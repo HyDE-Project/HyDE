@@ -46,6 +46,7 @@ N|Y|${HOME}/.config|lsd|lsd
 Y|Y|${HOME}/.config/hyde|wallbash|hyprland
 Y|Y|${HOME}/.local/share|hyde|hyprland
 N|Y|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
+N|Y|${HOME}/.config/hypr|hypridle|hypridle
 N|Y|${HOME}/.config/hypr|hypridle.conf|hypridle
 Y|Y|${HOME}/.config/hypr|hyprlock|hyprlock
 N|Y|${HOME}/.config/hypr|hyprlock.conf|hyprlock
