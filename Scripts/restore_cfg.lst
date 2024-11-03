@@ -46,16 +46,18 @@ N|Y|${HOME}/.config|lsd|lsd
 Y|Y|${HOME}/.config/hyde|wallbash|hyprland
 Y|Y|${HOME}/.local/share|hyde|hyprland
 N|Y|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
-N|Y|${HOME}/.config/hypr|hyde.conf keybindings.conf monitors.conf userprefs.conf animations.conf hyprland.conf windowrules.conf animations themes|hyprland
-Y|Y|${HOME}/.local/lib|hyde|hyprland
-Y|Y|${HOME}/.config|kitty|kitty
+N|Y|${HOME}/.config/hypr|hypridle.conf|hypridle
+Y|Y|${HOME}/.config/hypr|hyprlock|hyprlock
+N|Y|${HOME}/.config/hypr|hyprlock.conf|hyprlock
+Y|Y|${HOME}/.local/share|bin|hyprland
+Y|Y|${HOME}/.config/kitty|kitty.conf theme.conf|kitty
+N|Y|${HOME}/.config/kitty|userprefs.conf|kitty
 Y|Y|${HOME}/.config|Kvantum|kvantum
 Y|Y|${HOME}/.config|MangoHud|mangohud
 Y|Y|${HOME}/.config|fastfetch|fastfetch
 Y|Y|${HOME}/.config|qt5ct|qt5ct
 Y|Y|${HOME}/.config|qt6ct|qt6ct
 Y|Y|${HOME}/.config|rofi|rofi
-Y|Y|${HOME}/.config|swaylock|swaylock-effects
 Y|Y|${HOME}/.config/waybar|modules config.jsonc style.css theme.css|waybar
 N|Y|${HOME}/.config/waybar|config.ctl|waybar
 Y|Y|${HOME}/.config|wlogout|wlogout
