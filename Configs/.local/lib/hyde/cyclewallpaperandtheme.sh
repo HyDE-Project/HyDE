@@ -1,11 +1,11 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Paths to scripts and directories
 WALL_SCRIPT="$HOME/.local/share/bin/swwwallpaper.sh"
 THEME_SCRIPT="$HOME/.local/share/bin/themeswitch.sh"
 #SDDM_SCRIPT="$HOME/bin/setsddmwallpaper"
 SDDM_SCRIPT="$HOME/.local/share/bin/setsddmwallpaper.sh"
-LOG_FILE="$HOME/.local/share/cyclewallpaperandtheme.log"
+LOG_FILE="$HOME/.cache/cyclewallpaperandtheme.log"
 WALL_CYCLE_FILE="$HOME/.local/share/cyclewallpapercount"
 THEME_CYCLE_FILE="$HOME/.local/share/cyclethemecount"
 THEME_CHANGE_FLAG_FILE="$HOME/.local/share/cyclethemeflag"
