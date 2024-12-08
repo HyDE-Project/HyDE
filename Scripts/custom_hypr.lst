@@ -28,7 +28,8 @@ dunst                                                  # notification daemon
 rofi-wayland                                           # application launcher
 waybar                                                 # system bar
 swww                                                   # wallpaper
-swaylock-effects-git                                   # lock screen
+hyprlock                                               # lock screen
+hypridle                                               # idling daemon
 wlogout                                                # logout menu
 grimblast-git                                          # screenshot tool
 hyprpicker                                             # color picker
@@ -68,12 +69,12 @@ code                                                   # ide text editor
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
-# oh-my-zsh-git|zsh                                    #  plugin manager for zsh (Optional)
-zsh-theme-powerlevel10k-git|zsh          # theme for zsh
+oh-my-zsh-git|zsh                                      # plugin manager for zsh
+zsh-theme-powerlevel10k-git|zsh oh-my-zsh-git          # theme for zsh
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt
 fastfetch                                              # system information fetch tool
-pokego-bin|zsh                                        # display pokemon sprites in terminal (written GO)
+pokemon-colorscripts-git|zsh                           # display pokemon sprites
 
 # --------------------------------------------------- // HyDE
-# hyde-cli-git                                           # cli tool to manage hyde \\ Deprecated for HyDE
+hyde-cli-git                                           # cli tool to manage hyde

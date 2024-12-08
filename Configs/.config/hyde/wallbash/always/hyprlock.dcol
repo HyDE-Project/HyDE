@@ -1,0 +1,109 @@
+$HOME/.config/hypr/hyprlock/colors.conf|${scrDir}/hyprlock.sh background
+# Color group 1
+
+$primary_1   = <wallbash_pry1>    # primary color 1
+$text_1      = <wallbash_txt1>    # text color 1
+$p1_accent_1 = <wallbash_1xa1>    # accent color 1 for primary color 1
+$p1_accent_2 = <wallbash_1xa2>    # accent color 2 for primary color 1
+$p1_accent_3 = <wallbash_1xa3>    # accent color 3 for primary color 1
+$p1_accent_4 = <wallbash_1xa4>    # accent color 4 for primary color 1
+$p1_accent_5 = <wallbash_1xa5>    # accent color 5 for primary color 1
+$p1_accent_6 = <wallbash_1xa6>    # accent color 6 for primary color 1
+$p1_accent_7 = <wallbash_1xa7>    # accent color 7 for primary color 1
+$p1_accent_8 = <wallbash_1xa8>    # accent color 8 for primary color 1
+$p1_accent_9 = <wallbash_1xa9>    # accent color 9 for primary color 1
+
+# in rgba format
+$primary_1_rgba   = <wallbash_pry1_rgba(0.9)>    # primary color 1
+$text_1_rgba      = <wallbash_txt1_rgba(0.9)>    # text color 1
+$p1_accent_1_rgba = <wallbash_1xa1_rgba(0.9)>    # accent color 1 for primary color 1
+$p1_accent_2_rgba = <wallbash_1xa2_rgba(0.9)>    # accent color 2 for primary color 1
+$p1_accent_3_rgba = <wallbash_1xa3_rgba(0.9)>    # accent color 3 for primary color 1
+$p1_accent_4_rgba = <wallbash_1xa4_rgba(0.9)>    # accent color 4 for primary color 1
+$p1_accent_5_rgba = <wallbash_1xa5_rgba(0.9)>    # accent color 5 for primary color 1
+$p1_accent_6_rgba = <wallbash_1xa6_rgba(0.9)>    # accent color 6 for primary color 1
+$p1_accent_7_rgba = <wallbash_1xa7_rgba(0.9)>    # accent color 7 for primary color 1
+$p1_accent_8_rgba = <wallbash_1xa8_rgba(0.9)>    # accent color 8 for primary color 1
+$p1_accent_9_rgba = <wallbash_1xa9_rgba(0.9)>    # accent color 9 for primary color 1
+
+
+# Color group 2
+
+$primary_2   = <wallbash_pry2>    # primary color 2
+$text_2      = <wallbash_txt2>    # text color 2
+$p2_accent_1 = <wallbash_2xa1>    # accent color 1 for primary color 2
+$p2_accent_2 = <wallbash_2xa2>    # accent color 2 for primary color 2
+$p2_accent_3 = <wallbash_2xa3>    # accent color 3 for primary color 2
+$p2_accent_4 = <wallbash_2xa4>    # accent color 4 for primary color 2
+$p2_accent_5 = <wallbash_2xa5>    # accent color 5 for primary color 2
+$p2_accent_6 = <wallbash_2xa6>    # accent color 6 for primary color 2
+$p2_accent_7 = <wallbash_2xa7>    # accent color 7 for primary color 2
+$p2_accent_8 = <wallbash_2xa8>    # accent color 8 for primary color 2
+$p2_accent_9 = <wallbash_2xa9>    # accent color 9 for primary color 2
+
+# in rgba format
+$primary_2_rgba   = <wallbash_pry2_rgba(0.9)>    # primary color 2
+$text_2_rgba      = <wallbash_txt2_rgba(0.9)>    # text color 2
+$p2_accent_1_rgba = <wallbash_2xa1_rgba(0.9)>    # accent color 1 for primary color 2
+$p2_accent_2_rgba = <wallbash_2xa2_rgba(0.9)>    # accent color 2 for primary color 2
+$p2_accent_3_rgba = <wallbash_2xa3_rgba(0.9)>    # accent color 3 for primary color 2
+$p2_accent_4_rgba = <wallbash_2xa4_rgba(0.9)>    # accent color 4 for primary color 2
+$p2_accent_5_rgba = <wallbash_2xa5_rgba(0.9)>    # accent color 5 for primary color 2
+$p2_accent_6_rgba = <wallbash_2xa6_rgba(0.9)>    # accent color 6 for primary color 2
+$p2_accent_7_rgba = <wallbash_2xa7_rgba(0.9)>    # accent color 7 for primary color 2
+$p2_accent_8_rgba = <wallbash_2xa8_rgba(0.9)>    # accent color 8 for primary color 2
+$p2_accent_9_rgba = <wallbash_2xa9_rgba(0.9)>    # accent color 9 for primary color 2
+
+# Color group 3
+
+$primary_3   = <wallbash_pry3>    # primary color 3
+$text_3      = <wallbash_txt3>    # text color 3
+$p3_accent_1 = <wallbash_3xa1>    # accent color 1 for primary color 3
+$p3_accent_2 = <wallbash_3xa2>    # accent color 2 for primary color 3
+$p3_accent_3 = <wallbash_3xa3>    # accent color 3 for primary color 3
+$p3_accent_4 = <wallbash_3xa4>    # accent color 4 for primary color 3
+$p3_accent_5 = <wallbash_3xa5>    # accent color 5 for primary color 3
+$p3_accent_6 = <wallbash_3xa6>    # accent color 6 for primary color 3
+$p3_accent_7 = <wallbash_3xa7>    # accent color 7 for primary color 3
+$p3_accent_8 = <wallbash_3xa8>    # accent color 8 for primary color 3
+$p3_accent_9 = <wallbash_3xa9>    # accent color 9 for primary color 3
+
+# in rgba format
+$primary_3_rgba   = <wallbash_pry3_rgba(0.9)>    # primary color 3
+$text_3_rgba      = <wallbash_txt3_rgba(0.9)>    # text color 3
+$p3_accent_1_rgba = <wallbash_3xa1_rgba(0.9)>    # accent color 1 for primary color 3
+$p3_accent_2_rgba = <wallbash_3xa2_rgba(0.9)>    # accent color 2 for primary color 3
+$p3_accent_3_rgba = <wallbash_3xa3_rgba(0.9)>    # accent color 3 for primary color 3
+$p3_accent_4_rgba = <wallbash_3xa4_rgba(0.9)>    # accent color 4 for primary color 3
+$p3_accent_5_rgba = <wallbash_3xa5_rgba(0.9)>    # accent color 5 for primary color 3
+$p3_accent_6_rgba = <wallbash_3xa6_rgba(0.9)>    # accent color 6 for primary color 3
+$p3_accent_7_rgba = <wallbash_3xa7_rgba(0.9)>    # accent color 7 for primary color 3
+$p3_accent_8_rgba = <wallbash_3xa8_rgba(0.9)>    # accent color 8 for primary color 3
+$p3_accent_9_rgba = <wallbash_3xa9_rgba(0.9)>    # accent color 9 for primary color 3
+
+# Color group 4
+
+$primary_4   = <wallbash_pry4>    # primary color 4
+$text_4      = <wallbash_txt4>    # text color 4
+$p4_accent_1 = <wallbash_3xa1>    # accent color 1 for primary color 4
+$p4_accent_2 = <wallbash_3xa2>    # accent color 2 for primary color 4
+$p4_accent_3 = <wallbash_3xa3>    # accent color 3 for primary color 4
+$p4_accent_4 = <wallbash_3xa4>    # accent color 4 for primary color 4
+$p4_accent_5 = <wallbash_3xa5>    # accent color 5 for primary color 4
+$p4_accent_6 = <wallbash_3xa6>    # accent color 6 for primary color 4
+$p4_accent_7 = <wallbash_3xa7>    # accent color 7 for primary color 4
+$p4_accent_8 = <wallbash_3xa8>    # accent color 8 for primary color 4
+$p4_accent_9 = <wallbash_3xa9>    # accent color 9 for primary color 4
+
+# in rgba format
+$primary_4_rgba   = <wallbash_pry4_rgba(0.9)>    # primary color 4
+$text_4_rgba      = <wallbash_txt4_rgba(0.9)>    # text color 4
+$p4_accent_1_rgba = <wallbash_4xa1_rgba(0.9)>    # accent color 1 for primary color 4
+$p4_accent_2_rgba = <wallbash_4xa2_rgba(0.9)>    # accent color 2 for primary color 4
+$p4_accent_3_rgba = <wallbash_4xa3_rgba(0.9)>    # accent color 3 for primary color 4
+$p4_accent_4_rgba = <wallbash_4xa4_rgba(0.9)>    # accent color 4 for primary color 4
+$p4_accent_5_rgba = <wallbash_4xa5_rgba(0.9)>    # accent color 5 for primary color 4
+$p4_accent_6_rgba = <wallbash_4xa6_rgba(0.9)>    # accent color 6 for primary color 4
+$p4_accent_7_rgba = <wallbash_4xa7_rgba(0.9)>    # accent color 7 for primary color 4
+$p4_accent_8_rgba = <wallbash_4xa8_rgba(0.9)>    # accent color 8 for primary color 4
+$p4_accent_9_rgba = <wallbash_4xa9_rgba(0.9)>    # accent color 9 for primary color 4

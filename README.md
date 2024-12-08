@@ -50,7 +50,7 @@ Who are the $USER?
   - [ ] Make `wallbash*.sh` scripts monolithic, to fix wallbash issues
 - [ ] **Better Abstraction**
   - [ ] Waybar
-  - [ ] Hyprlock
+  - [😊] Hyprlock
   - [ ] ...
 - [ ] Clean up
 - [ ] **...**
