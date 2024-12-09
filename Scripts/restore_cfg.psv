@@ -31,9 +31,9 @@ Populate or Preserved:
 
 P|${HOME}/.config/Code - OSS/User|settings.json|code
 P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
-P|${HOME}/.config/hypr|hyde.conf hyprland.conf windowrules.conf keybindings.conf monitors.conf animations.conf |hyprland
+P|${HOME}/.config/hypr|hyde.conf hyprland.conf windowrules.conf keybindings.conf monitors.conf animations.conf  |hyprland
 P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
-P|${HOME}/.config/hypr|themes|hyprland
+P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
 P|${HOME}/.config/waybar|config.ctl|waybar
 P|${HOME}/.config|baloofilerc|dolphin
 P|${HOME}/.config|code-flags.conf|code
@@ -64,7 +64,6 @@ S|${HOME}/.config|rofi|rofi
 S|${HOME}/.config|swaylock|swaylock-effects
 S|${HOME}/.config|wlogout|wlogout
 S|${HOME}/.config|xsettingsd|nwg-look
-S|${HOME}/.local/lib|hyde|hyprland
 S|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
 S|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
 S|${HOME}/.local/share|dolphin|dolphin
@@ -74,4 +73,4 @@ S|${HOME}/.config/hyde|wallbash|hyprland
 Overwrite: Strict Hyde specific files
 
 O|${HOME}/.local/share|hyde|hyprland
-
+O|${HOME}/.local/lib|hyde|hyprland
