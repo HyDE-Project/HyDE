@@ -16,7 +16,7 @@ mangohud                                               # system performance over
 
 # --------------------------------------------------- // Music
 cava                                                   # audio visualizer
-spotify                                                # proprietary music streaming service
+spotify-launcher                                       # proprietary music streaming service
 spicetify-cli                                          # cli to customize spotify client
 
 # --------------------------------------------------- // Apps
