@@ -56,12 +56,12 @@ EOF
 
 if [ $# -ge 1 ]; then
     if [[ "$2" == *q* ]] || [[ "$3" == *q* ]]; then
-	notify=false
+	    notify=false
     fi
     if [[ "$2" =~ ^[0-9]+$ ]]; then
-	step=$2
+	    step=$2
     elif [[ "$3" =~ ^[0-9]+$ ]]; then
-	step=$3 
+        step=$3 
     fi
 fi
 
@@ -76,24 +76,18 @@ esac
 # Apply action based on the selected option
 case $action in
     increase) 
-        [ "$toggle_mode" -eq 1 ] && newTemp=$(($currentTemp + $step)) && newTemp=$(clamp_temp "$newTemp")
-	echo "{\"temp\": $newTemp, \"user\": $toggle_mode}" > "$sunsetConf"
+        newTemp=$(clamp_temp "$(($currentTemp + $step))") && echo "{\"temp\": $newTemp, \"user\": $toggle_mode}" > "$sunsetConf"
         ;;
     decrease) 
-        [ "$toggle_mode" -eq 1 ] && newTemp=$(($currentTemp - $step)) && newTemp=$(clamp_temp "$newTemp")
-	echo "{\"temp\": $newTemp, \"user\": $toggle_mode}" > "$sunsetConf"
+        newTemp=$(clamp_temp "$(($currentTemp - $step))") && echo "{\"temp\": $newTemp, \"user\": $toggle_mode}" > "$sunsetConf"
         ;;
     read) 
         newTemp=$currentTemp
         ;;
     toggle) 
-        if [ "$toggle_mode" -eq 1 ]; then
-            newTemp=$default
-            jq '.user = 0' "$sunsetConf" > "${sunsetConf}.tmp" && mv "${sunsetConf}.tmp" "$sunsetConf"
-        else
-            newTemp=$currentTemp
-            jq '.user = 1' "$sunsetConf" > "${sunsetConf}.tmp" && mv "${sunsetConf}.tmp" "$sunsetConf"
-        fi
+        toggle_mode=$((1 - $toggle_mode))
+        [ "$toggle_mode" -eq 1 ] && newTemp=$currentTemp || newTemp=$default
+        jq --argjson toggle_mode "$toggle_mode" '.user = $toggle_mode' "$sunsetConf" > "${sunsetConf}.tmp" && mv "${sunsetConf}.tmp" "$sunsetConf"
         ;;
 esac
 
@@ -102,10 +96,12 @@ esac
 
 # Start or restart hyprsunset if necessary
 if [ ! "$action" = "read" ]; then
-    if pgrep -x hyprsunset > /dev/null; then
-        pkill -x hyprsunset
+    pkill -x hyprsunset
+    if [ "$toggle_mode" -eq 0 ]; then
+        hyprsunset -i > /dev/null & # $default is only approx
+    else 
+        hyprsunset --temperature "$newTemp" > /dev/null &
     fi
-    hyprsunset --temperature "$newTemp" > /dev/null &
 fi
 
 # Print status message
