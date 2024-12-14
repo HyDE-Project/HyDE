@@ -8,6 +8,7 @@ confDir=${confDir:-$XDG_CONFIG_HOME}
 
 # Check if SwayOSD is installed
 use_swayosd=false
+quiet_mode=${VOLUME_QUIET:-false}
 if command -v swayosd-client >/dev/null 2>&1 && pgrep -x swayosd-server >/dev/null; then
     use_swayosd=true
 fi
@@ -29,6 +30,7 @@ Actions:
     i     Increase volume
     d     Decrease volume
     m     Toggle mute
+    q     Quiet mode (no notifications)
 
 Optional:
     step  Volume change step (default: 5)
@@ -38,7 +40,9 @@ Examples:
     $(basename "$0") -i m       # Toggle input mute
     $(basename "$0") -p spotify d 10  # Decrease Spotify volume by 10
     $(basename "$0") -p '' d 10  # Decrease volume by 10 for all players
-
+    $(basename "$0") -s          # Select output device
+    $(basename "$0") -t          # Toggle to next output device
+    $(basename "$0") -q    # Increase output volume by 5 in quiet mode
 EOF
     exit 1
 }
@@ -48,16 +52,17 @@ notify_vol() {
     iconStyle="knob"
     ico="${icodir}/${iconStyle}-${angle}.svg"
     bar=$(seq -s "." $((vol / 15)) | sed 's/[0-9]//g')
-    notify-send -a "HyDE Notify" -r 69 -t 800 -i "${ico}" "${vol}${bar}" "${nsink}"
+    [[ "${quiet_mode}" == true ]] || notify-send -a "HyDE Notify" -r 69 -t 800 -i "${ico}" "${vol}${bar}" "${nsink}"
 }
 
 notify_mute() {
+    [[ "${quiet_mode}" == true ]] && return 0
     mute=$(pamixer "${srce}" --get-mute | cat)
     [ "${srce}" == "--default-source" ] && dvce="microphone" || dvce="speaker"
     if [ "${mute}" == "true" ]; then
-        notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/muted-${dvce}.svg" "muted" "${nsink}"
+        [[ "${quiet_mode}" == true ]] || notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/muted-${dvce}.svg" "muted" "${nsink}"
     else
-        notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/unmuted-${dvce}.svg" "unmuted" "${nsink}"
+        [[ "${quiet_mode}" == true ]] || notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/unmuted-${dvce}.svg" "unmuted" "${nsink}"
     fi
 }
 
@@ -145,8 +150,8 @@ toggle_output() {
 iconsDir="${iconsDir:-$XDG_DATA_HOME/icons}"
 icodir="${iconsDir}/Wallbash-Icon/media"
 step=5
-# Parse options
-while getopts "iop:st" opt; do
+
+while getopts "iop:stq" opt; do
     case $opt in
     i)
         device="pamixer"
@@ -171,6 +176,9 @@ while getopts "iop:st" opt; do
     t)
         toggle_output
         exit
+        ;;
+    q)
+        quiet_mode=true
         ;;
     *) print_usage ;;
     esac

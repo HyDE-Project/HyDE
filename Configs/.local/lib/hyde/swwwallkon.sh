@@ -8,7 +8,7 @@ source "${scrDir}/globalcontrol.sh"
 scrName="$(basename "$0")"
 kmenuPath="$HOME/.local/share/kio/servicemenus"
 kmenuDesk="${kmenuPath}/hydewallpaper.desktop"
-tgtPath="$(dirname "${hydeThemeDir}")"
+tgtPath="$(dirname "${HYDE_THEME_DIR}")"
 get_themes
 
 

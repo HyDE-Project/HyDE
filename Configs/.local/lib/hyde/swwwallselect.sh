@@ -30,8 +30,8 @@ orientation:vertical;} element-icon{size:28em;border-radius:0em;} element-text{p
 #// launch rofi menu
 
 # shellcheck disable=SC2154
-currentWall="$(basename "$(readlink "${hydeThemeDir}/wall.set")")"
-wallPathArray=("${hydeThemeDir}")
+currentWall="$(basename "$(readlink "${HYDE_THEME_DIR}/wall.set")")"
+wallPathArray=("${HYDE_THEME_DIR}")
 wallPathArray+=("${wallAddCustomPath[@]}")
 get_hashmap "${wallPathArray[@]}"
 wallListBase=()

@@ -52,7 +52,7 @@ rofiSel=$(
     while [ $i -lt ${#thmList[@]} ]; do
         echo -en "${thmList[$i]}\x00icon\x1f${thmbDir}/$(set_hash "${thmWall[$i]}").${thmbExtn}\n"
         i=$((i + 1))
-    done | rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${hydeTheme}"
+    done | rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${HYDE_THEME}"
 )
 
 #// apply theme

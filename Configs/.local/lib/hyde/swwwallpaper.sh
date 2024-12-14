@@ -42,7 +42,7 @@ Wall_Change() {
 scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
-wallSet="${hydeThemeDir}/wall.set"
+wallSet="${HYDE_THEME_DIR}/wall.set"
 wallCur="${cacheDir}/wall.set"
 wallSqr="${cacheDir}/wall.sqre"
 wallTmb="${cacheDir}/wall.thmb"
@@ -53,8 +53,8 @@ wallDcl="${cacheDir}/wall.dcol"
 #// check wall
 
 setIndex=0
-[ ! -d "${hydeThemeDir}" ] && echo "ERROR: \"${hydeThemeDir}\" does not exist" && exit 0
-wallPathArray=("${hydeThemeDir}")
+[ ! -d "${HYDE_THEME_DIR}" ] && echo "ERROR: \"${HYDE_THEME_DIR}\" does not exist" && exit 0
+wallPathArray=("${HYDE_THEME_DIR}")
 wallPathArray+=("${wallAddCustomPath[@]}")
 get_hashmap "${wallPathArray[@]}"
 [ ! -e "$(readlink -f "${wallSet}")" ] && echo "fixig link :: ${wallSet}" && ln -fs "${wallList[setIndex]}" "${wallSet}"

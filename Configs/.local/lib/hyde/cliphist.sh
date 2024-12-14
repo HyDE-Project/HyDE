@@ -78,6 +78,7 @@ checkContent() {
 }
 
 # Set rofi scaling
+rofiScale="${ROFI_CLIPHIST_SCALE}"
 [[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=10
 r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
 hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}

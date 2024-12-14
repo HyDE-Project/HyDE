@@ -47,8 +47,8 @@ image_dirs=(
 # shellcheck disable=SC1091
 [ -f "/etc/os-release" ] && source "/etc/os-release"
 
-if [ -n "${hydeTheme}" ] && [ -d "${confDir}/hyde/themes/${hydeTheme}" ]; then
-  image_dirs+=("${confDir}/hyde/themes/${hydeTheme}")
+if [ -n "${HYDE_THEME}" ] && [ -d "${confDir}/hyde/themes/${HYDE_THEME}" ]; then
+  image_dirs+=("${confDir}/hyde/themes/${HYDE_THEME}")
 fi
 
 hyde_distro_logo=${iconDir}/Wallbash-Icon/distro/$LOGO

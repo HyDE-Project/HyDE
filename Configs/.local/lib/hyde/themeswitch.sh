@@ -6,7 +6,7 @@
 scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
-[ -z "${hydeTheme}" ] && echo "ERROR: unable to detect theme" && exit 1
+[ -z "${HYDE_THEME}" ] && echo "ERROR: unable to detect theme" && exit 1
 get_themes
 
 #// define functions
@@ -16,7 +16,7 @@ Theme_Change() {
 
     # shellcheck disable=SC2154
     for i in "${!thmList[@]}"; do
-        if [ "${thmList[i]}" == "${hydeTheme}" ]; then
+        if [ "${thmList[i]}" == "${HYDE_THEME}" ]; then
             if [ "${x_switch}" == 'n' ]; then
                 setIndex=$(((i + 1) % ${#thmList[@]}))
             elif [ "${x_switch}" == 'p' ]; then
@@ -60,9 +60,9 @@ done
 #// update control file
 
 # shellcheck disable=SC2076
-[[ ! " ${thmList[*]} " =~ " ${themeSet} " ]] && themeSet="${hydeTheme}"
+[[ ! " ${thmList[*]} " =~ " ${themeSet} " ]] && themeSet="${HYDE_THEME}"
 
-set_conf "hydeTheme" "${themeSet}"
+set_conf "HYDE_THEME" "${themeSet}"
 print_log -sec "theme" -stat "apply" "${themeSet}"
 
 export reload_flag=1
@@ -72,7 +72,7 @@ source "${scrDir}/globalcontrol.sh"
 #// hypr
 [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] && hyprctl keyword misc:disable_autoreload 1 -q
 # shellcheck disable=SC2154
-sed '1d' "${hydeThemeDir}/hypr.theme" >"${confDir}/hypr/themes/theme.conf" # Useless and already handled by swwwallbash.sh but kept for robustness
+sed '1d' "${HYDE_THEME_DIR}/hypr.theme" >"${confDir}/hypr/themes/theme.conf" # Useless and already handled by swwwallbash.sh but kept for robustness
 # shellcheck disable=SC2154
 if [ "${enableWallDcol}" -eq 0 ]; then
     gtkTheme="$(get_hyprConf "GTK_THEME")"
@@ -158,4 +158,4 @@ fi
 
 #// wallpaper
 
-"${scrDir}/swwwallpaper.sh" -s "$(readlink "${hydeThemeDir}/wall.set")"
+"${scrDir}/swwwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")"

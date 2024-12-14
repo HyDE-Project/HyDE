@@ -64,11 +64,11 @@ dcol_mode="${dcol_mode:-dark}"
 #  Theme mode: detects the color-scheme set in hypr.theme and falls back if nothing is parsed.
 enableWallDcol="${enableWallDcol:-1}"
 if [ "${enableWallDcol}" -eq 0 ]; then
-hydeThemeDir="${hydeThemeDir:-$confDir/hyde/themes/$hydeTheme}"
+HYDE_THEME_DIR="${HYDE_THEME_DIR:-$confDir/hyde/themes/$HYDE_THEME}"
 dcol_mode=$(get_hyprConf "COLOR_SCHEME")
 dcol_mode=${dcol_mode#prefer-}
 # shellcheck disable=SC1091
-[ -f "${hydeThemeDir}/theme.dcol" ] && source "${hydeThemeDir}/theme.dcol"
+[ -f "${HYDE_THEME_DIR}/theme.dcol" ] && source "${HYDE_THEME_DIR}/theme.dcol"
 fi
 { [ "${dcol_mode}" == "dark" ] && export BtnCol="white" ;} || export BtnCol="black"
 

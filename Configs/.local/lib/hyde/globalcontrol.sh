@@ -1,16 +1,33 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091
 
-#// hyde envs
+# xdg resolution
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
+# hyde envs
+export HYDE_CONFIG_HOME="${XDG_CONFIG_HOME}/hyde"
+export HYDE_DATA_HOME="${XDG_DATA_HOME}/hyde"
+export HYDE_CACHE_HOME="${XDG_CACHE_HOME}/hyde"
+export HYDE_STATE_HOME="${XDG_STATE_HOME}/hyde"
+export HYDE_RUNTIME_DIR="${XDG_RUNTIME_DIR}/hyde"
+export ICONS_DIR="${XDG_DATA_HOME}/icons"
+export FONTS_DIR="${XDG_DATA_HOME}/fonts"
+export THEMES_DIR="${XDG_DATA_HOME}/themes"
+
+#legacy hyde envs // should be deprecated
 
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-export hydeConfDir="${confDir}/hyde"
-export cacheDir="$HOME/.cache/hyde"
-export thmbDir="${cacheDir}/thumbs"
-export dcolDir="${cacheDir}/dcols"
-export iconsDir="${XDG_DATA_HOME}/icons"
-export themesDir="${XDG_DATA_HOME}/themes"
-export fontsDir="${XDG_DATA_HOME}/fonts"
+export hydeConfDir="$HYDE_CONFIG_HOME"
+export cacheDir="$HYDE_CACHE_HOME"
+export thmbDir="$HYDE_CACHE_HOME/thumbs"
+export dcolDir="$HYDE_CACHE_HOME/dcols"
+export iconsDir="$ICONS_DIR"
+export themesDir="$THEMES_DIR"
+export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
 get_hashmap() {
@@ -104,20 +121,21 @@ get_themes() {
     fi
 }
 
-[ -f "${hydeConfDir}/hyderc" ] && source "${hydeConfDir}/hyderc"
 [ -f "${HYDE_RUNTIME_DIR}/environment" ] && source "${HYDE_RUNTIME_DIR}/environment"
+[ -f "${XDG_STATE_HOME}/hyde/environment" ] && source "${XDG_STATE_HOME}/hyde/environment"
+[ -f "${XDG_STATE_HOME}/hyde/staterc" ] && source "${XDG_STATE_HOME}/hyde/staterc"
 
 case "${enableWallDcol}" in
 0 | 1 | 2 | 3) ;;
 *) enableWallDcol=0 ;;
 esac
 
-if [ -z "${hydeTheme}" ] || [ ! -d "${hydeConfDir}/themes/${hydeTheme}" ]; then
+if [ -z "${HYDE_THEME}" ] || [ ! -d "${hydeConfDir}/themes/${HYDE_THEME}" ]; then
     get_themes
-    hydeTheme="${thmList[0]}"
+    HYDE_THEME="${thmList[0]}"
 fi
 
-hydeThemeDir="${hydeConfDir}/themes/${hydeTheme}"
+HYDE_THEME_DIR="${hydeConfDir}/themes/${HYDE_THEME}"
 wallbashDirs=(
     "${hydeConfDir}/wallbash"
     "${XDG_DATA_HOME}/hyde/wallbash"
@@ -125,8 +143,8 @@ wallbashDirs=(
     "/usr/share/hyde/wallbash"
 )
 
-export hydeTheme
-export hydeThemeDir
+export HYDE_THEME
+export HYDE_THEME_DIR
 export wallbashDirs
 export enableWallDcol
 
@@ -167,12 +185,12 @@ get_aurhlpr() {
 set_conf() {
     local varName="${1}"
     local varData="${2}"
-    touch "${hydeConfDir}/hyderc"
+    touch "${XDG_STATE_HOME}/hyde/staterc"
 
-    if [ "$(grep -c "^${varName}=" "${hydeConfDir}/hyderc")" -eq 1 ]; then
-        sed -i "/^${varName}=/c${varName}=\"${varData}\"" "${hydeConfDir}/hyderc"
+    if [ "$(grep -c "^${varName}=" "${XDG_STATE_HOME}/hyde/staterc")" -eq 1 ]; then
+        sed -i "/^${varName}=/c${varName}=\"${varData}\"" "${XDG_STATE_HOME}/hyde/staterc"
     else
-        echo "${varName}=\"${varData}\"" >>"${hydeConfDir}/hyderc"
+        echo "${varName}=\"${varData}\"" >>"${XDG_STATE_HOME}/hyde/staterc"
     fi
 }
 
@@ -254,7 +272,7 @@ print_log() {
 # Yes this is so slow but it's the only way to ensure that parsing behaves correctly
 get_hyprConf() {
     local hyVar="${1}"
-    local file="${2:-"${hydeThemeDir}/hypr.theme"}"
+    local file="${2:-"$HYDE_THEME_DIR/hypr.theme"}"
     local gsVal
     gsVal="$(grep "^[[:space:]]*\$${hyVar}\s*=" "${file}" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     [ -n "${gsVal}" ] && [[ "${gsVal}" != \$* ]] && echo "${gsVal}" && return 0
