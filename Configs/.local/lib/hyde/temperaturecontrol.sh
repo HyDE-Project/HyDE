@@ -101,7 +101,7 @@ esac
 [ "$notify" = true ] && send_notification
 
 # Start or restart hyprsunset if necessary
-if if [ ! "$action" = "read" ]; then
+if [ ! "$action" = "read" ]; then
     if pgrep -x hyprsunset > /dev/null; then
         pkill -x hyprsunset
     fi
