@@ -1,0 +1,16 @@
+"custom/sunset": {
+        "return-type": "json",
+        "format": "{icon}",
+        "format-icons": {
+            "active" : "",
+            "inactive" : ""
+        },
+        "exec": "temperaturecontrol.sh r q",
+        "rotate": ${r_deg},
+        "on-click": "temperaturecontrol.sh t",
+        "on-scroll-up": "temperaturecontrol.sh i",
+        "on-scroll-down": "temperaturecontrol.sh d",
+        "interval": 1,
+        "tooltip":true,
+        "escape": true,
+    },
