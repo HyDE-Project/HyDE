@@ -67,3 +67,4 @@ Y|Y|${HOME}/.local/share|dolphin|dolphin
 Y|Y|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
 Y|Y|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
 N|Y|${HOME}/.config|libinput-gestures.conf|libinput-gestures
+N|Y|${HOME}/.config/swayosd|config.toml | swayosd-git
