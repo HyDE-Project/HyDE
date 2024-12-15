@@ -99,7 +99,7 @@ else
 fi
 
 case "${main_action}" in
--c | --copy | "History")
+c | -c | --copy | "History")
     selected_item=$( (
         echo -e ":f:a:v:\t📌 Favorites"
         echo -e ":o:p:t:\t⚙️ Options"
@@ -114,7 +114,7 @@ case "${main_action}" in
     paste_string "${*}"
     echo -e "${selected_item}\t" | cliphist delete
     ;;
--d | --delete | "Delete")
+d | -d | --delete | "Delete")
     export delMode=true
     (
         cliphist list
@@ -229,7 +229,7 @@ case "${main_action}" in
         ;;
     esac
     ;;
--w | --wipe | "Clear History")
+w | -w | --wipe | "Clear History")
     if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"☢️ Clear Clipboard History?\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")" == "Yes" ]; then
         cliphist wipe
         notify-send "Clipboard history cleared."
