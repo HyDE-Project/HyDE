@@ -105,6 +105,5 @@ xtrans=${SWWW_TRANSITION_DEFAULT}
 [ -z "${wallTransDuration}" ] && wallTransDuration=0.4
 
 #// apply wallpaper
-echo ::"$xtrans"
 print_log -sec "wallpaper" -stat "apply" "$(readlink -f "${wallSet}")"
 swww img "$(readlink "${wallSet}")" --transition-bezier .43,1.19,1,.4 --transition-type "${xtrans}" --transition-duration "${wallTransDuration}" --transition-fps "${wallFramerate}" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &

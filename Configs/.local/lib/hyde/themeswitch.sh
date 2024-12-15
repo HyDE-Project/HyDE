@@ -93,18 +93,29 @@ fi
 
 #// qtct
 
-sed -i "/^icon_theme=/c\icon_theme=${gtkIcon}" "${confDir}/qt5ct/qt5ct.conf"
-sed -i "/^icon_theme=/c\icon_theme=${gtkIcon}" "${confDir}/qt6ct/qt6ct.conf"
-
+if ! kwriteconfig6 --file "${confDir}/qt5ct/qt5ct.conf" --group "Appearance" --key "icon_theme" "${gtkIcon}" 2>/dev/null; then
+    sed -i "/^icon_theme=/c\icon_theme=${gtkIcon}" "${confDir}/qt5ct/qt5ct.conf"
+fi
+if ! kwriteconfig6 --file "${confDir}/qt6ct/qt6ct.conf" --group "Appearance" --key "icon_theme" "${gtkIcon}" 2>/dev/null; then
+    sed -i "/^icon_theme=/c\icon_theme=${gtkIcon}" "${confDir}/qt6ct/qt6ct.conf"
+fi
 # // kde plasma
-sed -i "/^Theme=/c\Theme=${gtkIcon}" "${confDir}/kdeglobals"
+if ! kwriteconfig6 --file "${confDir}/kdeglobals" --group "Icons" --key "Theme" "${gtkIcon}" 2>/dev/null; then
+    sed -i "/^Theme=/c\Theme=${gtkIcon}" "${confDir}/kdeglobals"
+fi
 
 # Ensure [UiSettings] ColorScheme exists in kdeglobals // dolphin fix
-if ! grep -q "^\[UiSettings\]" "${confDir}/kdeglobals"; then
-    echo -e "\n[UiSettings]\nColorScheme=${gtkTheme}" >>"${confDir}/kdeglobals"
-elif ! grep -q "^ColorScheme=" "${confDir}/kdeglobals"; then
-    sed -i "/^\[UiSettings\]/a ColorScheme=${gtkTheme}" "${confDir}/kdeglobals"
+if ! kwriteconfig6 --file "${confDir}/kdeglobals" --group "UiSettings" --key "ColorScheme" "${gtkTheme}" 2>/dev/null; then
+    if ! grep -q "^\[UiSettings\]" "${confDir}/kdeglobals"; then
+        echo -e "\n[UiSettings]\nColorScheme=${gtkTheme}" >>"${confDir}/kdeglobals"
+    elif ! grep -q "^ColorScheme=" "${confDir}/kdeglobals"; then
+        sed -i "/^\[UiSettings\]/a ColorScheme=${gtkTheme}" "${confDir}/kdeglobals"
+    fi
 fi
+
+# For KDE stuff
+kwriteconfig6 --file "${confDir}/kdeglobals" --group "KDE" --key "windgetStyke" "kvantum" 2>/dev/null
+kwriteconfig6 --file "${confDir}/kdeglobals" --group "Colors:View" --key "BackgroundNormal" "#00000000" 2>/dev/null
 
 # // gtk2
 
