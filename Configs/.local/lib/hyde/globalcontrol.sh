@@ -122,8 +122,8 @@ get_themes() {
 }
 
 [ -f "${HYDE_RUNTIME_DIR}/environment" ] && source "${HYDE_RUNTIME_DIR}/environment"
-[ -f "${XDG_STATE_HOME}/hyde/config" ] && source "${XDG_STATE_HOME}/hyde/config"
-[ -f "${XDG_STATE_HOME}/hyde/staterc" ] && source "${XDG_STATE_HOME}/hyde/staterc"
+[ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
+[ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
 
 case "${enableWallDcol}" in
 0 | 1 | 2 | 3) ;;

@@ -1,0 +1,88 @@
+# Configuration file for HyDE
+# Environment variables should be on top
+# Updated hyde.toml file can be found at $HOME/.local/share/hyde/hyde.toml
+
+WARP_ENABLE_WAYLAND = 1
+
+[swww]
+custom_path = ["$HOME/Pictures/Wallpapers", "$HOME/Pictures/mushrooms"]
+framerate = 60
+duration = 1
+
+[rofi]
+scale = 1
+
+
+[rofi.launcher]
+# style = "10"
+scale = 8
+
+[rofi.cliphist]
+scale = 8
+
+[rofi.wallpaper]
+scale = 8
+
+[rofi.emoji]
+style = 2
+scale = 8
+
+[rofi.theme]
+scale = 8
+
+[wlogout]
+style = "1"
+
+[battery.notify]
+timer = 120
+notify = 1140
+interval = 5
+dock = false
+
+[battery.notify.threshold]
+full = 90
+critical = 10
+low = 20
+unplug = 80
+
+
+[battery.notify.execute]
+unplug = ""
+low = ""
+critical = "systemctl suspend"
+
+[keybind.hint]
+
+[rofi.keybind.hint]
+width = "40em"
+height = "40em"
+line = 16
+conf = "$HOME/GitHub/HyDE/Configs/.local/share/bin/keybinds_hint.sh"
+
+
+[screenshot]
+annotation_tool = "swappy"
+
+[rofi.bookmark]
+file = "$HOME/.config/hyde/bookmarks.lst"
+
+[rofi.search]
+file = "$HOME/.config/hyde/search.lst"
+
+
+[wallbash]
+skip_template = ["hyprpanel"]
+
+[waybar]
+font = "JetBrains Mono"
+font_size = 10
+output = ["HDMI-A-0", "eDP-1"]
+
+[waybar.module.cava]
+bar = "▁▂▃▄▅▆▇█"
+width = 20
+range = 7
+standby = "🎶"
+
+[hypr.config]
+sanitize = ['.*rgba\(.*,*,*,*,']

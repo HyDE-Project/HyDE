@@ -3,7 +3,7 @@
 undock=false
 scrDir=$(dirname "$(realpath "$0")")
 source $scrDir/globalcontrol.sh
-batterynotify_conf="${hydeConfDir}/hyderc" # Shared with hyde configuration
+batterynotify_conf="$HYDE_STATE_HOME/staterc" # Shared with hyde configuration
 config_info() {
     cat <<EOF
 

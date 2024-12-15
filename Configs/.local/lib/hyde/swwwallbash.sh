@@ -112,8 +112,7 @@ fn_wallbash() {
 
     # shellcheck disable=SC1091
     # shellcheck disable=SC2154
-    [ -f "${hydeConfDir}/hyderc" ] && source "${hydeConfDir}/hyderc"
-    # Skips the the template declared in ./hyderc
+    [ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
     if [[ -n "${skip_wallbash[*]}" ]]; then
         for skip in "${skip_wallbash[@]}"; do
             if [[ "${template}" =~ ${skip} ]]; then

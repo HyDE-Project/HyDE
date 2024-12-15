@@ -43,7 +43,7 @@ image_dirs=(
 )
 
 # shellcheck source=/dev/null
-[ -f "${confDir}/hyde/hyderc" ] && source "${confDir}/hyde/hyderc"
+[ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
 # shellcheck disable=SC1091
 [ -f "/etc/os-release" ] && source "/etc/os-release"
 
