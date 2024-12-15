@@ -48,6 +48,7 @@ qt5-imageformats                                       # for dolphin image thumb
 ffmpegthumbs                                           # for dolphin video thumbnails
 kde-cli-tools                                          # for dolphin file type defaults
 libnotify                                              # for notifications
+xorg-xhost                                             # authorization from wayland
 
 # --------------------------------------------------- // Theming
 nwg-look                                               # gtk configuration tool
