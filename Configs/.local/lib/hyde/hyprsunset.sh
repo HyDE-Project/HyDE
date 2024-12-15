@@ -1,42 +1,108 @@
-#! /bin/env bash
+#!/usr/bin/env sh
 
-max_temp=20000
-min_temp=1000
-multiplier=$(((max_temp - min_temp) / 100))
+# Set directory paths and file locations
+scrDir=$(dirname "$(realpath "$0")")
+source "$scrDir/globalcontrol.sh"
+sunsetConf="${confDir}/hypr/hyprsunset.json"
 
-HYDE_RUNTIME_DIR=${HYDE_RUNTIME_DIR:-/tmp}
-temp_file="$HYDE_RUNTIME_DIR/hyprsunset_temperature"
+# Default temperature settings
+default=6500
+step=500
+min=1000
+max=10000
 
-action=$1
-step=${2:-5}
+notify="${waybar_temperature_notification:-true}"
 
-if [[ ! -f $temp_file ]]; then
-    echo 6000 >"$temp_file"
+# Ensure the configuration file exists, create it if not
+if [ ! -f "$sunsetConf" ]; then
+    echo "{\"temp\": $default, \"user\": 1}" > "$sunsetConf"
 fi
 
-current_temp=$(cat "$temp_file")
-case $action in
-i)
-    new_temp=$((current_temp + step * multiplier))
-    if [[ $new_temp -gt $max_temp ]]; then
-        new_temp=$max_temp
+# Read current temperature and mode from the configuration file
+currentTemp=$(jq '.temp' "$sunsetConf")
+toggle_mode=$(jq '.user' "$sunsetConf")
+[ -z "$currentTemp" ] && currentTemp=$default
+[ -z "$toggle_mode" ] && toggle_mode=1
+
+# Notification function
+send_notification() {
+    message="Temperature: $newTemp"
+    notify-send -a "t2" -r 91192 -t 800 "$message"
+}
+
+#keep temp in range
+clamp_temp() {
+    newTemp=$1
+    [ "$newTemp" -lt "$min" ] && newTemp=$min
+    [ "$newTemp" -gt "$max" ] && newTemp=$max
+    echo "$newTemp"
+}
+
+print_error() {
+    cat << EOF
+    $(basename ${0}) <action> [mode]
+    ...valid actions are...
+        i -- <i>ncrease screen temperature [+500]
+        d -- <d>ecrease screen temperature [-500]
+        r -- <r>ead screen temperature
+        t -- <t>oggle temperature mode (on/off)
+    Example:
+        $(basename ${0}) r       # Read the temperature value
+        $(basename ${0}) i       # Increase temperature by 500
+        $(basename ${0}) d       # Decrease temperature by 500
+        $(basename ${0}) t -q    # Toggle mode quietly
+EOF
+}
+
+if [ $# -ge 1 ]; then
+    if [[ "$2" == *q* ]] || [[ "$3" == *q* ]]; then
+	    notify=false
     fi
-    ;;
-d)
-    new_temp=$((current_temp - step * multiplier))
-    if [[ $new_temp -lt $min_temp ]]; then
-        new_temp=$min_temp
+    if [[ "$2" =~ ^[0-9]+$ ]]; then
+	    step=$2
+    elif [[ "$3" =~ ^[0-9]+$ ]]; then
+        step=$3 
     fi
-    ;;
-*)
-    echo "Invalid action. Use 'i' to increase or 'd' to decrease."
-    exit 1
-    ;;
+fi
+
+case "$1" in
+    i) action="increase" ;;
+    d) action="decrease" ;;
+    r) action="read" ;;
+    t) action="toggle" ;;
+    *) print_error; exit 1 ;;  # If the argument is invalid, show usage and exit
 esac
 
-echo $new_temp >"$temp_file"
-if [[ -n $(pgrep hyprsunset) ]]; then
-    pkill hyprsunset
+# Apply action based on the selected option
+case $action in
+    increase) 
+        newTemp=$(clamp_temp "$(($currentTemp + $step))") && echo "{\"temp\": $newTemp, \"user\": $toggle_mode}" > "$sunsetConf"
+        ;;
+    decrease) 
+        newTemp=$(clamp_temp "$(($currentTemp - $step))") && echo "{\"temp\": $newTemp, \"user\": $toggle_mode}" > "$sunsetConf"
+        ;;
+    read) 
+        newTemp=$currentTemp
+        ;;
+    toggle) 
+        toggle_mode=$((1 - $toggle_mode))
+        [ "$toggle_mode" -eq 1 ] && newTemp=$currentTemp || newTemp=$default
+        jq --argjson toggle_mode "$toggle_mode" '.user = $toggle_mode' "$sunsetConf" > "${sunsetConf}.tmp" && mv "${sunsetConf}.tmp" "$sunsetConf"
+        ;;
+esac
+
+# Send notification if enabled
+[ "$notify" = true ] && send_notification
+
+# Start or restart hyprsunset if necessary
+if [ ! "$action" = "read" ]; then
+    pkill -x hyprsunset
+    if [ "$toggle_mode" -eq 0 ]; then
+        hyprsunset -i > /dev/null & # $default is only approx
+    else 
+        hyprsunset --temperature "$newTemp" > /dev/null &
+    fi
 fi
-hyprsunset --temperature "$new_temp" &
-disown
+
+# Print status message
+echo "{\"alt\":\"$( [ "$toggle_mode" -eq 1 ] && echo 'active' || echo 'inactive' )\", \"tooltip\":\"Sunset mode $( [ "$toggle_mode" -eq 1 ] && echo 'active' || echo 'inactive' )\"}"
