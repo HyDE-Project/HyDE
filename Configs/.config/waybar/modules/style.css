@@ -1,7 +1,7 @@
 * {
     border: none;
     border-radius: 0px;
-    font-family: "JetBrainsMono Nerd Font";
+    font-family: "${font_name}";
     font-weight: bold;
     font-size: ${s_fontpx}px;
     min-height: 10px;

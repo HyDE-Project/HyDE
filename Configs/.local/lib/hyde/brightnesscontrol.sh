@@ -8,15 +8,15 @@ source "$scrDir/globalcontrol.sh"
 
 # Check if SwayOSD is installed
 use_swayosd=false
+isNotify=${BRIGHTNESS_NOTIFY:-true}
 if command -v swayosd-client >/dev/null 2>&1 && pgrep -x swayosd-server >/dev/null; then
     use_swayosd=true
 fi
 
-print_error()
-{
-local cmd
-cmd=$(basename "$0")
-cat << EOF
+print_error() {
+    local cmd
+    cmd=$(basename "$0")
+    cat <<EOF
     "${cmd}" <action> [step]
     ...valid actions are...
         i -- <i>ncrease brightness [+5%]
@@ -35,28 +35,30 @@ send_notification() {
     # shellcheck disable=SC2154
     ico="${iconsDir}/Wallbash-Icon/media/knob-${angle}.svg"
     bar=$(seq -s "." $((brightness / 15)) | sed 's/[0-9]//g')
-    notify-send -a "HyDE Notify" -r 96 -t 800 -i "${ico}" "${brightness}${bar}" "${brightinfo}"
+    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 96 -t 800 -i "${ico}" "${brightness}${bar}" "${brightinfo}"
 }
 
 get_brightness() {
     brightnessctl -m | grep -o '[0-9]\+%' | head -c-2
 }
 
-step="${2:-5}"
+step=${BRIGHTNESS_STEPS:-5}
+step="${2:-$step}"
 
 case $1 in
-i|-i)  # increase the backlight
-    if [[ $(get_brightness) -lt 10 ]] ; then
+i | -i) # increase the backlight
+    if [[ $(get_brightness) -lt 10 ]]; then
         # increase the backlight by 1% if less than 10%
         step=1
     fi
 
     $use_swayosd && swayosd-client --brightness raise "$step" && exit 0
     brightnessctl set +"${step}"%
-    send_notification ;;
-d|-d)  # decrease the backlight
+    send_notification
+    ;;
+d | -d) # decrease the backlight
 
-    if [[ $(get_brightness) -le 10 ]] ; then
+    if [[ $(get_brightness) -le 10 ]]; then
         # decrease the backlight by 1% if less than 10%
         step=1
     fi
@@ -69,7 +71,8 @@ d|-d)  # decrease the backlight
         brightnessctl set "${step}"%-
     fi
 
-    send_notification ;;
-*)  # print error
+    send_notification
+    ;;
+*) # print error
     print_error ;;
 esac
