@@ -10,6 +10,7 @@ rofiStyle="${rofiStyle:-$ROFI_LAUNCHER_STYLE}"
 rofi_config="${confDir}/rofi/styles/style_${rofiStyle:-1}.rasi"
 
 rofiScale="${ROFI_LAUNCHER_SCALE}"
+rofiScale="${ROFI_SCALE:-ROFI_LAUNCHER_SCALE}"
 [[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=10
 
 if [ ! -f "${rofi_config}" ]; then

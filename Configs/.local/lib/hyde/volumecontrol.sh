@@ -8,7 +8,7 @@ confDir=${confDir:-$XDG_CONFIG_HOME}
 
 # Check if SwayOSD is installed
 use_swayosd=false
-quiet_mode=${VOLUME_QUIET:-false}
+isNotify=${VOLUME_NOTIFY:-true}
 if command -v swayosd-client >/dev/null 2>&1 && pgrep -x swayosd-server >/dev/null; then
     use_swayosd=true
 fi
@@ -52,17 +52,16 @@ notify_vol() {
     iconStyle="knob"
     ico="${icodir}/${iconStyle}-${angle}.svg"
     bar=$(seq -s "." $((vol / 15)) | sed 's/[0-9]//g')
-    [[ "${quiet_mode}" == true ]] || notify-send -a "HyDE Notify" -r 69 -t 800 -i "${ico}" "${vol}${bar}" "${nsink}"
+    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 69 -t 800 -i "${ico}" "${vol}${bar}" "${nsink}"
 }
 
 notify_mute() {
-    [[ "${quiet_mode}" == true ]] && return 0
     mute=$(pamixer "${srce}" --get-mute | cat)
     [ "${srce}" == "--default-source" ] && dvce="microphone" || dvce="speaker"
     if [ "${mute}" == "true" ]; then
-        [[ "${quiet_mode}" == true ]] || notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/muted-${dvce}.svg" "muted" "${nsink}"
+        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/muted-${dvce}.svg" "muted" "${nsink}"
     else
-        [[ "${quiet_mode}" == true ]] || notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/unmuted-${dvce}.svg" "unmuted" "${nsink}"
+        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/unmuted-${dvce}.svg" "unmuted" "${nsink}"
     fi
 }
 
@@ -149,7 +148,7 @@ toggle_output() {
 # Set default variables
 iconsDir="${iconsDir:-$XDG_DATA_HOME/icons}"
 icodir="${iconsDir}/Wallbash-Icon/media"
-step=5
+step=${VOLUME_STEPS:-5}
 
 while getopts "iop:stq" opt; do
     case $opt in
@@ -178,7 +177,7 @@ while getopts "iop:stq" opt; do
         exit
         ;;
     q)
-        quiet_mode=true
+        isNotify=false
         ;;
     *) print_usage ;;
     esac

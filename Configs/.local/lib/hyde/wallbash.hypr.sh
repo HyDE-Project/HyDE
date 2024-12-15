@@ -90,7 +90,7 @@ deleteRegex=(
     "^ *col.shadow*"
 )
 
-deleteRegex+=("${hypr_sanitize[@]}")
+deleteRegex+=("${HYPR_CONFIG_SANITIZE[@]}")
 
 # Loop through each pattern and remove matching lines
 for pattern in "${deleteRegex[@]}"; do

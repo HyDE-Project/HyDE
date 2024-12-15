@@ -86,7 +86,7 @@ done
 #// generate cache
 
 wallPathArray=("${cacheIn}")
-wallPathArray+=("${wallAddCustomPath[@]}")
+wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
 get_hashmap "${wallPathArray[@]}"
 # shellcheck disable=SC2154
 parallel --bar --link "fn_wallcache${mode}" ::: "${wallHash[@]}" ::: "${wallList[@]}"

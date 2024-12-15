@@ -32,7 +32,7 @@ orientation:vertical;} element-icon{size:28em;border-radius:0em;} element-text{p
 # shellcheck disable=SC2154
 currentWall="$(basename "$(readlink "${HYDE_THEME_DIR}/wall.set")")"
 wallPathArray=("${HYDE_THEME_DIR}")
-wallPathArray+=("${wallAddCustomPath[@]}")
+wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
 get_hashmap "${wallPathArray[@]}"
 wallListBase=()
 # shellcheck disable=SC2154
@@ -44,7 +44,7 @@ done
 # shellcheck disable=SC2154
 rofiSel=$(paste <(printf "%s\n" "${wallListBase[@]}") <(printf "|%s\n" "${wallHash[@]}") |
     awk -F '|' -v thmbDir="${thmbDir}" '{split($1, arr, "/"); print arr[length(arr)] "\x00icon\x1f" thmbDir "/" $2 ".sqre"}' |
-    rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${currentWall}" | xargs )
+    rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${currentWall}" | xargs)
 #// apply wallpaper
 
 if [ -n "${rofiSel}" ]; then

@@ -26,13 +26,17 @@ def parse_toml_to_env(toml_file, env_file=None, export=False):
             elif isinstance(v, list):
                 array_items = " ".join(f'"{item}"' for item in v)
                 items.append((new_key, f"({array_items})"))
-            else:
+            elif isinstance(v, bool):
+                items.append((new_key, str(v).lower()))
+            elif isinstance(v, int):
                 items.append((new_key, v))
+            else:
+                items.append((new_key, f'"{v}"'))
         return dict(items)
 
     flat_toml_content = flatten_dict(toml_content)
     output = [
-        f'export {key}="{value}"' if export else f"{key}={value}"
+        f"export {key}={value}" if export else f"{key}={value}"
         for key, value in flat_toml_content.items()
     ]
 
@@ -71,6 +75,9 @@ if __name__ == "__main__":
     export_mode = "--export" in sys.argv
 
     if daemon_mode:
+        # Generate the config on launch
+        parse_toml_to_env(input_toml_file, output_env_file, export_mode)
+
         watcher_thread = threading.Thread(
             target=watch_file, args=(input_toml_file, output_env_file, export_mode)
         )
