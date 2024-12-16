@@ -85,7 +85,7 @@ fn_select() {
     selected_layout=$(awk -F/ '{print $NF}' <<<"$layout_files" |
         rofi -dmenu \
             -p "Select hyprlock layout" \
-            -theme-str "entry { placeholder: \"🔎 Hyprlock Layout...\"; }" \
+            -theme-str "entry { placeholder: \"🔒 Hyprlock Layout...\"; }" \
             -theme-str "${r_scale}" \
             -theme-str "${r_override}" \
             -theme-str "$(get_rofi_pos)" \
