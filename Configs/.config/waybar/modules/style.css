@@ -149,3 +149,20 @@ ${modules_ls}
     margin-${x3}: ${e_margin}px;
     padding-${x3}: ${e_paddin}px;
 }
+
+#battery.critical {
+    background-color: rgb(219, 74, 25);
+    animation: blink 1s infinite;
+}
+
+#battery.charging,
+#battery.plugged {
+    animation: none; /* Disable blinking */
+    background-color: @main-bg; /* Reset to default background */
+}
+
+@keyframes blink {
+    0% { background-color: rgb(219, 74, 25); }
+    50% { background-color: @main-bg; } /* Matches the theme */
+    100% { background-color: rgb(219, 74, 25); }
+}
