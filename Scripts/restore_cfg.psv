@@ -13,18 +13,19 @@ Structure:
 
 Flags:
 P = Populate/Preserved - Copy the target to the specified path
-                          Only if the target does not exist
-                          Preserved the target
+                          - ONLY if the target do not exist
+                          - Preserved the target
 S = Sync - Copy the target to the specified path
-            Overwrite the target target
-              Ignore other targets that is not from the list
-              Ignore other targets that is not from the ./Configs
+            - Overwrite the target
+              - Ignore other targets that is not from the list
+              - Ignore other targets that is not from the ./Configs
 O = Overwrite - Copy the target to the specified path
-                Overwrite the target target
-                If Target is a directory, Overwrite EVERYTHING
-                If Target is a file, Overwrite the file
+                - Overwrite the target target
+                - If Target is a directory, Overwrite EVERYTHING in the directory
+                - If Target is a file, Overwrite the file
 B = Backup - Backup the target
-              All P,S,O flags will also backup the target file/directory
+              - All P,S,O flags will also backup the target file/directory
+
 
 
  Hyde core files 
@@ -61,7 +62,8 @@ S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
 P|${HOME}/.config|fish|fish
 P|${HOME}/.config|lsd|lsd
 S|${HOME}/.config|fastfetch|fastfetch
-S|${HOME}/.config|kitty|kitty
+S|${HOME}/.config/kitty|hyde.conf theme.conf|kitty
+P|${HOME}/.config/kitty|kitty.conf|kitty
 
 
  File Explorer 
@@ -98,7 +100,7 @@ S|${HOME}/.config|wlogout|wlogout
  Lock Screen 
 S|${HOME}/.config|swaylock|swaylock-effects
 S|${HOME}/.config/hypr|hyprlock.conf|hyprlock
-S|${HOME}/.config/hypr/hyprlock| 'IBM Plex.conf' anurati.conf|hyprlock
+S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 
 P|${HOME}/.config/hypr|hypridle.conf|hypridle
