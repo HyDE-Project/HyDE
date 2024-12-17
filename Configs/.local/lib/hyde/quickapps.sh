@@ -1,62 +1,81 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # set variables
 
-scrDir=`dirname "$(realpath "$0")"`
+scrDir=$(dirname "$(realpath "$0")")
+scrDir="${scrDir:-$HOME/.local/lib/hyde}"
 source $scrDir/globalcontrol.sh
-roconf="~/.config/rofi/quickapps.rasi"
+confDir=${confDir:-$XDG_CONFIG_HOME}
+rofi_config="$confDir/rofi/quickapps.rasi"
 
-if [ $# -eq 0 ] ; then
+if [ $# -eq 0 ]; then
     echo "usage: ./quickapps.sh <app1> <app2> ... <app[n]>"
     exit 1
 else
     appCount="$#"
 fi
 
+# Set rofi scaling
+[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
+r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
+wind_border=$((hypr_border * 3 / 2))
+elem_border=$((hypr_border == 0 ? 5 : hypr_border))
 
-# set position
+# Evaluate spawn position
+readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
+readarray -t monRes < <(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width,.height,.scale,.x,.y')
+readarray -t offRes < <(hyprctl -j monitors | jq -r '.[] | select(.focused==true).reserved | map(tostring) | join("\n")')
+monRes[2]="${monRes[2]//./}"
+monRes[0]=$((monRes[0] * 100 / monRes[2]))
+monRes[1]=$((monRes[1] * 100 / monRes[2]))
+curPos[0]=$((curPos[0] - monRes[3]))
+curPos[1]=$((curPos[1] - monRes[4]))
 
-x_mon=$( cat /sys/class/drm/*/modes | head -1  )
-y_mon=$( echo $x_mon | cut -d 'x' -f 2 )
-x_mon=$( echo $x_mon | cut -d 'x' -f 1 )
-
-x_cur=$(hyprctl cursorpos | sed 's/ //g')
-y_cur=$( echo $x_cur | cut -d ',' -f 2 )
-x_cur=$( echo $x_cur | cut -d ',' -f 1 )
-
-if [ ${x_cur} -le $(( x_mon/3 )) ] ; then
-    x_rofi="west"
-    x_offset="x-offset: 20px;"
-elif [ ${x_cur} -ge $(( x_mon/3*2 )) ] ; then
-    x_rofi="east"
-    x_offset="x-offset: -20px;"
+if [ "${curPos[0]}" -ge "$((monRes[0] / 2))" ]; then
+    x_pos="east"
+    x_off="-$((monRes[0] - curPos[0] - offRes[2]))"
 else
-    unset x_rofi
+    x_pos="west"
+    x_off="$((curPos[0] - offRes[0]))"
 fi
 
-if [ ${y_cur} -le $(( y_mon/3 )) ] ; then
-    y_rofi="north"
-    y_offset="y-offset: 20px;"
-elif [ ${y_cur} -ge $(( y_mon/3*2 )) ] ; then
-    y_rofi="south"
-    y_offset="y-offset: -20px;"
+if [ "${curPos[1]}" -ge "$((monRes[1] / 2))" ]; then
+    y_pos="south"
+    y_off="-$((monRes[1] - curPos[1] - offRes[3]))"
 else
-    unset y_rofi
+    y_pos="north"
+    y_off="$((curPos[1] - offRes[1]))"
 fi
-
-if [ ! -z $x_rofi ] || [ ! -z $y_rofi ] ; then
-    pos="window {location: $y_rofi $x_rofi; $x_offset $y_offset}"
-fi
-
+hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
 
 # override rofi
 
-dockHeight=$(( x_mon * 3 / 100))
-dockWidth=$(( dockHeight * appCount ))
-iconSize=$(( dockHeight - 4 ))
-wind_border=$(( hypr_border * 3/2 ))
-r_override="window{height:${dockHeight};width:${dockWidth};border-radius:${wind_border}px;} listview{columns:${appCount};} element{border-radius:${wind_border}px;} element-icon{size:${iconSize}px;}"
-
+dockHeight=$((monRes[0] * 3 / 100))
+dockWidth=$((dockHeight * appCount))
+iconSize=$((dockHeight - 4))
+wind_border=$((hypr_border * 3 / 2))
+r_override="window{
+height:${dockHeight};
+width:${dockWidth};
+location:${x_pos} ${y_pos};
+anchor:${x_pos} ${y_pos};
+x-offset:${x_off}px;
+y-offset:${y_off}px;
+border:${hypr_width}px;
+border-radius:${wind_border}px;
+}
+listview{
+columns:${appCount};
+}
+element{border-radius:${wind_border}px;
+}
+element-icon{size:${iconSize}px;
+}
+wallbox{
+border-radius:${elem_border}px;
+}
+"
 
 # launch rofi menu
 
@@ -66,12 +85,14 @@ else
     appDir=/usr/share/applications
 fi
 
-RofiSel=$( for qapp in "$@"
-do
-    Lkp=`grep "$qapp" $appDir/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1`
-    Ico=`grep 'Icon=' $Lkp | awk -F '=' '{print $2}' | head -1`
-    echo -en "${qapp}\x00icon\x1f${Ico}\n"
-done | rofi -no-fixed-num-lines -dmenu -theme-str "${r_override}" -theme-str "${pos}" -config $roconf)
+# RofiSel=$(
+for qApp in "$@"; do
+    Lkp=$(grep "$qApp" $appDir/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1)
+    Ico=$(grep 'Icon=' "$Lkp" | awk -F '=' '{print $2}' | head -1)
+    # Ico=$(grep 'Icon=' "$qApp" | awk -F '=' '{print $2}' | head -1)
 
-$RofiSel &
+    echo -en "${qApp}\x00icon\x1f${Ico}\n"
+done
+# | rofi -no-fixed-num-lines -dmenu -theme-str "${r_override}" -config "$rofi_config")
 
+# gtk-launch "$RofiSel" &

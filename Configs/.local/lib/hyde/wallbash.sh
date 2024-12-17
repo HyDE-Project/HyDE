@@ -76,18 +76,17 @@ if [ -z "${wallbashImg}" ] || [ ! -f "${wallbashImg}" ]; then
     exit 1
 fi
 
-# if [ $? -ne 0 ] ; then
-if magick -ping "${wallbashImg}" -format "%t" info: &>/dev/null; then
+# if [ $? -ne 0 ]; then
+if ! magick -ping "${wallbashImg}" -format "%t" info: &>/dev/null; then
     echo "Error: Unsuppoted image format ${wallbashImg}"
     exit 1
 fi
 
 echo -e "wallbash ${colorProfile} profile :: ${sortMode} :: Colors ${wallbashColors} :: Fuzzy ${wallbashFuzz} :: \"${wallbashOut}\""
-cacheDir="${cacheDir:-$HOME/.cache/hyde}"
-# mkdir -p "${cacheDir}/${cacheThm}"
-mkdir -p "${cacheDir}"
+cacheDir="${cacheDir:-$XDG_CACHE_HOME}"
+thmDir="${thmDir:-$cacheDir/thumbs}"
+mkdir -p "${cacheDir}/${thmDir}"
 : >"${wallbashOut}"
-
 #// define functions
 
 rgb_negative() {
@@ -149,8 +148,8 @@ if [ "${sortMode}" == "auto" ]; then
 fi
 
 echo "dcol_mode=\"${sortMode}\"" >>"${wallbashOut}"
-#TODO # dcolHex=($(echo  -e "${dcolRaw[@]:0:$wallbashColors}" | tr ' ' '\n' | awk -F ',' '{print $2}' | sort ${colSort}))
-mapfile -t dcolHex < <(echo -e "${dcolRaw[@]:0:$wallbashColors}" | tr ' ' '\n' | awk -F ',' '{print $2}' | sort "${colSort}")
+# dcolHex=($(echo -e "${dcolRaw[@]:0:$wallbashColors}" | tr ' ' '\n' | awk -F ',' '{print $2}' | sort ${colSort:+"$colSort"}))
+mapfile -t dcolHex < <(echo -e "${dcolRaw[@]:0:$wallbashColors}" | tr ' ' '\n' | awk -F ',' '{print $2}' | sort ${colSort:+"$colSort"})
 greyCheck=$(magick "${wallbashRaw}" -colorspace HSL -channel g -separate +channel -format "%[fx:mean]" info:)
 
 if (($(awk 'BEGIN {print ('"$greyCheck"' < 0.12)}'))); then
@@ -176,6 +175,7 @@ for ((i = 0; i < wallbashColors; i++)); do
         fi
 
         echo -e "dcol_pry$((i + 1)) :: regen missing color"
+        # dcol[i]=$(magick xc:"#${dcolHex[i - 1]}" -depth 8 -normalize -modulate ${modBri},${modSat},${modHue} -depth 8 -format "%c" histogram:info: | sed -n 's/^[ ]*\(.*\):.*[#]\([0-9a-fA-F]*\) .*$/\2/p')
         dcolHex[i]=$(magick xc:"#${dcolHex[i - 1]}" -depth 8 -normalize -modulate ${modBri},${modSat},${modHue} -depth 8 -format "%c" histogram:info: | sed -n 's/^[ ]*\(.*\):.*[#]\([0-9a-fA-F]*\) .*$/\2/p')
 
     fi
@@ -202,7 +202,7 @@ for ((i = 0; i < wallbashColors; i++)); do
     xHue=$(magick xc:"#${dcolHex[i]}" -colorspace HSB -format "%c" histogram:info: | awk -F '[hsb(,]' '{print $2}')
     acnt=1
 
-    echo -e "${wallbashCurve}" | sort -n "${colSort}" | while read -r xBri xSat; do
+    echo -e "${wallbashCurve}" | sort -n ${colSort:+"$colSort"} | while read -r xBri xSat; do
         acol=$(magick xc:"hsb(${xHue},${xSat}%,${xBri}%)" -depth 8 -format "%c" histogram:info: | sed -n 's/^[ ]*\(.*\):.*[#]\([0-9a-fA-F]*\) .*$/\2/p')
         echo "dcol_$((i + 1))xa${acnt}=\"${acol}\"" >>"${wallbashOut}"
         echo "dcol_$((i + 1))xa${acnt}_rgba=\"$(rgba_convert "${acol}")\"" >>"${wallbashOut}"

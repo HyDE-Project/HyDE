@@ -212,25 +212,3 @@ json)
     deploy_json "${CfgLst}"
     ;;
 esac
-
-if [ -z "${ThemeOverride}" ]; then
-    #! Deprecated it is optionally sourced in ./hyde/hyprland.conf. This file is optional too
-    # if nvidia_detect && [ $(grep '^source = ~/.config/hypr/nvidia.conf' "${HOME}/.config/hypr/hyprland.conf" | wc -l) -eq 0 ]; then
-    # echo -e 'source = ~/.config/hypr/nvidia.conf # auto sourced vars for nvidia\n' >> "${HOME}/.config/hypr/hyprland.conf"
-    # fi
-    usrDir=$HOME/.local
-    HYDE_VERSION="0.1.0"
-    HYPRLAND_CONF="${HOME}/.config/hypr/hyprland.conf"
-    SOURCE_LINE="source = $usrDir/share/hyde/hyprland.conf # HyDE ${HYDE_VERSION}"
-
-    # Remove any existing similar lines
-    [ "${flg_DryRun}" -ne 1 ] && sed -i "/source.*=.*share\/hyde\/hyprland.conf.*/d" "$HYPRLAND_CONF"
-    if ! grep -Fqx "$SOURCE_LINE" "$HYPRLAND_CONF"; then
-        # Add the source line at the top of the file
-        [ "${flg_DryRun}" -ne 1 ] && sed -i "1s|^|$SOURCE_LINE\n|" "$HYPRLAND_CONF"
-        print_log -g "sourced" -b " :: " "hyprland.conf"
-    else
-        print_log -y "existing" -b " :: " "source line"
-    fi
-
-fi

@@ -10,7 +10,7 @@ rofiConf="${confDir}/rofi/selector.rasi"
 
 #// set rofi scaling
 
-[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=10
+[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
 r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
 # shellcheck disable=SC2154
 elem_border=$((hypr_border * 3))
@@ -30,9 +30,9 @@ orientation:vertical;} element-icon{size:28em;border-radius:0em;} element-text{p
 #// launch rofi menu
 
 # shellcheck disable=SC2154
-currentWall="$(basename "$(readlink "${hydeThemeDir}/wall.set")")"
-wallPathArray=("${hydeThemeDir}")
-wallPathArray+=("${wallAddCustomPath[@]}")
+currentWall="$(basename "$(readlink "${HYDE_THEME_DIR}/wall.set")")"
+wallPathArray=("${HYDE_THEME_DIR}")
+wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
 get_hashmap "${wallPathArray[@]}"
 wallListBase=()
 # shellcheck disable=SC2154
@@ -44,7 +44,7 @@ done
 # shellcheck disable=SC2154
 rofiSel=$(paste <(printf "%s\n" "${wallListBase[@]}") <(printf "|%s\n" "${wallHash[@]}") |
     awk -F '|' -v thmbDir="${thmbDir}" '{split($1, arr, "/"); print arr[length(arr)] "\x00icon\x1f" thmbDir "/" $2 ".sqre"}' |
-    rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${currentWall}" | xargs )
+    rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${currentWall}" | xargs)
 #// apply wallpaper
 
 if [ -n "${rofiSel}" ]; then
@@ -54,10 +54,10 @@ if [ -n "${rofiSel}" ]; then
     done
     if [ -n "${setWall}" ]; then
         "${scrDir}/swwwallpaper.sh" -s "${setWall}"
-        echo notify-send -a "t1" -i "${thmbDir}/$(set_hash "${setWall}").sqre" " ${rofiSel}"
-        notify-send -a "t1" -i "${thmbDir}/$(set_hash "${setWall}").sqre" " ${rofiSel}"
+        echo notify-send -a "HyDE Alert" -i "${thmbDir}/$(set_hash "${setWall}").sqre" " ${rofiSel}"
+        notify-send -a "HyDE Alert" -i "${thmbDir}/$(set_hash "${setWall}").sqre" " ${rofiSel}"
     else
-        notify-send -a "t1" "Wallpaper not found"
+        notify-send -a "HyDE Alert" "Wallpaper not found"
     fi
 
 fi

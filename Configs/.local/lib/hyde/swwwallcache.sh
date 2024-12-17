@@ -9,7 +9,7 @@ export scrDir
 export thmbDir
 export dcolDir
 # shellcheck disable=SC2154
-[ -d "${hydeThemeDir}" ] && cacheIn="${hydeThemeDir}" || exit 1
+[ -d "${HYDE_THEME_DIR}" ] && cacheIn="${HYDE_THEME_DIR}" || exit 1
 [ -d "${thmbDir}" ] || mkdir -p "${thmbDir}"
 [ -d "${dcolDir}" ] || mkdir -p "${dcolDir}"
 # shellcheck disable=SC2154
@@ -62,14 +62,14 @@ while getopts "w:t:f" option; do
         cacheIn="${OPTARG}"
         ;;
     t) # generate cache for input theme
-        cacheIn="$(dirname "${hydeThemeDir}")/${OPTARG}"
+        cacheIn="$(dirname "${HYDE_THEME_DIR}")/${OPTARG}"
         if [ ! -d "${cacheIn}" ]; then
             echo "Error: Input theme \"${OPTARG}\" not found!"
             exit 1
         fi
         ;;
     f) # full cache rebuild
-        cacheIn="$(dirname "${hydeThemeDir}")"
+        cacheIn="$(dirname "${HYDE_THEME_DIR}")"
         mode="_force"
         ;;
     *) # invalid option
@@ -86,7 +86,7 @@ done
 #// generate cache
 
 wallPathArray=("${cacheIn}")
-wallPathArray+=("${wallAddCustomPath[@]}")
+wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
 get_hashmap "${wallPathArray[@]}"
 # shellcheck disable=SC2154
 parallel --bar --link "fn_wallcache${mode}" ::: "${wallHash[@]}" ::: "${wallList[@]}"

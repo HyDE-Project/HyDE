@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 #* jq to parse and create a metadata.
 #* Users are advised to use bindd to explicitly add the description
@@ -11,7 +11,8 @@ source "$scrDir/globalcontrol.sh"
 
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 keyconfDir="$confDir/hypr"
-kb_hint_conf=("$keyconfDir/hyprland.conf" "$keyconfDir/keybindings.conf" "$keyconfDir/userprefs.conf" )
+kb_hint_conf=("$keyconfDir/hyprland.conf" "$keyconfDir/keybindings.conf" "$keyconfDir/userprefs.conf")
+kb_hint_conf+=("${ROFI_KEYBIND_HINT_CONFIG[@]}")
 tmpMapDir="/tmp"
 tmpMap="$tmpMapDir/hyde-keybinds.jq"
 keycodeFile="${hydeConfDir}/keycode.kb"
@@ -21,7 +22,7 @@ categoryFile="${hydeConfDir}/category.kb"
 dispatcherFile="${hydeConfDir}/dispatcher.kb"
 
 roDir="$confDir/rofi"
-roconf="$roDir/clipboard.rasi"
+rofi_config="$roDir/clipboard.rasi"
 
 HELP() {
   cat <<HELP
@@ -36,24 +37,25 @@ Options:
     --help Display this help message
 Example:
  $(basename "$0") -j -p -d '>' -f custom_file.txt -w 80 -h 90"
-Users can also add a global overrides inside ${hydeConfDir}/hyderc
+Users can also add a global overrides inside ${hydeConfDir}/config.toml
   Available overrides:
 
-    kb_hint_delim=">"                         ﯦ add a custom custom delimiter
-    kb_hint_conf=("file1.conf" "file2.conf")  ﯦ add a custom keybinds.conf path (add it like an array)
-    kb_hint_width="30em"                      ﯦ custom width supports [ 'em' '%' 'px' ] 
-    kb_hint_height="35em"                     ﯦ custom height supports [ 'em' '%' 'px' ]
-    kb_hint_line=13                           ﯦ adjust how many lines are listed
+[rofi.keybind.hint]
+    delimiter=">"                         ﯦ add a custom custom delimiter
+    config=("file1.conf" "file2.conf")    ﯦ add a custom keybinds.conf path (add it like an array)
+    width="30em"                          ﯦ custom width supports [ 'em' '%' 'px' ]
+    height="35em"                         ﯦ custom height supports [ 'em' '%' 'px' ]
+    line=13                               ﯦ adjust how many lines are listed
 
 Users can also add a key overrides inside ${hydeConfDir}
 List of file override:
-${keycodeFile} => keycode 
-${modmaskFile} => modmask   
+${keycodeFile} => keycode
+${modmaskFile} => modmask
 ${keyFile} => keys
 ${categoryFile} => category
 ${dispatcherFile} => dispatcher
 
-Example for keycode override 
+Example for keycode override
 create a file named $keycodeFile and use the following format:
 
     "number": "display name/symbol",
@@ -61,7 +63,7 @@ create a file named $keycodeFile and use the following format:
 
 HELP
 }
-
+kb_hint_delim=${ROFI_KEYBIND_HINT_DELIMITER:-">"}
 while [ "$#" -gt 0 ]; do
   case "$1" in
   -j) # show the json format
@@ -87,9 +89,9 @@ while [ "$#" -gt 0 ]; do
     kb_hint_height="$1"
     ;;
   -l) # Custom number of line
-  shift
-  kb_hint_line="$1"
-  ;;
+    shift
+    kb_hint_line="$1"
+    ;;
   -*) # Add Help message
     HELP
     exit
@@ -172,15 +174,15 @@ $comments
 
 };
 
-def keycode_mapping: { #? Fetches keycode from a file 
+def keycode_mapping: { #? Fetches keycode from a file
  "0": "",
  $([ -f "${keycodeFile}" ] && cat "${keycodeFile}")
 };
 
   def modmask_mapping: { #? Define mapping for modmask numbers represents bitmask
     "64": " ",  #? SUPER  󰻀 Also added 2 En space ' ' <<<
-    "8": "ALT", 
-    "4": "CTRL", 
+    "8": "ALT",
+    "4": "CTRL",
     "1": "SHIFT",
     "0": " ",
  $([ -f "${modmaskFile}" ] && cat "${modmaskFile}")
@@ -206,7 +208,7 @@ def keycode_mapping: { #? Fetches keycode from a file
     "XF86MonBrightnessDown" : "󰃜",
     "XF86MonBrightnessUp" : "󰃠",
     "switch:on:Lid Switch" : "󰛧",
-    "backspace" : "󰁮 ",  
+    "backspace" : "󰁮 ",
     $([ -f "${keyFile}" ] && cat "${keyFile}")
   };
   def category_mapping: { #? Define Category Names, derive from Dispatcher #? This will serve as the Group header
@@ -293,15 +295,15 @@ def get_keycode:
 .keycode |= (get_keycode // .) |  #? Apply the get_keycode transformation
 .key |= (key_mapping[.] // .) | #? Apply the get_key
 # .keybind = (.modmask | tostring // "") + (.key // "") | #! Same as below but without the keycode
-.keybind = (.modmask | tostring // "") + (.key // "") + ((.keycode // 0) | tostring) | #? Show the keybindings 
+.keybind = (.modmask | tostring // "") + (.key // "") + ((.keycode // 0) | tostring) | #? Show the keybindings
 .flags = " locked=" + (.locked | tostring) + " mouse=" + (.mouse | tostring) + " release=" + (.release | tostring) + " repeat=" + (.repeat | tostring) + " non_consuming=" + (.non_consuming | tostring) | #? This are the flags repeat,lock etc
 .category |= (category_mapping[.] // .) | #? Group by Categories will be use for headers
 #!if .modmask and .modmask != " " and .modmask != "" then .modmask |= (split(" ") | map(select(length > 0)) | if length > 1 then join("  + ") else .[0] end) else .modmask = "" end |
 if .keybind and .keybind != " " and .keybind != "" then .keybind |= (split(" ") | map(select(length > 0)) | if length > 1 then join("  + ") else .[0] end) else .keybind = "" end |  #? Clean up
   .arg |= (arg_mapping[.] // .) | #? See above for how arg is converted
- #!    .desc_executable |= gsub(".sh"; "") | #? Maybe Useful soon removes ".sh" to file  
+ #!    .desc_executable |= gsub(".sh"; "") | #? Maybe Useful soon removes ".sh" to file
   #? Creates a key desc... for fallback if  "has description" is false
-  .desc_executable |= (executables_mapping[.] // .) | #? exclusive for "exec" dispatchers 
+  .desc_executable |= (executables_mapping[.] // .) | #? exclusive for "exec" dispatchers
   .desc_dispatcher |= (description_mapping[.] // .)  |  #? for all other dispatchers
   .description = if .has_description == false then "\(.desc_dispatcher) \(.desc_executable)" else.description end
 ' #* <---- There is a '   do not delete this'
@@ -309,7 +311,7 @@ if .keybind and .keybind != " " and .keybind != "" then .keybind |= (split(" ") 
 
 #? Now we have the metadata we can Group it accordingly
 GROUP() {
-awk -v cols="$cols" -F '!=!' '
+  awk -v cols="$cols" -F '!=!' '
 {
     category = $1
     binds[category] = binds[category]? binds[category] "\n" $0 : $0
@@ -332,7 +334,7 @@ END {
 }
 
 #? Display the JSON format
-[ "$kb_hint_json" = true ] && jq <<< "$jsonData" && exit 0
+[ "$kb_hint_json" = true ] && jq <<<"$jsonData" && exit 0
 
 #? Format this is how the keybinds are displayed.
 DISPLAY() { awk -v kb_hint_delim="${kb_hint_delim:->}" -F '!=!' '{if ($0 ~ /=/ && $6 != "") printf "%-25s %-2s %-30s\n", $5, kb_hint_delim, $6; else if ($0 ~ /=/) printf "%-25s\n", $5; else print $0}'; }
@@ -344,10 +346,10 @@ cols=${cols:-999}
 linebreak="$(printf '%.0s━' $(seq 1 "${cols}") "")"
 
 #! this Part Gives extra loading time as I don't have efforts to make single space for each class
-metaData="$(jq -r '"\(.category) !=! \(.modmask) !=! \(.key) !=! \(.dispatcher) !=! \(.arg) !=! \(.keybind) !=! \(.description) !=! \(.flags)"' <<< "${jsonData}" | tr -s ' ' | sort -k 1)"
+metaData="$(jq -r '"\(.category) !=! \(.modmask) !=! \(.key) !=! \(.dispatcher) !=! \(.arg) !=! \(.keybind) !=! \(.description) !=! \(.flags)"' <<<"${jsonData}" | tr -s ' ' | sort -k 1)"
 
 #? This formats the pretty output
-display="$(GROUP <<< "$metaData" | DISPLAY)"
+display="$(GROUP <<<"$metaData" | DISPLAY)"
 
 # output=$(echo -e "${header}\n${linebreak}\n${primMenu}\n${linebreak}\n${display}")
 output=$(echo -e "${header}\n${linebreak}\n${display}")
@@ -361,12 +363,15 @@ if ! command -v rofi &>/dev/null; then
   exit 0
 fi
 
-#? Put rofi configuration here 
+#? Put rofi configuration here
 # Read hypr theme border
 wind_border=$((hypr_border * 3 / 2))
 elem_border=$([ "$hypr_border" -eq 0 ] && echo "5" || echo "$hypr_border")
 
 # TODO Dynamic scaling for text and the window >>> I do not know if rofi is capable of this
+kb_hint_width="$ROFI_KEYBIND_HINT_WIDTH"
+kb_hint_height="$ROFI_KEYBIND_HINT_HEIGHT"
+kb_hint_line="$ROFI_KEYBIND_HINT_LINE"
 r_width="width: ${kb_hint_width:-35em};"
 r_height="height: ${kb_hint_height:-35em};"
 r_listview="listview { lines: ${kb_hint_line:-13}; }"
@@ -381,12 +386,12 @@ icon_override=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'/
 icon_override="configuration {icon-theme: \"${icon_override}\";}"
 
 #? Actions to do when selected
-selected=$(echo "$output" | rofi -dmenu -p -i -theme-str "${fnt_override}" -theme-str "${r_override}" -theme-str "${icon_override}" -config "${roconf}" | sed 's/.*\s*//')
+selected=$(echo "$output" | rofi -dmenu -p -i -theme-str "${fnt_override}" -theme-str "${r_override}" -theme-str "${icon_override}" -config "${rofi_config}" | sed 's/.*\s*//')
 if [ -z "$selected" ]; then exit 0; fi
 
-sel_1=$(awk -F "${kb_hint_delim:->}" '{print $1}' <<< "$selected" | awk '{$1=$1};1')
-sel_2=$(awk -F "${kb_hint_delim:->}" '{print $2}' <<< "$selected" | awk '{$1=$1};1')
-run="$(grep "$sel_1" <<< "$metaData" | grep "$sel_2")"
+sel_1=$(awk -F "${kb_hint_delim:->}" '{print $1}' <<<"$selected" | awk '{$1=$1};1')
+sel_2=$(awk -F "${kb_hint_delim:->}" '{print $2}' <<<"$selected" | awk '{$1=$1};1')
+run="$(grep "$sel_1" <<<"$metaData" | grep "$sel_2")"
 
 run_flg="$(echo "$run" | awk -F '!=!' '{print $8}')"
 run_sel="$(echo "$run" | awk -F '!=!' '{gsub(/^ *| *$/, "", $5); if ($5 ~ /[[:space:]]/ && $5 !~ /^[0-9]+$/ && substr($5, 1, 1) != "-") print $4, "\""$5"\""; else print $4, $5}')"

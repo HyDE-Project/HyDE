@@ -8,7 +8,7 @@ source "${scrDir}/globalcontrol.sh"
 scrName="$(basename "$0")"
 kmenuPath="$HOME/.local/share/kio/servicemenus"
 kmenuDesk="${kmenuPath}/hydewallpaper.desktop"
-tgtPath="$(dirname "${hydeThemeDir}")"
+tgtPath="$(dirname "${HYDE_THEME_DIR}")"
 get_themes
 
 
@@ -52,7 +52,7 @@ if [ ! -z "${setTheme}" ] && [ ! -z "${setWall}" ] ; then
     inwallHash="$(set_hash "${setWall}")"
     get_hashmap "${tgtPath}/${setTheme}"
     if [[ "${wallHash[@]}" == *"${inwallHash}"* ]] ; then
-        notify-send -a "t2" -i "${thmbDir}/${inwallHash}.sqre" "Error" "Hash matched in ${setTheme}"
+        notify-send -a "HyDE Notify" -i "${thmbDir}/${inwallHash}.sqre" "Error" "Hash matched in ${setTheme}"
         exit 0
     fi
 
@@ -60,7 +60,7 @@ if [ ! -z "${setTheme}" ] && [ ! -z "${setWall}" ] ; then
     ln -fs "${tgtPath}/${setTheme}/wallpapers/$(basename "${setWall}")" "${tgtPath}/${setTheme}/wall.set"
 
     "${scrDir}/themeswitch.sh" -s "${setTheme}"
-    notify-send -a "t1" -i "${thmbDir}/${inwallHash}.sqre" "Wallpaper set in ${setTheme}"
+    notify-send -a "HyDE Alert" -i "${thmbDir}/${inwallHash}.sqre" "Wallpaper set in ${setTheme}"
 
 else
 

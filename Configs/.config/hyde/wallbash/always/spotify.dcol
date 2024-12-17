@@ -1,4 +1,4 @@
-$HOME/.config/spicetify/Themes/Sleek/color.ini|${wallbashScripts}/spotify.sh
+$HOME/.config/spicetify/Themes/Sleek/color.ini|${WALLBASH_SCRIPTS}/spotify.sh
 
 [Wallbash]
 text               = <wallbash_4xa9>

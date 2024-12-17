@@ -5,7 +5,7 @@ confDir="${confDir:-$HOME/.config}"
 kittyConf="${confDir}/kitty/kitty.conf"
 hydeKitty="${HYDE_DATA_HOME}/kitty.conf"
 
-INC_LINE="include ${hydeKitty}"
+INC_LINE="include hyde.conf"
 
 sed -i "/include .*share\/hyde\/kitty.conf.*/d" "$kittyConf"
 # Ensure the line is at the top and remove duplicates

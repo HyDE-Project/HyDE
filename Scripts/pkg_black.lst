@@ -1,0 +1,9 @@
+# Blacklisted packages
+# This list is a user specific list of packages that users do not want to install
+# Whatever packages are in this list will not be installed
+# And will be removed from the final package installation
+# Example:
+
+# flatpak
+visual-studio-code-bin
+

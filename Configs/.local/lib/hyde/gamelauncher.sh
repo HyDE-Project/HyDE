@@ -41,8 +41,8 @@ done | rofi -dmenu -theme-str "${r_override}" -config $RofiConf)
 if [ ! -z "$RofiSel" ] ; then
     launchid=`echo "$GameList" | grep "$RofiSel" | cut -d '|' -f 2`
     ${steamlaunch} -applaunch "${launchid} [gamemoderun %command%]" &
-    # dunstify "t1" -a "Launching ${RofiSel}..." -i ${SteamThumb}/${launchid}_header.jpg -r 91190 -t 2200
-    notify-send -a "t1" -i "${SteamThumb}/${launchid}_header.jpg" "Launching ${RofiSel}..."
+    # dunstify "HyDE Alert" -a "Launching ${RofiSel}..." -i ${SteamThumb}/${launchid}_header.jpg -r 91190 -t 2200
+    notify-send -a "HyDE Alert" -i "${SteamThumb}/${launchid}_header.jpg" "Launching ${RofiSel}..."
 
 fi
 }
@@ -55,17 +55,17 @@ meta_data="/tmp/hyprdots-$(id -u)-lutrisgames.json"
 # Retrieve the list of games from Lutris in JSON format
 #TODO Only call this if new apps are installed...
  # [ ! -s "${meta_data}" ] &&  
-notify-send -a "t1" "Please wait... " -t 4000 
+notify-send -a "HyDE Alert" "Please wait... " -t 4000 
 
 eval "${run_lutris}" -j -l 2> /dev/null| jq --arg icons "$icon_path/" --arg prefix ".jpg" '.[] |= . + {"select": (.name + "\u0000icon\u001f" + $icons + .slug + $prefix)}' > "${meta_data}"
 
-[ ! -s "${meta_data}" ] && notify-send -a "t1" "Cannot Fetch Lutris Games!" && exit 1
+[ ! -s "${meta_data}" ] && notify-send -a "HyDE Alert" "Cannot Fetch Lutris Games!" && exit 1
 
 
 CHOICE=$(jq -r '.[].select' "${meta_data}" | rofi -dmenu -p Lutris  -theme-str "${r_override}" -config "${RofiConf}" )
 [ -z "$CHOICE" ] && exit 0
 	SLUG=$(jq -r --arg choice "$CHOICE" '.[] | select(.name == $choice).slug' "${meta_data}"  )
-    notify-send -a "t1" -i "${icon_path}/${SLUG}.jpg" "Launching ${CHOICE}..."
+    notify-send -a "HyDE Alert" -i "${icon_path}/${SLUG}.jpg" "Launching ${CHOICE}..."
 	exec xdg-open "lutris:rungame/${SLUG}"
 }
 
@@ -87,7 +87,7 @@ if [ -z "${run_lutris}" ] || echo "$*" | grep -q "steam" ; then
     fi
     
     if [ ! -f $SteamLib ] || [ ! -d $SteamThumb ] ; then
-        notify-send -a "t1" "Steam library not found!"
+        notify-send -a "HyDE Alert" "Steam library not found!"
         exit 1
     fi
     fn_steam

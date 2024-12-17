@@ -3,7 +3,7 @@
 undock=false
 scrDir=$(dirname "$(realpath "$0")")
 source $scrDir/globalcontrol.sh
-batterynotify_conf="${hydeConfDir}/hyderc" # Shared with hyde configuration
+batterynotify_conf="$HYDE_STATE_HOME/staterc" # Shared with hyde configuration
 config_info() {
     cat <<EOF
 
@@ -45,7 +45,7 @@ fn_notify() { # Send notification
 }
 fn_percentage() {
     if [[ "$battery_percentage" -ge "$unplug_charger_threshold" ]] && [[ "$battery_status" != "Discharging" ]] && [[ "$battery_status" != "Full" ]] && (((battery_percentage - last_notified_percentage) >= $interval)); then
-        if $verbose; then echo "Prompt:UNPLUG: $battery_unplug_threshold $battery_status $battery_percentage"; fi
+        if $verbose; then echo "Prompt:UNPLUG: $unplug_charger_threshold $battery_status $battery_percentage"; fi
         fn_notify "-t 5000 " "CRITICAL" "Battery Charged" "Battery is at $battery_percentage%. You can unplug the charger!"
         last_notified_percentage=$battery_percentage
     elif [[ "$battery_percentage" -le "$battery_critical_threshold" ]]; then
@@ -154,18 +154,20 @@ fn_status_change() { # Handle when status changes
 
 # resume_processes() { for pid in $pids ; do  if [ "$pid" -ne "$current_pid" ] ; then kill -CONT $pid ; notify-send -a "Battery Notify" -t 2000 -r 9889 -u "CRITICAL" "Debugging ENDED, Resuming Regular Process" ; fi ; done }
 
-main() {                                # Main function
-    rm -fr /tmp/hyprdots.batterynotify* # Cleaning the lock file
-    battery_full_threshold=${battery_full_threshold:-100}
-    battery_critical_threshold=${battery_critical_threshold:-5}
-    unplug_charger_threshold=${unplug_charger_threshold:-80}
-    battery_low_threshold=${battery_low_threshold:-20}
-    timer=${timer:-120}
-    notify=${notify:-1140}
-    interval=${interval:-5}
-    execute_critical=${execute_critical:-"systemctl suspend"}
-    execute_low=${execute_low:-}
-    execute_unplug=${execute_unplug:-}
+main() {                                      # Main function
+    rm -fr "$HYDE_RUNTIME_DIR/batterynotify"* # Cleaning the lock file
+    battery_full_threshold=${BATTERY_NOTIFY_THRESHOLD_FULL:-100}
+    battery_critical_threshold=${BATTERY_NOTIFY_THRESHOLD_CRITICAL:-5}
+    unplug_charger_threshold=${BATTERY_NOTIFY_THRESHOLD_UNPLUG:-80}
+    battery_low_threshold=${BATTERY_NOTIFY_THRESHOLD_LOW:-20}
+    timer=${BATTERY_NOTIFY_TIMER:-120}
+    notify=${BATTERY_NOTIFY_NOTIFY:-1140}
+    interval=${BATTERY_NOTIFY_INTERVAL:-5}
+    execute_critical=${BATTERY_NOTIFY_EXECUTE_CRITICAL:-"systemctl suspend"}
+    execute_low=${BATTERY_NOTIFY_EXECUTE_LOW:-}
+    execute_unplug=${BATTERY_NOTIFY_EXECUTE_UNPLUG:-}
+    execute_charging=${BATTERY_NOTIFY_EXECUTE_CHARGING:-}
+    execute_discharging=${BATTERY_NOTIFY_EXECUTE_DISCHARGING:-}
 
     config_info
     if $verbose; then
