@@ -7,7 +7,8 @@
 set -e
 
 scrDir="$(dirname "$(realpath "$0")")"
-cloneDir="$(dirname "${scrDir}")"
+cloneDir="$(dirname "${scrDir}")" # fallback, we will use CLONE_DIR now
+cloneDir="${CLONE_DIR:-${cloneDir}}"
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 cacheDir="${XDG_CACHE_HOME:-$HOME/.cache/hyde}"
 aurList=(yay paru)
@@ -87,15 +88,15 @@ nvidia_detect() {
 
 prompt_timer() {
     set +e
-    unset promptIn
+    unset PROMPT_INPUT
     local timsec=$1
     local msg=$2
     while [[ ${timsec} -ge 0 ]]; do
         echo -ne "\r :: ${msg} (${timsec}s) : "
-        read -rt 1 -n 1 promptIn && break
+        read -rt 1 -n 1 PROMPT_INPUT && break
         ((timsec--))
     done
-    export promptIn
+    export PROMPT_INPUT
     echo ""
     set -e
 }

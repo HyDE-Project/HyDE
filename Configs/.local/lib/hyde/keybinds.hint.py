@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 import subprocess
 import json
+import argparse
+from collections import defaultdict
 
 
 def get_hyprctl_binds():
@@ -86,6 +88,16 @@ def map_keyDisplay(key):
     return key
 
 
+def find_duplicated_binds(binds):
+    bind_map = defaultdict(list)
+    for bind in binds:
+        key = (bind["mod_display"], bind["key_display"])
+        bind_map[key].append(bind)
+
+    duplicated_binds = {k: v for k, v in bind_map.items() if len(v) > 1}
+    return duplicated_binds
+
+
 def tabulate_binds(binds):
     """Tabulate binds data for printing."""
     headers = ["ModSym", "KeySym", "Dispatcher", "Arg", "Description"]
@@ -131,8 +143,13 @@ def tabulate_binds(binds):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Hyprland keybinds hint script")
+    parser.add_argument(
+        "--show-unbind", action="store_true", help="Show duplicated keybinds"
+    )
+    args = parser.parse_args()
+
     binds_data = get_hyprctl_binds()
-    user_binds = get_user_binds()
     if binds_data:
         for bind in binds_data:
             if bind.get("has_description", False):
@@ -149,5 +166,10 @@ if __name__ == "__main__":
             bind["key_display"] = map_keyDisplay(bind["key"])
             bind["mod_display"] = map_modDisplay(bind["modmask"])
 
-        print(json.dumps(binds_data, indent=4))
-        # print(tabulate_binds(binds_data))
+        if args.show_unbind:
+            duplicated_binds = find_duplicated_binds(binds_data)
+            for (mod_display, key_display), binds in duplicated_binds.items():
+                print(f"unbind = {mod_display} , {key_display}")
+        else:
+            print(json.dumps(binds_data, indent=4))
+            # print(tabulate_binds(binds_data))

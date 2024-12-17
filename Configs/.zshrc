@@ -85,7 +85,5 @@ alias mkdir='mkdir -p'
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-function launch {[ command -v "${1}" &> /dev/null ] "${1}";}
-
 # Display Pokemon
 pokego --no-title -r 1,3,6

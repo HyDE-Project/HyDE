@@ -1,4 +1,4 @@
-${confDir}/kitty/theme.conf|${wallbashScripts}/kitty.sh
+${confDir}/kitty/theme.conf|${WALLBASH_SCRIPTS}/kitty.sh
 foreground              #<wallbash_txt1>
 background              #<wallbash_pry1>
 selection_foreground    #<wallbash_pry1>

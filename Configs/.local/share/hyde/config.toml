@@ -1,0 +1,115 @@
+# Configuration file for HyDE
+# Environment variables should be on top
+# Updated config.toml file can be found at $HOME/.local/share/hyde/config.toml
+
+WARP_ENABLE_WAYLAND = 1
+
+[wallpaper]
+custom_paths = ["$HOME/Pictures/Wallpapers"]
+
+[wallpaper.swww]
+framerate = 60
+duration = 1
+# Transition type [ none | simple | fade | left | right | top | bottom | wipe | wave | grow | center | any | outer | random ]
+transition_next = "grow"
+transition_prev = "outer"
+transition_default = "random"
+
+
+[rofi]
+scale = 8 # rofi fallback scaling
+
+[rofi.animation]
+scale = 8
+
+[rofi.glyph]
+scale = 8
+
+[rofi.launcher]
+# style = "10"
+scale = 5
+
+[rofi.cliphist]
+scale = 8
+
+[rofi.wallpaper]
+scale = 8
+
+[rofi.emoji]
+style = 2
+scale = 8
+
+[rofi.theme]
+scale = 6
+
+[wlogout]
+style = 2
+
+[battery.notify]
+timer = 120
+notify = 1140
+interval = 5
+dock = false
+
+[battery.notify.threshold]
+full = 90
+critical = 10
+low = 20
+unplug = 80
+
+
+[battery.notify.execute]
+unplug = ""
+low = ""
+critical = "systemctl suspend"
+charging = ""
+discharging = ""
+
+[keybind.hint]
+
+[rofi.keybind.hint]
+delimiter = "\t"
+width = "40em"
+height = "40em"
+line = 16
+config = ["$HOME/GitHub/HyDE/Configs/.local/share/bin/keybinds_hint.sh"]
+
+
+[screenshot]
+annotation_tool = "swappy"
+
+# [rofi.bookmark]
+# file = "$HOME/.config/hyde/bookmarks.lst"
+
+# [rofi.search]
+# file = "$HOME/.config/hyde/search.lst"
+
+
+# [wallbash]
+# skip_template = ["hyprpanel"]
+
+[waybar]
+font = "JetBrainsMono Nerd Font"
+border_radius = 2                # fallback border radius
+
+# Set which monitor to display waybar \\ Default: all monitors
+output = ["HDMI-A-0", "eDP-1"]
+
+[waybar.module.cava]
+bar = "▁▂▃▄▅▆▇█"
+width = 20
+range = 7
+standby = "🎶"
+
+[hypr.config]
+
+# removes rgba colors declaration (workaround for crashing when rgba is set)
+sanitize = ['.*rgba\(.*,*,*,*,']
+
+[volume]
+notify = true # Useful for systems that have their own OSD
+steps = 5     # Number of steps to increase/decrease volume
+
+[brightness]
+notify = true # Useful for systems that have their own OSD
+steps = 5     # Number of steps to increase/decrease brightness

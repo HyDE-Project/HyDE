@@ -9,70 +9,98 @@ Note:
 - Each column should use spaces to separate array
 
 Structure:
-#?        flag|path|file|dependency
+#?        flag|path|target|dependency
 
 Flags:
-P = Populate/Preserved - Copy the file to the specified path
-                          Only if the file does not exist
-                          Preserved the target file
-S = Sync - Copy the file to the specified path
-            Overwrite the target file
-              Ignore other files that is not from the list
-              Ignore other files that is not from the ./Configs
-O = Overwrite - Copy the file to the specified path
-                Overwrite the target file
-                If Target is a directory, Overwrite EVERYTHING
-                If Target is a file, Overwrite the file
-B = Backup - Backup the target file
-              All P,S,O flags will also backup the target target file
+P = Populate/Preserved - Copy the target to the specified path
+                          - ONLY if the target do not exist
+                          - Preserved the target
+S = Sync - Copy the target to the specified path
+            - Overwrite the target
+              - Ignore other targets that is not from the list
+              - Ignore other targets that is not from the ./Configs
+O = Overwrite - Copy the target to the specified path
+                - Overwrite the target target
+                - If Target is a directory, Overwrite EVERYTHING in the directory
+                - If Target is a file, Overwrite the file
+B = Backup - Backup the target
+              - All P,S,O flags will also backup the target file/directory
 
 
-Populate or Preserved:
 
-P|${HOME}/.config/Code - OSS/User|settings.json|code
-P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
-P|${HOME}/.config/hypr|hyprland.conf windowrules.conf keybindings.conf monitors.conf animations.conf |hyprland
+ Hyde core files 
+P|${HOME}/.config/hyde|config.toml|hyprland
+P|${HOME}/.config/hypr|hyde.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
 P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
-P|${HOME}/.config/hypr|themes|hyprland
-P|${HOME}/.config/waybar|config.ctl|waybar
-P|${HOME}/.config|baloofilerc|dolphin
-P|${HOME}/.config|code-flags.conf|code
-P|${HOME}/.config|code-flags.conf|visual-studio-code-bin
-P|${HOME}/.config|fish|fish
-P|${HOME}/.config|libinput-gestures.conf|libinput-gestures
-P|${HOME}/.config|lsd|lsd
-P|${HOME}/.config|spotify-flags.conf|spotify
-P|${HOME}/.local/state|dolphinstaterc|dolphin
-P|${HOME}|.zshrc .p10k.zsh|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokemon-colorscripts-git
+P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
+S|${HOME}/.config/hypr|hyprland.conf|hyprland
+S|${HOME}/.local|bin|hyprland
 
-Synchronized:
-
-S|${HOME}/.config/menus|applications.menu|dolphin
-S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
-S|${HOME}/.config|dolphinrc|dolphin
-S|${HOME}/.config|dunst|dunst
-S|${HOME}/.config|fastfetch|fastfetch
 S|${HOME}/.config|gtk-3.0|nwg-look
-S|${HOME}/.config|kdeglobals|dolphin
-S|${HOME}/.config|kitty|kitty
-S|${HOME}/.config|Kvantum|kvantum
-S|${HOME}/.config|MangoHud|mangohud
 S|${HOME}/.config|nwg-look|nwg-look
+S|${HOME}/.config|xsettingsd|nwg-look
+S|${HOME}|.gtkrc-2.0|nwg-look
+S|${HOME}/.config|Kvantum|kvantum
 S|${HOME}/.config|qt5ct|qt5ct
 S|${HOME}/.config|qt6ct|qt6ct
-S|${HOME}/.config|rofi|rofi
-S|${HOME}/.config|swaylock|swaylock-effects
-S|${HOME}/.config|wlogout|wlogout
-S|${HOME}/.config|xsettingsd|nwg-look
-S|${HOME}/.local/lib|hyde|hyprland
+S|${HOME}/.config/hyde|wallbash|hyprland
+S|${HOME}/.config/hypr|animations|hyprland
+
+O|${HOME}/.local/share|hyde|hyprland
+O|${HOME}/.local/lib|hyde|hyprland
+
+ Editor 
+P|${HOME}/.config/Code - OSS/User|settings.json|code
+P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
+P|${HOME}/.config/VSCodium/User|settings.json|vscodium-bin
+
+ Bar 
+P|${HOME}/.config/waybar|config.ctl|waybar
+S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
+
+ Terminal 
+P|${HOME}/.config|fish|fish
+P|${HOME}/.config|lsd|lsd
+S|${HOME}/.config|fastfetch|fastfetch
+S|${HOME}/.config/kitty|hyde.conf theme.conf|kitty
+P|${HOME}/.config/kitty|kitty.conf|kitty
+
+
+ File Explorer 
+P|${HOME}/.local/state|dolphinstaterc|dolphin
+P|${HOME}/.config|baloofilerc|dolphin
+P|${HOME}|.zshrc .p10k.zsh|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokemon-colorscripts-git
+S|${HOME}/.config/menus|applications.menu|dolphin
+S|${HOME}/.config|dolphinrc|dolphin
+S|${HOME}/.config|kdeglobals|dolphin
 S|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
 S|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
 S|${HOME}/.local/share|dolphin|dolphin
-S|${HOME}|.gtkrc-2.0|nwg-look
-S|${HOME}/.config/hyde|wallbash|hyprland
 
-Overwrite: Strict Hyde specific files
+ Input 
+P|${HOME}/.config|libinput-gestures.conf|libinput-gestures
 
-O|${HOME}/.local/share|hyde|hyprland
-O|${HOME}/.local/share/icons|Wallbash-Icon|hyprland
+ Wayland 
+P|${HOME}/.config|spotify-flags.conf|spotify
+P|${HOME}/.config|code-flags.conf|code
+P|${HOME}/.config|code-flags.conf|visual-studio-code-bin
+P|${HOME}/.config|vscodium-flags.conf|vscodium-bin
+P|${HOME}/.config|electron-flags.conf|electron
 
+ Notifications 
+S|${HOME}/.config|dunst|dunst
+
+ Gaming 
+S|${HOME}/.config|MangoHud|mangohud
+
+ Launcher 
+S|${HOME}/.config|rofi|rofi
+S|${HOME}/.config|wlogout|wlogout
+
+ Lock Screen 
+S|${HOME}/.config|swaylock|swaylock-effects
+S|${HOME}/.config/hypr|hyprlock.conf|hyprlock
+S|${HOME}/.config/hypr|hyprlock|hyprlock
+
+ Idle daemon 
+P|${HOME}/.config/hypr|hypridle.conf|hypridle

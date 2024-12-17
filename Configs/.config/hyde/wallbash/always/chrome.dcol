@@ -1,1 +1,1 @@
-/tmp/null |${wallbashScripts}/chrome.sh
+/tmp/null |${WALLBASH_SCRIPTS}/chrome.sh

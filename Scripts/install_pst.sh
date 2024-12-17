@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-        # shellcheck disable=SC2086
-        # shellcheck disable=SC2154
 #|---/ /+--------------------------------------+---/ /|#
 #|--/ /-| Script to apply post install configs |--/ /-|#
 #|-/ /--| Prasanth Rangan                      |-/ /--|#
@@ -8,10 +6,12 @@
 
 scrDir=$(dirname "$(realpath "$0")")
 # shellcheck disable=SC1091
-if ! source "${scrDir}/global_fn.sh";then
+if ! source "${scrDir}/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
+
+cloneDir="${cloneDir:-$CLONE_DIR}"
 
 # sddm
 if pkg_installed sddm; then
@@ -20,19 +20,19 @@ if pkg_installed sddm; then
         sudo mkdir -p /etc/sddm.conf.d
     fi
 
-    if [ ! -f /etc/sddm.conf.d/kde_settings.t2.bkp ]; then
+    if [ ! -f /etc/sddm.conf.d/kde_settings.hyde.bkp ]; then
         print_log -g "[DISPLAYMANAGER] " -b " :: " "configuring sddm..."
         print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Corners"
-        read -pr " :: Enter option number : " sddmopt
+        read -p " :: Enter option number : " -r sddmopt
 
         case $sddmopt in
         1) sddmtheme="Candy" ;;
         *) sddmtheme="Corners" ;;
         esac
 
-        sudo tar -xzf ${cloneDir}/Source/arcs/Sddm_${sddmtheme}.tar.gz -C /usr/share/sddm/themes/
+        sudo tar -xzf "${cloneDir}/Source/arcs/Sddm_${sddmtheme}.tar.gz" -C /usr/share/sddm/themes/
         sudo touch /etc/sddm.conf.d/kde_settings.conf
-        sudo cp /etc/sddm.conf.d/kde_settings.conf /etc/sddm.conf.d/kde_settings.t2.bkp
+        sudo cp /etc/sddm.conf.d/kde_settings.conf /etc/sddm.conf.d/kde_settings.hyde.bkp
         sudo cp /usr/share/sddm/themes/${sddmtheme}/kde_settings.conf /etc/sddm.conf.d/
     else
         print_log -y "[DISPLAYMANAGER] " -b " :: " "sddm is already configured..."
@@ -40,7 +40,7 @@ if pkg_installed sddm; then
 
     if [ ! -f "/usr/share/sddm/faces/${USER}.face.icon" ] && [ -f "${cloneDir}/Source/misc/${USER}.face.icon" ]; then
         sudo cp "${cloneDir}/Source/misc/${USER}.face.icon" /usr/share/sddm/faces/
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "avatar set for ${USER}..."   
+        print_log -g "[DISPLAYMANAGER] " -b " :: " "avatar set for ${USER}..."
     fi
 
 else
@@ -66,7 +66,7 @@ if ! pkg_installed flatpak; then
     print_log -r "[FLATPAK]" -b "list :: " "flatpak application"
     awk -F '#' '$1 != "" {print "["++count"]", $1}' "${scrDir}/extra/custom_flat.lst"
     prompt_timer 60 "Install these flatpaks? [Y/n]"
-    fpkopt=${promptIn,,}
+    fpkopt=${PROMPT_INPUT,,}
 
     if [ "${fpkopt}" = "y" ]; then
         print_log -g "[FLATPAK]" -b "install :: " "flatpaks"

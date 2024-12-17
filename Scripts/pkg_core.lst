@@ -28,13 +28,14 @@ dunst                                                  # notification daemon
 rofi-wayland                                           # application launcher
 waybar                                                 # system bar
 swww                                                   # wallpaper
-swaylock-effects-git                                   # lock screen
+hyprlock                                               # lock screen
 wlogout                                                # logout menu
 grimblast-git                                          # screenshot tool
 hyprpicker                                             # color picker
 slurp                                                  # region select for screenshot/screenshare
 swappy                                                 # screenshot editor
 cliphist                                               # clipboard manager
+hyprsunset                                             # blue light filter
 
 # --------------------------------------------------- // Dependencies
 polkit-gnome                                           # authentication agent
@@ -63,8 +64,10 @@ firefox                                                # browser
 kitty                                                  # terminal
 dolphin                                                # kde file manager
 ark                                                    # kde file archiver
+unzip                                                  # extracting zip files
 vim                                                    # terminal text editor
 code                                                   # ide text editor
+nwg-displays                                           # monitor management utility
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
@@ -76,4 +79,5 @@ fastfetch                                              # system information fetc
 pokego-bin|zsh                                        # display pokemon sprites in terminal (written GO)
 
 # --------------------------------------------------- // HyDE
-hyde-cli-git                                           # cli tool to manage hyde
+# hyde-cli-git                                           # cli tool to manage hyde \\ Deprecated for HyDE
+hypridle                                               # idle daemon

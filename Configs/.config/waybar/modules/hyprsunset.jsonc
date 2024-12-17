@@ -1,0 +1,16 @@
+"custom/hyprsunset": {
+        "return-type": "json",
+        "format": "{icon}",
+        "format-icons": {
+            "active" : "",
+            "inactive" : ""
+        },
+        "exec": "hyprsunset.sh r q",
+        "rotate": ${r_deg},
+        "on-click": "hyprsunset.sh t",
+        "on-scroll-up": "hyprsunset.sh i",
+        "on-scroll-down": "hyprsunset.sh d",
+        "interval": 1,
+        "tooltip":true,
+        "escape": true,
+    },

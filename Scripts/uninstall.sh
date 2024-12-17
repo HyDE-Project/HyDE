@@ -4,15 +4,15 @@
 #|-/ /--| Prasanth Rangan               |-/ /--|#
 #|/ /---+-------------------------------+/ /---|#
 
-cat << "EOF"
+cat <<"EOF"
 
 -------------------------------------------------
         .
-       / \                 _  _      ___  ___ 
+       / \                 _  _      ___  ___
       /^  \      _____    | || |_  _|   \| __|
-     /  _  \    |_____|   | __ | || | |) | _| 
+     /  _  \    |_____|   | __ | || | |) | _|
     /  | | ~\             |_||_|\_, |___/|___|
-   /.-'   '-.\                  |__/          
+   /.-'   '-.\                  |__/
 
 -------------------------------------------------
 
@@ -22,12 +22,12 @@ cat << "EOF"
 please type "DONT HYDE" to continue...
 EOF
 
-read promptIn
-[ "${promptIn}" == "DONT HYDE" ] || exit 0
+read -r PROMPT_INPUT
+[ "${PROMPT_INPUT}" == "DONT HYDE" ] || exit 0
 
-cat << "EOF"
+cat <<"EOF"
 
-         _         _       _ _ 
+         _         _       _ _
  _ _ ___|_|___ ___| |_ ___| | |
 | | |   | |   |_ -|  _| .'| | |
 |___|_|_|_|_|_|___|_| |__,|_|_|
@@ -43,7 +43,7 @@ if [ $? -ne 0 ]; then
 fi
 
 CfgLst="${scrDir}/restore_cfg.lst"
-if [ ! -f "${CfgLst}" ] ; then
+if [ ! -f "${CfgLst}" ]; then
     echo "ERROR: '${CfgLst}' does not exist..."
     exit 1
 fi
@@ -51,14 +51,14 @@ fi
 BkpDir="${HOME}/.config/cfg_backups/$(date +'%y%m%d_%Hh%Mm%Ss')_remove"
 mkdir -p "${BkpDir}"
 
-cat "${CfgLst}" | while read lst ; do
+cat "${CfgLst}" | while read lst; do
     pth=$(echo "${lst}" | awk -F '|' '{print $3}')
     pth=$(eval echo "${pth}")
     cfg=$(echo "${lst}" | awk -F '|' '{print $4}')
 
     echo "${cfg}" | xargs -n 1 | while read -r cfg_chk; do
         [[ -z "${pth}" ]] && continue
-        if [ -d "${pth}/${cfg_chk}" ] || [ -f "${pth}/${cfg_chk}" ] ; then
+        if [ -d "${pth}/${cfg_chk}" ] || [ -f "${pth}/${cfg_chk}" ]; then
             tgt=$(echo "${pth}" | sed "s+^${HOME}++g")
             if [ ! -d "${BkpDir}${tgt}" ]; then
                 mkdir -p "${BkpDir}${tgt}"
@@ -72,7 +72,7 @@ done
 [ -d "$HOME/.config/hyde" ] && rm -rf "$HOME/.config/hyde"
 [ -d "$HOME/.cache/hyde" ] && rm -rf "$HOME/.cache/hyde"
 
-cat << "NOTE"
+cat <<"NOTE"
 -------------------------------------------------------
 .: Manual action required to complete uninstallation :.
 -------------------------------------------------------
@@ -95,6 +95,6 @@ Revert back bootloader/pacman/sddm settings manually from these backups
 /usr/share/sddm/themes                  # remove sddm themes from here
 
 Uninstall the packages manually that are no longer required based on these list
-${scrDir}/custom_hypr.lst
-${scrDir}/custom_apps.lst
+${scrDir}/pkg_core.lst
+${scrDir}/pkg_custom.lst
 NOTE

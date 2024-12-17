@@ -1,16 +1,33 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091
 
-#// hyde envs
+# xdg resolution
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+
+# hyde envs
+export HYDE_CONFIG_HOME="${XDG_CONFIG_HOME}/hyde"
+export HYDE_DATA_HOME="${XDG_DATA_HOME}/hyde"
+export HYDE_CACHE_HOME="${XDG_CACHE_HOME}/hyde"
+export HYDE_STATE_HOME="${XDG_STATE_HOME}/hyde"
+export HYDE_RUNTIME_DIR="${XDG_RUNTIME_DIR}/hyde"
+export ICONS_DIR="${XDG_DATA_HOME}/icons"
+export FONTS_DIR="${XDG_DATA_HOME}/fonts"
+export THEMES_DIR="${XDG_DATA_HOME}/themes"
+
+#legacy hyde envs // should be deprecated
 
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-export hydeConfDir="${confDir}/hyde"
-export cacheDir="$HOME/.cache/hyde"
-export thmbDir="${cacheDir}/thumbs"
-export dcolDir="${cacheDir}/dcols"
-export iconsDir="${XDG_DATA_HOME}/icons"
-export themesDir="${XDG_DATA_HOME}/themes"
-export fontsDir="${XDG_DATA_HOME}/fonts"
+export hydeConfDir="$HYDE_CONFIG_HOME"
+export cacheDir="$HYDE_CACHE_HOME"
+export thmbDir="$HYDE_CACHE_HOME/thumbs"
+export dcolDir="$HYDE_CACHE_HOME/dcols"
+export iconsDir="$ICONS_DIR"
+export themesDir="$THEMES_DIR"
+export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
 get_hashmap() {
@@ -104,30 +121,31 @@ get_themes() {
     fi
 }
 
-[ -f "${hydeConfDir}/hyderc" ] && source "${hydeConfDir}/hyderc"
 [ -f "${HYDE_RUNTIME_DIR}/environment" ] && source "${HYDE_RUNTIME_DIR}/environment"
+[ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
+[ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
 
 case "${enableWallDcol}" in
 0 | 1 | 2 | 3) ;;
 *) enableWallDcol=0 ;;
 esac
 
-if [ -z "${hydeTheme}" ] || [ ! -d "${hydeConfDir}/themes/${hydeTheme}" ]; then
+if [ -z "${HYDE_THEME}" ] || [ ! -d "${hydeConfDir}/themes/${HYDE_THEME}" ]; then
     get_themes
-    hydeTheme="${thmList[0]}"
+    HYDE_THEME="${thmList[0]}"
 fi
 
-hydeThemeDir="${hydeConfDir}/themes/${hydeTheme}"
-walbashDirs=(
+HYDE_THEME_DIR="${hydeConfDir}/themes/${HYDE_THEME}"
+wallbashDirs=(
     "${hydeConfDir}/wallbash"
     "${XDG_DATA_HOME}/hyde/wallbash"
     "/usr/local/share/hyde/wallbash"
     "/usr/share/hyde/wallbash"
 )
 
-export hydeTheme
-export hydeThemeDir
-export walbashDirs
+export HYDE_THEME
+export HYDE_THEME_DIR
+export wallbashDirs
 export enableWallDcol
 
 #// hypr vars
@@ -167,12 +185,12 @@ get_aurhlpr() {
 set_conf() {
     local varName="${1}"
     local varData="${2}"
-    touch "${hydeConfDir}/hyderc"
+    touch "${XDG_STATE_HOME}/hyde/staterc"
 
-    if [ "$(grep -c "^${varName}=" "${hydeConfDir}/hyderc")" -eq 1 ]; then
-        sed -i "/^${varName}=/c${varName}=\"${varData}\"" "${hydeConfDir}/hyderc"
+    if [ "$(grep -c "^${varName}=" "${XDG_STATE_HOME}/hyde/staterc")" -eq 1 ]; then
+        sed -i "/^${varName}=/c${varName}=\"${varData}\"" "${XDG_STATE_HOME}/hyde/staterc"
     else
-        echo "${varName}=\"${varData}\"" >>"${hydeConfDir}/hyderc"
+        echo "${varName}=\"${varData}\"" >>"${XDG_STATE_HOME}/hyde/staterc"
     fi
 }
 
@@ -254,7 +272,7 @@ print_log() {
 # Yes this is so slow but it's the only way to ensure that parsing behaves correctly
 get_hyprConf() {
     local hyVar="${1}"
-    local file="${2:-"${hydeThemeDir}/hypr.theme"}"
+    local file="${2:-"$HYDE_THEME_DIR/hypr.theme"}"
     local gsVal
     gsVal="$(grep "^[[:space:]]*\$${hyVar}\s*=" "${file}" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     [ -n "${gsVal}" ] && [[ "${gsVal}" != \$* ]] && echo "${gsVal}" && return 0
@@ -285,14 +303,74 @@ get_hyprConf() {
         "SDDM_THEME") echo "" ;;
         *)
             grep "^[[:space:]]*\$default.${hyVar}\s*=" \
+                "XDG_DATA_HOME/hyde/hyde.conf" \
                 "$XDG_DATA_HOME/hyde/hyprland.conf" \
+                "/usr/local/share/hyde/hyde.conf" \
                 "/usr/local/share/hyde/hyprland.conf" \
+                "/usr/share/hyde/hyde.conf" \
                 "/usr/share/hyde/hyprland.conf" 2>/dev/null |
                 cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | head -n 1
             ;;
         esac
     else
-        echo "${gsVal}"::
+        echo "${gsVal}"
     fi
 
+}
+
+# Rofi spawn location
+get_rofi_pos() {
+    readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
+    eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
+        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" ")))"')"
+
+    monRes[2]="${monRes[2]//./}"
+    monRes[0]=$((monRes[0] * 100 / monRes[2]))
+    monRes[1]=$((monRes[1] * 100 / monRes[2]))
+    curPos[0]=$((curPos[0] - monRes[3]))
+    curPos[1]=$((curPos[1] - monRes[4]))
+    offRes=("${offRes// / }")
+
+    if [ "${curPos[0]}" -ge "$((monRes[0] / 2))" ]; then
+        local x_pos="east"
+        local x_off="-$((monRes[0] - curPos[0] - offRes[2]))"
+    else
+        local x_pos="west"
+        local x_off="$((curPos[0] - offRes[0]))"
+    fi
+
+    if [ "${curPos[1]}" -ge "$((monRes[1] / 2))" ]; then
+        local y_pos="south"
+        local y_off="-$((monRes[1] - curPos[1] - offRes[3]))"
+    else
+        local y_pos="north"
+        local y_off="$((curPos[1] - offRes[1]))"
+    fi
+
+    local coordinates="window{location:${x_pos} ${y_pos};anchor:${x_pos} ${y_pos};x-offset:${x_off}px;y-offset:${y_off}px;}"
+    echo "${coordinates}"
+}
+
+#? handle pasting
+paste_string() {
+    if ! command -v wtype >/dev/null; then exit 0; fi
+    ignore_paste_file=${cacheDir}/landing/ignore.paste
+
+    if [[ ! -e "${ignore_paste_file}" ]]; then
+        cat <<EOF >"${ignore_paste_file}"
+kitty
+org.kde.konsole
+terminator
+XTerm
+Alacritty
+xterm-256color
+EOF
+    fi
+
+    ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
+    [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_prompt -y "[ignore]" "'$ignore_class'" && exit 0
+    class=$(hyprctl -j activewindow | jq -r '.initialClass')
+    if ! grep -q "${class}" "${ignore_paste_file}"; then
+        hyprctl -q dispatch exec 'wtype -M ctrl V -m ctrl'
+    fi
 }

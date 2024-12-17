@@ -1,7 +1,6 @@
-${confDir}/hypr/themes/colors.conf
-# ----------------------------
-# Wallbash mode enabled
-# ----------------------------
+${cacheDir}/wallbash/hypr.theme | ${scrDir}/wallbash.hypr.sh
+#//---Wallbash mode enabled---
+# Overriding values above
 
 $GTK_THEME = Wallbash-Gtk
 $COLOR_SCHEME = prefer-<wallbash_mode>

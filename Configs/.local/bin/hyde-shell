@@ -1,0 +1,43 @@
+#!/bin/env bash
+# This script will soon be use to resolve $PATHS and LIB_DIR specific to hyde
+# wallbash script can source this script to resolve the paths cleanly on a separate shell
+
+BIN_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+LIB_DIR="${BIN_DIR/\/bin/\/lib}"
+
+# shellcheck disable=SC1091
+if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
+    echo "Error: Could not load HyDe, broken installation?"
+    exit 1
+fi
+
+interactive_shell() {
+    while true; do
+        read -rp "hyde-shell> " cmd
+        if [[ "$cmd" == "exit" ]]; then
+            break
+        elif declare -f "${cmd%% *}" >/dev/null; then
+            eval "$cmd"
+        else
+            echo "Available commands:"
+            compgen -A function
+            echo -e "\e[31mCommand not found: $cmd\e[0m"
+            echo -e "\e[32mAvailable commands:\e[0m"
+            compgen -A function | while read -r function; do
+                echo -e "\e[34m$function\e[0m"
+            done
+        fi
+    done
+
+}
+
+case $1 in
+-i)
+    interactive_shell
+    ;;
+*)
+    for func in $(compgen -A function); do
+        export -f "${func?}"
+    done
+    ;;
+esac

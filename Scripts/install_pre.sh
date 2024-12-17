@@ -6,10 +6,12 @@
 
 scrDir=$(dirname "$(realpath "$0")")
 # shellcheck disable=SC1091
-if ! source "${scrDir}/global_fn.sh";then
+if ! source "${scrDir}/global_fn.sh"; then
     echo "Error: unable to source global_fn.sh..."
     exit 1
 fi
+
+flg_DryRun=${flg_DryRun:-0}
 
 # grub
 if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
@@ -29,9 +31,9 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
         print_log -r "[bootloader] " -b " :: " "Select grub theme:" -r "\n[1]" -b " Retroboot (dark)" -r "\n[2]" -b " Pochita (light)"
         read -r -p " :: Press enter to skip grub theme <or> Enter option number : " grubopt
         case ${grubopt} in
-            1) grubtheme="Retroboot" ;;
-            2) grubtheme="Pochita" ;;
-            *) grubtheme="None" ;;
+        1) grubtheme="Retroboot" ;;
+        2) grubtheme="Pochita" ;;
+        *) grubtheme="None" ;;
         esac
 
         if [ "${grubtheme}" == "None" ]; then
@@ -55,11 +57,10 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
 fi
 
 # systemd-boot
-if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2> /dev/null | awk '{if ($1 == "Product:") print $2}')" == "systemd-boot" ]; then
+if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | awk '{if ($1 == "Product:") print $2}')" == "systemd-boot" ]; then
     print_log -c "[bootloader] " -b "detected :: " "systemd-boot"
 
-    if [ "$(find /boot/loader/entries/ -type f -name '*.conf.hyde.bkp' 2> /dev/null | wc -l)" -ne "$(find /boot/loader/entries/ -type f -name '*.conf' 2> /dev/null | wc -l)" ]; then
-        echo "nvidia detected, adding nvidia_drm.modeset=1 to boot option..."
+    if [ "$(find /boot/loader/entries/ -type f -name '*.conf.hyde.bkp' 2>/dev/null | wc -l)" -ne "$(find /boot/loader/entries/ -type f -name '*.conf' 2>/dev/null | wc -l)" ]; then
         print_log -g "[bootloader] " -b " :: " "nvidia detected, adding nvidia_drm.modeset=1 to boot option..."
         find /boot/loader/entries/ -type f -name "*.conf" | while read -r imgconf; do
             sudo cp "${imgconf}" "${imgconf}.hyde.bkp"
@@ -76,15 +77,15 @@ if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.hyde.bkp ]; then
     print_log -g "[PACMAN] " -b "modify :: " "adding extra spice to pacman..."
 
     # shellcheck disable=SC2154
-    [ "${flg_DryRun}" -eq 1 ] && cp /etc/pacman.conf /etc/pacman.conf.hyde.bkp
-    [ "${flg_DryRun}" -eq 1 ] && sudo sed -i "/^#Color/c\Color\nILoveCandy
+    [ "${flg_DryRun}" -eq 1 ] || sudo cp /etc/pacman.conf /etc/pacman.conf.hyde.bkp
+    [ "${flg_DryRun}" -eq 1 ] || sudo sed -i "/^#Color/c\Color\nILoveCandy
     /^#VerbosePkgLists/c\VerbosePkgLists
     /^#ParallelDownloads/c\ParallelDownloads = 5" /etc/pacman.conf
-    [ "${flg_DryRun}" -eq 1 ] &&  sudo sed -i '/^#\[multilib\]/,+1 s/^#//' /etc/pacman.conf
+    [ "${flg_DryRun}" -eq 1 ] || sudo sed -i '/^#\[multilib\]/,+1 s/^#//' /etc/pacman.conf
 
     print_log -g "[PACMAN] " -b "update :: " "packages..."
-    [ "${flg_DryRun}" -eq 1 ] &&  sudo pacman -Syyu
-    [ "${flg_DryRun}" -eq 1 ] &&  sudo pacman -Fy
+    [ "${flg_DryRun}" -eq 1 ] || sudo pacman -Syyu
+    [ "${flg_DryRun}" -eq 1 ] || sudo pacman -Fy
 else
     print_log -y "[PACMAN] " -b "skipped :: " "pacman is already configured..."
 fi

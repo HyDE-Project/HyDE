@@ -1,4 +1,4 @@
-${cacheDir}/wallbash/cava|${wallbashScripts}/cava.sh
+${cacheDir}/wallbash/cava|${WALLBASH_SCRIPTS}/cava.sh
 
 [color]
 

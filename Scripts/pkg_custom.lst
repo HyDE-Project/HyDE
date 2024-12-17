@@ -3,6 +3,9 @@
 # trash-cli-git                                        # cli to manage trash files
 # libinput-gestures                                    # actions touchpad gestures using libinput
 # gestures                                             # gui for libinput-gestures
+wttrbar                                                # for weather
+python-requests|wttrbar                                # script dependency
+ddccui                                                 # GUI to control brightness for external monitors     
 
 # --------------------------------------------------- // Dependencies
 xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
@@ -10,7 +13,7 @@ xdg-desktop-portal-gtk                                 # xdg desktop portal usin
 
 # --------------------------------------------------- // Gaming
 steam                                                  # gaming platform
-gamemode                                               # daemon and library for game optimisations
+gamemode                                               # daemon and library for game optimizations
 mangohud                                               # system performance overlay
 # gamescope                                            # micro-compositor for gaming
 
@@ -25,3 +28,18 @@ spicetify-cli                                          # cli to customize spotif
 # --------------------------------------------------- // Shell
 # oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh
 # pokemon-colorscripts-git|zsh                           # display pokemon sprites (optional)
+
+# --------------------------------------------------- // Editor
+# vscodium-bin                                          # Full oss text editor
+# vscodium-bin-marketplace|vscodium-bin                 # VSCodium marketplace
+# code-marketplace|code                                 # Code-Oss marketplace
+# visual-studio-code-bin                                # MS  text editor
+
+# --------------------------------------------------- // Backends
+#electron                                              # electron backend
+
+# --------------------------------------------------- // Lockscreen
+#swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
+
+# --------------------------------------------------- // OSD
+swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
