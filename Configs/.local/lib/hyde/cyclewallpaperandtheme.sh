@@ -6,8 +6,6 @@ source "$scrDir/globalcontrol.sh"
 # Paths to scripts and directories
 WALL_SCRIPT="$scrDir/swwwallpaper.sh"
 THEME_SCRIPT="$scrDir/themeswitch.sh"
-#SDDM_SCRIPT="$HOME/bin/setsddmwallpaper"
-SDDM_SCRIPT="$scrDir/setsddmwallpaper.sh"
 LOG_FILE="$HOME/.cache/cyclewallpaperandtheme.log"
 WALL_CYCLE_FILE="$HOME/.local/share/cyclewallpapercount"
 THEME_CYCLE_FILE="$HOME/.local/share/cyclethemecount"
@@ -85,7 +83,11 @@ cycle_wallpaper() {
 
     # Set wallpaper
     "$WALL_SCRIPT" -s "$next_wallpaper" >> "$LOG_FILE" 2>&1
-    "$SDDM_SCRIPT" "$next_wallpaper" >> "$LOG_FILE" 2>&1
+    if [ -n "$DM_SCRIPT" ] && [ -x "$DM_SCRIPT" ]; then
+        "$DM_SCRIPT" "$next_wallpaper" >> "$LOG_FILE" 2>&1
+    else
+        log "No Display Manager script provided or script is not executable. Skipping Display Manager wallpaper update."
+    fi
     log "Wallpaper changed to: $next_wallpaper"
 
     # If all wallpapers are cycled, flag theme change
@@ -97,6 +99,19 @@ cycle_wallpaper() {
 }
 
 # Main execution
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dm-script)
+            DM_SCRIPT="$2"
+            shift 2
+            ;;
+        *)
+            log "Unknown argument: $1"
+            exit 1
+            ;;
+    esac
+done
+
 if [ -f "$THEME_CHANGE_FLAG_FILE" ]; then
     cycle_theme
     rm -f "$THEME_CHANGE_FLAG_FILE"
