@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#! /bin/env bash
 
 # Configuration
 SDDM_THEME_CONFIG="/usr/share/sddm/themes/Corners/theme.conf"
