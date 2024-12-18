@@ -94,12 +94,19 @@ esac
 # Send notification if enabled
 [ "$notify" = true ] && send_notification
 
-# Start or restart hyprsunset if necessary
-if [ ! "$action" = "read" ]; then
+# Fetch current running temperature
+current_running_temp=$(pgrep -a hyprsunset | grep -- '--temperature' | awk '{for(i=1;i<=NF;i++) if ($i ~ /--temperature/) print $(i+1)}')
+
+if [ "$action" = "read" ]; then
+    if [ "$toggle_mode" -eq 1 ] && [ "$current_running_temp" != "$currentTemp" ]; then
+        pkill -x hyprsunset
+        hyprsunset --temperature "$currentTemp" > /dev/null &
+    fi
+else
     pkill -x hyprsunset
     if [ "$toggle_mode" -eq 0 ]; then
-        hyprsunset -i > /dev/null & # $default is only approx
-    else 
+        hyprsunset -i > /dev/null &
+    else
         hyprsunset --temperature "$newTemp" > /dev/null &
     fi
 fi
