@@ -1,4 +1,4 @@
-${cacheDir}/wallbash/dunst.conf|${wallbashScripts}/dunst.sh
+${cacheDir}/wallbash/dunst.conf|${WALLBASH_SCRIPTS}/dunst.sh
 
 [urgency_low]
     background = "#<wallbash_3xa5>80"

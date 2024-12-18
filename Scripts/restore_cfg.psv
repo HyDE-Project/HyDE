@@ -52,7 +52,7 @@ O|${HOME}/.local/lib|hyde|hyprland
  Editor 
 P|${HOME}/.config/Code - OSS/User|settings.json|code
 P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
-P|${HOME}/.config/Code/User|settings.json|vscodium-bin
+P|${HOME}/.config/VSCodium/User|settings.json|vscodium-bin
 
  Bar 
 P|${HOME}/.config/waybar|config.ctl|waybar

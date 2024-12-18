@@ -4,7 +4,8 @@
 # libinput-gestures                                    # actions touchpad gestures using libinput
 # gestures                                             # gui for libinput-gestures
 wttrbar                                                # for weather
-python-requests|wttrbar                                        # script dependency
+python-requests|wttrbar                                # script dependency
+ddccui                                                 # GUI to control brightness for external monitors     
 
 # --------------------------------------------------- // Dependencies
 xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk

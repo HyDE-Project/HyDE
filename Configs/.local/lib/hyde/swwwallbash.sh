@@ -92,7 +92,7 @@ export gtkTheme gtkIcon cursorTheme
 fn_wallbash() {
     local template="${1}"
     local target_file exec_command
-    wallbashScripts="${template%%hyde/wallbash*}hyde/wallbash/scripts"
+    WALLBASH_SCRIPTS="${template%%hyde/wallbash*}hyde/wallbash/scripts"
     if [[ "${template}" == *.theme ]]; then
         # This is approach is to handle the theme files
         # We don't want themes to launch the exec_command or any arbitrary codes
@@ -105,7 +105,7 @@ fn_wallbash() {
         if [[ -n "${dcolTemplate}" ]]; then
             eval target_file="$(head -1 "${dcolTemplate}" | awk -F '|' '{print $1}')"
             exec_command="$(head -1 "${dcolTemplate}" | awk -F '|' '{print $2}')"
-            wallbashScripts="${dcolTemplate%%hyde/wallbash*}hyde/wallbash/scripts"
+            WALLBASH_SCRIPTS="${dcolTemplate%%hyde/wallbash*}hyde/wallbash/scripts"
 
         fi
     fi
@@ -124,7 +124,8 @@ fn_wallbash() {
 
     [ -z "${target_file}" ] && eval target_file="$(head -1 "${template}" | awk -F '|' '{print $1}')"
     [ ! -d "$(dirname "${target_file}")" ] && print_log -sec "wallbash" -warn "skip 'missing directory'" "${target_file} // Do you have the dependency installed?" && return 0
-    export wallbashScripts confDir hydeConfDir cacheDir thmbDir dcolDir iconsDir themesDir fontsDir wallbashDirs enableWallDcol HYDE_THEME_DIR HYDE_THEME gtkIcon gtkTheme cursorTheme
+    export wallbashScripts="${WALLBASH_SCRIPTS}"
+    export WALLBASH_SCRIPTS confDir hydeConfDir cacheDir thmbDir dcolDir iconsDir themesDir fontsDir wallbashDirs enableWallDcol HYDE_THEME_DIR HYDE_THEME gtkIcon gtkTheme cursorTheme
     export -f pkg_installed print_log
     # exec_command="$(head -1 "${template}" | awk -F '|' '{print $2}')"
     exec_command="${exec_command:-"$(head -1 "${template}" | awk -F '|' '{print $2}')"}"
