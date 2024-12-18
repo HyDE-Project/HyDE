@@ -1,6 +1,6 @@
 "custom/cava": {
 	"format": "{}",
-	"exec": "cava.sh stdout",
+	"exec": "cava.sh waybar",
 	"restart-interval": 1,
 	"hide-empty": true
 },
