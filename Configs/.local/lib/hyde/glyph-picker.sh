@@ -1,6 +1,5 @@
 #!/bin/env bash
 
-# shellcheck source=/home/khing/.local/bin/hyde-shell
 # shellcheck disable=SC1091
 if ! source "$(which hyde-shell)"; then
     echo "[wallbash] code :: Error: hyde-shell not found."

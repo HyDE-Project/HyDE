@@ -7,16 +7,44 @@ scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
 
+help_msg() {
+    cat <<HELP
+Usage: $(basename "$0") [command] [OPTIONS]
+Commands:
+    stdout - Generate a cava bar to STDOUT useful for waybar, hyprlock, etc.
+Options:
+    stdout:
+            --bar <cava_bar>  Specify the characters to use for the bar animation (default: ▁▂▃▄▅▆▇█).
+            --width <cava_width>   Specify the width of the bar.
+            --range <cava_range>   Specify the range of the bar.
+            --help                        Display this help message and exit.
+            --restart                     Restart the cava.
+            --stb <cava_stbmode>  Specify the standby mode for stdout cava (default: 0).
+                                        0: clean  - totally hides the module
+                                        1: blank  - makes module expand as spaces
+                                        2: full   - occupies the module with full bar
+                                        3: low    - makes the module display the lowest set bar
+                                        *: string - displays a string
+HELP
+}
+
+
+stdout () {
+temp_dir=${HYDE_RUNTIME_DIR:-/tmp}
+local config_file="${temp_dir}/bar_cava_config"
+
+
+
 usage() {
     cat <<HELP
 Usage: $(basename "$0") [OPTIONS]
 Options:
-  --bar <waybar_cava_bar>  Specify the characters to use for the bar animation (default: ▁▂▃▄▅▆▇█).
-  --width <waybar_cava_width>   Specify the width of the bar.
-  --range <waybar_cava_range>   Specify the range of the bar.
+  --bar <cava_bar>  Specify the characters to use for the bar animation (default: ▁▂▃▄▅▆▇█).
+  --width <cava_width>   Specify the width of the bar.
+  --range <cava_range>   Specify the range of the bar.
   --help                        Display this help message and exit.
-  --restart                     Restart the waybar_cava.
-  --stb <waybar_cava_stbmode>  Specify the standby mode for waybar cava (default: 0).
+  --restart                     Restart the cava.
+  --stb <cava_stbmode>  Specify the standby mode for stdout cava (default: 0).
                                 0: clean  - totally hides the module
                                 1: blank  - makes module expand as spaces
                                 2: full   - occupies the module with full bar
@@ -31,6 +59,7 @@ if ! ARGS=$(getopt -o "hr" -l "help,bar:,width:,range:,restart,stb:" -n "$0" -- 
     usage
 fi
 
+
 eval set -- "$ARGS"
 while true; do
     case "$1" in
@@ -38,23 +67,23 @@ while true; do
         usage
         ;;
     --bar)
-        waybar_cava_bar="$2"
+        cava_bar="$2"
         shift 2
         ;;
     --width)
-        waybar_cava_width="$2"
+        cava_width="$2"
         shift 2
         ;;
     --range)
-        waybar_cava_range="$2"
+        cava_range="$2"
         shift 2
         ;;
-    --restart) # restart by killing all waybar_cava
-        pkill -f "cava -p /tmp/bar_cava_config"
+    --restart) # restart by killing all cava
+        pkill -f "cava -p ${config_file}"
         exit 0
         ;;
     --stb)
-        waybar_cava_stbmode="$2"
+        cava_stbmode="$2"
         shift 2
         ;;
     --)
@@ -67,15 +96,15 @@ while true; do
     esac
 done
 
-bar="${waybar_cava_bar:-▁▂▃▄▅▆▇█}"
+bar="${cava_bar:-▁▂▃▄▅▆▇█}"
 
-# // waybar_cava_stbmode - standby mode for waybar cava - default 0
+# // cava_stbmode - standby mode for stdout cava - default 0
 # 0: clean - totally hides the module
 # 1: blank - makes module expand as spaces
 # 2: full - occupies the module with full bar
 # 3: low - makes the module display the lowest set bar
 # <string>: - displays a string
-case ${waybar_cava_stbmode:-} in
+case ${cava_stbmode:-} in
 0)
     stbBar=''
     ;; # Clean
@@ -89,14 +118,14 @@ case ${waybar_cava_stbmode:-} in
     stbBar="${bar:0:1}"
     ;; # Lowest bar
 *)
-    asciiBar="${waybar_cava_stbmode:-${bar}}"
+    asciiBar="${cava_stbmode:-${bar}}"
     ;; 
 esac
 
 # Calculate the length of the bar outside the loop
 bar_length=${#bar}
-bar_width=${waybar_cava_width:-${bar_length}}
-bar_range=${waybar_cava_range:-$((bar_length - 1))}
+bar_width=${cava_width:-${bar_length}}
+bar_range=${cava_range:-$((bar_length - 1))}
 # Create dictionary to replace char with bar
 dict="s/;//g"
 stbAscii=$(printf '0%.0s' $(seq 1 "${bar_width}")) # predicts the amount of ancii characters to be used
@@ -112,7 +141,6 @@ while [ $i -lt "${bar_length}" ] || [ $i -lt "${bar_width}" ]; do
 done
 
 # Create cava config
-config_file="/tmp/bar_cava_config"
 cat >"$config_file" <<EOF
 [general]
 bars = ${bar_width}
@@ -128,3 +156,15 @@ ascii_max_range = ${bar_range}
 EOF
 
 cava -p "$config_file" | sed -u "${dict}"
+}
+
+
+case $1 in
+stdout)
+    shift
+    stdout "$@"
+    ;;
+*)  
+    help_msg
+    ;;
+esac    

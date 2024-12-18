@@ -22,14 +22,7 @@ fn_background() {
     ([[ -z ${mime} ]] && magick "${BG}"[0] "${BG}") &
 }
 
-mpris_thumb() { # Generate thumbnail for mpris
-    artUrl=$(playerctl -p spotify metadata --format '{{mpris:artUrl}}')
-    [ "${artUrl}" == "$(cat "${THUMB}".lnk)" ] && [ -f "${THUMB}".png ] && exit 0
-    echo "${artUrl}" >"${THUMB}".lnk
-    curl -Lso "${THUMB}".art "$artUrl"
-    magick "${THUMB}.art" -quality 50 "${THUMB}.png"
-    pkill -USR2 hyprlock # updates the mpris thumbnail
-}
+
 
 fn_profile() {
     local profilePath="${cacheDir}/landing/profile"
@@ -41,10 +34,12 @@ fn_profile() {
     return 0
 }
 
+
 fn_mpris() {
+    local  player=${1:-spotify}
     THUMB="${cacheDir}/landing/mpris"
-    if [ "$(playerctl -p spotify status)" == "Playing" ]; then
-        playerctl -p spotify metadata --format '{{title}}    {{artist}}'
+    if [ "$(playerctl -p "${player}" status)" == "Playing" ]; then
+        playerctl -p "${player}" metadata --format "{{xesam:title}} $(mpris_icon "${player}")  {{xesam:artist}}" 
         mpris_thumb
     else
 
@@ -53,9 +48,50 @@ fn_mpris() {
         else
             cp "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${THUMB}".png
         fi
-        pkill -USR2 hyprlock # updates the mpris thumbnail
-        return 1
+        pkill -USR2 hyprlock &>/dev/null # updates the mpris thumbnail
+
     fi
+}
+
+
+mpris_icon() {    
+
+
+
+
+local player=${1:-default}
+declare -A player_dict=(
+    ["default"]=""
+    ["spotify"]=""
+    ["firefox"]=""
+    ["vlc"]="嗢"
+    ["google-chrome"]=""
+    ["opera"]=""
+    ["brave"]=""
+)
+
+
+
+for key in "${!player_dict[@]}"; do
+    if [[ ${player} == "$key"* ]]; then
+        echo "${player_dict[$key]}"
+        return
+    fi
+done
+echo "" # Default icon if no match is found
+
+
+}
+
+
+mpris_thumb() { # Generate thumbnail for mpris
+    local player=${1:-spotify}
+    artUrl=$(playerctl -p "${player}" metadata --format '{{mpris:artUrl}}')
+    [ "${artUrl}" == "$(cat "${THUMB}".lnk)" ] && [ -f "${THUMB}".png ] && exit 0
+    echo "${artUrl}" >"${THUMB}".lnk
+    curl -Lso "${THUMB}".art "$artUrl"
+    magick "${THUMB}.art" -quality 50 "${THUMB}.png"
+    pkill -USR2 hyprlock &>/dev/null # updates the mpris thumbnail
 }
 
 fn_cava() {
