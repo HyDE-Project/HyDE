@@ -15,7 +15,7 @@ download_and_extract() {
     domain=${domain%%/*} # Remove everything after the first '/'
     # Ping the extracted domain
     if ! ping -c 1 "$domain" &>/dev/null; then
-        echo "Ping to $domain failed"
+        echo "[font] Ping to $domain failed"
         exit 1
     fi
 
@@ -31,7 +31,7 @@ download_and_extract() {
             if command -v tar >/dev/null; then
                 tar -xzf "$file" -C "${temp_dir}/${name}"
             else
-                echo "tar is not installed"
+                echo "[font] tar is not installed"
                 return 1
             fi
             ;;
@@ -39,7 +39,7 @@ download_and_extract() {
             if command -v unzip >/dev/null; then
                 unzip -q "$file" -d "${temp_dir}/${name}"
             else
-                echo "unzip is not installed"
+                echo "[font] unzip is not installed"
                 return 1
             fi
             ;;
@@ -51,23 +51,26 @@ download_and_extract() {
                 return 1
             fi
             ;;
-        *.ttf)
-            mv "$file" "${temp_dir}/${name}/$name.ttf"
-            ;;
-        *.otf)
-            mv "$file" "${temp_dir}/${name}/$name.otf"
+        *.ttf | *.otf)
+            mkdir -p "${font_dir}/hyde"
+            mv "$file" "${font_dir}/hyde/$name.ttf"
+            echo "[font] $name installed successfully. Please restart hyprlock to apply changes."
+            notify-send -i "preferences-desktop-font" "HyDE font" "${name} Intalled successfully"
+            return 0
             ;;
         *)
-            echo "Unsupported file format: $file"
+            echo "[font] Unsupported file format: $file"
             rm -f "$temp_dir"
             return 1
             ;;
         esac
 
         if ! cp -rn "${temp_dir}/${name}" "$font_dir"; then
-            echo "Failed to extract $file"
+            echo "[font] Failed to extract $file"
+            notify-send -i "preferences-desktop-font" "HyDE font" "Failed to extract $file"
             return 1
         fi
+        notify-send -i "preferences-desktop-font" "HyDE font" "${name} Intalled successfully"
     done
 
     rm -rf "$temp_dir"
@@ -78,7 +81,7 @@ download_and_extract() {
 resolve() {
     local layout="${1}"
     # shellcheck disable=SC2016
-    grep -Eo '\$resolve\.font\s*=\s*[^|]+\s*\|\s*[^ ]+' "${layout}" | while IFS='=' read -r _ font; do
+    grep -Eo '^\s*\$resolve\.font\s*=\s*[^|]+\s*\|\s*[^ ]+' "${layout}" | while IFS='=' read -r _ font; do
         name=$(echo "$font" | awk -F'|' '{print $1}' | xargs)
         url=$(echo "$font" | awk -F'|' '{print $2}' | xargs)
         if ! fc-list | grep -q "${name}"; then

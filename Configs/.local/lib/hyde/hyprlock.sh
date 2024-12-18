@@ -7,7 +7,7 @@ if ! source "$(which hyde-shell)"; then
     echo "[wallbash] code :: Is HyDE installed?"
     exit 1
 fi
-
+scrDir=${scrDir:-$HOME/.local/lib/hyde}
 confDir="${confDir:-$XD_CONFIG_HOME}"
 cacheDir="${cacheDir:-"${XDG_CACHE_HOME}/hyde"}"
 WALLPAPER="${cacheDir}/wall.set"
@@ -29,6 +29,16 @@ mpris_thumb() { # Generate thumbnail for mpris
     curl -Lso "${THUMB}".art "$artUrl"
     magick "${THUMB}.art" -quality 50 "${THUMB}.png"
     pkill -USR2 hyprlock # updates the mpris thumbnail
+}
+
+fn_profile() {
+    local profilePath="${cacheDir}/landing/profile"
+    if [ -f "$HOME/.face.icon" ]; then
+        cp "$HOME/.face.icon" "${profilePath}.png"
+    else
+        cp "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${profilePath}.png"
+    fi
+    return 0
 }
 
 fn_mpris() {
@@ -74,18 +84,21 @@ fn_select() {
 
     # List available .conf files in hyprlock directory
     layout_dir="$confDir/hypr/hyprlock"
-    layout_files=$(find "${layout_dir}" -name "*.conf" 2>/dev/null | sed 's/\.conf$//')
+    layout_items=$(find "${layout_dir}" -name "*.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
 
-    if [ -z "$layout_files" ]; then
+    if [ -z "$layout_items" ]; then
         notify-send -i "preferences-desktop-display" "Error" "No .conf files found in ${layout_dir}"
         exit 1
     fi
 
+    layout_items="Theme Preference
+$layout_items"
+
     rofi_config="$confDir/rofi/clipboard.rasi"
-    selected_layout=$(awk -F/ '{print $NF}' <<<"$layout_files" |
+    selected_layout=$(awk -F/ '{print $NF}' <<<"$layout_items" |
         rofi -dmenu \
             -p "Select hyprlock layout" \
-            -theme-str "entry { placeholder: \"🔎 Hyprlock Layout...\"; }" \
+            -theme-str "entry { placeholder: \"🔒 Hyprlock Layout...\"; }" \
             -theme-str "${r_scale}" \
             -theme-str "${r_override}" \
             -theme-str "$(get_rofi_pos)" \
@@ -93,6 +106,8 @@ fn_select() {
     if [ -z "$selected_layout" ]; then
         echo "No selection made"
         exit 0
+    elif [ "$selected_layout" == "Theme Preference" ]; then
+        selected_layout="theme"
     fi
     hyde_conf="$confDir/hypr/hyprlock.conf"
     # shellcheck disable=SC2016
@@ -101,10 +116,23 @@ fn_select() {
     else
         echo "\$HYPRLOCK_LAYOUT=$selected_layout" >>"$hyde_conf"
     fi
-
+    "${scrDir}/font.sh" resolve "${layout_dir}/${selected_layout}.conf"
+    fn_profile
     # Notify the user
-    notify-send -i "system-lock-screen" "Hyprlock:" "${selected_layout}"
+    notify-send -i "system-lock-screen" "Hyprlock layout:" "${selected_layout}"
 
+}
+
+fn_help() {
+    echo "Usage: hyprlock.sh [command]"
+    echo "Commands:"
+    echo "  background   - Converts and ensures background to be a png"
+    echo "  mpris        - Handles mpris thumbnail generation"
+    echo "  profile      - Generates the profile picture"
+    echo "  cava         - Placeholder function for cava"
+    echo "  art          - Prints the path to the mpris art"
+    echo "  select       - Selects the hyprlock layout"
+    echo "  help         - Displays this help message"
 }
 
 if declare -f "fn_${1}" >/dev/null; then

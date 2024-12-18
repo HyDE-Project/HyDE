@@ -19,9 +19,9 @@ if [ ! -d "$animations_dir" ]; then
 fi
 
 # List available .conf files in animations directory
-animation_files=$(find "$animations_dir" -name "*.conf" ! -name "disable.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
+animation_items=$(find "$animations_dir" -name "*.conf" ! -name "disable.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
 
-if [ -z "$animation_files" ]; then
+if [ -z "$animation_items" ]; then
     notify-send -i "preferences-desktop-display" "Error" "No .conf files found in $animations_dir"
     exit 1
 fi
@@ -41,12 +41,12 @@ fn_select() {
     hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
     r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;} wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
 
-    animation_files="Disable Animation
+    animation_items="Disable Animation
 Theme Preference
-$animation_files"
+$animation_items"
 
     # Display options using Rofi with custom scaling, positioning, and placeholder
-    selected_animation=$(awk -F/ '{print $NF}' <<<"$animation_files" |
+    selected_animation=$(awk -F/ '{print $NF}' <<<"$animation_items" |
         rofi -dmenu \
             -p "Select animation" \
             -theme-str "entry { placeholder: \"Select animation...\"; }" \
