@@ -12,6 +12,11 @@ help_msg() {
 Usage: $(basename "$0") [command] [OPTIONS]
 Commands:
     stdout - Generate a cava bar to STDOUT useful for waybar, hyprlock, etc.
+    waybar - Generate a cava bar for waybar.
+    hyprlock - Generate a cava bar for hyprlock.
+
+    Note: Configurations are set in ~/.config/hyde/config.toml
+   
 Options:
     stdout:
             --bar <cava_bar>  Specify the characters to use for the bar animation (default: ▁▂▃▄▅▆▇█).
@@ -162,9 +167,16 @@ cava -p "$config_file" | sed -u "${dict}"
 case $1 in
 stdout)
     shift
-    stdout "$@"
+    cava_bar="$CAVA_STDOUT_BAR" cava_width="$CAVA_STDOUT_WIDTH" cava_range="$CAVA_STDOUT_RANGE" cava_stbmode="$CAVA_STDOUT_STANDBY"
+    stdout "$@" 
     ;;
-*)  
+waybar)
+    stdout --bar "$WAYBAR_MODULE_CAVA_BAR" --width "$WAYBAR_MODULE_CAVA_WIDTH" --range "$WAYBAR_MODULE_CAVA_RANGE" --stb "$WAYBAR_MODULE_CAVA_STANDBY"
+    ;;
+hyprlock)
+    stdout --bar "$HYPRLOCK_CAVA_BAR" --width "$HYPRLOCK_CAVA_WIDTH" --range "$HYPRLOCK_CAVA_RANGE" --stb "$HYPRLOCK_CAVA_STANDBY"
+    ;;
+*) 
     help_msg
     ;;
 esac    

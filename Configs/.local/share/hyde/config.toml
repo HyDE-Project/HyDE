@@ -101,6 +101,20 @@ width = 20
 range = 7
 standby = "🎶"
 
+[hyprlock.cava]
+bar = "▁▂▃▄▅▆▇█"
+width = 20
+range = 7
+standby = "🎶"
+
+
+[cava.stdout]
+bar = "▁▂▃▄▅▆▇█"
+width = 20
+range = 7
+standby = "🎶"
+
+
 [hypr.config]
 
 # removes rgba colors declaration (workaround for crashing when rgba is set)
