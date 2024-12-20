@@ -9,7 +9,7 @@ sunsetConf="${confDir}/hypr/hyprsunset.json"
 default=6500
 step=500
 min=1000
-max=10000
+max=20000
 
 notify="${waybar_temperature_notification:-true}"
 
