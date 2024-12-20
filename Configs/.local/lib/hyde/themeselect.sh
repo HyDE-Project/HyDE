@@ -25,7 +25,7 @@ mon_x_res=$((mon_x_res * 100 / mon_scale))
 #// generate config
 
 # shellcheck disable=SC2154
-case "${themeSelect}" in
+case "${ROFI_THEME_STYLE}" in
 2) # adapt to style 2
     elm_width=$(((20 + 12) * rofiScale * 2))
     max_avail=$((mon_x_res - (4 * rofiScale)))
