@@ -71,7 +71,7 @@ nwg-displays                                           # monitor management util
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
-# oh-my-zsh-git|zsh                                    #  plugin manager for zsh (Optional)
+oh-my-zsh-git|zsh                                    #  plugin manager for zsh (Optional)
 zsh-theme-powerlevel10k-git|zsh          # theme for zsh
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt

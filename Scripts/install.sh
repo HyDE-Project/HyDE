@@ -69,7 +69,7 @@ Usage: $0 [options]
             r : [r]estore config files
             s : enable system [s]ervices
             n : ignore/[n]o [n]vidia actions
-            h : reevaluate S[h]ell
+            h : re-evaluate S[h]ell
             m : no the[m]e reinstallations
             t : [t]est run without executing (-irst to dry run all)
 EOF
@@ -79,7 +79,8 @@ EOF
 done
 
 # Only export that are used outside this script
-export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall
+HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
+export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall HYDE_LOG
 
 if [ "${flg_DryRun}" -eq 1 ]; then
     print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
@@ -148,35 +149,63 @@ EOF
     #----------------#
     # get user prefs #
     #----------------#
+    echo ""
     if ! chk_list "aurhlpr" "${aurList[@]}"; then
-        print_log -c "AUR Helpers :: " + 30 "\n[1] " "yay" + 60 "\n[2] " "yay-bin" + 90 "\n[3] " "paru" + 120 "\n[4] " "paru-bin"
-        prompt_timer 120 "Enter option number [default: yay] "
+        print_log -c "\nAUR Helpers :: "
+        for i in "${!aurList[@]}"; do
+            print_log -sec "$((i + 1))" " ${aurList[$i]} "
+        done
+
+        prompt_timer 120 "Enter option number [default: yay-bin] | q to quit "
 
         case "${PROMPT_INPUT}" in
         1) export getAur="yay" ;;
         2) export getAur="yay-bin" ;;
         3) export getAur="paru" ;;
         4) export getAur="paru-bin" ;;
-        *)
-            print_log -warn "AUR" " :: " "Invalid option selected"
+        q)
+            print_log -sec "AUR" -crit "Quit" "Exiting..."
             exit 1
+            ;;
+        *)
+            print_log -sec "AUR" -warn "Defaulting to yay-bin"
+            print_log -sec "AUR" -stat "default" "yay-bin"
+            export getAur="yay-bin"
             ;;
         esac
     fi
+    if [[ -z "$aurhlpr" ]]; then
+        print_log -sec "AUR" -crit "No AUR helper found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+        exit 1
+    fi
 
     if ! chk_list "myShell" "${shlList[@]}"; then
-        print_log -c "Shell :: " + 30 "\n[1] " "zsh" + 60 "\n[2] " "fish"
-        prompt_timer 120 "Enter option number"
+        print_log -c "Shell :: "
+        for i in "${!shlList[@]}"; do
+            print_log -sec "$((i + 1))" " ${shlList[$i]} "
+        done
+        prompt_timer 120 "Enter option number [default: zsh] | q to quit "
 
         case "${PROMPT_INPUT}" in
         1) export myShell="zsh" ;;
         2) export myShell="fish" ;;
-        *)
-            print_log -warn "Shell" " :: " "Invalid option selected"
+        q)
+            print_log -sec "shell" -crit "Quit" "Exiting..."
             exit 1
+            ;;
+        *)
+            print_log -sec "hell" -warn "Defaulting to zsh"
+            export myShell="zsh"
             ;;
         esac
         echo "${myShell}" >>"${scrDir}/install_pkg.lst"
+    fi
+
+    if [[ -z "$myShell" ]]; then
+        print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+        exit 1
+    else
+        print_log -sec "shell" -stat "detected :: " "${myShell}"
     fi
 
     #--------------------------------#
@@ -209,7 +238,7 @@ EOF
 
     if [ "${flg_DryRun}" -ne 1 ]; then
         "$HOME/.local/lib/hyde/swwwallcache.sh" -t ""
-        "$HOME/.local/lib/hyde/themeswitch.sh"
+        "$HOME/.local/lib/hyde/themeswitch.sh" -q || true
         echo "[install] reload :: Hyprland"
     fi
 
@@ -259,3 +288,7 @@ EOF
 
     done <"${scrDir}/system_ctl.lst"
 fi
+
+print_log -g "\nInstallation" " :: " "completed"
+print_log -g "Log" " :: " "View logs at ${cacheDir}/logs/${HYDE_LOG}"
+print_log -g "HyDE" " :: " "Please restart your system to apply changes"

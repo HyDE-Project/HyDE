@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-undock=false
+dock=${BATTERY_NOTIFY_DOCK:-true}
 scrDir=$(dirname "$(realpath "$0")")
-source $scrDir/globalcontrol.sh
+# shellcheck disable=SC1091
+source "$scrDir/globalcontrol.sh"
 batterynotify_conf="$HYDE_STATE_HOME/staterc" # Shared with hyde configuration
 config_info() {
     cat <<EOF
@@ -39,34 +40,31 @@ fn_verbose() {
 VERBOSE
     fi
 }
-fn_notify() { # Send notification
 
-    notify-send -a "Power" $1 -u $2 "$3" "$4" -p # Call the notify-send command with the provided arguments \$1 is the flags \$2 is the urgency \$3 is the title \$4 is the message
-}
 fn_percentage() {
-    if [[ "$battery_percentage" -ge "$unplug_charger_threshold" ]] && [[ "$battery_status" != "Discharging" ]] && [[ "$battery_status" != "Full" ]] && (((battery_percentage - last_notified_percentage) >= $interval)); then
+    if [[ "$battery_percentage" -ge "$unplug_charger_threshold" ]] && [[ "$battery_status" != "Discharging" ]] && [[ "$battery_status" != "Full" ]] && (((battery_percentage - last_notified_percentage) >= interval)); then
         if $verbose; then echo "Prompt:UNPLUG: $unplug_charger_threshold $battery_status $battery_percentage"; fi
-        fn_notify "-t 5000 " "CRITICAL" "Battery Charged" "Battery is at $battery_percentage%. You can unplug the charger!"
+        notify-send -a "HyDE Power" -t 5000 -r 69 -u "CRITICAL" "Battery Charged" "Battery is at $battery_percentage%. You can unplug the charger!"
         last_notified_percentage=$battery_percentage
     elif [[ "$battery_percentage" -le "$battery_critical_threshold" ]]; then
-        count=$((timer > $mnt ? timer : $mnt)) # reset count
+        count=$((timer > mnt ? timer : mnt)) # reset count
         while [ $count -gt 0 ] && [[ $battery_status == "Discharging"* ]]; do
             for battery in /sys/class/power_supply/BAT*; do battery_status=$(<"$battery/status"); done
             if [[ $battery_status != "Discharging" ]]; then break; fi
-            fn_notify "-t 5000 -r 69 " "CRITICAL" "Battery Critically Low" "$battery_percentage% is critically low. Device will execute $execute_critical in $((count / 60)):$((count % 60)) ."
+            notify-send -a "HyDE Power" -t 5000 -r 69 -u "CRITICAL" "Battery Critically Low" "$battery_percentage% is critically low. Device will execute $execute_critical in $((count / 60)):$((count % 60)) ."
             count=$((count - 1))
             sleep 1
         done
         [ $count -eq 0 ] && fn_action
-    elif [[ "$battery_percentage" -le "$battery_low_threshold" ]] && [[ "$battery_status" == "Discharging" ]] && (((last_notified_percentage - battery_percentage) >= $interval)); then
+    elif [[ "$battery_percentage" -le "$battery_low_threshold" ]] && [[ "$battery_status" == "Discharging" ]] && (((last_notified_percentage - battery_percentage) >= interval)); then
         if $verbose; then echo "Prompt:LOW: $battery_low_threshold $battery_status $battery_percentage"; fi
-        fn_notify "-t 5000 " "CRITICAL" "Battery Low" "Battery is at $battery_percentage%. Connect the charger."
+        notify-send -a "HyDE Power" -t 5000 -r 69 -u "CRITICAL" "Battery Low" "Battery is at $battery_percentage%. Connect the charger."
         last_notified_percentage=$battery_percentage
     fi
 }
-fn_action() {                              #handles the $execute_critical command #? This is special as it will try to execute always
-    count=$((timer > $mnt ? timer : $mnt)) # reset count
-    nohup $execute_critical
+fn_action() {                            #handles the $execute_critical command #? This is special as it will try to execute always
+    count=$((timer > mnt ? timer : mnt)) # reset count
+    nohup "$execute_critical" &>/dev/null &
 }
 
 fn_status() {
@@ -80,7 +78,7 @@ fn_status() {
         if [[ "$prev_status" != "Discharging" ]] || [[ "$prev_status" == "Full" ]]; then
             prev_status=$battery_status
             urgency=$([[ $battery_percentage -le "$battery_low_threshold" ]] && echo "CRITICAL" || echo "NORMAL")
-            fn_notify "-t 5000 -r 54321 " "$urgency" "Charger Plug OUT" "Battery is at $battery_percentage%."
+            notify-send -a "HyDE Power" -t 5000 -r 69 -u "CRITICAL" "Charger Plug Out" "Battery is at $battery_percentage%."
             $execute_discharging
         fi
         fn_percentage
@@ -88,10 +86,11 @@ fn_status() {
     "Not"* | "Charging")
         if $verbose; then echo "Case:$battery_status Level: $battery_percentage"; fi
         if [[ "$prev_status" == "Discharging" ]] || [[ "$prev_status" == "Not"* ]]; then
+            echo inside
             prev_status=$battery_status
-            count=$((timer > $mnt ? timer : $mnt)) # reset count
+            count=$((timer > mnt ? timer : mnt)) # reset count
             urgency=$([[ "$battery_percentage" -ge $unplug_charger_threshold ]] && echo "CRITICAL" || echo "NORMAL")
-            fn_notify "-t 5000 -r 54321 " "$urgency" "Charger Plug In" "Battery is at $battery_percentage%."
+            notify-send -a "HyDE Power" -t 5000 -r 69 -u "${urgency}" "Charger Plug In" "Battery is at $battery_percentage%."
             $execute_charging
         fi
         fn_percentage
@@ -101,7 +100,7 @@ fn_status() {
         if [[ $battery_status != "Discharging" ]]; then
             now=$(date +%s)
             if [[ "$prev_status" == *"harging"* ]] || ((now - lt >= $((notify * 60)))); then
-                fn_notify "-t 5000 -r 54321" "CRITICAL" "Battery Full" "Please unplug your Charger"
+                notify-send -a "HyDE Power" -t 5000 -r 69 -u "CRITICAL" "Battery Full" "Please unplug your Charger"
                 prev_status=$battery_status lt=$now
                 $execute_charging
             fi
@@ -109,7 +108,7 @@ fn_status() {
         ;;
     *)
         if [[ ! -f "/tmp/hyprdots.batterynotify.status.fallback.$battery_status-$$" ]]; then
-            echo "Status: '==>> "$battery_status" <<==' Script on Fallback mode,Unknown power supply status.Please copy this line and raise an issue to the Github Repo.Also run 'ls /tmp/hyprdots.batterynotify' to see the list of lock files.*"
+            echo "Status: '==>> \"${battery_status}\" <<==' Script on Fallback mode,Unknown power supply status.Please copy this line and raise an issue to the Github Repo.Also run 'ls /tmp/hyprdots.batterynotify' to see the list of lock files.*"
             touch "/tmp/hyprdots.batterynotify.status.fallback.$battery_status-$$"
         fi
         fn_percentage
@@ -147,8 +146,7 @@ fn_status_change() { # Handle when status changes
             $execute_unplug
             executed_unplug=true executed_low=false
         fi
-
-        if $undock; then fn_status; fi
+        if $dock; then fn_status; fi
     fi
 }
 
@@ -171,7 +169,7 @@ main() {                                      # Main function
 
     config_info
     if $verbose; then
-        for line in "Verbose Mode is ON..." "" "" "" ""; do echo $line; done
+        for line in "Verbose Mode is ON..." "" "" "" ""; do echo "${line}"; done
     #TODO Might still need this in the future but for now we don't have any battery notify issues
     # current_pid=$$
     # pids=$(pgrep -f "/usr/bin/env bash ${scrDir}/batterynotify.sh" )
@@ -185,22 +183,6 @@ main() {                                      # Main function
 
 verbose=false
 case "$1" in
--m | --modify)
-    EDITOR="${EDITOR:-code}" #* Use VS Code as the default editor
-    echo -e "[Editor]: $EDITOR \n To change editor, run 'export EDITOR=preferred-editor'  \n[Modifying]: $batterynotify_conf \nPress Any Key if done editing"
-    #kitty -o allow_remote_control=yes -o listen_on=unix:/tmp/mykitty $(which $EDITOR) "$batterynotify_conf" > /dev/null 2>&1 &
-    kitty "$(which $EDITOR)" "$batterynotify_conf" >/dev/null 2>&1 &
-    LAST_MD5SUM=$(md5sum "$batterynotify_conf")
-    while true; do
-        CURRENT_MD5SUM=$(md5sum "$batterynotify_conf")
-        if [ "$CURRENT_MD5SUM" != "$LAST_MD5SUM" ]; then
-            notify-send "Config Changed: Needs reboot or restart $0"
-            LAST_MD5SUM="$CURRENT_MD5SUM"
-        fi
-        read -t 2 -n 1 >/dev/null && break #? loop every 2 seconds
-    done
-    exit 0
-    ;;
 -i | --info)
     config_info
     exit 0
@@ -212,7 +194,6 @@ case "$1" in
     cat <<HELP
 Usage: $0 [options]
 
-[-m|--modify]                  Modify configuration file
 [-i|--info]                    Display configuration information
 [-v|--verbose]                 Debugging mode
 [-h|--help]                 This Message
@@ -222,10 +203,10 @@ HELP
 esac
 
 mnc=2 mxc=50 mnl=10 mxl=80 mnu=50 mxu=100 mnt=60 mxt=1000 mnf=80 mxf=100 mnn=1 mxn=1140 mni=1 mxi=10 #Defaults Ranges
+
 check_range() {
     local var=$1 min=$2 max=$3 error_message=$4
     if [[ $var =~ ^[0-9]+$ ]] && ((var >= min && var <= max)); then
-        var=$var
         shift 2
     else
         echo -e "$1 WARNING: $error_message must be $min - $max." >&2

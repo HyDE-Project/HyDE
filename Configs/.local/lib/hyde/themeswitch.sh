@@ -29,8 +29,8 @@ Theme_Change() {
 }
 
 #// evaluate options
-
-while getopts "nps:" option; do
+quiet=false
+while getopts "qnps:" option; do
     case $option in
 
     n) # set next theme
@@ -45,7 +45,9 @@ while getopts "nps:" option; do
 
     s) # set selected theme
         themeSet="$OPTARG" ;;
-
+    q)
+        quiet=true
+        ;;
     *) # invalid option
         echo "... invalid option ..."
         echo "$(basename "${0}") -[option]"
@@ -168,5 +170,8 @@ if [ ! -L "$HOME/.themes" ] && [ -d "${themesDir}/" ]; then
 fi
 
 #// wallpaper
-
-"${scrDir}/swwwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")"
+if [ "$quiet" = true ]; then
+    "${scrDir}/swwwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" >/dev/null 2>&1
+else
+    "${scrDir}/swwwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")"
+fi

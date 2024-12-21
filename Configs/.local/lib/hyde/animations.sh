@@ -77,17 +77,11 @@ $animation_items"
 fn_update() {
     [ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
     [ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
+    local animDir="$confDir/hypr/animations"
     current_animation=${HYPR_ANIMATION:-"theme"}
     echo "Animation updated to: $current_animation"
-    case "${current_animation}" in
-    "disable")
-        hyprctl keyword animations:enabled false
-        ;;
-    *)
-        local animDir="$confDir/hypr/animations/$current_animation.conf"
-        hyprctl -q keyword source "${animDir}"
-        ;;
-    esac
+    : >"${confDir}/hypr/animations.conf"
+    cat "${animDir}/${current_animation}.conf" >>"${confDir}/hypr/animations.conf"
 }
 
 if declare -f "fn_${1}" >/dev/null; then

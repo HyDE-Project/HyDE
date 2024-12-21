@@ -31,9 +31,19 @@ interactive_shell() {
 
 }
 
+hyde_reload() {
+
+    print_log -sec "hyde" "Reloading HyDE"
+    "$LIB_DIR/hyde/swwwallcache.sh" -t ""
+    "$LIB_DIR/hyde/themeswitch.sh"
+}
+
 case $1 in
 -i)
     interactive_shell
+    ;;
+-r)
+    hyde_reload
     ;;
 *)
     for func in $(compgen -A function); do

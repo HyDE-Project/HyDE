@@ -8,8 +8,8 @@ if ! source "$(which hyde-shell)"; then
     exit 1
 fi
 scrDir=${scrDir:-$HOME/.local/lib/hyde}
-confDir="${confDir:-$XD_CONFIG_HOME}"
-cacheDir="${cacheDir:-"${XDG_CACHE_HOME}/hyde"}"
+confDir="${confDir:-$XDG_CONFIG_HOME}"
+cacheDir="${HYDE_CACHE_HOME:-"${XDG_CACHE_HOME}/hyde"}"
 WALLPAPER="${cacheDir}/wall.set"
 
 # Converts and ensures background to be a png
@@ -22,8 +22,6 @@ fn_background() {
     ([[ -z ${mime} ]] && magick "${BG}"[0] "${BG}") &
 }
 
-
-
 fn_profile() {
     local profilePath="${cacheDir}/landing/profile"
     if [ -f "$HOME/.face.icon" ]; then
@@ -34,13 +32,12 @@ fn_profile() {
     return 0
 }
 
-
 fn_mpris() {
-    local  player=${1:-spotify}
+    local player=${1:-spotify}
     THUMB="${cacheDir}/landing/mpris"
     if [ "$(playerctl -p "${player}" status)" == "Playing" ]; then
-        playerctl -p "${player}" metadata --format "{{xesam:title}} $(mpris_icon "${player}")  {{xesam:artist}}" 
-        mpris_thumb
+        playerctl -p "${player}" metadata --format "{{xesam:title}} $(mpris_icon "${player}")  {{xesam:artist}}"
+        mpris_thumb "${player}"
     else
 
         if [ -f "$HOME/.face.icon" ]; then
@@ -53,36 +50,28 @@ fn_mpris() {
     fi
 }
 
+mpris_icon() {
 
-mpris_icon() {    
+    local player=${1:-default}
+    declare -A player_dict=(
+        ["default"]=""
+        ["spotify"]=""
+        ["firefox"]=""
+        ["vlc"]="嗢"
+        ["google-chrome"]=""
+        ["opera"]=""
+        ["brave"]=""
+    )
 
-
-
-
-local player=${1:-default}
-declare -A player_dict=(
-    ["default"]=""
-    ["spotify"]=""
-    ["firefox"]=""
-    ["vlc"]="嗢"
-    ["google-chrome"]=""
-    ["opera"]=""
-    ["brave"]=""
-)
-
-
-
-for key in "${!player_dict[@]}"; do
-    if [[ ${player} == "$key"* ]]; then
-        echo "${player_dict[$key]}"
-        return
-    fi
-done
-echo "" # Default icon if no match is found
-
+    for key in "${!player_dict[@]}"; do
+        if [[ ${player} == "$key"* ]]; then
+            echo "${player_dict[$key]}"
+            return
+        fi
+    done
+    echo "" # Default icon if no match is found
 
 }
-
 
 mpris_thumb() { # Generate thumbnail for mpris
     local player=${1:-spotify}
@@ -95,9 +84,12 @@ mpris_thumb() { # Generate thumbnail for mpris
 }
 
 fn_cava() {
-
-    :
-
+    local tempFile=/tmp/hyprlock-cava
+    [ -f "${tempFile}" ] && tail -n 1 "${tempFile}"
+    config_file="$HYDE_RUNTIME_DIR/cava.hyprlock"
+    if [ "$(pgrep -c -f "cava -p ${config_file}")" -eq 0 ]; then
+        "$scrDir/cava.sh" hyprlock >${tempFile} 2>&1
+    fi
 }
 
 fn_art() {

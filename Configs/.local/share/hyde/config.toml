@@ -4,20 +4,24 @@
 
 WARP_ENABLE_WAYLAND = 1
 
+
 [wallpaper]
-custom_paths = ["$HOME/Pictures/Wallpapers"]
+custom_paths = [
+    "$HOME/Pictures/Wallpapers",
+] # List of paths to search for wallpapers
 
 [wallpaper.swww]
-framerate = 60
-duration = 1
+framerate = 60 # transition framerate
+duration = 1   # transition duration
 # Transition type [ none | simple | fade | left | right | top | bottom | wipe | wave | grow | center | any | outer | random ]
-transition_next = "grow"
-transition_prev = "outer"
-transition_default = "random"
+transition_next = "grow"    # transition type for next wallpaper
+transition_prev = "outer"   # transition type for previous wallpaper
+transition_default = "grow" # transition type for default wallpaper
 
 
 [rofi]
-scale = 8 # rofi fallback scaling
+scale = 10 # rofi default scaling
+
 
 [rofi.animation]
 scale = 8
@@ -49,7 +53,7 @@ style = 2
 timer = 120
 notify = 1140
 interval = 5
-dock = false
+dock = true
 
 [battery.notify.threshold]
 full = 90
@@ -72,53 +76,55 @@ delimiter = "\t"
 width = "40em"
 height = "40em"
 line = 16
-config = ["$HOME/GitHub/HyDE/Configs/.local/share/bin/keybinds_hint.sh"]
-
 
 [screenshot]
-annotation_tool = "swappy"
+annotation_tool = "swappy" # Annotation tool
+annotation_pre_command = [
+    # 'shader=$(hyprshade current) && hyprshade off && trap restore_shader EXIT', # Use this when you're using hyprshade
+] # Pre command for annotation tool
+annotation_post_command = [
+    # "[ -n \"\\$shader\" ] && hyprshade on \\$shader", # Use this when you're using hyprshade
+    "",
+] # Post command for annotation tool
 
-# [rofi.bookmark]
-# file = "$HOME/.config/hyde/bookmarks.lst"
 
-# [rofi.search]
-# file = "$HOME/.config/hyde/search.lst"
+[rofi.bookmark]
+file = "$HOME/.config/hyde/bookmarks.lst"
+
+[rofi.search]
+file = "$HOME/.config/hyde/search.lst"
 
 
-# [wallbash]
-# skip_template = ["hyprpanel"]
+[wallbash]
+skip_template = [
+    "",
+] # skips the template when using wallbash. Requires full path to the template
 
 [waybar]
 font = "JetBrainsMono Nerd Font"
-border_radius = 2                # fallback border radius
-
-# Set which monitor to display waybar \\ Default: all monitors
-output = ["HDMI-A-0", "eDP-1"]
-
-[waybar.module.cava]
-bar = "▁▂▃▄▅▆▇█"
-width = 20
-range = 7
-standby = "🎶"
-
-[hyprlock.cava]
-bar = "▁▂▃▄▅▆▇█"
-width = 20
-range = 7
-standby = "🎶"
-
+font_size = 10
+# output = ["", ""]                # Default monitor output for waybar
 
 [cava.stdout]
+max_instances = 1 # Maximum number of cava instances // fix and workaround when waybar won't kill 'cava ' process
 bar = "▁▂▃▄▅▆▇█"
 width = 20
 range = 7
 standby = "🎶"
+
+[cava.hyprlock]
+max_instances = 1 # Maximum number of cava instances // fix and workaround when waybar won't kill 'cava ' process
+
+
+[cava.waybar]
+max_instances = 1 # Maximum number of cava instances // fix and workaround when waybar won't kill 'cava ' process
 
 
 [hypr.config]
-
-# removes rgba colors declaration (workaround for crashing when rgba is set)
-sanitize = ['.*rgba\(.*,*,*,*,']
+# List of regex to sanitize in the theme.config // Useful for deprecated options to be removed from the theme.config
+sanitize = [
+    '.*rgba\(.*,*,*,*,',
+] # Remove all rgba colors // workarounds for rgba colors crashing hyprland
 
 [volume]
 notify = true # Useful for systems that have their own OSD

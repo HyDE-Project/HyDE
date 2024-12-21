@@ -1,8 +1,12 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-# Normally, before invoking this script, the following variables should be set:
-# pkg_installed - function to check if a package is installed
-# confDir - the $XDGC_CONFIG_HOME directory
+# shellcheck source=/home/khing/.local/bin/hyde-shell
+# shellcheck disable=SC1091
+if ! source "$(which hyde-shell)"; then
+    echo "[wallbash] code :: Error: hyde-shell not found."
+    echo "[wallbash] code :: Is HyDE installed?"
+    exit 1
+fi
 
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
@@ -11,16 +15,19 @@ CAVA_CONF="${cvaDir}/config"
 CAVA_DCOL="${cacheDir}/wallbash/cava"
 KEY_LINE='### Auto generated wallbash colors ###'
 
-if pkg_installed cava ; then
-
-    sed -i "/${KEY_LINE}/,\$d" "${CAVA_CONF}"
-    if grep -q "${KEY_LINE}" "${CAVA_CONF}"; then
-        sed -i "/${KEY_LINE}/r ${CAVA_DCOL}" "${CAVA_CONF}"
+if pkg_installed cava; then
+    if [[ ! -d "${cvaDir}" ]]; then
+        print_log -sec "wallbash" -warn "Not initialized" "cava config directory not found. Try running cava first."
     else
-        echo "${KEY_LINE}" >> "${CAVA_CONF}"
-        sed -i "/${KEY_LINE}/r ${CAVA_DCOL}" "${CAVA_CONF}"
+
+        sed -i "/${KEY_LINE}/,\$d" "${CAVA_CONF}"
+        if grep -q "${KEY_LINE}" "${CAVA_CONF}"; then
+            sed -i "/${KEY_LINE}/r ${CAVA_DCOL}" "${CAVA_CONF}"
+        else
+            echo "${KEY_LINE}" >>"${CAVA_CONF}"
+            sed -i "/${KEY_LINE}/r ${CAVA_DCOL}" "${CAVA_CONF}"
+        fi
+
+        pkill -USR2 cava
     fi
-
-    pkill -USR2 cava
-
 fi
