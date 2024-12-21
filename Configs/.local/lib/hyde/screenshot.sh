@@ -56,13 +56,13 @@ EOF
 
 case $1 in
 p) # print all outputs
-	grimblast copysave screen $temp_screenshot && pre_cmd && "${annotation_tool}" "${annotation_args}" ;;
+	grimblast copysave screen $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 s) # drag to manually snip an area / click on a window to print it
 	grimblast copysave area $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 sf) # frozen screen, drag to manually snip an area / click on a window to print it
-	grimblast --freeze copysave area $temp_screenshot && pre_cmd && "${annotation_tool}" "${annotation_args}" ;;
+	grimblast --freeze copysave area $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 m) # print focused monitor
-	grimblast copysave output $temp_screenshot && pre_cmd && "${annotation_tool}" "${annotation_args}" ;;
+	grimblast copysave output $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 *) # invalid option
 	print_error ;;
 esac
