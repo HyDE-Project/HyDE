@@ -14,7 +14,7 @@
 
 {
     "label": "suspend",
-    "action": "hyprlock & disown && systemctl suspend",
+    "action": "lockscreen.sh & disown && systemctl suspend",
     "text": "Suspend",
     "keybind": "u"
 }
