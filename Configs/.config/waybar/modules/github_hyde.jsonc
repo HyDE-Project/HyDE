@@ -2,5 +2,5 @@
         "format": " ",
         "rotate": ${r_deg},
         "tooltip-format": "  HyDE repository",
-        "on-click": "xdg-open https://github.com",
+        "on-click": "xdg-open https://github.com/HyDE-Project/HyDE",
     },
