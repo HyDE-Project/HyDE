@@ -51,7 +51,7 @@ while read -r pkg deps; do
         done < <(xargs -n1 <<<"${deps}")
 
         if [[ ${pass} -ne 1 ]]; then
-            print_log -m "missing" "dependency for ${pkg}..."
+            print_log -warn "missing" "dependency [ ${deps} ] for ${pkg}..."
             continue
         fi
     fi

@@ -24,7 +24,7 @@ background {
 label {
   monitor =
   text = $TIME
-  color = $wallbash_pry4
+  color = $wallbash_pry4_rgba
   font_size = 90
   font_family = $fontFamily
   position = -30, 0
@@ -36,7 +36,7 @@ label {
 label {
   monitor =
   text = cmd[update:43200000] date +"%A, %d %B %Y"
-  color = $wallbash_pry4
+  color = $wallbash_pry4_rgba
   font_size = 25
   font_family = $fontFamily
   position = -30, -150
@@ -65,7 +65,7 @@ input-field {
     dots_spacing = 0.15 # Scale of dots' absolute size, 0.0 - 1.0
     dots_center = true
     dots_rounding = -1 # -1 default circle, -2 follow input-field rounding
-    outer_color = $wallbash_pry4
+    outer_color = $wallbash_pry4_rgba
     inner_color = $wallbash_pry3_rgba
     font_color = $wallbash_txt1_rgba
     fade_on_empty = true
@@ -74,7 +74,7 @@ input-field {
     hide_input = false
     rounding = -1 # -1 means complete rounding (circle/oval)
     check_color = $wallbash_txt4_rgba
-    fail_color = rgb(204, 34, 34) # if authentication failed, changes outer_color and fail message color
+    fail_color = #CC2222 # if authentication failed, changes outer_color and fail message color
     fail_text = <i>$FAIL <b>($ATTEMPTS)</b></i> # can be set to empty
     fail_transition = 300 # transition time in ms between normal outer_color and fail_color
     capslock_color = -1
@@ -110,3 +110,4 @@ label {
     halign = center
     valign = bottom
 }
+

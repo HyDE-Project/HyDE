@@ -15,7 +15,7 @@ flg_DryRun=${flg_DryRun:-0}
 
 # grub
 if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
-    print_log -c "[bootloader] " -b "detected :: " "grub..."
+    print_log -sec "bootloader" -stat "detected" "grub..."
 
     if [ ! -f /etc/default/grub.hyde.bkp ] && [ ! -f /boot/grub/grub.hyde.bkp ]; then
         print_log -g "[bootloader] " -b "configure :: " "grub"
@@ -58,7 +58,7 @@ fi
 
 # systemd-boot
 if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | awk '{if ($1 == "Product:") print $2}')" == "systemd-boot" ]; then
-    print_log -c "[bootloader] " -b "detected :: " "systemd-boot"
+    print_log -sec "bootloader" -stat "detected" "systemd-boot"
 
     if [ "$(find /boot/loader/entries/ -type f -name '*.conf.hyde.bkp' 2>/dev/null | wc -l)" -ne "$(find /boot/loader/entries/ -type f -name '*.conf' 2>/dev/null | wc -l)" ]; then
         print_log -g "[bootloader] " -b " :: " "nvidia detected, adding nvidia_drm.modeset=1 to boot option..."
@@ -68,7 +68,7 @@ if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | a
             sudo sed -i "/^options/c${sdopt} quiet splash nvidia_drm.modeset=1" "${imgconf}"
         done
     else
-        print_log -y "[bootloader] " -b "skipped :: " "systemd-boot is already configured..."
+        print_log -y "[bootloader] " -stat "skipped" "systemd-boot is already configured..."
     fi
 fi
 
@@ -87,5 +87,31 @@ if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.hyde.bkp ]; then
     [ "${flg_DryRun}" -eq 1 ] || sudo pacman -Syyu
     [ "${flg_DryRun}" -eq 1 ] || sudo pacman -Fy
 else
-    print_log -y "[PACMAN] " -b "skipped :: " "pacman is already configured..."
+    print_log -sec "PACMAN" -stat "skipped" "pacman is already configured..."
+fi
+
+if grep -q '\[chaotic-aur\]' /etc/pacman.conf; then
+    print_log -sec "CHAOTIC-AUR" -stat "skipped" "Chaotic AUR entry found in pacman.conf..."
+else
+    prompt_timer 120 "Would you like to install Chaotic AUR? [y/n] | q to quit "
+    is_chaotic_aur=false
+
+    case "${PROMPT_INPUT}" in
+    y | Y)
+        is_chaotic_aur=true
+        ;;
+    n | N)
+        is_chaotic_aur=false
+        ;;
+    q | Q)
+        print_log -sec "Chaotic AUR" -crit "Quit" "Exiting..."
+        exit 1
+        ;;
+    *)
+        is_chaotic_aur=true
+        ;;
+    esac
+    if [ "${is_chaotic_aur}" == true ]; then
+        sudo "${scrDir}/chaotic_aur.sh" --install
+    fi
 fi

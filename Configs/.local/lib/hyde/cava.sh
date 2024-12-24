@@ -178,12 +178,13 @@ stdout)
 waybar)
     cava_cmd="waybar"
     max_instances=${CAVA_WAYBAR_MAX_INSTANCES:-1}
-    stdout --bar "$WAYBAR_MODULE_CAVA_BAR" --width "$WAYBAR_MODULE_CAVA_WIDTH" --range "$WAYBAR_MODULE_CAVA_RANGE" --stb "$WAYBAR_MODULE_CAVA_STANDBY"
+    stdout --bar "$CAVA_WAYBAR_BAR" --width "$CAVA_WAYBAR_WIDTH" --range "$CAVA_WAYBAR_RANGE" --stb "$CAVA_WAYBAR_STANDBY"
     ;;
 hyprlock)
     cava_cmd="hyprlock"
     max_instances=${CAVA_HYPRLOCK_MAX_INSTANCES:-1}
-    stdout --bar "$HYPRLOCK_CAVA_BAR" --width "$HYPRLOCK_CAVA_WIDTH" --range "$HYPRLOCK_CAVA_RANGE" --stb "$HYPRLOCK_CAVA_STANDBY"
+    stdout --bar "$CAVA_HYPRLOCK_BAR" --width "$CAVA_HYPRLOCK_WIDTH" --range "$CAVA_HYPRLOCK_RANGE" --stb "$CAVA_HYPRLOCK_STANDBY"
+
     ;;
 *)
     help_msg

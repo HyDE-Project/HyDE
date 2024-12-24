@@ -44,10 +44,12 @@ fn_select() {
     animation_items="Disable Animation
 Theme Preference
 $animation_items"
+    rofi_select="${HYPR_ANIMATION/theme/Theme Preference}"
+    rofi_select="${rofi_select/disable/Disable Animation}"
 
     # Display options using Rofi with custom scaling, positioning, and placeholder
     selected_animation=$(awk -F/ '{print $NF}' <<<"$animation_items" |
-        rofi -dmenu \
+        rofi -dmenu -i -select "$rofi_select" \
             -p "Select animation" \
             -theme-str "entry { placeholder: \"Select animation...\"; }" \
             -theme-str "${r_scale}" \
@@ -80,8 +82,21 @@ fn_update() {
     local animDir="$confDir/hypr/animations"
     current_animation=${HYPR_ANIMATION:-"theme"}
     echo "Animation updated to: $current_animation"
-    : >"${confDir}/hypr/animations.conf"
-    cat "${animDir}/${current_animation}.conf" >>"${confDir}/hypr/animations.conf"
+    cat <<EOF >"${confDir}/hypr/animations.conf"
+
+#! ▄▀█ █▄░█ █ █▀▄▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█
+#! █▀█ █░▀█ █ █░▀░█ █▀█ ░█░ █ █▄█ █░▀█
+
+# See https://wiki.hyprland.org/Configuring/Animations/
+# HyDE Controlled content // DO NOT EDIT
+# Edit or add animations in the ./hypr/animations/ directory
+# and run the 'animations.sh select' command to update this file
+
+\$ANIMATION=${current_animation}
+\$ANIMATION_PATH=${animDir}/${current_animation}.conf
+
+EOF
+    # cat "${animDir}/${current_animation}.conf" >>"${confDir}/hypr/animations.conf"
 }
 
 if declare -f "fn_${1}" >/dev/null; then

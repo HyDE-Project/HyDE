@@ -18,6 +18,7 @@ can_render_images() {
 # fi
 # exit 0
 
+# Early load to maintain fastfetch speed
 if [ -z "${*}" ]; then
   clear
   fastfetch
@@ -52,7 +53,25 @@ if [ -n "${HYDE_THEME}" ] && [ -d "${confDir}/hyde/themes/${HYDE_THEME}" ]; then
 fi
 
 hyde_distro_logo=${iconDir}/Wallbash-Icon/distro/$LOGO
-(
-  [ -f "$hyde_distro_logo" ] && echo "${hyde_distro_logo}"
-  find "${image_dirs[@]}" \( -name "*.icon" -o -name "*logo*" \) 2>/dev/null
-) | shuf -n 1
+case $1 in
+logo)
+  (
+    [ -f "$hyde_distro_logo" ] && echo "${hyde_distro_logo}"
+    find "${image_dirs[@]}" \( -name "*.icon" -o -name "*logo*" -o -name "*.png" \) ! -path "*/wallpapers/*.png" 2>/dev/null
+  ) | shuf -n 1
+
+  ;;
+help)
+  cat <<EOF
+Usage: fastfetch [option]
+
+Options:
+  logo  Display a random logo
+  help  Display this help message
+EOF
+  ;;
+*)
+  clear
+  fastfetch
+  ;;
+esac

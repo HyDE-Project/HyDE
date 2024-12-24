@@ -64,12 +64,12 @@ get_hashmap "${wallPathArray[@]}"
 while getopts "nps:" option; do
     case $option in
     n) # set next wallpaper
-        xtrans=${SWWW_TRANSITION_NEXT}
+        xtrans=${WALLPAPER_SWWW_TRANSITION_NEXT}
         xtrans="${xtrans:-"grow"}"
         Wall_Change n
         ;;
     p) # set previous wallpaper
-        xtrans=${SWWW_TRANSITION_NEXT}
+        xtrans=${WALLPAPER_SWWW_TRANSITION_PREV}
         xtrans="${xtrans:-"outer"}"
         Wall_Change p
         ;;
@@ -99,7 +99,7 @@ if ! swww query &>/dev/null; then
 fi
 
 #// set defaults
-xtrans=${SWWW_TRANSITION_DEFAULT}
+xtrans=${WALLPAPER_SWWW_TRANSITION_DEFAULT}
 [ -z "${xtrans}" ] && xtrans="grow"
 [ -z "${wallFramerate}" ] && wallFramerate=60
 [ -z "${wallTransDuration}" ] && wallTransDuration=0.4

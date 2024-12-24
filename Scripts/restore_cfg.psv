@@ -70,7 +70,7 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
  File Explorer 
 P|${HOME}/.local/state|dolphinstaterc|dolphin
 P|${HOME}/.config|baloofilerc|dolphin
-P|${HOME}|.zshrc .p10k.zsh|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokemon-colorscripts-git
+P|${HOME}|.zshrc .p10k.zsh|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokego-bin
 S|${HOME}/.config/menus|applications.menu|dolphin
 S|${HOME}/.config|dolphinrc|dolphin
 S|${HOME}/.config|kdeglobals|dolphin
@@ -100,7 +100,7 @@ S|${HOME}/.config|wlogout|wlogout
 
  Lock Screen 
 S|${HOME}/.config|swaylock|swaylock-effects
-S|${HOME}/.config/hypr|hyprlock.conf|hyprlock
+P|${HOME}/.config/hypr|hyprlock.conf|hyprlock
 S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 

@@ -22,6 +22,8 @@ transition_default = "grow" # transition type for default wallpaper
 [rofi]
 scale = 10 # rofi default scaling
 
+[rofi.hyprlock]
+scale = 10
 
 [rofi.animation]
 scale = 8
@@ -105,19 +107,30 @@ font = "JetBrainsMono Nerd Font"
 font_size = 10
 # output = ["", ""]                # Default monitor output for waybar
 
+
 [cava.stdout]
+# 'cava.sh stdout' configuration
+max_instances = 1 # Maximum number of cava instances // fix and workaround when a process won't kill 'cava ' process
+bar = "▁▂▃▄▅▆▇█"
+width = 20
+range = 7         # Number of (bars -1)
+standby = "🎶"
+
+[cava.hyprlock]
+# 'cava.sh hyprlock' configuration
+max_instances = 1 # Maximum number of cava instances // fix and workaround when a process won't kill 'cava ' process
+bar = "🌑🌒🌓🌔🌕🌖🌗🌘"
+width = 20
+range = 7
+standby = "🎶"
+
+[cava.waybar]
+# 'cava.sh waybar' configuration
 max_instances = 1 # Maximum number of cava instances // fix and workaround when waybar won't kill 'cava ' process
 bar = "▁▂▃▄▅▆▇█"
 width = 20
 range = 7
 standby = "🎶"
-
-[cava.hyprlock]
-max_instances = 1 # Maximum number of cava instances // fix and workaround when waybar won't kill 'cava ' process
-
-
-[cava.waybar]
-max_instances = 1 # Maximum number of cava instances // fix and workaround when waybar won't kill 'cava ' process
 
 
 [hypr.config]

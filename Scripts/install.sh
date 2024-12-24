@@ -126,11 +126,12 @@ EOF
     shift $((OPTIND - 1))
     custom_pkg=$1
     cp "${scrDir}/pkg_core.lst" "${scrDir}/install_pkg.lst"
-    trap 'rm "${scrDir}/install_pkg.lst"' EXIT
+    trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${HYDE_LOG}/install_pkg.lst"' EXIT
 
     if [ -f "${custom_pkg}" ] && [ -n "${custom_pkg}" ]; then
         cat "${custom_pkg}" >>"${scrDir}/install_pkg.lst"
     fi
+    echo -e "\n#user packages" >>"${scrDir}/install_pkg.lst" # Add a marker for user packages
     #--------------------------------#
     # add nvidia drivers to the list #
     #--------------------------------#
@@ -152,6 +153,7 @@ EOF
     echo ""
     if ! chk_list "aurhlpr" "${aurList[@]}"; then
         print_log -c "\nAUR Helpers :: "
+        aurList+=("yay-bin" "paru-bin") # Add this here instead of in global_fn.sh
         for i in "${!aurList[@]}"; do
             print_log -sec "$((i + 1))" " ${aurList[$i]} "
         done
@@ -173,10 +175,10 @@ EOF
             export getAur="yay-bin"
             ;;
         esac
-    fi
-    if [[ -z "$aurhlpr" ]]; then
-        print_log -sec "AUR" -crit "No AUR helper found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
-        exit 1
+        if [[ -z "$getAur" ]]; then
+            print_log -sec "AUR" -crit "No AUR helper found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+            exit 1
+        fi
     fi
 
     if ! chk_list "myShell" "${shlList[@]}"; then
@@ -194,18 +196,24 @@ EOF
             exit 1
             ;;
         *)
-            print_log -sec "hell" -warn "Defaulting to zsh"
+            print_log -sec "shell" -warn "Defaulting to zsh"
             export myShell="zsh"
             ;;
         esac
+        print_log -sec "shell" -stat "Added as shell" "${myShell}"
         echo "${myShell}" >>"${scrDir}/install_pkg.lst"
+
+        if [[ -z "$myShell" ]]; then
+            print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+            exit 1
+        else
+            print_log -sec "shell" -stat "detected :: " "${myShell}"
+        fi
     fi
 
-    if [[ -z "$myShell" ]]; then
-        print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+    if ! grep -q "^#user packages" "${scrDir}/install_pkg.lst"; then
+        print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}/install.sh"
         exit 1
-    else
-        print_log -sec "shell" -stat "detected :: " "${myShell}"
     fi
 
     #--------------------------------#
@@ -289,6 +297,12 @@ EOF
     done <"${scrDir}/system_ctl.lst"
 fi
 
-print_log -g "\nInstallation" " :: " "completed"
-print_log -g "Log" " :: " "View logs at ${cacheDir}/logs/${HYDE_LOG}"
-print_log -g "HyDE" " :: " "Please restart your system to apply changes"
+if [ $flg_Install -eq 1 ]; then
+    print_log -stat "\nInstallation" "completed"
+fi
+print_log -stat "Log" "View logs at ${cacheDir}/logs/${HYDE_LOG}"
+if [ $flg_Install -eq 1 ] ||
+    [ $flg_Restore -eq 1 ] ||
+    [ $flg_Service -eq 1 ]; then
+    print_log -stat "HyDE" "Please restart your system to apply changes"
+fi
