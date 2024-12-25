@@ -1,12 +1,12 @@
 #!/bin/env bash
-# This script will soon be use to resolve $PATHS and LIB_DIR specific to hyde
+# This script will soon be use to resolve $PATHS and HYDE_LIB_DIR specific to hyde
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
 
-BIN_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-LIB_DIR="${BIN_DIR/\/bin/\/lib}"
+HYDE_BIN_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+HYDE_LIB_DIR="${HYDE_BIN_DIR/\/bin/\/lib}"
 
 # shellcheck disable=SC1091
-if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
+if ! source "${HYDE_LIB_DIR}/hyde/globalcontrol.sh"; then
     echo "Error: Could not load HyDe, broken installation?"
     exit 1
 fi
@@ -34,8 +34,8 @@ interactive_shell() {
 hyde_reload() {
 
     print_log -sec "hyde" "Reloading HyDE"
-    "$LIB_DIR/hyde/swwwallcache.sh" -t ""
-    "$LIB_DIR/hyde/themeswitch.sh"
+    "$HYDE_LIB_DIR/hyde/swwwallcache.sh" -t ""
+    "$HYDE_LIB_DIR/hyde/themeswitch.sh"
 }
 
 case $1 in

@@ -99,7 +99,7 @@ fn_cava() {
 }
 
 fn_art() {
-    echo "$XDG_CACHE_HOME/hyde/landing/mpris.art"
+    echo "${cacheDir}/landing/mpris.art"
 }
 
 # hyprlock selector
@@ -155,7 +155,7 @@ $layout_items"
 
 generate_conf() {
     local path="${1:-$confDir/hypr/hyprlock/theme.conf}"
-    local hyde_hyprlock_conf=${SHARE_DIR:-XDG_DATA_HOME}/hyde/hyprlock.conf
+    local hyde_hyprlock_conf=${HYDE_SHARE_DIR:-$XDG_DATA_HOME}/hyde/hyprlock.conf
 
     cat <<CONF >"$confDir/hypr/hyprlock.conf"
 #! █░█ █▄█ █▀█ █▀█ █░░ █▀█ █▀▀ █▄▀
