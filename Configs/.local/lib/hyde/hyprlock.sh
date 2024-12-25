@@ -177,7 +177,7 @@ generate_conf() {
 # this should be the full path to the layout file.
 
 #*  All boilerplate configurations are handled by HyDE 
-source = ${hyde_hyprlock_conf}
+source = \$${hyde_hyprlock_conf}
 
 #*  Making a custom layout 
 # To create a custom layout, make a file in the './hyprlock/' directory.
