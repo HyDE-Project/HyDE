@@ -2,22 +2,37 @@
 import subprocess
 import json
 import argparse
+import os
 from collections import defaultdict
+import time
+
+
+# filepath: /home/khing/.local/lib/hyde/keybinds.hint.py
 
 
 def get_hyprctl_binds():
-    try:
-        result = subprocess.run(
-            ["hyprctl", "binds", "-j"], capture_output=True, text=True, check=True
-        )
-        binds = json.loads(result.stdout)
-        return binds
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing hyprctl: {e}")
-        return None
-    except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {e}")
-        return None
+    while True:
+        try:
+            result = subprocess.run(
+                ["hyprctl", "binds", "-j"], capture_output=True, text=True, check=True
+            )
+            while result.returncode != 0:
+                print("Waiting for hyprctl command to succeed...")
+                time.sleep(1)
+                result = subprocess.run(
+                    ["hyprctl", "binds", "-j"],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+            binds = json.loads(result.stdout)
+            return binds
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing hyprctl: {e}")
+            return None
+        except json.JSONDecodeError as e:
+            # print("Invalid JSON received, retrying...")
+            time.sleep(1)
 
 
 def parse_description(description):
@@ -25,7 +40,7 @@ def parse_description(description):
         headers, main_description = description.split("] ", 1)
         headers = headers.strip("[").split("|")
     else:
-        headers = ["", "", "", ""]
+        headers = ["Misc", "", "", ""]
         main_description = description
 
     return {
@@ -74,18 +89,22 @@ def map_modDisplay(modmask):
         2: "CAPSLOCK",
         1: "SHIFT",
     }
-    modsym = []
+    mod_display = []
     for key, name in sorted(modkey_map.items(), reverse=True):
         if modmask >= key:
             modmask -= key
-            modsym.append(name)
-    return " ".join(modsym) if modsym else "None"
+            mod_display.append(name)
+    return " ".join(mod_display) if mod_display else "None"
 
 
 def map_keyDisplay(key):
-    """Map keysym to a more descriptive term."""
-    # Implement key mapping if needed
-    return key
+    """Map key_display to a more descriptive term."""
+    key_map = {
+        "edge:r:d": "Touch right edge downwards",
+        "edge:r:l": "Touch right edge left",
+        "edge:r:r": "Touch right edge right",
+    }
+    return key_map.get(key, key)
 
 
 def find_duplicated_binds(binds):
@@ -100,13 +119,13 @@ def find_duplicated_binds(binds):
 
 def tabulate_binds(binds):
     """Tabulate binds data for printing."""
-    headers = ["ModSym", "KeySym", "Dispatcher", "Arg", "Description"]
+    headers = ["mod_display", "key_display", "Dispatcher", "Arg", "Description"]
 
     # Calculate column widths
     col_widths = [len(header) for header in headers]
     for bind in binds:
-        col_widths[0] = max(col_widths[0], len(bind["modsym"]))
-        col_widths[1] = max(col_widths[1], len(bind["keysym"]))
+        col_widths[0] = max(col_widths[0], len(bind["mod_display"]))
+        col_widths[1] = max(col_widths[1], len(bind["key_display"]))
         col_widths[2] = max(col_widths[2], len(bind["dispatcher"]))
         col_widths[3] = max(col_widths[3], len(bind["arg"]))
         col_widths[4] = max(col_widths[4], len(bind["description"]))
@@ -131,7 +150,8 @@ def tabulate_binds(binds):
             + "|".join(
                 f" {str(bind[key]).ljust(width)} "
                 for key, width in zip(
-                    ["modsym", "keysym", "dispatcher", "arg", "description"], col_widths
+                    ["mod_display", "key_display", "dispatcher", "arg", "description"],
+                    col_widths,
                 )
             )
             + "|"
@@ -142,13 +162,154 @@ def tabulate_binds(binds):
     return "\n".join(rows)
 
 
+def generate_md(binds):
+    """Generate markdown table for binds data."""
+    headers = ["Keys", "Action"]
+
+    # Create the header row
+    header_row = "| " + " | ".join(headers) + " |"
+    separator_row = "| :--- | :--- |"
+
+    # Group binds by headers
+    header_groups = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+    )
+    for bind in binds:
+        header1 = bind.get("header1", "Default")
+        header2 = bind.get("header2", "")
+        header3 = bind.get("header3", "")
+        header4 = bind.get("header4", "")
+        header_groups[header1][header2][header3][header4].append(bind)
+
+    # Create the table rows
+    rows = []
+    for header1, group1 in header_groups.items():
+        rows.append(f"## {header1}")
+        for header2, group2 in group1.items():
+            if header2:
+                rows.append(f"### {header2}")
+            for header3, group3 in group2.items():
+                if header3:
+                    rows.append(f"#### {header3}")
+                for header4, binds in group3.items():
+                    if header4:
+                        rows.append(f"##### {header4}")
+                    rows.append(header_row)
+                    rows.append(separator_row)
+                    for bind in binds:
+                        keys = bind["mod_display"].split() + [bind["key_display"]]
+                        formatted_keys = (
+                            "<kbd>" + "</kbd> + <kbd>".join(keys) + "</kbd>"
+                        )
+                        action = bind["description"]
+                        row = f"| {formatted_keys} | {action} |"
+                        rows.append(row)
+                    rows.append("")
+
+    return "\n".join(rows)
+
+
+def generate_dmenu(binds):
+    """Generate dmenu string for binds data."""
+    dmenu_str = ""
+    for bind in binds:
+        mod_display = bind["mod_display"]
+        if mod_display is None or mod_display == "None":
+            mod_display = ""
+        key_display = bind["key_display"]
+        if key_display is None or key_display == "None":
+            key_display = ""
+        keys = [mod_display] if mod_display else []
+        if key_display:
+            keys.append(key_display)
+        formatted_keys = " + ".join(keys).strip(" + ")
+        action = bind["description"]
+        header1 = bind.get("header1", "")
+        header2 = bind.get("header2", "")
+        header3 = bind.get("header3", "")
+        header4 = bind.get("header4", "")
+        dmenu_str += f"{formatted_keys} ::: {action} ::: {header1} ::: {header2} ::: {header3} ::: {header4}\n"
+    return dmenu_str
+
+
+def generate_rofi(binds):
+    """Generate rofi string for binds data with headers."""
+    rofi_str = ""
+    groups = {}
+
+    delimiter = os.getenv("ROFI_KEYBIND_HINT_DELIMITER", ">")
+    for bind in binds:
+        mod_display = bind["mod_display"]
+        if mod_display is None or mod_display == "None":
+            mod_display = ""
+        key_display = bind["key_display"]
+        if key_display is None or key_display == "None":
+            key_display = ""
+        keys = [mod_display] if mod_display else []
+        if key_display:
+            keys.append(key_display)
+        formatted_keys = " + ".join(keys).strip(" + ")
+
+        description = bind["description"]
+        dispatcher = bind["dispatcher"]
+        arg = bind["arg"]
+        header1 = bind.get("header1", "")
+        header2 = bind.get("header2", "")
+        header3 = bind.get("header3", "")
+        header4 = bind.get("header4", "")
+        header5 = bind.get("header5", "")
+        repeated = "repeat" if bind.get("repeat", False) else ""
+        keycode = bind["keycode"]
+        meta_data = f"{dispatcher} {arg} {repeated} {keycode} {header1} {header2} {header3} {header4} {header5}"
+
+        # Create nested dictionary structure
+        if header1 not in groups:
+            groups[header1] = {}
+        if header2 not in groups[header1]:
+            groups[header1][header2] = {}
+        if header3 not in groups[header1][header2]:
+            groups[header1][header2][header3] = {}
+        if header4 not in groups[header1][header2][header3]:
+            groups[header1][header2][header3][header4] = {}
+        if header5 not in groups[header1][header2][header3][header4]:
+            groups[header1][header2][header3][header4][header5] = []
+
+        displayed_rofi_keys = f"{formatted_keys:<20} {delimiter:<5} {description}"
+
+        groups[header1][header2][header3][header4][header5].append(
+            f"{displayed_rofi_keys} ::: {dispatcher} ::: {arg} ::: {repeated} ::: {meta_data}"
+        )
+
+    def format_group(headers, level=0, parent_meta_data=""):
+        nonlocal rofi_str
+        prefix = "" * (level + 1)
+        for header, subgroups in headers.items():
+            current_meta_data = f"{parent_meta_data} > {header}".strip(" >")
+            if header:
+                rofi_str += f"{prefix} {header} {prefix} ::: ::: {current_meta_data}\n"
+            if isinstance(subgroups, dict):
+                format_group(subgroups, level + 1, current_meta_data)
+            else:
+                for binding in subgroups:
+                    rofi_str += f"{binding} ::: ::: {current_meta_data} \n"
+                rofi_str += f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ::: ::: {current_meta_data} \n"
+
+    format_group(groups)
+    return rofi_str
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hyprland keybinds hint script")
     parser.add_argument(
         "--show-unbind", action="store_true", help="Show duplicated keybinds"
     )
+    parser.add_argument(
+        "--format",
+        choices=["json", "md", "dmenu", "rofi"],
+        default="json",
+        help="Output format",
+    )
     args = parser.parse_args()
-
     binds_data = get_hyprctl_binds()
     if binds_data:
         for bind in binds_data:
@@ -160,7 +321,7 @@ if __name__ == "__main__":
                     f"{map_dispatcher(bind['dispatcher'])} {bind['arg']}"
                 )
                 bind.update(
-                    {"header1": "", "header2": "", "header3": "", "header4": ""}
+                    {"header1": "Misc", "header2": "", "header3": "", "header4": ""}
                 )
             bind["key"] = map_codeDisplay(bind["keycode"], bind["key"])
             bind["key_display"] = map_keyDisplay(bind["key"])
@@ -170,6 +331,11 @@ if __name__ == "__main__":
             duplicated_binds = find_duplicated_binds(binds_data)
             for (mod_display, key_display), binds in duplicated_binds.items():
                 print(f"unbind = {mod_display} , {key_display}")
-        else:
+        elif args.format == "json":
             print(json.dumps(binds_data, indent=4))
-            # print(tabulate_binds(binds_data))
+        elif args.format == "md":
+            print(generate_md(binds_data))
+        elif args.format == "dmenu":
+            print(generate_dmenu(binds_data))
+        elif args.format == "rofi":
+            print(generate_rofi(binds_data))
