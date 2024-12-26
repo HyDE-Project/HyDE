@@ -6,7 +6,7 @@
 | <kbd>SUPER</kbd> + <kbd>Delete</kbd> | kill hyprland session |
 | <kbd>SUPER</kbd> + <kbd>W</kbd> | toggle float |
 | <kbd>SUPER</kbd> + <kbd>G</kbd> | toggle group |
-| <kbd>None</kbd> + <kbd>F11</kbd> | toggle fullscreen |
+| <kbd>Shift</kbd> + <kbd>F11</kbd> | toggle fullscreen |
 | <kbd>SUPER</kbd> + <kbd>L</kbd> | lock screen |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>F</kbd> | toggle pin on focused window |
 | <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Delete</kbd> | logout menu |
