@@ -30,7 +30,7 @@ waybar                                                 # system bar
 swww                                                   # wallpaper
 hyprlock                                               # lock screen
 wlogout                                                # logout menu
-grimblast-git                                          # screenshot tool
+# grimblast-git                                        # screenshot tool # DEPRECATED! We will ship our own version to avoid breaking changes
 hyprpicker                                             # color picker
 slurp                                                  # region select for screenshot/screenshare
 swappy                                                 # screenshot editor

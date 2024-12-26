@@ -1,23 +1,32 @@
 #!/bin/env bash
-# This script will soon be use to resolve $PATHS and HYDE_LIB_DIR specific to hyde
+# This script will soon be use to resolve $PATHS and LIB_DIR specific to hyde
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
 
-HYDE_BIN_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-HYDE_LIB_DIR="${HYDE_BIN_DIR/\/bin/\/lib}"
+BIN_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
+LIB_DIR="${BIN_DIR/\/bin/\/lib}"
+HYDE_SHARE_DIR="${BIN_DIR/\/bin/\/share}"
+
+export BIN_DIR LIB_DIR HYDE_SHARE_DIR
 
 # shellcheck disable=SC1091
-if ! source "${HYDE_LIB_DIR}/hyde/globalcontrol.sh"; then
+if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
     echo "Error: Could not load HyDe, broken installation?"
     exit 1
 fi
 
 interactive_shell() {
+    history_file="/tmp/.hyde_shell_history"
+    touch "$history_file"
+    history -r "$history_file"
+
     while true; do
-        read -rp "hyde-shell> " cmd
+        read -rep "hyde-shell> " cmd
         if [[ "$cmd" == "exit" ]]; then
             break
         elif declare -f "${cmd%% *}" >/dev/null; then
             eval "$cmd"
+            history -s "$cmd"
+            history -w "$history_file"
         else
             echo "Available commands:"
             compgen -A function
@@ -31,19 +40,51 @@ interactive_shell() {
 
 }
 
+zoom() { #? Zoom in/out Hyprland
+    # case
+    intensity=${2:-0.1}
+    local cursor_state
+    local cursor_state
+    cursor_state="$(hyprctl getoption cursor:no_hardware_cursors 1 -j | jq .int)"
+    trap 'hyprctl -q keyword cursor:no_hardware_cursors "$cursor_state"' EXIT
+    case $1 in
+    in) #? Zoom in
+        hyprctl -q keyword cursor:no_hardware_cursors 1
+        hyprctl -q keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$intensity" '.float + ($zoomFactor | tonumber)')"
+        ;;
+    out) #? Zoom out
+        hyprctl -q keyword cursor:no_hardware_cursors 1
+        hyprctl -q keyword cursor:zoom_factor "$(
+            hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$intensity" '
+    if (.float - ($zoomFactor | tonumber)) < 1 then 1 else (.float - ($zoomFactor | tonumber)) end'
+        )"
+        ;;
+    reset) #? Reset Zoom
+        hyprctl -q keyword cursor:zoom_factor 1
+        ;;
+    *)
+        echo "Usage: zoom [in|out|reset] [intensity]"
+
+        ;;
+    esac
+}
+
 hyde_reload() {
 
     print_log -sec "hyde" "Reloading HyDE"
-    "$HYDE_LIB_DIR/hyde/swwwallcache.sh" -t ""
-    "$HYDE_LIB_DIR/hyde/themeswitch.sh"
+    "$LIB_DIR/hyde/swwwallcache.sh" -t ""
+    "$LIB_DIR/hyde/themeswitch.sh"
 }
 
 case $1 in
--i)
+-i | interactive)
     interactive_shell
     ;;
--r)
+-r | reload)
     hyde_reload
+    ;;
+zoom)
+    zoom "${@:2}"
     ;;
 *)
     for func in $(compgen -A function); do
