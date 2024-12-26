@@ -29,14 +29,9 @@ if [ -z "$XDG_PICTURES_DIR" ]; then
 	XDG_PICTURES_DIR="$HOME/Pictures"
 fi
 
-# shellcheck source=$HOME/.local/bin/hyde-shell
+scrDir=$(dirname "$(realpath "$0")")
 # shellcheck disable=SC1091
-if ! source "$(which hyde-shell)"; then
-	echo "[wallbash] code :: Error: hyde-shell not found."
-	echo "[wallbash] code :: Is HyDE installed?"
-	exit 1
-fi
-
+source "$scrDir/globalcontrol.sh"
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 save_dir="${2:-$XDG_PICTURES_DIR/Screenshots}"
 save_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
@@ -61,13 +56,13 @@ EOF
 
 case $1 in
 p) # print all outputs
-	"$LIB_DIR/hyde/grimblast" copysave screen $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
+	grimblast copysave screen $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 s) # drag to manually snip an area / click on a window to print it
-	"$LIB_DIR/hyde/grimblast" copysave area $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
+	grimblast copysave area $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 sf) # frozen screen, drag to manually snip an area / click on a window to print it
-	"$LIB_DIR/hyde/grimblast" --freeze copysave area $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
+	grimblast --freeze copysave area $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 m) # print focused monitor
-	"$LIB_DIR/hyde/grimblast" copysave output $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
+	grimblast copysave output $temp_screenshot && pre_cmd && "${annotation_tool}" ${annotation_args} ;;
 *) # invalid option
 	print_error ;;
 esac
