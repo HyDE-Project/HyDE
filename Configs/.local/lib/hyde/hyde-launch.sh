@@ -58,24 +58,6 @@ find_mime_type() {
     echo "${mime_type%%=*}"
 }
 
-# find_exec_line() {
-#     local default_app=$1
-#     local dirs=(
-#         "$HOME/.local/share/flatpak/exports/share/applications/"
-#         "$HOME/.local/share/applications"
-#         "/var/lib/flatpak/exports/share/applications/"
-#         "/usr/local/share/applications"
-#         "/usr/share/applications")
-
-#     for dir in "${dirs[@]}"; do
-#         if [ -f "$dir/$default_app" ]; then
-#             awk '/^Exec=/ {print; exit}' "$dir/$default_app"
-#             return 0
-#         fi
-#     done
-#     return 1
-# }
-
 main() {
     # Check if no arguments are provided
     [ $# -eq 0 ] && {
@@ -83,8 +65,9 @@ main() {
         exit 1
     }
     std_only=false
-    # Parse options
-    while [[ "$1" == --* || "$1" == -* ]]; do
+    fallbackCmd=""
+
+    while [[ "$#" -gt 0 ]]; do
         case "$1" in
         --help | -h)
             show_usage
@@ -92,6 +75,7 @@ main() {
             ;;
         --std)
             std_only=true
+            shift
             ;;
         --mime)
             (cat "${HOME}/.config/mimeapps.list" || cat /usr/share/mime/types) 2>/dev/null | grep --color=auto "${2}"
@@ -99,18 +83,21 @@ main() {
             ;;
         --fall)
             fallbackCmd="${2}"
-            shift
+            shift 2
             ;;
         *)
-            echo "Unknown option: $1"
-            show_usage
-            exit 1
+            input="$1"
+            shift
             ;;
         esac
-        shift
     done
 
-    local input=$1
+    if [ -z "$input" ]; then
+        echo "Error: No input provided"
+        show_usage
+        exit 1
+    fi
+
     local mime_type
     mime_type=$(find_mime_type "$input")
 
@@ -126,21 +113,10 @@ main() {
         gtk-launch "${fallbackCmd}" || exit 1
     }
 
-    # local exec_line
-    # exec_line=$(find_exec_line "${default_app}")
-    # [ -z "$exec_line" ] && {
-    #     echo -e "Error: Could not find Exec line in (${default_app})\n"
-    #     gtk-launch "${fallbackCmd}" || exit 1
-    # }
-
-    # local command=${exec_line#Exec=}
-    # command=${command%% %*}
-
-    # if [[ "${command}" == *"flatpak run"* ]] || command -v "$command" &>/dev/null; then
-    # echo "${command}"
-    $std_only || gtk-launch "${default_app}" || gtk-launch "${fallbackCmd}"
-    # echo "[error] Could not find the default application ($command)" && exit 1
-    # fi
+    if [ "${std_only}" = true ]; then
+        echo "${default_app}"
+    else
+        gtk-launch "${default_app}" || gtk-launch "${fallbackCmd}"
+    fi
 }
-
 main "$@"

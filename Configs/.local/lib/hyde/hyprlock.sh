@@ -148,6 +148,7 @@ $layout_items"
     generate_conf "${layout_dir}/${selected_layout}.conf"
     "${scrDir}/font.sh" resolve "${layout_dir}/${selected_layout}.conf"
     fn_profile
+    
     # Notify the user
     notify-send -i "system-lock-screen" "Hyprlock layout:" "${selected_layout}"
 
