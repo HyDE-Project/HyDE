@@ -30,8 +30,7 @@ def get_hyprctl_binds():
         except subprocess.CalledProcessError as e:
             print(f"Error executing hyprctl: {e}")
             return None
-        except json.JSONDecodeError as e:
-            # print("Invalid JSON received, retrying...")
+        except json.JSONDecodeError:
             time.sleep(1)
 
 
@@ -239,17 +238,11 @@ def generate_rofi(binds):
 
     delimiter = os.getenv("ROFI_KEYBIND_HINT_DELIMITER", ">")
     for bind in binds:
-        mod_display = bind["mod_display"]
-        if mod_display is None or mod_display == "None":
-            mod_display = ""
-        key_display = bind["key_display"]
-        if key_display is None or key_display == "None":
-            key_display = ""
-        keys = [mod_display] if mod_display else []
-        if key_display:
-            keys.append(key_display)
-        formatted_keys = " + ".join(keys).strip(" + ")
+        catch_all = bind.get("catch_all", False)
+        if catch_all:  # hide the catch all keybind from the rofi menu
+            continue
 
+        displayed_keys = bind["displayed_keys"]
         description = bind["description"]
         dispatcher = bind["dispatcher"]
         arg = bind["arg"]
@@ -258,9 +251,12 @@ def generate_rofi(binds):
         header3 = bind.get("header3", "")
         header4 = bind.get("header4", "")
         header5 = bind.get("header5", "")
+        submap = bind.get("submap", "")
         repeated = "repeat" if bind.get("repeat", False) else ""
         keycode = bind["keycode"]
-        meta_data = f"{dispatcher} {arg} {repeated} {keycode} {header1} {header2} {header3} {header4} {header5}"
+        meta_data = f"{dispatcher} {arg} {repeated} {keycode} {header1} {header2} {header3} {header4} {header5} {submap} {displayed_keys}"
+
+        displayed_rofi_keys = f"{displayed_keys:<20} {delimiter:<5} {description}"
 
         # Create nested dictionary structure
         if header1 not in groups:
@@ -274,28 +270,92 @@ def generate_rofi(binds):
         if header5 not in groups[header1][header2][header3][header4]:
             groups[header1][header2][header3][header4][header5] = []
 
-        displayed_rofi_keys = f"{formatted_keys:<20} {delimiter:<5} {description}"
-
         groups[header1][header2][header3][header4][header5].append(
             f"{displayed_rofi_keys} ::: {dispatcher} ::: {arg} ::: {repeated} ::: {meta_data}"
         )
 
-    def format_group(headers, level=0, parent_meta_data=""):
-        nonlocal rofi_str
-        prefix = "" * (level + 1)
-        for header, subgroups in headers.items():
-            current_meta_data = f"{parent_meta_data} > {header}".strip(" >")
-            if header:
-                rofi_str += f"{prefix} {header} {prefix} ::: ::: {current_meta_data}\n"
-            if isinstance(subgroups, dict):
-                format_group(subgroups, level + 1, current_meta_data)
+        def format_group(headers, level=0, parent_meta_data=""):
+            nonlocal rofi_str
+            if level == 0:
+                prefix = ""
+            elif level == 1:
+                prefix = ""
             else:
-                for binding in subgroups:
-                    rofi_str += f"{binding} ::: ::: {current_meta_data} \n"
-                rofi_str += f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ::: ::: {current_meta_data} \n"
+                prefix = " " * (level - 1) + ""
+
+            suffix = f"[{parent_meta_data}]" if parent_meta_data else ""
+
+            for header, subgroups in headers.items():
+                current_meta_data = f"{header}{suffix}".strip(" <")
+                if header:
+                    rofi_str += (
+                        f"{prefix} {header}  {suffix:>20} ::: ::: {current_meta_data}\n"
+                    )
+                if isinstance(subgroups, dict):
+                    format_group(subgroups, level + 1, current_meta_data)
+                else:
+                    for binding in subgroups:
+                        rofi_str += f"{binding} ::: ::: {current_meta_data}\n"
+                    rofi_str += f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ::: ::: {current_meta_data}\n"
 
     format_group(groups)
     return rofi_str
+
+
+def expand_meta_data(binds_data):
+    submap_keys = {}
+
+    # First pass: collect submap keys
+    for bind in binds_data:
+        if bind.get("has_description", False):
+            parsed_description = parse_description(bind["description"])
+            bind.update(parsed_description)
+        else:
+            bind["description"] = f"{map_dispatcher(bind['dispatcher'])} {bind['arg']}"
+            bind.update(
+                {"header1": "Misc", "header2": "", "header3": "", "header4": ""}
+            )
+        bind["key"] = map_codeDisplay(bind["keycode"], bind["key"])
+        bind["key_display"] = map_keyDisplay(bind["key"])
+        bind["mod_display"] = map_modDisplay(bind["modmask"])
+
+        # Handle submaps
+        if bind["dispatcher"] == "submap":
+            submap_name = bind["arg"]
+            submap_keys[submap_name] = {
+                "mod_display": bind["mod_display"],
+                "key_display": bind["key_display"],
+            }
+
+    # Second pass: update binds with submap keys
+    for bind in binds_data:
+        submap = bind.get("submap", "")
+        mod_display = bind["mod_display"]
+        if mod_display is None or mod_display == "None":
+            mod_display = ""
+        key_display = bind["key_display"]
+        if key_display is None or key_display == "None":
+            key_display = ""
+        keys = [mod_display] if mod_display else []
+        if key_display:
+            keys.append(key_display)
+        formatted_keys = " + ".join(keys).strip(" + ")
+
+        if submap in submap_keys:
+            submap_mod_display = submap_keys[submap]["mod_display"]
+            submap_key_display = submap_keys[submap]["key_display"]
+            bind["submap_mod"] = submap_mod_display
+            bind["submap_key"] = submap_key_display
+            bind["displayed_keys"] = (
+                f"[{submap_mod_display} + {submap_key_display}] + {formatted_keys}".strip(
+                    " + "
+                )
+            )
+            bind["description"] = f"[{submap}] {bind['description']}"
+        else:
+            bind["submap_mod"] = ""
+            bind["submap_key"] = ""
+            bind["displayed_keys"] = formatted_keys
 
 
 if __name__ == "__main__":
@@ -312,21 +372,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     binds_data = get_hyprctl_binds()
     if binds_data:
-        for bind in binds_data:
-            if bind.get("has_description", False):
-                parsed_description = parse_description(bind["description"])
-                bind.update(parsed_description)
-            else:
-                bind["description"] = (
-                    f"{map_dispatcher(bind['dispatcher'])} {bind['arg']}"
-                )
-                bind.update(
-                    {"header1": "Misc", "header2": "", "header3": "", "header4": ""}
-                )
-            bind["key"] = map_codeDisplay(bind["keycode"], bind["key"])
-            bind["key_display"] = map_keyDisplay(bind["key"])
-            bind["mod_display"] = map_modDisplay(bind["modmask"])
-
+        expand_meta_data(binds_data)
         if args.show_unbind:
             duplicated_binds = find_duplicated_binds(binds_data)
             for (mod_display, key_display), binds in duplicated_binds.items():
