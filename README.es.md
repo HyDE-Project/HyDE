@@ -139,7 +139,7 @@ Para obtener más información, visite [HyDE-Project/hyde-themes](https://github
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_2.png"/></td></tr></table></div>
 
-<div align="center"><table><tr><td>Seleccionar fondo de pantalla</td><td>Seleccionar Launcher</td></tr><tr><td>
+<div align="center"><table><tr><td>Seleccionar fondo de pantalla</td><td>Seleccionar Lanzador</td></tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/walls_select.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_sel.png"/></td></tr>
 <tr><td>Modos de Wallbash</td><td>Acción de notificación</td></tr><tr><td>
