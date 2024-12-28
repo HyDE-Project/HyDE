@@ -23,9 +23,9 @@ Consulte aquí la nota completa:
 
 <br>
 
-<a href="#installation"><kbd> <br> Instalación <br> </kbd></a>&ensp;&ensp;
-<a href="#themes"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
-<a href="#styles"><kbd> <br> Estilos <br> </kbd></a>&ensp;&ensp;
+<a href="#instalación"><kbd> <br> Instalación <br> </kbd></a>&ensp;&ensp;
+<a href="#temas"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
+<a href="#estilos"><kbd> <br> Estilos <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.md"><kbd> <br> Combinaciones <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
 <a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
@@ -76,7 +76,7 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 Reinicie el sistema después de que se complete el script de instalación y lo lleve a la pantalla de inicio de sesión de SDDM (o pantalla negra) por primera vez.
 Para obtener más detalles, consulte la [wiki de instalación](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
-### Actualizar
+## Actualizar
 
 Para actualizar HyDE, necesitarás extraer los últimos cambios de GitHub y restaurar las configuraciones ejecutando los siguientes comandos:
 
