@@ -28,10 +28,9 @@ Check this out for the full note:
 <a href="#styles"><kbd> <br> Styles <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.md"><kbd> <br> Keybindings <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
+<a href="README.es.md"><kbd> <br> Spanish <br> </kbd></a>&ensp;&ensp;
 <a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
-
-</div><br><br>
 
 https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265
 
