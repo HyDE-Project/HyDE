@@ -71,6 +71,7 @@ alias pa='$aurhelper -Ss' # list available package
 alias pc='$aurhelper -Sc' # remove unused cache
 alias po='$aurhelper -Qtdq | $aurhelper -Rns -' # remove unused packages, also try > $aurhelper -Qqd | $aurhelper -Rsu --print -
 alias vc='code' # gui code editor
+alias fastfetch='fastfetch --logo-type kitty'
 
 # Directory navigation shortcuts
 alias ..='cd ..'
