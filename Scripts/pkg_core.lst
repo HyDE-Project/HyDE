@@ -72,12 +72,12 @@ nwg-displays                                           # monitor management util
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
-oh-my-zsh-git|zsh                                    #  plugin manager for zsh (Optional)
-zsh-theme-powerlevel10k-git|zsh          # theme for zsh
+# oh-my-zsh-git|zsh                                    #  plugin manager for zsh (Optional) // Moved to pkg_custom.lst
+zsh-theme-powerlevel10k-git|zsh                        # theme for zsh
+pokego-bin|zsh                                        # display pokemon sprites in terminal (written GO)
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt
 fastfetch                                              # system information fetch tool
-pokego-bin|zsh                                        # display pokemon sprites in terminal (written GO)
 
 # --------------------------------------------------- // HyDE
 # hyde-cli-git                                           # cli tool to manage hyde \\ Deprecated for HyDE
