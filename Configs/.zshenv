@@ -150,13 +150,29 @@ else
     echo "$aurhelper" > "$aur_cache_file"
 fi
 
+
+# Optionally load user configuration // usefull for customizing the shell without modifying the main file
+[[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
+
+# Load plugins
+load_zsh_plugins
+
+# Warn if the shell is slow to load
+autoload -Uz add-zsh-hook
+add-zsh-hook -Uz precmd slow_load_warning
+# add-zsh-hook zshexit cleanup
+
+
 # Helpful aliases
+if [[ -x /usr/bin/exa ]]; then
+    alias ls='exa' \
+        l='exa -lh --icons=auto' \
+        ll='exa -lha --icons=auto --sort=name --group-directories-first' \
+        ld='exa -lhD --icons=auto' \
+        lt='exa --icons=auto --tree'
+fi
+
 alias c='clear' \
-    l='eza -lh --icons=auto' \
-    ls='eza -1 --icons=auto' \
-    ll='eza -lha --icons=auto --sort=name --group-directories-first' \
-    ld='eza -lhD --icons=auto' \
-    lt='eza --icons=auto --tree' \
     un='$aurhelper -Rns' \
     up='$aurhelper -Syu' \
     pl='$aurhelper -Qs' \
@@ -172,14 +188,3 @@ alias c='clear' \
     .5='cd ../../../../..' \
     mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 
-
-# Optionally load user configuration // usefull for customizing the shell without modifying the main file
-[[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
-
-# Load plugins
-load_zsh_plugins
-
-# Warn if the shell is slow to load
-autoload -Uz add-zsh-hook
-add-zsh-hook -Uz precmd slow_load_warning
-add-zsh-hook zshexit cleanup
