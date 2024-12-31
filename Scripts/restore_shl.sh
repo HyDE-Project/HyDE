@@ -43,6 +43,7 @@ if pkg_installed zsh; then
 
         # set variables
         Zsh_rc="${ZDOTDIR:-$HOME}/.zshenv"
+        Zsh_Path="${Zsh_Path:-$HOME/.oh-my-zsh}"
         Zsh_Plugins="$Zsh_Path/custom/plugins"
         Fix_Completion=""
 
