@@ -2,8 +2,8 @@
         "format": "{icon}",
         "rotate": ${r_deg},
         "format-icons": {
-            "activated": "󰥔",
-            "deactivated": ""
+            "activated": "󰥔 ",
+            "deactivated": " "
         }
     },
 
