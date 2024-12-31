@@ -2,10 +2,10 @@
         "device": "intel_backlight",
         "rotate": ${r_deg},
         "format": "{icon} {percent}%",
-        "tooltip-format": "{icon} brightness ",
         "format-icons": ["", "", "", "", "", "", "", "", ""],
-        "on-scroll-up": "brightnessctl set 1%+",
-        "on-scroll-down": "brightnessctl set 1%-",
+        "tooltip-format": "{icon} {percent}% ",
+        "on-scroll-up": "brightnesscontrol.sh i",
+        "on-scroll-down": "brightnesscontrol.sh d",
         "min-length": 6
     },
 
