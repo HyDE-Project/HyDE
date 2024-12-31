@@ -40,9 +40,17 @@ Consulte aquí la nota completa:
 
 </div><br><br>
 
+<div align="center">
+  <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
+    <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/archlinux.png?raw=true" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/cachyos.png?raw=true" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/endeavouros.png?raw=true" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/garuda.png?raw=true" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true" alt="NixOS" style="width: 10%; margin: 10px;"/>
+  </div>
+
 https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265
 
-<br><div align="center"><img width="12%" src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/arch.png"/><br></div>
 
 ## Instalación
 
