@@ -164,12 +164,12 @@ add-zsh-hook -Uz precmd slow_load_warning
 
 
 # Helpful aliases
-if [[ -x /usr/bin/exa ]]; then
-    alias ls='exa' \
-        l='exa -lh --icons=auto' \
-        ll='exa -lha --icons=auto --sort=name --group-directories-first' \
-        ld='exa -lhD --icons=auto' \
-        lt='exa --icons=auto --tree'
+if [[ -x "$(which eza)" ]]; then
+    alias ls='eza' \
+        l='eza -lh --icons=auto' \
+        ll='eza -lha --icons=auto --sort=name --group-directories-first' \
+        ld='eza -lhD --icons=auto' \
+        lt='eza --icons=auto --tree'
 fi
 
 alias c='clear' \
