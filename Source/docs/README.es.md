@@ -7,9 +7,6 @@ Multi-language README support
 
 # Repositorio oficial del proyecto HyDE
 
-Consulte aquí la nota completa:
-[Viaje a HyDE y más allá](./Hyprdots-to-HyDE.md)
-
 ###### _<div align="right"><sub>// design by t2</sub></div>_
 
 <div align = center>
@@ -48,6 +45,9 @@ Consulte aquí la nota completa:
     <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/garuda.png?raw=true" alt="Garuda" style="width: 10%; margin: 10px;"/>
     <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true" alt="NixOS" style="width: 10%; margin: 10px;"/>
   </div>
+
+Consulte aquí la nota completa:
+[Viaje a HyDE y más allá](./Hyprdots-to-HyDE.md)
 
 https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265
 
