@@ -43,7 +43,6 @@ if pkg_installed zsh; then
 
         # set variables
         Zsh_rc="${ZDOTDIR:-$HOME}/.zshenv"
-        Zsh_Path="$HOME/.oh-my-zsh"
         Zsh_Plugins="$Zsh_Path/custom/plugins"
         Fix_Completion=""
 
@@ -65,15 +64,15 @@ if pkg_installed zsh; then
         done < <(cut -d '#' -f 1 "${scrDir}/restore_zsh.lst" | sed 's/ //g')
 
         # update plugin array in zshrc
-        print_log -g "[SHELL] " -b "installing :: " "plugins (${w_plugin} )"
+        print_log -sec "SHELL" -stat "installing" "plugins (${w_plugin} )"
         sed -i "/^hyde_plugins=/c\hyde_plugins=(${w_plugin} )${Fix_Completion}" "${Zsh_rc}"
     fi
 fi
 
 # set shell
 if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]]; then
-    print_log -g "[SHELL] " -b "change :: " "shell to ${myShell}..."
+    print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
     chsh -s "$(which "${myShell}")"
 else
-    print_log -y "[SHELL] " -y "exist :: " "${myShell} is already set as shell..."
+    print_log -sec "SHELL" -stat "exist" "${myShell} is already set as shell..."
 fi
