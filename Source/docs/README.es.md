@@ -1,29 +1,21 @@
-<!--
-Multi-language README support
--->
-
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/HyDE-Project/HyDE/blob/master/README.md)
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/readme/README.es.md)
-
-# Repositorio oficial del proyecto HyDE
-
-###### _<div align="right"><sub>// design by t2</sub></div>_
-
 <div align = center>
     <a href="https://discord.gg/AYbJ9MJez7">
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
     </a>
 </div>
 
-<!--
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
+###### _<div align="right"><sub>// design by t2</sub></div>_
 
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&suffix=%20online&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
+![hyde_banner](https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/hyde_banner.png?raw=true)
+
+<!--
+Multi-language README support
 -->
 
-<div align="center">
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/HyDE-Project/HyDE/blob/master/README.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/HyDE-Project/HyDE/blob/master/Source/docs/README.es.md)
 
-![hyde_banner](https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/hyde_banner.png)
+<div align="center">
 
 <br>
 
@@ -45,23 +37,28 @@ Multi-language README support
     <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/garuda.png?raw=true" alt="Garuda" style="width: 10%; margin: 10px;"/>
     <img src="https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/nixos.png?raw=true" alt="NixOS" style="width: 10%; margin: 10px;"/>
   </div>
+</div>
 
-Consulte aquí la nota completa:
+Mira esto para ver la nota completa:
 [Viaje a HyDE y más allá](./Hyprdots-to-HyDE.md)
+
+<!--
+<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
+
+<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&suffix=%20online&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
+-->
 
 https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265
 
+## instalación
 
-## Instalación
-
-El script de instalación está diseñado para un mínimo [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) instalar, pero **puede** funcionar en algunos [Arch-based distro](https://wiki.archlinux.org/title/Arch-based_distributions).
-Al instalar HyDE junto con otro [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) debería funcionar, debido a que es una configuración muy personalizada, **tendrá** conflicto con su [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) tematización, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. y es bajo su propio riesgo.
+El script de instalación está diseñado para un mínimo [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) instalar, pero **puede** funcionar en algunos [Arch-based distros](https://wiki.archlinux.org/title/Arch-based_distributions).Al instalar HyDE junto con otro [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) debería funcionar, debido a que es una configuración muy personalizada, **tendrá** conflicto con su [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) tematización, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. y es bajo su propio riesgo.
 
 Para apoyar a Nixos se mantiene un proyecto separado @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
 > El script de instalación detectará automáticamente una tarjeta NVIDIA e instalará los controladores nvidia-dkms para su kernel.
-> Asegúrese de que su tarjeta NVIDIA admita los controladores dkms en la lista proporcionada [AQUÍ](https://wiki.archlinux.org/title/NVIDIA).
+> Asegúrese de que su tarjeta NVIDIA admita los controladores dkms en la lista proporcionada [aquí](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]
 > El script modifica su configuración `grub` o `systemd-boot` para habilitar NVIDIA DRM.
@@ -76,10 +73,10 @@ cd ~/HyDE/Scripts
 ```
 
 > [!TIP]
-> También puedes agregar cualquier otra aplicación que desees instalar junto con HyDE. `Scripts/pkg_custom.lst` y pasar el archivo como parámetro para instalarlo así:
+> También puedes agregar cualquier otra aplicación que desees instalar junto con HyDE a `Scripts/pkg_custom.lst` y pasar el archivo como parámetro para instalarlo de la siguiente manera:
 >
 > ```shell
-> ./install.sh pkg_custom.lst
+> ./install.sh pkg_custom.lst 
 > ```
 
 <!--
@@ -88,10 +85,10 @@ As a second install option, you can also use `Hyde-install`, which might be easi
 View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com/kRHYME7/Hyde-cli?tab=readme-ov-file#usage).
 -->
 
-Reinicie el sistema después de que se complete el script de instalación y lo lleve a la pantalla de inicio de sesión de SDDM (o pantalla negra) por primera vez.
+Reinicie después de que el script de instalación se complete y lo lleve a la pantalla de inicio de sesión de SDDM (o pantalla negra) por primera vez.
 Para obtener más detalles, consulte la [wiki de instalación](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
-## Actualizar
+### Actualizar
 
 Para actualizar HyDE, necesitarás extraer los últimos cambios de GitHub y restaurar las configuraciones ejecutando los siguientes comandos:
 
@@ -117,7 +114,7 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 
 ## Temas
 
-Todos nuestros temas oficiales se almacenan en un repositorio independiente, lo que permite a los usuarios instalarlos mediante themepatcher.
+Todos nuestros temas oficiales se almacenan en un repositorio separado, lo que permite a los usuarios instalarlos mediante themepatcher.
 Para obtener más información, visite [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes).
 
 <div align="center">
@@ -141,8 +138,8 @@ Para obtener más información, visite [HyDE-Project/hyde-themes](https://github
 
 > [!TIP]
 > Todos, incluido usted, pueden crear, mantener y compartir temas adicionales, ¡todos los cuales pueden instalarse usando themepatcher!
-> Para crear su propio tema personalizado, consulte la [theming wiki](https://github.com/prasanthrangan/hyprdots/wiki/Theming).
-> Si desea que se muestre su tema de Hyde o desea encontrar algunos temas no oficiales, visite [kRHYME7/hyde-gallery](https://github.com/kRHYME7/hyde-gallery)!
+> Para crear su propio tema personalizado, consulte la [Wiki de temas](https://github.com/prasanthrangan/hyprdots/wiki/Theming).
+> Si desea que se muestre su tema de Hyde o desea encontrar algunos temas no oficiales, visite [hyde-gallery](https://github.com/kRHYME7/hyde-gallery)!
 
 <div align="right">
   <br>
@@ -151,19 +148,19 @@ Para obtener más información, visite [HyDE-Project/hyde-themes](https://github
 
 ## Estilos
 
-<div align="center"><table><tr>Seleccionar tema</tr></tr><tr><td>
+<div align="center"><table><tr>Seleccionar tema</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_2.png"/></td></tr></table></div>
 
-<div align="center"><table><tr><td>Seleccionar fondo de pantalla</td><td>Seleccionar Lanzador</td></tr><tr><td>
+<div align="center"><table><tr><td>Seleccionar fondo de pantalla</td><td>Seleccionar lanzador</td></tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/walls_select.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_sel.png"/></td></tr>
-<tr><td>Modos de Wallbash</td><td>Acción de notificación</td></tr><tr><td>
+<tr><td> Modos de Wallbash</td><td>Acción de notificación</td></tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wb_mode_sel.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/notif_action_sel.png"/></td></tr>
 </table></div>
 
-<div align="center"><table><tr>Lanzador de Rofi</tr><tr><td>
+<div align="center"><table><tr>Lanzador Rofi</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_2.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_3.png"/></td></tr><tr><td>
@@ -178,7 +175,7 @@ Para obtener más información, visite [HyDE-Project/hyde-themes](https://github
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_12.png"/></td></tr>
 </table></div>
 
-<div align="center"><table><tr>Estilos de menu Wlogout</tr><tr><td>
+<div align="center"><table><tr>Cerrar sesión</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_2.png"/></td></tr></table></div>
 
@@ -202,4 +199,8 @@ Para obtener más información, visite [HyDE-Project/hyde-themes](https://github
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
+<div align="right">
+  <sub>Last edited on: <span id="last-edited"></span></sub>
 </div>
