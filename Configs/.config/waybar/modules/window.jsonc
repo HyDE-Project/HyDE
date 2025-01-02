@@ -16,7 +16,9 @@
             "(.*) — Google chrome": "$1  ",
             "(.*)Google chrome": "Google chrome  ",
             "(.*) — Github": "$1  ",
-            "(.*)Github": "Github ", 
+            "(.*)Github": "Github ",
+            "(.*)Spotify Free": "Spotify 󰓇",
+            "(.*)Spotify Premiun": "Spotify 󰓇",
         },
         "max-length": 50
     },
