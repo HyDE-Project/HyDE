@@ -14,20 +14,21 @@ fpk_exup="pkg_installed flatpak && flatpak update"
 
 # Trigger upgrade
 if [ "$1" == "up" ] ; then
-    trap 'pkill -RTMIN+20 waybar' EXIT
+    # trap 'pkill -RTMIN+20 waybar' EXIT
     command="
     fastfetch
-    $0 upgrade
+    $0 upgrade &
     ${aurhlpr} -Syu
     $fpk_exup
     read -n 1 -p 'Press any key to continue...'
     "
     kitty --title systemupdate sh -c "${command}"
+    exit 0
 fi
 
 # Check for AUR updates
-aur=$(${aurhlpr} -Qua | wc -l)
-ofc=$( (while pgrep -x checkupdates > /dev/null ; do sleep 1; done) ; checkupdates | wc -l)
+aur=$(${aurhlpr} -Qua | wc -l) 
+ofc=$(pacman -Qu | wc -l)
 
 # Check for flatpak updates
 if pkg_installed flatpak ; then
@@ -40,8 +41,7 @@ fi
 
 # Calculate total available updates
 upd=$(( ofc + aur + fpk ))
-
-[ "${1}" == upgrade ] && printf "[Official] %-10s\n[AUR]      %-10s\n[Flatpak]  %-10s\n" "$ofc" "$aur" "$fpk" && exit
+[ "${1}" == upgrade ] && printf "\n[Official] %-10s\n[AUR]      %-10s\n[Flatpak]  %-10s\nEnter your password:" "$ofc" "$aur" "$fpk" && exit
 
 # Show tooltip
 if [ $upd -eq 0 ] ; then
