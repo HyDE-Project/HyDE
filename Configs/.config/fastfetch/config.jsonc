@@ -9,8 +9,10 @@
   },
   "modules": [
     {
-      "type": "custom",
-      "format": "\u001b[36m   󰄛  コンピューター"
+      "type": "command",
+      "key": "ﮧ",
+      "keyColor": "blue",
+      "text": "splash=$(hyprctl splash);echo $splash"
     },
     {
       "type": "custom",
@@ -19,7 +21,7 @@
     {
       "type": "chassis",
       "key": "  󰇺 Chassis",
-      "format": "{3}"
+      "format": "{1} {2} {3}"
     },
     {
       "type": "os",
