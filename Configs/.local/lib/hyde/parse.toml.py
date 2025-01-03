@@ -1,10 +1,41 @@
 #!/bin/env python
 import tomllib
-import sys
+import argparse
+import logging
 import os
 import time
 import threading
 import subprocess
+
+
+def fmt_logging():
+    class ColoredFormatter(logging.Formatter):
+        COLORS = {
+            "DEBUG": "\033[94m",  # Blue
+            "INFO": "\033[92m",  # Green
+            "WARNING": "\033[93m",  # Yellow
+            "ERROR": "\033[91m",  # Red
+            "CRITICAL": "\033[95m",  # Magenta
+        }
+        RESET = "\033[0m"
+        DATE_COLOR = "\033[96m"  # Cyan
+
+        def format(self, record):
+            log_color = self.COLORS.get(record.levelname, self.RESET)
+            record.levelname = f"{log_color}{record.levelname}{self.RESET}"
+            record.asctime = (
+                f"{self.DATE_COLOR}{self.formatTime(record, self.datefmt)}{self.RESET}"
+            )
+            return super().format(record)
+
+    log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+    log_format = os.getenv(
+        "LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    formatter = ColoredFormatter(log_format)
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    logging.basicConfig(level=log_level, handlers=[handler])
 
 
 def parse_toml_to_env(toml_file, env_file=None, export=False):
@@ -13,7 +44,7 @@ def parse_toml_to_env(toml_file, env_file=None, export=False):
             toml_content = tomllib.load(file)
     except Exception as e:
         error_message = f"Error parsing TOML file: {e}"
-        print(error_message)
+        logging.error(error_message)
         subprocess.run(["notify-send", "HyDE Error", error_message])
         return
 
@@ -43,9 +74,10 @@ def parse_toml_to_env(toml_file, env_file=None, export=False):
     if env_file:
         with open(env_file, "w") as file:
             file.write("\n".join(output) + "\n")
-        print(f"Environment variables have been written to {env_file}")
+        logging.debug(f"Environment variables have been written to {env_file}")
+
     else:
-        print("\n".join(output))
+        logging.debug("\n".join(output))
 
 
 def watch_file(toml_file, env_file=None, export=False):
@@ -58,21 +90,29 @@ def watch_file(toml_file, env_file=None, export=False):
             parse_toml_to_env(toml_file, env_file, export)
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2 or len(sys.argv) > 5:
-        print(
-            "Usage: python parse.toml.py <input_toml_file> [<output_env_file>] [--daemon] [--export]"
-        )
-        sys.exit(1)
-
-    input_toml_file = sys.argv[1]
-    output_env_file = (
-        sys.argv[2]
-        if len(sys.argv) >= 3 and sys.argv[2] not in ["--daemon", "--export"]
-        else None
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Parse a TOML file and optionally watch for changes."
     )
-    daemon_mode = "--daemon" in sys.argv
-    export_mode = "--export" in sys.argv
+    parser.add_argument("input_toml_file", help="The input TOML file to parse.")
+    parser.add_argument(
+        "output_env_file", nargs="?", help="The output environment file."
+    )
+    parser.add_argument(
+        "--daemon", action="store_true", help="Run in daemon mode to watch for changes."
+    )
+    parser.add_argument("--export", action="store_true", help="Export the parsed data.")
+    return parser.parse_args()
+
+
+def main():
+    fmt_logging()
+    args = parse_args()
+
+    input_toml_file = args.input_toml_file
+    output_env_file = args.output_env_file
+    daemon_mode = args.daemon
+    export_mode = args.export
 
     if daemon_mode:
         # Generate the config on launch
@@ -83,11 +123,15 @@ if __name__ == "__main__":
         )
         watcher_thread.daemon = True
         watcher_thread.start()
-        print(f"Watching {input_toml_file} for changes...")
+        logging.debug(f"Watching {input_toml_file} for changes...")
         try:
             while True:
                 time.sleep(1)
         except KeyboardInterrupt:
-            print("Daemon mode stopped.")
+            logging.info("Daemon mode stopped.")
     else:
         parse_toml_to_env(input_toml_file, output_env_file, export_mode)
+
+
+if __name__ == "__main__":
+    main()

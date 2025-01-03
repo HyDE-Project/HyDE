@@ -59,10 +59,10 @@ cat <<WALLBASH >"${confDir}/hypr/themes/wallbash.conf"
 # \$SOURCE_FILE="/some/files"
 #
 #
-# -- ⌨️ hyprland.conf --
+# -- ⌨️ userprefs.conf --
 # exec = \${RUN_CMD}"
 # source = \${SOURCE_FILE}
-# exec = Hyde code theme \$CODE_THEME # Setting the code theme
+# exec = hyde-shell walbash code \$CODE_THEME # Setting the code theme
 
 # // ----------------------------
 WALLBASH

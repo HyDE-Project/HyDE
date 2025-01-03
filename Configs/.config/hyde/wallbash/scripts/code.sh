@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
-scrDir="$(dirname "$(which globalcontrol.sh)")"
+# shellcheck source=$HOME/.local/bin/hyde-shell
 # shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+if ! source "$(which hyde-shell)"; then
+    echo "[wallbash] code :: Error: hyde-shell not found."
+    echo "[wallbash] code :: Is HyDE installed?"
+    exit 1
+fi
 
 cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
 # confDir="${confDir:-$XDG_CONFIG_HOME}"
-# readarray -t codeConf < <(find "$confDir" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" -o -name "Cursor*" | sort)
+readarray -t codeConf < <(find "$confDir" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" -o -name "Cursor*" | sort)
 readarray -t codeVsix < <(find "$HOME" -mindepth 1 -maxdepth 1 -type d -name ".vscode*" -o -name ".cursor" | sort)
 # tmpFile="/tmp/$(id -u)$(basename ${0}).tmp"
 
@@ -38,12 +42,16 @@ cat <<NOTICE
 [wallbashcode]  and type "Preferences: Color Theme" and select "Wallbash".
 NOTICE
 
-# for i in "${!codeConf[@]}"; do
-#     [ -d "${codeConf[i]}/User" ] || continue
-#     [ -f "${codeConf[i]}/User/settings.json" ] || echo -e "{\n \"workbench.colorTheme\":\"Wallbash\" \n}" >"${codeConf[i]}/User/settings.json"
-#     extTheme="$(jq -r '.["workbench.colorTheme"]' "${codeConf[i]}/User/settings.json")"
-
-#     if [ "${extTheme}" != "Wallbash" ]; then
-#         jq '.["workbench.colorTheme"] = "Wallbash"' "${codeConf[i]}/User/settings.json" >"${tmpFile}" && mv "${tmpFile}" "${codeConf[i]}/User/settings.json"
-#     fi
-# done
+set_theme="${1:-"Wallbash"}"
+for i in "${!codeConf[@]}"; do
+    [ -d "${codeConf[i]}/User" ] || continue
+    [ -f "${codeConf[i]}/User/settings.json" ] || echo -e "{\n \"workbench.colorTheme\":\"Wallbash\" \n}" >"${codeConf[i]}/User/settings.json"
+    extTheme="$(
+        "$LIB_DIR/hyde/parse.json.py" -CRQ '.["workbench.colorTheme"]' "${codeConf[i]}/User/settings.json"
+    )"
+    if [ "${extTheme}" != "${set_theme}" ]; then
+        "$LIB_DIR/hyde/parse.json.py" -CU '.["workbench.colorTheme"]' "${set_theme}" "${codeConf[i]}/User/settings.json"
+        echo "[wallbashcode] Theme set to: ${set_theme} in ${codeConf[i]}"
+    #! jq '.["workbench.colorTheme"] = "Wallbash"' "${codeConf[i]}/User/settings.json" >"${tmpFile}" && mv "${tmpFile}" "${codeConf[i]}/User/settings.json" # DEPRECATED
+    fi
+done

@@ -1,5 +1,11 @@
-#!/bin/bash
+#!/bin/env bash
 # shellcheck disable=SC2154
+
+if [[ -z $dcol_pry1 ]]; then
+    cacheDir=${cacheDir:-$HOME/.cache/hyde}
+    # shellcheck disable=SC1091
+    source "${cacheDir}/wall.dcol"
+fi
 
 # Function to convert hex to RGB
 hex_to_rgb() {
@@ -7,12 +13,13 @@ hex_to_rgb() {
     echo "$((16#${hex:0:2})) $((16#${hex:2:2})) $((16#${hex:4:2}))"
 }
 
-# Function to print color
 print_color() {
+    echo -n " "
     for hex_color in "$@"; do
         local rgb_color
         rgb_color=$(hex_to_rgb "$hex_color")
-        echo -en "\e[48;2;${rgb_color// /;};1m        \e[0m "
+        # echo -en "\e[48;2;${rgb_color// /;};1m        \e[0m "
+        echo -en "\e[48;2;${rgb_color// /;};m  \e[0m"
     done
     echo
 }

@@ -304,5 +304,13 @@ print_log -stat "Log" "View logs at ${cacheDir}/logs/${HYDE_LOG}"
 if [ $flg_Install -eq 1 ] ||
     [ $flg_Restore -eq 1 ] ||
     [ $flg_Service -eq 1 ]; then
-    print_log -stat "HyDE" "Please restart your system to apply changes"
+    print_log -stat "HyDE" "It is not recommended to use newly installed or upgraded HyDE without rebooting the system. Do you want to reboot the system? (y/n)"
+read answer
+
+if [ "$answer" == "y" ]; then
+  echo "Rebooting system"
+  sudo reboot
+else
+  echo "The system will not reboot"
+fi
 fi

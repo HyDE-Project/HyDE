@@ -34,8 +34,11 @@ while read -r lst; do
     fi
 
     if [ ! -d "${tgt}" ]; then
-        mkdir -p "${tgt}" || print_log -warn "create" "directory as root instead..." && sudo mkdir -p "${tgt}"
-        print_log -stat "create" "Directory: ${tgt}"
+        if ! mkdir -p "${tgt}"; then
+            print_log -warn "create" "directory as root instead..."
+            sudo mkdir -p "${tgt}"
+        fi
+
     fi
 
     if [ -w "${tgt}" ]; then

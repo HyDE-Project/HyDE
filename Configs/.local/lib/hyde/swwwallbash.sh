@@ -91,7 +91,7 @@ export gtkTheme gtkIcon cursorTheme
 
 fn_wallbash() {
     local template="${1}"
-    local target_file exec_command
+    local temp_target_file exec_command
     WALLBASH_SCRIPTS="${template%%hyde/wallbash*}hyde/wallbash/scripts"
     if [[ "${template}" == *.theme ]]; then
         # This is approach is to handle the theme files
@@ -129,7 +129,8 @@ fn_wallbash() {
     export -f pkg_installed print_log
     # exec_command="$(head -1 "${template}" | awk -F '|' '{print $2}')"
     exec_command="${exec_command:-"$(head -1 "${template}" | awk -F '|' '{print $2}')"}"
-    sed '1d' "${template}" >"${target_file}"
+    temp_target_file="$(mktemp)"
+    sed '1d' "${template}" >"${temp_target_file}"
     if [[ ${revert_colors} -eq 1 ]] || [[ "${enableWallDcol}" -eq 2 && "${dcol_mode}" == "light" ]] || [[ "${enableWallDcol}" -eq 3 && "${dcol_mode}" == "dark" ]]; then
         sed -i 's/<wallbash_mode>/'"${dcol_invt}"'/g
                 s/<wallbash_pry1>/'"${dcol_pry4}"'/g
@@ -219,7 +220,7 @@ fn_wallbash() {
                 s/<wallbash_4xa6_rgba(\([^)]*\))>/'"${dcol_1xa4_rgba}"'/g
                 s/<wallbash_4xa7_rgba(\([^)]*\))>/'"${dcol_1xa3_rgba}"'/g
                 s/<wallbash_4xa8_rgba(\([^)]*\))>/'"${dcol_1xa2_rgba}"'/g
-                s/<wallbash_4xa9_rgba(\([^)]*\))>/'"${dcol_1xa1_rgba}"'/g' "${target_file}"
+                s/<wallbash_4xa9_rgba(\([^)]*\))>/'"${dcol_1xa1_rgba}"'/g' "${temp_target_file}"
     else
         sed -i 's/<wallbash_mode>/'"${dcol_mode}"'/g
                 s/<wallbash_pry1>/'"${dcol_pry1}"'/g
@@ -309,7 +310,14 @@ fn_wallbash() {
                 s/<wallbash_4xa6_rgba(\([^)]*\))>/'"${dcol_4xa6_rgba}"'/g
                 s/<wallbash_4xa7_rgba(\([^)]*\))>/'"${dcol_4xa7_rgba}"'/g
                 s/<wallbash_4xa8_rgba(\([^)]*\))>/'"${dcol_4xa8_rgba}"'/g
-                s/<wallbash_4xa9_rgba(\([^)]*\))>/'"${dcol_4xa9_rgba}"'/g' "${target_file}"
+                s/<wallbash_4xa9_rgba(\([^)]*\))>/'"${dcol_4xa9_rgba}"'/g' "${temp_target_file}"
+    fi
+
+    if [ -s "${temp_target_file}" ]; then
+        mv "${temp_target_file}" "${target_file}"
+    else
+        echo "Error: ${temp_target_file} is empty or not created."
+        exit 1
     fi
     [ -z "${exec_command}" ] || bash -c "${exec_command}"
 }

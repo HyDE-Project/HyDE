@@ -11,6 +11,7 @@ custom_paths = [
 ] # List of paths to search for wallpapers
 
 [wallpaper.swww]
+# swwwallselect.sh configuration
 framerate = 60 # transition framerate
 duration = 1   # transition duration
 # Transition type [ none | simple | fade | left | right | top | bottom | wipe | wave | grow | center | any | outer | random ]
@@ -20,38 +21,48 @@ transition_default = "grow" # transition type for default wallpaper
 
 
 [rofi]
+# global rofi configuration`
 scale = 10 # rofi default scaling
 
 [rofi.hyprlock]
+# 'hyprlock.sh select' configuration
 scale = 10
 
 [rofi.animation]
+# ' animation.sh select' configuration
 scale = 8
 
 [rofi.glyph]
+# glyph-picker.sh configuration
 scale = 8
 
 [rofi.launcher]
+# rofilaunch.sh configuration
 # style = "10"
 scale = 5
 
 [rofi.cliphist]
+# cliphist.sh configuration
 scale = 8
 
 [rofi.wallpaper]
+#swwwallselect.sh configuration
 scale = 8
 
 [rofi.emoji]
+# emoji-picker.sh configuration
 style = 2
 scale = 8
 
 [rofi.theme]
+# themeselect.sh configuration
 scale = 6
 
 [wlogout]
 style = 2
 
 [battery.notify]
+# batterynotify.sh configuration
 timer = 120
 notify = 1140
 interval = 5
@@ -72,14 +83,18 @@ charging = ""
 discharging = ""
 
 [keybind.hint]
+# keybind.hint.py configuration
+
 
 [rofi.keybind.hint]
+# keybind_hint.sh configuration
 delimiter = "\t"
 width = "40em"
 height = "40em"
 line = 16
 
 [screenshot]
+# screenshot.sh configuration
 annotation_tool = "swappy" # Annotation tool
 annotation_pre_command = [
     # 'shader=$(hyprshade current) && hyprshade off && trap restore_shader EXIT', # Use this when you're using hyprshade
@@ -140,9 +155,17 @@ sanitize = [
 ] # Remove all rgba colors // workarounds for rgba colors crashing hyprland
 
 [volume]
+# volumecontrol.sh configuration
 notify = true # Useful for systems that have their own OSD
 steps = 5     # Number of steps to increase/decrease volume
 
 [brightness]
+# brightnesscontrol.sh configuration
 notify = true # Useful for systems that have their own OSD
 steps = 5     # Number of steps to increase/decrease brightness
+
+
+[sysmonitor]
+#  sysmonlaunch.sh configuration // System monitor configuration
+execute = "btop"                   # Default command to execute // accepts executable or app.desktop
+commands = ["btop", "htop", "top"] # Fallback command options

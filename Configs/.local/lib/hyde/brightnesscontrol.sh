@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# Check if the script is already running
-pgrep -cf "${0##*/}" | grep -qv 1 && echo "An instance of the script is already running..." && exit 1
 scrDir=$(dirname "$(realpath "$0")")
 # shellcheck disable=SC1091
 source "$scrDir/globalcontrol.sh"
@@ -35,7 +33,7 @@ send_notification() {
     # shellcheck disable=SC2154
     ico="${iconsDir}/Wallbash-Icon/media/knob-${angle}.svg"
     bar=$(seq -s "." $((brightness / 15)) | sed 's/[0-9]//g')
-    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 96 -t 800 -i "${ico}" "${brightness}${bar}" "${brightinfo}"
+    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 7 -t 800 -i "${ico}" "${brightness}${bar}" "${brightinfo}"
 }
 
 get_brightness() {

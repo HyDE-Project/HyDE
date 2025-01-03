@@ -29,9 +29,9 @@ Who are the $USER?
 - [ ] **Portable**
 
   - [ ] HyDE-specific files should be imported into $USER, not the other way around
-  - [ ] Keep it minimal
+  - [X] Keep it minimal
   - [ ] Make it packageable
-  - [ ] Follow XDG specs
+  - [X] Follow XDG specs
   - [ ] Add Makefile
 
 - [ ] **Extensible**
@@ -46,11 +46,12 @@ Who are the $USER?
 
 - [ ] **Manageable**
   - [ ] Fix scripts (shellcheck compatible)
-  - [ ] Move scripts to `./lib/hyde`
-  - [ ] Make `wallbash*.sh` scripts monolithic, to fix wallbash issues
+  - [X] Move scripts to `./lib/hyde`
+  - [X] Make `wallbash*.sh` scripts monolithic, to fix wallbash issues
 - [ ] **Better Abstraction**
   - [ ] Waybar
   - [x] Hyprlock
+  - [x] Animations
   - [ ] ...
 - [ ] Clean up
 - [ ] **...**

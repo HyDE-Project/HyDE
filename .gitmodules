@@ -1,0 +1,3 @@
+[submodule "Wiki"]
+	path = Wiki
+	url = https://github.com/HyDE-Project/HyDE.wiki.git

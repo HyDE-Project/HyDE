@@ -36,37 +36,22 @@ get_hashmap() {
     unset skipStrays
     unset verboseMap
 
-    validSources=()
     for wallSource in "$@"; do
         [ -z "${wallSource}" ] && continue
-        case "${wallSource}" in
-        --skipstrays) skipStrays=1 ;;
-        --verbose) verboseMap=1 ;;
-        *) validSources+=("${wallSource}") ;;
-        esac
+        [ "${wallSource}" == "--skipstrays" ] && skipStrays=1 && continue
+        [ "${wallSource}" == "--verbose" ] && verboseMap=1 && continue
+
+        hashMap=$(find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -exec "${hashMech}" {} + | sort -k2)
+        if [ -z "${hashMap}" ]; then
+            echo "WARNING: No image found in \"${wallSource}\""
+            continue
+        fi
+
+        while read -r hash image; do
+            wallHash+=("${hash}")
+            wallList+=("${image}")
+        done <<<"${hashMap}"
     done
-
-    if [ ${#validSources[@]} -eq 0 ]; then
-        echo "ERROR: No valid image sources provided"
-        exit 1
-    fi
-
-    # 200ms reduction
-    # hashMap=$(find "${validSources[@]}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0 | xargs -0 "${hashMech}" | sort -k2)
-
-    # if [ -z "${hashMap}" ]; then
-    #     echo "WARNING: No images found in the provided sources:"
-    #     for source in "${validSources[@]}"; do
-    #         num_files=$(find "${source}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | wc -l)
-    #         echo " x ${source} - ${num_files} files"
-    #     done
-    #     exit 1
-    # fi
-
-    while read -r hash image; do
-        wallHash+=("${hash}")
-        wallList+=("${image}")
-    done <<<"$(find "${validSources[@]}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -print0 | xargs -0 "${hashMech}" | sort -k2)"
 
     if [ -z "${#wallList[@]}" ] || [[ "${#wallList[@]}" -eq 0 ]]; then
         if [[ "${skipStrays}" -eq 1 ]]; then
