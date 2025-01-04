@@ -24,9 +24,9 @@ if [ "$1" == "up" ] ; then
         # Read info from env file
         while IFS="=" read -r key value; do
             case "$key" in
-                Official) official=$value ;;
-                AUR) aur=$value ;;
-                Flatpak) flatpak=$value ;;
+                OFFICIAL_UPDATES) official=$value ;;
+                AUR_UPDATES) aur=$value ;;
+                FLATPAK_UPDATES) flatpak=$value ;;
             esac
         done < "$temp_file"
 
@@ -61,9 +61,9 @@ fi
 upd=$(( ofc + aur + fpk ))
 # Prepare the upgrade info
 upgrade_info=$(cat <<EOF
-Official=$ofc
-AUR=$aur
-Flatpak=$fpk
+OFFICIAL_UPDATES=$ofc
+AUR_UPDATES=$aur
+FLATPAK_UPDATES=$fpk
 EOF
 )
 
