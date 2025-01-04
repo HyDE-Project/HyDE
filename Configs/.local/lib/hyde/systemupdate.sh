@@ -7,26 +7,32 @@ fi
 
 # source variables
 scrDir=$(dirname "$(realpath "$0")")
+# shellcheck disable=SC1091
 source "$scrDir/globalcontrol.sh"
 get_aurhlpr
 export -f pkg_installed
 fpk_exup="pkg_installed flatpak && flatpak update"
-# Create the folder to store the JSON file
-[ ! -f "$HYDE_RUNTIME_DIR/update_info.json" ] && mkdir -p "$HYDE_RUNTIME_DIR"
-json_file="$HYDE_RUNTIME_DIR/update_info.json"
+temp_file="$HYDE_RUNTIME_DIR/update_info"
+# shellcheck source=/dev/null
+[ -f "$temp_file" ] && source "$temp_file"
 
 # Trigger upgrade
 if [ "$1" == "up" ] ; then
-    if [ -f "$json_file" ]; then
+    if [ -f "$temp_file" ]; then
         # refreshes the module so after you update it will reset to zero
         trap 'pkill -RTMIN+20 waybar' EXIT
-        # Read and parse JSON in one step
-        eval "$(jq -r '@sh "official_updates=\(.official_updates) aur_updates=\(.aur_updates) flatpak_updates=\(.flatpak_updates)"' "$json_file")"  
+        # Read info from env file
+        while IFS="=" read -r key value; do
+            case "$key" in
+                Official) official=$value ;;
+                AUR) aur=$value ;;
+                Flatpak) flatpak=$value ;;
+            esac
+        done < "$temp_file"
+
         command="
         fastfetch
-        printf '[%s] %5s\n' 'Official' '$official_updates'
-        printf '[%s] %10s\n' 'AUR' '$aur_updates'
-        printf '[%s] %6s\n' 'Flatpak' '$flatpak_updates'
+        printf '[Official] %-10s\n[AUR]      %-10s\n[Flatpak]  %-10s\n' '$official' '$aur' '$flatpak'
         ${aurhlpr} -Syu
         $fpk_exup
         read -n 1 -p 'Press any key to continue...'
@@ -53,19 +59,16 @@ fi
 
 # Calculate total available updates
 upd=$(( ofc + aur + fpk ))
-# Prepare the upgrade info as JSON format
+# Prepare the upgrade info
 upgrade_info=$(cat <<EOF
-{
-    "official_updates": "$ofc",
-    "aur_updates": "$aur",
-    "flatpak_updates": "$fpk",
-    "total_updates": "$upd"
-}
+Official=$ofc
+AUR=$aur
+Flatpak=$fpk
 EOF
 )
 
-# Save the upgrade info as JSON file
-echo "$upgrade_info" > "$json_file"
+# Save the upgrade info
+echo "$upgrade_info" > "$temp_file"
 # Show tooltip
 if [ $upd -eq 0 ] ; then
     upd="" #Remove Icon completely
