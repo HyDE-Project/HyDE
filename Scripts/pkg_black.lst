@@ -4,6 +4,6 @@
 # And will be removed from the final package installation
 # Example:
 
-# flatpak
-visual-studio-code-bin
+# core
+python-pyamdgpuinfo
 
