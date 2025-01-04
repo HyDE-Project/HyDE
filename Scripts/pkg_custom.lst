@@ -1,51 +1,57 @@
 # --------------------------------------------------- // System
-# downgrade                                            # downgrade packages
-# trash-cli-git                                        # cli to manage trash files
-# libinput-gestures                                    # actions touchpad gestures using libinput
-# gestures                                             # gui for libinput-gestures
-wttrbar                                                # for weather
-python-requests|wttrbar                                # script dependency
-ddccui                                                 # GUI to control brightness for external monitors
-hyprgui-bin                                            # GUI for hyprland configuration // might mess your userprefs but convenient
-# satty                                                  # Annotation tool like swappy but better
+timeshift                                               # backup utility
+downgrade                                               # downgrade packages
+kdeconnect                                              # wireless communication between devices
+auto-cpufreq                                            # Automatic CPU speed & power optimizer
+# trash-cli-git                                         # cli to manage trash files
+# libinput-gestures                                     # actions touchpad gestures using libinput
+# gestures                                              # gui for libinput-gestures
+# wttrbar                                               # for weather
+# python-requests|wttrbar                               # script dependency
+# ddccui                                                # GUI to control brightness for external monitors
+# hyprgui-bin                                           # GUI for hyprland configuration // might mess your userprefs but convenient
+# satty                                                 # Annotation tool like swappy but better
 
 # --------------------------------------------------- // Shell
-# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh // already installed locally
+# oh-my-zsh-git|zsh                                     # Optional plugin manager for zsh // already installed locally
 
 
 # --------------------------------------------------- // Misc
-xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
-# emote                                                # emoji picker gtk3
+xdg-desktop-portal-gtk                                  # xdg desktop portal using gtk
+emote                                                   # emoji picker gtk3
 
 # --------------------------------------------------- // Gaming
-steam                                                  # gaming platform
-gamemode                                               # daemon and library for game optimizations
-mangohud                                               # system performance overlay
-# gamescope                                            # micro-compositor for gaming
+steam                                                   # gaming platform
+gamemode                                                # daemon and library for game optimizations
+mangohud                                                # system performance overlay
+gamescope                                               # micro-compositor for gaming
 
-# --------------------------------------------------- // Music
-cava                                                   # audio visualizer
-spotify                                                # proprietary music streaming service
-spicetify-cli                                          # cli to customize spotify client
+# --------------------------------------------------- // Media
+feh                                                     # minimal image viewer
+mpv                                                     # better video player
+evince                                                  # minimal document reader
+cava                                                    # audio visualizer
+spotify                                                 # proprietary music streaming service
+spicetify-cli                                           # cli to customize spotify client
 
 # --------------------------------------------------- // Apps
-# neovim                                               # vim based text editor
+neovim                                                  # vim based text editor
 
 # --------------------------------------------------- // Shell
-# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh
-# pokemon-colorscripts-git|zsh                           # display pokemon sprites (optional)
+# oh-my-zsh-git|zsh                                     # Optional plugin manager for zsh
+# pokemon-colorscripts-git|zsh                          # display pokemon sprites (optional)
 
 # --------------------------------------------------- // Editor
-# vscodium-bin                                          # Full oss text editor
-# vscodium-bin-marketplace|vscodium-bin                 # VSCodium marketplace
+vscodium-bin                                            # Full oss text editor
+vscodium-bin-marketplace|vscodium-bin                   # VSCodium marketplace
 # code-marketplace|code                                 # Code-Oss marketplace
 # visual-studio-code-bin                                # MS  text editor
 
 # --------------------------------------------------- // Backends
-#electron                                              # electron backend
+# electron                                              # electron backend
 
 # --------------------------------------------------- // Lockscreen
-#swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
+# swaylock-effects-git                                  # swaylock with effects // very minimal lockscreen
 
 # --------------------------------------------------- // OSD
-swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
+# swayosd-git                                           # A GTK based on screen display for keyboard shortcuts like caps-lock and volume
