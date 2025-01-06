@@ -140,7 +140,7 @@ map_floor() {
 # generate emoji and icon based on temperature and utilization
 get_icons() {
     # key-value pairs of temperature and utilization levels
-    temp_lv="85:&🌋, 65:&🔥, 45:&☁️, &❄️"
+    temp_lv="85:& , 65:&󰈸 , 45:& , & "
     util_lv="90:, 60:󰓅, 30:󰾅, 󰾆"
 
     # return comma separated emojis/icons
