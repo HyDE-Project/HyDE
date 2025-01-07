@@ -44,6 +44,11 @@ if [ "$1" == "up" ] ; then
     exit 0
 fi
 
+# Check official package updates (without sudo)
+if command -v checkupdates &> /dev/null; then
+    ofc=$(checkupdates 2>/dev/null | wc -l)
+fi
+
 # Check for AUR updates
 aur=$(${aurhlpr} -Qua | wc -l) 
 ofc=$(pacman -Qu | wc -l)
