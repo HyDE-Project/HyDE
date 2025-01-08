@@ -48,7 +48,12 @@
     },
     {
       "type": "terminal",
-      "key": "  >_ Terminal",
+      "key": "   Terminal",
+      "keyColor": "yellow"
+    },
+    {
+      "type": "shell",
+      "key": "   shell",
       "keyColor": "yellow"
     },
     {
