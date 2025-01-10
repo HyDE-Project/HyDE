@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Update HyDE 
+Exec=sh -c 'cd ~/HyDE/Scripts && git pull origin master && ./install.sh -r'
+Icon=~/.cache/hyde/landing/mpris.png
+Terminal=true
