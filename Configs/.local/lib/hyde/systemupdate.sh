@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 
+# Check if the system is Arch Linux
 if [ ! -f /etc/arch-release ] ; then
     exit 0
 fi
 
+# Source variables and functions
 scrDir=$(dirname "$(realpath "$0")")
 # shellcheck disable=SC1091
 source "$scrDir/globalcontrol.sh"
 get_aurhlpr
 
+# Export functions
 export -f pkg_installed
 
+# Define update commands
 fpk_exup="pkg_installed flatpak && flatpak update"
 snp_exup="pkg_installed snap && snap refresh"
 
@@ -51,10 +55,11 @@ if [ "$1" == "up" ] ; then
     exit 0
 fi
 
+# Check for AUR updates
 aur=$(${aurhlpr} -Qua | wc -l)
 ofc=$(CHECKUPDATES_DB=$(mktemp -u) checkupdates | wc -l)
 
-# Check updates
+# Check for Flatpak updates
 if pkg_installed flatpak ; then
     fpk=$(flatpak remote-ls --updates | wc -l)
     fpk_disp="\n󰏓 Flatpak $fpk"
@@ -63,6 +68,7 @@ else
     fpk_disp=""
 fi
 
+# Check for Snap updates
 if pkg_installed snap ; then
     snp=$(snap refresh --list | wc -l)
     snp_disp="\n Snap $snp"
