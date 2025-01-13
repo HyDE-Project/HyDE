@@ -10,7 +10,7 @@
   "modules": [
     {
       "type": "command",
-      "key": "ﮧ",
+      "key": "  ",
       "keyColor": "blue",
       "text": "splash=$(hyprctl splash);echo $splash"
     },
@@ -48,7 +48,7 @@
     },
     {
       "type": "terminal",
-      "key": "  >_ Terminal",
+      "key": "   Terminal",
       "keyColor": "yellow"
     },
     {
@@ -91,7 +91,7 @@
     },
     {
       "type": "memory",
-      "key": "    Memory",
+      "key": "   Memory ",
       "keyColor": "magenta"
     },
     {

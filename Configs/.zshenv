@@ -37,9 +37,9 @@ function command_not_found_handler {
 function load_zsh_plugins {
 # Oh-my-zsh installation path
 zsh_paths=(
-    "/usr/share/oh-my-zsh"
-    "/usr/local/share/oh-my-zsh"
     "$HOME/.oh-my-zsh"
+    "/usr/local/share/oh-my-zsh"
+    "/usr/share/oh-my-zsh"
 )
 for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
 # Load Plugins
