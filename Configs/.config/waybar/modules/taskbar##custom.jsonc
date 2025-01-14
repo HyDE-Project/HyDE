@@ -1,0 +1,32 @@
+// you can copy this file to your config directory and modify it to your needs
+"wlr/taskbar": {
+    "all-outputs": true,
+    "active-first": true,
+    "markup": true,
+    "format": "{icon}",
+    "rotate": "${r_deg}",
+    "icon-size": ${i_task
+    },
+    "icon-theme": "${i_theme}",
+    "spacing": 0,
+    "tooltip-format": "{title}{app_id}",
+    "on-click": "activate",
+    "on-click-right": "fullscreen",
+    "on-click-middle": "close",
+    "ignore-list": [
+        ""
+        //"Spotify Free"
+    ],
+    "app_ids-mapping": {
+        "firefoxdeveloperedition": "firefox-developer-edition",
+        "firefoxnightly": "firefox-nightly",
+        "Spotify Free": "Spotify"
+    },
+    "rewrite": {
+        "Firefox Web Browser": "Firefox",
+        "Foot Server": "Terminal",
+        "Spotify Free": "Spotify",
+        "org.kde.dolphin": "dolphin",
+        "libreoffice-writer": "writer"
+    }
+},

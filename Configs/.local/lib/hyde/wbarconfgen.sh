@@ -109,17 +109,29 @@ gen_mod() {
     local col=$2
     local mod=""
 
-    mod="$(grep '^1|' "${conf_ctl}" | cut -d '|' -f "${col}")"
-    mod="${mod//(/"custom/l_end"}"
-    mod="${mod//)/"custom/r_end"}"
-    mod="${mod//[/"custom/sl_end"}"
-    mod="${mod//]/"custom/sr_end"}"
-    mod="${mod//\{/"custom/rl_end"}"
-    mod="${mod//\}/"custom/rr_end"}"
-    mod="${mod// /"\",\""}"
+    list_mods() {
+        mod="$(grep '^1|' "${conf_ctl}" | cut -d '|' -f "${col}")"
 
-    echo -e "\t\"modules-${pos}\": [\"custom/padd\",\"${mod}\",\"custom/padd\"]," >>"${conf_file}"
-    write_mod="$write_mod $mod"
+        if [[ $1 == "clean" ]]; then
+            # Process each word and remove the part after '##' indicating a tag
+            mod=$(echo "$mod" | awk '{for(i=1;i<=NF;i++){sub(/##.*/,"",$i); printf "%s ", $i}}')
+            mod="${mod% }" # Remove trailing space
+        fi
+
+        mod="${mod//(/"custom/l_end"}"
+        mod="${mod//)/"custom/r_end"}"
+        mod="${mod//[/"custom/sl_end"}"
+        mod="${mod//]/"custom/sr_end"}"
+        mod="${mod//\{/"custom/rl_end"}"
+        mod="${mod//\}/"custom/rr_end"}"
+        mod="${mod// /"\",\""}"
+        echo -e "${mod}"
+    }
+
+    write_mod="$write_mod $(list_mods)" # This is used to copy the modules to the config later
+
+    echo -e "\t\"modules-${pos}\": [\"custom/padd\",\"$(list_mods clean)\",\"custom/padd\"]," >>"${conf_file}"
+
 }
 
 # write positions for modules

@@ -3,63 +3,38 @@
 import json
 import requests
 from datetime import datetime
+import os
+
+
+def load_env_file(filepath):
+    with open(filepath) as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                if line.startswith('export '):
+                    line = line[len('export '):]
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value.strip('"')
+
+# Load environment variables from the specified files
+load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
+load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
+
 
 WEATHER_CODES = {
-    '113': '☀️ ',
-    '116': '⛅ ',
-    '119': '☁️ ',
-    '122': '☁️ ',
-    '143': '☁️ ',
-    '176': '🌧️',
-    '179': '🌧️',
-    '182': '🌧️',
-    '185': '🌧️',
-    '200': '⛈️ ',
-    '227': '🌨️',
-    '230': '🌨️',
-    '248': '☁️ ',
-    '260': '☁️ ',
-    '263': '🌧️',
-    '266': '🌧️',
-    '281': '🌧️',
-    '284': '🌧️',
-    '293': '🌧️',
-    '296': '🌧️',
-    '299': '🌧️',
-    '302': '🌧️',
-    '305': '🌧️',
-    '308': '🌧️',
-    '311': '🌧️',
-    '314': '🌧️',
-    '317': '🌧️',
-    '320': '🌨️',
-    '323': '🌨️',
-    '326': '🌨️',
-    '329': '❄️ ',
-    '332': '❄️ ',
-    '335': '❄️ ',
-    '338': '❄️ ',
-    '350': '🌧️',
-    '353': '🌧️',
-    '356': '🌧️',
-    '359': '🌧️',
-    '362': '🌧️',
-    '365': '🌧️',
-    '368': '🌧️',
-    '371': '❄️',
-    '374': '🌨️',
-    '377': '🌨️',
-    '386': '🌨️',
-    '389': '🌨️',
-    '392': '🌧️',
-    '395': '❄️ '
+    **dict.fromkeys(['113'], '☀️ '),
+    **dict.fromkeys(['116'], '⛅ '),
+    **dict.fromkeys(['119', '122', '143', '248', '260'], '☁️ '),
+    **dict.fromkeys(['176', '179', '182', '185', '263', '266', '281', '284', '293', '296', '299', '302', '305', '308', '311', '314', '317', '350', '353', '356', '359', '362', '365', '368', '392'], '🌧️'),
+    **dict.fromkeys(['200'], '⛈️ '),
+    **dict.fromkeys(['227', '230', '320', '323', '326', '374', '377', '386', '389'], '🌨️'),
+    **dict.fromkeys(['329', '332', '335', '338', '371', '395'], '❄️ ')
 }
-
 data = {}
 
 
-weather = requests.get("https://wttr.in/?format=j1").json()
 
+weather = requests.get("https://wttr.in/?format=j1").json()
+with_location = os.getenv('WAYBAR_WEATHER_LOC', True)
 
 def format_time(time):
     return time.replace("00", "").zfill(2)
@@ -92,9 +67,14 @@ if tempint > 0 and tempint < 10:
     extrachar = '+'
 
 
-data['text'] = ' '+WEATHER_CODES[weather['current_condition'][0]['weatherCode']] + \
-    " "+extrachar+weather['current_condition'][0]['FeelsLikeC']+"°" +" | "+ weather['nearest_area'][0]['areaName'][0]['value']+\
-    ", "  + weather['nearest_area'][0]['country'][0]['value']
+if with_location is True:
+    data['text'] = ' '+WEATHER_CODES[weather['current_condition'][0]['weatherCode']] + \
+        " "+extrachar+weather['current_condition'][0]['FeelsLikeC']+"°" +" | "+ weather['nearest_area'][0]['areaName'][0]['value']+\
+        ", "  + weather['nearest_area'][0]['country'][0]['value']
+else:
+    data['text'] = ' '+WEATHER_CODES[weather['current_condition'][0]['weatherCode']] + \
+        " "+extrachar+weather['current_condition'][0]['FeelsLikeC']+"°" 
+
 
 data['tooltip'] = f"<b>{weather['current_condition'][0]['weatherDesc'][0]['value']} {weather['current_condition'][0]['temp_C']}°</b>\n"
 data['tooltip'] += f"Feels like: {weather['current_condition'][0]['FeelsLikeC']}°\n"

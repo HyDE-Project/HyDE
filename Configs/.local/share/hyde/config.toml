@@ -115,13 +115,15 @@ file = "$HOME/.config/hyde/search.lst"
 [wallbash]
 skip_template = [
     "",
-] # skips the template when using wallbash. Requires full path to the template
+]    # skips the template when using wallbash. Requires full path to the template
 
 [waybar]
 font = "JetBrainsMono Nerd Font"
-font_size = 10
-# output = ["", ""]                # Default monitor output for waybar
+scale=30                                # total scaling
+# output = ["", ""]                     # Default monitor output for waybar
 
+[waybar.weather]
+loc = true                          # Show location in weather module
 
 [cava.stdout]
 # 'cava.sh stdout' configuration

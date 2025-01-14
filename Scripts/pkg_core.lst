@@ -50,6 +50,7 @@ qt5-imageformats                                       # for dolphin image thumb
 ffmpegthumbs                                           # for dolphin video thumbnails
 kde-cli-tools                                          # for dolphin file type defaults
 libnotify                                              # for notifications
+noto-fonts-emoji                                       # emoji font
 
 # --------------------------------------------------- // Theming
 nwg-look                                               # gtk configuration tool
