@@ -3,10 +3,10 @@
 # trash-cli-git                                        # cli to manage trash files
 # libinput-gestures                                    # actions touchpad gestures using libinput
 # gestures                                             # gui for libinput-gestures
-wttrbar                                                # for weather
-python-requests|wttrbar                                # script dependency
-ddccui                                                 # GUI to control brightness for external monitors
-hyprgui-bin                                            # GUI for hyprland configuration // might mess your userprefs but convenient
+# wttrbar                                                # for weather
+# python-requests|wttrbar                                # script dependency
+# ddccui                                                 # GUI to control brightness for external monitors
+# hyprgui-bin                                            # GUI for hyprland configuration // might mess your userprefs but convenient
 # satty                                                  # Annotation tool like swappy but better
 
 # --------------------------------------------------- // Shell
@@ -14,19 +14,19 @@ hyprgui-bin                                            # GUI for hyprland config
 
 
 # --------------------------------------------------- // Misc
-xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
+# xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
 # emote                                                # emoji picker gtk3
 
 # --------------------------------------------------- // Gaming
-steam                                                  # gaming platform
-gamemode                                               # daemon and library for game optimizations
-mangohud                                               # system performance overlay
+# steam                                                  # gaming platform
+# gamemode                                               # daemon and library for game optimizations
+# mangohud                                               # system performance overlay
 # gamescope                                            # micro-compositor for gaming
 
 # --------------------------------------------------- // Music
-cava                                                   # audio visualizer
-spotify                                                # proprietary music streaming service
-spicetify-cli                                          # cli to customize spotify client
+# cava                                                   # audio visualizer
+# spotify                                                # proprietary music streaming service
+# spicetify-cli                                          # cli to customize spotify client
 
 # --------------------------------------------------- // Apps
 # neovim                                               # vim based text editor
@@ -49,3 +49,33 @@ spicetify-cli                                          # cli to customize spotif
 
 # --------------------------------------------------- // OSD
 swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
+
+
+# --------------------------------------------------- // ZARYU
+aylurs-gtk-shell-git                                   # Ags
+ddcutil                                                # AgsDeps
+ttf-material-symbols-variable-git                      # AgsDeps
+gnome-bluetooth-3.0                                    # AgsDeps
+greetd                                                 # AgsDeps
+libdbusmenu-gtk3                                       # AgsDeps
+libsoup3                                               # AgsDeps
+libnotify                                              # AgsDeps
+networkmanager                                         # AgsDeps
+power-profiles-daemon                                  # AgsDeps  
+upower                                                 # AgsDeps
+gtksourceview3                                         # AgsDeps
+
+bleachbit                                              # system cleaner
+cpio                                                   # hyprpm deps
+meson                                                  # hyprpm deps
+cmake                                                  # hyprpm deps
+
+bat                                                    # cat replacement
+mousepad                                               # text-editor
+video-downloader-git                                   # video downloader
+gparted                                                # partition manager
+brave-bin                                              # browser
+neovim                                                 # editor
+fish                                                   # shell
+
+flatpak                                                # flatpak manager

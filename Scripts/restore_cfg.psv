@@ -1,4 +1,4 @@
-This is a pipe separated value file.
+rThis is a pipe separated value file.
 It contains the paths of the dotfiles and
 their respective package dependency.
 
@@ -107,3 +107,13 @@ S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 
 P|${HOME}/.config/hypr|hypridle.conf|hypridle
+
+ ZARYU 
+P|${HOME}/.config|agsv1|aylurs-gtk-shell-git
+P|${HOME}/.config|bleachbit|bleachbit
+P|${HOME}/.config|nvim|neovim
+P|${HOME}/.config|chrome-flags.conf|chromium
+P|${HOME}/.local/share/hyprpm|hyprland
+P|${HOME}/.local/share/fonts|hyprland
+P|${HOME}|.UsefulCMD|hyprland
+P|${HOME}/.config/hyde|themes|hyprland

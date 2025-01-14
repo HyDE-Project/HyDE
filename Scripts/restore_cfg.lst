@@ -44,7 +44,9 @@ N|Y|${HOME}/.config|lsd|lsd
 Y|Y|${HOME}/.config/hyde|wallbash|hyprland
 Y|Y|${HOME}/.local/share|hyde|hyprland
 N|Y|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
-N|Y|${HOME}/.config/hypr|hyde.conf keybindings.conf monitors.conf userprefs.conf animations.conf hyprland.conf windowrules.conf animations themes|hyprland
+Y|Y|${HOME}/.config/hypr|animations.conf hyprland.conf pyprland.toml windowrules.conf windowsrules.conf animations themes UserPrefs pyprland.d plugins|hyprland
+N|Y|${HOME}/.config/hypr|keybindings.conf monitors.conf userprefs.conf|hyprland
+Y|Y|${HOME}/.local/share|bin|hyprland
 Y|Y|${HOME}/.local/lib|hyde|hyprland
 Y|Y|${HOME}/.config|kitty|kitty
 Y|Y|${HOME}/.config|Kvantum|kvantum
@@ -67,3 +69,13 @@ Y|Y|${HOME}/.local/share|dolphin|dolphin
 Y|Y|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
 Y|Y|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
 N|Y|${HOME}/.config|libinput-gestures.conf|libinput-gestures
+
+Y|Y|${HOME}/.config|agsv1|aylurs-gtk-shell-git
+Y|Y|${HOME}/.config|bleachbit|bleachbit
+Y|Y|${HOME}/.config|nvim|neovim
+N|Y|${HOME}/.config|chrome-flags.conf|chromium
+
+Y|Y|${HOME}/.local/share|hyprpm|hyprland
+Y|Y|${HOME}/.local/share|fonts|hyprland
+Y|Y|${HOME}|.UsefulCMD|hyprland
+N|Y|${HOME}/.config/hyde|themes|hyprland
