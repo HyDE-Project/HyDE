@@ -1,5 +1,5 @@
     "custom/gpuinfo": {
-        "exec": " gpuinfo.sh",
+        "exec": "NO_EMOJI=1 gpuinfo.sh",
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
@@ -10,7 +10,7 @@
     },
 
     "custom/gpuinfo#nvidia": {
-        "exec": " gpuinfo.sh --use nvidia ",
+        "exec": "NO_EMOJI=1 gpuinfo.sh --use nvidia ",
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
@@ -20,7 +20,7 @@
     },
 
     "custom/gpuinfo#amd": {
-        "exec": " gpuinfo.sh --use amd ",
+        "exec": "NO_EMOJI=1 gpuinfo.sh --use amd ",
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
@@ -30,7 +30,7 @@
     },
 
     "custom/gpuinfo#intel": {
-        "exec": " gpuinfo.sh --use intel ",
+        "exec": "NO_EMOJI=1 gpuinfo.sh --use intel ",
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},

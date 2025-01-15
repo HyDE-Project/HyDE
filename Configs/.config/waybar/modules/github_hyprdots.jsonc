@@ -1,0 +1,6 @@
+    "custom/github_hyprdots": {
+        "format": " ",
+        "rotate": ${r_deg},
+        "tooltip-format": "  Hyprdots repository",
+        "on-click": "xdg-open https://github.com/prasanthrangan/hyprdots",
+    },

@@ -1,6 +1,0 @@
-    "custom/github_hyde": {
-        "format": " ",
-        "rotate": ${r_deg},
-        "tooltip-format": "  HyDE repository",
-        "on-click": "xdg-open https://github.com/HyDE-Project/HyDE",
-    },

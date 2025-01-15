@@ -1,7 +1,0 @@
-"custom/weather": {
-    "exec": "weather.py ",
-    "tooltip": true,
-    "format": "{}",
-    "interval": 30,
-    "return-type": "json"
-},
