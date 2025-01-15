@@ -22,13 +22,13 @@ if pkg_installed sddm; then
 
     if [ ! -f /etc/sddm.conf.d/kde_settings.hyde.bkp ]; then
         print_log -g "[DISPLAYMANAGER] " -b " :: " "configuring sddm..."
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Corners"
+        print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Sequoia" -r "\n[3]" -b " Corners"
         read -p " :: Enter option number : " -r sddmopt
 
         case $sddmopt in
         1) sddmtheme="Candy" ;;
-        2) sddmtheme="Corners" ;;
-        *) sddmtheme="Sequoia" ;;
+        2) sddmtheme="Sequoia" ;;
+        *) sddmtheme="Corners" ;;
         esac
 
         sudo tar -xzf "${cloneDir}/Source/arcs/Sddm_${sddmtheme}.tar.gz" -C /usr/share/sddm/themes/
