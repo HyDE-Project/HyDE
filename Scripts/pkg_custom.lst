@@ -78,6 +78,7 @@ gparted                                                # partition manager
 brave-bin                                              # browser
 neovim                                                 # editor
 fish                                                   # shell
+less                                                   # pager
 
 flatpak                                                # flatpak manager
 btop                                                   # system monitor
