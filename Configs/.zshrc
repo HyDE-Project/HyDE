@@ -12,3 +12,35 @@
 
 #  This is your file 
 # Add your configurations here
+
+# Custom Aliases
+alias v='nvim'
+alias vi='nvim'
+alias va='vim'
+alias cat='bat'
+#alias nix='fish'
+alias 'e.'='exit'
+alias fast='fastfetch'
+
+#NIX ALIASES
+alias hms='home-manager switch'
+alias ns='nix-store --gc'
+alias nsall='nix-collect-garbage -d'
+alias nel='nix-env -q'
+alias neg='nix-env --list-generations'
+alias hmg='home-manager generations'
+alias hmp='home-manager packages'
+alias nx='cd /home/zaryu/GitHub/hyprnix'
+alias sddmbg='cd /usr/share/sddm/themes/sequoia/backgrounds'
+alias gdir='cd /home/zaryu/GitHub'
+
+#GIT ALIASES
+alias ga='git add .'
+alias gc='git commit -m'
+alias gpm='git push -u origin main'
+alias gpms='git push -u origin master'
+alias gs='git status'
+alias gl='git log'
+
+# PACMAN
+alias repairpac='sudo pacman -Qknq | cut -d' ' -f 1 | sudo pacman -S -'
