@@ -4,13 +4,17 @@
 scrDir=$(dirname "$(realpath "$0")")
 gpuQ="/tmp/hyde-${UID}-gpuinfo-query"
 
+# Use the AQ_DRM_DEVICES variable to set the priority of the GPUs
+AQ_DRM_DEVICES="${AQ_DRM_DEVICES:-WLR_DRM_DEVICES}"
+
 tired=false
 [[ " $* " =~ " tired " ]] && ! grep -q "tired" "${gpuQ}" && echo "tired=true" >>"${gpuQ}"
 if [[ ! " $* " =~ " startup " ]]; then
   gpuQ="${gpuQ}$2"
 fi
-detect() { # Auto detect Gpu used by Hyprland(declared using env = WLR_DRM_DEVICES) Sophisticated?
-  card=$(echo "${WLR_DRM_DEVICES}" | cut -d':' -f1 | cut -d'/' -f4)
+detect() { # Auto detect Gpu used by Hyprland(declared using env = AQ_DRM_DEVICES) Sophisticated?
+  card=$(echo "${AQ_DRM_DEVICES}" | cut -d':' -f1 | cut -d'/' -f4)
+
   # shellcheck disable=SC2010
   slot_number=$(ls -l /dev/dri/by-path/ | grep "${card}" | awk -F'pci-0000:|-card' '{print $2}')
   vendor_id=$(lspci -nn -s "${slot_number}")
@@ -69,7 +73,7 @@ query() {
     } >>"${gpuQ}"
   fi
 
-  if ! grep -q "prioGPU=" "${gpuQ}" && [[ -n "${WLR_DRM_DEVICES}" ]]; then
+  if ! grep -q "prioGPU=" "${gpuQ}" && [[ -n "${AQ_DRM_DEVICES}" ]]; then
     trap detect EXIT
   fi
 
@@ -325,7 +329,7 @@ Available GPU: ${gpu_flags//_flag/}
 tired            * Adding this option will not query nvidia-smi if gpu is in suspend mode
 startup          * Useful if you want a certain GPU to be set at startup
 
-* If ${USER} declared env = WLR_DRM_DEVICES on hyprland then use this as the primary GPU
+* If ${USER} declared env = AQ_DRM_DEVICES on hyprland then use this as the primary GPU
 EOF
   exit
   ;;

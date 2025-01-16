@@ -83,6 +83,10 @@ call_wallbashScript() {
     dirs=("${sanitized_dirs[@]}")
     script_path=$(find "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
 
+    for func in $(compgen -A function); do
+        export -f "${func?}"
+    done
+
     if [[ -n "$script_path" ]]; then
         "$script_path" "${args[@]}"
     else

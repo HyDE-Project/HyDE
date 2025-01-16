@@ -37,7 +37,7 @@
 
 # --------------------------------------------------- // Editor
 # vscodium-bin                                          # Full oss text editor
-# vscodium-bin-marketplace|vscodium-bin                 # VSCodium marketplace
+# vscodium-marketplace|vscodium-bin                 # VSCodium marketplace
 # code-marketplace|code                                 # Code-Oss marketplace
 # visual-studio-code-bin                                # MS  text editor
 

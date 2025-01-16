@@ -26,11 +26,12 @@ if [ -e "$grimblastInstanceCheck" ]; then
 else
     touch "$grimblastInstanceCheck"
 fi
-trap "rm -f '$grimblastInstanceCheck'" EXIT
+trap 'rm -f "$grimblastInstanceCheck"' EXIT
 
 getTargetDirectory() {
+    # shellcheck disable=SC1091
     test -f "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs" &&
-        . "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs"
+        source "${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs"
 
     echo "${XDG_SCREENSHOTS_DIR:-${XDG_PICTURES_DIR:-$HOME}}"
 }
@@ -144,12 +145,6 @@ notifyError() {
     fi
 }
 
-resetFade() {
-    if [[ -n $FADELAYERS ]]; then
-        hyprctl keyword animation "$FADELAYERS" >/dev/null
-    fi
-}
-
 killHyprpicker() {
     if [ ! $HYPRPICKER_PID -eq -1 ]; then
         kill $HYPRPICKER_PID
@@ -177,14 +172,28 @@ takeScreenshot() {
     FILE=$1
     GEOM=$2
     OUTPUT=$3
+    c_state=$(hyprctl --batch -j \
+        "getoption cursor:no_hardware_cursors;\
+        getoption cursor:inactive_timeout" |
+        jq -r '[.int, .float] | map(select(. != null)) | @csv')
+    local hw_cursor=${c_state%%$'\n'*}
+    local t_out=${c_state#*$'\n'}
+    if [ -z "${CURSOR}" ] || [[ "${hw_cursor}" != 0 ]]; then
+        hyprctl --batch -q \
+            "keyword cursor:no_hardware_cursors false;\
+             keyword cursor:inactive_timeout 0.000001"
+        sleep 0.2
+    fi
     if [ -n "$OUTPUT" ]; then
         grim ${CURSOR:+-c} ${SCALE:+-s "$SCALE"} -o "$OUTPUT" "$FILE" || die "Unable to invoke grim"
     elif [ -z "$GEOM" ]; then
         grim ${CURSOR:+-c} ${SCALE:+-s "$SCALE"} "$FILE" || die "Unable to invoke grim"
     else
         grim ${CURSOR:+-c} ${SCALE:+-s "$SCALE"} -g "$GEOM" "$FILE" || die "Unable to invoke grim"
-        resetFade
     fi
+    hyprctl --batch -q \
+        "keyword cursor:no_hardware_cursors ${hw_cursor};\
+        keyword cursor:inactive_timeout ${t_out}"
 }
 
 wait() {
@@ -225,20 +234,19 @@ elif [ "$SUBJECT" = "area" ]; then
         HYPRPICKER_PID=$!
     fi
 
-    # get fade & fadeOut animation and unset it
+    # disable animation for layer namespace "selection" (slurp)
     # this removes the black border seen around screenshots
-    FADELAYERS="$(hyprctl -j animations | jq -jr '.[0][] | select(.name == "fadeLayers") | .name, ",", (if .enabled == true then "1" else "0" end), ",", (.speed|floor), ",", .bezier')"
-    hyprctl keyword animation 'fadeLayers,0,1,default' >/dev/null
+    hyprctl keyword layerrule "noanim,selection" >/dev/null
 
+    FULLSCREEN_WORKSPACES="$(hyprctl workspaces -j | jq -r 'map(select(.hasfullscreen) | .id)')"
     WORKSPACES="$(hyprctl monitors -j | jq -r '[(foreach .[] as $monitor (0; if $monitor.specialWorkspace.name == "" then $monitor.activeWorkspace else $monitor.specialWorkspace end)).id]')"
-    WINDOWS="$(hyprctl clients -j | jq -r --argjson workspaces "$WORKSPACES" 'map(select([.workspace.id] | inside($workspaces)))')"
+    WINDOWS="$(hyprctl clients -j | jq -r --argjson workspaces "$WORKSPACES" --argjson fullscreenWorkspaces "$FULLSCREEN_WORKSPACES" 'map((select(([.workspace.id] | inside($workspaces)) and ([.workspace.id] | inside($fullscreenWorkspaces) | not) or .fullscreen > 0)))')"
     # shellcheck disable=2086 # if we don't split, spaces mess up slurp
     GEOM=$(echo "$WINDOWS" | jq -r '.[] | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])"' | slurp $SLURP_ARGS)
 
     # Check if user exited slurp without selecting the area
     if [ -z "$GEOM" ]; then
         killHyprpicker
-        resetFade
         exit 1
     fi
     WHAT="Area"
