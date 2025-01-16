@@ -81,3 +81,6 @@ fish                                                   # shell
 
 flatpak                                                # flatpak manager
 btop                                                   # system monitor
+zen-browser-bin                                        # browser
+kcalc                                                  # calculator
+zed                                                    # text-editor

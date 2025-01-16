@@ -13,7 +13,7 @@ io.github.flattool.Warehouse                   # Warehouse
 
 # ------------------------------------------- // Social
 # org.signal.Signal                            # Signal
-# com.discordapp.Discord                       # Discord
+com.discordapp.Discord                       # Discord
 # dev.vencord.Vesktop                          # Vesktop
 # io.github.spacingbat3.webcord                  # Webcord
 

@@ -1,0 +1,9 @@
+[pyprland]
+include = ["~/.config/hypr/pyprland.d"]
+
+plugins = [
+  
+  "magnify",
+  "fetch_client_menu"
+]
+

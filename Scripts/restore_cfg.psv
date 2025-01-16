@@ -113,7 +113,10 @@ P|${HOME}/.config|agsv1|aylurs-gtk-shell-git
 P|${HOME}/.config|bleachbit|bleachbit
 P|${HOME}/.config|nvim|neovim
 P|${HOME}/.config|chrome-flags.conf|chromium
-P|${HOME}/.local/share/hyprpm|hyprland
-P|${HOME}/.local/share/fonts|hyprland
+S|${HOME}/.local/share/hyprpm|hyprland
+S|${HOME}/.local/share/fonts|hyprland
 P|${HOME}|.UsefulCMD|hyprland
-P|${HOME}/.config/hyde|themes|hyprland
+S|${HOME}/.config/hypr|plugins pyprland.d UserPrefs|hyprland
+S|${HOME}/.config/hypr|pyprland.toml|hyprland
+
+

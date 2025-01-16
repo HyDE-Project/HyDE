@@ -74,8 +74,7 @@ Y|Y|${HOME}/.config|agsv1|aylurs-gtk-shell-git
 Y|Y|${HOME}/.config|bleachbit|bleachbit
 Y|Y|${HOME}/.config|nvim|neovim
 N|Y|${HOME}/.config|chrome-flags.conf|chromium
-
 Y|Y|${HOME}/.local/share|hyprpm|hyprland
 Y|Y|${HOME}/.local/share|fonts|hyprland
 Y|Y|${HOME}|.UsefulCMD|hyprland
-N|Y|${HOME}/.config/hyde|themes|hyprland
+N|Y|${HOME}/.config|electron-flags.conf|electron
