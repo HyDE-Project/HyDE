@@ -1,0 +1,26 @@
+pyprland.plugins = [ "shortcuts_menu" ]
+
+[shortcuts_menu]
+command_start = "󰜎"
+engine = "rofi"
+parameters = "-p 🍰 -dmenu -i -theme ~/.config/rofi/clipboard.rasi"
+
+[shortcuts_menu.entries]
+
+"QuickEdit" = "kitty nvim ~/.config/hypr/pyprland.d/shortcuts.toml"
+
+"Fetch window" = "pypr fetch_client_menu"
+
+"NVIM CheatSheet" = "xdg-open https://cheatography.com/marconlsantos/cheat-sheets/neovim//"
+
+"Clipboard history" = [
+    {name="entry", command="cliphist list", filter="s/\t.*//"},
+    "cliphist decode '[entry]' | wl-copy"
+]
+
+[shortcuts_menu.entries.WM]
+
+
+Reload = "hyprctl reload; pypr reload"
+"Hyprland socket" = '[term] socat - "UNIX-CONNECT:$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"'
+"Hyprland logs" = '[term] tail -f $XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/hyprland.log'

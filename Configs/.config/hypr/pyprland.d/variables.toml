@@ -1,0 +1,3 @@
+[pyprland.variables]
+term = "kitty"
+term_classed = "kitty --class"

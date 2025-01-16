@@ -1,0 +1,39 @@
+[pyprland]
+plugins = ["scratchpads"]
+
+# YAZI 
+[scratchpads.term_b]
+animation = "fromBottom"
+command = "kitty --class kitty-dropterm_b yazi"
+class = "kitty-dropterm_b"
+lazy = true
+size = "75% 85%"
+margin = 70
+
+# 빈 터미널 
+[scratchpads.term_l]
+animation = "fromLeft"
+command = "kitty --class kitty-dropterm_l"
+class = "kitty-dropterm_l"
+# class = "chromium"
+lazy = true
+size = "75% 65%"
+margin = 60
+
+# Reddit CLI 
+[scratchpads.term_r]
+animation = "fromRight"
+command = "kitty --class kitty-dropterm_r cava"
+class = "kitty-dropterm_r"
+lazy = true
+size = "75% 65%"
+margin = 60
+
+# bleutooth 설정
+[scratchpads.blueman_t]
+animation = "fromTop"
+command = "blueman-manager"
+class = "blueman-manager"
+lazy = true
+size = "20% 30%"
+margin = 250
