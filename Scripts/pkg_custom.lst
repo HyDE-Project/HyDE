@@ -38,7 +38,7 @@ spicetify-cli                                          # cli to customize spotif
 
 # --------------------------------------------------- // Editor
 # vscodium-bin                                          # Full oss text editor
-# vscodium-marketplace|vscodium-bin                 # VSCodium marketplace
+# vscodium-marketplace|vscodium-bin                     # VSCodium marketplace
 # code-marketplace|code                                 # Code-Oss marketplace
 # visual-studio-code-bin                                # MS  text editor
 
@@ -50,3 +50,7 @@ spicetify-cli                                          # cli to customize spotif
 
 # --------------------------------------------------- // OSD
 swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
+
+# --------------------------------------------------- // Social
+# telegram-desktop                                      # Telegram is an instant messaging app that allows you to send messages, make video calls, share files and join groups
+# mastodon                                              # Mastodon is a microblogging social network that is integrated within the ideology of the Fediverse, which consists of creating decentralized social networks
