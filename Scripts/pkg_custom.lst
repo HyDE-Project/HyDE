@@ -79,3 +79,4 @@ neovim                                                 # editor
 fish                                                   # shell
 
 flatpak                                                # flatpak manager
+btop                                                   # system monitor
