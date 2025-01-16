@@ -5,8 +5,8 @@ curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix 
 nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager
 nix-channel --update
 nix-shell '<home-manager>' -A install
-mkdir -p GitHub
-cd GitHub
+mkdir -p ~/GitHub
+cd ~/GitHub
 git clone --depth 1 https://github.com/niumination/hyprnix.git
 cd hyprnix
 nix flake update

@@ -299,11 +299,7 @@ fi
 
 cd ~/.UsefulCMD
 bash agsv1-installer.sh
-
-cd ~/.UsefulCMD
 bash install-ZaryuHiveThemeHyde.sh
-
-cd ~/.UsefulCMD
 bash nix-determinate.sh
 
 
