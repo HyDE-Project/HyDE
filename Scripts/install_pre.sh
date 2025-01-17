@@ -28,7 +28,7 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
             sudo sed -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/c\GRUB_CMDLINE_LINUX_DEFAULT=\"${gcld} nvidia_drm.modeset=1\"" /etc/default/grub
         fi
 
-        print_log -r "[bootloader] " -b " :: " "Select grub theme:" -r "\n[1]" -b " Retroboot (dark)" -r "\n[2]" -b " Pochita (light)" -r "\n[3]" -b " Argenti (default)"
+        print_log -r "[bootloader] " -b " :: " "Select grub theme:" -r "\n[1]" -b " Retroboot (dark)" -r "\n[2]" -b " Pochita (light)" -r "\n[3]" -b " Argenti (dark)"
         read -r -p " :: Press enter to skip grub theme <or> Enter option number : " grubopt
         case ${grubopt} in
         1) grubtheme="Retroboot" ;;
