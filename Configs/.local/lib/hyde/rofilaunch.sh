@@ -16,8 +16,6 @@ fi
 
 rofi_config="${ROFI_LAUNCH_STYLE:-$rofi_config}"
 
-echo "${rofi_config}"
-
 rofiScale="${ROFI_LAUNCHER_SCALE}"
 [[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
 
@@ -50,6 +48,7 @@ i_override="configuration {icon-theme: \"${i_override}\";}"
 
 #// launch rofi
 rofi -show "${r_mode}" \
+    -show-icons \
     -theme-str "${r_scale}" \
     -theme-str "${r_override}" \
     -theme-str "${i_override}" \
