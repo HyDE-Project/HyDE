@@ -1,9 +1,18 @@
+/**
+ * ROFI Layout 
+ *
+ * Game Launcher 1
+ * 
+ * User: The HyDE Project [ vertical left thin ]
+ * Copyright: The HyDE Project
+ */
+
 // Config //
 configuration {
     modi:                        "drun";
     show-icons:                  true;
     drun-display-format:         "{name}";
-    font:                        "JetBrainsMono Nerd Font 9";
+    font:                        "JetBrainsMono Nerd Font 8";
 }
 
 @theme "~/.config/rofi/theme.rasi"
@@ -13,81 +22,75 @@ configuration {
 window {
     enabled:                     true;
     fullscreen:                  false;
-    width:                       40em;
-    height:                      32.8em;
+    width:                       20%;
+    height:                      100%;
+    location:                    west;
+    x-offset:                    10%;
     transparency:                "real";
     cursor:                      "default";
-    spacing:                     0em;
-    padding:                     0em;
-    border:                      0em;
-    border-radius:               0em;
+    spacing:                     0px;
+    padding:                     0px;
+    border:                      0px;
+    border-radius:               0px;
     border-color:                transparent;
     background-color:            transparent;
-    background-image:            url("~/.config/rofi/assets/notification.png", width);
 }
 mainbox {
     enabled:                     true;
-    orientation:                 vertical;
-    children:                    [ "dummy" , "frame" ];
-    background-color:            transparent;
+    children:                    [ "listview" ];
+    background-color:            @main-bg;
 }
-dummy {
-    padding:                     6em;
-    expand:                      false;
-    background-color:            transparent;
-}
-frame {
-    enabled:                     true;
-    orientation:                 vertical;
-    children:                    [ "dummy2" , "listview" , "dummy2" ];
-    background-color:            transparent;
-}
+
 
 // Lists //
 listview {
     enabled:                     true;
-    spacing:                     0em;
-    padding:                     0em;
     columns:                     1;
-    lines:                       5;
+    spacing:                     17px;
+    padding:                     10px 20px 10px 20px;
     cycle:                       true;
-    dynamic:                     true;
+    dynamic:                     false;
     scrollbar:                   false;
     layout:                      vertical;
-    reverse:                     false;
-    expand:                      false;
+    reverse:                     true;
     fixed-height:                true;
     fixed-columns:               true;
     cursor:                      "default";
     background-color:            transparent;
-}
-dummy2 {
-    spacing:                     0em;
-    padding:                     0em;
-    background-color:            transparent;
+    text-color:                  @main-fg;
 }
 
 
 // Elements //
 element {
     enabled:                     true;
-    spacing:                     1em;
-    padding:                     1em;
+    orientation:                 horizontal;
+    spacing:                     0px;
+    padding:                     0px;
+    border-radius:               0px;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
-    border-radius:               0em;
 }
 element selected.normal {
     background-color:            @select-bg;
     text-color:                  @select-fg;
 }
 element-icon {
-    enabled:                     false;
+    size:                        15%;
+    spacing:                     0px;
+    padding:                     0px;
+    cursor:                      inherit;
+    border-radius:               35px;
+    background-color:            transparent;
+    text-color:                  inherit;
 }
 element-text {
+    enabled:                     true;
     vertical-align:              0.5;
-    horizontal-align:            0.5;
+    horizontal-align:            0;
+    spacing:                     0px;
+    padding:                     0px;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;

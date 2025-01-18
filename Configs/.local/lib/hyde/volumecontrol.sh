@@ -169,7 +169,7 @@ while getopts "iop:stq" opt; do
         ;;
     s)
 
-        select_output "$(select_output | rofi -dmenu -config "${confDir}/rofi/notification.rasi")"
+        select_output "$(select_output | rofi -dmenu -theme "notification")"
         exit
         ;;
     t)

@@ -128,7 +128,6 @@ fn_select() {
     layout_items="Theme Preference
 $layout_items"
 
-    rofi_config="$confDir/rofi/clipboard.rasi"
     selected_layout=$(awk -F/ '{print $NF}' <<<"$layout_items" |
         rofi -dmenu -i -select "${HYPRLOCK_LAYOUT}" \
             -p "Select hyprlock layout" \
@@ -136,7 +135,7 @@ $layout_items"
             -theme-str "${r_scale}" \
             -theme-str "${r_override}" \
             -theme-str "$(get_rofi_pos)" \
-            -theme "$rofi_config")
+            -theme "${ROFI_HYPRLOCK_STYLE:-clipboard}")
     if [ -z "$selected_layout" ]; then
         echo "No selection made"
         exit 0

@@ -1,9 +1,18 @@
+/**
+ * ROFI Layout 
+ *
+ * HyDE's Global Seletor Style
+ * 
+ * User: The HyDE Project [  HyDE's Global Selector Style  ]
+ * Copyright: The HyDE Project
+ */
+
 // Config //
 configuration {
     modi:                        "drun";
     show-icons:                  true;
     drun-display-format:         "{name}";
-    font:                        "JetBrainsMono Nerd Font 8";
+    font:                        "JetBrainsMono Nerd Font 10";
 }
 
 @theme "~/.config/rofi/theme.rasi"
@@ -13,52 +22,54 @@ configuration {
 window {
     enabled:                     true;
     fullscreen:                  false;
-    width:                       20%;
-    height:                      100%;
-    location:                    west;
-    x-offset:                    10%;
     transparency:                "real";
     cursor:                      "default";
-    spacing:                     0px;
-    padding:                     0px;
-    border:                      0px;
-    border-radius:               0px;
+    spacing:                     0em;
+    padding:                     0em;
+    border:                      0em;
+    border-radius:               0em;
     border-color:                transparent;
-    background-color:            transparent;
+    background-color:            @main-bg;
 }
 mainbox {
     enabled:                     true;
+    orientation:                 horizontal;
+    children:                    [ "dummy", "frame", "dummy" ];
+    background-color:            transparent;
+}
+frame {
     children:                    [ "listview" ];
-    background-color:            @main-bg;
+    background-color:            transparent;
 }
 
 
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     1;
-    spacing:                     17px;
-    padding:                     10px 20px 10px 20px;
-    cycle:                       true;
+    spacing:                     4em;
+    padding:                     4em;
+    columns:                     10;
+    lines:                       1;
     dynamic:                     false;
-    scrollbar:                   false;
-    layout:                      vertical;
-    reverse:                     true;
-    fixed-height:                true;
+    fixed-height:                false;
     fixed-columns:               true;
+    reverse:                     true;
     cursor:                      "default";
     background-color:            transparent;
     text-color:                  @main-fg;
+}
+dummy {
+    width:                       2em;
+    expand:                      false;
+    background-color:            transparent;
 }
 
 
 // Elements //
 element {
     enabled:                     true;
-    orientation:                 horizontal;
-    spacing:                     0px;
-    padding:                     0px;
-    border-radius:               0px;
+    spacing:                     0em;
+    padding:                     0em;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
@@ -68,20 +79,15 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        15%;
-    spacing:                     0px;
-    padding:                     0px;
     cursor:                      inherit;
-    border-radius:               35px;
+    size:                        10em;
     background-color:            transparent;
     text-color:                  inherit;
+    expand:                      false;
 }
 element-text {
-    enabled:                     true;
     vertical-align:              0.5;
-    horizontal-align:            0;
-    spacing:                     0px;
-    padding:                     0px;
+    horizontal-align:            0.5;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;

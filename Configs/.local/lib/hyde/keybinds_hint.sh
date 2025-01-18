@@ -11,9 +11,6 @@ keyconfDir="$confDir/hypr"
 kb_hint_conf=("$keyconfDir/hyprland.conf" "$keyconfDir/keybindings.conf" "$keyconfDir/userprefs.conf")
 kb_hint_conf+=("${ROFI_KEYBIND_HINT_CONFIG[@]}")
 
-roDir="$confDir/rofi"
-rofi_config="$roDir/clipboard.rasi"
-
 kb_cache="${HYDE_RUNTIME_DIR:-$XDG_RUNTIME_DIR/hyde}/keybinds_hint.rofi"
 [ -f "$kb_cache" ] && { trap 'keybinds.hint.py --format rofi > "$kb_cache" && echo "Keybind cache updated" ' EXIT; }
 
@@ -24,7 +21,7 @@ output="$(
 )"
 wait
 if [ -z "$output" ]; then
-notify-send "Keybind Hint" "Initialization failed."
+  notify-send "Keybind Hint" "Initialization failed."
   exit 0
 fi
 
@@ -66,7 +63,7 @@ selected=$(echo -e "$output" | rofi -dmenu -p \
   -theme-str "${fnt_override}" \
   -theme-str "${r_override}" \
   -theme-str "${icon_override}" \
-  -config "${rofi_config}" | sed 's/.*\s*//')
+  -theme "${ROFI_KEYBIND_HINT_STYLE:-clipboard}" | sed 's/.*\s*//')
 if [ -z "$selected" ]; then exit 0; fi
 dispatch=$(awk -F ':::' '{print $2}' <<<"$selected" | xargs)
 arg=$(awk -F ':::' '{print $3}' <<<"$selected" | xargs)
@@ -78,7 +75,7 @@ RUN() { case "$(eval "hyprctl dispatch '${dispatch}' '${arg}'")" in *"Not enough
 if [ -n "$dispatch" ] && [ "$(echo "$dispatch" | wc -l)" -eq 1 ]; then
   if [ "$repeat" = repeat ]; then
     while true; do
-      repeat_command=$(echo -e "Repeat" | rofi -dmenu -no-custom -p - "[Enter] repeat; [ESC] exit" -config "${confDir}/rofi/notification.rasi") #? Needed a separate Rasi ? Dunno how to make; Maybe Something like confirmation rasi for buttons Yes and No then the -p will be the Question like Proceed? Repeat?
+      repeat_command=$(echo -e "Repeat" | rofi -dmenu -no-custom -p - "[Enter] repeat; [ESC] exit" -theme "notification") #? Needed a separate Rasi ? Dunno how to make; Maybe Something like confirmation rasi for buttons Yes and No then the -p will be the Question like Proceed? Repeat?
       if [ "$repeat_command" = "Repeat" ]; then
         # Repeat the command here
         RUN

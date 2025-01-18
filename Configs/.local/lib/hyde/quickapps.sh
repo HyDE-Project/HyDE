@@ -85,14 +85,17 @@ else
     appDir=/usr/share/applications
 fi
 
-# RofiSel=$(
-for qApp in "$@"; do
-    Lkp=$(grep "$qApp" $appDir/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1)
-    Ico=$(grep 'Icon=' "$Lkp" | awk -F '=' '{print $2}' | head -1)
-    # Ico=$(grep 'Icon=' "$qApp" | awk -F '=' '{print $2}' | head -1)
+RofiSel=$(
+    for qApp in "$@"; do
+        Lkp=$(grep "$qApp" $appDir/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1)
+        Ico=$(grep 'Icon=' "$Lkp" | awk -F '=' '{print $2}' | head -1)
+        # Ico=$(grep 'Icon=' "$qApp" | awk -F '=' '{print $2}' | head -1)
 
-    echo -en "${qApp}\x00icon\x1f${Ico}\n"
-done
-# | rofi -no-fixed-num-lines -dmenu -theme-str "${r_override}" -config "$rofi_config")
+        echo -en "${qApp}\x00icon\x1f${Ico}\n"
+    done | rofi -no-fixed-num-lines -dmenu \
+        -theme-str "${r_override}" \
+        -theme-str "${r_scale}" \
+        -config "quickapps"
+)
 
-# gtk-launch "$RofiSel" &
+[[ -n "${RofiSel}" ]] && gtk-launch "$RofiSel" &

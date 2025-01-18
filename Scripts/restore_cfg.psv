@@ -97,7 +97,7 @@ S|${HOME}/.config|dunst|dunst
 S|${HOME}/.config|MangoHud|mangohud
 
  Launcher 
-S|${HOME}/.config|rofi|rofi
+P|${HOME}/.config|rofi|rofi
 S|${HOME}/.config|wlogout|wlogout
 
  Lock Screen 

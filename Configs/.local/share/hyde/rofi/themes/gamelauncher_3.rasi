@@ -1,3 +1,12 @@
+/**
+ * ROFI Layout 
+ *
+ * Game launcher 3: span vertical left 
+ * 
+ * User: The HyDE Project [  span vertical left ]
+ * Copyright: The HyDE Project
+ */
+
 // Config //
 configuration {
     modi:                        "drun";
@@ -13,8 +22,9 @@ configuration {
 window {
     enabled:                     true;
     fullscreen:                  false;
-    width:                       2155px;
-    height:                      850px;
+    width:                       28%;
+    height:                      100%;
+    location:                    west;
     transparency:                "real";
     cursor:                      "default";
     spacing:                     0px;
@@ -22,37 +32,31 @@ window {
     border:                      0px;
     border-radius:               0px;
     border-color:                transparent;
-    background-image:            url("~/.config/rofi/assets/steamdeck_holographic.png", width);
     background-color:            transparent;
 }
 mainbox {
     enabled:                     true;
     children:                    [ "listview" ];
-    background-color:            transparent;
-    orientation:                 horizontal;
-    spacing:                     0px;
-    padding:                     42px 442px 50px 450px;
+    background-color:            @main-bg;
 }
 
 
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     5;
-    rows:                        2;
-    flow:                        horizontal;
-    spacing:                     25px;
-    padding:                     20px 50px 20px 50px;
+    columns:                     4;
+    spacing:                     20px;
+    padding:                     10px 50px 10px 50px;
     cycle:                       true;
-    dynamic:                     true;
+    dynamic:                     false;
     scrollbar:                   false;
+    layout:                      vertical;
     reverse:                     true;
-    fixed-height:                false;
-    fixed-columns:               false;
+    fixed-height:                true;
+    fixed-columns:               true;
     cursor:                      "default";
-    background-color:            @main-bg;
+    background-color:            transparent;
     text-color:                  @main-fg;
-    border-radius:               8px;
 }
 
 
@@ -61,7 +65,7 @@ element {
     enabled:                     true;
     orientation:                 vertical;
     spacing:                     0px;
-    padding:                     5px;
+    padding:                     3px;
     border-radius:               0px;
     cursor:                      pointer;
     background-color:            transparent;
@@ -72,19 +76,20 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        300px;
+    size:                        20%;
     spacing:                     0px;
     padding:                     0px;
     cursor:                      inherit;
-    border-radius:               0px;
+    border-radius:               35px;
     background-color:            transparent;
     text-color:                  inherit;
 }
 element-text {
+    enabled:                     true;
     vertical-align:              0.5;
     horizontal-align:            0.5;
     spacing:                     0px;
-    padding:                     10px;
+    padding:                     5px;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;

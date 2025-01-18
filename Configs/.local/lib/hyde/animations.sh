@@ -27,7 +27,6 @@ if [ -z "$animation_items" ]; then
 fi
 
 fn_select() {
-    rofi_config="$confDir/rofi/clipboard.rasi"
 
     # Set rofi scaling
     rofiScale="${ROFI_ANIMATION_SCALE}"
@@ -55,7 +54,7 @@ $animation_items"
             -theme-str "${r_scale}" \
             -theme-str "${r_override}" \
             -theme-str "$(get_rofi_pos)" \
-            -theme "$rofi_config")
+            -theme "clipboard")
 
     # Exit if no selection was made
     if [ -z "$selected_animation" ]; then

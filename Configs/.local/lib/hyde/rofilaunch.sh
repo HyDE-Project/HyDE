@@ -6,15 +6,20 @@ scrDir="$(dirname "$(realpath "$0")")"
 confDir="${confDir}/config"
 # shellcheck source=/dev/null
 . "${scrDir}/globalcontrol.sh"
-rofiStyle="${rofiStyle:-$ROFI_LAUNCHER_STYLE}"
-rofi_config="${confDir}/rofi/styles/style_${rofiStyle:-1}.rasi"
+rofiStyle="${rofiStyle:-1}"
+
+if [[ "${rofiStyle}" =~ ^[0-9]+$ ]]; then
+    rofi_config="style_${rofiStyle:-1}"
+else
+    rofi_config="${rofiStyle:-"style_1"}"
+fi
+
+rofi_config="${ROFI_LAUNCH_STYLE:-$rofi_config}"
+
+echo "${rofi_config}"
 
 rofiScale="${ROFI_LAUNCHER_SCALE}"
 [[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
-
-if [ ! -f "${rofi_config}" ]; then
-    rofi_config="$(find "${confDir}/rofi/styles" -type f -name "style_*.rasi" | sort -t '_' -k 2 -n | head -1)"
-fi
 
 #// rofi action
 
@@ -44,4 +49,8 @@ i_override="$(get_hyprConf "ICON_THEME")"
 i_override="configuration {icon-theme: \"${i_override}\";}"
 
 #// launch rofi
-rofi -show "${r_mode}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${i_override}" -config "${rofi_config}"
+rofi -show "${r_mode}" \
+    -theme-str "${r_scale}" \
+    -theme-str "${r_override}" \
+    -theme-str "${i_override}" \
+    -config "${rofi_config}"

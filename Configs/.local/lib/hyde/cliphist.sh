@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 
 # Set variables
-scrDir=$(dirname "$(realpath "$0")")
-scrDir="${scrDir:-$HOME/.config/hyde}"
+# shellcheck source=$HOME/.local/bin/hyde-shell
 # shellcheck disable=SC1091
-source "$scrDir/globalcontrol.sh"
+if ! source "$(which hyde-shell)"; then
+    echo "[wallbash] code :: Error: hyde-shell not found."
+    echo "[wallbash] code :: Is HyDE installed?"
+    exit 1
+fi
+
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
-rofi_config="${confDir}/rofi/clipboard.rasi"
 favoritesFile="${cacheDir}/landing/cliphist_favorites"
-
+cliphist_style="${ROFI_CLIPHIST_STYLE:-clipboard}"
 delMode=false
 
 #? MultiSelect
@@ -93,7 +96,7 @@ r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;}wallbo
 
 # Show main menu if no arguments are passed
 if [ $# -eq 0 ]; then
-    main_action=$(echo -e "History\nDelete\nView Favorites\nManage Favorites\nClear History" | rofi -dmenu -theme-str "entry { placeholder: \"🔎 Choose action\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")
+    main_action=$(echo -e "History\nDelete\nView Favorites\nManage Favorites\nClear History" | rofi -dmenu -theme-str "entry { placeholder: \"🔎 Choose action\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
 else
     main_action="$1"
 fi
@@ -104,7 +107,7 @@ case "${main_action}" in
         echo -e ":f:a:v:\t📌 Favorites"
         echo -e ":o:p:t:\t⚙️ Options"
         cliphist list
-    ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 2 -theme-str "${r_scale}" -theme-str "entry { placeholder: \" 📜 History...\";}  ${rofi_position}  ${r_override}" -config "$rofi_config")
+    ) | rofi -dmenu -multi-select -i -display-columns 2 -selected-row 2 -theme-str "${r_scale}" -theme-str "entry { placeholder: \" 📜 History...\";}  ${rofi_position}  ${r_override}" -theme "${cliphist_style}")
     ([ -n "${selected_item}" ] && echo -e "${selected_item}" | checkContent) || exit 0
     if [ $? -eq 1 ]; then
         paste_string "${*}"
@@ -118,7 +121,7 @@ case "${main_action}" in
     export delMode=true
     (
         cliphist list
-    ) | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "${r_scale}" -theme-str "entry { placeholder: \" 🗑️ Delete\";} ${rofi_position} ${r_override}" -config "${rofi_config}" | pastebin_process
+    ) | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "${r_scale}" -theme-str "entry { placeholder: \" 🗑️ Delete\";} ${rofi_position} ${r_override}" -theme "${cliphist_style}" | pastebin_process
     ;;
 -f | --favorites | "View Favorites")
     if [ -f "$favoritesFile" ] && [ -s "$favoritesFile" ]; then
@@ -134,7 +137,7 @@ case "${main_action}" in
             decoded_lines+=("$single_line_favorite")
         done
 
-        selected_favorite=$(printf "%s\n" "${decoded_lines[@]}" | rofi -dmenu -theme-str "entry { placeholder: \"📌  View Favorites\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")
+        selected_favorite=$(printf "%s\n" "${decoded_lines[@]}" | rofi -dmenu -theme-str "entry { placeholder: \"📌  View Favorites\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
         if [ -n "$selected_favorite" ]; then
             # Find the index of the selected favorite
             index=$(printf "%s\n" "${decoded_lines[@]}" | grep -nxF "$selected_favorite" | cut -d: -f1)
@@ -154,12 +157,12 @@ case "${main_action}" in
     fi
     ;;
 -mf | -manage-fav | "Manage Favorites")
-    manage_action=$(echo -e "Add to Favorites\nDelete from Favorites\nClear All Favorites" | rofi -dmenu -theme-str "entry { placeholder: \"📓 Manage Favorites\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")
+    manage_action=$(echo -e "Add to Favorites\nDelete from Favorites\nClear All Favorites" | rofi -dmenu -theme-str "entry { placeholder: \"📓 Manage Favorites\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
 
     case "${manage_action}" in
     "Add to Favorites")
         # Show clipboard history to add to favorites
-        item=$(cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"➕ Add to Favorites...\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")
+        item=$(cliphist list | rofi -dmenu -theme-str "entry { placeholder: \"➕ Add to Favorites...\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
         if [ -n "$item" ]; then
             # Decode the item from clipboard history
             full_item=$(echo "$item" | cliphist decode)
@@ -189,7 +192,7 @@ case "${main_action}" in
                 decoded_lines+=("$single_line_favorite")
             done
 
-            selected_favorite=$(printf "%s\n" "${decoded_lines[@]}" | rofi -dmenu -theme-str "entry { placeholder: \"➖ Remove from Favorites...\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")
+            selected_favorite=$(printf "%s\n" "${decoded_lines[@]}" | rofi -dmenu -theme-str "entry { placeholder: \"➖ Remove from Favorites...\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
             if [ -n "$selected_favorite" ]; then
                 index=$(printf "%s\n" "${decoded_lines[@]}" | grep -nxF "$selected_favorite" | cut -d: -f1)
                 if [ -n "$index" ]; then
@@ -214,7 +217,7 @@ case "${main_action}" in
         ;;
     -cf | --clear-fav | "Clear All Favorites")
         if [ -f "$favoritesFile" ] && [ -s "$favoritesFile" ]; then
-            confirm=$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"☢️ Clear All Favorites?\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")
+            confirm=$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"☢️ Clear All Favorites?\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
             if [ "$confirm" = "Yes" ]; then
                 : >"$favoritesFile"
                 notify-send "All favorites have been deleted."
@@ -230,7 +233,7 @@ case "${main_action}" in
     esac
     ;;
 -w | --wipe | "Clear History")
-    if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"☢️ Clear Clipboard History?\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -config "${rofi_config}")" == "Yes" ]; then
+    if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"☢️ Clear Clipboard History?\";}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")" == "Yes" ]; then
         cliphist wipe
         notify-send "Clipboard history cleared."
     fi

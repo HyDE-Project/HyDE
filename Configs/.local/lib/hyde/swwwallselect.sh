@@ -5,8 +5,6 @@
 scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
-# shellcheck disable=SC2154
-rofiConf="${confDir}/rofi/selector.rasi"
 
 #// set rofi scalingS
 
@@ -45,7 +43,12 @@ done
 # shellcheck disable=SC2154
 rofiSel=$(paste <(printf "%s\n" "${wallListBase[@]}") <(printf "|%s\n" "${wallHash[@]}") |
     awk -F '|' -v thmbDir="${thmbDir}" '{split($1, arr, "/"); print arr[length(arr)] "\x00icon\x1f" thmbDir "/" $2 ".sqre"}' |
-    rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${currentWall}" | xargs)
+    rofi -dmenu \
+        -theme-str "${r_scale}" \
+        -theme-str "${r_override}" \
+        -config "selector" \
+        -select "${currentWall}" | xargs)
+
 #// apply wallpaper
 
 if [ -n "${rofiSel}" ]; then

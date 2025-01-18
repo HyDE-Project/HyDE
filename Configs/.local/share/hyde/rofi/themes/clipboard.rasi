@@ -1,3 +1,12 @@
+/**
+ * ROFI Layout 
+ *
+ * Base style for clipboard style Layout.
+ * 
+ * User: The HyDE Project [ mini dropdown menu ]
+ * Copyright: The HyDE Project
+ */
+
 // Config //
 configuration {
     modi:                        "drun";

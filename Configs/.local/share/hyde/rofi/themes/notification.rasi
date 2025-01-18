@@ -1,9 +1,18 @@
+/**
+ * ROFI Layout 
+ *
+ * Notification Style 
+ * 
+ * User: The HyDE Project [ notification prompt  ]
+ * Copyright: The HyDE Project
+ */
+
 // Config //
 configuration {
     modi:                        "drun";
     show-icons:                  true;
     drun-display-format:         "{name}";
-    font:                        "JetBrainsMono Nerd Font 10";
+    font:                        "JetBrainsMono Nerd Font 9";
 }
 
 @theme "~/.config/rofi/theme.rasi"
@@ -13,6 +22,8 @@ configuration {
 window {
     enabled:                     true;
     fullscreen:                  false;
+    width:                       40em;
+    height:                      32.8em;
     transparency:                "real";
     cursor:                      "default";
     spacing:                     0em;
@@ -20,38 +31,49 @@ window {
     border:                      0em;
     border-radius:               0em;
     border-color:                transparent;
-    background-color:            @main-bg;
+    background-color:            transparent;
+    background-image: url         ("~/.local/share/hyde/rofi/assets/notification.png",width);
+
 }
 mainbox {
     enabled:                     true;
-    orientation:                 horizontal;
-    children:                    [ "dummy", "frame", "dummy" ];
+    orientation:                 vertical;
+    children:                    [ "dummy" , "frame" ];
+    background-color:            transparent;
+}
+dummy {
+    padding:                     6em;
+    expand:                      false;
     background-color:            transparent;
 }
 frame {
-    children:                    [ "listview" ];
+    enabled:                     true;
+    orientation:                 vertical;
+    children:                    [ "dummy2" , "listview" , "dummy2" ];
     background-color:            transparent;
 }
-
 
 // Lists //
 listview {
     enabled:                     true;
-    spacing:                     4em;
-    padding:                     4em;
-    columns:                     10;
-    lines:                       1;
-    dynamic:                     false;
-    fixed-height:                false;
+    spacing:                     0em;
+    padding:                     0em;
+    columns:                     1;
+    lines:                       5;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    expand:                      false;
+    fixed-height:                true;
     fixed-columns:               true;
-    reverse:                     true;
     cursor:                      "default";
     background-color:            transparent;
-    text-color:                  @main-fg;
 }
-dummy {
-    width:                       2em;
-    expand:                      false;
+dummy2 {
+    spacing:                     0em;
+    padding:                     0em;
     background-color:            transparent;
 }
 
@@ -59,22 +81,19 @@ dummy {
 // Elements //
 element {
     enabled:                     true;
-    spacing:                     0em;
-    padding:                     0em;
+    spacing:                     1em;
+    padding:                     1em;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
+    border-radius:               0em;
 }
 element selected.normal {
     background-color:            @select-bg;
     text-color:                  @select-fg;
 }
 element-icon {
-    cursor:                      inherit;
-    size:                        10em;
-    background-color:            transparent;
-    text-color:                  inherit;
-    expand:                      false;
+    enabled:                     false;
 }
 element-text {
     vertical-align:              0.5;

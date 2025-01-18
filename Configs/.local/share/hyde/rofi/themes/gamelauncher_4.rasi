@@ -1,3 +1,12 @@
+/**
+ * ROFI Layout 
+ *
+ * Game launcher 4: span horizontal 
+ * 
+ * User: The HyDE Project [  span horizontal  ]
+ * Copyright: The HyDE Project
+ */
+
 // Config //
 configuration {
     modi:                        "drun";
@@ -13,9 +22,7 @@ configuration {
 window {
     enabled:                     true;
     fullscreen:                  false;
-    width:                       28%;
-    height:                      100%;
-    location:                    west;
+    width:                       100%;
     transparency:                "real";
     cursor:                      "default";
     spacing:                     0px;
@@ -35,9 +42,10 @@ mainbox {
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     4;
-    spacing:                     20px;
-    padding:                     10px 50px 10px 50px;
+    columns:                     10;
+    lines:                       1;
+    spacing:                     30px;
+    padding:                     40px 100px 40px 100px;
     cycle:                       true;
     dynamic:                     false;
     scrollbar:                   false;
@@ -56,7 +64,7 @@ element {
     enabled:                     true;
     orientation:                 vertical;
     spacing:                     0px;
-    padding:                     3px;
+    padding:                     5px;
     border-radius:               0px;
     cursor:                      pointer;
     background-color:            transparent;
@@ -67,7 +75,7 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        20%;
+    size:                        30%;
     spacing:                     0px;
     padding:                     0px;
     cursor:                      inherit;
@@ -76,11 +84,10 @@ element-icon {
     text-color:                  inherit;
 }
 element-text {
-    enabled:                     true;
     vertical-align:              0.5;
     horizontal-align:            0.5;
     spacing:                     0px;
-    padding:                     5px;
+    padding:                     10px;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;

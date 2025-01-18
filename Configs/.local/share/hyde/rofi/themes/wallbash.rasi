@@ -1,3 +1,13 @@
+/**
+ * ROFI Layout 
+ *
+ * Wallbash Mode Selector.
+ * 
+ * User: The HyDE Project [ Wallbash mode Selector ]
+ * Copyright: https://github.com/prasanthrangan/hyprdots/
+ */
+
+
 // Config //
 configuration {
     modi:                        "drun";
@@ -23,7 +33,8 @@ window {
     border-radius:               0em;
     border-color:                #00000003;
     background-color:            @main-bg;
-    background-image:            url("~/.config/rofi/assets/wallbash_mode.png", width);
+    background-image:            url("~/.local/share/hyde/rofi/assets/wallbash_mode.png",width);
+
 }
 mainbox {
     enabled:                     true;

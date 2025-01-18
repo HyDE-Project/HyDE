@@ -20,6 +20,10 @@ transition_prev = "outer"   # transition type for previous wallpaper
 transition_default = "grow" # transition type for default wallpaper
 
 
+# NOTE: 
+# for [rofi.*] 
+# style <--script's built-in styles, also accepts themes from rofi-theme-selector
+
 [rofi]
 # global rofi configuration`
 scale = 10 # rofi default scaling

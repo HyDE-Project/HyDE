@@ -128,10 +128,10 @@ wallbashDirs=(
     "/usr/share/hyde/wallbash"
 )
 
-export HYDE_THEME
-export HYDE_THEME_DIR
-export wallbashDirs
-export enableWallDcol
+export HYDE_THEME \
+    HYDE_THEME_DIR \
+    wallbashDirs \
+    enableWallDcol
 
 #// hypr vars
 

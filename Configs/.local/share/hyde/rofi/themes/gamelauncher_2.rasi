@@ -1,3 +1,12 @@
+/**
+ * ROFI Layout 
+ *
+ * Game launcher 2
+ * 
+ * User: The HyDE Project [ span horizontal ]
+ * Copyright: The HyDE Project
+ */
+
 // Config //
 configuration {
     modi:                        "drun";
@@ -14,6 +23,7 @@ window {
     enabled:                     true;
     fullscreen:                  false;
     width:                       100%;
+    height:                      800px;
     transparency:                "real";
     cursor:                      "default";
     spacing:                     0px;
@@ -33,10 +43,10 @@ mainbox {
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     10;
+    columns:                     9;
     lines:                       1;
     spacing:                     30px;
-    padding:                     40px 100px 40px 100px;
+    padding:                     30px 200px 30px 200px;
     cycle:                       true;
     dynamic:                     false;
     scrollbar:                   false;
@@ -66,7 +76,7 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        30%;
+    size:                        29%;
     spacing:                     0px;
     padding:                     0px;
     cursor:                      inherit;

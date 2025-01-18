@@ -6,7 +6,6 @@ scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
 # shellcheck disable=SC2154
-rofiConf="${confDir}/rofi/selector.rasi"
 
 #// set rofi scaling
 rofiScale="${ROFI_THEME_SCALE}"
@@ -34,11 +33,17 @@ case "${ROFI_THEME_STYLE}" in
     thmbExtn="quad"
     ;;
 *) # default to style 1
-    elm_width=$(((23 + 12 + 1) * rofiScale * 2))
-    max_avail=$((mon_x_res - (4 * rofiScale)))
-    col_count=$((max_avail / elm_width))
-    r_override="window{width:100%;} listview{columns:${col_count};} element{border-radius:${elem_border}px;padding:0.5em;} element-icon{size:23em;border-radius:${icon_border}px;}"
-    thmbExtn="sqre"
+    if [ "${ROFI_THEME_STYLE}" != 1 ]; then
+        :
+
+    else
+
+        elm_width=$(((23 + 12 + 1) * rofiScale * 2))
+        max_avail=$((mon_x_res - (4 * rofiScale)))
+        col_count=$((max_avail / elm_width))
+        r_override="window{width:100%;} listview{columns:${col_count};} element{border-radius:${elem_border}px;padding:0.5em;} element-icon{size:23em;border-radius:${icon_border}px;}"
+        thmbExtn="sqre"
+    fi
     ;;
 esac
 
@@ -52,7 +57,11 @@ rofiSel=$(
     while [ $i -lt ${#thmList[@]} ]; do
         echo -en "${thmList[$i]}\x00icon\x1f${thmbDir}/$(set_hash "${thmWall[$i]}").${thmbExtn}\n"
         i=$((i + 1))
-    done | rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${HYDE_THEME}"
+    done | rofi -dmenu \
+        -theme-str "${r_scale}" \
+        -theme-str "${r_override}" \
+        -config "selector" \
+        -select "${HYDE_THEME}"
 )
 
 #// apply theme
