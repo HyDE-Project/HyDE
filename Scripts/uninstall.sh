@@ -96,5 +96,5 @@ Revert back bootloader/pacman/sddm settings manually from these backups
 
 Uninstall the packages manually that are no longer required based on these list
 ${scrDir}/pkg_core.lst
-${scrDir}/pkg_custom.lst
+${scrDir}/pkg_extra.lst
 NOTE
