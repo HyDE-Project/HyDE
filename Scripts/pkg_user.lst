@@ -1,0 +1,13 @@
+# User Preferred Package List
+# This list is a user specific list of packages
+#   that users prefer to install
+# Always refer to ./pkg_extra.lst for the full list of packages
+#   and their descriptions
+# HyDE won't touch this file
+# Usage: `install.sh pkg_user.lst`
+#
+
+spotify
+spicetify-cli
+cava
+swayosd-git

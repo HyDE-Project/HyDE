@@ -315,9 +315,6 @@ fn_wallbash() {
 
     if [ -s "${temp_target_file}" ]; then
         mv "${temp_target_file}" "${target_file}"
-    else
-        echo "Error: ${temp_target_file} is empty or not created."
-        exit 1
     fi
     [ -z "${exec_command}" ] || bash -c "${exec_command}"
 }
@@ -376,7 +373,7 @@ fi
 
 #  Theme mode: detects the color-scheme set in hypr.theme and falls back if nothing is parsed.
 revert_colors=0
-[ "${enableWallDcol}" -eq 0 ] && grep -q "${dcol_mode}" <<<"$(get_hyprConf "COLOR_SCHEME")" || revert_colors=1
+[ "${enableWallDcol}" -eq 0 ] && { grep -q "${dcol_mode}" <<<"$(get_hyprConf "COLOR_SCHEME")" || revert_colors=1; }
 export revert_colors
 
 find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | sort | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {}
