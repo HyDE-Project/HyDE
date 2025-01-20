@@ -13,7 +13,7 @@
 
 ### Who are the $USER?
 
-> **NOTE**: If you're confused why every `install.sh -r` overwrites your configs, you should fork [prasanthrangan/hyprdots](https://github.com/prasanthrangan/hyprdots), edit the `*.lst` file, and run the script. That’s the intended way.
+> **NOTE**: If you're confused why every `install.sh -r` overwrites your configs, you should fork [HyDE](https://github.com/HyDE-Project/HyDE), edit the `*.lst` file, and run the script. That’s the intended way.
 
 Who are the $USER?
 
