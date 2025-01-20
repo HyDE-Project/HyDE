@@ -4,12 +4,16 @@ export const quickLaunchItems = [
         "command": "kitty btop &"
     },
     {
-        "name": "GH",
-        "command": "xdg-open 'https://github.com/niumination' &"
+        "name": "Code",
+        "command": "code &"
     },
     {
-        "name": "Yazi",
-        "command": "kitty yazi &"
+        "name": "Nvim",
+        "command": "kitty nvim ~/.config &"
+    },
+    {
+        "name": "Ob",
+        "command": "flatpak run md.obsidian.Obsidian"
     },
     {
         "name": "Themes",

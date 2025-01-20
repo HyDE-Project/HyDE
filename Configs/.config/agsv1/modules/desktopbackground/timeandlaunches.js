@@ -40,7 +40,7 @@ const QuickLaunches = () => Box({
         Label({
             xalign: 0,
             className: 'bg-quicklaunch-title',
-            label: 'Quick Launches',
+            label: '>>>',
         }),
         Box({
             hpack: 'start',

@@ -138,7 +138,7 @@ let configOptions = {
     dock: {
         enabled: true,
         hiddenThickness: 5,
-        pinnedApps: ["kitty", "code", "github-desktop"],
+        pinnedApps: ["bleachbit", "dolphin", "github-desktop"],
         layer: "top",
         monitorExclusivity: true, // Dock will move to other monitor along with focus if enabled
         searchPinnedAppIcons: false, // Try to search for the correct icon if the app class isn't an icon name
