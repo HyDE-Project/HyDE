@@ -50,7 +50,9 @@ Check this out for the full note:
 
 https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265
 
-## Installation
+<a id="installation"></a>  
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALLATION" width="450"/>
+---
 
 The installation script is designed for a minimal [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) install, but **may** work on some [Arch-based distros](https://wiki.archlinux.org/title/Arch-based_distributions).
 While installing HyDE alongside another [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) should work, due to it being a heavily customized setup, it **will** conflict with your [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) theming, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. and is at your own risk.
@@ -93,7 +95,9 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 Please reboot after the install script completes and takes you to the SDDM login screen (or black screen) for the first time.
 For more details, please refer to the [installation wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
-### Updating
+<a id="updating"></a>  
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=UPDATING" width="450"/>
+---
 
 To update HyDE, you will need to pull the latest changes from GitHub and restore the configs by running the following commands:
 
@@ -117,7 +121,9 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-## Themes
+<a id="themes"></a>  
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=THEMES" width="450"/>
+---
 
 All our official themes are stored in a separate repository, allowing users to install them using themepatcher.
 For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes).
@@ -151,7 +157,9 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-## Styles
+<a id="styles"></a>  
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=STYLES" width="450"/>
+---
 
 <div align="center"><table><tr>Theme Select</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_1.png"/></td><td>
