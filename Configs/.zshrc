@@ -44,3 +44,15 @@ alias gl='git log'
 
 # PACMAN
 alias repairpac='sudo pacman -Qknq | cut -d' ' -f 1 | sudo pacman -S -'
+
+# FZF
+source <(fzf --zsh)
+alias see='fzf --preview="bat --color=always {}"'
+alias seevi='vi $(fzf --preview="bat --color=always {}")'
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix"
+export FZF_DEFAULT_OPTS="--height 70% --layout=reverse --border --color=hl:#2dd4bf"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}' --bind 'enter:execute(nvim {})'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"

@@ -79,6 +79,7 @@ brave-bin                                              # browser
 neovim                                                 # editor
 fish                                                   # shell
 less                                                   # pager
+fd                                                     # find entries filesystem
 
 flatpak                                                # flatpak manager
 btop                                                   # system monitor
