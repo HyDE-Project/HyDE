@@ -49,7 +49,7 @@ rofiSel=$(paste <(printf "%s\n" "${wallListBase[@]}") <(printf "|%s\n" "${wallHa
     rofi -dmenu \
         -theme-str "${r_scale}" \
         -theme-str "${r_override}" \
-        -config "${ROFI_WALLPAPER_STYLE:-selector}" \
+        -theme "${ROFI_WALLPAPER_STYLE:-selector}" \
         -select "${currentWall}" | xargs)
 
 #// apply wallpaper
