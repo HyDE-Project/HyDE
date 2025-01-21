@@ -1,0 +1,8 @@
+"custom/hackthebox": {
+    "rotate": "${r_deg}",
+    "format": " ",
+    "exec": "hackthebox.sh",
+    "tooltip": true ,
+    "interval": 60,
+    "return-type": "json"
+},
