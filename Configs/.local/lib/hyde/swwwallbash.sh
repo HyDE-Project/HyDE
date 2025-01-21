@@ -108,7 +108,7 @@ fn_wallbash() {
             WALLBASH_SCRIPTS="${dcolTemplate%%hyde/wallbash*}hyde/wallbash/scripts"
 
         fi
-    fic
+    fi
 
     # shellcheck disable=SC1091
     # shellcheck disable=SC2154
