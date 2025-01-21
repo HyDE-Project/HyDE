@@ -1,7 +1,7 @@
 export const quickLaunchItems = [
     {
-        "name": "SysMon",
-        "command": "kitty btop &"
+        "name": "Find",
+        "command": "kitty fish -C /home/zaryu/ZHALL_ABSTRACT/UsefulCMD/fy.sh &"
     },
     {
         "name": "Code",

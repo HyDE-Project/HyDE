@@ -153,6 +153,9 @@ export default () => Box({
                 }
 
             },
+            onSecondaryClickRelease: () => {
+                execAsync('kitty btop').catch(print);
+            },
         })
     ],
 })
