@@ -28,6 +28,7 @@ mangohud                                               # system performance over
 cava                                                   # audio visualizer
 spotify                                                # proprietary music streaming service
 spicetify-cli                                          # cli to customize spotify client
+# spotify-adblock                                      # spotify ad blocker
 
 # --------------------------------------------------- // Apps
 # neovim                                               # vim based text editor
