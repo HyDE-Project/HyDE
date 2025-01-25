@@ -32,15 +32,20 @@ Multi-language README support
 <div align="center">
   <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
     <a href="https://archlinux.org/" target="_blank">
-    <img src="Source/assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+      <img src="Source/assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    </a>
     <a href="https://cachyos.org/" target="_blank">
-    <img src="Source/assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+      <img src="Source/assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    </a>
     <a href="https://endeavouros.com/" target="_blank">
-    <img src="Source/assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+      <img src="Source/assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    </a>
     <a href="https://garudalinux.org/" target="_blank">
-    <img src="Source/assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+      <img src="Source/assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    </a>
     <a href="https://nixos.org/" target="_blank">
-    <img src="Source/assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+      <img src="Source/assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+    </a>
   </div>
 </div>
 
