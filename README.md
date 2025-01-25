@@ -41,7 +41,6 @@ Multi-language README support
     <img src="Source/assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
     <a href="https://nixos.org/" target="_blank">
     <img src="Source/assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
-    <a href="https://nixos.org/" target="_blank">
   </div>
 </div>
 
