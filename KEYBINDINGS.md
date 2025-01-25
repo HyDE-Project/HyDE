@@ -180,9 +180,9 @@ Multi-language README support
 
 | Keys                                                   | Action                      |
 | :----------------------------------------------------- | :-------------------------- |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>grave</kbd> | move to scratchpad          |
-| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>grave</kbd>   | move to scratchpad (silent) |
-| <kbd>SUPER</kbd> + <kbd>grave</kbd>                    | toggle scratchpad           |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>S</kbd> | move to scratchpad          |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>S</kbd>   | move to scratchpad (silent) |
+| <kbd>SUPER</kbd> + <kbd>S</kbd>                    | toggle scratchpad           |
 
 #### Move window silently
 
