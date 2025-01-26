@@ -42,10 +42,20 @@ def parse_toml_to_env(toml_file, env_file=None, export=False):
     try:
         with open(toml_file, "rb") as file:
             toml_content = tomllib.load(file)
-    except Exception as e:
-        error_message = f"Error parsing TOML file: {e}"
-        logging.error(error_message)
-        subprocess.run(["notify-send", "HyDE Error", error_message])
+    except FileNotFoundError as e:
+        error_message = f"TOML file not found: {e}"
+        logging.error("TOML file not found: %s", e)
+        subprocess.run(["notify-send", "HyDE Error", error_message], check=True)
+        return
+    except tomllib.TOMLDecodeError as e:
+        error_message = f"Error decoding TOML file: {e}"
+        logging.error("Error decoding TOML file: %s", e)
+        subprocess.run(["notify-send", "HyDE Error", error_message], check=True)
+        return
+    except IOError as e:
+        error_message = f"IO error: {e}"
+        logging.error("IO error: %s", e)
+        subprocess.run(["notify-send", "HyDE Error", error_message], check=True)
         return
 
     def flatten_dict(d, parent_key=""):
@@ -72,9 +82,9 @@ def parse_toml_to_env(toml_file, env_file=None, export=False):
     ]
 
     if env_file:
-        with open(env_file, "w") as file:
+        with open(env_file, "w", encoding='UTF-8') as file: #Use UTF-8 encoding
             file.write("\n".join(output) + "\n")
-        logging.debug(f"Environment variables have been written to {env_file}")
+        logging.debug("Environment variables have been written to %s", env_file) # Use % lazy formatting for better performance in logging
 
     else:
         logging.debug("\n".join(output))
@@ -123,7 +133,7 @@ def main():
         )
         watcher_thread.daemon = True
         watcher_thread.start()
-        logging.debug(f"Watching {input_toml_file} for changes...")
+        logging.debug("Watching %s for changes...", input_toml_file) # Same as line 77
         try:
             while True:
                 time.sleep(1)

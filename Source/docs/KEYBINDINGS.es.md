@@ -180,9 +180,9 @@ Multi-language README support
 
 | Teclas                                                 | Acción                              |
 | :----------------------------------------------------- | :---------------------------------- |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>grave</kbd> | pasar al bloc de notas              |
-| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>grave</kbd>   | mover al bloc de notas (silencioso) |
-| <kbd>SUPER</kbd> + <kbd>grave</kbd>                    | alternar bloc de notas              |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>S</kbd>     | pasar al bloc de notas              |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>S</kbd>       | mover al bloc de notas (silencioso) |
+| <kbd>SUPER</kbd> + <kbd>S</kbd>                        | alternar bloc de notas              |
 
 #### Mover la ventana silenciosamente
 

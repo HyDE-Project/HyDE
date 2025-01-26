@@ -41,7 +41,7 @@ class PlayerManager:
     def init_players(self):
         for player in self.manager.props.player_names:
             if self.selected_player is not None and self.selected_player != player.name:
-                logger.debug(f"{player.name} is not the filtered player, skipping it")
+                logger.debug("%s is not the filtered player, skipping it", player.name)
                 continue
             self.init_player(player)
 
@@ -50,7 +50,7 @@ class PlayerManager:
         self.loop.run()
 
     def init_player(self, player):
-        logger.info(f"Initialize new player: {player.name}")
+        logger.info("Initialize new player: %s", player.name)
         player = Playerctl.Player.new_from_name(player)
         player.connect("playback-status",
                        self.on_playback_status_changed, None)
@@ -62,7 +62,7 @@ class PlayerManager:
         return self.manager.props.players
 
     def write_output(self, text, player, tooltip):
-        logger.debug(f"Writing output: {text}")
+        logger.debug("Writing output: %s", text)
 
         output = {"text": text,
                   "class": "custom-" + player.props.player_name,
@@ -77,12 +77,12 @@ class PlayerManager:
         sys.stdout.flush()
 
     def on_playback_status_changed(self, player, status, _=None):
-        logger.debug(f"Playback status changed for player {player.props.player_name}: {status}")
+        logger.debug("Playback status changed for player %s: %s", player.props.player_name, status)
         self.on_metadata_changed(player, player.props.metadata)
 
     def get_first_playing_player(self):
         players = self.get_players()
-        logger.debug(f"Getting first playing player from {len(players)} players")
+        logger.debug("Getting first playing player from %d players", len(players))
         if len(players) > 0:
             # if any are playing, show the first one that is playing
             # reverse order, so that the most recently added ones are preferred
@@ -107,7 +107,7 @@ class PlayerManager:
             self.clear_output()
 
     def on_metadata_changed(self, player, metadata, _=None):
-        logger.debug(f"Metadata changed for player {player.props.player_name}")
+        logger.debug("Metadata changed for player %s", player.props.player_name)
         player_name = player.props.player_name
         artist = player.get_artist()
         title = player.get_title()
@@ -130,10 +130,10 @@ class PlayerManager:
         if current_playing is None or current_playing.props.player_name == player.props.player_name:
             self.write_output(track_info, player, tooltip)
         else:
-            logger.debug(f"Other player {current_playing.props.player_name} is playing, skipping")
+            logger.debug("Other player %s is playing, skipping output", current_playing.props.player_name)
 
     def on_player_appeared(self, _, player):
-        logger.info(f"Player has appeared: {player.name}")
+        logger.info("Player has appeared: %s", player.name)
         if player is not None and (self.selected_player is None or player.name == self.selected_player):
             self.init_player(player)
         else:
@@ -141,7 +141,7 @@ class PlayerManager:
                 "New player appeared, but it's not the selected player, skipping")
 
     def on_player_vanished(self, _, player):
-        logger.info(f"Player {player.props.player_name} has vanished")
+        logger.info("Player %s has vanished", player.props.player_name)
         self.show_most_important_player()
 
 def parse_arguments():
@@ -174,7 +174,7 @@ def main():
 
     logger.info("Creating player manager")
     if arguments.player:
-        logger.info(f"Filtering for player: {arguments.player}")
+        logger.info("Filtering for player: %s", arguments.player)
     player = PlayerManager(arguments.player)
     player.run()
 
