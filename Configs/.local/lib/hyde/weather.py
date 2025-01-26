@@ -41,7 +41,7 @@ else:
     set_location = True
     if get_location == 'True':
         get_location = ''
-    weather = requests.get(f"https://wttr.in/{get_location}?format=j1").json()
+    weather = requests.get(f"https://wttr.in/{get_location}?format=j1", timeout=10).json() # timeout is 10 seconds
 
 def format_time(time):
     return time.replace("00", "").zfill(2)
