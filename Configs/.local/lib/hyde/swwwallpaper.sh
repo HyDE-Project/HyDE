@@ -61,7 +61,7 @@ get_hashmap "${wallPathArray[@]}"
 
 #// evaluate options
 
-while getopts "nps:" option; do
+while getopts "nprs:" option; do
     case $option in
     n) # set next wallpaper
         xtrans=${WALLPAPER_SWWW_TRANSITION_NEXT}
@@ -79,11 +79,16 @@ while getopts "nps:" option; do
         fi
         Wall_Cache
         ;;
+    r) # set random wallpaper
+        setIndex=$((RANDOM % ${#wallList[@]}))
+        Wall_Cache
+        ;;
     *) # invalid option
         echo "... invalid option ..."
         echo "$(basename "${0}") -[option]"
-        echo "n : set next wall"
-        echo "p : set previous wall"
+        echo "n : set next wallpaper"
+        echo "p : set previous wallppaer"
+        echo "r : set random wallpaper"
         echo "s : set input wallpaper"
         exit 1
         ;;
