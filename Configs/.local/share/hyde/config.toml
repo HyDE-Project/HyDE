@@ -127,7 +127,7 @@ scale=30                                # total scaling
 # output = ["", ""]                     # Default monitor output for waybar
 
 [waybar.weather]
-loc = true # Show location in bar // accepts true or false or location/coordinates string
+loc = true                          # Show location in weather module
 
 [cava.stdout]
 # 'cava.sh stdout' configuration

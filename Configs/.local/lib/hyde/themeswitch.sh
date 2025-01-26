@@ -116,8 +116,20 @@ if ! kwriteconfig6 --file "${confDir}/kdeglobals" --group "UiSettings" --key "Co
 fi
 
 # For KDE stuff
-kwriteconfig6 --file "${confDir}/kdeglobals" --group "KDE" --key "windgetStyke" "kvantum" 2>/dev/null
-kwriteconfig6 --file "${confDir}/kdeglobals" --group "Colors:View" --key "BackgroundNormal" "#00000000" 2>/dev/null
+if ! kwriteconfig6 --file "${confDir}/kdeglobals" --group "KDE" --key "windgetStyke" "kvantum" 2>/dev/null; then
+    if ! grep -q "^\[KDE\]" "${confDir}/kdeglobals"; then
+        echo -e "\n[KDE]\nwidgetStyle=kvantum" >>"${confDir}/kdeglobals"
+    elif ! grep -q "^widgetStyle=" "${confDir}/kdeglobals"; then
+        sed -i "/^\[KDE\]/a widgetStyle=kvantum" "${confDir}/kdeglobals"
+    fi
+fi
+if ! kwriteconfig6 --file "${confDir}/kdeglobals" --group "Colors:View" --key "BackgroundNormal" "#00000000" 2>/dev/null; then
+    if ! grep -q "^\[Colors:View\]" "${confDir}/kdeglobals"; then
+        echo -e "\n[Colors:View]\nBackgroundNormal=#00000000" >>"${confDir}/kdeglobals"
+    elif ! grep -q "^BackgroundNormal=" "${confDir}/kdeglobals"; then
+        sed -i "/^\[Colors:View\]/a BackgroundNormal=#00000000" "${confDir}/kdeglobals"
+    fi
+fi
 
 # // gtk2
 

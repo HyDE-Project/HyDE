@@ -8,7 +8,7 @@ lockFile="$HYDE_RUNTIME_DIR/$(basename "${0}").lock"
 touch "${lockFile}"
 trap 'rm -f ${lockFile}' EXIT
 
-#// define functions
+#// Set and Cache Wallpaper
 
 Wall_Cache() {
     ln -fs "${wallList[setIndex]}" "${wallSet}"
@@ -62,6 +62,7 @@ get_hashmap "${wallPathArray[@]}"
 #// evaluate options
 
 while getopts "nprs:" option; do
+
     case $option in
     n) # set next wallpaper
         xtrans=${WALLPAPER_SWWW_TRANSITION_NEXT}
@@ -86,7 +87,7 @@ while getopts "nprs:" option; do
     *) # invalid option
         echo "... invalid option ..."
         echo "$(basename "${0}") -[option]"
-        echo "n : set next wallpaper"
+        echo "n : set next wallp"
         echo "p : set previous wallppaer"
         echo "r : set random wallpaper"
         echo "s : set input wallpaper"
@@ -110,5 +111,6 @@ xtrans=${WALLPAPER_SWWW_TRANSITION_DEFAULT}
 [ -z "${wallTransDuration}" ] && wallTransDuration=0.4
 
 #// apply wallpaper
+# TODO: add support for other backends
 print_log -sec "wallpaper" -stat "apply" "$(readlink -f "${wallSet}")"
 swww img "$(readlink "${wallSet}")" --transition-bezier .43,1.19,1,.4 --transition-type "${xtrans}" --transition-duration "${wallTransDuration}" --transition-fps "${wallFramerate}" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
