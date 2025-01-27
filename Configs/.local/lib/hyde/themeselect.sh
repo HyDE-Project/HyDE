@@ -1,8 +1,11 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 #// set variables
+
 scrDir="$(dirname "$(realpath "$0")")"
+# shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
+# shellcheck disable=SC2154
 
 case "$1" in
 
