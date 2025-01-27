@@ -21,6 +21,8 @@ export THEMES_DIR="${XDG_DATA_HOME}/themes"
 #legacy hyde envs // should be deprecated
 
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
+export rofiConf="$HYDE_DATA_HOME/rofi/themes"
+export rofiAssetDir="$HYDE_DATA_HOME/rofi/assets"
 export hydeConfDir="$HYDE_CONFIG_HOME"
 export cacheDir="$HYDE_CACHE_HOME"
 export thmbDir="$HYDE_CACHE_HOME/thumbs"
