@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck source=$HOME/.local/lib/hyde/globalcontrol.sh

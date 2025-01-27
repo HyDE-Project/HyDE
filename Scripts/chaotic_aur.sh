@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 #! REQUIRED ROOT
 execName="$0 $*"
@@ -84,30 +84,47 @@ check_Integrity() {
 }
 
 install() {
-    handle_error(){
+    handle_error() {
         tput setaf 1
         echo "ERROR :: Failed to install Chaotic AUR"
         tput sgr0
-        echo   "WARNING :: Reverting changes..."
-        { purge && echo "Reverted successfully" ; }|| echo "Failed to revert"
+        echo "WARNING :: Reverting changes..."
+        { purge && echo "Reverted successfully"; } || echo "Failed to revert"
         exit 1
     }
 
-
     box_me "Installing the key"
-    pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || { box_me "Failed to install the key"; handle_error; }
-    pacman-key --lsign-key 3056513887B78AEB || { box_me "Failed to locally sign the key"; handle_error; }
+    pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com || {
+        box_me "Failed to install the key"
+        handle_error
+    }
+    pacman-key --lsign-key 3056513887B78AEB || {
+        box_me "Failed to locally sign the key"
+        handle_error
+    }
 
     box_me "Downloading the keyring"
-    pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || { box_me "Failed to download the keyring"; handle_error; }
+    pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' || {
+        box_me "Failed to download the keyring"
+        handle_error
+    }
 
     box_me "Downloading the mirrorlist"
-    pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || { box_me "Failed to download the mirrorlist"; handle_error; }
+    pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' || {
+        box_me "Failed to download the mirrorlist"
+        handle_error
+    }
 
-    write_ChaoticAUR "append" || { box_me "Failed to append Chaotic AUR"; handle_error; }
+    write_ChaoticAUR "append" || {
+        box_me "Failed to append Chaotic AUR"
+        handle_error
+    }
 
     box_me "Refreshing the mirrorlists"
-    pacman -Sy || { box_me "Failed to refresh the mirrorlists"; handle_error; }
+    pacman -Sy || {
+        box_me "Failed to refresh the mirrorlists"
+        handle_error
+    }
 
     box_me "Chaotic-AUR has been successfully installed!"
 }

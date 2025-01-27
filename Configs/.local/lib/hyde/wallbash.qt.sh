@@ -1,16 +1,13 @@
-#!/usr/bin/env sh
-
+#!/usr/bin/env bash
 
 # set variables
 
-scrDir=`dirname "$(realpath "$0")"`
+scrDir=$(dirname "$(realpath "$0")")
 source $scrDir/globalcontrol.sh
-
 
 # sync qt5 and qt6 colors
 
 cp "${confDir}/qt5ct/colors.conf" "${confDir}/qt6ct/colors.conf"
-
 
 # restart dolphin
 
@@ -20,4 +17,3 @@ cp "${confDir}/qt5ct/colors.conf" "${confDir}/qt6ct/colors.conf"
 #    hyprctl dispatch closewindow pid:${dpid}
 #    hyprctl dispatch exec dolphin &
 #fi
-
