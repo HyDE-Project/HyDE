@@ -14,6 +14,28 @@
 # This also ensures that the proper HyDE $ENVs are loaded
 
 
+# cleaning up home folder
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CONFIG_DIR="$HOME/.config"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DESKTOP_DIR="$HOME/Desktop"
+export XDG_DOWNLOAD_DIR="$HOME/Downloads"
+export XDG_TEMPLATES_DIR="$HOME/Templates"
+export XDG_PUBLICSHARE_DIR="$HOME/Public"
+export XDG_DOCUMENTS_DIR="$HOME/Documents"
+export XDG_MUSIC_DIR="$HOME/Music"
+export XDG_PICTURES_DIR="$HOME/Pictures"
+export XDG_VIDEOS_DIR="$HOME/Videos"
+export LESSHISTFILE=/tmp/less-hist
+export PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
+
+# wget
+export WGETRC="${XDG_CONFIG_HOME}/wgetrc"
+export SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
+
+
 # Command not found handler
 function command_not_found_handler {
     local purple='\e[1;35m' bright='\e[0;1m' green='\e[1;32m' reset='\e[0m'
