@@ -6,6 +6,8 @@ scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
 # shellcheck disable=SC2154
+rofiConf="$HOME/.local/share/hyde/rofi/themes"
+rofiAssetDir="$HOME/.local/share/hyde/rofi/assets"
 
 case "$1" in
 
