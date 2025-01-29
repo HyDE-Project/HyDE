@@ -21,6 +21,10 @@
             "(.*)Github": "Github ",
             "(.*)Spotify Free": "Spotify 󰓇",
             "(.*)Spotify Premiun": "Spotify 󰓇",
+            "(.*)nwg-displays": "Display settings 󱄄 ",
+            "(.*)Proton VPN": "Proton VPN 󰖂  ",
+            "(.*)Youtube": "YouTube  ",
+            "(.*)vim": "VIM  ",
         },
         "max-length": 50
     },
