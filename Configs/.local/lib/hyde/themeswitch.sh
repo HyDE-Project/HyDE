@@ -192,6 +192,8 @@ fi
 #// wallpaper
 if [ "$quiet" = true ]; then
     "${scrDir}/swwwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" >/dev/null 2>&1
+    "${scrDir}/hyprlockwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" >/dev/null 2>&1
 else
     "${scrDir}/swwwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")"
+    "${scrDir}/hyprlockwallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")"
 fi

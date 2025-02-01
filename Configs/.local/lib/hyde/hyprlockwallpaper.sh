@@ -65,13 +65,9 @@ while getopts "nprs:" option; do
 
     case $option in
     n) # set next wallpaper
-        xtrans=${WALLPAPER_SWWW_TRANSITION_NEXT}
-        xtrans="${xtrans:-"grow"}"
         Wall_Change n
         ;;
     p) # set previous wallpaper
-        xtrans=${WALLPAPER_SWWW_TRANSITION_PREV}
-        xtrans="${xtrans:-"outer"}"
         Wall_Change p
         ;;
     s) # set input wallpaper
@@ -96,21 +92,7 @@ while getopts "nprs:" option; do
     esac
 done
 
-#// check swww daemon
-
-if ! swww query &>/dev/null; then
-    swww-daemon --format xrgb &
-    disown
-    swww query && swww restore
-fi
-
-#// set defaults
-xtrans=${WALLPAPER_SWWW_TRANSITION_DEFAULT}
-[ -z "${xtrans}" ] && xtrans="grow"
-[ -z "${wallFramerate}" ] && wallFramerate=60
-[ -z "${wallTransDuration}" ] && wallTransDuration=0.4
-
 #// apply wallpaper
 # TODO: add support for other backends
 print_log -sec "wallpaper" -stat "apply" "$(readlink -f "${wallSet}")"
-swww img "$(readlink "${wallSet}")" --transition-bezier .43,1.19,1,.4 --transition-type "${xtrans}" --transition-duration "${wallTransDuration}" --transition-fps "${wallFramerate}" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
+hyprlock.sh background
