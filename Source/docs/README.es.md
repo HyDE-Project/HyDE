@@ -4,7 +4,7 @@
     </a>
 </div>
 
-###### _<div align="right"><sub>// design by t2</sub></div>_
+###### _<div align="right"><sub>// diseño por t2</sub></div>_
 
 ![hyde_banner](https://github.com/HyDE-Project/HyDE/blob/master/Source/assets/hyde_banner.png?raw=true)
 
@@ -54,7 +54,7 @@ https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALACI%C3%93N" width="450"/>
 ---
 
-El script de instalación está diseñado para un mínimo [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) instalar, pero **puede** funcionar en algunos [Arch-based distros](https://wiki.archlinux.org/title/Arch-based_distributions).Al instalar HyDE junto con otro [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) debería funcionar, debido a que es una configuración muy personalizada, **tendrá** conflicto con su [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) tematización, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. y es bajo su propio riesgo.
+El script de instalación está diseñado para un mínimo [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) instalar, pero **puede** funcionar en algunas [Distros basadas en arch](https://wiki.archlinux.org/title/Arch-based_distributions). Al instalar HyDE junto con otro [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) debería funcionar, debido a que es una configuración muy personalizada, **tendrá** conflicto con su [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) tematización, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. y es bajo su propio riesgo.
 
 Para apoyar a Nixos se mantiene un proyecto separado @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
@@ -121,7 +121,7 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 ---
 
 Todos nuestros temas oficiales se almacenan en un repositorio separado, lo que permite a los usuarios instalarlos mediante themepatcher.
-Para obtener más información, visite [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes).
+Para obtener más información, visite [Temas HyDE](https://github.com/HyDE-Project/hyde-themes).
 
 <div align="center">
   <table><tr><td>
@@ -145,7 +145,7 @@ Para obtener más información, visite [HyDE-Project/hyde-themes](https://github
 > [!TIP]
 > Todos, incluido usted, pueden crear, mantener y compartir temas adicionales, ¡todos los cuales pueden instalarse usando themepatcher!
 > Para crear su propio tema personalizado, consulte la [Wiki de temas](https://github.com/prasanthrangan/hyprdots/wiki/Theming).
-> Si desea que se muestre su tema de Hyde o desea encontrar algunos temas no oficiales, visite [hyde-gallery](https://github.com/kRHYME7/hyde-gallery)!
+> Si desea que se muestre su tema de Hyde o desea encontrar algunos temas no oficiales, visite [Galeria HyDE](https://github.com/kRHYME7/hyde-gallery)!
 
 <div align="right">
   <br>
@@ -210,5 +210,5 @@ Para obtener más información, visite [HyDE-Project/hyde-themes](https://github
 </div>
 
 <div align="right">
-  <sub>Last edited on: <span id="last-edited"></span></sub>
+  <sub>Última edición el: <span id="last-edited"></span></sub>
 </div>
