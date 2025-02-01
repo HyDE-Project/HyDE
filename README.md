@@ -1,10 +1,10 @@
 <div align = center>
-    <a href="https://discord.gg/AYbJ9MJez7">
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
-    </a>
+  <a href="https://discord.gg/AYbJ9MJez7">
+    <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
+  </a>
 </div>
 
-###### _<div align="right"><sub>// design by t2</sub></div>_
+###### _<div align="right"><a id=-design-by-t2></a><sub>// design by t2</sub></div>_
 
 ![hyde_banner](Source/assets/hyde_banner.png)
 
@@ -12,8 +12,9 @@
 Multi-language README support
 -->
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/HyDE-Project/HyDE/blob/master/README.md)
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/HyDE-Project/HyDE/blob/master/Source/docs/README.es.md)
+<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](README.md) -->
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/README.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/README.de.md)
 
 <div align="center">
 
@@ -50,7 +51,7 @@ Check this out for the full note:
 
 https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265
 
-<a id="installation"></a>  
+<a id="installation"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALLATION" width="450"/>
 ---
 
@@ -95,7 +96,7 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 Please reboot after the install script completes and takes you to the SDDM login screen (or black screen) for the first time.
 For more details, please refer to the [installation wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
-<a id="updating"></a>  
+<a id="updating"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=UPDATING" width="450"/>
 ---
 
@@ -200,6 +201,7 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_4.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_5.png"/></td></tr></table></div>
 
+<!--
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
@@ -208,6 +210,7 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 <div align="center">
 
 </div>
+-->
 
 <div align="right">
   <br>
@@ -215,5 +218,5 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 </div>
 
 <div align="right">
-  <sub>Last edited on: <span id="last-edited"></span></sub>
+  <sub>Last edited on: 02/01/2025<span id="last-edited"></span></sub>
 </div>

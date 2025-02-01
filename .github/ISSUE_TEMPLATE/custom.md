@@ -5,6 +5,14 @@ title: "[Custom]: Short description of the issue"
 labels: "custom"
 ---
 
+<!--
+Multi-language custom support
+-->
+
+<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](custom.md) -->
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](custom.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](custom.de.md)
+
 ## Custom Template
 
 ### Description
