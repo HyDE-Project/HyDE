@@ -1,41 +1,46 @@
 ---
-nombre: Plantilla personalizada
-acerca de: Utilice esta plantilla para enviar un problema personalizado
-titulo: "[Custom]: Breve descripción del problema"
-etiqueta: "custom"
+name: Custom template
+about: Use this template to submit a custom issue
+title: "[Custom]: Short description of the issue"
+labels: "custom"
 ---
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](bug_report.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](bug_report.de.md)
+<!--
+Multi-language custom support
+-->
 
-## Plantilla personalizada
+<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](custom.md) -->
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](custom.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](custom.de.md)
 
-### descripción
+## Custom Template
 
-[Proporcione una descripción clara y concisa del problema o solicitud.]
+### Description
 
-### Pasos para reproducir (si corresponde)
+[Provide a clear and concise description of the issue or request.]
 
-1. [Primer paso]
-2. [Segundo Paso]
-3. [y así sucesivamente...]
+### Steps to Reproduce (if applicable)
 
-### Comportamiento esperado
+1. [First Step]
+2. [Second Step]
+3. [and so on...]
+
+### Expected Behavior
 
 [What did you expect to happen?]
 
-### Comportamiento real
+### Actual Behavior
 
-[¿Qué pasó realmente?]
+[What actually happened?]
 
-### Capturas de pantalla (si corresponde)
+### Screenshots (if applicable)
 
-[Si corresponde, agregue capturas de pantalla para ayudar a explicar su problema.]
+[If applicable, add screenshots to help explain your problem.]
 
-### Solución propuesta (si corresponde)
+### Proposed Solution (if applicable)
 
-[Si tiene una solución específica en mente, descríbala aquí. Si no, puedes saltarte esta sección.]
+[If you have a specific solution in mind, describe it here. If not, you can skip this section.]
 
-### Información adicional
+### Additional Information
 
-[Agregue aquí cualquier otra información sobre el problema o la solicitud. Por ejemplo, puede incluir enlaces a funciones similares en otros proyectos, o capturas de pantalla o diagramas para ayudar a explicar su idea.]
+[Add any other information about the issue or request here. For example, you might include links to similar features in other projects, or screenshots or diagrams to help explain your idea.]
