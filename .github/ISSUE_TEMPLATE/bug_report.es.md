@@ -5,6 +5,10 @@ título: "[Bug]: Breve descripción del problema"
 etiquetas: "Error, necesita clasificación"
 ---
 
+[![en](https://img.shields.io/badge/lang-en-red.svg)](bug_report.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](bug_report.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](bug_report.de.md)
+
 ## Reportar bug
 
 ### descripción
