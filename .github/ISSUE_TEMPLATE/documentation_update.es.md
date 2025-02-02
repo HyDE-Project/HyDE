@@ -1,0 +1,24 @@
+---
+nombre: Actualización de documentación
+acerca de: Proponer un cambio en la documentación del proyecto.
+titulo: "[Docs]: Breve descripción del cambio."
+etiqueta: "documentación, revisión de necesidades"
+---
+
+## Actualización de documentación
+
+### Descripción
+
+[Proporcione una descripción clara y concisa de la actualización de la documentación que le gustaría que se realice.]
+
+### Documentación actual
+
+[Provide a link to the current documentation or describe where it can be found.]
+
+### Documentación propuesta
+
+[Proporcione una descripción clara y concisa de la documentación actualizada que le gustaría que se agregue.]
+
+### Información adicional
+
+[Agregue aquí cualquier otra información sobre la actualización de la documentación. Por ejemplo, puede incluir enlaces a documentación similar en otros proyectos, o capturas de pantalla o diagramas para ayudar a explicar su idea.]
