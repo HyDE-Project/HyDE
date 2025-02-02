@@ -1,38 +1,41 @@
 ---
-name: Custom template
-about: Use this template to submit a custom issue
-title: "[Custom]: Short description of the issue"
-labels: "custom"
+nombre: Plantilla personalizada
+acerca de: Utilice esta plantilla para enviar un problema personalizado
+titulo: "[Custom]: Breve descripción del problema"
+etiqueta: "custom"
 ---
 
-## Custom Template
+[![en](https://img.shields.io/badge/lang-en-red.svg)](bug_report.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](bug_report.de.md)
 
-### Description
+## Plantilla personalizada
 
-[Provide a clear and concise description of the issue or request.]
+### descripción
 
-### Steps to Reproduce (if applicable)
+[Proporcione una descripción clara y concisa del problema o solicitud.]
 
-1. [First Step]
-2. [Second Step]
-3. [and so on...]
+### Pasos para reproducir (si corresponde)
 
-### Expected Behavior
+1. [Primer paso]
+2. [Segundo Paso]
+3. [y así sucesivamente...]
+
+### Comportamiento esperado
 
 [What did you expect to happen?]
 
-### Actual Behavior
+### Comportamiento real
 
-[What actually happened?]
+[¿Qué pasó realmente?]
 
-### Screenshots (if applicable)
+### Capturas de pantalla (si corresponde)
 
-[If applicable, add screenshots to help explain your problem.]
+[Si corresponde, agregue capturas de pantalla para ayudar a explicar su problema.]
 
-### Proposed Solution (if applicable)
+### Solución propuesta (si corresponde)
 
-[If you have a specific solution in mind, describe it here. If not, you can skip this section.]
+[Si tiene una solución específica en mente, descríbala aquí. Si no, puedes saltarte esta sección.]
 
-### Additional Information
+### Información adicional
 
-[Add any other information about the issue or request here. For example, you might include links to similar features in other projects, or screenshots or diagrams to help explain your idea.]
+[Agregue aquí cualquier otra información sobre el problema o la solicitud. Por ejemplo, puede incluir enlaces a funciones similares en otros proyectos, o capturas de pantalla o diagramas para ayudar a explicar su idea.]
