@@ -1,8 +1,8 @@
 ---
-nombre: Reportar bug
-acerca de: Crea un informe para ayudarnos a mejorar
-título: "[Bug]: Breve descripción del problema"
-etiquetas: "Error, necesita clasificación"
+name: Reportar bug
+about: Crea un informe para ayudarnos a mejorar
+títle: "[Bug]: Breve descripción del problema"
+labels: "Error, necesita clasificación"
 ---
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](bug_report.md)
