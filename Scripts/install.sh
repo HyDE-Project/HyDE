@@ -303,6 +303,8 @@ cd ~/.UsefulCMD
 bash nix-determinate.sh
 cd ~/.UsefulCMD
 bash agsv1-installer.sh
+cd ~/.UsefulCMD
+bash auto-rotate-hyprland.sh
 
 if [ $flg_Install -eq 1 ]; then
     print_log -stat "\nInstallation" "completed"
