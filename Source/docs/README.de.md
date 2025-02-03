@@ -14,6 +14,7 @@ Mehrsprachige README-Unterstützung
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../README.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](README.es.md)
+[![中文](https://img.shields.io/badge/lang-中文-red.svg)](Source/docs/README.zh.md)
 <!-- [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md) -->
 
 <div align="center"><br>
@@ -46,7 +47,7 @@ Hier finden Sie die vollständige Notiz:
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&suffix=%20online&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
 -->
 
-https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265
+<https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265>
 
 <a id="installation"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALLATION" width="450"/>
@@ -55,11 +56,11 @@ https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a
 Das Installationsskript ist für eine minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux)-Installation gedacht, aber **kann** auf einigen [Arch-basierten Distributionen](https://wiki.archlinux.org/title/Arch-based_distributions) funktionieren.
 Während die Installation von HyDE neben einem anderen [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) funktionieren sollte, **wird** es aufgrund der stark angepassten Installation zu Konflikten mit Ihren [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) Themen, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), usw. kommen und geschieht auf eigene Gefahr.
 
-Für die Unterstützung von Nixos gibt es ein eigenes Projekt, das unter [Hydenix] (https://github.com/richen604/hydenix/tree/main) gepflegt wird.
+Für die Unterstützung von Nixos gibt es ein eigenes Projekt, das unter [Hydenix] (<https://github.com/richen604/hydenix/tree/main>) gepflegt wird.
 
 > [!IMPORTANT]
 > Das Installationsskript erkennt automatisch eine NVIDIA-Karte und installiert nvidia-dkms Treiber für Ihren Kernel.
-> Vergewissern Sie sich, dass Ihre NVIDIA-Karte die dkms Treiber aus der [hier] bereitgestellten Liste unterstützt (https://wiki.archlinux.org/title/NVIDIA).
+> Vergewissern Sie sich, dass Ihre NVIDIA-Karte die dkms Treiber aus der [hier] bereitgestellten Liste unterstützt (<https://wiki.archlinux.org/title/NVIDIA>).
 
 > [!CAUTION]
 > Das Skript modifiziert Ihre `grub` oder `systemd-boot` Konfiguration, um NVIDIA DRM zu aktivieren.
@@ -90,7 +91,7 @@ Sehen Sie sich die Installationsanweisungen für HyDE in [Hyde-cli - Usage](http
 -->
 
 Bitte starten Sie neu, nachdem das Installationsskript abgeschlossen ist und Sie zum ersten Mal den SDDM-Anmeldebildschirm (oder einen schwarzen Bildschirm) sehen.
-Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki] (https://github.com/HyDE-Project/HyDE/wiki/installation).
+Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki] (<https://github.com/HyDE-Project/HyDE/wiki/installation>).
 
 <a id="aktualisieren"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=AKTUALISIEREN" width="450"/>
