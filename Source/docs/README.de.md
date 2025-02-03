@@ -14,7 +14,7 @@ Mehrsprachige README-Unterstützung
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../README.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](README.es.md)
-[![中文](https://img.shields.io/badge/lang-中文-red.svg)](Source/docs/README.zh.md)
+[![中文](https://img.shields.io/badge/lang-中文-red.svg)](README.zh.md)
 <!-- [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md) -->
 
 <div align="center"><br>

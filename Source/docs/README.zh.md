@@ -64,12 +64,12 @@ HyDE是一个高度自定义的预设，在其他[桌面环境](https://wiki.arc
 
 我们支持 Nixos， 但作为一个单独的仓库在 [Hydenix](https://github.com/richen604/hydenix/tree/main) 提供。
 
-> [!重要提醒]
+> [!IMPORTANT]
 > 安装脚本会自动检测英伟达显卡并安装 nvidia-dkms 内核驱动。
 > 请确保您的英伟达显卡支持 dkms 驱动，支持的具体型号可以查看[这个列表](https://wiki.archlinux.org/title/NVIDIA)。
 
-> [!注意]
-> 这个脚本会修改您的 `grub` 或 `systemd-boot` 配置来启用英伟达DRM。
+> [!CAUTION]
+> 这个脚本会修改您的 `grub` 或 `systemd-boot` 配置以启用英伟达DRM。
 
 若要安装，请执行以下命令：
 
@@ -80,16 +80,16 @@ cd ~/HyDE/Scripts
 ./install.sh
 ```
 
-> [!小贴士]
+> [!TIP]
 > 您可以在 `Scripts/pkg_user.lst` 中添加您想随 HyDE 一同安装的应用，并将此文件作为参数传入安装脚本，像这样：
-> 
+>
 > ```shell
 > ./install.sh pkg_user.lst
 > ```
 
-> [!重要提醒]
+> [!IMPORTANT]
 > 请参照 `Scripts/pkg_extra.lst`编写您的安装列表，
-> 
+>
 > 如果您想安装额外的软件包，也可以  `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst`。
 
 <!--
@@ -105,7 +105,7 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 
 ---
 
-要更新 HyDE, 您需要从 GitHub 中提取最新更改并通过运行以下命令恢复配置：
+要更新 HyDE, 您需要从 GitHub 中拉取最新更改并通过运行以下命令恢复配置：
 
 ```shell
 cd ~/HyDE/Scripts
@@ -113,7 +113,7 @@ git pull origin master
 ./install.sh -r
 ```
 
-> [!重要提醒]
+> [!IMPORTANT]
 > 请注意，在`Sctipts/restore_cfg.psv`中列出的配置中，您所做的任何个性化配置都会被覆盖。
 > 但是，所有被覆盖的配置会先被备份到`~/.config/cfg_backups/`中，以便找回。
 
@@ -154,7 +154,7 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 </td></tr></table>
 </div>
 
-> [!小贴士]
+> [!TIP]
 > 包括您在内的所有人都可以创建、维护、分享主题！它们都可以通过主题补丁程序安装。
 > 请参阅[主题 wiki](https://github.com/prasanthrangan/hyprdots/wiki/Theming) 来创建您的个性化主题。
 > 如果您想展示您的 hyde 主题，或者您想寻找非官方主题，请看[kRHYME7/hyde-gallery](https://github.com/kRHYME7/hyde-gallery)。
