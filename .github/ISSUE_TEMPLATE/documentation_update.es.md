@@ -1,8 +1,8 @@
 ---
-nombre: Actualización de documentación
-acerca de: Proponer un cambio en la documentación del proyecto.
-titulo: "[Docs]: Breve descripción del cambio."
-etiqueta: "documentación, revisión de necesidades"
+name: Actualización de documentación
+about: Proponer un cambio en la documentación del proyecto.
+title: "[Docs]: Breve descripción del cambio."
+labels: "documentación, revisión de necesidades"
 ---
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](documentation_update.md)
