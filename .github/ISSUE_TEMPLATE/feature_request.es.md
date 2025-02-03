@@ -1,8 +1,8 @@
 ---
-nombre: Solicitud de función
-acerca de: Sugerir una característica para este proyecto
-titulo: "[Feature Request]: Breve descripción de la característica"
-etiqueta: "mejora, clasificación de necesidades, solicitud de funciones"
+name: Solicitud de función
+about: Sugerir una característica para este proyecto
+title: "[Feature Request]: Breve descripción de la característica"
+labels: "mejora, clasificación de necesidades, solicitud de funciones"
 ---
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](feature_request.md)
