@@ -4,7 +4,7 @@ alias vi='nvim'
 alias va='vim'
 alias cat='bat'
 #alias nix='fish'
-alias 'e.'='exit'
+alias q='exit'
 alias fast='fastfetch'
 
 #NIX ALIASES
