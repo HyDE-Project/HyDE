@@ -1,8 +1,8 @@
 ---
-nombre: Plantilla personalizada
-acerca de: Utilice esta plantilla para enviar un problema personalizado
-titulo: "[Custom]: Breve descripción del problema"
-etiqueta: "custom"
+name: Plantilla personalizada
+about: Utilice esta plantilla para enviar un problema personalizado
+title: "[Custom]: Breve descripción del problema"
+labels: "custom"
 ---
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](custom.md)
