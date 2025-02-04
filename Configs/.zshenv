@@ -180,15 +180,6 @@ export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOM
 XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
 
 
-# Load plugins
-load_zsh_plugins
-
-# Warn if the shell is slow to load
-autoload -Uz add-zsh-hook
-add-zsh-hook -Uz precmd slow_load_warning
-# add-zsh-hook zshexit cleanup
-
-
 # Helpful aliases
 if [[ -x "$(which eza)" ]]; then
     alias ls='eza' \
@@ -213,4 +204,13 @@ alias c='clear' \
     .4='cd ../../../..' \
     .5='cd ../../../../..' \
     mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+
+
+# Load plugins
+load_zsh_plugins
+
+# Warn if the shell is slow to load
+autoload -Uz add-zsh-hook
+add-zsh-hook -Uz precmd slow_load_warning
+# add-zsh-hook zshexit cleanup
 
