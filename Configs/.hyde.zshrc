@@ -1,3 +1,6 @@
+#  Load OMZ Scripts 
+source $ZSH/oh-my-zsh.sh
+
 #  Startup 
 # Commands on startup (before the prompt is shown)
 # This is a good place to load graphic/ascii art, display system information, etc.
