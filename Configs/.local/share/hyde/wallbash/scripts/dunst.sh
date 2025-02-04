@@ -3,9 +3,9 @@
 # shellcheck source=$HOME/.local/bin/hyde-shell
 # shellcheck disable=SC1091
 if ! source "$(which hyde-shell)"; then
-    echo "[wallbash] code :: Error: hyde-shell not found."
-    echo "[wallbash] code :: Is HyDE installed?"
-    exit 1
+  echo "[wallbash] code :: Error: hyde-shell not found."
+  echo "[wallbash] code :: Is HyDE installed?"
+  exit 1
 fi
 
 confDir="${confDir:-$HOME/.config}"
@@ -70,13 +70,6 @@ WARN
 grep -v '^\s*#' "${dunstDir}/dunst.conf" | grep -v '^\s*$' | envsubst >>"${dunstDir}/dunstrc"
 
 cat <<MANDATORY >>"${dunstDir}/dunstrc"
-# HyDE Mandatory section // Non overridable // please open a request in https://github.com/HyDE-Project/HyDE
-# ------------------------------------------------------------------------------
-[global]
-
-font = ${font_name:-mononoki Nerd Font} 8
-dmenu = $(which rofi) -config notification -dmenu -p dunst:
-
 
 # Wallbash section
 # ------------------------------------------------------------------------------
