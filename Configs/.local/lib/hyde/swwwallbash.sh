@@ -112,9 +112,11 @@ fn_wallbash() {
 
     # shellcheck disable=SC1091
     # shellcheck disable=SC2154
-    [ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
-    if [[ -n "${skip_wallbash[*]}" ]]; then
-        for skip in "${skip_wallbash[@]}"; do
+    [ -f "$HYDE_STATE_HOME/state" ] && source "$HYDE_STATE_HOME/state"
+    # shellcheck disable=SC1091
+    [ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
+    if [[ -n "${WALLBASH_SKIP_TEMPLATE[*]}" ]]; then
+        for skip in "${WALLBASH_SKIP_TEMPLATE[@]}"; do
             if [[ "${template}" =~ ${skip} ]]; then
                 print_log -sec "wallbash" -warn "skip '$skip' template " "Template: ${template}"
                 return 0
@@ -315,9 +317,6 @@ fn_wallbash() {
 
     if [ -s "${temp_target_file}" ]; then
         mv "${temp_target_file}" "${target_file}"
-    else
-        echo "Error: ${temp_target_file} is empty or not created."
-        exit 1
     fi
     [ -z "${exec_command}" ] || bash -c "${exec_command}"
 }
@@ -348,8 +347,10 @@ if [ -n "${single_template}" ]; then
 fi
 
 # Run when hyprland is running
-[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] && hyprctl keyword misc:disable_autoreload 1 -q && trap 'print_log -sec "[wallbash]" -stat "reload"  "Hyprland" && hyprctl reload -q' EXIT
-
+if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+    hyprctl keyword misc:disable_autoreload 1 -q
+    trap 'print_log -sec "[wallbash]" -stat "reload"  "Hyprland" && hyprctl reload -q' EXIT
+fi
 # Print to terminal the colors
 [ -t 1 ] && "${scrDir}/wallbash.print.colors.sh"
 
@@ -376,7 +377,7 @@ fi
 
 #  Theme mode: detects the color-scheme set in hypr.theme and falls back if nothing is parsed.
 revert_colors=0
-[ "${enableWallDcol}" -eq 0 ] && grep -q "${dcol_mode}" <<<"$(get_hyprConf "COLOR_SCHEME")" || revert_colors=1
+[ "${enableWallDcol}" -eq 0 ] && { grep -q "${dcol_mode}" <<<"$(get_hyprConf "COLOR_SCHEME")" || revert_colors=1; }
 export revert_colors
 
 find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | sort | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {}

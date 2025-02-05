@@ -3,6 +3,7 @@
         "rotate": ${r_deg},
         "format": "{icon} {percent}%",
         "format-icons": ["", "", "", "", "", "", "", "", ""],
+        "tooltip-format": "{icon} {percent}% ",
         "on-scroll-up": "brightnesscontrol.sh i 1",
         "on-scroll-down": "brightnesscontrol.sh d 1",
         "min-length": 6

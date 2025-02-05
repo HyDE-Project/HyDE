@@ -1,9 +1,9 @@
     "custom/cpuinfo": {
-        "exec": "NO_EMOJI=1 cpuinfo.sh",
+        "exec": " cpuinfo.sh",
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
-        "restart-interval": 5, // once every 5 seconds
+        "interval": 5, // once every 5 seconds
         "tooltip": true,
         "max-length": 1000
     },

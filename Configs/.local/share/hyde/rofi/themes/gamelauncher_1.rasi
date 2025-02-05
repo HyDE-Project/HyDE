@@ -1,0 +1,98 @@
+/**
+ * ROFI Layout 
+ *
+ * Game Launcher 1
+ * 
+ * User: The HyDE Project [ vertical left thin ]
+ * Copyright: The HyDE Project
+ */
+
+// Config //
+configuration {
+    modi:                        "drun";
+    show-icons:                  true;
+    drun-display-format:         "{name}";
+    font:                        "JetBrainsMono Nerd Font 8";
+}
+
+@theme "~/.config/rofi/theme.rasi"
+
+
+// Main //
+window {
+    enabled:                     true;
+    fullscreen:                  false;
+    width:                       20%;
+    height:                      100%;
+    location:                    west;
+    x-offset:                    10%;
+    transparency:                "real";
+    cursor:                      "default";
+    spacing:                     0px;
+    padding:                     0px;
+    border:                      0px;
+    border-radius:               0px;
+    border-color:                transparent;
+    background-color:            transparent;
+}
+mainbox {
+    enabled:                     true;
+    children:                    [ "listview" ];
+    background-color:            @main-bg;
+}
+
+
+// Lists //
+listview {
+    enabled:                     true;
+    columns:                     1;
+    spacing:                     17px;
+    padding:                     10px 20px 10px 20px;
+    cycle:                       true;
+    dynamic:                     false;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     true;
+    fixed-height:                true;
+    fixed-columns:               true;
+    cursor:                      "default";
+    background-color:            transparent;
+    text-color:                  @main-fg;
+}
+
+
+// Elements //
+element {
+    enabled:                     true;
+    orientation:                 horizontal;
+    spacing:                     0px;
+    padding:                     0px;
+    border-radius:               0px;
+    cursor:                      pointer;
+    background-color:            transparent;
+    text-color:                  @main-fg;
+}
+element selected.normal {
+    background-color:            @select-bg;
+    text-color:                  @select-fg;
+}
+element-icon {
+    size:                        15%;
+    spacing:                     0px;
+    padding:                     0px;
+    cursor:                      inherit;
+    border-radius:               35px;
+    background-color:            transparent;
+    text-color:                  inherit;
+}
+element-text {
+    enabled:                     true;
+    vertical-align:              0.5;
+    horizontal-align:            0;
+    spacing:                     0px;
+    padding:                     0px;
+    cursor:                      inherit;
+    background-color:            transparent;
+    text-color:                  inherit;
+}
+

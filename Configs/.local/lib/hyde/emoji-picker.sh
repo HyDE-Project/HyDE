@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # Set variables
 scrDir=$(dirname "$(realpath "$0")")
@@ -7,12 +7,19 @@ scrDir="${scrDir:-$HOME/.config/hyde}"
 source "$scrDir/globalcontrol.sh"
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
-rofi_config="${confDir}/rofi/clipboard.rasi"
 
 # Set rofi scaling
-rofiScale="${ROFI_EMOJI_SCALE}"
-[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
-r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+font_scale="${ROFI_EMOJI_SCALE}"
+[[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
+
+# set font name
+font_name=${ROFI_EMOJI_FONT:-$ROFI_FONT}
+font_name=${font_name:-$(get_hyprConf "MENU_FONT")}
+font_name=${font_name:-$(get_hyprConf "FONT")}
+
+# set rofi font override
+font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} ${font_scale}\";}"
+
 hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
 wind_border=$((hypr_border * 3 / 2))
 elem_border=$((hypr_border == 0 ? 5 : hypr_border))
@@ -40,7 +47,7 @@ while (($# > 0)); do
             shift # Consume the value argument
         else
             print_log +y "[warn] " "--style needs argument"
-            emoji_style=1
+            emoji_style="clipboard"
             shift
         fi
         ;;
@@ -57,9 +64,10 @@ while (($# > 0)); do
         cat <<HELP
 Usage:
 --style [1 | 2]     Change Emoji style
-                    Add 'emoji_style=[1|2]' variable in ./hyde.conf'
+                    Add 'emoji_style=[1|2]' variable in .~/.config/hyde/config.toml'
                         1 = list
                         2 = grid
+                    or select styles from 'rofi-theme-selector'
 HELP
 
         exit 0
@@ -86,14 +94,29 @@ unique_entries=$(echo -e "${combined_entries}" | awk '!seen[$0]++')
 if [[ -n ${useRofile} ]]; then
     dataEmoji=$(rofi -dmenu -i -config "${useRofile}" <<<"${unique_entries}")
 else
-    emoji_style="${ROFI_EMOJI_STYLE}"
+    emoji_style="${emoji_style:-$ROFI_EMOJI_STYLE}"
     case ${emoji_style} in
     2 | grid)
         size_override=""
-        dataEmoji=$(rofi -dmenu -i -display-columns 1 -display-column-separator " " -theme-str "listview {columns: 8;}" -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${rofi_position} ${r_override}" -theme-str "${r_scale}" -theme-str "${size_override}" -config "${rofi_config}" <<<"${unique_entries}")
+        dataEmoji=$(rofi -dmenu -i -display-columns 1 \
+            -display-column-separator " " \
+            -theme-str "listview {columns: 8;}" \
+            -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${rofi_position} ${r_override}" \
+            -theme-str "${font_override}" \
+            -theme-str "${size_override}" \
+            -theme "clipboard" <<<"${unique_entries}")
+        ;;
+    1 | list)
+        dataEmoji=$(rofi -dmenu -multi-select -i \
+            -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${rofi_position} ${r_override}" \
+            -theme-str "${font_override}" \
+            -theme "clipboard" <<<"${unique_entries}")
         ;;
     *)
-        dataEmoji=$(rofi -dmenu -multi-select -i -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${rofi_position} ${r_override}" -theme-str "${r_scale}" -config "${rofi_config}" <<<"${unique_entries}")
+        dataEmoji=$(rofi -dmenu -multi-select -i \
+            -theme-str "entry { placeholder: \" 🔎 Emoji\";} ${rofi_position} ${r_override}" \
+            -theme-str "${font_override}" \
+            -theme "${emoji_style:-clipboard}" <<<"${unique_entries}")
         ;;
     esac
 fi

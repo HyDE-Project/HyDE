@@ -1,4 +1,4 @@
-rThis is a pipe separated value file.
+This is a pipe separated value file.
 It contains the paths of the dotfiles and
 their respective package dependency.
 
@@ -45,7 +45,7 @@ S|${HOME}/.config|Kvantum|kvantum
 S|${HOME}/.config|qt5ct|qt5ct
 S|${HOME}/.config|qt6ct|qt6ct
 S|${HOME}/.config/hyde|wallbash|hyprland
-S|${HOME}/.config/hypr|animations|hyprland
+S|${HOME}/.config/hypr|animations|hyprland  
 
 O|${HOME}/.local/share|hyde|hyprland
 O|${HOME}/.local/lib|hyde|hyprland
@@ -53,7 +53,7 @@ O|${HOME}/.local/lib|hyde|hyprland
  Editor 
 P|${HOME}/.config/Code - OSS/User|settings.json|code
 P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
-P|${HOME}/.config/VSCodium/User|settings.json|vscodium-bin
+P|${HOME}/.config/VSCodium/User|settings.json|vscodium
 
  Bar 
 P|${HOME}/.config/waybar|config.ctl|waybar
@@ -67,7 +67,7 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
 
  Shell 
 P|${HOME}/.config|fish|fish
-P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh .my-zsh|zsh zsh-theme-powerlevel10k pokego-bin
+P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh zsh-theme-powerlevel10k pokego-bin
 S|${HOME}|.zshenv|zsh zsh-theme-powerlevel10k
 
  File Explorer 
@@ -87,7 +87,7 @@ P|${HOME}/.config|libinput-gestures.conf|libinput-gestures
 P|${HOME}/.config|spotify-flags.conf|spotify
 P|${HOME}/.config|code-flags.conf|code
 P|${HOME}/.config|code-flags.conf|visual-studio-code-bin
-P|${HOME}/.config|vscodium-flags.conf|vscodium-bin
+P|${HOME}/.config|vscodium-flags.conf|vscodium
 P|${HOME}/.config|electron-flags.conf|electron
 
  Notifications 
@@ -97,7 +97,7 @@ S|${HOME}/.config|dunst|dunst
 S|${HOME}/.config|MangoHud|mangohud
 
  Launcher 
-S|${HOME}/.config|rofi|rofi
+P|${HOME}/.config|rofi|rofi
 S|${HOME}/.config|wlogout|wlogout
 
  Lock Screen 
@@ -107,16 +107,3 @@ S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 
 P|${HOME}/.config/hypr|hypridle.conf|hypridle
-
- ZARYU 
-P|${HOME}/.config|agsv1|aylurs-gtk-shell-git
-P|${HOME}/.config|bleachbit|bleachbit
-P|${HOME}/.config|nvim|neovim
-P|${HOME}/.config|chrome-flags.conf|chromium
-S|${HOME}/.local/share/hyprpm|hyprland
-S|${HOME}/.local/share/fonts|hyprland
-P|${HOME}|.UsefulCMD|hyprland
-S|${HOME}/.config/hypr|plugins pyprland.d UserPrefs|hyprland
-S|${HOME}/.config/hypr|pyprland.toml|hyprland
-
-

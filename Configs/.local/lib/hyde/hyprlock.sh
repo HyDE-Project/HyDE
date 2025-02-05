@@ -105,9 +105,16 @@ fn_art() {
 # hyprlock selector
 fn_select() {
     # Set rofi scaling
-    rofiScale="${ROFI_HYPRLOCK_SCALE}"
-    [[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
-    r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+    font_scale="${ROFI_HYPRLOCK_SCALE}"
+    [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
+
+    # set font name
+    font_name=${ROFI_HYPRLOCK_FONT:-$ROFI_FONT}
+    font_name=${font_name:-$(get_hyprConf "MENU_FONT")}
+    font_name=${font_name:-$(get_hyprConf "FONT")}
+
+    # set rofi font override
+    font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} ${font_scale}\";}"
 
     # Window and element styling
     hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
@@ -128,15 +135,14 @@ fn_select() {
     layout_items="Theme Preference
 $layout_items"
 
-    rofi_config="$confDir/rofi/clipboard.rasi"
     selected_layout=$(awk -F/ '{print $NF}' <<<"$layout_items" |
         rofi -dmenu -i -select "${HYPRLOCK_LAYOUT}" \
             -p "Select hyprlock layout" \
             -theme-str "entry { placeholder: \"🔒 Hyprlock Layout...\"; }" \
-            -theme-str "${r_scale}" \
+            -theme-str "${font_override}" \
             -theme-str "${r_override}" \
             -theme-str "$(get_rofi_pos)" \
-            -theme "$rofi_config")
+            -theme "${ROFI_HYPRLOCK_STYLE:-clipboard}")
     if [ -z "$selected_layout" ]; then
         echo "No selection made"
         exit 0
@@ -219,15 +225,15 @@ source = ${hyde_hyprlock_conf}
 # - Note that you needed to have a network connection to download the font.
 # - You also need to restart Hyprlock to apply the font.
 
-# cmd [update:1000] $MPRIS_TEXT
+# cmd [update:1000] \$MPRIS_TEXT
 # - Text from media players in "Title  Author" format.
 
 
-# cmd [update:1000] $SPLASH_CMD
+# cmd [update:1000] \$SPLASH_CMD
 # - Outputs the song title when MPRIS is available,
 # - otherwise, it will output the splash command.
 
-# cmd [update:1] $CAVA_CMD
+# cmd [update:1] \$CAVA_CMD
 # - The command to be executed to get the CAVA output.
 # - ⚠️ (Use with caution as it eats up the CPU.)
 

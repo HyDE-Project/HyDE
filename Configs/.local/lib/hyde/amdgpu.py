@@ -75,9 +75,19 @@ def main():
 
         # Print the JSON string
         print(json_output)
-        
-    except Exception as e:
-        print(f"Error: {str(e)}")
     
+    except json.JSONDecodeError as e:  # Handle JSON decoding errors (e.g., invalid JSON)
+        print(f"JSON Error: {str(e)}")
+    except AttributeError as e:  # Handle attribute errors (e.g., method not found)
+        print(f"Attribute Error: {str(e)}")
+    except ValueError as e:  # Handle value errors (e.g., invalid value for formatting)
+        print(f"Value Error: {str(e)}")
+    except RuntimeError as e:  # Handle runtime errors (e.g., issues with querying the GPU)
+        print(f"Runtime Error: {str(e)}")
+    except OSError as e:  # Handle OS-related errors (e.g., hardware issues)
+        print(f"OS Error: {str(e)}")
+    except Exception as e:  # Handle any other unexpected errors
+        print(f"Unexpected Error: {str(e)}")
+
 if __name__ == "__main__":
     main()

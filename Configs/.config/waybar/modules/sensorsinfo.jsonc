@@ -1,0 +1,11 @@
+"custom/sensorsinfo": {
+    "exec": "sensorsinfo.py",
+    "return-type": "json",
+    "format": "{}",
+    "rotate": ${r_deg},
+    "interval": 5,
+    "tooltip": true,
+    "max-length": 1000,
+    "on-click": "sensorsinfo.py --next",
+    "signal": 19
+},

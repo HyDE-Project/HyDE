@@ -19,8 +19,6 @@ post_cmd() {
 	done
 }
 
-pre_cmd
-
 if [ -z "$XDG_PICTURES_DIR" ]; then
 	XDG_PICTURES_DIR="$HOME/Pictures"
 fi
@@ -37,12 +35,24 @@ confDir="${confDir:-$XDG_CONFIG_HOME}"
 save_dir="${2:-$XDG_PICTURES_DIR/Screenshots}"
 save_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
 temp_screenshot="/tmp/screenshot.png"
-annotation_tool=${SCREENSHOT_ANNOTATION_TOOL:-swappy}
+annotation_tool=${SCREENSHOT_ANNOTATION_TOOL}
+if [[ -z "$annotation_tool" ]]; then
+	pkg_installed "swappy" && annotation_tool="swappy"
+	pkg_installed "satty" && annotation_tool="satty"
+fi
 
-annotation_args=${SCREENSHOT_ANNOTATION_ARGS:-"-o" "${save_dir}/${save_file}" "-f" "${temp_screenshot}"}
-annotation_args=$(eval echo "$annotation_args")
+annotation_args=("-o" "${save_dir}/${save_file}" "-f" "${temp_screenshot}")
 
+annotation_args+=("${SCREENSHOT_ANNOTATION_ARGS[@]}")
+evaluated_annotation_args=$(eval echo "${annotation_args[@]}")
 mkdir -p "$save_dir"
+
+# Fixes the issue where the annotation tool doesn't save the file in the correct directory
+if [[ "$annotation_tool" == "swappy" ]]; then
+	swpy_dir="${confDir}/swappy"
+	mkdir -p "$swpy_dir"
+	echo -e "[Default]\nsave_dir=$save_dir\nsave_filename_format=$save_file" >"${swpy_dir}"/config
+fi
 
 function print_error {
 	cat <<"EOF"
@@ -55,18 +65,24 @@ function print_error {
 EOF
 }
 
+pre_cmd
+
 case $1 in
 p)                 # print all outputs
 	timeout 0.2 slurp # capture animation lol
-	"$LIB_DIR/hyde/grimblast" copysave screen $temp_screenshot && "${annotation_tool}" ${annotation_args}
+	# shellcheck disable=SC2086
+	"$LIB_DIR/hyde/grimblast" copysave screen $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} # intended globbing
 	;;
 s) # drag to manually snip an area / click on a window to print it
-	"$LIB_DIR/hyde/grimblast" copysave area $temp_screenshot && "${annotation_tool}" ${annotation_args} ;;
-sf) # frozen screen, drag to manually snip an area / click on a window to print it
-	"$LIB_DIR/hyde/grimblast" --freeze --cursor copysave area $temp_screenshot && "${annotation_tool}" ${annotation_args} ;;
-m)                 # print focused monitor
-	timeout 0.2 slurp # capture animation lol
-	"$LIB_DIR/hyde/grimblast" copysave output $temp_screenshot && "${annotation_tool}" ${annotation_args}
+	# shellcheck disable=SC2086
+	"$LIB_DIR/hyde/grimblast" copysave area $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} ;; # intended globbing
+sf)                                                                                                               # frozen screen, drag to manually snip an area / click on a window to print it
+	# shellcheck disable=SC2086
+	"$LIB_DIR/hyde/grimblast" --freeze --cursor copysave area $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} ;; # intended globbing
+m)                                                                                                                                  # print focused monitor
+	timeout 0.2 slurp                                                                                                                  # capture animation lol
+	# shellcheck disable=SC2086
+	"$LIB_DIR/hyde/grimblast" copysave output $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} # intended globbing
 	;;
 *) # invalid option
 	print_error ;;

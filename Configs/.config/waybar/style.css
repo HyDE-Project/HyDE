@@ -22,7 +22,7 @@ tooltip {
 
 #workspaces button {
     box-shadow: none;
-	text-shadow: none;
+    text-shadow: none;
     padding: 0px;
     border-radius: 9px;
     margin-top: 3px;
@@ -43,19 +43,19 @@ tooltip {
     padding-right: 12px;
     margin-right: 3px;
     animation: ws_active 20s ease-in-out 1;
-    transition: all 0.4s cubic-bezier(.55,-0.68,.48,1.682);
+    transition: all 0.4s cubic-bezier(.55, -0.68, .48, 1.682);
 }
 
 #workspaces button:hover {
     background: @wb-hvr-bg;
     color: @wb-hvr-fg;
     animation: ws_hover 20s ease-in-out 1;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition: all 0.3s cubic-bezier(.55, -0.68, .48, 1.682);
 }
 
 #taskbar button {
     box-shadow: none;
-	text-shadow: none;
+    text-shadow: none;
     padding: 0px;
     border-radius: 9px;
     margin-top: 3px;
@@ -76,14 +76,14 @@ tooltip {
     padding-right: 12px;
     margin-right: 3px;
     animation: tb_active 20s ease-in-out 1;
-    transition: all 0.4s cubic-bezier(.55,-0.68,.48,1.682);
+    transition: all 0.4s cubic-bezier(.55, -0.68, .48, 1.682);
 }
 
 #taskbar button:hover {
     background: @wb-hvr-bg;
     color: @wb-hvr-color;
     animation: tb_hover 20s ease-in-out 1;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+    transition: all 0.3s cubic-bezier(.55, -0.68, .48, 1.682);
 }
 
 #tray menu * {
@@ -97,11 +97,15 @@ tooltip {
 #backlight,
 #battery,
 #bluetooth,
+#custom-cava,
 #custom-cliphist,
+#clock,
 #clock,
 #custom-cpuinfo,
 #cpu,
+#custom-github_hyde,
 #custom-gpuinfo,
+#custom-hyprsunset,
 #idle_inhibitor,
 #custom-keybindhint,
 #language,
@@ -110,15 +114,23 @@ tooltip {
 #network,
 #custom-notifications,
 #custom-power,
+#privacy,
 #pulseaudio,
+#custom-sensorsinfo,
 #custom-spotify,
 #taskbar,
+#taskbar,
+#taskbar,
+#taskbar#windows,
 #custom-theme,
 #tray,
 #custom-updates,
 #custom-wallchange,
 #custom-wbar,
+#custom-weather,
 #window,
+#workspaces,
+#workspaces,
 #workspaces,
 #custom-l_end,
 #custom-r_end,

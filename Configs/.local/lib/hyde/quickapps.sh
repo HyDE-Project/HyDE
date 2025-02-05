@@ -16,8 +16,16 @@ else
 fi
 
 # Set rofi scaling
-[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
-r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+[[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
+
+# set font name
+font_name=${ROFI_QUICKAPPS_FONT:-$ROFI_FONT}
+font_name=${font_name:-$(get_hyprConf "MENU_FONT")}
+font_name=${font_name:-$(get_hyprConf "FONT")}
+
+# set rofi font override
+font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} ${font_scale}\";}"
+
 hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
 wind_border=$((hypr_border * 3 / 2))
 elem_border=$((hypr_border == 0 ? 5 : hypr_border))
@@ -85,14 +93,17 @@ else
     appDir=/usr/share/applications
 fi
 
-# RofiSel=$(
-for qApp in "$@"; do
-    Lkp=$(grep "$qApp" $appDir/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1)
-    Ico=$(grep 'Icon=' "$Lkp" | awk -F '=' '{print $2}' | head -1)
-    # Ico=$(grep 'Icon=' "$qApp" | awk -F '=' '{print $2}' | head -1)
+RofiSel=$(
+    for qApp in "$@"; do
+        Lkp=$(grep "$qApp" $appDir/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1)
+        Ico=$(grep 'Icon=' "$Lkp" | awk -F '=' '{print $2}' | head -1)
+        # Ico=$(grep 'Icon=' "$qApp" | awk -F '=' '{print $2}' | head -1)
 
-    echo -en "${qApp}\x00icon\x1f${Ico}\n"
-done
-# | rofi -no-fixed-num-lines -dmenu -theme-str "${r_override}" -config "$rofi_config")
+        echo -en "${qApp}\x00icon\x1f${Ico}\n"
+    done | rofi -no-fixed-num-lines -dmenu \
+        -theme-str "${r_override}" \
+        -theme-str "${font_override}" \
+        -config "quickapps"
+)
 
-# gtk-launch "$RofiSel" &
+[[ -n "${RofiSel}" ]] && gtk-launch "$RofiSel" &

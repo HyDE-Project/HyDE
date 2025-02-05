@@ -6,42 +6,99 @@ scrDir="$(dirname "$(realpath "$0")")"
 confDir="${confDir}/config"
 # shellcheck source=/dev/null
 . "${scrDir}/globalcontrol.sh"
-rofiStyle="${rofiStyle:-$ROFI_LAUNCHER_STYLE}"
-rofi_config="${confDir}/rofi/styles/style_${rofiStyle:-1}.rasi"
+rofiStyle="${rofiStyle:-1}"
 
-rofiScale="${ROFI_LAUNCHER_SCALE}"
-[[ "${rofiScale}" =~ ^[0-9]+$ ]] || rofiScale=${ROFI_SCALE:-10}
-
-if [ ! -f "${rofi_config}" ]; then
-    rofi_config="$(find "${confDir}/rofi/styles" -type f -name "style_*.rasi" | sort -t '_' -k 2 -n | head -1)"
+if [[ "${rofiStyle}" =~ ^[0-9]+$ ]]; then
+    rofi_config="style_${rofiStyle:-1}"
+else
+    rofi_config="${rofiStyle:-"style_1"}"
 fi
+
+rofi_config="${ROFI_LAUNCH_STYLE:-$rofi_config}"
+
+font_scale="${ROFI_LAUNCHER_SCALE}"
+[[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
 
 #// rofi action
 
 case "${1}" in
-d | --drun) r_mode="drun" ;;
-w | --window) r_mode="window" ;;
-f | --filebrowser) r_mode="filebrowser" ;;
-r | --run) r_mode="run" ;;
+d | --drun)
+    r_mode="drun"
+    rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
+    ;;
+w | --window)
+    r_mode="window"
+    rofi_config="${ROFI_LAUNCH_WINDOW_STYLE:-$rofi_config}"
+    ;;
+f | --filebrowser)
+    r_mode="filebrowser"
+    rofi_config="${ROFI_LAUNCH_FILEBROWSER_STYLE:-$rofi_config}"
+    ;;
+r | --run)
+    r_mode="run"
+    rofi_config="${ROFI_LAUNCH_RUN_STYLE:-$rofi_config}"
+    ;;
 h | --help)
     echo -e "$(basename "${0}") [action]"
     echo "d :  drun mode"
     echo "w :  window mode"
     echo "f :  filebrowser mode,"
+    echo "r :  run mode"
     exit 0
     ;;
-*) r_mode="drun" ;;
+*)
+    r_mode="drun"
+    ROFI_LAUNCH_DRUN_STYLE="${ROFI_LAUNCH_DRUN_STYLE:-$ROFI_LAUNCH_STYLE}"
+    rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
+    ;;
 esac
 
 #// set overrides
 hypr_border="${hypr_border:-10}"
 hypr_width="${hypr_width:-2}"
 wind_border=$((hypr_border * 3))
+
+if [[ -f "${HYDE_STATE_HOME}/fullscreen_${r_mode}" ]]; then
+    hypr_width="0"
+    wind_border="0"
+fi
+
 [ "${hypr_border}" -eq 0 ] && elem_border="10" || elem_border=$((hypr_border * 2))
 r_override="window {border: ${hypr_width}px; border-radius: ${wind_border}px;} element {border-radius: ${elem_border}px;}"
-r_scale="configuration {font: \"JetBrainsMono Nerd Font ${rofiScale}\";}"
+
+# set font name
+font_name=${ROFI_LAUNCH_FONT:-$ROFI_FONT}
+font_name=${font_name:-$(get_hyprConf "MENU_FONT")}
+font_name=${font_name:-$(get_hyprConf "FONT")}
+
+# set rofi font override
+font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} ${font_scale}\";}"
+
 i_override="$(get_hyprConf "ICON_THEME")"
 i_override="configuration {icon-theme: \"${i_override}\";}"
 
 #// launch rofi
-rofi -show "${r_mode}" -theme-str "${r_scale}" -theme-str "${r_override}" -theme-str "${i_override}" -config "${rofi_config}"
+rofi -show "${r_mode}" \
+    -show-icons \
+    -theme-str "${font_override}" \
+    -theme-str "${i_override}" \
+    -theme-str "${r_override}" \
+    -theme "${rofi_config}" &
+disown
+
+#// Set full screen state
+#TODO Contributor notes:
+#? - Workaround to set the full screen state of rofi dynamically and efficiently.
+#? - Avoids invoking rofi twice before rendering.
+#? - Checks if the theme has fullscreen set to true after rendering.
+#? - Sets the variable accordingly for use on the next launch.
+
+rofi -show "${r_mode}" \
+    -show-icons \
+    -config "${rofi_config}" \
+    -theme-str "${font_override}" \
+    -theme-str "${i_override}" \
+    -theme-str "${r_override}" \
+    -theme "${rofi_config}" \
+    -dump-theme |
+    { grep -q "fullscreen.*true" && touch "${HYDE_STATE_HOME}/fullscreen_${r_mode}"; } || rm -f "${HYDE_STATE_HOME}/fullscreen_${r_mode}"

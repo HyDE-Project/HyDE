@@ -25,7 +25,12 @@ if pkg_installed zsh; then
     if ! pkg_installed oh-my-zsh-git; then
         if [[ ! -e "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
             print_log -sec "SHELL" -stat "cloning" "oh-my-zsh"
-            sh -c "$(curl -fsSL https://install.ohmyz.sh/)" "" --unattended --keep-zshrc
+            if ! sh -c "$(curl -fsSL https://install.ohmyz.sh/)" "" --unattended --keep-zshrc; then
+                print_log -err "oh-my-zsh update failed..." "Please resolve this issue manually LATER ..."
+                print_log -warn "Continuing" "with existing oh-my-zsh..."
+                exit 0
+            fi
+
         else
             print_log -sec "SHELL" -stat "updating" "oh-my-zsh"
             zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/upgrade.sh)"

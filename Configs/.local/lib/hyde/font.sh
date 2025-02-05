@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 # Script to resolve fonts
 
 font_dir="${XDG_DATA_HOME:-$HOME/.local/share}/fonts"

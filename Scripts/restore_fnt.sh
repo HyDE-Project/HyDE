@@ -30,13 +30,14 @@ while read -r lst; do
     tgt=$(eval "echo $tgt")
 
     if [[ "${tgt}" =~ /(usr|usr\/local)\/share/ && -d /run/current-system/sw/share/ ]]; then
+        echo "Detected NixOS system, changing target to /run/current-system/sw/share/..."
         continue
     fi
 
     if [ ! -d "${tgt}" ]; then
         if ! mkdir -p "${tgt}"; then
             print_log -warn "create" "directory as root instead..."
-            sudo mkdir -p "${tgt}"
+            [ "${flg_DryRun}" -eq 1 ] || sudo mkdir -p "${tgt}"
         fi
 
     fi
@@ -46,7 +47,12 @@ while read -r lst; do
         [ "${flg_DryRun}" -eq 1 ] || tar -xzf "${cloneDir}/Source/arcs/${fnt}.tar.gz" -C "${tgt}/"
     else
         print_log -warn "not writable" "Extracting as root: ${tgt} "
-        [ "${flg_DryRun}" -eq 1 ] || sudo tar -xzf "${cloneDir}/Source/arcs/${fnt}.tar.gz" -C "${tgt}/"
+        if [ "${flg_DryRun}" -ne 1 ]; then
+            if ! sudo tar -xzf "${cloneDir}/Source/arcs/${fnt}.tar.gz" -C "${tgt}/" 2>/dev/null; then
+                print_log -err "extraction by root FAILED" " giving up..."
+                print_log "The above error can be ignored if the '${tgt}' is not writable..."
+            fi
+        fi
     fi
     print_log "${fnt}.tar.gz" -r " --> " "${tgt}... "
 

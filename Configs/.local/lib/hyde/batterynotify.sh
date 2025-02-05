@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-dock=${BATTERY_NOTIFY_DOCK:-true}
 scrDir=$(dirname "$(realpath "$0")")
 # shellcheck disable=SC1091
 source "$scrDir/globalcontrol.sh"
-batterynotify_conf="$HYDE_STATE_HOME/staterc" # Shared with hyde configuration
+dock=${BATTERY_NOTIFY_DOCK:-false}
+
 config_info() {
     cat <<EOF
 
-Modify $batterynotify_conf  to set options.
+Modify '$XDG_CONFIG_HOME/hyde/config.toml'  to set options.
 
       STATUS      THRESHOLD    INTERVAL
       Full        $battery_full_threshold          $notify Minutes
@@ -16,8 +16,11 @@ Modify $batterynotify_conf  to set options.
       Low         $battery_low_threshold           $interval Percent    then '$execute_low'
       Unplug      $unplug_charger_threshold          $interval Percent   then '$execute_unplug'
 
-      Charging: $execute_charging
-      Discharging: $execute_discharging
+      Command on Charging: $execute_charging
+      Command on Discharging: $execute_discharging
+      Dock Mode: $dock (Will not notify on status change) 
+
+
 EOF
 }
 
@@ -146,7 +149,7 @@ fn_status_change() { # Handle when status changes
             $execute_unplug
             executed_unplug=true executed_low=false
         fi
-        if $dock; then fn_status; fi
+        if ! $dock; then fn_status; fi
     fi
 }
 

@@ -130,7 +130,7 @@ def main():
     if args.file == "-":
         json_data = sys.stdin.read()
     else:
-        with open(args.file, "r+") as f:
+        with open(args.file, "r+", encoding='UTF-8') as f:
             json_data = f.read()
 
     if args.update:
@@ -144,7 +144,7 @@ def main():
         if args.file == "-":
             print(result)
         else:
-            with open(args.file, "w") as f:
+            with open(args.file, "w", encoding='UTF-8') as f:
                 f.write(result)
     elif args.query:
         result = parse_json(json_data, args.query, args.skip_comments, args.raw_output)

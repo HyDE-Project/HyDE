@@ -47,6 +47,14 @@ fn_wallcache_force() {
     "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${thmbDir}/${x_hash}.thmb" "${dcolDir}/${x_hash}" &>/dev/null
 }
 
+# Function to cache any links that are hyde related
+fn_envar_cache() {
+    if command -v rofi &>/dev/null; then
+        mkdir -p "$XDG_DATA_HOME/rofi/themes"
+        ln -snf "$XDG_DATA_HOME/hyde/rofi/themes"/* "$XDG_DATA_HOME/rofi/themes/"
+    fi
+}
+
 export -f fn_wallcache
 export -f fn_wallcache_force
 
@@ -85,6 +93,7 @@ done
 
 #// generate cache
 
+fn_envar_cache
 wallPathArray=("${cacheIn}")
 wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
 get_hashmap "${wallPathArray[@]}"

@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 scrDir="$(dirname "$(realpath "$0")")"
 export scrDir

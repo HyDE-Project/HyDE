@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 # shellcheck disable=SC2154
 
 if [[ -z $dcol_pry1 ]]; then
