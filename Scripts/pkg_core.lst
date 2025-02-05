@@ -34,7 +34,7 @@ wlogout                                                # logout menu
 grim                                                   # screenshot tool
 hyprpicker                                             # color picker
 slurp                                                  # region select for screenshot/screenshare
-satty                                                  # Modern Screenshot Annotation
+swappy                                                 # screenshot editor
 cliphist                                               # clipboard manager
 hyprsunset                                             # blue light filter
 
@@ -62,7 +62,7 @@ qt5-wayland                                            # wayland support in qt5
 qt6-wayland                                            # wayland support in qt6
 
 # --------------------------------------------------- // Applications
-firefox                                                # browser
+chromium                                               # browser
 kitty                                                  # terminal
 dolphin                                                # kde file manager
 ark                                                    # kde file archiver
@@ -73,7 +73,7 @@ nwg-displays                                           # monitor management util
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
-# oh-my-zsh-git|zsh                                    #  plugin manager for zsh (Optional) // Moved to pkg_extra.lst
+# oh-my-zsh-git|zsh                                    #  plugin manager for zsh (Optional) // Moved to pkg_custom.lst
 zsh-theme-powerlevel10k-git|zsh                        # theme for zsh
 pokego-bin|zsh                                        # display pokemon sprites in terminal (written GO)
 eza|fish                                               # file lister for fish
