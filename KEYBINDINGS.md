@@ -1,11 +1,55 @@
+<div align = center>
+    <a href="https://discord.gg/AYbJ9MJez7">
+<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
+    </a>
+</div>
+
+###### _<div align="right"><a id=-design-by-t2></a><sub>// design by t2</sub></div>_
+
+![hyde_banner](Source/assets/hyde_banner.png)
+
 <!--
-Multi-language README support
+Multi-language KEYBINDINGS support
 -->
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/HyDE-Project/HyDE/blob/master/KEYBINDINGS.md)
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](https://github.com/HyDE-Project/HyDE/blob/master/Source/docs/KEYBINDINGS.es.md)
+<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](KEYBINDINGS.md) -->
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/KEYBINDINGS.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/KEYBINDINGS.de.md)
 
-## Window Management
+<div align="center">
+
+<br>
+
+<!-- <a href=#hyde-keybindings><kbd> <br> HyDE keybindings <br> </kbd></a>&ensp;&ensp; -->
+<a href=#window-management><kbd> <br> Window Management <br> </kbd></a>&ensp;&ensp;
+<a href=#misc><kbd> <br> Misc <br> </kbd></a>&ensp;&ensp;
+<a href=#launcher><kbd> <br> Launcher <br> </kbd></a>&ensp;&ensp;
+<a href=#hardware-controls><kbd> <br> Hardware Controls <br> </kbd></a>&ensp;&ensp;
+<a href=#utilities><kbd> <br> Utilities <br> </kbd></a>&ensp;&ensp;
+<a href="#theming-and-wallpaper"><kbd> <br> Theming and Wallpaper <br> </kbd></a>&ensp;&ensp;
+<a href=#wokspaces><kbd> <br> Wokspaces <br> </kbd></a>&ensp;&ensp;
+
+</div><br><br>
+
+<div align="center">
+  <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
+    <img src="Source/assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    <img src="Source/assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    <img src="Source/assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    <img src="Source/assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    <img src="Source/assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+  </div>
+</div>
+
+<!-- # <a id=hyde-keybindings>HyDE Keybindings</a> -->
+<!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
+Here are all HyDE specific keybindings listed.
+
+>[!TIP]
+> <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
+
+<!-- ## <a id=window-management>Window Management</a> -->
+## <a id=window-management></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Window%20Management" width="450"/>
 
 | Keys                                                 | Action                          |
 | :--------------------------------------------------- | :------------------------------ |
@@ -55,16 +99,18 @@ Multi-language README support
 | <kbd>SUPER</kbd> + <kbd>Z</kbd>         | hold to move window   |
 | <kbd>SUPER</kbd> + <kbd>X</kbd>         | hold to resize window |
 
-## Misc
+<!-- ## <a id=misc>Misc</a> -->
+## <a id=misc></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Misc" width="450"/>
 
 | Keys                                                                     | Action                         |
 | :----------------------------------------------------------------------- | :----------------------------- |
-| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>left</kbd>  | Move activewindow to the right |
-| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>right</kbd> | Move activewindow to the right |
-| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>up</kbd>    | Move activewindow to the right |
-| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>down</kbd>  | Move activewindow to the right |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>left</kbd>  | move activewindow to the left  |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>right</kbd> | move activewindow to the right |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>up</kbd>    | move activewindow up           |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>down</kbd>  | move activewindow down         |
 
-## Launcher
+<!-- ## <a id=launcher>Launcher</a> -->
+## <a id=launcher></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Launcher" width="450"/>
 
 ### Apps
 
@@ -90,7 +136,8 @@ Multi-language README support
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>V</kbd> | clipboard manager    |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>A</kbd> | select rofi launcher |
 
-## Hardware Controls
+<!-- ## <a id="hardware-controls">Hardware Controls</a> -->
+## <a id="hardware-controls"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Hardware%20Controls" width="450"/>
 
 ### Audio
 
@@ -120,7 +167,8 @@ Multi-language README support
 | <kbd>None</kbd> + <kbd>XF86MonBrightnessUp</kbd>   | increase brightness |
 | <kbd>None</kbd> + <kbd>XF86MonBrightnessDown</kbd> | decrease brightness |
 
-## Utilities
+<!-- ## <a id=utilities>Utilities</a> -->
+## <a id=utilities></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Utilities" width="450"/>
 
 | Keys                                             | Action                 |
 | :----------------------------------------------- | :--------------------- |
@@ -137,7 +185,8 @@ Multi-language README support
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>P</kbd>   | print monitor          |
 | <kbd>None</kbd> + <kbd>Print</kbd>                 | print all monitors     |
 
-## Theming and Wallpaper
+<!-- ## <a id=theming-and-wallpaper>Theming and Wallpaper</a> -->
+## <a id=theming-and-wallpaper></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Theming%20and%20Wallpaper" width="450"/>
 
 | Keys                                                 | Action                 |
 | :--------------------------------------------------- | :--------------------- |
@@ -149,7 +198,8 @@ Multi-language README support
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>R</kbd>   | wallbash mode selector |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | select a theme         |
 
-## Workspaces
+<!-- ## <a id=workspaces>Workspaces</a> -->
+## <a id=workspaces></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Workspaces" width="450"/>
 
 ### Navigation
 
@@ -180,9 +230,9 @@ Multi-language README support
 
 | Keys                                                   | Action                      |
 | :----------------------------------------------------- | :-------------------------- |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>grave</kbd> | move to scratchpad          |
-| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>grave</kbd>   | move to scratchpad (silent) |
-| <kbd>SUPER</kbd> + <kbd>grave</kbd>                    | toggle scratchpad           |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>S</kbd> | move to scratchpad          |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>S</kbd>   | move to scratchpad (silent) |
+| <kbd>SUPER</kbd> + <kbd>S</kbd>                    | toggle scratchpad           |
 
 #### Move window silently
 
@@ -218,3 +268,23 @@ Multi-language README support
 | :--------------------------------------------------------------------- | :----------------------------------------- |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Right</kbd> | move window to next relative workspace     |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Left</kbd>  | move window to previous relative workspace |
+
+<!--
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
+<div align="center">
+
+</div>
+-->
+
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
+<div align="right">
+  <sub>Last edited on: 02/01/2025<span id="last-edited"></span></sub>
+</div>

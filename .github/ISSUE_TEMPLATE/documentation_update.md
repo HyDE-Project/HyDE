@@ -5,6 +5,14 @@ title: "[Docs]: Short description of the change"
 labels: "documentation, needs review"
 ---
 
+<!--
+Multi-language documentation_update support
+-->
+
+<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](documentation_update.md) -->
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](documentation_update.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](documentation_update.de.md)
+
 ## Documentation Update
 
 ### Description

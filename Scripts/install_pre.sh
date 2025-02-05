@@ -74,6 +74,7 @@ if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | a
 fi
 
 # pacman
+
 if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.hyde.bkp ]; then
     print_log -g "[PACMAN] " -b "modify :: " "adding extra spice to pacman..."
 
@@ -113,6 +114,7 @@ else
         ;;
     esac
     if [ "${is_chaotic_aur}" == true ]; then
+        sudo pacman-key --init
         sudo "${scrDir}/chaotic_aur.sh" --install
     fi
 fi

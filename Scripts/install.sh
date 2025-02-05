@@ -162,8 +162,8 @@ EOF
 
         case "${PROMPT_INPUT}" in
         1) export getAur="yay" ;;
-        2) export getAur="yay-bin" ;;
-        3) export getAur="paru" ;;
+        2) export getAur="paru" ;;
+        3) export getAur="yay-bin" ;;
         4) export getAur="paru-bin" ;;
         q)
             print_log -sec "AUR" -crit "Quit" "Exiting..."
