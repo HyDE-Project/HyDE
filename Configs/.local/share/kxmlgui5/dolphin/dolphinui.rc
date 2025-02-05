@@ -1,10 +1,8 @@
-<!DOCTYPE gui>
-<gui name="dolphin" translationDomain="kxmlgui6" version="40">
- <MenuBar alreadyVisited="1">
-  <Menu alreadyVisited="1" name="file" noMerge="1">
-   <text translationDomain="kxmlgui6">&amp;File</text>
-   <Action name="file_new"/>
-   <Separator weakSeparator="1"/>
+<?xml version='1.0'?>
+<!DOCTYPE gui SYSTEM 'kpartgui.dtd'>
+<gui name="dolphin" version="41">
+ <MenuBar>
+  <Menu name="file">
    <Action name="new_menu"/>
    <Action name="file_new"/>
    <Action name="new_tab"/>
@@ -21,23 +19,8 @@
    <Action name="show_target"/>
    <Separator/>
    <Action name="properties"/>
-   <Separator weakSeparator="1"/>
-   <Action name="file_close"/>
-   <Separator weakSeparator="1"/>
-   <Action name="file_quit"/>
   </Menu>
-  <Menu alreadyVisited="1" name="edit" noMerge="1">
-   <text translationDomain="kxmlgui6">&amp;Edit</text>
-   <Action name="edit_undo"/>
-   <Separator weakSeparator="1"/>
-   <Action name="edit_cut"/>
-   <Action name="edit_copy"/>
-   <Action name="edit_paste"/>
-   <Separator weakSeparator="1"/>
-   <Action name="edit_select_all"/>
-   <Separator weakSeparator="1"/>
-   <Action name="edit_find"/>
-   <Separator weakSeparator="1"/>
+  <Menu name="edit">
    <Action name="edit_undo"/>
    <Separator/>
    <Action name="edit_cut"/>
@@ -54,13 +37,7 @@
    <Action name="edit_select_all"/>
    <Action name="invert_selection"/>
   </Menu>
-  <Menu alreadyVisited="1" name="view" noMerge="1">
-   <text translationDomain="kxmlgui6">&amp;View</text>
-   <Action name="view_zoom_in"/>
-   <Action name="view_zoom_out"/>
-   <Separator weakSeparator="1"/>
-   <Action name="view_redisplay"/>
-   <Separator weakSeparator="1"/>
+  <Menu name="view">
    <Action name="view_zoom_in"/>
    <Action name="view_zoom_reset"/>
    <Action name="view_zoom_out"/>
@@ -80,58 +57,24 @@
    <Action name="stop"/>
    <Separator/>
    <Action name="panels"/>
-   <Menu icon="edit-select-text" name="location_bar" noMerge="1">
-    <text context="@title:menu" translationDomain="dolphin">Location Bar</text>
+   <Menu icon="edit-select-text" name="location_bar">
+    <text context="@title:menu">Location Bar</text>
     <Action name="editable_location"/>
     <Action name="replace_location"/>
    </Menu>
    <Separator/>
    <Action name="view_properties"/>
   </Menu>
-  <Menu alreadyVisited="1" name="go" noMerge="1">
-   <text translationDomain="kxmlgui6">&amp;Go</text>
-   <Action name="go_up"/>
-   <Action name="go_back"/>
-   <Action name="go_forward"/>
-   <Action name="go_home"/>
-   <Separator weakSeparator="1"/>
+  <Menu name="go">
    <Action name="bookmarks"/>
    <Action name="closed_tabs"/>
   </Menu>
-  <Menu alreadyVisited="1" name="tools" noMerge="1">
-   <text translationDomain="kxmlgui6">&amp;Tools</text>
+  <Menu name="tools">
    <Action name="open_preferred_search_tool"/>
    <Action name="open_terminal"/>
    <Action name="open_terminal_here"/>
-   <Action name="focus_terminal_panel"/>
    <Action name="compare_files"/>
    <Action name="change_remote_encoding"/>
-  </Menu>
-  <Menu name="settings" noMerge="1">
-   <text translationDomain="kxmlgui6">&amp;Settings</text>
-   <Action name="options_show_menubar"/>
-   <Merge name="StandardToolBarMenuHandler"/>
-   <Merge name="KMDIViewActions"/>
-   <Action name="options_show_statusbar"/>
-   <Separator weakSeparator="1"/>
-   <Action name="switch_application_language"/>
-   <Action name="options_configure_keybinding"/>
-   <Action name="options_configure_toolbars"/>
-   <Action name="options_configure"/>
-  </Menu>
-  <Separator weakSeparator="1"/>
-  <Menu name="help" noMerge="1">
-   <text translationDomain="kxmlgui6">&amp;Help</text>
-   <Action name="help_contents"/>
-   <Action name="help_whats_this"/>
-   <Action name="open_kcommand_bar"/>
-   <Separator weakSeparator="1"/>
-   <Action name="help_report_bug"/>
-   <Separator weakSeparator="1"/>
-   <Action name="help_donate"/>
-   <Separator weakSeparator="1"/>
-   <Action name="help_about_app"/>
-   <Action name="help_about_kde"/>
   </Menu>
  </MenuBar>
  <ToolBar alreadyVisited="1" name="mainToolBar" noMerge="1">
@@ -172,13 +115,16 @@
   <Action name="compact" priority="0"/>
   <Action name="details" priority="0"/>
   <Action name="edit_copy" priority="0"/>
-  <Action name="edit_cut" priority="0"/>
+  <Action name="edit_cut" priority="0" shortcut="Ctrl+X"/>
   <Action name="edit_paste" priority="0"/>
+  <Action name="focus_terminal_panel" shortcut="Ctrl+Shift+F4; Ctrl+Alt+Return"/>
   <Action name="go_back" priority="0"/>
   <Action name="go_forward" priority="0"/>
   <Action name="go_home" priority="0"/>
   <Action name="go_up" priority="0"/>
   <Action name="icons" priority="0"/>
+  <Action name="open_terminal_here" shortcut="Ctrl+Shift+Return"/>
+  <Action name="properties" shortcut="Alt+Return; Ctrl+Return"/>
   <Action name="stop" priority="0"/>
   <Action name="toggle_filter" priority="0"/>
   <Action name="toggle_search" priority="0"/>
