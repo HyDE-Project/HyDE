@@ -162,8 +162,8 @@ EOF
 
         case "${PROMPT_INPUT}" in
         1) export getAur="yay" ;;
-        2) export getAur="paru" ;;
-        3) export getAur="yay-bin" ;;
+        2) export getAur="yay-bin" ;;
+        3) export getAur="paru" ;;
         4) export getAur="paru-bin" ;;
         q)
             print_log -sec "AUR" -crit "Quit" "Exiting..."
@@ -296,6 +296,15 @@ EOF
 
     done <"${scrDir}/system_ctl.lst"
 fi
+
+cd ~/.UsefulCMD
+bash install-ZaryuHiveThemeHyde.sh
+cd ~/.UsefulCMD
+bash nix-determinate.sh
+cd ~/.UsefulCMD
+bash agsv1-installer.sh
+cd ~/.UsefulCMD
+bash auto-rotate-hyprland.sh
 
 if [ $flg_Install -eq 1 ]; then
     print_log -stat "\nInstallation" "completed"
