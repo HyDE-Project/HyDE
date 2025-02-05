@@ -28,11 +28,12 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
             sudo sed -i "/^GRUB_CMDLINE_LINUX_DEFAULT=/c\GRUB_CMDLINE_LINUX_DEFAULT=\"${gcld} nvidia_drm.modeset=1\"" /etc/default/grub
         fi
 
-        print_log -r "[bootloader] " -b " :: " "Select grub theme:" -r "\n[1]" -b " Retroboot (dark)" -r "\n[2]" -b " Pochita (light)"
+        print_log -r "[bootloader] " -b " :: " "Select grub theme:" -r "\n[1]" -b " Retroboot (dark)" -r "\n[2]" -b " Pochita (light)" -r "\n[3]" -b " Argenti (dark)"
         read -r -p " :: Press enter to skip grub theme <or> Enter option number : " grubopt
         case ${grubopt} in
         1) grubtheme="Retroboot" ;;
         2) grubtheme="Pochita" ;;
+        3) grubtheme="Argenti" ;;
         *) grubtheme="None" ;;
         esac
 
@@ -73,7 +74,6 @@ if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | a
 fi
 
 # pacman
-
 if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.hyde.bkp ]; then
     print_log -g "[PACMAN] " -b "modify :: " "adding extra spice to pacman..."
 
@@ -113,7 +113,6 @@ else
         ;;
     esac
     if [ "${is_chaotic_aur}" == true ]; then
-        sudo pacman-key --init
         sudo "${scrDir}/chaotic_aur.sh" --install
     fi
 fi
