@@ -15,8 +15,8 @@ Multi-language KEYBINDINGS support
 <!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](KEYBINDINGS.md) -->
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../KEYBINDINGS.md)
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/KEYBINDINGS.es.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/KEYBINDINGS.de.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](KEYBINDINGS.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](KEYBINDINGS.de.md)
 
 <div align="center">
 
@@ -35,11 +35,11 @@ Multi-language KEYBINDINGS support
 
 <div align="center">
   <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
-    <img src="Source/assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
   </div>
 </div>
 
