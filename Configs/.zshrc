@@ -12,3 +12,5 @@
 
 #  This is your file 
 # Add your configurations here
+
+source ~/.my-zsh
