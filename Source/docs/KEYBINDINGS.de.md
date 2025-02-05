@@ -14,6 +14,7 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../KEYBINDINGS.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](KEYBINDINGS.es.md)
+[![zh](https://img.shields.io/badge/lang-中文-orange.svg)](KEYBINDINGS.zh.md)
 <!-- [![de](https://img.shields.io/badge/lang-de-black.svg)](KEYBINDINGS.de.md) -->
 
 <div align="center">

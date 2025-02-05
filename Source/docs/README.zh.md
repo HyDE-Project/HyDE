@@ -25,7 +25,7 @@ Multi-language README support
 <a href="#installation"><kbd> <br> 安装 <br> </kbd></a>&ensp;&ensp;
 <a href="#themes"><kbd> <br> 主题 <br> </kbd></a>&ensp;&ensp;
 <a href="#styles"><kbd> <br> 风格 <br> </kbd></a>&ensp;&ensp;
-<a href="KEYBINDINGS.md"><kbd> <br> 按键映射 <br> </kbd></a>&ensp;&ensp;
+<a href="KEYBINDINGS.zh.md"><kbd> <br> 按键映射 <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
 <a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
