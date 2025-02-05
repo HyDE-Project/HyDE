@@ -59,10 +59,10 @@ Multi-language KEYBINDINGS support
 | <kbd>ALT</kbd> + <kbd>F4</kbd>                       | 关闭聚焦的窗口                  |
 | <kbd>SUPER</kbd> + <kbd>Delete</kbd>                 | 关闭当前 hyprland 会话          |
 | <kbd>SUPER</kbd> + <kbd>W</kbd>                      | 切换窗口悬浮状态                    |
-| <kbd>SUPER</kbd> + <kbd>G</kbd>                      | 切换窗口分组开关                |
+| <kbd>SUPER</kbd> + <kbd>G</kbd>                      | 切换窗口分组|
 | <kbd>Shift</kbd> + <kbd>F11</kbd>                    | 切换窗口全屏                    |
 | <kbd>SUPER</kbd> + <kbd>L</kbd>                      | 锁屏|
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>F</kbd>   | 切换是否固定聚焦的窗口 |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>F</kbd>   | 固定窗口焦点 |
 | <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Delete</kbd> | 登出菜单 |
 | <kbd>ALT</kbd> + <kbd>Control_R</kbd>                | 开/关 waybar 并重载配置 |
 | <kbd>SUPER</kbd> + <kbd>J</kbd>                      | 切换窗口排布 |
@@ -96,10 +96,10 @@ Multi-language KEYBINDINGS support
 
 | 按键                                    | 行为                |
 | :-------------------------------------- | :-------------------- |
-| <kbd>SUPER</kbd> + <kbd>mouse:272</kbd> | 抓住并移动窗口 |
-| <kbd>SUPER</kbd> + <kbd>mouse:273</kbd> | 抓住并改变窗口大小|
-| <kbd>SUPER</kbd> + <kbd>Z</kbd>         | 抓住并移动窗口 |
-| <kbd>SUPER</kbd> + <kbd>X</kbd>         | 抓住并改变窗口大小|
+| <kbd>SUPER</kbd> + <kbd>mouse:272</kbd> | 拖动窗口 |
+| <kbd>SUPER</kbd> + <kbd>mouse:273</kbd> | 拖动窗口大小|
+| <kbd>SUPER</kbd> + <kbd>Z</kbd>         | 拖动窗口 |
+| <kbd>SUPER</kbd> + <kbd>X</kbd>         | 拖动窗口大小|
 
 <!-- ## <a id=misc>Misc</a> -->
 ## <a id=misc></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Misc" width="450"/>
@@ -145,11 +145,11 @@ Multi-language KEYBINDINGS support
 
 | 按键                                              | 行为             |
 | :------------------------------------------------ | :----------------- |
-| <kbd>None</kbd> + <kbd>F10</kbd>                  | 切换输出静音 |
-| <kbd>None</kbd> + <kbd>XF86AudioMute</kbd>        | 切换输出静音 |
+| <kbd>None</kbd> + <kbd>F10</kbd>                  | 输出静音 |
+| <kbd>None</kbd> + <kbd>XF86AudioMute</kbd>        | 输出静音 |
 | <kbd>None</kbd> + <kbd>F11</kbd>                  | 音量减|
 | <kbd>None</kbd> + <kbd>F12</kbd>                  | 音量加|
-| <kbd>None</kbd> + <kbd>XF86AudioMicMute</kbd>     | 麦克风静音开关|
+| <kbd>None</kbd> + <kbd>XF86AudioMicMute</kbd>     | 麦克风静音|
 | <kbd>None</kbd> + <kbd>XF86AudioLowerVolume</kbd> | 音量减|
 | <kbd>None</kbd> + <kbd>XF86AudioRaiseVolume</kbd> | 音量加|
 
@@ -157,8 +157,8 @@ Multi-language KEYBINDINGS support
 
 | 按键                                        | 行为         |
 | :------------------------------------------ | :------------- |
-| <kbd>None</kbd> + <kbd>XF86AudioPlay</kbd>  | 播放视频|
-| <kbd>None</kbd> + <kbd>XF86AudioPause</kbd> | 暂停视频|
+| <kbd>None</kbd> + <kbd>XF86AudioPlay</kbd>  | 播放|
+| <kbd>None</kbd> + <kbd>XF86AudioPause</kbd> | 暂停|
 | <kbd>None</kbd> + <kbd>XF86AudioNext</kbd>  | 下一个|
 | <kbd>None</kbd> + <kbd>XF86AudioPrev</kbd>  | 下一个|
 
@@ -183,7 +183,7 @@ Multi-language KEYBINDINGS support
 | :------------------------------------------------- | :--------------------- |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>P</kbd> | 颜色选择器
 | <kbd>SUPER</kbd> + <kbd>P</kbd>                    | 屏幕剪切
-| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>P</kbd>  | 固定屏幕并剪切 |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>P</kbd>  | 冻结屏幕并剪切 |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>P</kbd>   | 截取显示器|
 | <kbd>None</kbd> + <kbd>Print</kbd>                 | 截取所有显示器     |
 
