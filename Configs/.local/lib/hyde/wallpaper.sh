@@ -95,6 +95,20 @@ backend_swww() {
 
 }
 
+# interfacing with hyprlock backend
+backend_hyprlock() {
+    lockFile="$HYDE_RUNTIME_DIR/$(basename "${0}").lock"
+    [ -e "${lockFile}" ] && echo "An instance of the script is already running..." && exit 1
+    touch "${lockFile}"
+    trap 'rm -f ${lockFile}' EXIT
+
+    #// apply wallpaper
+    # TODO: add support for other backends
+    print_log -sec "wallpaper" -stat "apply" "$(readlink -f "$HOME/.cache/hyde/wall.set")"
+    "${scrDir}/hyprlock.sh" -s "$(readlink -f "$HOME/.cache/hyde/wall.set")"
+
+}
+
 #// evaluate options
 
 if [ -z "${*}" ]; then
@@ -145,7 +159,7 @@ while true; do
         ;;
     -b | --backend)
         # Set wallpaper backend to use (swww, hyprpaper, etc.)
-        walllpaper_backend="${2:-"$WALLPAPER_BACKEND"}"
+        wallpaper_backend="${2:-"$WALLPAPER_BACKEND"}"
         shift 2
         ;;
     -o | --output)
@@ -171,7 +185,7 @@ done
 
 main() {
     #// set full cache variables
-    if [ -z "$walllpaper_backend" ] && [ "$wallpaper_setter_flag" != "o" ]; then
+    if [ -z "$wallpaper_backend" ] && [ "$wallpaper_setter_flag" != "o" ]; then
         print_log -err "wallpaper" " No backend specified"
         print_log -err "wallpaper" " Please specify a backend, try '--backend swww'"
         exit 1
@@ -186,10 +200,10 @@ main() {
         wallBlr="${HYDE_CACHE_HOME}/wall.blur"
         wallQad="${HYDE_CACHE_HOME}/wall.quad"
         wallDcl="${HYDE_CACHE_HOME}/wall.dcol"
-    elif [ -n "${walllpaper_backend}" ]; then
+    elif [ -n "${wallpaper_backend}" ]; then
         mkdir -p "${HYDE_CACHE_HOME}/wallpapers"
-        wallCur="${HYDE_CACHE_HOME}/wallpapers/${walllpaper_backend}.png"
-        wallSet="${HYDE_THEME_DIR}/wall.${walllpaper_backend}.png"
+        wallCur="${HYDE_CACHE_HOME}/wallpapers/${wallpaper_backend}.png"
+        wallSet="${HYDE_THEME_DIR}/wall.${wallpaper_backend}.png"
     else
         wallSet="${HYDE_THEME_DIR}/wall.set"
     fi
@@ -244,11 +258,14 @@ main() {
     fi
 
     # Apply wallpaper to  backend
-    if [ -n "${walllpaper_backend}" ]; then
-        print_log -sec "wallpaper" "Using backend: ${walllpaper_backend}"
-        case "${walllpaper_backend}" in
+    if [ -n "${wallpaper_backend}" ]; then
+        print_log -sec "wallpaper" "Using backend: ${wallpaper_backend}"
+        case "${wallpaper_backend}" in
         swww)
             backend_swww
+            ;;
+        hyprlock)
+            backend_hyprlock
             ;;
         esac
     fi
