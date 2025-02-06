@@ -12,7 +12,7 @@ isNotify=${VOLUME_NOTIFY:-true}
 if command -v swayosd-client >/dev/null 2>&1 && pgrep -x swayosd-server >/dev/null; then
     use_swayosd=true
 fi
-isVolumeBoost=false 
+isVolumeBoost="${VOLUME_BOOST:-false}"
 # Define functions
 
 print_usage() {
@@ -76,11 +76,14 @@ change_volume() {
 
     [ "${action}" = "i" ] && delta="+"
     [ "${srce}" = "--default-source" ] && mode="--input-volume"
-    boost_flag=[ "$isVolumeBoost" = true ] && boost_flag="--allow-boost --set-limit 150"
     case $device in
     "pamixer")
         $use_swayosd && swayosd-client ${mode} "${delta}${step}" && exit 0
-        pamixer "$srce" -"$action" "$step" $boost_flag
+        if [ "$isVolumeBoost" = true ]; then
+            pamixer "$srce" --allow-boost --set-limit "${VOLUME_BOOST_LIMIT:-150}" -"${action}" "$step"
+        else
+            pamixer "$srce" -"${action}" "$step"
+        fi
         vol=$(pamixer "$srce" --get-volume)
         ;;
     "playerctl")
