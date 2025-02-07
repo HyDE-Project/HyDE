@@ -10,7 +10,7 @@ show_help() {
     cat <<EOF
 Usage: $(basename "$0") --[options|flags] [parameters]
 options:
-    -l, --list                List wallpapers in JSON format to STDOUT
+    -j, --json                List wallpapers in JSON format to STDOUT
     -S, --select              Select wallpaper using rofi
     -n, --next                Set next wallpaper
     -p, --previous            Set previous wallpaper
@@ -71,7 +71,7 @@ Wall_Change() {
     Wall_Cache
 }
 
-# * Method to list wallpapers from hashmaps
+# * Method to list wallpapers from hashmaps into json
 Wall_Json() {
     setIndex=0
     [ ! -d "${HYDE_THEME_DIR}" ] && echo "ERROR: \"${HYDE_THEME_DIR}\" does not exist" && exit 0
@@ -230,11 +230,11 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONGOPTS="global,select,list,next,previous,random,set:,backend:,get,output,help"
+LONGOPTS="global,select,json,next,previous,random,set:,backend:,get,output,help"
 
 # Parse options
 PARSED=$(
-    if getopt --options GSlnprb:s:go:h --longoptions $LONGOPTS --name "$0" -- "$@"; then
+    if getopt --options GSjnprb:s:go:h --longoptions $LONGOPTS --name "$0" -- "$@"; then
         exit 2
     fi
 )
@@ -248,7 +248,7 @@ while true; do
         set_as_global=true
         shift
         ;;
-    -l | --list)
+    -j | --json)
         Wall_Json
         exit 0
         ;;
