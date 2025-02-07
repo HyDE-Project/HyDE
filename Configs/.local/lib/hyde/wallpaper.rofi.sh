@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# TODO: Convert this into a library function
 #// set variables
 
 scrDir="$(dirname "$(realpath "$0")")"
