@@ -3,7 +3,7 @@
 scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
-pkgChk=(${UTILS_SYSTEM_MONITOR:-"io.missioncenter.MissionCenter" "htop" "btop" "top"})
+read -r -a pkgChk <<<"${UTILS_SYSTEM_MONITOR:-io.missioncenter.MissionCenter htop btop top}"
 pkgChk+=("${SYSMONITOR_COMMANDS[@]}")
 
 for sysMon in "${!pkgChk[@]}"; do
