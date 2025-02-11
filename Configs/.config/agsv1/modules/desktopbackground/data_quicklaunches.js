@@ -19,4 +19,8 @@ export const quickLaunchItems = [
         "name": "Themes",
         "command": "pkill -x rofi || ~/.local/share/bin/themeselect.sh"
     },
+    {
+        "name": "OSK",
+        "command": "wvkbd-mobintl &"
+    },
 ]

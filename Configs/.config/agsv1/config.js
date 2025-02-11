@@ -16,6 +16,7 @@ import Session from './modules/session/main.js';
 import SideLeft from './modules/sideleft/main.js';
 import SideRight from './modules/sideright/main.js';
 import Dock from "./modules/dock/main.js";
+// import Osk from "./modules/onscreenkeyboard/main.js"
 
 import { COMPILED_STYLE_DIR } from './init.js';
 
@@ -42,6 +43,7 @@ const Windows = () => [
     //forMonitors(Cheatsheet),
     SideLeft(),
     SideRight(),
+    // forMonitors(Osk),
     forMonitors(Session),
     ...(userOptions.dock.enabled ? [forMonitors(Dock)] : []),
 ];

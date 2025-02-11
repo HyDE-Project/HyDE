@@ -74,6 +74,16 @@ export default (props) => {
                         //            .catch(print);
                         //    },
                         //}),
+                        ConfigToggle({
+                            icon: 'border_clear',
+                            name: 'OSK',
+                            desc: 'OnScreenKeyboard',
+                            initValue: exec('bash -c "pkill wvkbd-mobintl"'),
+                            onChange: (self, newValue) => {
+                                execAsync('bash -c "/home/zaryu/.config/agsv1/modules/.configuration/osk.sh"')
+                            //    .then(execAsync(['bash -c /home/zaryu/Clone/osk.sh']))
+                            }
+                        }),
                         HyprlandToggle({ icon: 'blur_on', name: 'Blur', desc: "[Hyprland]\nEnable blur on transparent elements\nDoesn't affect performance/power consumption unless you have transparent windows.", option: "decoration:blur:enabled" }),
                         //Subcategory([
                         //    HyprlandToggle({ icon: 'stack_off', name: 'X-ray', desc: "[Hyprland]\nMake everything behind a window/layer except the wallpaper not rendered on its blurred surface\nRecommended to improve performance (if you don't abuse transparency/blur) ", option: "decoration:blur:xray" }),
