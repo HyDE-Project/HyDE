@@ -149,71 +149,71 @@ LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
 PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 
 if [ -t 1 ];then
-# We are loading the prompt on start so users can see the prompt immediately
-# Powerlevel10k theme path
-P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
-[[ -r $P10k_THEME ]] && source $P10k_THEME
+    # We are loading the prompt on start so users can see the prompt immediately
+    # Powerlevel10k theme path
+    P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
+    [[ -r $P10k_THEME ]] && source $P10k_THEME
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+    # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
+    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Detect AUR wrapper and cache it for faster subsequent loads
-aur_cache_file="/tmp/.aurhelper.zshrc"
-if [[ -f $aur_cache_file ]]; then
-    aurhelper=$(<"$aur_cache_file")
-else
-    if pacman -Qi yay &>/dev/null; then
-        aurhelper="yay"
-    elif pacman -Qi paru &>/dev/null; then
-        aurhelper="paru"
+    # Detect AUR wrapper and cache it for faster subsequent loads
+    aur_cache_file="/tmp/.aurhelper.zshrc"
+    if [[ -f $aur_cache_file ]]; then
+        aurhelper=$(<"$aur_cache_file")
+    else
+        if pacman -Qi yay &>/dev/null; then
+            aurhelper="yay"
+        elif pacman -Qi paru &>/dev/null; then
+            aurhelper="paru"
+        fi
+        echo "$aurhelper" > "$aur_cache_file"
     fi
-    echo "$aurhelper" > "$aur_cache_file"
-fi
 
 
-# Optionally load user configuration // usefull for customizing the shell without modifying the main file
-[[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
+    # Optionally load user configuration // usefull for customizing the shell without modifying the main file
+    [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
 
 
-# wget
-WGETRC="${XDG_CONFIG_HOME}/wgetrc"
-SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
+    # wget
+    WGETRC="${XDG_CONFIG_HOME}/wgetrc"
+    SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
 
-export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
-XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
-
-
-# Helpful aliases
-if [[ -x "$(which eza)" ]]; then
-    alias ls='eza' \
-        l='eza -lh --icons=auto' \
-        ll='eza -lha --icons=auto --sort=name --group-directories-first' \
-        ld='eza -lhD --icons=auto' \
-        lt='eza --icons=auto --tree'
-fi
-
-alias c='clear' \
-    un='$aurhelper -Rns' \
-    up='$aurhelper -Syu' \
-    pl='$aurhelper -Qs' \
-    pa='$aurhelper -Ss' \
-    pc='$aurhelper -Sc' \
-    po='$aurhelper -Qtdq | $aurhelper -Rns -' \
-    vc='code' \
-    fastfetch='fastfetch --logo-type kitty' \
-    ..='cd ..' \
-    ...='cd ../..' \
-    .3='cd ../../..' \
-    .4='cd ../../../..' \
-    .5='cd ../../../../..' \
-    mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+    export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
+    XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
 
 
-# Load plugins
-load_zsh_plugins
+    # Helpful aliases
+    if [[ -x "$(which eza)" ]]; then
+        alias ls='eza' \
+            l='eza -lh --icons=auto' \
+            ll='eza -lha --icons=auto --sort=name --group-directories-first' \
+            ld='eza -lhD --icons=auto' \
+            lt='eza --icons=auto --tree'
+    fi
 
-# Warn if the shell is slow to load
-autoload -Uz add-zsh-hook
-add-zsh-hook -Uz precmd slow_load_warning
-# add-zsh-hook zshexit cleanup
+    alias c='clear' \
+        un='$aurhelper -Rns' \
+        up='$aurhelper -Syu' \
+        pl='$aurhelper -Qs' \
+        pa='$aurhelper -Ss' \
+        pc='$aurhelper -Sc' \
+        po='$aurhelper -Qtdq | $aurhelper -Rns -' \
+        vc='code' \
+        fastfetch='fastfetch --logo-type kitty' \
+        ..='cd ..' \
+        ...='cd ../..' \
+        .3='cd ../../..' \
+        .4='cd ../../../..' \
+        .5='cd ../../../../..' \
+        mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+
+
+    # Load plugins
+    load_zsh_plugins
+
+    # Warn if the shell is slow to load
+    autoload -Uz add-zsh-hook
+    add-zsh-hook -Uz precmd slow_load_warning
+    # add-zsh-hook zshexit cleanup
 fi
