@@ -54,7 +54,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 
 | Teclas                                               | Acción                                                                  |
 | :--------------------------------------------------- | :---------------------------------------------------------------------- |
-| <kbd>CTRL</kbd> + <kbd>Q</kbd>                       | cerrar ventana enfocada                                                 |
+| <kbd>SUPER</kbd> + <kbd>Q</kbd>                      | cerrar ventana enfocada                                                 |
 | <kbd>ALT</kbd> + <kbd>F4</kbd>                       | cerrar ventana enfocada                                                 |
 | <kbd>SUPER</kbd> + <kbd>Delete</kbd>                 | matar sesión de hyprland                                                |
 | <kbd>SUPER</kbd> + <kbd>W</kbd>                      | alternar flotador                                                       |
@@ -127,7 +127,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 
 | Teclas                                             | Acción                                |
 | :------------------------------------------------- | :------------------------------------ |
-| <kbd>ALT</kbd> + <kbd>space</kbd>                  | buscador de aplicaciones              |
+| <kbd>SUPER</kbd> + <kbd>A</kbd>                    | buscador de aplicaciones              |
 | <kbd>SUPER</kbd> + <kbd>TAB</kbd>                  | conmutador de ventana                 |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>E</kbd> | buscador de archivos                  |
 | <kbd>SUPER</kbd> + <kbd>slash</kbd>                | sugerencia de combinaciones de teclas |
