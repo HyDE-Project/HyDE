@@ -177,7 +177,8 @@ def get_sensor_data(page=0):
 
 if __name__ == "__main__":
     import sys
-    result = subprocess.run(['sensors', '-j'], capture_output=True, text=True)
+    result = subprocess.run(["sensors", "-j"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    # result = subprocess.run(['sensors', '-j'], capture_output=True, text=True)
     # result = subprocess.run(['cat', '/tmp/beef'], capture_output=True, text=True)
     sensors_data = json.loads(result.stdout)
     devices = list(sensors_data.keys())

@@ -256,7 +256,7 @@ generate_json() {
 
 general_query() { # Function to get temperature from 'sensors'
   filter=''
-  sensors_data=$(sensors)
+  sensors_data=$(sensors 2>/dev/null)
   temperature=$(echo "${sensors_data}" | ${filter} grep -m 1 -E "(edge|Package id.*|another keyword)" | awk -F ':' '{print int($2)}') #! We can get json data from sensors too
   fan_speed=$(echo "${sensors_data}" | ${filter} grep -m 1 -E "fan[1-9]" | awk -F ':' '{print int($2)}')
 

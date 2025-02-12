@@ -12,7 +12,7 @@ isNotify=${VOLUME_NOTIFY:-true}
 if command -v swayosd-client >/dev/null 2>&1 && pgrep -x swayosd-server >/dev/null; then
     use_swayosd=true
 fi
-
+isVolumeBoost="${VOLUME_BOOST:-false}"
 # Define functions
 
 print_usage() {
@@ -48,8 +48,11 @@ EOF
 }
 
 notify_vol() {
+    local vol=$1
     angle=$((((vol + 2) / 5) * 5))
     iconStyle="knob"
+    # cap the icon at 100 if vol > 100
+    [ "$angle" -gt 100 ] && angle=100
     ico="${icodir}/${iconStyle}-${angle}.svg"
     bar=$(seq -s "." $((vol / 15)) | sed 's/[0-9]//g')
     [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 69 -t 800 -i "${ico}" "${vol}${bar}" "${nsink}"
@@ -76,8 +79,13 @@ change_volume() {
     [ "${srce}" = "--default-source" ] && mode="--input-volume"
     case $device in
     "pamixer")
-        $use_swayosd && swayosd-client ${mode} "${delta}${step}" && exit 0
-        pamixer "$srce" -"$action" "$step"
+        if [ "${isVolumeBoost}" = true ]; then
+            $use_swayosd && swayosd-client ${mode} "${delta}${step}" --max-volume "${VOLUME_BOOST_LIMIT:-150}" && exit 0
+            pamixer "$srce" "${allow_boost:-}" --allow-boost --set-limit "${VOLUME_BOOST_LIMIT:-150}" -"${action}" "$step"
+        else
+            $use_swayosd && swayosd-client ${mode} "${delta}${step}" && exit 0
+            pamixer "$srce" -"${action}" "$step"
+        fi
         vol=$(pamixer "$srce" --get-volume)
         ;;
     "playerctl")
@@ -86,7 +94,7 @@ change_volume() {
         ;;
     esac
 
-    notify_vol
+    notify_vol "$vol"
 }
 
 toggle_mute() {

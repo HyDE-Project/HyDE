@@ -3,9 +3,8 @@
 #// set variables
 
 scrDir="$(dirname "$(realpath "$0")")"
+# shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
-TgtScr="$scrDir/globalcontrol.sh"
-rofiConf="${confDir}/rofi/wallbash.rasi"
 wallbashModes=("theme" "auto" "dark" "light")
 
 #// rofi select mode
@@ -56,4 +55,4 @@ export reload_flag=1
 [[ "${setMode}" -lt 0 ]] && setMode=$((${#wallbashModes[@]} - 1))
 set_conf "enableWallDcol" "${setMode}"
 "${scrDir}/themeswitch.sh"
-notify-send -a "HyDE Alert" -i "${iconsDir}/Wallbash-Icon/hyde.png" " ${wallbashModes[setMode]} mode"
+notify-send -a "HyDE Alert" -i "${ICONS_DIR}/Wallbash-Icon/hyde.png" " ${wallbashModes[setMode]} mode"

@@ -205,6 +205,10 @@ source = ${hyde_hyprlock_conf}
 # \$BACKGROUND_PATH
 # - The path to the wallpaper image.
 
+# \$HYPRLOCK_BACKGROUND
+# - The path to the static hyprlock wallpaper image.
+# - Can be set to set a static wallpaper for Hyprlock.
+
 # \$MPRIS_IMAGE
 # - The path to the MPRIS image.
 # - If MPRIS is not available, it will show the ~/.face.icon image
@@ -242,19 +246,81 @@ CONF
 }
 
 fn_help() {
-    echo "Usage: hyprlock.sh [command]"
-    echo "Commands:"
-    echo "  background   - Converts and ensures background to be a png"
-    echo "  mpris        - Handles mpris thumbnail generation"
-    echo "  profile      - Generates the profile picture"
-    echo "  cava         - Placeholder function for cava"
-    echo "  art          - Prints the path to the mpris art"
-    echo "  select       - Selects the hyprlock layout"
-    echo "  help         - Displays this help message"
+    cat <<EOF
+    Usage: hyprlock.sh [command]"
+    Commands:"
+      --background -b    - Converts and ensures background to be a png
+                            : \$BACKGROUND_PATH
+      --mpris           - Handles mpris thumbnail generation
+                            : \$MPRIS_IMAGE
+      --profile          - Generates the profile picture
+                            : \$PROFILE_IMAGE
+      --cava             - Placeholder function for cava
+                            : \$CAVA_CMD
+      --art              - Prints the path to the mpris art"
+                            : \$MPRIS_ART
+      --select      -s     - Selects the hyprlock layout"
+                            : \$LAYOUT_PATH
+      --help       -h    - Displays this help message"
+EOF
 }
 
-if declare -f "fn_${1}" >/dev/null; then
-    "fn_${1}"
-else
+if [ -z "${*}" ]; then
+    if [ ! -f "$HYDE_CACHE_HOME/wallpapers/hyprlock.png" ]; then
+        print_log -sec "hyprlock" -stat "setting" " $HYDE_CACHE_HOME/wallpapers/hyprlock.png"
+        "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend hyprlock
+    fi
     hyprlock
 fi
+
+# Define long options
+LONGOPTS="select,background,profile,mpris,cava,art,help"
+
+# Parse options
+PARSED=$(
+    if getopt --options shb --longoptions $LONGOPTS --name "$0" -- "$@"; then
+        exit 2
+    fi
+)
+
+# Apply parsed options
+# echo "$PARSED"
+eval set -- "$PARSED"
+
+while true; do
+    case "$1" in
+    select | -s | --select)
+        fn_select
+        exit 0
+        ;;
+    background | --background | -b)
+        fn_background
+        exit 0
+        ;;
+    profile | --profile)
+        fn_profile
+        exit 0
+        ;;
+    mpris | --mpris)
+        fn_mpris "${2}"
+        exit 0
+        ;;
+    cava | --cava) # Placeholder function for cava
+        fn_cava
+        exit 0
+        ;;
+    art | --art)
+        fn_art
+        exit 0
+        ;;
+    help | --help | -h)
+        fn_help
+        exit 0
+        ;;
+    --)
+        shift
+        break
+        ;;
+    esac
+
+done

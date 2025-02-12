@@ -71,6 +71,7 @@ done
 
 [ -d "$HOME/.config/hyde" ] && rm -rf "$HOME/.config/hyde"
 [ -d "$HOME/.cache/hyde" ] && rm -rf "$HOME/.cache/hyde"
+[ -d "$HOME/.local/state/hyde" ] && rm -rf "$HOME/.local/state/hyde"
 
 cat <<"NOTE"
 -------------------------------------------------------

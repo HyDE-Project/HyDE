@@ -103,7 +103,7 @@ label {
 label {
     monitor =
     text = cmd[update:1000] $SPLASH_CMD # Outputs the song title when mpris is available, otherwise, it will output the splash command.
-    color = $wallbash_txt3_rgba
+    color = $wallbash_txt2_rgba
     font_family = $fontFamily
     font_size = 15
     position = 0, 0

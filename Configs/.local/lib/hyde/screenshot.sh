@@ -68,8 +68,8 @@ EOF
 pre_cmd
 
 case $1 in
-p)                 # print all outputs
-	timeout 0.2 slurp # capture animation lol
+p) # print all outputs
+	# timeout 0.2 slurp # capture animation lol
 	# shellcheck disable=SC2086
 	"$LIB_DIR/hyde/grimblast" copysave screen $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} # intended globbing
 	;;
@@ -80,7 +80,7 @@ sf)                                                                             
 	# shellcheck disable=SC2086
 	"$LIB_DIR/hyde/grimblast" --freeze --cursor copysave area $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} ;; # intended globbing
 m)                                                                                                                                  # print focused monitor
-	timeout 0.2 slurp                                                                                                                  # capture animation lol
+	# timeout 0.2 slurp                                                                                                                  # capture animation lol
 	# shellcheck disable=SC2086
 	"$LIB_DIR/hyde/grimblast" copysave output $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} # intended globbing
 	;;

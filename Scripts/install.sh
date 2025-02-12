@@ -243,7 +243,7 @@ EOF
     "${scrDir}/restore_fnt.sh"
     "${scrDir}/restore_cfg.sh"
     "${scrDir}/restore_thm.sh"
-
+    print_log -g "[generate] " "cache ::" "Wallpapers..."
     if [ "${flg_DryRun}" -ne 1 ]; then
         "$HOME/.local/lib/hyde/swwwallcache.sh" -t ""
         "$HOME/.local/lib/hyde/themeswitch.sh" -q || true

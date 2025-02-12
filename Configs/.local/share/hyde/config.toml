@@ -1,6 +1,6 @@
 # Configuration file for HyDE
 # Environment variables should be on top
-# Updated config.toml file can be found at $HOME/.local/share/hyde/config.toml
+# Add your custom configuration in '~/.config/hyde/config.toml'
 
 WARP_ENABLE_WAYLAND = 1
 
@@ -164,6 +164,8 @@ sanitize = [
 # volumecontrol.sh configuration
 notify = true # Useful for systems that have their own OSD
 steps = 5     # Number of steps to increase/decrease volume
+boost = false # Enable volume boost
+boost_limit = 150 # Volume boost limit // Don't kill your ears/speakers
 
 [brightness]
 # brightnesscontrol.sh configuration
