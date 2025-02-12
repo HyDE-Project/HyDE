@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 #!          ░▒▓         
 #!        ░▒▒░▓▓         
 #!      ░▒▒▒░░░▓▓           ___________
@@ -34,45 +35,45 @@ function command_not_found_handler {
 }
 
 function load_zsh_plugins {
-# Oh-my-zsh installation path
-zsh_paths=(
-    "$HOME/.oh-my-zsh"
-    "/usr/local/share/oh-my-zsh"
-    "/usr/share/oh-my-zsh"
-)
-for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
-# Load Plugins
-hyde_plugins=( git zsh-256color zsh-autosuggestions zsh-syntax-highlighting )
-plugins+=( "${plugins[@]}" "${hyde_plugins[@]}" git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
-# Deduplicate plugins
-plugins=("${plugins[@]}")
-plugins=($(printf "%s\n" "${plugins[@]}" | sort -u))
+    # Oh-my-zsh installation path
+    zsh_paths=(
+        "$HOME/.oh-my-zsh"
+        "/usr/local/share/oh-my-zsh"
+        "/usr/share/oh-my-zsh"
+    )
+    for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
+    # Load Plugins
+    hyde_plugins=( git zsh-256color zsh-autosuggestions zsh-syntax-highlighting )
+    plugins+=( "${plugins[@]}" "${hyde_plugins[@]}" git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
+    # Deduplicate plugins
+    plugins=("${plugins[@]}")
+    plugins=($(printf "%s\n" "${plugins[@]}" | sort -u))
 
-# Loads om-my-zsh
-[[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
+    # Loads om-my-zsh
+    [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
 }
 
 # Install packages from both Arch and AUR
 function in {
-local -a inPkg=("$@")
-local -a arch=()
-local -a aur=()
+    local -a inPkg=("$@")
+    local -a arch=()
+    local -a aur=()
 
-for pkg in "${inPkg[@]}"; do
-if pacman -Si "${pkg}" &>/dev/null; then
-arch+=("${pkg}")
-else
-aur+=("${pkg}")
-fi
-done
+    for pkg in "${inPkg[@]}"; do
+    if pacman -Si "${pkg}" &>/dev/null; then
+    arch+=("${pkg}")
+    else
+    aur+=("${pkg}")
+    fi
+    done
 
-if [[ ${#arch[@]} -gt 0 ]]; then
-sudo pacman -S "${arch[@]}"
-fi
+    if [[ ${#arch[@]} -gt 0 ]]; then
+    sudo pacman -S "${arch[@]}"
+    fi
 
-if [[ ${#aur[@]} -gt 0 ]]; then
-${aurhelper} -S "${aur[@]}"
-fi
+    if [[ ${#aur[@]} -gt 0 ]]; then
+    ${aurhelper} -S "${aur[@]}"
+    fi
 }
 
 # Function to display a slow load warning
@@ -128,6 +129,26 @@ function no_such_file_or_directory_handler {
     return 127
 }
 
+# export env vars here
+
+# cleaning up home folder
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-HOME/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
+XDG_DOWNLOAD_DIR="${XDG_DOWNLOAD_DIR:-$HOME/Downloads}"
+XDG_TEMPLATES_DIR="${XDG_TEMPLATES_DIR:-$HOME/Templates}"
+XDG_PUBLICSHARE_DIR="${XDG_PUBLICSHARE_DIR:-$HOME/Public}"
+XDG_DOCUMENTS_DIR="${XDG_DOCUMENTS_DIR:-$HOME/Documents}"
+XDG_MUSIC_DIR="${XDG_MUSIC_DIR:-$HOME/Music}"
+XDG_PICTURES_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}"
+XDG_VIDEOS_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}"
+LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
+PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
+
+if [ -t 1 ];then
 # We are loading the prompt on start so users can see the prompt immediately
 # Powerlevel10k theme path
 P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
@@ -153,24 +174,6 @@ fi
 # Optionally load user configuration // usefull for customizing the shell without modifying the main file
 [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
 
-# export env vars here
-
-# cleaning up home folder
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-HOME/.config}"
-XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
-XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
-XDG_DOWNLOAD_DIR="${XDG_DOWNLOAD_DIR:-$HOME/Downloads}"
-XDG_TEMPLATES_DIR="${XDG_TEMPLATES_DIR:-$HOME/Templates}"
-XDG_PUBLICSHARE_DIR="${XDG_PUBLICSHARE_DIR:-$HOME/Public}"
-XDG_DOCUMENTS_DIR="${XDG_DOCUMENTS_DIR:-$HOME/Documents}"
-XDG_MUSIC_DIR="${XDG_MUSIC_DIR:-$HOME/Music}"
-XDG_PICTURES_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}"
-XDG_VIDEOS_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}"
-LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
-PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 
 # wget
 WGETRC="${XDG_CONFIG_HOME}/wgetrc"
@@ -213,4 +216,4 @@ load_zsh_plugins
 autoload -Uz add-zsh-hook
 add-zsh-hook -Uz precmd slow_load_warning
 # add-zsh-hook zshexit cleanup
-
+fi
