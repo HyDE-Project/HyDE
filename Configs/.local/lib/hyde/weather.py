@@ -51,6 +51,12 @@ def get_feels_like(weatherinstance):
         return weatherinstance['FeelsLikeC'] + "°C"
     else:
         return weatherinstance['FeelsLikeF'] + "°F"
+    
+def get_wind_speed(weatherinstance):
+    if windspeed_unit == 'Km/h':
+        return weatherinstance['windspeedKmph'] + "Km/h"
+    else:
+        return weatherinstance['windspeedMiles'] + "Mph"
 
 def get_max_temp(day):
     if temp_unit == 'C':
@@ -102,6 +108,7 @@ load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
 
 temp_unit = os.getenv('TEMP_UNIT', 'C')                                                         # C or F            (default: C)
 time_format = os.getenv('TIME_FORMAT', '24h')                                                   # 12h or 24h        (default: 24h)
+windspeed_unit = os.getenv('WINDSPEED_UNIT', 'Km/h')                                            # Km/h or mph       (default: Km/h)
 show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')            # True or False     (default: True)
 show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')   # True or False     (default: False)
 get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                              # Name of the location to get the weather from (default: '')
@@ -113,6 +120,12 @@ if temp_unit not in ('C', 'F'):
 if time_format not in ('12h', '24h'):
     subprocess.run(['notify-send', 'Weather Script Error', f"TIME_FORMAT in ~/.local/state/hyde/config must be '12h' or '24h'. {time_format} is not valid"])
     time_format = '24h'
+if windspeed_unit not in ('Km/h', 'mph'):
+    subprocess.run(['notify-send', 'Weather Script Error', f"WINDSPEED_UNIT in ~/.local/state/hyde/config must be 'Km/h' or 'mph'. {windspeed_unit} is not valid"])
+    windspeed_unit = 'Km/h'
+if show_icon not in (True, False):
+    subprocess.run(['notify-send', 'Weather Script Error', f"SHOW_ICON in ~/.local/state/hyde/config must be 'True' or 'False'. {show_icon} is not valid"])
+    show_icon = True
 if show_location not in (True, False):
     subprocess.run(['notify-send', 'Weather Script Error', f"SHOW_LOCATION in ~/.local/state/hyde/config must be 'True' or 'False'. {show_location} is not valid"])
     show_location = False
@@ -135,7 +148,7 @@ if show_location:
 data['tooltip'] = f"<b>{get_description(current_weather)} {get_temperature(current_weather)}</b>\n"
 data['tooltip'] += f"Feels like: {get_feels_like(current_weather)}\n"
 data['tooltip'] += f"Location: {get_city_name(weather)}, {get_country_name(weather)}\n"
-data['tooltip'] += f"Wind: {current_weather['windspeedKmph']}Km/h\n"
+data['tooltip'] += f"Wind: {get_wind_speed(current_weather)}\n"
 data['tooltip'] += f"Humidity: {current_weather['humidity']}%\n"
 # Get the weather forecast for the next 2 days
 for i, day in enumerate(weather['weather']):
