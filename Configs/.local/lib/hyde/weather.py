@@ -28,11 +28,54 @@ def load_env_file(filepath):
                 key, value = line.strip().split('=', 1)
                 os.environ[key] = value.strip('"')
 
+def get_weather_icon(weatherinstance):
+    return WEATHER_CODES[weatherinstance['weatherCode']]
+
+def get_description(weatherinstance):
+    return weatherinstance['weatherDesc'][0]['value']
+
+def get_temperature(weatherinstance):
+    if temp_unit == 'C':
+        return weatherinstance['temp_C'] + "°C"
+    else:
+        return weatherinstance['temp_F'] + "°F"
+    
+def get_temperature_hour(weatherinstance):
+    if temp_unit == 'C':
+        return weatherinstance['tempC'] + "°C"
+    else:
+        return weatherinstance['tempF'] + "°F"
+    
+def get_feels_like(weatherinstance):
+    if temp_unit == 'C':
+        return weatherinstance['FeelsLikeC'] + "°C"
+    else:
+        return weatherinstance['FeelsLikeF'] + "°F"
+
+def get_max_temp(day):
+    if temp_unit == 'C':
+        return day['maxtempC'] + "°C"
+    else:
+        return day['maxtempF'] + "°F"
+
+def get_min_temp(day):
+    if temp_unit == 'C':
+        return day['mintempC'] + "°C"
+    else:
+        return day['mintempF'] + "°F"
+    
+def get_city_name(weather):
+    return weather['nearest_area'][0]['areaName'][0]['value']
+
+def get_country_name(weather):
+    return weather['nearest_area'][0]['country'][0]['value']
+
 def format_time(time):
-    return time.replace("00", "").zfill(2)
+    return (time.replace("00", "")).ljust(3)
 
 def format_temp(temp):
-    return (hour['FeelsLikeC']+"°").ljust(3)
+    if temp[0] != "-": temp += " "
+    return temp.ljust(5)
 
 def format_chances(hour):
     chances = {
@@ -57,10 +100,10 @@ def format_chances(hour):
 load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
 load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
 
-temp_unit = os.getenv('TEMP_UNIT', 'C')                                                         # C or F
-time_format = os.getenv('TIME_FORMAT', '24h')                                                   # 12h or 24h
-show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')   # True or False
-get_location = os.getenv('WAYBAR_WEATHER_LOC', 'True')                                          # Name of the location to get the weather from
+temp_unit = os.getenv('TEMP_UNIT', 'C')                                                         # C or F            (default: C)
+time_format = os.getenv('TIME_FORMAT', '24h')                                                   # 12h or 24h        (default: 24h)
+show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')   # True or False     (default: False)
+get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                              # Name of the location to get the weather from (default: '')
 
 # Check if the variables are set correctly
 if temp_unit not in ('C', 'F'):
@@ -75,37 +118,23 @@ if show_location not in (True, False):
 
 # Main Logic
 data = {}
-
 # Get the weather data
-if get_location.lower() in ('false', '0', 'f', 'n', 'no', 'true', '1', 't', 'y', 'yes'):
-    # If get_location is a boolean value (default) then request the weather without a location (IP based location)
-    set_location = False
-    weather = requests.get("https://wttr.in/?format=j1", timeout=10).json()
-else:
-    set_location = True
-    weather = requests.get(f"https://wttr.in/{get_location}?format=j1", timeout=10).json()
+weather = requests.get(f"https://wttr.in/{get_location}?format=j1", timeout=10).json()
+current_weather = weather['current_condition'][0]
 
-tempint = int(weather['current_condition'][0]['FeelsLikeC'])
-extrachar = ''
-if tempint > 0 and tempint < 10:
-    extrachar = '+'
+# Get the data to display
+# waybar text
+data['text'] = get_weather_icon(current_weather) + get_temperature(current_weather)
+if show_location:
+    data['text'] += f" | {get_city_name(weather)}, {get_country_name(weather)}"
 
-
-if set_location is True :
-    data['text'] = ' '+WEATHER_CODES[weather['current_condition'][0]['weatherCode']] + \
-        " "+extrachar+weather['current_condition'][0]['FeelsLikeC']+"°" +" | "+ weather['nearest_area'][0]['areaName'][0]['value']+\
-        ", "  + weather['nearest_area'][0]['country'][0]['value']
-
-if set_location is False:
-    data['text'] = ' '+WEATHER_CODES[weather['current_condition'][0]['weatherCode']] + \
-        " "+extrachar+weather['current_condition'][0]['FeelsLikeC']+"°" 
-
-
-data['tooltip'] = f"<b>{weather['current_condition'][0]['weatherDesc'][0]['value']} {weather['current_condition'][0]['temp_C']}°</b>\n"
-data['tooltip'] += f"Feels like: {weather['current_condition'][0]['FeelsLikeC']}°\n"
-data['tooltip'] += f"Location: {weather['nearest_area'][0]['areaName'][0]['value']}\n"
-data['tooltip'] += f"Wind: {weather['current_condition'][0]['windspeedKmph']}Km/h\n"
-data['tooltip'] += f"Humidity: {weather['current_condition'][0]['humidity']}%\n"
+# waybar tooltip
+data['tooltip'] = f"<b>{get_description(current_weather)} {get_temperature(current_weather)}</b>\n"
+data['tooltip'] += f"Feels like: {get_feels_like(current_weather)}\n"
+data['tooltip'] += f"Location: {get_city_name(weather)}, {get_country_name(weather)}\n"
+data['tooltip'] += f"Wind: {current_weather['windspeedKmph']}Km/h\n"
+data['tooltip'] += f"Humidity: {current_weather['humidity']}%\n"
+# Get the weather forecast for the next 2 days
 for i, day in enumerate(weather['weather']):
     data['tooltip'] += f"\n<b>"
     if i == 0:
@@ -113,13 +142,13 @@ for i, day in enumerate(weather['weather']):
     if i == 1:
         data['tooltip'] += "Tomorrow, "
     data['tooltip'] += f"{day['date']}</b>\n"
-    data['tooltip'] += f"⬆️ {day['maxtempC']}° ⬇️ {day['mintempC']}° "
+    data['tooltip'] += f"⬆️ {get_max_temp(day)} ⬇️ {get_min_temp(day)} "
     data['tooltip'] += f"🌅 {day['astronomy'][0]['sunrise']} 🌇 {day['astronomy'][0]['sunset']}\n"
     for hour in day['hourly']:
         if i == 0:
             if int(format_time(hour['time'])) < datetime.now().hour-2:
                 continue
-        data['tooltip'] += f"{format_time(hour['time'])} {WEATHER_CODES[hour['weatherCode']]} {format_temp(hour['FeelsLikeC'])} {hour['weatherDesc'][0]['value']}, {format_chances(hour)}\n"
+        data['tooltip'] += f"{format_time(hour['time'])} {get_weather_icon(hour)} {format_temp(get_temperature_hour(hour))} {get_description(hour)}, {format_chances(hour)}\n"
 
 
 print(json.dumps(data))
