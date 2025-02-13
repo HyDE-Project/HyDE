@@ -111,6 +111,10 @@ windspeed_unit = os.getenv('WINDSPEED_UNIT', 'km/h').lower()                    
 show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')                    # True or False     (default: True)
 show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')           # True or False     (default: False)
 show_today_details = os.getenv('SHOW_TODAY_DETAILS', 'True').lower() in ('true', '1', 't', 'y', 'yes')  # True or False     (default: True)
+try:
+    forecast_days = int(os.getenv('FORECAST_DAYS', '3'))                                                    # Number of days to show the forecast for (default: 3)
+except ValueError:
+    forecast_days = 3
 get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                                      # Name of the location to get the weather from (default: '')
 
 # Check if the variables are set correctly
@@ -120,6 +124,8 @@ if time_format not in ('12h', '24h'):
     time_format = '24h'
 if windspeed_unit not in ('km/h', 'mph'):
     windspeed_unit = 'km/h'
+if forecast_days not in range(4):
+    forecast_days = 3
 
 # Main Logic
 data = {}
@@ -144,7 +150,8 @@ if show_today_details:
     data['tooltip'] += f"Wind: {get_wind_speed(current_weather)}\n"
     data['tooltip'] += f"Humidity: {current_weather['humidity']}%\n"
 # Get the weather forecast for the next 2 days
-for i, day in enumerate(weather['weather']):
+for i in range(forecast_days):
+    day = weather['weather'][i]
     data['tooltip'] += f"\n<b>"
     if i == 0:
         data['tooltip'] += "Today, "
