@@ -24,7 +24,7 @@ background {
 label {
   monitor =
   text = $TIME
-  color = $wallbash_pry4_rgba
+  color = $wallbash_txt1_rgba
   font_size = 90
   font_family = $fontFamily
   position = -30, 0
@@ -36,7 +36,7 @@ label {
 label {
   monitor =
   text = cmd[update:43200000] date +"%A, %d %B %Y"
-  color = $wallbash_pry4_rgba
+  color = $wallbash_txt4_rgba
   font_size = 25
   font_family = $fontFamily
   position = -30, -150
@@ -111,3 +111,28 @@ label {
     valign = bottom
 }
 
+
+
+# Battery Status if present
+label {
+    monitor =
+    text = cmd[update:5000] $BATTERY_ICON
+    color = $wallbash_4xa9_rgba
+    font_size = 20
+    font_family = JetBrainsMono Nerd Font
+    position = -1%, 1%
+    halign = right
+    valign = bottom
+}
+
+# Current Keyboard Layout 
+label {
+    monitor =
+    text = cmd[update:1000] $KEYBOARD_LAYOUT
+    color = $wallbash_4xa9_rgba
+    font_size = 20
+    font_family = $fontFamily
+    position = -2%, 1%
+    halign = right
+    valign = bottom
+}

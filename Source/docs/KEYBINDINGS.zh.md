@@ -55,7 +55,7 @@ Multi-language KEYBINDINGS support
 
 | 按键                                                 | 行为                          |
 | :--------------------------------------------------- | :------------------------------ |
-| <kbd>CTRL</kbd> + <kbd>Q</kbd>                       | 关闭聚焦的窗口                  |
+| <kbd>SUPER</kbd> + <kbd>Q</kbd>                       | 关闭聚焦的窗口                  |
 | <kbd>ALT</kbd> + <kbd>F4</kbd>                       | 关闭聚焦的窗口                  |
 | <kbd>SUPER</kbd> + <kbd>Delete</kbd>                 | 关闭当前 hyprland 会话          |
 | <kbd>SUPER</kbd> + <kbd>W</kbd>                      | 切换窗口悬浮状态                    |
@@ -128,7 +128,7 @@ Multi-language KEYBINDINGS support
 
 |  按键                                               | 行为               |
 | :------------------------------------------------- | :------------------- |
-| <kbd>ALT</kbd> + <kbd>space</kbd>                  | 查找应用 |
+| <kbd>SUPER</kbd> + <kbd>A</kbd>                  | 查找应用 |
 | <kbd>SUPER</kbd> + <kbd>TAB</kbd>                  | 切换窗口|
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>E</kbd> | 查找文件 |
 | <kbd>SUPER</kbd> + <kbd>slash</kbd>                | 按键映射提示列表|

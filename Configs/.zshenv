@@ -1,3 +1,4 @@
+#!/usr/bin/env zsh
 #!          ░▒▓         
 #!        ░▒▒░▓▓         
 #!      ░▒▒▒░░░▓▓           ___________
@@ -34,45 +35,45 @@ function command_not_found_handler {
 }
 
 function load_zsh_plugins {
-# Oh-my-zsh installation path
-zsh_paths=(
-    "$HOME/.oh-my-zsh"
-    "/usr/local/share/oh-my-zsh"
-    "/usr/share/oh-my-zsh"
-)
-for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
-# Load Plugins
-hyde_plugins=( git zsh-256color zsh-autosuggestions zsh-syntax-highlighting )
-plugins+=( "${plugins[@]}" "${hyde_plugins[@]}" git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
-# Deduplicate plugins
-plugins=("${plugins[@]}")
-plugins=($(printf "%s\n" "${plugins[@]}" | sort -u))
+    # Oh-my-zsh installation path
+    zsh_paths=(
+        "$HOME/.oh-my-zsh"
+        "/usr/local/share/oh-my-zsh"
+        "/usr/share/oh-my-zsh"
+    )
+    for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
+    # Load Plugins
+    hyde_plugins=( git zsh-256color zsh-autosuggestions zsh-syntax-highlighting )
+    plugins+=( "${plugins[@]}" "${hyde_plugins[@]}" git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
+    # Deduplicate plugins
+    plugins=("${plugins[@]}")
+    plugins=($(printf "%s\n" "${plugins[@]}" | sort -u))
 
-# Loads om-my-zsh
-[[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
+    # Loads om-my-zsh
+    [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
 }
 
 # Install packages from both Arch and AUR
 function in {
-local -a inPkg=("$@")
-local -a arch=()
-local -a aur=()
+    local -a inPkg=("$@")
+    local -a arch=()
+    local -a aur=()
 
-for pkg in "${inPkg[@]}"; do
-if pacman -Si "${pkg}" &>/dev/null; then
-arch+=("${pkg}")
-else
-aur+=("${pkg}")
-fi
-done
+    for pkg in "${inPkg[@]}"; do
+    if pacman -Si "${pkg}" &>/dev/null; then
+    arch+=("${pkg}")
+    else
+    aur+=("${pkg}")
+    fi
+    done
 
-if [[ ${#arch[@]} -gt 0 ]]; then
-sudo pacman -S "${arch[@]}"
-fi
+    if [[ ${#arch[@]} -gt 0 ]]; then
+    sudo pacman -S "${arch[@]}"
+    fi
 
-if [[ ${#aur[@]} -gt 0 ]]; then
-${aurhelper} -S "${aur[@]}"
-fi
+    if [[ ${#aur[@]} -gt 0 ]]; then
+    ${aurhelper} -S "${aur[@]}"
+    fi
 }
 
 # Function to display a slow load warning
@@ -128,31 +129,6 @@ function no_such_file_or_directory_handler {
     return 127
 }
 
-# We are loading the prompt on start so users can see the prompt immediately
-# Powerlevel10k theme path
-P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
-[[ -r $P10k_THEME ]] && source $P10k_THEME
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Detect AUR wrapper and cache it for faster subsequent loads
-aur_cache_file="/tmp/.aurhelper.zshrc"
-if [[ -f $aur_cache_file ]]; then
-    aurhelper=$(<"$aur_cache_file")
-else
-    if pacman -Qi yay &>/dev/null; then
-        aurhelper="yay"
-    elif pacman -Qi paru &>/dev/null; then
-        aurhelper="paru"
-    fi
-    echo "$aurhelper" > "$aur_cache_file"
-fi
-
-
-# Optionally load user configuration // usefull for customizing the shell without modifying the main file
-[[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
-
 # export env vars here
 
 # cleaning up home folder
@@ -172,45 +148,72 @@ XDG_VIDEOS_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}"
 LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
 PARALLEL_HOME="$XDG_CONFIG_HOME"/parallel
 
-# wget
-WGETRC="${XDG_CONFIG_HOME}/wgetrc"
-SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
+if [ -t 1 ];then
+    # We are loading the prompt on start so users can see the prompt immediately
+    # Powerlevel10k theme path
+    P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
+    [[ -r $P10k_THEME ]] && source $P10k_THEME
 
-export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
-XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
+    # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
+    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+    # Detect AUR wrapper and cache it for faster subsequent loads
+    aur_cache_file="/tmp/.aurhelper.zshrc"
+    if [[ -f $aur_cache_file ]]; then
+        aurhelper=$(<"$aur_cache_file")
+    else
+        if pacman -Qi yay &>/dev/null; then
+            aurhelper="yay"
+        elif pacman -Qi paru &>/dev/null; then
+            aurhelper="paru"
+        fi
+        echo "$aurhelper" > "$aur_cache_file"
+    fi
 
 
-# Helpful aliases
-if [[ -x "$(which eza)" ]]; then
-    alias ls='eza' \
-        l='eza -lh --icons=auto' \
-        ll='eza -lha --icons=auto --sort=name --group-directories-first' \
-        ld='eza -lhD --icons=auto' \
-        lt='eza --icons=auto --tree'
+    # Optionally load user configuration // usefull for customizing the shell without modifying the main file
+    [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
+
+
+    # wget
+    WGETRC="${XDG_CONFIG_HOME}/wgetrc"
+    SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
+
+    export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
+    XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR
+
+
+    # Helpful aliases
+    if [[ -x "$(which eza)" ]]; then
+        alias ls='eza' \
+            l='eza -lh --icons=auto' \
+            ll='eza -lha --icons=auto --sort=name --group-directories-first' \
+            ld='eza -lhD --icons=auto' \
+            lt='eza --icons=auto --tree'
+    fi
+
+    alias c='clear' \
+        un='$aurhelper -Rns' \
+        up='$aurhelper -Syu' \
+        pl='$aurhelper -Qs' \
+        pa='$aurhelper -Ss' \
+        pc='$aurhelper -Sc' \
+        po='$aurhelper -Qtdq | $aurhelper -Rns -' \
+        vc='code' \
+        fastfetch='fastfetch --logo-type kitty' \
+        ..='cd ..' \
+        ...='cd ../..' \
+        .3='cd ../../..' \
+        .4='cd ../../../..' \
+        .5='cd ../../../../..' \
+        mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+
+
+    # Load plugins
+    load_zsh_plugins
+
+    # Warn if the shell is slow to load
+    autoload -Uz add-zsh-hook
+    add-zsh-hook -Uz precmd slow_load_warning
+    # add-zsh-hook zshexit cleanup
 fi
-
-alias c='clear' \
-    un='$aurhelper -Rns' \
-    up='$aurhelper -Syu' \
-    pl='$aurhelper -Qs' \
-    pa='$aurhelper -Ss' \
-    pc='$aurhelper -Sc' \
-    po='$aurhelper -Qtdq | $aurhelper -Rns -' \
-    vc='code' \
-    fastfetch='fastfetch --logo-type kitty' \
-    ..='cd ..' \
-    ...='cd ../..' \
-    .3='cd ../../..' \
-    .4='cd ../../../..' \
-    .5='cd ../../../../..' \
-    mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
-
-
-# Load plugins
-load_zsh_plugins
-
-# Warn if the shell is slow to load
-autoload -Uz add-zsh-hook
-add-zsh-hook -Uz precmd slow_load_warning
-# add-zsh-hook zshexit cleanup
-

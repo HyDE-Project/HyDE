@@ -64,6 +64,14 @@ if [[ -f "${HYDE_STATE_HOME}/fullscreen_${r_mode}" ]]; then
 fi
 
 [ "${hypr_border}" -eq 0 ] && elem_border="10" || elem_border=$((hypr_border * 2))
+
+mon_data=$(hyprctl -j monitors)
+is_vertical=$(jq -e '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width / .height else .height / .width end < 1' <<<"${mon_data}")
+
+if [[ "$is_vertical" == "true" ]]; then
+    echo "Monitor is vertical"
+fi
+
 r_override="window {border: ${hypr_width}px; border-radius: ${wind_border}px;} element {border-radius: ${elem_border}px;}"
 
 # set font name
