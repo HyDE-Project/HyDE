@@ -70,5 +70,7 @@ Here are some of my speculations:
 
 - **Hy**prdots **D**otfiles **E**nhanced - Enhanced version of hyprdots when @prasanthrangan introduced wallbash as our main theme management engine.
 - **Hy**prland **D**otfiles **E**xtended - Extensible Dotfiles for Hyprland.
+- But the one that make most sense is - **Hy**prland **D**esktop **E**nvironment - as hyprland is usually considered a WM for wayland, not a full fledged D.E and this 
+  dotfile kind of turns it into a full-blown D.E.
 
 Feel free to suggest your own meaning of HyDE. 🤔
