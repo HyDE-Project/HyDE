@@ -105,12 +105,13 @@ def format_chances(hour):
 load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
 load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
 
-temp_unit = os.getenv('TEMP_UNIT', 'c').lower()                                                 # c or f            (default: c)
-time_format = os.getenv('TIME_FORMAT', '24h').lower()                                           # 12h or 24h        (default: 24h)
-windspeed_unit = os.getenv('WINDSPEED_UNIT', 'km/h').lower()                                    # km/h or mph       (default: Km/h)
-show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')            # True or False     (default: True)
-show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')   # True or False     (default: False)
-get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                              # Name of the location to get the weather from (default: '')
+temp_unit = os.getenv('TEMP_UNIT', 'c').lower()                                                         # c or f            (default: c)
+time_format = os.getenv('TIME_FORMAT', '24h').lower()                                                   # 12h or 24h        (default: 24h)
+windspeed_unit = os.getenv('WINDSPEED_UNIT', 'km/h').lower()                                            # km/h or mph       (default: Km/h)
+show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')                    # True or False     (default: True)
+show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')           # True or False     (default: False)
+show_today_details = os.getenv('SHOW_TODAY_DETAILS', 'True').lower() in ('true', '1', 't', 'y', 'yes')  # True or False     (default: True)
+get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                                      # Name of the location to get the weather from (default: '')
 
 # Check if the variables are set correctly
 if temp_unit not in ('c', 'f'):
@@ -119,10 +120,6 @@ if time_format not in ('12h', '24h'):
     time_format = '24h'
 if windspeed_unit not in ('km/h', 'mph'):
     windspeed_unit = 'km/h'
-if show_icon not in (True, False):
-    show_icon = True
-if show_location not in (True, False):
-    show_location = False
 
 # Main Logic
 data = {}
@@ -139,11 +136,13 @@ if show_location:
     data['text'] += f" | {get_city_name(weather)}, {get_country_name(weather)}"
 
 # waybar tooltip
-data['tooltip'] = f"<b>{get_description(current_weather)} {get_temperature(current_weather)}</b>\n"
-data['tooltip'] += f"Feels like: {get_feels_like(current_weather)}\n"
-data['tooltip'] += f"Location: {get_city_name(weather)}, {get_country_name(weather)}\n"
-data['tooltip'] += f"Wind: {get_wind_speed(current_weather)}\n"
-data['tooltip'] += f"Humidity: {current_weather['humidity']}%\n"
+data['tooltip'] = ""
+if show_today_details:
+    data['tooltip'] += f"<b>{get_description(current_weather)} {get_temperature(current_weather)}</b>\n"
+    data['tooltip'] += f"Feels like: {get_feels_like(current_weather)}\n"
+    data['tooltip'] += f"Location: {get_city_name(weather)}, {get_country_name(weather)}\n"
+    data['tooltip'] += f"Wind: {get_wind_speed(current_weather)}\n"
+    data['tooltip'] += f"Humidity: {current_weather['humidity']}%\n"
 # Get the weather forecast for the next 2 days
 for i, day in enumerate(weather['weather']):
     data['tooltip'] += f"\n<b>"
