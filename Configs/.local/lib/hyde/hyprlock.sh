@@ -220,7 +220,7 @@ source = ${hyde_hyprlock_conf}
 # - if available, otherwise, it will show the HyDE logo.
 
 # \$GREET_TEXT
-# - The text to be displayed on the lock screen.
+# - A greeting text to be displayed on the lock screen.
 # - The text will be updated every hour.
 
 # \$resolve.font
@@ -241,6 +241,13 @@ source = ${hyde_hyprlock_conf}
 # - The command to be executed to get the CAVA output.
 # - ⚠️ (Use with caution as it eats up the CPU.)
 
+# cmd [update:5000] \$BATTERY_ICON
+# - The battery icon to be displayed on the lock screen.
+# - Only works if the battery is available.
+
+# cmd [update:1000] \$KEYBOARD_LAYOUT
+# - The current keyboard layout
+# - SUPER + K to change the keyboard layout (or any binding you set)
 
 CONF
 }
