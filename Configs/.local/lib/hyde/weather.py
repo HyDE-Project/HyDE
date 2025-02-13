@@ -69,6 +69,12 @@ def get_min_temp(day):
     else:
         return day['mintempF'] + "°F"
     
+def get_sunrise(day):
+    return get_timestamp(day['astronomy'][0]['sunrise'])
+
+def get_sunset(day):
+    return get_timestamp(day['astronomy'][0]['sunset'])
+    
 def get_city_name(weather):
     return weather['nearest_area'][0]['areaName'][0]['value']
 
@@ -81,6 +87,12 @@ def format_time(time):
 def format_temp(temp):
     if temp[0] != "-": temp += " "
     return temp.ljust(5)
+
+def get_timestamp(time_str):
+    if time_format == '24h':
+        return datetime.strptime(time_str, '%I:%M %p').strftime('%H:%M')
+    else:
+        return time_str
 
 def format_chances(hour):
     chances = {
@@ -106,7 +118,7 @@ load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
 load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
 
 temp_unit = os.getenv('TEMP_UNIT', 'c').lower()                                                         # c or f            (default: c)
-time_format = os.getenv('TIME_FORMAT', '24h').lower()                                                   # 12h or 24h        (default: 24h)
+time_format = os.getenv('TIME_FORMAT', '12h').lower()                                                   # 12h or 24h        (default: 12h)
 windspeed_unit = os.getenv('WINDSPEED_UNIT', 'km/h').lower()                                            # km/h or mph       (default: Km/h)
 show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')                    # True or False     (default: True)
 show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')           # True or False     (default: False)
@@ -121,7 +133,7 @@ get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                              
 if temp_unit not in ('c', 'f'):
     temp_unit = 'c'
 if time_format not in ('12h', '24h'):
-    time_format = '24h'
+    time_format = '12h'
 if windspeed_unit not in ('km/h', 'mph'):
     windspeed_unit = 'km/h'
 if forecast_days not in range(4):
@@ -159,7 +171,7 @@ for i in range(forecast_days):
         data['tooltip'] += "Tomorrow, "
     data['tooltip'] += f"{day['date']}</b>\n"
     data['tooltip'] += f"⬆️ {get_max_temp(day)} ⬇️ {get_min_temp(day)} "
-    data['tooltip'] += f"🌅 {day['astronomy'][0]['sunrise']} 🌇 {day['astronomy'][0]['sunset']}\n"
+    data['tooltip'] += f"🌅 {get_sunrise(day)} 🌇 {get_sunset(day)}\n"
     for hour in day['hourly']:
         if i == 0:
             if int(format_time(hour['time'])) < datetime.now().hour-2:
