@@ -4,6 +4,7 @@ import json
 import requests
 from datetime import datetime
 import os
+import subprocess
 
 
 def load_env_file(filepath):
@@ -18,6 +19,22 @@ def load_env_file(filepath):
 # Load environment variables from the specified files
 load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
 load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
+
+# New environment variables with default values
+temp_unit = os.getenv('TEMP_UNIT', 'C')
+time_format = os.getenv('TIME_FORMAT', '24h')
+show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')
+
+# Check if the variables are set correctly
+if temp_unit not in ('C', 'F'):
+    subprocess.run(['notify-send', 'Weather Script Error', f"TEMP_UNIT in ~/.local/state/hyde/config must be 'C' or 'F'. {temp_unit} is not valid"])
+    temp_unit = 'C'
+if time_format not in ('12h', '24h'):
+    subprocess.run(['notify-send', 'Weather Script Error', f"TIME_FORMAT in ~/.local/state/hyde/config must be '12h' or '24h'. {time_format} is not valid"])
+    time_format = '24h'
+if show_location not in (True, False):
+    subprocess.run(['notify-send', 'Weather Script Error', f"SHOW_LOCATION in ~/.local/state/hyde/config must be 'True' or 'False'. {show_location} is not valid"])
+    show_location = False
 
 
 WEATHER_CODES = {
