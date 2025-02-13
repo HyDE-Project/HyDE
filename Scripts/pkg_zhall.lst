@@ -70,6 +70,10 @@ bleachbit                                              # system cleaner
 cpio                                                   # hyprpm deps
 meson                                                  # hyprpm deps
 cmake                                                  # hyprpm deps
+xorg-xhost                                             # hyprpm deps
+glaze
+hyprland-protocols
+uwsm
 
 bat                                                    # cat replacement
 mousepad                                               # text-editor
