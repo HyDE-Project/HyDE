@@ -4,7 +4,6 @@ import json
 import requests
 from datetime import datetime
 import os
-import subprocess
 
 
 # Constants
@@ -35,37 +34,37 @@ def get_description(weatherinstance):
     return weatherinstance['weatherDesc'][0]['value']
 
 def get_temperature(weatherinstance):
-    if temp_unit == 'C':
+    if temp_unit == 'c':
         return weatherinstance['temp_C'] + "°C"
     else:
         return weatherinstance['temp_F'] + "°F"
     
 def get_temperature_hour(weatherinstance):
-    if temp_unit == 'C':
+    if temp_unit == 'c':
         return weatherinstance['tempC'] + "°C"
     else:
         return weatherinstance['tempF'] + "°F"
     
 def get_feels_like(weatherinstance):
-    if temp_unit == 'C':
+    if temp_unit == 'c':
         return weatherinstance['FeelsLikeC'] + "°C"
     else:
         return weatherinstance['FeelsLikeF'] + "°F"
     
 def get_wind_speed(weatherinstance):
-    if windspeed_unit == 'Km/h':
+    if windspeed_unit == 'km/h':
         return weatherinstance['windspeedKmph'] + "Km/h"
     else:
         return weatherinstance['windspeedMiles'] + "Mph"
 
 def get_max_temp(day):
-    if temp_unit == 'C':
+    if temp_unit == 'c':
         return day['maxtempC'] + "°C"
     else:
         return day['maxtempF'] + "°F"
 
 def get_min_temp(day):
-    if temp_unit == 'C':
+    if temp_unit == 'c':
         return day['mintempC'] + "°C"
     else:
         return day['mintempF'] + "°F"
@@ -106,28 +105,23 @@ def format_chances(hour):
 load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
 load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
 
-temp_unit = os.getenv('TEMP_UNIT', 'C')                                                         # C or F            (default: C)
-time_format = os.getenv('TIME_FORMAT', '24h')                                                   # 12h or 24h        (default: 24h)
-windspeed_unit = os.getenv('WINDSPEED_UNIT', 'Km/h')                                            # Km/h or mph       (default: Km/h)
+temp_unit = os.getenv('TEMP_UNIT', 'c').lower()                                                 # c or f            (default: c)
+time_format = os.getenv('TIME_FORMAT', '24h').lower()                                           # 12h or 24h        (default: 24h)
+windspeed_unit = os.getenv('WINDSPEED_UNIT', 'km/h').lower()                                    # km/h or mph       (default: Km/h)
 show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')            # True or False     (default: True)
 show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')   # True or False     (default: False)
 get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                              # Name of the location to get the weather from (default: '')
 
 # Check if the variables are set correctly
-if temp_unit not in ('C', 'F'):
-    subprocess.run(['notify-send', 'Weather Script Error', f"TEMP_UNIT in ~/.local/state/hyde/config must be 'C' or 'F'. {temp_unit} is not valid"])
-    temp_unit = 'C'
+if temp_unit not in ('c', 'f'):
+    temp_unit = 'c'
 if time_format not in ('12h', '24h'):
-    subprocess.run(['notify-send', 'Weather Script Error', f"TIME_FORMAT in ~/.local/state/hyde/config must be '12h' or '24h'. {time_format} is not valid"])
     time_format = '24h'
-if windspeed_unit not in ('Km/h', 'mph'):
-    subprocess.run(['notify-send', 'Weather Script Error', f"WINDSPEED_UNIT in ~/.local/state/hyde/config must be 'Km/h' or 'mph'. {windspeed_unit} is not valid"])
-    windspeed_unit = 'Km/h'
+if windspeed_unit not in ('km/h', 'mph'):
+    windspeed_unit = 'km/h'
 if show_icon not in (True, False):
-    subprocess.run(['notify-send', 'Weather Script Error', f"SHOW_ICON in ~/.local/state/hyde/config must be 'True' or 'False'. {show_icon} is not valid"])
     show_icon = True
 if show_location not in (True, False):
-    subprocess.run(['notify-send', 'Weather Script Error', f"SHOW_LOCATION in ~/.local/state/hyde/config must be 'True' or 'False'. {show_location} is not valid"])
     show_location = False
 
 # Main Logic
