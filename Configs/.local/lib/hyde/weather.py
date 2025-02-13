@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 
 
-# Constants
+### Constants ###
 WEATHER_CODES = {
     **dict.fromkeys(['113'], '☀️ '),
     **dict.fromkeys(['116'], '⛅ '),
@@ -17,7 +17,7 @@ WEATHER_CODES = {
     **dict.fromkeys(['329', '332', '335', '338', '371', '395'], '❄️ ')
 }
 
-# Functions
+### Functions ###
 def load_env_file(filepath):
     with open(filepath) as f:
         for line in f:
@@ -112,7 +112,7 @@ def format_chances(hour):
             conditions.append(chances[event]+" "+hour[event]+"%")
     return ", ".join(conditions)
 
-# Variables
+### Variables ###
 # Load environment variables from the specified files
 load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
 load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
@@ -124,7 +124,7 @@ show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'y
 show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')           # True or False     (default: False)
 show_today_details = os.getenv('SHOW_TODAY_DETAILS', 'True').lower() in ('true', '1', 't', 'y', 'yes')  # True or False     (default: True)
 try:
-    forecast_days = int(os.getenv('FORECAST_DAYS', '3'))                                                    # Number of days to show the forecast for (default: 3)
+    forecast_days = int(os.getenv('FORECAST_DAYS', '3'))                                                # Number of days to show the forecast for (default: 3)
 except ValueError:
     forecast_days = 3
 get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                                      # Name of the location to get the weather from (default: '')
@@ -139,7 +139,7 @@ if windspeed_unit not in ('km/h', 'mph'):
 if forecast_days not in range(4):
     forecast_days = 3
 
-# Main Logic
+### Main Logic ###
 data = {}
 # Get the weather data
 weather = requests.get(f"https://wttr.in/{get_location}?format=j1", timeout=10).json()
@@ -172,6 +172,7 @@ for i in range(forecast_days):
     data['tooltip'] += f"{day['date']}</b>\n"
     data['tooltip'] += f"⬆️ {get_max_temp(day)} ⬇️ {get_min_temp(day)} "
     data['tooltip'] += f"🌅 {get_sunrise(day)} 🌇 {get_sunset(day)}\n"
+    # Get the hourly forecast for the day
     for hour in day['hourly']:
         if i == 0:
             if int(format_time(hour['time'])) < datetime.now().hour-2:
