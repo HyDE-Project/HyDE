@@ -102,6 +102,7 @@ load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
 
 temp_unit = os.getenv('TEMP_UNIT', 'C')                                                         # C or F            (default: C)
 time_format = os.getenv('TIME_FORMAT', '24h')                                                   # 12h or 24h        (default: 24h)
+show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')            # True or False     (default: True)
 show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')   # True or False     (default: False)
 get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                              # Name of the location to get the weather from (default: '')
 
@@ -124,7 +125,9 @@ current_weather = weather['current_condition'][0]
 
 # Get the data to display
 # waybar text
-data['text'] = get_weather_icon(current_weather) + get_temperature(current_weather)
+data['text'] = get_temperature(current_weather)
+if show_icon:
+    data['text'] = get_weather_icon(current_weather) + data['text']
 if show_location:
     data['text'] += f" | {get_city_name(weather)}, {get_country_name(weather)}"
 
