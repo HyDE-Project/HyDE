@@ -85,7 +85,7 @@ def format_time(time):
     return (time.replace("00", "")).ljust(3)
 
 def format_temp(temp):
-    if temp[0] != "-": temp += " "
+    if temp[0] != "-": temp = " " + temp
     return temp.ljust(5)
 
 def get_timestamp(time_str):
