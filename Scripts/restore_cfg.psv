@@ -110,13 +110,12 @@ P|${HOME}/.config/hypr|hypridle.conf|hypridle
 
  ZARYU 
 P|${HOME}/.config|agsv1|aylurs-gtk-shell-git
-P|${HOME}/.local/state/ags/scss|aylurs-gtk-shell-git
-P|${HOME}/.local/state/ags/user|aylurs-gtk-shell-git
+P|${HOME}/.local/state/ags|scss user|aylurs-gtk-shell-git
 P|${HOME}/.config|bleachbit|bleachbit
 P|${HOME}/.config|nvim|neovim
 P|${HOME}/.config|chrome-flags.conf|chromium
-S|${HOME}/.local/share/hyprpm|hyprland
-S|${HOME}/.local/share/fonts|hyprland
+S|${HOME}/.local/share|hyprpm|hyprland
+S|${HOME}/.local/share|fonts|hyprland
 P|${HOME}|.UsefulCMD|hyprland
 S|${HOME}/.config/hypr|plugins pyprland.d UserPrefs|hyprland
 S|${HOME}/.config/hypr|pyprland.toml|hyprland
