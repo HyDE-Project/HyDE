@@ -2,10 +2,21 @@
 BackgroundNormal=#00000000
 
 [General]
-TerminalApplication=kitty
+TerminalApplication=
 
 [Icons]
-Theme=Will be overwritten on themeswitch
+Theme=Vivid-Glassy-Dark-Icons
+
+[KDE]
+ShowDeleteCommand=false
+widgetStyle=kvantum
+
+[PreviewSettings]
+EnableRemoteFolderThumbnail=false
+MaximumRemoteSize=0
+
+[UISettings]
+ColorScheme=Eternal-Arctic
 
 [UiSettings]
 ColorScheme=*

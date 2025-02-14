@@ -1,11 +1,11 @@
 # DO NOT EDIT! This file will be overwritten by nwg-look.
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
-include "~/.gtkrc-2.0.mine"
-gtk-theme-name="Catppuccin-Mocha"
-gtk-icon-theme-name="Tela-circle-dracula"
+include "/home/zaryu/.gtkrc-2.0.mime"
+gtk-theme-name="Eternal-Arctic"
+gtk-icon-theme-name="Vivid-Glassy-Dark-Icons"
 gtk-font-name="Cantarell 10"
-gtk-cursor-theme-name="Bibata-Modern-Ice"
+gtk-cursor-theme-name="onedark-cursor"
 gtk-cursor-theme-size=20
 gtk-toolbar-style=GTK_TOOLBAR_ICONS
 gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR

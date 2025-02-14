@@ -1,0 +1,7 @@
+[Confirmations]
+ConfirmDelete=true
+ConfirmEmptyTrash=true
+ConfirmTrash=false
+
+[Executable scripts]
+behaviourOnLaunch=alwaysAsk

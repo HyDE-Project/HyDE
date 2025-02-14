@@ -1,0 +1,53 @@
+$HOME/.config/hypr/themes/theme.conf|> $HOME/.config/hypr/themes/colors.conf
+
+$GTK_THEME=Eternal-Arctic
+$ICON_THEME=Vivid-Glassy-Dark-Icons
+$COLOR_SCHEME=prefer-dark
+$CODE_THEME=Nord
+$CURSOR_THEME=onedark-cursor
+$CURSOR_SIZE=20
+
+
+exec = gsettings set org.gnome.desktop.interface icon-theme '$ICON_THEME'
+exec = gsettings set org.gnome.desktop.interface gtk-theme '$GTK_THEME'
+exec = gsettings set org.gnome.desktop.interface color-scheme '$COLOR_SCHEME'
+exec = Hyde code theme '$CODE_THEME'
+
+exec = gsettings set org.gnome.desktop.interface cursor-theme '$CURSOR_THEME'
+exec = gsettings set org.gnome.desktop.interface cursor-size $CURSOR_SIZE
+exec = hyprctl setcursor $CURSOR_THEME $CURSOR_SIZE
+
+
+
+general {
+    gaps_in = 2
+    gaps_out = 5
+    border_size = 2
+    col.active_border = rgba(90ceaaff) rgba(ecd3a0ff) 45deg
+    col.inactive_border = rgba(86aaeccc) rgba(93cee9cc) 45deg
+    layout = dwindle
+    resize_on_border = true
+}
+
+group {
+    col.border_active = rgba(90ceaaff) rgba(ecd3a0ff) 45deg
+    col.border_inactive = rgba(86aaeccc) rgba(93cee9cc) 45deg
+    col.border_locked_active = rgba(90ceaaff) rgba(ecd3a0ff) 45deg
+    col.border_locked_inactive = rgba(86aaeccc) rgba(93cee9cc) 45deg
+}
+
+decoration {
+    rounding = 5
+    drop_shadow = false
+
+    blur {
+        enabled = yes
+        size = 1
+        passes = 2
+        new_optimizations = on
+        ignore_opacity = on
+        xray = false
+    }
+}
+
+layerrule = unset,waybar

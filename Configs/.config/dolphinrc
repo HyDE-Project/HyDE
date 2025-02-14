@@ -5,7 +5,9 @@ update_info=dolphin_detailsmodesettings.upd:rename-leading-padding
 
 [General]
 ShowSelectionToggle=false
+ShowSpaceInfo=false
 ShowStatusBar=false
+ShowZoomSlider=false
 Version=202
 ViewPropsTimestamp=2023,4,26,16,58,48.324
 
@@ -15,6 +17,7 @@ PreviewSize=112
 
 [InformationPanel]
 dateFormat=ShortFormat
+previewsShown=false
 
 [KFileDialog Settings]
 Places Icons Auto-resize=false
@@ -39,4 +42,3 @@ Plugins=appimagethumbnail,audiothumbnail,comicbookthumbnail,cursorthumbnail,djvu
 
 [Toolbar mainToolBar]
 ToolButtonStyle=IconOnly
-
