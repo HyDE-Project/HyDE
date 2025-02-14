@@ -117,17 +117,17 @@ def format_chances(hour):
 load_env_file(os.path.expanduser('~/.local/state/hyde/staterc'))
 load_env_file(os.path.expanduser('~/.local/state/hyde/config'))
 
-temp_unit = os.getenv('TEMP_UNIT', 'c').lower()                                                         # c or f            (default: c)
-time_format = os.getenv('TIME_FORMAT', '12h').lower()                                                   # 12h or 24h        (default: 12h)
-windspeed_unit = os.getenv('WINDSPEED_UNIT', 'km/h').lower()                                            # km/h or mph       (default: Km/h)
-show_icon = os.getenv('SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')                    # True or False     (default: True)
-show_location = os.getenv('SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')           # True or False     (default: False)
-show_today_details = os.getenv('SHOW_TODAY_DETAILS', 'True').lower() in ('true', '1', 't', 'y', 'yes')  # True or False     (default: True)
+temp_unit = os.getenv('WEATHER_TEMPERATURE_UNIT', 'c').lower()                                                         # c or f            (default: c)
+time_format = os.getenv('WEATHER_TIME_FORMAT', '12h').lower()                                                   # 12h or 24h        (default: 12h)
+windspeed_unit = os.getenv('WEATHER_WINDSPEED_UNIT', 'km/h').lower()                                            # km/h or mph       (default: Km/h)
+show_icon = os.getenv('WEATHER_SHOW_ICON', 'True').lower() in ('true', '1', 't', 'y', 'yes')                    # True or False     (default: True)
+show_location = os.getenv('WEATHER_SHOW_LOCATION', 'False').lower() in ('true', '1', 't', 'y', 'yes')           # True or False     (default: False)
+show_today_details = os.getenv('WEATHER_SHOW_TODAY_DETAILS', 'True').lower() in ('true', '1', 't', 'y', 'yes')  # True or False     (default: True)
 try:
-    forecast_days = int(os.getenv('FORECAST_DAYS', '3'))                                                # Number of days to show the forecast for (default: 3)
+    forecast_days = int(os.getenv('WEATHER_FORECAST_DAYS', '3'))                                                # Number of days to show the forecast for (default: 3)
 except ValueError:
     forecast_days = 3
-get_location = os.getenv('WAYBAR_WEATHER_LOC', '')                                                      # Name of the location to get the weather from (default: '')
+get_location = os.getenv('WEATHER_LOC', '')                                                                     # Name of the location to get the weather from (default: '')
 
 # Check if the variables are set correctly
 if temp_unit not in ('c', 'f'):
