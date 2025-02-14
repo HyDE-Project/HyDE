@@ -14,6 +14,25 @@ if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
     exit 1
 fi
 
+USAGE() {
+
+    cat <<USAGE
+Usage: $(basename "$0") [command]
+Commands:
+  --help, help, -h : Display this help message
+  -i, interactive  : Start an interactive shell
+  -r, reload       : Reload HyDE
+  zoom             : Zoom in/out Hyprland
+  wallbash         : Execute a wallbash script
+
+Available HyDE commands:
+
+$(find "$LIB_DIR/hyde" -type f -name "*.sh" -exec basename {} .sh \;)
+
+USAGE
+
+}
+
 interactive_shell() {
     history_file="/tmp/.hyde_shell_history"
     touch "$history_file"
@@ -114,24 +133,36 @@ hyde_reload() {
     "$LIB_DIR/hyde/themeswitch.sh"
 }
 
-case $1 in
--i | interactive)
-    interactive_shell
-    ;;
--r | reload)
-    hyde_reload
-    ;;
-zoom)
-    shift
-    zoom "$@"
-    ;;
-wallbash)
-    shift
-    call_wallbashScript "$@"
-    ;;
-*)
-    for func in $(compgen -A function); do
-        export -f "${func?}"
-    done
-    ;;
-esac
+if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
+
+    case $1 in
+    -i | interactive)
+        interactive_shell
+        ;;
+    -r | reload)
+        hyde_reload
+        ;;
+    zoom)
+        shift
+        zoom "$@"
+        ;;
+    wallbash)
+        shift
+        call_wallbashScript "$@"
+        ;;
+    --help | help | -h)
+        USAGE
+        ;;
+    "")
+        for func in $(compgen -A function); do
+            export -f "${func?}"
+        done
+        ;;
+    *)
+        if [ -f "$LIB_DIR/hyde/$1.sh" ]; then
+            "$LIB_DIR/hyde/$1.sh" "${@:2}"
+        fi
+        ;;
+    esac
+
+fi
