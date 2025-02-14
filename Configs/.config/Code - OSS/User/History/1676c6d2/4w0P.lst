@@ -1,0 +1,8 @@
+git                                                     # alias and functions for git commands
+sudo                                                    # press ESC key twice to execute command with sudo prefix 
+#python                                                 # alias for python
+#zsh-interactive-cd                                     # press tab to change dir with fzf
+https://github.com/chrissicool/zsh-256color             # enhance terminal environment with 256 colors
+#https://github.com/zsh-users/zsh-completions           # press tab to complete command
+https://github.com/zsh-users/zsh-autosuggestions        # suggests commands as you type based on history
+https://github.com/zsh-users/zsh-syntax-highlighting    # highlights commands as you type

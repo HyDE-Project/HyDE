@@ -1,0 +1,16 @@
+"battery": {
+    "format": "{icon}",
+    "format-charging": "󰂄",
+    "format-full": "󰁹",
+    "format-icons": [
+      "󰁺",
+      "󰁻",
+      "󰁼",
+      "󰁽",
+      "󰁾",
+      "󰁿",
+      "󰂀",
+      "󰂁",
+      "󰂂",
+      "󰁹"
+    ],

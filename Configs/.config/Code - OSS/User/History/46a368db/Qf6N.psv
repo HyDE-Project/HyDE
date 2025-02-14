@@ -1,0 +1,33 @@
+This is a pipe separated value file.
+It contains the paths of the dotfiles and
+their respective package dependency.
+
+Note:
+- Lines starting with '#' are comments
+- The only known variable is '${HOME}'
+- This is a 4 column file separated by '|'
+- Each column should use spaces to separate array
+
+Structure:
+#?        flag|path|target|dependency
+
+Flags:
+P = Populate/Preserved - Copy the target to the specified path
+                          - ONLY if the target do not exist
+                          - Preserved the target
+S = Sync - Copy the target to the specified path
+            - Overwrite the target
+              - Ignore other targets that is not from the list
+              - Ignore other targets that is not from the ./Configs
+O = Overwrite - Copy the target to the specified path
+                - Overwrite the target target
+                - If Target is a directory, Overwrite EVERYTHING in the directory
+                - If Target is a file, Overwrite the file
+B = Backup - Backup the target
+              - All P,S,O flags will also backup the target file/directory
+
+
+
+ Hyde core files 
+P|${HOME}/.local/share/hyprpm|hyprland
+

@@ -1,0 +1,5 @@
+"custom/hyprprofileicon": {
+    "format": "󱙋",
+    "on-click": "hyprprofile-dmenu",
+    "tooltip": false
+  },

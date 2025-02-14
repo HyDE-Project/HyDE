@@ -1,0 +1,14 @@
+"pulseaudio#text": {
+    "format": "{volume}%",
+    "format-bluetooth": "{volume}%",
+    "format-bluetooth-muted": "",
+    "format-muted": "",
+    "format-source": "{volume}%",
+    "format-source-muted": "",
+    "on-click": "hyprctl dispatch togglespecialworkspace scratch_pavucontrol; if hyprctl clients | grep pavucontrol; then echo 'scratch_ranger respawn not needed'; else pavucontrol; fi",
+    "scroll-step": 1
+  },
+  "spacing": 7,
+  "tray": {
+    "spacing": 7
+  }

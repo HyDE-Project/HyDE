@@ -1,0 +1,5 @@
+"custom/power": {
+    "format": "󰐥",
+    "on-click": "shutdown now",
+    "tooltip": false
+  },

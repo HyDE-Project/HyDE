@@ -1,0 +1,6 @@
+  // Windows VM
+  "custom/windowsvm": {
+    "format": "",
+    "on-click": "~/.config/ml4w/scripts/launchvm.sh",
+    "tooltip": false
+  },

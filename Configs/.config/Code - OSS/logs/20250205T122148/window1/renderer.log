@@ -1,0 +1,8 @@
+2025-02-05 12:21:53.154 [info] Started local extension host with pid 8141.
+2025-02-05 12:21:57.996 [warning] [mainThreadStorage] large extension state detected (extensionId: sourcegraph.cody-ai, global: true): 1753.30078125kb. Consider to use 'storageUri' or 'globalStorageUri' to store this data on disk instead.
+2025-02-05 12:22:00.719 [info] Extension host (LocalProcess pid: 8141) is unresponsive.
+2025-02-05 12:22:01.037 [info] Extension host (LocalProcess pid: 8141) is responsive.
+2025-02-05 12:22:01.329 [info] [perf] Render performance baseline is 110ms
+2025-02-05 12:22:01.489 [error] [Extension Host] DelegatingProxy: Loaded 152 CA certs from noxide
+2025-02-05 12:22:01.689 [error] Timed out waiting for authentication provider to register
+2025-02-05 12:22:39.315 [warning] [backup tracker] suspended, ignoring unregister event file:///home/zaryu/.vscode-oss/extensions/sourcegraph.cody-ai-1.62.0-universal/walkthroughs/cody_tutorial.py 

@@ -1,0 +1,6 @@
+  // Settings
+  "custom/settings": {
+    "format": "",
+    "on-click": "sleep 0.1 && com.ml4w.dotfilessettings",
+    "tooltip-format": "ML4W Dotfiles Settings"
+  },

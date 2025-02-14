@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../../../waybar"
+		},
+		{
+			"path": "../../../waybar.libe"
+		}
+	],
+	"settings": {}
+}

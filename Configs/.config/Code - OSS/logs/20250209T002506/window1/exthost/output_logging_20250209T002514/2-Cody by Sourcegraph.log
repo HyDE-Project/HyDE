@@ -1,0 +1,5 @@
+█ ChatsController:constructor init
+█ telemetry-v2 recordEvent: cody.extension/savedLogin:
+█ auth Authenticating to https://sourcegraph.com/...
+█ ModelsService User model preferences changed: {"defaults":{"chat":"anthropic::2023-06-01::claude-3.5-sonnet","edit":"anthropic::2023-06-01::claude-3.5-sonnet","autocomplete":"fireworks::v1::deepseek-coder-v2-lite-base"},"selected":{}}
+█ telemetry-v2 recordEvent: cody.characters/flush:

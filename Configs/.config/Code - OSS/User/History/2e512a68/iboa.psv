@@ -1,0 +1,113 @@
+rThis is a pipe separated value file.
+It contains the paths of the dotfiles and
+their respective package dependency.
+
+Note:
+- Lines starting with '#' are comments
+- The only known variable is '${HOME}'
+- This is a 4 column file separated by '|'
+- Each column should use spaces to separate array
+
+Structure:
+#?        flag|path|target|dependency
+
+Flags:
+P = Populate/Preserved - Copy the target to the specified path
+                          - ONLY if the target do not exist
+                          - Preserved the target
+S = Sync - Copy the target to the specified path
+            - Overwrite the target
+              - Ignore other targets that is not from the list
+              - Ignore other targets that is not from the ./Configs
+O = Overwrite - Copy the target to the specified path
+                - Overwrite the target target
+                - If Target is a directory, Overwrite EVERYTHING in the directory
+                - If Target is a file, Overwrite the file
+B = Backup - Backup the target
+              - All P,S,O flags will also backup the target file/directory
+
+
+
+ Hyde core files 
+P|${HOME}/.config/hyde|config.toml|hyprland
+P|${HOME}/.config/hypr|hyde.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
+P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
+P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
+P|${HOME}/.local/state|hyde|hyprland
+
+S|${HOME}/.config/hypr|hyprland.conf|hyprland
+S|${HOME}/.local|bin|hyprland
+S|${HOME}/.config|gtk-3.0|nwg-look
+S|${HOME}/.config|nwg-look|nwg-look
+S|${HOME}/.config|xsettingsd|nwg-look
+S|${HOME}|.gtkrc-2.0|nwg-look
+S|${HOME}/.config|Kvantum|kvantum
+S|${HOME}/.config|qt5ct|qt5ct
+S|${HOME}/.config|qt6ct|qt6ct
+S|${HOME}/.config/hyde|wallbash|hyprland
+S|${HOME}/.config/hypr|animations|hyprland
+
+O|${HOME}/.local/share|hyde|hyprland
+O|${HOME}/.local/lib|hyde|hyprland
+
+ Editor 
+P|${HOME}/.config/Code - OSS/User|settings.json|code
+P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
+P|${HOME}/.config/VSCodium/User|settings.json|vscodium-bin
+
+ Bar 
+P|${HOME}/.config/waybar|config.ctl|waybar
+S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
+
+ Terminal 
+P|${HOME}/.config|lsd|lsd
+S|${HOME}/.config|fastfetch|fastfetch
+S|${HOME}/.config/kitty|hyde.conf theme.conf|kitty
+P|${HOME}/.config/kitty|kitty.conf|kitty
+
+ Shell 
+P|${HOME}/.config|fish|fish
+P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh zsh-theme-powerlevel10k pokego-bin
+S|${HOME}|.zshenv|zsh zsh-theme-powerlevel10k
+
+ File Explorer 
+P|${HOME}/.local/state|dolphinstaterc|dolphin
+P|${HOME}/.config|baloofilerc|dolphin
+S|${HOME}/.config/menus|applications.menu|dolphin
+S|${HOME}/.config|dolphinrc|dolphin
+S|${HOME}/.config|kdeglobals|dolphin
+S|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
+S|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
+S|${HOME}/.local/share|dolphin|dolphin
+
+ Input 
+P|${HOME}/.config|libinput-gestures.conf|libinput-gestures
+
+ Wayland 
+P|${HOME}/.config|spotify-flags.conf|spotify
+P|${HOME}/.config|code-flags.conf|code
+P|${HOME}/.config|code-flags.conf|visual-studio-code-bin
+P|${HOME}/.config|vscodium-flags.conf|vscodium-bin
+P|${HOME}/.config|electron-flags.conf|electron
+
+ Notifications 
+S|${HOME}/.config|dunst|dunst
+
+ Gaming 
+S|${HOME}/.config|MangoHud|mangohud
+
+ Launcher 
+S|${HOME}/.config|rofi|rofi
+S|${HOME}/.config|wlogout|wlogout
+
+ Lock Screen 
+S|${HOME}/.config|swaylock|swaylock-effects
+P|${HOME}/.config/hypr|hyprlock.conf|hyprlock
+S|${HOME}/.config/hypr|hyprlock|hyprlock
+
+ Idle daemon 
+P|${HOME}/.config/hypr|hypridle.conf|hypridle
+
+ ZARYU 
+P|${HOME}/.config/agsv1|agsv1
+P|${HOME}/.config/bleachbit|bleachbit

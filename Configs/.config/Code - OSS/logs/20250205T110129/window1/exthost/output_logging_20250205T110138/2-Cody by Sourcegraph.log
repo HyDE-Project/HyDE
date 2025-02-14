@@ -1,0 +1,17 @@
+█ ChatsController:constructor init
+█ telemetry-v2 recordEvent: cody.extension/savedLogin:
+█ auth Authenticating to https://sourcegraph.com/...
+█ ModelsService User model preferences changed: {"defaults":{"chat":"anthropic::2023-06-01::claude-3.5-sonnet","edit":"anthropic::2023-06-01::claude-3.5-sonnet","autocomplete":"fireworks::v1::deepseek-coder-v2-lite-base"},"selected":{}}
+█ auth Failed to authenticate to https://sourcegraph.com/ due to invalid credentials or other endpoint error: accessing Sourcegraph HTTP API:  Error: HTTP status code 401: Invalid access token.
+ (https://sourcegraph.com/.api/graphql?CurrentUser)
+█ telemetry-v2 recordEvent: cody.auth/failed:
+█ Autocomplete:createProvider You are not signed in.
+█ GraphQLTelemetryExporter Error exporting telemetry events:: Error: accessing Sourcegraph HTTP API:  Error: HTTP status code 401: Invalid access token.
+ (https://sourcegraph.com/.api/graphql?RecordTelemetryEvents)
+█ FeatureFlagProvider Failed to get all evaluated feature flags: Error: accessing Sourcegraph HTTP API:  Error: HTTP status code 401: Invalid access token.
+ (https://sourcegraph.com/.api/graphql?FeatureFlags)
+█ GraphQLTelemetryExporter Error exporting telemetry events:: Error: accessing Sourcegraph HTTP API:  Error: HTTP status code 401: Invalid access token.
+ (https://sourcegraph.com/.api/graphql?RecordTelemetryEvents)
+█ UpstreamHealth Ping took 545ms (Gateway: 3170ms):
+█ UpstreamHealth Ping took 2984ms (Gateway: 3476ms):
+█ telemetry-v2 recordEvent: cody.characters/flush:

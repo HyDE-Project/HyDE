@@ -1,0 +1,237 @@
+2025-02-09 00:25:14.168 [info] Extension host with pid 15024 started
+2025-02-09 00:25:14.168 [info] Skipping acquiring lock for /home/zaryu/.config/Code - OSS/User/workspaceStorage/31e8bff41afedba3536beda0a635adfe.
+2025-02-09 00:25:14.682 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*', root cause: vscode.git
+2025-02-09 00:25:14.742 [info] ExtensionService#_doActivateExtension arrterian.nix-env-selector, startup: true, activationEvent: '*'
+2025-02-09 00:25:15.091 [error] Activating extension arrterian.nix-env-selector failed due to an error:
+2025-02-09 00:25:15.091 [error] TypeError: The "path" argument must be of type string or an instance of Buffer or URL. Received null
+	at t.readdir (node:electron/js2c/node_init:2:11008)
+	at ext.actions.get_nix_files (/home/zaryu/.vscode-oss/extensions/arrterian.nix-env-selector-1.0.11-universal/dist/main.js:2631:358)
+	at activate (/home/zaryu/.vscode-oss/extensions/arrterian.nix-env-selector-1.0.11-universal/dist/main.js:2650:268)
+	at Pw.kb (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:15214)
+	at Pw.jb (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:14921)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:13079
+	at async K0.n (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:115:4447)
+	at async K0.m (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:115:4410)
+	at async K0.l (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:115:3866)
+2025-02-09 00:25:15.136 [info] ExtensionService#_doActivateExtension vscode.git, startup: true, activationEvent: '*'
+2025-02-09 00:25:15.561 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2025-02-09 00:25:16.073 [info] Eager extensions activated
+2025-02-09 00:25:16.253 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2025-02-09 00:25:16.268 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+2025-02-09 00:25:16.386 [info] ExtensionService#_doActivateExtension sourcegraph.cody-ai, startup: false, activationEvent: 'onStartupFinished'
+2025-02-09 00:25:19.943 [info] ExtensionService#_doActivateExtension vscode.configuration-editing, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:20.025 [info] ExtensionService#_doActivateExtension vscode.extension-editing, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:20.076 [info] ExtensionService#_doActivateExtension vscode.json-language-features, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:20.408 [info] ExtensionService#_doActivateExtension vscode.npm, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:20.527 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2025-02-09 00:25:21.169 [error] Error: AuthStatus is not initialized
+	at currentAuthStatus (/home/zaryu/.vscode-oss/extensions/sourcegraph.cody-ai-1.62.0-universal/dist/extension.node.js:22143:11)
+	at /home/zaryu/.vscode-oss/extensions/sourcegraph.cody-ai-1.62.0-universal/dist/extension.node.js:231839:27
+	at kh.value (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:157:35593)
+	at P.B (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:30:746)
+	at P.C (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:30:816)
+	at P.fire (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:30:1033)
+	at ib.onDidChangeWindowProperty (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:123:15744)
+	at ib.$onDidChangeWindowFocus (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:123:15555)
+	at Dy.S (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:115275)
+	at Dy.Q (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:115055)
+	at Dy.M (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:114144)
+	at Dy.L (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:113249)
+	at kh.value (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112046)
+	at P.B (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:30:746)
+	at P.fire (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:30:964)
+	at Vn.fire (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:9457)
+	at kh.value (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:13296)
+	at P.B (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:30:746)
+	at P.fire (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:30:964)
+	at Vn.fire (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:9457)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11588)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.172 [info] Extension host terminating: renderer closed the MessagePort
+2025-02-09 00:25:21.222 [error] Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949) setContext undefined
+2025-02-09 00:25:21.222 [error] Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949) setContext undefined
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.224 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.225 [error] ProxyResolver#addCertificatesV1 Canceled: Canceled
+	at Fc (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:7:1122)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112153
+	at Array.forEach (<anonymous>)
+	at Dy.dispose (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:32:112093)
+	at zz.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:119:10082)
+	at QC.terminate (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:120:1424)
+	at Zi (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:15080)
+	at MessagePortMain.<anonymous> (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:175:11628)
+	at MessagePortMain.emit (node:events:518:28)
+	at MessagePortMain.emit (node:domain:489:12)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2949)
+2025-02-09 00:25:21.225 [info] Extension host with pid 15024 exiting with code 0
+2025-02-09 00:25:22.835 [info] Extension host with pid 15136 started
+2025-02-09 00:25:22.835 [info] Skipping acquiring lock for /home/zaryu/.config/Code - OSS/User/workspaceStorage/31e8bff41afedba3536beda0a635adfe.
+2025-02-09 00:25:23.100 [info] ExtensionService#_doActivateExtension vscode.configuration-editing, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:23.161 [info] ExtensionService#_doActivateExtension vscode.extension-editing, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:23.201 [info] ExtensionService#_doActivateExtension vscode.json-language-features, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:23.421 [info] ExtensionService#_doActivateExtension vscode.npm, startup: false, activationEvent: 'onLanguage:json'
+2025-02-09 00:25:23.522 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2025-02-09 00:25:23.590 [info] ExtensionService#_doActivateExtension arrterian.nix-env-selector, startup: false, activationEvent: 'onLanguage'
+2025-02-09 00:25:23.774 [info] ExtensionService#_doActivateExtension sourcegraph.cody-ai, startup: false, activationEvent: 'onLanguage'
+2025-02-09 00:25:26.661 [info] ExtensionService#_doActivateExtension vscode.typescript-language-features, startup: false, activationEvent: 'onLanguage:javascript'
+2025-02-09 00:25:26.898 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*', root cause: vscode.git
+2025-02-09 00:25:28.048 [info] ExtensionService#_doActivateExtension vscode.git, startup: true, activationEvent: '*'
+2025-02-09 00:25:28.453 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2025-02-09 00:25:29.486 [info] Eager extensions activated
+2025-02-09 00:25:31.096 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2025-02-09 00:25:31.105 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'

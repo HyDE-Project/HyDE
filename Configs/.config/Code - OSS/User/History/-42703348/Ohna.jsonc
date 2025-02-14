@@ -1,0 +1,5 @@
+"group/backlight": {
+    "drawer": {
+      "transition-duration": 500,
+      "transition-left-to-right": true
+    },

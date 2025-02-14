@@ -1,0 +1,7 @@
+  // Wallpaper
+  "custom/wallpaper": {
+    "format": "",
+    "on-click": "bash -c waypaper &",
+    "on-click-right": "~/.config/hypr/scripts/wallpaper-effects.sh",
+    "tooltip-format": "Left: Select a wallpaper\nRight: Select wallpaper effect"
+  },

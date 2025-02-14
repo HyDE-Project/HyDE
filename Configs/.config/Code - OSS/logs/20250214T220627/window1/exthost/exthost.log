@@ -1,0 +1,12 @@
+2025-02-14 22:06:36.386 [info] Extension host with pid 8602 started
+2025-02-14 22:06:36.386 [info] Skipping acquiring lock for /home/zaryu/.config/Code - OSS/User/workspaceStorage/31e8bff41afedba3536beda0a635adfe.
+2025-02-14 22:06:37.522 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2025-02-14 22:06:37.633 [info] ExtensionService#_doActivateExtension vscode.typescript-language-features, startup: false, activationEvent: 'onLanguage:javascript'
+2025-02-14 22:06:38.403 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*', root cause: vscode.git
+2025-02-14 22:06:38.805 [info] ExtensionService#_doActivateExtension vscode.git, startup: true, activationEvent: '*'
+2025-02-14 22:06:39.115 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2025-02-14 22:06:39.978 [info] Eager extensions activated
+2025-02-14 22:06:40.835 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2025-02-14 22:06:41.144 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+2025-02-14 22:06:50.173 [info] Extension host terminating: renderer closed the MessagePort
+2025-02-14 22:06:50.281 [info] Extension host with pid 8602 exiting with code 0

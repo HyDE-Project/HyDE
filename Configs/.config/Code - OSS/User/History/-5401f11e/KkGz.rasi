@@ -1,0 +1,86 @@
+// Config //
+configuration {
+    modi:                        "drun";
+    show-icons:                  true;
+    drun-display-format:         "{name}";
+    font:                        "JetBrainsMono Nerd Font 10";
+}
+
+@theme "~/.config/rofi/theme.rasi"
+
+
+// Main //
+window {
+    enabled:                     true;
+    fullscreen:                  false;
+    transparency:                "real";
+    cursor:                      "default";
+    spacing:                     0em;
+    padding:                     0em;
+    border:                      0em;
+    border-radius:               0em;
+    border-color:                transparent;
+    background-color:            @main-bg;
+}
+mainbox {
+    enabled:                     true;
+    orientation:                 horizontal;
+    children:                    [ "dummy", "frame", "dummy" ];
+    background-color:            transparent;
+}
+frame {
+    children:                    [ "listview" ];
+    background-color:            transparent;
+}
+
+
+// Lists //
+listview {
+    enabled:                     true;
+    spacing:                     4em;
+    padding:                     4em;
+    columns:                     10;
+    lines:                       1;
+    dynamic:                     false;
+    fixed-height:                false;
+    fixed-columns:               true;
+    reverse:                     true;
+    cursor:                      "default";
+    background-color:            transparent;
+    text-color:                  @main-fg;
+}
+dummy {
+    width:                       2em;
+    expand:                      false;
+    background-color:            transparent;
+}
+
+
+// Elements //
+element {
+    enabled:                     true;
+    spacing:                     0em;
+    padding:                     0em;
+    cursor:                      pointer;
+    background-color:            transparent;
+    text-color:                  @main-fg;
+}
+element selected.normal {
+    background-color:            @select-bg;
+    text-color:                  @select-fg;
+}
+element-icon {
+    cursor:                      inherit;
+    size:                        10em;
+    background-color:            transparent;
+    text-color:                  inherit;
+    expand:                      false;
+}
+element-text {
+    vertical-align:              0.5;
+    horizontal-align:            0.5;
+    cursor:                      inherit;
+    background-color:            transparent;
+    text-color:                  inherit;
+}
+

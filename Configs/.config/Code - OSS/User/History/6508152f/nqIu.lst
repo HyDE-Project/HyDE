@@ -1,0 +1,57 @@
+# --------------------------------------------------- // System
+# downgrade                                            # downgrade packages
+# trash-cli-git                                        # cli to manage trash files
+# libinput-gestures                                    # actions touchpad gestures using libinput
+# gestures                                             # gui for libinput-gestures
+#wttrbar                                                # for weather
+#python-requests|wttrbar                                # script dependency
+#ddccui                                                 # GUI to control brightness for external monitors
+# hyprgui-bin                                          # GUI for hyprland configuration // might mess your userprefs but convenient // Just disappeared
+# swappy                                               # screenshot editor, DEPRECATED in favor for satty
+
+# --------------------------------------------------- // Shell
+# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh // already installed locally
+
+
+# --------------------------------------------------- // Misc
+#xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
+# emote                                                # emoji picker gtk3
+
+# --------------------------------------------------- // Gaming
+#steam                                                  # gaming platform
+#gamemode                                               # daemon and library for game optimizations
+#mangohud                                               # system performance overlay
+# gamescope                                            # micro-compositor for gaming
+# lutris                                               # Lutris is an open source gaming platform for Linux
+
+# --------------------------------------------------- // Music
+#cava                                                   # audio visualizer
+#spotify                                                # proprietary music streaming service
+#spicetify-cli                                          # cli to customize spotify client
+
+# --------------------------------------------------- // Apps
+# neovim                                               # vim based text editor
+
+# --------------------------------------------------- // Shell
+# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh
+# pokemon-colorscripts-git|zsh                           # display pokemon sprites (optional)
+
+# --------------------------------------------------- // Editor
+# vscodium                                              # Full oss text editor
+# vscodium-marketplace|vscodium                         # VSCodium marketplace
+# code-marketplace|code                                 # Code-Oss marketplace
+# visual-studio-code-bin                                # MS  text editor
+
+# --------------------------------------------------- // Backends
+#electron                                              # electron backend
+
+# --------------------------------------------------- // Lockscreen
+#swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
+
+# --------------------------------------------------- // OSD
+#swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
+
+bleachbit
+cpio
+cmake
+meson

@@ -1,0 +1,29 @@
+"hyprland/workspaces": {
+    "active-only": false,
+    "all-outputs": false,
+    "format": "{icon}",
+    "format-icons": {
+      "1": "󱚌",
+      "2": "󰖟",
+      "3": "",
+      "4": "󰎄",
+      "5": "󰋩",
+      "6": "",
+      "7": "󰄖",
+      "8": "󰑴",
+      "9": "󱎓",
+      "scratch_btm": "_",
+      "scratch_music": "_",
+      "scratch_pavucontrol": "_󰍰",
+      "scratch_ranger": "_󰴉",
+      "scratch_term": "_"
+    },
+    "ignore-workspaces": [
+      "scratch",
+      "-"
+    ],
+    "on-click": "activate",
+    "on-scroll-down": "hyprnome --previous",
+    "on-scroll-up": "hyprnome",
+    "show-special": false
+  },

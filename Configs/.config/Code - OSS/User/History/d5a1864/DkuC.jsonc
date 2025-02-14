@@ -1,0 +1,5 @@
+  // Memory
+  "memory": {
+    "format": "/ M {}% ",
+    "on-click": "~/.config/ml4w/settings/system-monitor.sh"
+  },

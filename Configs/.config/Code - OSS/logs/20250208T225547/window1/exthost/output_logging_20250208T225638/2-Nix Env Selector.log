@@ -1,0 +1,4 @@
+Initializing config...
+Loaded config: {:workspace-root "/home/zaryu/.config/agsv1", :nix-file nil, :suggest-nix? true, :nix-packages #js [], :nix-args nil, :nix-shell-path nil}
+Running action: Select environment
+Running action: Hit environment

@@ -1,0 +1,8 @@
+2025-02-05 14:03:47.478 [warning] Creation of workbench contribution 'workbench.contrib.preferencesActions' took 21ms.
+2025-02-05 14:03:48.906 [info] Started local extension host with pid 47303.
+2025-02-05 14:03:53.623 [warning] [mainThreadStorage] large extension state detected (extensionId: sourcegraph.cody-ai, global: true): 1753.30078125kb. Consider to use 'storageUri' or 'globalStorageUri' to store this data on disk instead.
+2025-02-05 14:03:54.502 [info] [perf] Render performance baseline is 97ms
+2025-02-05 14:03:56.724 [error] [Extension Host] DelegatingProxy: Loaded 154 CA certs from noxide
+2025-02-05 14:03:56.932 [error] Timed out waiting for authentication provider to register
+2025-02-05 14:04:44.153 [error] [Extension Host] {"stack":"Error: Timeout\n\tat Timeout._onTimeout (/home/zaryu/.vscode-oss/extensions/sourcegraph.cody-ai-1.62.0-universal/dist/extension.node.js:179118:20)\n\tat listOnTimeout (node:internal/timers:581:17)\n\tat process.processTimers (node:internal/timers:519:7)","message":"Timeout","name":"Error","promesa$protocols$IPromiseFactory$":"[object Object]","promesa$protocols$IPromiseFactory$_promise$arity$1":"function(a){return promesa.impl.rejected(this)}"}
+2025-02-05 14:34:31.982 [error] [Extension Host] {"stack":"Error: Timeout\n\tat Timeout._onTimeout (/home/zaryu/.vscode-oss/extensions/sourcegraph.cody-ai-1.62.0-universal/dist/extension.node.js:179118:20)\n\tat listOnTimeout (node:internal/timers:581:17)\n\tat process.processTimers (node:internal/timers:519:7)","message":"Timeout","name":"Error","promesa$protocols$IPromiseFactory$":"[object Object]","promesa$protocols$IPromiseFactory$_promise$arity$1":"function(a){return promesa.impl.rejected(this)}"}

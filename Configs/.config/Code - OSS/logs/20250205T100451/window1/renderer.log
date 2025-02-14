@@ -1,0 +1,6 @@
+2025-02-05 10:04:54.134 [warning] Creation of workbench contribution 'workbench.contrib.preferencesActions' took 28ms.
+2025-02-05 10:04:55.706 [info] Started local extension host with pid 1892.
+2025-02-05 10:04:59.903 [warning] [mainThreadStorage] large extension state detected (extensionId: sourcegraph.cody-ai, global: true): 1753.30078125kb. Consider to use 'storageUri' or 'globalStorageUri' to store this data on disk instead.
+2025-02-05 10:05:03.459 [error] Timed out waiting for authentication provider to register
+2025-02-05 10:05:03.771 [error] [Extension Host] DelegatingProxy: Loaded 152 CA certs from noxide
+2025-02-05 10:05:18.001 [info] [perf] Render performance baseline is 83ms

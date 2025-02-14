@@ -1,0 +1,24 @@
+2025-02-10 01:35:38.475 [info] Extension host with pid 27485 started
+2025-02-10 01:35:38.475 [info] Skipping acquiring lock for /home/zaryu/.config/Code - OSS/User/workspaceStorage/31e8bff41afedba3536beda0a635adfe.
+2025-02-10 01:35:38.892 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*', root cause: vscode.git
+2025-02-10 01:35:38.925 [info] ExtensionService#_doActivateExtension arrterian.nix-env-selector, startup: true, activationEvent: '*'
+2025-02-10 01:35:39.137 [error] Activating extension arrterian.nix-env-selector failed due to an error:
+2025-02-10 01:35:39.138 [error] TypeError: a.appendLine is not a function
+	at vscode.window.write_log (/home/zaryu/.vscode-oss/extensions/arrterian.nix-env-selector-1.0.11-universal/dist/main.js:2619:418)
+	at activate (/home/zaryu/.vscode-oss/extensions/arrterian.nix-env-selector-1.0.11-universal/dist/main.js:2647:437)
+	at Ow.kb (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:116:15214)
+	at Ow.jb (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:116:14921)
+	at file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:116:13079
+	at async aw.n (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:112:4447)
+	at async aw.m (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:112:4410)
+	at async aw.l (file:///usr/lib/code/out/vs/workbench/api/node/extensionHostProcess.js:112:3866)
+2025-02-10 01:35:39.214 [info] ExtensionService#_doActivateExtension vscode.git, startup: true, activationEvent: '*'
+2025-02-10 01:35:39.531 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2025-02-10 01:35:39.860 [info] Eager extensions activated
+2025-02-10 01:35:40.367 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2025-02-10 01:35:40.401 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+2025-02-10 01:35:40.518 [info] ExtensionService#_doActivateExtension sourcegraph.cody-ai, startup: false, activationEvent: 'onStartupFinished'
+2025-02-10 01:35:44.914 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2025-02-10 01:36:09.824 [info] ExtensionService#_doActivateExtension vscode.typescript-language-features, startup: false, activationEvent: 'onLanguage:javascript'
+2025-02-10 02:13:45.482 [info] Extension host terminating: renderer closed the MessagePort
+2025-02-10 02:13:45.594 [info] Extension host with pid 27485 exiting with code 0

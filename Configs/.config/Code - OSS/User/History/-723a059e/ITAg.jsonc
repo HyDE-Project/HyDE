@@ -1,0 +1,8 @@
+  // Group Links
+  "group/links": {
+    "orientation": "horizontal",
+    "modules": [
+      "custom/chatgpt",
+      "custom/empty"      
+    ]
+  },

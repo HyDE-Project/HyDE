@@ -1,0 +1,9 @@
+"battery#text": {
+    "format": "{capacity}%",
+    "fullat": 80,
+    "states": {
+      "critical": 15,
+      "good": 75,
+      "warning": 30
+    }
+  },

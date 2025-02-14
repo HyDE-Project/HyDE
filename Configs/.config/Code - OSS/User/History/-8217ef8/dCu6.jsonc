@@ -1,0 +1,6 @@
+"clock#time": {
+    "format": "{:%I:%M:%S %p}",
+    "interval": 1,
+    "timezone": "Asia/Jakarta",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  },

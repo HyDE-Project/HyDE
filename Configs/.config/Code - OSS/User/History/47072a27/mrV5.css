@@ -1,0 +1,45 @@
+window#sidebar0 {
+    background-color: rgba(30, 30, 30, 0.95);
+    border-right: 1px solid #444;
+}
+
+.title {
+    color: #ffffff;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.scrolled-window {
+    min-height: 300px;
+    margin: 0 10px;
+}
+
+.ai-response {
+    background-color: rgba(50, 50, 50, 0.7);
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.user-input {
+    background-color: rgba(60, 60, 60, 0.7);
+    color: #ffffff;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 5px 10px;
+}
+
+.send-button {
+    background-color: #4a90d9;
+    color: #ffffff;
+    font-weight: bold;
+    border-radius: 5px;
+    margin: 0 10px 10px 10px;
+    padding: 5px 15px;
+}
+
+.send-button:hover {
+    background-color: #5aa0e9;
+}

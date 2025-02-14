@@ -1,0 +1,14 @@
+"group/power": {
+    "drawer": {
+      "children-class": "not-power",
+      "transition-duration": 500,
+      "transition-left-to-right": true
+    },
+    "modules": [
+      "custom/lock",
+      "custom/quit",
+      "custom/power",
+      "custom/reboot"
+    ],
+    "orientation": "horizontal"
+  },

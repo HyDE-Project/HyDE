@@ -1,0 +1,11 @@
+"group/memory": {
+    "drawer": {
+      "transition-duration": 500,
+      "transition-left-to-right": true
+    },
+    "modules": [
+      "memory",
+      "memory#text"
+    ],
+    "orientation": "horizontal"
+  },
