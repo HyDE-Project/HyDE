@@ -62,7 +62,7 @@ qt5-wayland                                            # wayland support in qt5
 qt6-wayland                                            # wayland support in qt6
 
 # --------------------------------------------------- // Applications
-chromium                                               # browser
+firefox                                                # browser
 kitty                                                  # terminal
 dolphin                                                # kde file manager
 ark                                                    # kde file archiver
