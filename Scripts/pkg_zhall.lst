@@ -84,6 +84,7 @@ neovim                                                 # editor
 fish                                                   # shell
 less                                                   # pager
 fd                                                     # find entries filesystem
+preload
 
 flatpak                                                # flatpak manager
 btop                                                   # system monitor
