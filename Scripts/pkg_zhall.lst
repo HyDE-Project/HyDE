@@ -92,3 +92,5 @@ zen-browser-bin                                        # browser
 kcalc                                                  # calculator
 zed                                                    # text-editor
 chromium                                               # browser
+ttf-jetbrains-mono-nerd                                # fonts
+fzf                                                    # fuzzy finder
