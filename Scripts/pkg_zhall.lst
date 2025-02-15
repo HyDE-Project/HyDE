@@ -1,8 +1,8 @@
 # --------------------------------------------------- // System
 # downgrade                                            # downgrade packages
 # trash-cli-git                                        # cli to manage trash files
-# libinput-gestures                                    # actions touchpad gestures using libinput
-# gestures                                             # gui for libinput-gestures
+libinput-gestures                                    # actions touchpad gestures using libinput
+gestures                                             # gui for libinput-gestures
 # wttrbar                                                # for weather
 # python-requests|wttrbar                                # script dependency
 # ddccui                                                 # GUI to control brightness for external monitors
@@ -14,7 +14,7 @@
 
 
 # --------------------------------------------------- // Misc
-# xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
+xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
 # emote                                                # emoji picker gtk3
 
 # --------------------------------------------------- // Gaming
@@ -43,13 +43,13 @@
 # visual-studio-code-bin                                # MS  text editor
 
 # --------------------------------------------------- // Backends
-#electron                                              # electron backend
+electron                                              # electron backend
 
 # --------------------------------------------------- // Lockscreen
 #swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
 
 # --------------------------------------------------- // OSD
-swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
+# swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
 
 
 # --------------------------------------------------- // ZARYU
@@ -94,3 +94,4 @@ zed                                                    # text-editor
 chromium                                               # browser
 ttf-jetbrains-mono-nerd                                # fonts
 fzf                                                    # fuzzy finder
+auto-cpufreq                                           # cpu tools
