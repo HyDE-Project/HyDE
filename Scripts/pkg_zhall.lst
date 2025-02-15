@@ -95,3 +95,4 @@ chromium                                               # browser
 ttf-jetbrains-mono-nerd                                # fonts
 fzf                                                    # fuzzy finder
 auto-cpufreq                                           # cpu tools
+ristretto                                               # image viewer
