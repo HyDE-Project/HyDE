@@ -95,4 +95,7 @@ chromium                                               # browser
 ttf-jetbrains-mono-nerd                                # fonts
 fzf                                                    # fuzzy finder
 auto-cpufreq                                           # cpu tools
-ristretto                                               # image viewer
+ristretto                                              # image viewer
+lsd                                                    # list with icon on terminal
+ncdu                                                   # cli tools
+intel-media-sdk

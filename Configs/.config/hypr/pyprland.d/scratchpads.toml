@@ -23,7 +23,7 @@ margin = 60
 # Reddit CLI 
 [scratchpads.term_r]
 animation = "fromRight"
-command = "kitty --class kitty-dropterm_r cava"
+command = "kitty --class kitty-dropterm_r cmatrix"
 class = "kitty-dropterm_r"
 lazy = true
 size = "75% 65%"
