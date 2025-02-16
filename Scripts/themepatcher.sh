@@ -280,11 +280,33 @@ for prefix in "${!archive_map[@]}"; do
     tarFile="$(find "${Theme_Dir}" -type f -name "${prefix}_*.tar.*")"
     [ -f "${tarFile}" ] || continue
     tgtDir="${archive_map[$prefix]}"
-    [ -d "${tgtDir}" ] || mkdir -p "${tgtDir}"
+
+    if [[ "${tgtDir}" =~ /(usr|usr\/local)\/share/ && -d /run/current-system/sw/share/ ]]; then
+        print_prompt -y "Detected NixOS system, changing target to /run/current-system/sw/share/..."
+        tgtDir="/run/current-system/sw/share/"
+    fi
+
+    if [ ! -d "${tgtDir}" ]; then
+        if ! mkdir -p "${tgtDir}"; then
+            print_prompt -y "Creating directory as root instead..."
+            sudo mkdir -p "${tgtDir}"
+        fi
+    fi
+
     tgtChk="$(basename "$(tar -tf "${tarFile}" | cut -d '/' -f1 | sort -u)")"
-    [[ "${FULL_THEME_UPDATE}" = true ]] || { [ -d "${tgtDir[indx]}/${tgtChk}" ] && print_prompt -y "[skip] " "\"${tgtDir[indx]}/${tgtChk}\" already exists" && continue; }
+    [[ "${FULL_THEME_UPDATE}" = true ]] || { [ -d "${tgtDir}/${tgtChk}" ] && print_prompt -y "[skip] " "\"${tgtDir}/${tgtChk}\" already exists" && continue; }
     print_prompt -g "[extracting] " "${tarFile} --> ${tgtDir}"
-    tar -xf "${tarFile}" -C "${tgtDir}"
+
+    if [ -w "${tgtDir}" ]; then
+        tar -xf "${tarFile}" -C "${tgtDir}"
+    else
+        print_prompt -y "Not writable. Extracting as root: ${tgtDir}"
+        if ! sudo tar -xf "${tarFile}" -C "${tgtDir}" 2>/dev/null; then
+            print_prompt -r "Extraction by root FAILED. Giving up..."
+            print_prompt "The above error can be ignored if the '${tgtDir}' is not writable..."
+        fi
+    fi
+
 done
 
 # populate wallpaper
