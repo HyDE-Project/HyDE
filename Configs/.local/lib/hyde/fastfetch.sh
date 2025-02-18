@@ -3,9 +3,22 @@
 # Early load to maintain fastfetch speed
 if [ -z "${*}" ]; then
   clear
-  fastfetch --logo-type kitty
+  exec fastfetch --logo-type kitty
   exit
 fi
+
+USAGE() {
+  cat <<USAGE
+Usage: fastfetch [commands] [options]
+
+commands:
+  logo    Display a random logo
+
+options:
+  -h, --help,     Display command's help message
+
+USAGE
+}
 
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 iconDir="${XDG_DATA_HOME:-$HOME/.local/share}/icons"
@@ -73,21 +86,15 @@ HELP
   ) | shuf -n 1
 
   ;;
-help)
-  cat <<EOF
-Usage: fastfetch [commands] [options]
+--select | -S)
+  :
 
-commands:
-  logo  Display a random logo
-  help  Display this help message
-
-options:
-  --help Display command's help message
-
-EOF
+  ;;
+help | --help | -h)
+  USAGE
   ;;
 *)
   clear
-  fastfetch --logo-type kitty
+  exec fastfetch --logo-type kitty
   ;;
 esac
