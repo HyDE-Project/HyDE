@@ -1,7 +1,0 @@
-"custom/os": {
-    "exec": "echo \"\" ",
-    "format": " {} ",
-    "interval": "once",
-    "on-click": "nwggrid-wrapper",
-    "tooltip": false
-  },

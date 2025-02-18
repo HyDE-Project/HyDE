@@ -1,6 +1,0 @@
-  // Waybar Themes
-  "custom/waybarthemes": {
-    "format": "",
-    "on-click": "~/.config/waybar/themeswitcher.sh",
-    "tooltip-format": "Select a waybar theme"
-  },

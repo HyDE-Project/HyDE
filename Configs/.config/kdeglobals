@@ -2,7 +2,7 @@
 BackgroundNormal=#00000000
 
 [General]
-TerminalApplication=/usr/bin/kitty
+TerminalApplication=
 
 [Icons]
 Theme=Vivid-Glassy-Dark-Icons
@@ -10,9 +10,6 @@ Theme=Vivid-Glassy-Dark-Icons
 [KDE]
 ShowDeleteCommand=false
 widgetStyle=kvantum
-
-[KShortcutsDialog Settings]
-Dialog Size=600,480
 
 [PreviewSettings]
 EnableRemoteFolderThumbnail=false

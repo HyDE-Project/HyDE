@@ -1,7 +1,0 @@
-  // Clock
-  "clock": {
-    "format": "{:%H:%M %a}",
-    "on-click": "ags toggle calendar",
-    "timezone": "",
-    "tooltip": false
-  },

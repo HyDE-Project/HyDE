@@ -1,6 +1,0 @@
-"custom/hyprprofile": {
-    "exec": "cat ~/.hyprprofile",
-    "format": " {}",
-    "interval": 3,
-    "on-click": "hyprprofile-dmenu"
-  },

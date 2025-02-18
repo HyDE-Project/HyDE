@@ -1,5 +1,0 @@
-"custom/lock": {
-    "format": "󰍁",
-    "on-click": "hyprlock",
-    "tooltip": false
-  },

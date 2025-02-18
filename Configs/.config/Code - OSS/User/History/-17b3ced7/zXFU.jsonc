@@ -1,6 +1,0 @@
-"clock#date": {
-    "format": "{:%a %Y-%m-%d}",
-    "interval": 1,
-    "timezone": "Asia/Jakarta",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
-},

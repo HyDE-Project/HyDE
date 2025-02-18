@@ -1,7 +1,0 @@
-  // ML4W Welcome App
-  "custom/ml4w-welcome": {
-    "on-click": "sleep 0.1 && ~/.config/ml4w/settings/ml4w-sidebar.sh",
-    "on-click-right": "sleep 0.1 && com.ml4w.welcome",
-    "format": " ",
-    "tooltip-format": "Open Sidebar"
-  },

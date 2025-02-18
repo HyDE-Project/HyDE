@@ -1,9 +1,0 @@
-"format-plugged": "󰂄",
-"fullat": 80,
-"interval": 10,
-"states": {
-  "critical": 15,
-  "good": 75,
-  "warning": 30
-}
-},

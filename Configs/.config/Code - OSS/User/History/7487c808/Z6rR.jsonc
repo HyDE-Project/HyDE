@@ -1,5 +1,0 @@
-"custom/reboot": {
-    "format": "󰜉",
-    "on-click": "reboot",
-    "tooltip": false
-  },

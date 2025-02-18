@@ -1,7 +1,0 @@
-  // Harddisc space used
-  "disk": {
-    "interval": 30,
-    "format": "D {percentage_used}% ",
-    "path": "/",
-    "on-click": "~/.config/ml4w/settings/system-monitor.sh"
-  },

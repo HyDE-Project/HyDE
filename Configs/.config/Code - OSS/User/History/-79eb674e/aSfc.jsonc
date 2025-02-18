@@ -1,5 +1,0 @@
-"custom/quit": {
-    "format": "󰍃",
-    "on-click": "hyprctl dispatch exit",
-    "tooltip": false
-  },
