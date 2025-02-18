@@ -92,6 +92,7 @@ zen-browser-bin                                        # browser
 kcalc                                                  # calculator
 zed                                                    # text-editor
 chromium                                               # browser
+<<<<<<< HEAD
 ttf-jetbrains-mono-nerd                                # fonts
 fzf                                                    # fuzzy finder
 auto-cpufreq                                           # cpu tools
@@ -100,3 +101,5 @@ lsd                                                    # list with icon on termi
 ncdu                                                   # cli tools
 intel-media-sdk
 tilix
+=======
+>>>>>>> parent of 37d41df (Update pkg_zhall.lst)
