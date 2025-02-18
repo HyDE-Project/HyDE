@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 #include <cstdint>
 #include "WaylandProtocol.hpp"
 #include "hyprland-ctm-control-v1.hpp"
 #include <unordered_map>
+#include <map>
+#include "../helpers/AnimatedVariable.hpp"
 
 class CMonitor;
 
@@ -32,9 +33,18 @@ class CHyprlandCTMControlProtocol : public IWaylandProtocol {
     void destroyResource(CHyprlandCTMControlResource* resource);
 
     void setCTM(PHLMONITOR monitor, const Mat3x3& ctm);
+    bool isCTMAnimationEnabled();
 
     //
     std::vector<SP<CHyprlandCTMControlResource>> m_vManagers;
+
+    //
+    struct SCTMData {
+        SCTMData();
+        Mat3x3            ctmFrom = Mat3x3::identity(), ctmTo = Mat3x3::identity();
+        PHLANIMVAR<float> progress;
+    };
+    std::map<PHLMONITORREF, UP<SCTMData>> m_mCTMDatas;
 
     friend class CHyprlandCTMControlResource;
 };

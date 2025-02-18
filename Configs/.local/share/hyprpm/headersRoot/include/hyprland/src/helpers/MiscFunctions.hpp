@@ -1,9 +1,7 @@
 #pragma once
 
 #include <optional>
-#include <string>
 #include <wayland-server.h>
-#include "math/Math.hpp"
 #include <vector>
 #include <format>
 #include <expected>
@@ -21,8 +19,6 @@ struct SWorkspaceIDName {
 };
 
 std::string                         absolutePath(const std::string&, const std::string&);
-void                                addWLSignal(wl_signal*, wl_listener*, void* pOwner, const std::string& ownerString);
-void                                removeWLSignal(wl_listener*);
 std::string                         escapeJSONStrings(const std::string& str);
 bool                                isDirection(const std::string&);
 bool                                isDirection(const char&);
@@ -42,7 +38,6 @@ bool                                envEnabled(const std::string& env);
 int                                 allocateSHMFile(size_t len);
 bool                                allocateSHMFilePair(size_t size, int* rw_fd_ptr, int* ro_fd_ptr);
 float                               stringToPercentage(const std::string& VALUE, const float REL);
-bool                                executableExistsInPath(const std::string& exe);
 
 template <typename... Args>
 [[deprecated("use std::format instead")]] std::string getFormat(std::format_string<Args...> fmt, Args&&... args) {

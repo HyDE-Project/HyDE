@@ -1,30 +1,29 @@
 #pragma once
 
+#include <hyprutils/animation/AnimationConfig.hpp>
 #define CONFIG_MANAGER_H
 
 #include <map>
-#include "../debug/Log.hpp"
 #include <unordered_map>
 #include "../defines.hpp"
 #include <variant>
 #include <vector>
-#include <algorithm>
 #include <optional>
 #include <functional>
 #include <xf86drmMode.h>
-#include "../helpers/WLClasses.hpp"
 #include "../helpers/Monitor.hpp"
-#include "../helpers/varlist/VarList.hpp"
 #include "../desktop/Window.hpp"
-#include "../desktop/LayerSurface.hpp"
+#include "../desktop/LayerRule.hpp"
 
-#include "defaultConfig.hpp"
 #include "ConfigDataValues.hpp"
+#include "../SharedDefs.hpp"
+#include "../helpers/Color.hpp"
+#include "../desktop/DesktopTypes.hpp"
+#include "../helpers/memory/Memory.hpp"
+#include "../desktop/WindowRule.hpp"
+#include "../managers/XWaylandManager.hpp"
 
 #include <hyprlang.hpp>
-
-#define INITANIMCFG(name)           animationConfig[name] = {}
-#define CREATEANIMCFG(name, parent) animationConfig[name] = {false, "", "", 0.f, -1, &animationConfig["global"], &animationConfig[parent]}
 
 #define HANDLE void*
 
@@ -52,18 +51,6 @@ struct SMonitorAdditionalReservedArea {
     int bottom = 0;
     int left   = 0;
     int right  = 0;
-};
-
-struct SAnimationPropertyConfig {
-    bool                      overridden = true;
-
-    std::string               internalBezier  = "";
-    std::string               internalStyle   = "";
-    float                     internalSpeed   = 0.f;
-    int                       internalEnabled = -1;
-
-    SAnimationPropertyConfig* pValues          = nullptr;
-    SAnimationPropertyConfig* pParentAnimation = nullptr;
 };
 
 struct SPluginKeyword {
@@ -146,12 +133,18 @@ struct SConfigOptionDescription {
     std::variant<SBoolData, SRangeData, SFloatData, SStringData, SColorData, SChoiceData, SGradientData, SVectorData> data;
 };
 
+struct SFirstExecRequest {
+    std::string exec      = "";
+    bool        withRules = false;
+};
+
 class CConfigManager {
   public:
     CConfigManager();
 
-    void                                                            tick();
     void                                                            init();
+    void                                                            reload();
+    std::string                                                     verify();
 
     int                                                             getDeviceInt(const std::string&, const std::string&, const std::string& fallback = "");
     float                                                           getDeviceFloat(const std::string&, const std::string&, const std::string& fallback = "");
@@ -163,8 +156,7 @@ class CConfigManager {
 
     void* const*                                                    getConfigValuePtr(const std::string&);
     Hyprlang::CConfigValue*                                         getHyprlangConfigValuePtr(const std::string& name, const std::string& specialCat = "");
-    void                                                            onPluginLoadUnload(const std::string& name, bool load);
-    static std::string                                              getMainConfigPath();
+    std::string                                                     getMainConfigPath();
     std::string                                                     getConfigString();
 
     SMonitorRule                                                    getMonitorRuleFor(const PHLMONITOR);
@@ -177,43 +169,45 @@ class CConfigManager {
 
     std::vector<SP<CWindowRule>>                                    getMatchingRules(PHLWINDOW, bool dynamic = true, bool shadowExec = false);
     std::vector<SP<CLayerRule>>                                     getMatchingRules(PHLLS);
+    void                                                            ensurePersistentWorkspacesPresent();
 
     const std::vector<SConfigOptionDescription>&                    getAllDescriptions();
 
     std::unordered_map<std::string, SMonitorAdditionalReservedArea> m_mAdditionalReservedAreas;
 
-    std::unordered_map<std::string, SAnimationPropertyConfig>       getAnimationConfig();
+    const std::unordered_map<std::string, SP<Hyprutils::Animation::SAnimationPropertyConfig>>& getAnimationConfig();
 
-    void                                                            addPluginConfigVar(HANDLE handle, const std::string& name, const Hyprlang::CConfigValue& value);
+    void addPluginConfigVar(HANDLE handle, const std::string& name, const Hyprlang::CConfigValue& value);
     void addPluginKeyword(HANDLE handle, const std::string& name, Hyprlang::PCONFIGHANDLERFUNC fun, Hyprlang::SHandlerOptions opts = {});
     void removePluginConfig(HANDLE handle);
 
     // no-op when done.
-    void                      dispatchExecOnce();
-    void                      dispatchExecShutdown();
+    void                                               dispatchExecOnce();
+    void                                               dispatchExecShutdown();
 
-    void                      performMonitorReload();
-    void                      appendMonitorRule(const SMonitorRule&);
-    bool                      replaceMonitorRule(const SMonitorRule&);
-    void                      ensureMonitorStatus();
-    void                      ensureVRR(PHLMONITOR pMonitor = nullptr);
+    void                                               performMonitorReload();
+    void                                               ensureMonitorStatus();
+    void                                               ensureVRR(PHLMONITOR pMonitor = nullptr);
 
-    bool                      shouldUseSoftwareCursors();
+    bool                                               shouldUseSoftwareCursors();
+    void                                               updateWatcher();
 
-    std::string               parseKeyword(const std::string&, const std::string&);
+    std::string                                        parseKeyword(const std::string&, const std::string&);
 
-    void                      addParseError(const std::string&);
+    void                                               addParseError(const std::string&);
 
-    SAnimationPropertyConfig* getAnimationPropertyConfig(const std::string&);
+    SP<Hyprutils::Animation::SAnimationPropertyConfig> getAnimationPropertyConfig(const std::string&);
 
-    void                      addExecRule(const SExecRequestedRule&);
+    void                                               addExecRule(const SExecRequestedRule&);
 
-    void                      handlePluginLoads();
-    std::string               getErrors();
+    void                                               handlePluginLoads();
+    std::string                                        getErrors();
 
     // keywords
     std::optional<std::string>                                                                     handleRawExec(const std::string&, const std::string&);
+    std::optional<std::string>                                                                     handleExec(const std::string&, const std::string&);
     std::optional<std::string>                                                                     handleExecOnce(const std::string&, const std::string&);
+    std::optional<std::string>                                                                     handleExecRawOnce(const std::string&, const std::string&);
     std::optional<std::string>                                                                     handleExecShutdown(const std::string&, const std::string&);
     std::optional<std::string>                                                                     handleMonitor(const std::string&, const std::string&);
     std::optional<std::string>                                                                     handleBind(const std::string&, const std::string&);
@@ -262,56 +256,55 @@ class CConfigManager {
     };
 
     std::unordered_map<std::string, std::function<CWindowOverridableVar<float>*(PHLWINDOW)>> mfWindowProperties = {
+        {"roundingpower", [](const PHLWINDOW& pWindow) { return &pWindow->m_sWindowData.roundingPower; }},
         {"scrollmouse", [](const PHLWINDOW& pWindow) { return &pWindow->m_sWindowData.scrollMouse; }},
         {"scrolltouchpad", [](const PHLWINDOW& pWindow) { return &pWindow->m_sWindowData.scrollTouchpad; }}};
 
-    bool m_bWantsMonitorReload = false;
-    bool m_bForceReload        = false;
-    bool m_bNoMonitorReload    = false;
-    bool isLaunchingExecOnce   = false; // For exec-once to skip initial ws tracking
+    bool m_bWantsMonitorReload                  = false;
+    bool m_bNoMonitorReload                     = false;
+    bool isLaunchingExecOnce                    = false; // For exec-once to skip initial ws tracking
+    bool m_bLastConfigVerificationWasSuccessful = true;
 
   private:
-    std::unique_ptr<Hyprlang::CConfig>                        m_pConfig;
+    UP<Hyprlang::CConfig>                            m_pConfig;
 
-    std::vector<std::string>                                  configPaths;       // stores all the config paths
-    std::unordered_map<std::string, time_t>                   configModifyTimes; // stores modify times
+    std::vector<std::string>                         m_configPaths;
 
-    std::unordered_map<std::string, SAnimationPropertyConfig> animationConfig; // stores all the animations with their set values
+    Hyprutils::Animation::CAnimationConfigTree       m_AnimationTree;
 
-    std::string                                               m_szCurrentSubmap = ""; // For storing the current keybind submap
+    std::string                                      m_szCurrentSubmap = ""; // For storing the current keybind submap
 
-    std::vector<SExecRequestedRule>                           execRequestedRules; // rules requested with exec, e.g. [workspace 2] kitty
+    std::vector<SExecRequestedRule>                  execRequestedRules; // rules requested with exec, e.g. [workspace 2] kitty
 
-    std::vector<std::string>                                  m_vDeclaredPlugins;
-    std::vector<SPluginKeyword>                               pluginKeywords;
-    std::vector<SPluginVariable>                              pluginVariables;
+    std::vector<std::string>                         m_vDeclaredPlugins;
+    std::vector<SPluginKeyword>                      pluginKeywords;
+    std::vector<SPluginVariable>                     pluginVariables;
 
-    bool                                                      isFirstLaunch = true; // For exec-once
+    bool                                             isFirstLaunch = true; // For exec-once
 
-    std::vector<SMonitorRule>                                 m_vMonitorRules;
-    std::vector<SWorkspaceRule>                               m_vWorkspaceRules;
-    std::vector<SP<CWindowRule>>                              m_vWindowRules;
-    std::vector<SP<CLayerRule>>                               m_vLayerRules;
-    std::vector<std::string>                                  m_dBlurLSNamespaces;
+    std::vector<SMonitorRule>                        m_vMonitorRules;
+    std::vector<SWorkspaceRule>                      m_vWorkspaceRules;
+    std::vector<SP<CWindowRule>>                     m_vWindowRules;
+    std::vector<SP<CLayerRule>>                      m_vLayerRules;
+    std::vector<std::string>                         m_dBlurLSNamespaces;
 
-    bool                                                      firstExecDispatched     = false;
-    bool                                                      m_bManualCrashInitiated = false;
-    std::vector<std::string>                                  firstExecRequests;
-    std::vector<std::string>                                  finalExecRequests;
+    bool                                             firstExecDispatched     = false;
+    bool                                             m_bManualCrashInitiated = false;
 
-    std::vector<std::pair<std::string, std::string>>          m_vFailedPluginConfigValues; // for plugin values of unloaded plugins
-    std::string                                               m_szConfigErrors = "";
+    std::vector<SFirstExecRequest>                   firstExecRequests; // bool is for if with rules
+    std::vector<std::string>                         finalExecRequests;
+
+    std::vector<std::pair<std::string, std::string>> m_vFailedPluginConfigValues; // for plugin values of unloaded plugins
+    std::string                                      m_szConfigErrors = "";
 
     // internal methods
-    void                              setAnimForChildren(SAnimationPropertyConfig* const);
-    void                              updateBlurredLS(const std::string&, const bool);
-    void                              setDefaultAnimationVars();
-    std::optional<std::string>        resetHLConfig();
-    static std::optional<std::string> generateConfig(std::string configPath);
-    static std::optional<std::string> verifyConfigExists();
-    void                              postConfigReload(const Hyprlang::CParseResult& result);
-    void                              reload();
-    SWorkspaceRule                    mergeWorkspaceRules(const SWorkspaceRule&, const SWorkspaceRule&);
+    void                       updateBlurredLS(const std::string&, const bool);
+    void                       setDefaultAnimationVars();
+    std::optional<std::string> resetHLConfig();
+    std::optional<std::string> generateConfig(std::string configPath);
+    std::optional<std::string> verifyConfigExists();
+    void                       postConfigReload(const Hyprlang::CParseResult& result);
+    SWorkspaceRule             mergeWorkspaceRules(const SWorkspaceRule&, const SWorkspaceRule&);
 };
 
-inline std::unique_ptr<CConfigManager> g_pConfigManager;
+inline UP<CConfigManager> g_pConfigManager;

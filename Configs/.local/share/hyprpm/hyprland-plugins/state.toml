@@ -29,7 +29,7 @@ failed = false
 filename = 'hyprwinwrap.so'
 
 [repository]
-hash = 'b4c0fa3ebc6ccd1589dcd17904652223088efede'
+hash = '4f48dbe12f3cbbeb4d31c91c67b21edbc5b4b451'
 name = 'hyprland-plugins'
 rev = ''
 url = 'https://github.com/hyprwm/hyprland-plugins'

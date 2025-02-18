@@ -28,11 +28,11 @@ struct SSessionLockSurface {
 };
 
 struct SSessionLock {
-    WP<CSessionLock>                                  lock;
-    CTimer                                            mLockTimer;
+    WP<CSessionLock>                     lock;
+    CTimer                               mLockTimer;
 
-    std::vector<std::unique_ptr<SSessionLockSurface>> vSessionLockSurfaces;
-    std::unordered_map<uint64_t, CTimer>              mMonitorsWithoutMappedSurfaceTimers;
+    std::vector<UP<SSessionLockSurface>> vSessionLockSurfaces;
+    std::unordered_map<uint64_t, CTimer> mMonitorsWithoutMappedSurfaceTimers;
 
     struct {
         CHyprSignalListener newSurface;
@@ -49,20 +49,20 @@ class CSessionLockManager {
     CSessionLockManager();
     ~CSessionLockManager() = default;
 
-    SSessionLockSurface* getSessionLockSurfaceForMonitor(uint64_t);
+    WP<SSessionLockSurface> getSessionLockSurfaceForMonitor(uint64_t);
 
-    float                getRedScreenAlphaForMonitor(uint64_t);
+    float                   getRedScreenAlphaForMonitor(uint64_t);
 
-    bool                 isSessionLocked();
-    bool                 isSessionLockPresent();
-    bool                 isSurfaceSessionLock(SP<CWLSurfaceResource>);
-    bool                 anySessionLockSurfacesPresent();
+    bool                    isSessionLocked();
+    bool                    isSessionLockPresent();
+    bool                    isSurfaceSessionLock(SP<CWLSurfaceResource>);
+    bool                    anySessionLockSurfacesPresent();
 
-    void                 removeSessionLockSurface(SSessionLockSurface*);
+    void                    removeSessionLockSurface(SSessionLockSurface*);
 
-    void                 onLockscreenRenderedOnMonitor(uint64_t id);
+    void                    onLockscreenRenderedOnMonitor(uint64_t id);
 
-    bool                 shallConsiderLockMissing();
+    bool                    shallConsiderLockMissing();
 
   private:
     UP<SSessionLock> m_pSessionLock;
@@ -74,4 +74,4 @@ class CSessionLockManager {
     void onNewSessionLock(SP<CSessionLock> pWlrLock);
 };
 
-inline std::unique_ptr<CSessionLockManager> g_pSessionLockManager;
+inline UP<CSessionLockManager> g_pSessionLockManager;

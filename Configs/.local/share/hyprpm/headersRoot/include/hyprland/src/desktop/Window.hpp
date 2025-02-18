@@ -2,9 +2,9 @@
 
 #include <vector>
 #include <string>
+#include <optional>
 
 #include "../config/ConfigDataValues.hpp"
-#include "../defines.hpp"
 #include "../helpers/AnimatedVariable.hpp"
 #include "../helpers/math/Math.hpp"
 #include "../helpers/signal/Signal.hpp"
@@ -12,6 +12,7 @@
 #include "../macros.hpp"
 #include "../managers/XWaylandManager.hpp"
 #include "../render/decorations/IHyprWindowDecoration.hpp"
+#include "../render/Transformer.hpp"
 #include "DesktopTypes.hpp"
 #include "Popup.hpp"
 #include "Subsurface.hpp"
@@ -57,6 +58,7 @@ enum eSuppressEvents : uint8_t {
     SUPPRESS_MAXIMIZE           = 1 << 1,
     SUPPRESS_ACTIVATE           = 1 << 2,
     SUPPRESS_ACTIVATE_FOCUSONLY = 1 << 3,
+    SUPPRESS_FULLSCREEN_OUTPUT  = 1 << 4,
 };
 
 class IWindowTransformer;
@@ -183,6 +185,7 @@ struct SWindowData {
     CWindowOverridableVar<bool>               renderUnfocused    = false;
 
     CWindowOverridableVar<int>                rounding;
+    CWindowOverridableVar<float>              roundingPower;
     CWindowOverridableVar<int>                borderSize;
 
     CWindowOverridableVar<float>              scrollMouse;
@@ -232,8 +235,8 @@ class CWindow {
     Vector2D m_vSize     = Vector2D(0, 0);
 
     // this is the real position and size used to draw the thing
-    CAnimatedVariable<Vector2D> m_vRealPosition;
-    CAnimatedVariable<Vector2D> m_vRealSize;
+    PHLANIMVAR<Vector2D> m_vRealPosition;
+    PHLANIMVAR<Vector2D> m_vRealSize;
 
     // for not spamming the protocols
     Vector2D                                     m_vReportedPosition;
@@ -287,29 +290,30 @@ class CWindow {
     bool m_bNoInitialFocus = false;
 
     // Fullscreen and Maximize
-    bool m_bWantsInitialFullscreen = false;
+    bool      m_bWantsInitialFullscreen        = false;
+    MONITORID m_iWantsInitialFullscreenMonitor = MONITOR_INVALID;
 
     // bitfield eSuppressEvents
     uint64_t m_eSuppressedEvents = SUPPRESS_NONE;
 
     // desktop components
-    std::unique_ptr<CSubsurface> m_pSubsurfaceHead;
-    std::unique_ptr<CPopup>      m_pPopupHead;
+    UP<CSubsurface> m_pSubsurfaceHead;
+    UP<CPopup>      m_pPopupHead;
 
     // Animated border
-    CGradientValueData       m_cRealBorderColor         = {0};
-    CGradientValueData       m_cRealBorderColorPrevious = {0};
-    CAnimatedVariable<float> m_fBorderFadeAnimationProgress;
-    CAnimatedVariable<float> m_fBorderAngleAnimationProgress;
+    CGradientValueData m_cRealBorderColor         = {0};
+    CGradientValueData m_cRealBorderColorPrevious = {0};
+    PHLANIMVAR<float>  m_fBorderFadeAnimationProgress;
+    PHLANIMVAR<float>  m_fBorderAngleAnimationProgress;
 
     // Fade in-out
-    CAnimatedVariable<float> m_fAlpha;
-    bool                     m_bFadingOut     = false;
-    bool                     m_bReadyToDelete = false;
-    Vector2D                 m_vOriginalClosedPos;  // these will be used for calculations later on in
-    Vector2D                 m_vOriginalClosedSize; // drawing the closing animations
-    SBoxExtents              m_eOriginalClosedExtents;
-    bool                     m_bAnimatingIn = false;
+    PHLANIMVAR<float> m_fAlpha;
+    bool              m_bFadingOut     = false;
+    bool              m_bReadyToDelete = false;
+    Vector2D          m_vOriginalClosedPos;  // these will be used for calculations later on in
+    Vector2D          m_vOriginalClosedSize; // drawing the closing animations
+    SBoxExtents       m_eOriginalClosedExtents;
+    bool              m_bAnimatingIn = false;
 
     // For pinned (sticky) windows
     bool m_bPinned = false;
@@ -325,27 +329,28 @@ class CWindow {
 
     // Window decorations
     // TODO: make this a SP.
-    std::vector<std::unique_ptr<IHyprWindowDecoration>> m_dWindowDecorations;
-    std::vector<IHyprWindowDecoration*>                 m_vDecosToRemove;
+    std::vector<UP<IHyprWindowDecoration>> m_dWindowDecorations;
+    std::vector<IHyprWindowDecoration*>    m_vDecosToRemove;
 
     // Special render data, rules, etc
     SWindowData m_sWindowData;
 
     // Transformers
-    std::vector<std::unique_ptr<IWindowTransformer>> m_vTransformers;
+    std::vector<UP<IWindowTransformer>> m_vTransformers;
 
     // for alpha
-    CAnimatedVariable<float> m_fActiveInactiveAlpha;
+    PHLANIMVAR<float> m_fActiveInactiveAlpha;
+    PHLANIMVAR<float> m_fMovingFromWorkspaceAlpha;
 
     // animated shadow color
-    CAnimatedVariable<CHyprColor> m_cRealShadowColor;
+    PHLANIMVAR<CHyprColor> m_cRealShadowColor;
 
     // animated tint
-    CAnimatedVariable<float> m_fDimPercent;
+    PHLANIMVAR<float> m_fDimPercent;
 
     // animate moving to an invisible workspace
-    int                      m_iMonitorMovedFrom = -1; // -1 means not moving
-    CAnimatedVariable<float> m_fMovingToWorkspaceAlpha;
+    int               m_iMonitorMovedFrom = -1; // -1 means not moving
+    PHLANIMVAR<float> m_fMovingToWorkspaceAlpha;
 
     // swallowing
     PHLWINDOWREF m_pSwallowed;
@@ -392,14 +397,13 @@ class CWindow {
     SBoxExtents            getFullWindowExtents();
     CBox                   getWindowBoxUnified(uint64_t props);
     CBox                   getWindowIdealBoundingBoxIgnoreReserved();
-    void                   addWindowDeco(std::unique_ptr<IHyprWindowDecoration> deco);
+    void                   addWindowDeco(UP<IHyprWindowDecoration> deco);
     void                   updateWindowDecos();
     void                   removeWindowDeco(IHyprWindowDecoration* deco);
     void                   uncacheWindowDecos();
     bool                   checkInputOnDecos(const eInputType, const Vector2D&, std::any = {});
     pid_t                  getPID();
     IHyprWindowDecoration* getDecorationByType(eDecorationType);
-    void                   removeDecorationByType(eDecorationType);
     void                   updateToplevel();
     void                   updateSurfaceScaleTransformDetails(bool force = false);
     void                   moveToWorkspace(PHLWORKSPACE);
@@ -414,6 +418,7 @@ class CWindow {
     Vector2D               middle();
     bool                   opaque();
     float                  rounding();
+    float                  roundingPower();
     bool                   canBeTorn();
     void                   setSuspended(bool suspend);
     bool                   visibleOnMonitor(PHLMONITOR pMonitor);
@@ -430,7 +435,7 @@ class CWindow {
     float                  getScrollTouchpad();
     void                   updateWindowData();
     void                   updateWindowData(const struct SWorkspaceRule&);
-    void                   onBorderAngleAnimEnd(void* ptr);
+    void                   onBorderAngleAnimEnd(WP<Hyprutils::Animation::CBaseAnimatedVariable> pav);
     bool                   isInCurvedCorner(double x, double y);
     bool                   hasPopupAt(const Vector2D& pos);
     int                    popupsCount();
@@ -450,6 +455,7 @@ class CWindow {
     void                   switchWithWindowInGroup(PHLWINDOW pWindow);
     void                   setAnimationsToMove();
     void                   onWorkspaceAnimUpdate();
+    void                   onFocusAnimUpdate();
     void                   onUpdateState();
     void                   onUpdateMeta();
     void                   onX11Configure(CBox box);
@@ -463,9 +469,10 @@ class CWindow {
     bool                   isModal();
     Vector2D               requestedMinSize();
     Vector2D               requestedMaxSize();
+    void                   sendWindowSize(Vector2D size, bool force = false, std::optional<Vector2D> overridePos = std::nullopt);
 
     CBox                   getWindowMainSurfaceBox() const {
-        return {m_vRealPosition.value().x, m_vRealPosition.value().y, m_vRealSize.value().x, m_vRealSize.value().y};
+        return {m_vRealPosition->value().x, m_vRealPosition->value().y, m_vRealSize->value().x, m_vRealSize->value().y};
     }
 
     // listeners

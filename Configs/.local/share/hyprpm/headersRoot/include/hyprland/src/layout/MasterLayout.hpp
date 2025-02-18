@@ -2,7 +2,7 @@
 
 #include "IHyprLayout.hpp"
 #include "../desktop/DesktopTypes.hpp"
-#include "../config/ConfigManager.hpp"
+#include "../helpers/varlist/VarList.hpp"
 #include <vector>
 #include <list>
 #include <vector>
@@ -87,7 +87,7 @@ class CHyprMasterLayout : public IHyprLayout {
     SMasterNodeData*                  getMasterNodeOnWorkspace(const WORKSPACEID&);
     SMasterWorkspaceData*             getMasterWorkspaceData(const WORKSPACEID&);
     void                              calculateWorkspace(PHLWORKSPACE);
-    PHLWINDOW                         getNextWindow(PHLWINDOW, bool);
+    PHLWINDOW                         getNextWindow(PHLWINDOW, bool, bool);
     int                               getMastersOnWorkspace(const WORKSPACEID&);
 
     friend struct SMasterNodeData;

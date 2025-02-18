@@ -140,6 +140,12 @@ inline static const std::vector<SConfigOptionDescription> CONFIG_OPTIONS = {
         .data        = SConfigOptionDescription::SRangeData{0, 0, 20},
     },
     SConfigOptionDescription{
+        .value       = "decoration:rounding_power",
+        .description = "rouding power of corners (2 is a circle)",
+        .type        = CONFIG_OPTION_FLOAT,
+        .data        = SConfigOptionDescription::SFloatData{2, 2, 10},
+    },
+    SConfigOptionDescription{
         .value       = "decoration:active_opacity",
         .description = "opacity of active windows. [0.0 - 1.0]",
         .type        = CONFIG_OPTION_FLOAT,
@@ -1289,6 +1295,30 @@ inline static const std::vector<SConfigOptionDescription> CONFIG_OPTIONS = {
         .type        = CONFIG_OPTION_BOOL,
         .data        = SConfigOptionDescription::SBoolData{false},
     },
+    SConfigOptionDescription{
+        .value       = "render:expand_undersized_textures",
+        .description = "Whether to expand textures that have not yet resized to be larger, or to just stretch them instead.",
+        .type        = CONFIG_OPTION_BOOL,
+        .data        = SConfigOptionDescription::SBoolData{true},
+    },
+    SConfigOptionDescription{
+        .value       = "render:xp_mode",
+        .description = "Disable back buffer and bottom layer rendering.",
+        .type        = CONFIG_OPTION_BOOL,
+        .data        = SConfigOptionDescription::SBoolData{true},
+    },
+    SConfigOptionDescription{
+        .value       = "render:ctm_animation",
+        .description = "Whether to enable a fade animation for CTM changes (hyprsunset). 2 means 'auto' (Yes on everything but Nvidia).",
+        .type        = CONFIG_OPTION_INT,
+        .data        = SConfigOptionDescription::SRangeData{2, 0, 2},
+    },
+    SConfigOptionDescription{
+        .value       = "render:allow_early_buffer_release",
+        .description = "Allow early buffer release event. Fixes stuttering and missing frames for some apps. May cause graphical glitches and memory leaks in others",
+        .type        = CONFIG_OPTION_BOOL,
+        .data        = SConfigOptionDescription::SBoolData{true},
+    },
 
     /*
      * cursor:
@@ -1603,10 +1633,16 @@ inline static const std::vector<SConfigOptionDescription> CONFIG_OPTIONS = {
         .data        = SConfigOptionDescription::SBoolData{true},
     },
     SConfigOptionDescription{
-        .value       = "master:always_center_master",
-        .description = "when using orientation=center, keep the master window centered, even when it is the only window in the workspace.",
+        .value       = "master:slave_count_for_center_master",
+        .description = "when using orientation=center, make the master window centered only when at least this many slave windows are open. (Set 0 to always_center_master)",
+        .type        = CONFIG_OPTION_INT,
+        .data        = SConfigOptionDescription::SRangeData{2, 0, 10}, //##TODO RANGE?
+    },
+    SConfigOptionDescription{
+        .value       = "master:center_master_slaves_on_right",
+        .description = "set if the slaves should appear on right of master when slave_count_for_center_master > 2",
         .type        = CONFIG_OPTION_BOOL,
-        .data        = SConfigOptionDescription::SBoolData{false},
+        .data        = SConfigOptionDescription::SBoolData{true},
     },
     SConfigOptionDescription{
         .value       = "master:center_ignores_reserved",
@@ -1627,5 +1663,23 @@ inline static const std::vector<SConfigOptionDescription> CONFIG_OPTIONS = {
                        "top/bottom of the stack depending on new_on_top.",
         .type        = CONFIG_OPTION_BOOL,
         .data        = SConfigOptionDescription::SBoolData{true},
+    },
+    SConfigOptionDescription{
+        .value       = "experimental:wide_color_gamut",
+        .description = "force wide color gamut for all supported outputs",
+        .type        = CONFIG_OPTION_BOOL,
+        .data        = SConfigOptionDescription::SBoolData{false},
+    },
+    SConfigOptionDescription{
+        .value       = "experimental:hdr",
+        .description = "force static hdr for all supported outputs",
+        .type        = CONFIG_OPTION_BOOL,
+        .data        = SConfigOptionDescription::SBoolData{false},
+    },
+    SConfigOptionDescription{
+        .value       = "experimental:xx_color_management_v4",
+        .description = "enable color management protocol",
+        .type        = CONFIG_OPTION_BOOL,
+        .data        = SConfigOptionDescription::SBoolData{false},
     },
 };

@@ -3,7 +3,7 @@ pyprland.plugins = [ "shortcuts_menu" ]
 [shortcuts_menu]
 command_start = "󰜎"
 engine = "rofi"
-parameters = "-p 🍰 -dmenu -i -theme ~/.config/rofi/clipboard.rasi"
+parameters = "-p 🍰 -dmenu -i -theme ~/.local/share/hyde/rofi/themes/clipboard.rasi"
 
 [shortcuts_menu.entries]
 

@@ -5,7 +5,7 @@
 #include <vector>
 #include "../Texture.hpp"
 #include <string>
-#include <memory>
+#include "../../helpers/memory/Memory.hpp"
 
 class CTitleTex {
   public:
@@ -14,8 +14,7 @@ class CTitleTex {
 
     SP<CTexture> tex;
     std::string  szContent;
-    int          textWidth;
-    int          textHeight;
+    Vector2D     texSize;
 
     PHLWINDOWREF pWindowOwner;
 };
@@ -71,6 +70,6 @@ class CHyprGroupBarDecoration : public IHyprWindowDecoration {
 
     struct STitleTexs {
         // STitleTexs*                            overriden = nullptr; // TODO: make shit shared in-group to decrease VRAM usage.
-        std::vector<std::unique_ptr<CTitleTex>> titleTexs;
+        std::vector<UP<CTitleTex>> titleTexs;
     } m_sTitleTexs;
 };

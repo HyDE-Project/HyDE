@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <unordered_map>
 #include "WaylandProtocol.hpp"
 #include "fractional-scale-v1.hpp"
@@ -13,25 +12,23 @@ class CFractionalScaleAddon {
     CFractionalScaleAddon(SP<CWpFractionalScaleV1> resource_, SP<CWLSurfaceResource> surf_);
 
     void                   setScale(const float& scale);
-    void                   onSurfaceDestroy();
 
     bool                   good();
 
     SP<CWLSurfaceResource> surf();
 
     bool                   operator==(const wl_resource* other) const {
-        return other == resource->resource();
+        return other == m_resource->resource();
     }
 
     bool operator==(const CFractionalScaleAddon* other) const {
-        return other->resource == resource;
+        return other->m_resource == m_resource;
     }
 
   private:
-    SP<CWpFractionalScaleV1> resource;
-    float                    scale = 1.F;
-    WP<CWLSurfaceResource>   surface;
-    bool                     surfaceGone = false;
+    SP<CWpFractionalScaleV1> m_resource;
+    float                    m_scale = -1.F; // unset
+    WP<CWLSurfaceResource>   m_surface;
 
     friend class CFractionalScaleProtocol;
 };

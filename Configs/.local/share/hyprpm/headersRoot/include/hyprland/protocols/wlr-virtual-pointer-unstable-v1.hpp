@@ -1,4 +1,4 @@
-// Generated with hyprwayland-scanner 0.4.2. Made with vaxry's keyboard and ❤️.
+// Generated with hyprwayland-scanner 0.4.4. Made with vaxry's keyboard and ❤️.
 // wlr_virtual_pointer_unstable_v1
 
 /*

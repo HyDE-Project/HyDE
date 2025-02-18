@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Compositor.hpp"
 #include <fstream>
 #include "../helpers/MiscFunctions.hpp"
+#include "../desktop/Window.hpp"
 #include <functional>
 
 // exposed for main.cpp
@@ -38,4 +38,4 @@ class CHyprCtl {
     std::string                      m_socketPath;
 };
 
-inline std::unique_ptr<CHyprCtl> g_pHyprCtl;
+inline UP<CHyprCtl> g_pHyprCtl;

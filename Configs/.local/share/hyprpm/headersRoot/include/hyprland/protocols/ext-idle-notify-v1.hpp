@@ -1,4 +1,4 @@
-// Generated with hyprwayland-scanner 0.4.2. Made with vaxry's keyboard and ❤️.
+// Generated with hyprwayland-scanner 0.4.4. Made with vaxry's keyboard and ❤️.
 // ext_idle_notify_v1
 
 /*
@@ -43,6 +43,8 @@ struct wl_resource;
 
 
 class CExtIdleNotifierV1;
+class CExtIdleNotificationV1;
+class CWlSeat;
 class CExtIdleNotificationV1;
 class CWlSeat;
 class CExtIdleNotificationV1;
@@ -109,6 +111,7 @@ class CExtIdleNotifierV1 {
 
     void setDestroy(F<void(CExtIdleNotifierV1*)> handler);
     void setGetIdleNotification(F<void(CExtIdleNotifierV1*, uint32_t, uint32_t, wl_resource*)> handler);
+    void setGetInputIdleNotification(F<void(CExtIdleNotifierV1*, uint32_t, uint32_t, wl_resource*)> handler);
 
     // --------------- Events --------------- //
 
@@ -117,6 +120,7 @@ class CExtIdleNotifierV1 {
     struct {
         F<void(CExtIdleNotifierV1*)> destroy;
         F<void(CExtIdleNotifierV1*, uint32_t, uint32_t, wl_resource*)> getIdleNotification;
+        F<void(CExtIdleNotifierV1*, uint32_t, uint32_t, wl_resource*)> getInputIdleNotification;
     } requests;
 
     void onDestroyCalled();

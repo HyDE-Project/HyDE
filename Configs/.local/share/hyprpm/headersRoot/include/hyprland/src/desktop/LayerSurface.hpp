@@ -4,7 +4,6 @@
 #include "../defines.hpp"
 #include "WLSurface.hpp"
 #include "../helpers/AnimatedVariable.hpp"
-#include "LayerRule.hpp"
 
 class CLayerShellResource;
 
@@ -18,17 +17,17 @@ class CLayerSurface {
   public:
     ~CLayerSurface();
 
-    void                        applyRules();
-    void                        startAnimation(bool in, bool instant = false);
-    bool                        isFadedOut();
-    int                         popupsCount();
+    void                    applyRules();
+    void                    startAnimation(bool in, bool instant = false);
+    bool                    isFadedOut();
+    int                     popupsCount();
 
-    CAnimatedVariable<Vector2D> realPosition;
-    CAnimatedVariable<Vector2D> realSize;
-    CAnimatedVariable<float>    alpha;
+    PHLANIMVAR<Vector2D>    realPosition;
+    PHLANIMVAR<Vector2D>    realSize;
+    PHLANIMVAR<float>       alpha;
 
-    WP<CLayerShellResource>     layerSurface;
-    wl_list                     link;
+    WP<CLayerShellResource> layerSurface;
+    wl_list                 link;
 
     // the header providing the enum type cannot be imported here
     int                        interactivity = 0;
@@ -60,7 +59,7 @@ class CLayerSurface {
     CBox                       geometry = {0, 0, 0, 0};
     Vector2D                   position;
     std::string                szNamespace = "";
-    std::unique_ptr<CPopup>    popupHead;
+    UP<CPopup>                 popupHead;
 
     void                       onDestroy();
     void                       onMap();

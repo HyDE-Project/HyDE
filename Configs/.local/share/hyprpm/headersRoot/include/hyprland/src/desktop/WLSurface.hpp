@@ -84,7 +84,11 @@ class CWLSurface {
     static SP<CWLSurface> fromResource(SP<CWLSurfaceResource> pSurface);
 
     // used by the alpha-modifier protocol
-    float m_pAlphaModifier = 1.F;
+    float m_fAlphaModifier = 1.F;
+
+    // used by the hyprland-surface protocol
+    float   m_fOverallOpacity = 1.F;
+    CRegion m_visibleRegion;
 
     struct {
         CSignal destroy;
@@ -116,4 +120,5 @@ class CWLSurface {
     } listeners;
 
     friend class CPointerConstraint;
+    friend class CXxColorManagerV4;
 };

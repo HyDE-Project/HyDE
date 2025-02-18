@@ -8,7 +8,6 @@
      - wl_callback
 */
 
-#include <memory>
 #include <vector>
 #include <cstdint>
 #include "../WaylandProtocol.hpp"
@@ -25,6 +24,8 @@ class CWLSurfaceResource;
 class CWLSubsurfaceResource;
 class CViewportResource;
 class CDRMSyncobjSurfaceResource;
+class CColorManagementSurface;
+class CFrogColorManagementSurface;
 
 class CWLCallbackResource {
   public:
@@ -121,10 +122,11 @@ class CWLSurfaceResource {
     SP<ISurfaceRole>                       role;
     WP<CViewportResource>                  viewportResource;
     WP<CDRMSyncobjSurfaceResource>         syncobj; // may not be present
+    WP<CColorManagementSurface>            colorManagement;
 
     void                                   breadthfirst(std::function<void(SP<CWLSurfaceResource>, const Vector2D&, void*)> fn, void* data);
     CRegion                                accumulateCurrentBufferDamage();
-    void                                   presentFeedback(timespec* when, PHLMONITOR pMonitor);
+    void                                   presentFeedback(timespec* when, PHLMONITOR pMonitor, bool discarded = false);
     void                                   lockPendingState();
     void                                   unlockPendingState();
 

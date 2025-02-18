@@ -1,4 +1,4 @@
-// Generated with hyprwayland-scanner 0.4.2. Made with vaxry's keyboard and ❤️.
+// Generated with hyprwayland-scanner 0.4.4. Made with vaxry's keyboard and ❤️.
 // ext_session_lock_v1
 
 /*

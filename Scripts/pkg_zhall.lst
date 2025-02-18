@@ -99,3 +99,4 @@ ristretto                                              # image viewer
 lsd                                                    # list with icon on terminal
 ncdu                                                   # cli tools
 intel-media-sdk
+tilix

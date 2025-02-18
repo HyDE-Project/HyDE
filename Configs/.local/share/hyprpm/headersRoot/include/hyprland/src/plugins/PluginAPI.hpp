@@ -223,7 +223,7 @@ namespace HyprlandAPI {
 
         returns: true on success. False otherwise.
     */
-    APICALL bool addWindowDecoration(HANDLE handle, PHLWINDOW pWindow, std::unique_ptr<IHyprWindowDecoration> pDecoration);
+    APICALL bool addWindowDecoration(HANDLE handle, PHLWINDOW pWindow, UP<IHyprWindowDecoration> pDecoration);
 
     /*
         Removes a window decoration
@@ -236,8 +236,17 @@ namespace HyprlandAPI {
         Adds a keybind dispatcher.
 
         returns: true on success. False otherwise.
+
+        DEPRECATED: use addDispatcherV2
     */
-    APICALL bool addDispatcher(HANDLE handle, const std::string& name, std::function<void(std::string)> handler);
+    APICALL [[deprecated]] bool addDispatcher(HANDLE handle, const std::string& name, std::function<void(std::string)> handler);
+
+    /*
+        Adds a keybind dispatcher.
+
+        returns: true on success. False otherwise.
+    */
+    APICALL bool addDispatcherV2(HANDLE handle, const std::string& name, std::function<SDispatchResult(std::string)> handler);
 
     /*
         Removes a keybind dispatcher.

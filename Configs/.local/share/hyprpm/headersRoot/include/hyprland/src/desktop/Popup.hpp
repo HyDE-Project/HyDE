@@ -1,20 +1,20 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include "Subsurface.hpp"
 #include "../helpers/signal/Signal.hpp"
+#include "../helpers/memory/Memory.hpp"
 
 class CXDGPopupResource;
 
 class CPopup {
   public:
     // dummy head nodes
-    CPopup(PHLWINDOW pOwner);
-    CPopup(PHLLS pOwner);
+    static UP<CPopup> create(PHLWINDOW pOwner);
+    static UP<CPopup> create(PHLLS pOwner);
 
     // real nodes
-    CPopup(SP<CXDGPopupResource> popup, CPopup* pOwner);
+    static UP<CPopup> create(SP<CXDGPopupResource> popup, WP<CPopup> pOwner);
 
     ~CPopup();
 
@@ -36,20 +36,23 @@ class CPopup {
     bool           visible();
 
     // will also loop over this node
-    void    breadthfirst(std::function<void(CPopup*, void*)> fn, void* data);
-    CPopup* at(const Vector2D& globalCoords, bool allowsInput = false);
+    void       breadthfirst(std::function<void(WP<CPopup>, void*)> fn, void* data);
+    WP<CPopup> at(const Vector2D& globalCoords, bool allowsInput = false);
 
     //
     SP<CWLSurface> m_pWLSurface;
+    WP<CPopup>     m_pSelf;
     bool           m_bMapped = false;
 
   private:
+    CPopup() = default;
+
     // T1 owners, each popup has to have one of these
     PHLWINDOWREF m_pWindowOwner;
     PHLLSREF     m_pLayerOwner;
 
     // T2 owners
-    CPopup*               m_pParent = nullptr;
+    WP<CPopup>            m_pParent;
 
     WP<CXDGPopupResource> m_pResource;
 
@@ -61,8 +64,8 @@ class CPopup {
     bool                  m_bInert = false;
 
     //
-    std::vector<SP<CPopup>>      m_vChildren;
-    std::unique_ptr<CSubsurface> m_pSubsurfaceHead;
+    std::vector<UP<CPopup>> m_vChildren;
+    UP<CSubsurface>         m_pSubsurfaceHead;
 
     struct {
         CHyprSignalListener newPopup;
@@ -81,5 +84,5 @@ class CPopup {
 
     Vector2D    localToGlobal(const Vector2D& rel);
     Vector2D    t1ParentCoords();
-    static void bfHelper(std::vector<CPopup*> const& nodes, std::function<void(CPopup*, void*)> fn, void* data);
+    static void bfHelper(std::vector<WP<CPopup>> const& nodes, std::function<void(WP<CPopup>, void*)> fn, void* data);
 };

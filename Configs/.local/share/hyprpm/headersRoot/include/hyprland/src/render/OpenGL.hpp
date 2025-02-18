@@ -17,8 +17,8 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "Framebuffer.hpp"
-#include "Transformer.hpp"
 #include "Renderbuffer.hpp"
+#include "pass/Pass.hpp"
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
@@ -61,17 +61,31 @@ struct SRenderModifData {
     bool                                               enabled = true;
 };
 
+enum eMonitorRenderFBs : uint8_t {
+    FB_MONITOR_RENDER_MAIN    = 0,
+    FB_MONITOR_RENDER_CURRENT = 1,
+    FB_MONITOR_RENDER_OUT     = 2,
+};
+
+enum eMonitorExtraRenderFBs : uint8_t {
+    FB_MONITOR_RENDER_EXTRA_OFFLOAD = 0,
+    FB_MONITOR_RENDER_EXTRA_MIRROR,
+    FB_MONITOR_RENDER_EXTRA_MIRROR_SWAP,
+    FB_MONITOR_RENDER_EXTRA_OFF_MAIN,
+    FB_MONITOR_RENDER_EXTRA_MONITOR_MIRROR,
+    FB_MONITOR_RENDER_EXTRA_BLUR,
+};
+
 struct SMonitorRenderData {
     CFramebuffer offloadFB;
     CFramebuffer mirrorFB;     // these are used for some effects,
     CFramebuffer mirrorSwapFB; // etc
     CFramebuffer offMainFB;
-
     CFramebuffer monitorMirrorFB; // used for mirroring outputs, does not contain artifacts like offloadFB
+    CFramebuffer blurFB;
 
     SP<CTexture> stencilTex = makeShared<CTexture>();
 
-    CFramebuffer blurFB;
     bool         blurFBDirty        = true;
     bool         blurFBShouldRender = false;
 
@@ -95,7 +109,6 @@ struct SMonitorRenderData {
 
 struct SCurrentRenderData {
     PHLMONITORREF       pMonitor;
-    PHLWORKSPACE        pWorkspace = nullptr;
     Mat3x3              projection;
     Mat3x3              savedProjection;
     Mat3x3              monitorProjection;
@@ -120,9 +133,13 @@ struct SCurrentRenderData {
     Vector2D            primarySurfaceUVBottomRight = Vector2D(-1, -1);
 
     CBox                clipBox = {}; // scaled coordinates
+    CRegion             clipRegion;
 
     uint32_t            discardMode    = DISCARD_OPAQUE;
     float               discardOpacity = 0.f;
+
+    PHLLSREF            currentLS;
+    PHLWINDOWREF        currentWindow;
 };
 
 class CEGLSync {
@@ -149,87 +166,86 @@ class CHyprOpenGLImpl {
     CHyprOpenGLImpl();
     ~CHyprOpenGLImpl();
 
-    void     begin(PHLMONITOR, const CRegion& damage, CFramebuffer* fb = nullptr, std::optional<CRegion> finalDamage = {});
-    void     beginSimple(PHLMONITOR, const CRegion& damage, SP<CRenderbuffer> rb = nullptr, CFramebuffer* fb = nullptr);
-    void     end();
+    void begin(PHLMONITOR, const CRegion& damage, CFramebuffer* fb = nullptr, std::optional<CRegion> finalDamage = {});
+    void beginSimple(PHLMONITOR, const CRegion& damage, SP<CRenderbuffer> rb = nullptr, CFramebuffer* fb = nullptr);
+    void end();
 
-    void     renderRect(CBox*, const CHyprColor&, int round = 0);
-    void     renderRectWithBlur(CBox*, const CHyprColor&, int round = 0, float blurA = 1.f, bool xray = false);
-    void     renderRectWithDamage(CBox*, const CHyprColor&, CRegion* damage, int round = 0);
-    void     renderTexture(SP<CTexture>, CBox*, float a, int round = 0, bool discardActive = false, bool allowCustomUV = false);
-    void     renderTextureWithDamage(SP<CTexture>, CBox*, CRegion* damage, float a, int round = 0, bool discardActive = false, bool allowCustomUV = false,
-                                     SP<CSyncTimeline> waitTimeline = nullptr, uint64_t waitPoint = 0);
-    void     renderTextureWithBlur(SP<CTexture>, CBox*, float a, SP<CWLSurfaceResource> pSurface, int round = 0, bool blockBlurOptimization = false, float blurA = 1.f);
-    void     renderRoundedShadow(CBox*, int round, int range, const CHyprColor& color, float a = 1.0);
-    void     renderBorder(CBox*, const CGradientValueData&, int round, int borderSize, float a = 1.0, int outerRound = -1 /* use round */);
-    void     renderBorder(CBox*, const CGradientValueData&, const CGradientValueData&, float lerp, int round, int borderSize, float a = 1.0, int outerRound = -1 /* use round */);
-    void     renderTextureMatte(SP<CTexture> tex, CBox* pBox, CFramebuffer& matte);
+    void renderRect(const CBox&, const CHyprColor&, int round = 0, float roundingPower = 2.0f);
+    void renderRectWithBlur(const CBox&, const CHyprColor&, int round = 0, float roundingPower = 2.0f, float blurA = 1.f, bool xray = false);
+    void renderRectWithDamage(const CBox&, const CHyprColor&, const CRegion& damage, int round = 0, float roundingPower = 2.0f);
+    void renderTexture(SP<CTexture>, const CBox&, float a, int round = 0, float roundingPower = 2.0f, bool discardActive = false, bool allowCustomUV = false);
+    void renderTextureWithDamage(SP<CTexture>, const CBox&, const CRegion& damage, float a, int round = 0, float roundingPower = 2.0f, bool discardActive = false,
+                                 bool allowCustomUV = false, SP<CSyncTimeline> waitTimeline = nullptr, uint64_t waitPoint = 0);
+    void renderTextureWithBlur(SP<CTexture>, const CBox&, float a, SP<CWLSurfaceResource> pSurface, int round = 0, float roundingPower = 2.0f, bool blockBlurOptimization = false,
+                               float blurA = 1.f, float overallA = 1.f);
+    void renderRoundedShadow(const CBox&, int round, float roundingPower, int range, const CHyprColor& color, float a = 1.0);
+    void renderBorder(const CBox&, const CGradientValueData&, int round, float roundingPower, int borderSize, float a = 1.0, int outerRound = -1 /* use round */);
+    void renderBorder(const CBox&, const CGradientValueData&, const CGradientValueData&, float lerp, int round, float roundingPower, int borderSize, float a = 1.0,
+                      int outerRound = -1 /* use round */);
+    void renderTextureMatte(SP<CTexture> tex, const CBox& pBox, CFramebuffer& matte);
 
-    void     setMonitorTransformEnabled(bool enabled);
-    void     setRenderModifEnabled(bool enabled);
+    void setMonitorTransformEnabled(bool enabled);
+    void setRenderModifEnabled(bool enabled);
 
-    void     saveMatrix();
-    void     setMatrixScaleTranslate(const Vector2D& translate, const float& scale);
-    void     restoreMatrix();
+    void saveMatrix();
+    void setMatrixScaleTranslate(const Vector2D& translate, const float& scale);
+    void restoreMatrix();
 
-    void     blend(bool enabled);
+    void blend(bool enabled);
 
-    void     makeWindowSnapshot(PHLWINDOW);
-    void     makeRawWindowSnapshot(PHLWINDOW, CFramebuffer*);
-    void     makeLayerSnapshot(PHLLS);
-    void     renderSnapshot(PHLWINDOW);
-    void     renderSnapshot(PHLLS);
-    bool     shouldUseNewBlurOptimizations(PHLLS pLayer, PHLWINDOW pWindow);
+    bool shouldUseNewBlurOptimizations(PHLLS pLayer, PHLWINDOW pWindow);
 
-    void     clear(const CHyprColor&);
-    void     clearWithTex();
-    void     scissor(const CBox*, bool transform = true);
-    void     scissor(const pixman_box32*, bool transform = true);
-    void     scissor(const int x, const int y, const int w, const int h, bool transform = true);
+    void clear(const CHyprColor&);
+    void clearWithTex();
+    void scissor(const CBox&, bool transform = true);
+    void scissor(const pixman_box32*, bool transform = true);
+    void scissor(const int x, const int y, const int w, const int h, bool transform = true);
 
-    void     destroyMonitorResources(PHLMONITOR);
+    void destroyMonitorResources(PHLMONITOR);
 
-    void     markBlurDirtyForMonitor(PHLMONITOR);
+    void markBlurDirtyForMonitor(PHLMONITOR);
 
-    void     preWindowPass();
-    bool     preBlurQueued();
-    void     preRender(PHLMONITOR);
+    void preWindowPass();
+    bool preBlurQueued();
+    void preRender(PHLMONITOR);
 
-    void     saveBufferForMirror(CBox*);
-    void     renderMirrored();
+    void saveBufferForMirror(const CBox&);
+    void renderMirrored();
 
-    void     applyScreenShader(const std::string& path);
+    void applyScreenShader(const std::string& path);
 
-    void     bindOffMain();
-    void     renderOffToMain(CFramebuffer* off);
-    void     bindBackOnMain();
+    void bindOffMain();
+    void renderOffToMain(CFramebuffer* off);
+    void bindBackOnMain();
 
-    void     setDamage(const CRegion& damage, std::optional<CRegion> finalDamage = {});
+    SP<CTexture>                         loadAsset(const std::string& file);
+    SP<CTexture>                         renderText(const std::string& text, CHyprColor col, int pt, bool italic = false, const std::string& fontFamily = "", int maxWidth = 0);
 
-    uint32_t getPreferredReadFormat(PHLMONITOR pMonitor);
-    std::vector<SDRMFormat>                     getDRMFormats();
-    EGLImageKHR                                 createEGLImage(const Aquamarine::SDMABUFAttrs& attrs);
-    SP<CEGLSync>                                createEGLSync(int fenceFD);
-    bool                                        waitForTimelinePoint(SP<CSyncTimeline> timeline, uint64_t point);
+    void                                 setDamage(const CRegion& damage, std::optional<CRegion> finalDamage = {});
 
-    SCurrentRenderData                          m_RenderData;
+    void                                 ensureBackgroundTexturePresence();
 
-    GLint                                       m_iCurrentOutputFb = 0;
+    uint32_t                             getPreferredReadFormat(PHLMONITOR pMonitor);
+    std::vector<SDRMFormat>              getDRMFormats();
+    EGLImageKHR                          createEGLImage(const Aquamarine::SDMABUFAttrs& attrs);
+    SP<CEGLSync>                         createEGLSync(int fenceFD);
+    bool                                 waitForTimelinePoint(SP<CSyncTimeline> timeline, uint64_t point);
 
-    int                                         m_iGBMFD       = -1;
-    gbm_device*                                 m_pGbmDevice   = nullptr;
-    EGLContext                                  m_pEglContext  = nullptr;
-    EGLDisplay                                  m_pEglDisplay  = nullptr;
-    EGLDeviceEXT                                m_pEglDevice   = nullptr;
-    uint                                        failedAssetsNo = 0;
+    SCurrentRenderData                   m_RenderData;
 
-    bool                                        m_bReloadScreenShader = true; // at launch it can be set
+    GLint                                m_iCurrentOutputFb = 0;
 
-    PHLWINDOWREF                                m_pCurrentWindow; // hack to get the current rendered window
-    PHLLS                                       m_pCurrentLayer;  // hack to get the current rendered layer
+    int                                  m_iGBMFD       = -1;
+    gbm_device*                          m_pGbmDevice   = nullptr;
+    EGLContext                           m_pEglContext  = nullptr;
+    EGLDisplay                           m_pEglDisplay  = nullptr;
+    EGLDeviceEXT                         m_pEglDevice   = nullptr;
+    uint                                 failedAssetsNo = 0;
 
-    std::map<PHLWINDOWREF, CFramebuffer>        m_mWindowFramebuffers;
-    std::map<PHLLSREF, CFramebuffer>            m_mLayerFramebuffers;
+    bool                                 m_bReloadScreenShader = true; // at launch it can be set
+
+    std::map<PHLWINDOWREF, CFramebuffer> m_mWindowFramebuffers;
+    std::map<PHLLSREF, CFramebuffer>     m_mLayerFramebuffers;
     std::map<PHLMONITORREF, SMonitorRenderData> m_mMonitorRenderResources;
     std::map<PHLMONITORREF, CFramebuffer>       m_mMonitorBGFBs;
 
@@ -279,7 +295,7 @@ class CHyprOpenGLImpl {
     CShader                 m_sFinalScreenShader;
     CTimer                  m_tGlobalTimer;
 
-    SP<CTexture>            m_pMissingAssetTexture, m_pBackgroundTexture, m_pLockDeadTexture, m_pLockDead2Texture, m_pLockTtyTextTexture;
+    SP<CTexture>            m_pMissingAssetTexture, m_pBackgroundTexture, m_pLockDeadTexture, m_pLockDead2Texture, m_pLockTtyTextTexture; // TODO: don't always load lock
 
     void                    logShaderError(const GLuint&, bool program = false);
     GLuint                  createProgram(const std::string&, const std::string&, bool dynamic = false);
@@ -289,8 +305,6 @@ class CHyprOpenGLImpl {
     void                    initDRMFormats();
     void                    initEGL(bool gbm);
     EGLDeviceEXT            eglDeviceFromDRMFD(int drmFD);
-    SP<CTexture>            loadAsset(const std::string& file);
-    SP<CTexture>            renderText(const std::string& text, CHyprColor col, int pt, bool italic = false);
     void                    initAssets();
     void                    initMissingAssetTexture();
 
@@ -300,16 +314,19 @@ class CHyprOpenGLImpl {
     // returns the out FB, can be either Mirror or MirrorSwap
     CFramebuffer* blurMainFramebufferWithDamage(float a, CRegion* damage);
 
-    void          renderTextureInternalWithDamage(SP<CTexture>, CBox* pBox, float a, CRegion* damage, int round = 0, bool discardOpaque = false, bool noAA = false,
-                                                  bool allowCustomUV = false, bool allowDim = false, SP<CSyncTimeline> = nullptr, uint64_t waitPoint = 0);
-    void          renderTexturePrimitive(SP<CTexture> tex, CBox* pBox);
-    void          renderSplash(cairo_t* const, cairo_surface_t* const, double offset, const Vector2D& size);
+    void renderTextureInternalWithDamage(SP<CTexture>, const CBox& box, float a, const CRegion& damage, int round = 0, float roundingPower = 2.0f, bool discardOpaque = false,
+                                         bool noAA = false, bool allowCustomUV = false, bool allowDim = false, SP<CSyncTimeline> = nullptr, uint64_t waitPoint = 0);
+    void renderTexturePrimitive(SP<CTexture> tex, const CBox& box);
+    void renderSplash(cairo_t* const, cairo_surface_t* const, double offset, const Vector2D& size);
 
-    void          preBlurForCurrentMonitor();
+    void preBlurForCurrentMonitor();
 
-    bool          passRequiresIntrospection(PHLMONITOR pMonitor);
+    bool passRequiresIntrospection(PHLMONITOR pMonitor);
 
     friend class CHyprRenderer;
+    friend class CTexPassElement;
+    friend class CPreBlurElement;
+    friend class CSurfacePassElement;
 };
 
-inline std::unique_ptr<CHyprOpenGLImpl> g_pHyprOpenGL;
+inline UP<CHyprOpenGLImpl> g_pHyprOpenGL;

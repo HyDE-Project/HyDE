@@ -8,6 +8,7 @@
 #include <xkbcommon/xkbcommon.h>
 #include "../devices/IPointer.hpp"
 #include "eventLoop/EventLoopTimer.hpp"
+#include "../helpers/Timer.hpp"
 
 class CInputManager;
 class CConfigManager;
@@ -48,6 +49,7 @@ enum eFocusWindowMode : uint8_t {
     MODE_INITIAL_CLASS_REGEX,
     MODE_TITLE_REGEX,
     MODE_INITIAL_TITLE_REGEX,
+    MODE_TAG_REGEX,
     MODE_ADDRESS,
     MODE_PID,
     MODE_ACTIVE_WINDOW
@@ -72,12 +74,6 @@ enum eMultiKeyCase : uint8_t {
     MK_NO_MATCH = 0,
     MK_PARTIAL_MATCH,
     MK_FULL_MATCH
-};
-
-struct SDispatchResult {
-    bool        passEvent = false;
-    bool        success   = true;
-    std::string error;
 };
 
 class CKeybindManager {
@@ -157,8 +153,12 @@ class CKeybindManager {
     static uint64_t                  spawnWithRules(std::string, PHLWORKSPACE pInitialWorkspace);
 
     // -------------- Dispatchers -------------- //
+    static SDispatchResult closeActive(std::string);
     static SDispatchResult killActive(std::string);
-    static SDispatchResult kill(std::string);
+    static SDispatchResult closeWindow(std::string);
+    static SDispatchResult killWindow(std::string);
+    static SDispatchResult signalActive(std::string);
+    static SDispatchResult signalWindow(std::string);
     static SDispatchResult spawn(std::string);
     static SDispatchResult spawnRaw(std::string);
     static SDispatchResult toggleActiveFloating(std::string);
@@ -229,4 +229,4 @@ class CKeybindManager {
     friend class CPointerManager;
 };
 
-inline std::unique_ptr<CKeybindManager> g_pKeybindManager;
+inline UP<CKeybindManager> g_pKeybindManager;

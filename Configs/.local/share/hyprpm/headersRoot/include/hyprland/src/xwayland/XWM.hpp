@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../macros.hpp"
 #include "XDataSource.hpp"
 #include "Dnd.hpp"
 #include "../helpers/memory/Memory.hpp"
@@ -45,16 +44,20 @@ struct SXSelection {
     xcb_window_t     owner     = 0;
     xcb_timestamp_t  timestamp = 0;
     SP<CXDataSource> dataSource;
+    bool             notifyOnFocus = false;
 
     void             onSelection();
+    void             onKeyboardFocus();
     bool             sendData(xcb_selection_request_event_t* e, std::string mime);
     int              onRead(int fd, uint32_t mask);
+    int              onWrite();
 
     struct {
         CHyprSignalListener setSelection;
+        CHyprSignalListener keyboardFocusChange;
     } listeners;
 
-    std::unique_ptr<SXTransfer> transfer;
+    UP<SXTransfer> transfer;
 };
 
 class CXCBConnection {

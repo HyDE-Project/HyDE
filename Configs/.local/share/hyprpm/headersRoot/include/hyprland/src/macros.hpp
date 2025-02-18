@@ -2,9 +2,11 @@
 
 #include <cmath>
 #include <csignal>
+#include <print>
 #include <utility>
 
 #include "helpers/memory/Memory.hpp"
+#include "debug/Log.hpp"
 
 #ifndef NDEBUG
 #ifdef HYPRLAND_DEBUG
@@ -49,7 +51,7 @@
         Debug::log(CRIT, "\n==========================================================================================\nASSERTION FAILED! \n\n{}\n\nat: line {} in {}",            \
                    std::format(reason, ##__VA_ARGS__), __LINE__,                                                                                                                   \
                    ([]() constexpr -> std::string { return std::string(__FILE__).substr(std::string(__FILE__).find_last_of('/') + 1); })());                                       \
-        printf("Assertion failed! See the log in /tmp/hypr/hyprland.log for more info.");                                                                                          \
+        std::print("Assertion failed! See the log in /tmp/hypr/hyprland.log for more info.");                                                                                      \
         raise(SIGABRT);                                                                                                                                                            \
     }
 
@@ -112,3 +114,6 @@
     namespace Aquamarine {                                                                                                                                                         \
         class name;                                                                                                                                                                \
     }
+
+#define UNLIKELY(expr) (expr) [[unlikely]]
+#define LIKELY(expr)   (expr) [[likely]]

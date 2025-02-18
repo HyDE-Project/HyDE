@@ -1,4 +1,4 @@
-// Generated with hyprwayland-scanner 0.4.2. Made with vaxry's keyboard and ❤️.
+// Generated with hyprwayland-scanner 0.4.4. Made with vaxry's keyboard and ❤️.
 // hyprland_ctm_control_v1
 
 /*
@@ -120,6 +120,8 @@ class CHyprlandCtmControlManagerV1 {
 
     // --------------- Events --------------- //
 
+    void sendBlocked();
+    void sendBlockedRaw();
 
   private:
     struct {

@@ -7,7 +7,6 @@
      - wl_buffer with shm
 */
 
-#include <memory>
 #include <vector>
 #include <cstdint>
 #include "../WaylandProtocol.hpp"
@@ -43,7 +42,6 @@ class CWLSHMBuffer : public IHLBuffer {
     virtual void                                   endDataPtr();
 
     bool                                           good();
-    void                                           updateTexture();
 
     int32_t                                        offset = 0, stride = 0;
     uint32_t                                       fmt = 0;

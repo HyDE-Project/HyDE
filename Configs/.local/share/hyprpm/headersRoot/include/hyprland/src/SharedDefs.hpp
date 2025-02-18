@@ -3,6 +3,8 @@
 #include "helpers/math/Math.hpp"
 #include <functional>
 #include <any>
+#include <string>
+#include <algorithm>
 #include <hyprutils/math/Box.hpp>
 
 enum eIcons : uint8_t {
@@ -48,6 +50,12 @@ struct SHyprCtlCommand {
     std::string                                                   name  = "";
     bool                                                          exact = true;
     std::function<std::string(eHyprCtlOutputFormat, std::string)> fn;
+};
+
+struct SDispatchResult {
+    bool        passEvent = false;
+    bool        success   = true;
+    std::string error;
 };
 
 typedef int64_t                                              WINDOWID;

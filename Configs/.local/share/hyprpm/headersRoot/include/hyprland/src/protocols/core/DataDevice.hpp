@@ -8,7 +8,6 @@
      - wl_data_device_manager
 */
 
-#include <memory>
 #include <vector>
 #include <cstdint>
 #include "../WaylandProtocol.hpp"
@@ -144,6 +143,9 @@ class CWLDataDeviceProtocol : public IWaylandProtocol {
     // for inputmgr to force refocus
     // TODO: move handling to seatmgr
     bool dndActive();
+
+    // called on an escape key pressed, for moments where it gets stuck
+    void abortDndIfPresent();
 
   private:
     void destroyResource(CWLDataDeviceManagerResource* resource);

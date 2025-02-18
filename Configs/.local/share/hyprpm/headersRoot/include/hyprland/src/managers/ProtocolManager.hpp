@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../defines.hpp"
-#include "../helpers/Monitor.hpp"
 #include "../helpers/memory/Memory.hpp"
 #include "../helpers/signal/Signal.hpp"
 #include <unordered_map>
@@ -19,4 +18,4 @@ class CProtocolManager {
     void                                                 onMonitorModeChange(PHLMONITOR pMonitor);
 };
 
-inline std::unique_ptr<CProtocolManager> g_pProtocolManager;
+inline UP<CProtocolManager> g_pProtocolManager;

@@ -1,11 +1,14 @@
 #pragma once
 
 #include "../defines.hpp"
+#include <stack>
 #include <vector>
+#include "../SharedDefs.hpp"
+#include "MiscFunctions.hpp"
 #include "WLClasses.hpp"
 #include <vector>
 #include <array>
-#include <memory>
+
 #include <xf86drmMode.h>
 #include "Timer.hpp"
 #include "math/Math.hpp"
@@ -30,7 +33,7 @@ struct SMonitorRule {
     Vector2D            resolution  = Vector2D(1280, 720);
     Vector2D            offset      = Vector2D(0, 0);
     float               scale       = 1;
-    float               refreshRate = 60;
+    float               refreshRate = 60; // Hz
     bool                disabled    = false;
     wl_output_transform transform   = WL_OUTPUT_TRANSFORM_NORMAL;
     std::string         mirrorOf    = "";
@@ -89,10 +92,8 @@ class CMonitor {
     CDamageRing                 damage;
 
     SP<Aquamarine::IOutput>     output;
-    float                       refreshRate     = 60;
-    int                         framesToSkip    = 0;
+    float                       refreshRate     = 60; // Hz
     int                         forceFullFrames = 0;
-    bool                        noFrameSchedule = false;
     bool                        scheduledRecalc = false;
     wl_output_transform         transform       = WL_OUTPUT_TRANSFORM_NORMAL;
     float                       xwaylandScale   = 1.f;
@@ -163,9 +164,10 @@ class CMonitor {
     // methods
     void        onConnect(bool noRule);
     void        onDisconnect(bool destroy = false);
+    bool        applyMonitorRule(SMonitorRule* pMonitorRule, bool force = false);
     void        addDamage(const pixman_region32_t* rg);
-    void        addDamage(const CRegion* rg);
-    void        addDamage(const CBox* box);
+    void        addDamage(const CRegion& rg);
+    void        addDamage(const CBox& box);
     bool        shouldSkipScheduleFrameOnMouseEvent();
     void        setMirror(const std::string&);
     bool        isMirror();
@@ -190,6 +192,7 @@ class CMonitor {
 
     bool        m_bEnabled             = false;
     bool        m_bRenderingInitPassed = false;
+    WP<CWindow> m_previousFSWindow;
 
     // For the list lookup
 
@@ -197,11 +200,16 @@ class CMonitor {
         return vecPosition == rhs.vecPosition && vecSize == rhs.vecSize && szName == rhs.szName;
     }
 
-  private:
-    void        setupDefaultWS(const SMonitorRule&);
-    WORKSPACEID findAvailableDefaultWS();
+    // workspace previous per monitor functionality
+    SWorkspaceIDName getPrevWorkspaceIDName(const WORKSPACEID id);
+    void             addPrevWorkspaceID(const WORKSPACEID id);
 
-    bool        doneScheduled = false;
+  private:
+    void                    setupDefaultWS(const SMonitorRule&);
+    WORKSPACEID             findAvailableDefaultWS();
+
+    bool                    doneScheduled = false;
+    std::stack<WORKSPACEID> prevWorkSpaces;
 
     struct {
         CHyprSignalListener frame;

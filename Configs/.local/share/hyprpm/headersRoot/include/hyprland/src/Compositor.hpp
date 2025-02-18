@@ -1,38 +1,21 @@
 #pragma once
 
-#include <memory>
 #include <list>
 #include <sys/resource.h>
 
 #include "defines.hpp"
-#include "debug/Log.hpp"
-#include "events/Events.hpp"
-#include "config/ConfigManager.hpp"
-#include "managers/ThreadManager.hpp"
 #include "managers/XWaylandManager.hpp"
-#include "managers/input/InputManager.hpp"
-#include "managers/LayoutManager.hpp"
 #include "managers/KeybindManager.hpp"
-#include "managers/AnimationManager.hpp"
-#include "managers/EventManager.hpp"
-#include "managers/ProtocolManager.hpp"
 #include "managers/SessionLockManager.hpp"
-#include "managers/HookSystemManager.hpp"
-#include "debug/HyprDebugOverlay.hpp"
-#include "debug/HyprNotificationOverlay.hpp"
-#include "helpers/Monitor.hpp"
-#include "desktop/Workspace.hpp"
 #include "desktop/Window.hpp"
-#include "render/Renderer.hpp"
-#include "render/OpenGL.hpp"
-#include "hyprerror/HyprError.hpp"
-#include "plugins/PluginSystem.hpp"
-#include "helpers/Watchdog.hpp"
+#include "protocols/types/ColorManagement.hpp"
+#include "helpers/memory/Memory.hpp"
 
 #include <aquamarine/backend/Backend.hpp>
 #include <aquamarine/output/Output.hpp>
 
 class CWLSurfaceResource;
+struct SWorkspaceRule;
 
 enum eManagersInitStage : uint8_t {
     STAGE_PRIORITY = 0,
@@ -42,7 +25,7 @@ enum eManagersInitStage : uint8_t {
 
 class CCompositor {
   public:
-    CCompositor();
+    CCompositor(bool onlyConfig = false);
     ~CCompositor();
 
     wl_display*                                m_sWLDisplay;
@@ -89,10 +72,11 @@ class CCompositor {
     bool                                       m_bUnsafeState    = false; // unsafe state is when there is no monitors.
     bool                                       m_bNextIsUnsafe   = false;
     PHLMONITORREF                              m_pUnsafeOutput; // fallback output for the unsafe state
-    bool                                       m_bIsShuttingDown = false;
-    bool                                       m_bFinalRequests  = false;
-    bool                                       m_bDesktopEnvSet  = false;
-    bool                                       m_bEnableXwayland = true;
+    bool                                       m_bIsShuttingDown         = false;
+    bool                                       m_bFinalRequests          = false;
+    bool                                       m_bDesktopEnvSet          = false;
+    bool                                       m_bWantsXwayland          = true;
+    bool                                       m_bOnlyConfigVerification = false;
 
     // ------------------------------------------------- //
 
@@ -123,8 +107,9 @@ class CCompositor {
     void                   changeWindowZOrder(PHLWINDOW, bool);
     void                   cleanupFadingOut(const MONITORID& monid);
     PHLWINDOW              getWindowInDirection(PHLWINDOW, char);
-    PHLWINDOW              getNextWindowOnWorkspace(PHLWINDOW, bool focusableOnly = false, std::optional<bool> floating = {});
-    PHLWINDOW              getPrevWindowOnWorkspace(PHLWINDOW, bool focusableOnly = false, std::optional<bool> floating = {});
+    PHLWINDOW              getWindowInDirection(const CBox& box, PHLWORKSPACE pWorkspace, char dir, PHLWINDOW ignoreWindow = nullptr, bool useVectorAngles = false);
+    PHLWINDOW              getNextWindowOnWorkspace(PHLWINDOW, bool focusableOnly = false, std::optional<bool> floating = {}, bool visible = false);
+    PHLWINDOW              getPrevWindowOnWorkspace(PHLWINDOW, bool focusableOnly = false, std::optional<bool> floating = {}, bool visible = false);
     WORKSPACEID            getNextAvailableNamedWorkspace();
     bool                   isPointOnAnyMonitor(const Vector2D&);
     bool                   isPointOnReservedArea(const Vector2D& point, const PHLMONITOR monitor = nullptr);
@@ -140,7 +125,6 @@ class CCompositor {
     void                   setWindowFullscreenInternal(const PHLWINDOW PWINDOW, const eFullscreenMode MODE);
     void                   setWindowFullscreenClient(const PHLWINDOW PWINDOW, const eFullscreenMode MODE);
     void                   setWindowFullscreenState(const PHLWINDOW PWINDOW, const SFullscreenState state);
-    void                   changeWindowFullscreenModeInternal(const PHLWINDOW PWINDOW, const eFullscreenMode MODE, const bool ON);
     void                   changeWindowFullscreenModeClient(const PHLWINDOW PWINDOW, const eFullscreenMode MODE, const bool ON);
     void                   updateFullscreenFadeOnWorkspace(PHLWORKSPACE);
     PHLWINDOW              getX11Parent(PHLWINDOW);
@@ -167,8 +151,11 @@ class CCompositor {
     void                   setPreferredScaleForSurface(SP<CWLSurfaceResource> pSurface, double scale);
     void                   setPreferredTransformForSurface(SP<CWLSurfaceResource> pSurface, wl_output_transform transform);
     void                   updateSuspendedStates();
-    PHLWINDOW              windowForCPointer(CWindow*);
     void                   onNewMonitor(SP<Aquamarine::IOutput> output);
+    void                   ensurePersistentWorkspacesPresent(const std::vector<SWorkspaceRule>& rules);
+
+    SImageDescription      getPreferredImageDescription();
+    bool                   shouldChangePreferredImageDescription();
 
     std::string            explicitConfigPath;
 
@@ -179,10 +166,11 @@ class CCompositor {
     void             setRandomSplash();
     void             initManagers(eManagersInitStage stage);
     void             prepareFallbackOutput();
+    bool             isWindowAvailableForCycle(PHLWINDOW pWindow, PHLWINDOW w, bool focusableOnly, std::optional<bool> floating, bool anyWorkspace = false);
 
     uint64_t         m_iHyprlandPID    = 0;
     wl_event_source* m_critSigSource   = nullptr;
     rlimit           m_sOriginalNofile = {0};
 };
 
-inline std::unique_ptr<CCompositor> g_pCompositor;
+inline UP<CCompositor> g_pCompositor;

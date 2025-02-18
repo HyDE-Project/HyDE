@@ -30,7 +30,6 @@ class CInputMethodRelay {
 
     CTextInput*        getFocusedTextInput();
 
-    void               setIMEPopupFocus(CInputPopup*, SP<CWLSurfaceResource>);
     void               removePopup(CInputPopup*);
 
     CInputPopup*       popupFromCoords(const Vector2D& point);
@@ -41,10 +40,10 @@ class CInputMethodRelay {
     WP<CInputMethodV2> m_pIME;
 
   private:
-    std::vector<std::unique_ptr<CTextInput>>  m_vTextInputs;
-    std::vector<std::unique_ptr<CInputPopup>> m_vIMEPopups;
+    std::vector<UP<CTextInput>>  m_vTextInputs;
+    std::vector<UP<CInputPopup>> m_vIMEPopups;
 
-    WP<CWLSurfaceResource>                    m_pLastKbFocus;
+    WP<CWLSurfaceResource>       m_pLastKbFocus;
 
     struct {
         CHyprSignalListener newTIV3;
