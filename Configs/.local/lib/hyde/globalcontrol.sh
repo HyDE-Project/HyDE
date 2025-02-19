@@ -379,3 +379,19 @@ is_hovered() {
     fi
     return 1
 }
+
+toml_write() {
+    # Use kwriteconfig6 to write to config files in toml format
+    local config_file=$1
+    local group=$2
+    local key=$3
+    local value=$4
+
+    if ! kwriteconfig6 --file "${config_file}" --group "${group}" --key "${key}" "${value}" 2>/dev/null; then
+        if ! grep -q "^\[${group}\]" "${config_file}"; then
+            echo -e "\n[${group}]\n${key}=${value}" >>"${config_file}"
+        elif ! grep -q "^${key}=" "${config_file}"; then
+            sed -i "/^\[${group}\]/a ${key}=${value}" "${config_file}"
+        fi
+    fi
+}

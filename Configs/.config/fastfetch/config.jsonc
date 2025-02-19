@@ -1,3 +1,11 @@
+/*
+HyDE provides xdg/share/fastfetch/presets/hyde/*.config.jsonc files for different layouts. 
+You can also create your own config.jsonc file in the same directory to create a custom theme. 
+
+To test HyDE's fastfetch theme, run:
+fastfetch --config hyde/*.jsonc
+
+*/
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {

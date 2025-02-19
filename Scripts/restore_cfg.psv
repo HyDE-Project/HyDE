@@ -61,7 +61,9 @@ S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
 
  Terminal 
 P|${HOME}/.config|lsd|lsd
-S|${HOME}/.config|fastfetch|fastfetch
+P|${HOME}/.config|fastfetch|fastfetch
+O|${HOME}/.local/share/fastfetch/presets|hyde|fastfetch
+
 S|${HOME}/.config/kitty|hyde.conf theme.conf|kitty
 P|${HOME}/.config/kitty|kitty.conf|kitty
 
