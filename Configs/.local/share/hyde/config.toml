@@ -129,11 +129,11 @@ scale=30                                # total scaling
 [weather]
 temperature_unit='c'	# Temperature unit to °C or °F ('c' or 'f')
 time_format='24h'		# Time format ('12h or 24h')
-windspeed_unit='km/h'	# Windpeed unit ('kh/h' or 'mph')
+windspeed_unit='km/h'	# Windspeed unit ('kh/h' or 'mph')
 show_icon= true			# Show the weather icon in waybar
 show_location= true	    # Show the location in waybar
 show_today= true		# Detailed description of today in tooltip
-forecast_days= 3 		# Number of days to show forcast (0-3)
+forecast_days= 3 		# Number of days to show forecast (0-3)
 location = ''			# Location/coordinates string for the weather output
 
 [cava.stdout]
