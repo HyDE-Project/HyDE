@@ -19,7 +19,7 @@ Mehrsprachige README-Unterstützung
 
 <div align="center"><br>
   <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
-  <a href="#aktualisieren"><kbd> <br> Aktualisieren <br> </kbd></a>&ensp;&ensp;>
+  <a href="#aktualisieren"><kbd> <br> Aktualisieren <br> </kbd></a>&ensp;&ensp;
   <a href="#themen"><kbd> <br> Themen <br> </kbd></a>&ensp;&ensp;
   <a href="#stile"><kbd> <br> Stile <br> </kbd></a>&ensp;&ensp;
   <a href="KEYBINDINGS.de.md"><kbd> <br> Tastenkombinationen <br> </kbd></a>&ensp;&ensp;
