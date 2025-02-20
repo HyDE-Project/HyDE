@@ -22,8 +22,8 @@ Multi-language README support
   <a href="#installatie"><kbd> <br> Installatie <br> </kbd></a>&ensp;&ensp;
   <a href="#updaten"><kbd> <br> Updaten <br> </kbd></a>&ensp;&ensp;
   <a href="#thema's"><kbd> <br> Thema's <br> </kbd></a>&ensp;&ensp;
-  <a href="#styles"><kbd> <br> Stijlen <br> </kbd></a>&ensp;&ensp;
-  <a href="KEYBINDINGS.md"><kbd> <br> Toetscombinaties <br> </kbd></a>&ensp;&ensp;
+  <a href="#stijlen"><kbd> <br> Stijlen <br> </kbd></a>&ensp;&ensp;
+  <a href="KEYBINDINGS.nl.md"><kbd> <br> Toetscombinaties <br> </kbd></a>&ensp;&ensp;
   <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
   <a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
   <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
@@ -41,12 +41,6 @@ Multi-language README support
 
 Bekijk de volledige notitie hier:
 [Journey to HyDE and beyond](./Hyprdots-to-HyDE.md)
-
-<!--
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
-
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&suffix=%20online&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
--->
 
 <https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265>
 
@@ -116,8 +110,8 @@ git pull origin master
 
 ---
 
-All our official themes are stored in a separate repository, allowing users to install them using themepatcher.
-For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes).
+Al onze officiële thema's worden opgeslagen in een apart repository, waardoor gebruikers ze kunnen installeren met themepatcher.
+Voor meer informatie, bezoek [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes).
 
 <div align="center">
   <table><tr><td>
@@ -139,33 +133,33 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 </div>
 
 > [!TIP]
-> Everyone, including you can create, maintain, and share additional themes, all of which can be installed using themepatcher!
-> To create your own custom theme, please refer to the [theming wiki](https://github.com/prasanthrangan/hyprdots/wiki/Theming).
-> If you wish to have your hyde theme showcased, or you want to find some non-official themes, visit [kRHYME7/hyde-gallery](https://github.com/kRHYME7/hyde-gallery)!
+> Iedereen, inclusief jij, kan extra thema's maken, onderhouden en delen, die allemaal kunnen worden geïnstalleerd met themepatcher!
+> Om je eigen aangepaste thema te maken, raadpleeg de [thema wiki](https://github.com/prasanthrangan/hyprdots/wiki/Theming).
+> Als je wilt dat jouw HyDE-thema wordt getoond, of als je enkele niet-officiële thema's wilt vinden, bezoek [kRHYME7/hyde-gallery](https://github.com/kRHYME7/hyde-gallery)!
 
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="styles"></a>  
+<a id="stijlen"></a>  
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=STYLES" width="450"/>
 
 ---
 
-<div align="center"><table><tr>Theme Select</tr><tr><td>
+<div align="center"><table><tr>Thema Selectie</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_2.png"/></td></tr></table></div>
 
-<div align="center"><table><tr><td>Wallpaper Select</td><td>Launcher Select</td></tr><tr><td>
+<div align="center"><table><tr><td>Achtergrond Selectie</td><td>Starter Selectie</td></tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/walls_select.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_sel.png"/></td></tr>
-<tr><td>Wallbash Modes</td><td>Notification Action</td></tr><tr><td>
+<tr><td>Wallbash Modes</td><td>Notificatie Actie</td></tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wb_mode_sel.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/notif_action_sel.png"/></td></tr>
 </table></div>
 
-<div align="center"><table><tr>Rofi Launcher</tr><tr><td>
+<div align="center"><table><tr>Rofi Starter</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_2.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_3.png"/></td></tr><tr><td>
@@ -184,7 +178,7 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_2.png"/></td></tr></table></div>
 
-<div align="center"><table><tr>Game Launcher</tr><tr><td>
+<div align="center"><table><tr>Game Starter</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_2.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_3.png"/></td></tr></table></div>
@@ -192,22 +186,11 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_4.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_5.png"/></td></tr></table></div>
 
-<!--
-<div align="right">
-  <br>
-  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
-</div>
-
-<div align="center">
-
-</div>
--->
-
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
 <div align="right">
-  <sub>Last edited on: 02/01/2025<span id="last-edited"></span></sub>
+  <sub>Laatst bewerkt op: 02/01/2025<span id="last-edited"></span></sub>
 </div>
