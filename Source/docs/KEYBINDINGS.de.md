@@ -200,7 +200,7 @@ Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | ein Thema auswählen           |
 
 <!-- ## <a id=Arbeitsbereiche>Arbeitsbereiche</a> -->
-## <a id=Arbeitsbereiche></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Arbeitsbereiche" width="450"/>
+## <a id=arbeitsbereiche></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Arbeitsbereiche" width="450"/>
 
 ### Navigation
 
