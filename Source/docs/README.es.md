@@ -23,6 +23,7 @@ Soporte multilingüe para el README
 <br>
 
 <a href="#instalación"><kbd> <br> Instalación <br> </kbd></a>&ensp;&ensp;
+<a href="#actualizar"><kbd> <br> actualizar <br> </kbd></a>&ensp;&ensp;
 <a href="#temas"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
 <a href="#estilos"><kbd> <br> Estilos <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.es.md"><kbd> <br> Combinaciones <br> </kbd></a>&ensp;&ensp;

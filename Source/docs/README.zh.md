@@ -24,6 +24,7 @@ Multi-language README support
 <br>
 
 <a href="#installation"><kbd> <br> 安装 <br> </kbd></a>&ensp;&ensp;
+<a href="#updating"><kbd> <br> 更新 <br> </kbd></a>&ensp;&ensp;
 <a href="#themes"><kbd> <br> 主题 <br> </kbd></a>&ensp;&ensp;
 <a href="#styles"><kbd> <br> 风格 <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.zh.md"><kbd> <br> 按键映射 <br> </kbd></a>&ensp;&ensp;

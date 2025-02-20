@@ -23,6 +23,7 @@ Multi-language README support
 <br>
 
 <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
+<a href="#updating"><kbd> <br> Updating <br> </kbd></a>&ensp;&ensp;
 <a href="#themes"><kbd> <br> Themes <br> </kbd></a>&ensp;&ensp;
 <a href="#styles"><kbd> <br> Styles <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.md"><kbd> <br> Keybindings <br> </kbd></a>&ensp;&ensp;
