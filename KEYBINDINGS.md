@@ -29,7 +29,7 @@ Multi-language KEYBINDINGS support
 <a href=#hardware-controls><kbd> <br> Hardware Controls <br> </kbd></a>&ensp;&ensp;
 <a href=#utilities><kbd> <br> Utilities <br> </kbd></a>&ensp;&ensp;
 <a href="#theming-and-wallpaper"><kbd> <br> Theming and Wallpaper <br> </kbd></a>&ensp;&ensp;
-<a href=#wokspaces><kbd> <br> Wokspaces <br> </kbd></a>&ensp;&ensp;
+<a href=#workspaces><kbd> <br> Workspaces <br> </kbd></a>&ensp;&ensp;
 
 </div><br><br>
 
