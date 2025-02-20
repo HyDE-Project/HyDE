@@ -19,8 +19,9 @@ Multi-language README support
 <!-- [![nl](https://img.shields.io/badge/lang-nl-green.svg)](Source/docs/README.nl.md) -->
 
 <div align="center"><br>
-  <a href="#Installatie"><kbd> <br> Installatie <br> </kbd></a>&ensp;&ensp;
-  <a href="#themes"><kbd> <br> Thema's <br> </kbd></a>&ensp;&ensp;
+  <a href="#installatie"><kbd> <br> Installatie <br> </kbd></a>&ensp;&ensp;
+  <a href="#updaten"><kbd> <br> Updaten <br> </kbd></a>&ensp;&ensp;
+  <a href="#thema's"><kbd> <br> Thema's <br> </kbd></a>&ensp;&ensp;
   <a href="#styles"><kbd> <br> Stijlen <br> </kbd></a>&ensp;&ensp;
   <a href="KEYBINDINGS.md"><kbd> <br> Toetscombinaties <br> </kbd></a>&ensp;&ensp;
   <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
@@ -49,7 +50,7 @@ Bekijk de volledige notitie hier:
 
 <https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265>
 
-<a id="Installatie"></a>
+<a id="installatie"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALLATION" width="450"/>
 
 ---
@@ -88,12 +89,12 @@ cd ~/HyDE/Scripts
 
 Start je systeem opnieuw op na het installatiescript klaar is en je voor de eerste keer naar het SDDM inlogscherm (of zwart scherm) brengt. Voor meer details, raadpleeg de [installatie wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
-<a id="updating"></a>
+<a id="updaten"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=UPDATING" width="450"/>
 
 ---
 
-To update HyDE, you will need to pull the latest changes from GitHub and restore the configs by running the following commands:
+Om de HyDE te updaten, moet je de laatste aanpassingen van Github ophalen en de configuraties herstellen door de volgende commando's uit te voeren:
 
 ```shell
 cd ~/HyDE/Scripts
@@ -102,20 +103,15 @@ git pull origin master
 ```
 
 > [!IMPORTANT]
-> Please note that any configurations you made will be overwritten if listed to be done so as listed by `Scripts/restore_cfg.psv`.
-> However, all replaced configs are backed up and may be recovered from in `~/.config/cfg_backups`.
-
-<!--
-As a second update option, you can use `Hyde restore ...`, which does have a better way of managing restore and backup options.
-For more details, you can refer to [Hyde-cli - dots management wiki](https://github.com/kRHYME7/Hyde-cli/wiki/Dots-Management).
--->
+> Wees ervan bewust dat alle configuraties die je hebt gemaakt, worden overschreven als dit is aangegeven in `Scripts/restore_cfg.psv`.
+> Alle vervangen configuraties worden wel geback-upt en kunnen worden hersteld vanuit `~/.config/cfg_backups`.
 
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="themes"></a>  
+<a id="thema's"></a>  
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=THEMES" width="450"/>
 
 ---
