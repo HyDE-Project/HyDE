@@ -31,6 +31,16 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 
 </div><br><br>
 
+<div align="center">
+  <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
+    <img src="../assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+  </div>
+</div>
+
 <!-- # <a id=hyde-tastenkombinationen>HyDE Tastenkombinationen</a> -->
 <!-- # <a id=hyde-tastenkombinationen></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=450&lines=HyDE Tastenkombinationen" width="450"/> -->
 Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
