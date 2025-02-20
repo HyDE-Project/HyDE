@@ -39,7 +39,7 @@ Mehrsprachige README-Unterstützung
 </div>
 
 Hier finden Sie die vollständige Notiz:
-[Reise zu HyDE und darüber hinaus](./Hyprdots-to-HyDE.md)
+[Reise zu HyDE und darüber hinaus](../../Hyprdots-to-HyDE.md)
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
