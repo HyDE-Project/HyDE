@@ -50,8 +50,10 @@ Hier finden Sie die vollständige Notiz:
 
 <https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265>
 
+<br>
+
 <a id="installation"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALLATION" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATION" width="450"/>
 ---
 
 Das Installationsskript ist für eine minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux)-Installation gedacht, aber **kann** auf einigen [Arch-basierten Distributionen](https://wiki.archlinux.org/title/Arch-based_distributions) funktionieren.
@@ -100,7 +102,7 @@ Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki] (<https://gith
 </div>
 
 <a id="aktualisieren"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=AKTUALISIEREN" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=AKTUALISIEREN" width="450"/>
 ---
 
 Um HyDE zu aktualisieren, müssen Sie die letzten Änderungen von GitHub ziehen und die Konfigurationen wiederherstellen, indem Sie die folgenden Befehle ausführen:
@@ -126,7 +128,7 @@ Weitere Details finden Sie in [Hyde-cli - dots management wiki](https://github.c
 </div>
 
 <a id="themen"></a>  
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=THEMEN" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMEN" width="450"/>
 ---
 
 Alle unsere offiziellen Themen sind in einem separaten Repository gespeichert, so dass Benutzer sie mit themepatcher installieren können.
@@ -161,7 +163,7 @@ Weitere Informationen finden Sie unter [HyDE-Project/hyde-themes](https://github
 </div>
 
 <a id="stile"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=STILE" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STILE" width="450"/>
 ---
 
 <div align="center">
