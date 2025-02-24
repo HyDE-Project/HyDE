@@ -1,16 +1,22 @@
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+
+*/
+{
     "mpris": {
         "format": "{player_icon} {dynamic}",
-        "rotate": ${r_deg},
+        "rotate": 0,
         "format-paused": "{status_icon} <i>{dynamic}</i>",
-        "player-icons": { 
-            "default": "▶",
-            "mpv": "🎵"
+        "player-icons": {
+            "default": "\u25b6",
+            "mpv": "\ud83c\udfb5"
         },
         "status-icons": {
-            "paused": ""
+            "paused": "\uf04c"
         },
-        // "ignored-players": ["firefox"]
         "max-length": 1000,
         "interval": 1
-    },
-
+    }
+}

@@ -1,10 +1,18 @@
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+
+*/
+{
     "idle_inhibitor": {
         "format": "{icon}",
-        "rotate": ${r_deg},
+        "rotate": 0,
         "format-icons": {
-            "activated": "󰅶 ",
-            "deactivated": "󰛊 "
+            "activated": "\udb80\udd76",
+            "deactivated": "\udb81\udeca"
         },
-        "tooltip-format-activated":"Caffeine Mode Active",
-        "tooltip-format-deactivated":"Caffeine Mode Inactive"
-    },
+        "tooltip-format-activated": "Caffeine Mode Active",
+        "tooltip-format-deactivated": "Caffeine Mode Inactive"
+    }
+}
