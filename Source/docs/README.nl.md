@@ -12,26 +12,21 @@
 Multi-language README support
 -->
 
-<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](README.md) -->
-
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../README.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](README.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
-[![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
+[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
+<!-- [![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md) -->
 
-<div align="center">
-
-<br>
-
-<a href="#installation"><kbd> <br> 安装 <br> </kbd></a>&ensp;&ensp;
-<a href="#updating"><kbd> <br> 更新 <br> </kbd></a>&ensp;&ensp;
-<a href="#themes"><kbd> <br> 主题 <br> </kbd></a>&ensp;&ensp;
-<a href="#styles"><kbd> <br> 风格 <br> </kbd></a>&ensp;&ensp;
-<a href="KEYBINDINGS.zh.md"><kbd> <br> 按键映射 <br> </kbd></a>&ensp;&ensp;
-<a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
-<a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
-<a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
-
+<div align="center"><br>
+  <a href="#installatie"><kbd> <br> Installatie <br> </kbd></a>&ensp;&ensp;
+  <a href="#updaten"><kbd> <br> Updaten <br> </kbd></a>&ensp;&ensp;
+  <a href="#thema's"><kbd> <br> Thema's <br> </kbd></a>&ensp;&ensp;
+  <a href="#stijlen"><kbd> <br> Stijlen <br> </kbd></a>&ensp;&ensp;
+  <a href="KEYBINDINGS.nl.md"><kbd> <br> Toetscombinaties <br> </kbd></a>&ensp;&ensp;
+  <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
+  <a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
+  <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
 </div><br><br>
 
 <div align="center">
@@ -44,37 +39,30 @@ Multi-language README support
   </div>
 </div>
 
-看这里了解完整说明：
-[Journey to HyDE and beyond](../../Hyprdots-to-HyDE.md)
-
-<!--
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
-
-<img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_presence_count&suffix=%20online&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
--->
+Bekijk de volledige notitie hier:
+[Reis naar HyDe en verder](../../Hyprdots-to-HyDE.md)
 
 <https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265>
 
 <br>
 
-<a id="installation"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATION" width="450"/>
+<a id="installatie"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATIE" width="450"/>
 ---
 
-安装脚本适用于最小 [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) 系统，但在某些[基于 Arch 的发行版](https://wiki.archlinux.org/title/Arch-based_distributions)上**可能**也能正常运行.
+Het installatiescript is ontworpen voor een minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) installatie, maar het **kan** ook werken op sommige [Arch-gebaseerde distributies](https://wiki.archlinux.org/title/Arch-based_distributions).
+Hoewel het installeren van HyDE naast een andere [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) zou moeten werken. Gaat het, vanwege de sterk aangepaste setup, **conflicteren** met je [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) thema's, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), enz. Dit is volledig het op eigen risico.
 
-HyDE是一个高度自定义的预设，在其他[桌面环境](https://wiki.archlinux.org/title/Desktop_environment)/[窗口管理器](https://wiki.archlinux.org/title/Window_manager)的上安装HyDE也许可行，但它可能会与您的[GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) 主题, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB)等等配置相冲突.您需自行承担风险。
-
-我们支持 Nixos， 但作为一个单独的仓库在 [Hydenix](https://github.com/richen604/hydenix/tree/main) 提供。
+Voor Nixos-ondersteuning is er een apart project dat wordt onderhouden op [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
-> 安装脚本会自动检测英伟达显卡并安装 nvidia-dkms 内核驱动。
-> 请确保您的英伟达显卡支持 dkms 驱动，支持的具体型号可以查看[这个列表](https://wiki.archlinux.org/title/NVIDIA)。
+> Het installatiescript detecteert automatisch een NVIDIA-kaart en installeert nvidia-dkms drivers voor je kernel.
+> Zorg controleer dat je NVIDIA-kaart dkms drivers ondersteunt in [deze lijst](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]
-> 这个脚本会修改您的 `grub` 或 `systemd-boot` 配置以启用英伟达DRM。
+> Dit script past je `grub` of `systemd-boot` instellingen aan om NVIDIA DRM te activeren.
 
-若要安装，请执行以下命令：
+Om te installeren, voer de volgende commando's uit:
 
 ```shell
 pacman -S --needed git base-devel
@@ -84,35 +72,28 @@ cd ~/HyDE/Scripts
 ```
 
 > [!TIP]
-> 您可以在 `Scripts/pkg_user.lst` 中添加您想随 HyDE 一同安装的应用，并将此文件作为参数传入安装脚本，像这样：
+> Je kan ook andere apps die je tegelijk met HyDe wenst te installeren toevoegen aan `Scripts/pkg_user.lst`. Deze file kan je dan als parameter aan de install meegeven:
 >
 > ```shell
 > ./install.sh pkg_user.lst
 > ```
 
 > [!IMPORTANT]
-> 请参照 `Scripts/pkg_extra.lst`编写您的安装列表，
->
-> 如果您想安装额外的软件包，也可以  `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst`。
+> Baseer je lijst op basis van `Scripts/pkg_extra.lst`
+> of je kunt `cp  Scripts/pkg_extra.lst Scripts/pkg_user.lst` Als je alle extra pakketten wilt installeren. 
 
-<!--
-
-As a second install option, you can also use `Hyde-install`, which might be easier for some.
-View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com/kRHYME7/Hyde-cli?tab=readme-ov-file#usage).
--->
-
-在安装脚本运行完成后请重启，首次启动时您将看到SDDM登录界面（或者黑屏）。更多细节请看[安装 wiki](https://github.com/HyDE-Project/HyDE/wiki/installation)
+Start je systeem opnieuw op na het installatiescript klaar is en je voor de eerste keer naar het SDDM inlogscherm (of zwart scherm) brengt. Voor meer details, raadpleeg de [installatie wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="updating"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=UPDATING" width="450"/>
+<a id="updaten"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=UPDATEN" width="450"/>
 ---
 
-要更新 HyDE, 您需要从 GitHub 中拉取最新更改并通过运行以下命令恢复配置：
+Om de HyDE te updaten, moet je de laatste aanpassingen van Github ophalen en de configuraties herstellen door de volgende commando's uit te voeren:
 
 ```shell
 cd ~/HyDE/Scripts
@@ -121,25 +102,20 @@ git pull origin master
 ```
 
 > [!IMPORTANT]
-> 请注意，在`Sctipts/restore_cfg.psv`中列出的配置中，您所做的任何个性化配置都会被覆盖。
-> 但是，所有被覆盖的配置会先被备份到`~/.config/cfg_backups/`中，以便找回。
-
-<!--
-As a second update option, you can use `Hyde restore ...`, which does have a better way of managing restore and backup options.
-For more details, you can refer to [Hyde-cli - dots management wiki](https://github.com/kRHYME7/Hyde-cli/wiki/Dots-Management).
--->
+> Wees ervan bewust dat alle configuraties die je hebt gemaakt, worden overschreven als dit is aangegeven in `Scripts/restore_cfg.psv`.
+> Alle vervangen configuraties worden wel geback-upt en kunnen worden hersteld vanuit `~/.config/cfg_backups`.
 
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="themes"></a>  
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMES" width="450"/>
+<a id="thema's"></a>  
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMA'S" width="450"/>
 ---
 
-所有的官方主题都作为单独的仓库存储，您可以用过主题补丁程序安装。
-详情请见[HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes)。
+Al onze officiële thema's worden opgeslagen in een apart repository, waardoor gebruikers ze kunnen installeren met themepatcher.
+Voor meer informatie, bezoek [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes).
 
 <div align="center">
   <table><tr><td>
@@ -157,36 +133,36 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 [![Synth-Wave](https://placehold.co/130x30/495495/ff7edb?text=Synth-Wave&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Synth-Wave)
 [![Tokyo-Night](https://placehold.co/130x30/7aa2f7/24283b?text=Tokyo-Night&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Tokyo-Night)
 
-</td></tr></table>
+  </td></tr></table>
 </div>
 
 > [!TIP]
-> 包括您在内的所有人都可以创建、维护、分享主题！它们都可以通过主题补丁程序安装。
-> 请参阅[主题 wiki](https://github.com/prasanthrangan/hyprdots/wiki/Theming) 来创建您的个性化主题。
-> 如果您想展示您的 hyde 主题，或者您想寻找非官方主题，请看[kRHYME7/hyde-gallery](https://github.com/kRHYME7/hyde-gallery)。
+> Iedereen, inclusief jij, kan extra thema's maken, onderhouden en delen, die allemaal kunnen worden geïnstalleerd met themepatcher!
+> Om je eigen aangepaste thema te maken, raadpleeg de [thema wiki](https://github.com/prasanthrangan/hyprdots/wiki/Theming).
+> Als je wilt dat jouw HyDE-thema wordt getoond, of als je enkele niet-officiële thema's wilt vinden, bezoek [kRHYME7/hyde-gallery](https://github.com/kRHYME7/hyde-gallery)!
 
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="styles"></a>  
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STYLES" width="450"/>
+<a id="stijlen"></a>  
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STIJLEN" width="450"/>
 ---
 
-<div align="center"><table><tr>主题选择</tr><tr><td>
+<div align="center"><table><tr>Thema Selectie</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_2.png"/></td></tr></table></div>
 
-<div align="center"><table><tr><td>壁纸选择</td><td>启动器界面选择</td></tr><tr><td>
+<div align="center"><table><tr><td>Achtergrond Selectie</td><td>Starter Selectie</td></tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/walls_select.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_sel.png"/></td></tr>
-<tr><td>Wallbash 模式</td><td>通知</td></tr><tr><td>
+<tr><td>Wallbash Modes</td><td>Notificatie Actie</td></tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wb_mode_sel.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/notif_action_sel.png"/></td></tr>
 </table></div>
 
-<div align="center"><table><tr>Rofi 启动器</tr><tr><td>
+<div align="center"><table><tr>Rofi Starter</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_2.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_3.png"/></td></tr><tr><td>
@@ -201,11 +177,11 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_12.png"/></td></tr>
 </table></div>
 
-<div align="center"><table><tr>Wlogout 菜单</tr><tr><td>
+<div align="center"><table><tr>Wlogout Menu</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_2.png"/></td></tr></table></div>
 
-<div align="center"><table><tr>游戏启动器</tr><tr><td>
+<div align="center"><table><tr>Game Starter</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_2.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_3.png"/></td></tr></table></div>
@@ -213,22 +189,11 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_4.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_5.png"/></td></tr></table></div>
 
-<!--
-<div align="right">
-  <br>
-  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
-</div>
-
-<div align="center">
-
-</div>
--->
-
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
 <div align="right">
-  <sub>最后编辑: 02/01/2025<span id="last-edited"></span></sub>
+  <sub>Laatst bewerkt op: 02/01/2025<span id="last-edited"></span></sub>
 </div>

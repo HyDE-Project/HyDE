@@ -14,12 +14,13 @@ Mehrsprachige README-Unterstützung
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../README.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](README.es.md)
+[![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
 <!-- [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md) -->
 
 <div align="center"><br>
   <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
-  <a href="#aktualisieren"><kbd> <br> Aktualisieren <br> </kbd></a>&ensp;&ensp;>
+  <a href="#aktualisieren"><kbd> <br> Aktualisieren <br> </kbd></a>&ensp;&ensp;
   <a href="#themen"><kbd> <br> Themen <br> </kbd></a>&ensp;&ensp;
   <a href="#stile"><kbd> <br> Stile <br> </kbd></a>&ensp;&ensp;
   <a href="KEYBINDINGS.de.md"><kbd> <br> Tastenkombinationen <br> </kbd></a>&ensp;&ensp;
@@ -39,7 +40,7 @@ Mehrsprachige README-Unterstützung
 </div>
 
 Hier finden Sie die vollständige Notiz:
-[Reise zu HyDE und darüber hinaus](./Hyprdots-to-HyDE.md)
+[Reise zu HyDE und darüber hinaus](../../Hyprdots-to-HyDE.md)
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
@@ -49,8 +50,10 @@ Hier finden Sie die vollständige Notiz:
 
 <https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265>
 
+<br>
+
 <a id="installation"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALLATION" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATION" width="450"/>
 ---
 
 Das Installationsskript ist für eine minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux)-Installation gedacht, aber **kann** auf einigen [Arch-basierten Distributionen](https://wiki.archlinux.org/title/Arch-based_distributions) funktionieren.
@@ -93,8 +96,13 @@ Sehen Sie sich die Installationsanweisungen für HyDE in [Hyde-cli - Usage](http
 Bitte starten Sie neu, nachdem das Installationsskript abgeschlossen ist und Sie zum ersten Mal den SDDM-Anmeldebildschirm (oder einen schwarzen Bildschirm) sehen.
 Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki] (<https://github.com/HyDE-Project/HyDE/wiki/installation>).
 
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
 <a id="aktualisieren"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=AKTUALISIEREN" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=AKTUALISIEREN" width="450"/>
 ---
 
 Um HyDE zu aktualisieren, müssen Sie die letzten Änderungen von GitHub ziehen und die Konfigurationen wiederherstellen, indem Sie die folgenden Befehle ausführen:
@@ -120,7 +128,7 @@ Weitere Details finden Sie in [Hyde-cli - dots management wiki](https://github.c
 </div>
 
 <a id="themen"></a>  
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=THEMEN" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMEN" width="450"/>
 ---
 
 Alle unsere offiziellen Themen sind in einem separaten Repository gespeichert, so dass Benutzer sie mit themepatcher installieren können.
@@ -155,7 +163,7 @@ Weitere Informationen finden Sie unter [HyDE-Project/hyde-themes](https://github
 </div>
 
 <a id="stile"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=STILE" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STILE" width="450"/>
 ---
 
 <div align="center">

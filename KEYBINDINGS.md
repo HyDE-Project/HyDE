@@ -15,6 +15,7 @@ Multi-language KEYBINDINGS support
 <!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](KEYBINDINGS.md) -->
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/KEYBINDINGS.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/KEYBINDINGS.de.md)
+[![nl](https://img.shields.io/badge/lang-nl-green.svg)](Source/docs/KEYBINDINGS.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/KEYBINDINGS.zh.md)
 
 <div align="center">
@@ -28,7 +29,7 @@ Multi-language KEYBINDINGS support
 <a href=#hardware-controls><kbd> <br> Hardware Controls <br> </kbd></a>&ensp;&ensp;
 <a href=#utilities><kbd> <br> Utilities <br> </kbd></a>&ensp;&ensp;
 <a href="#theming-and-wallpaper"><kbd> <br> Theming and Wallpaper <br> </kbd></a>&ensp;&ensp;
-<a href=#wokspaces><kbd> <br> Wokspaces <br> </kbd></a>&ensp;&ensp;
+<a href=#workspaces><kbd> <br> Workspaces <br> </kbd></a>&ensp;&ensp;
 
 </div><br><br>
 

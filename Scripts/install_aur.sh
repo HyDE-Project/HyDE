@@ -31,7 +31,7 @@ fi
 if pkg_installed git; then
     git clone "https://aur.archlinux.org/${aurhlpr}.git" "$HOME/Clone/${aurhlpr}"
 else
-    print_log -r "AUR" -stat "missing" "git dependency..."
+    print_log -sec "AUR" -stat "missing" "'git' as dependency..."
     exit 1
 fi
 

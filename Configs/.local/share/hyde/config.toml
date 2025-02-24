@@ -126,8 +126,15 @@ font = "JetBrainsMono Nerd Font"
 scale=30                                # total scaling
 # output = ["", ""]                     # Default monitor output for waybar
 
-[waybar.weather]
-loc = true # Show location in bar // accepts true or false or location/coordinates string
+[weather]
+temperature_unit='c'	# Temperature unit to °C or °F ('c' or 'f')
+time_format='24h'		# Time format ('12h or 24h')
+windspeed_unit='km/h'	# Windspeed unit ('kh/h' or 'mph')
+show_icon= true			# Show the weather icon in waybar
+show_location= true	    # Show the location in waybar
+show_today= true		# Detailed description of today in tooltip
+forecast_days= 3 		# Number of days to show forecast (0-3)
+location = ''			# Location/coordinates string for the weather output
 
 [cava.stdout]
 # 'cava.sh stdout' configuration

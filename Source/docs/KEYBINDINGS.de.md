@@ -14,6 +14,7 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../KEYBINDINGS.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](KEYBINDINGS.es.md)
+[![nl](https://img.shields.io/badge/lang-nl-green.svg)](KEYBINDINGS.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](KEYBINDINGS.zh.md)
 <!-- [![de](https://img.shields.io/badge/lang-de-black.svg)](KEYBINDINGS.de.md) -->
 
@@ -30,6 +31,16 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 <a href=#arbeitsbereiche><kbd> <br> Arbeitsbereiche <br> </kbd></a>&ensp;&ensp;
 
 </div><br><br>
+
+<div align="center">
+  <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
+    <img src="../assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    <img src="../assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+  </div>
+</div>
 
 <!-- # <a id=hyde-tastenkombinationen>HyDE Tastenkombinationen</a> -->
 <!-- # <a id=hyde-tastenkombinationen></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=450&lines=HyDE Tastenkombinationen" width="450"/> -->
@@ -189,7 +200,7 @@ Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | ein Thema auswählen           |
 
 <!-- ## <a id=Arbeitsbereiche>Arbeitsbereiche</a> -->
-## <a id=Arbeitsbereiche></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Arbeitsbereiche" width="450"/>
+## <a id=arbeitsbereiche></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Arbeitsbereiche" width="450"/>
 
 ### Navigation
 

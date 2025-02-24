@@ -15,6 +15,7 @@ Multi-language README support
 <!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](README.md) -->
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/README.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/README.de.md)
+[![nl](https://img.shields.io/badge/lang-nl-green.svg)](Source/docs/README.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/README.zh.md)
 
 <div align="center">
@@ -22,6 +23,7 @@ Multi-language README support
 <br>
 
 <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
+<a href="#updating"><kbd> <br> Updating <br> </kbd></a>&ensp;&ensp;
 <a href="#themes"><kbd> <br> Themes <br> </kbd></a>&ensp;&ensp;
 <a href="#styles"><kbd> <br> Styles <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.md"><kbd> <br> Keybindings <br> </kbd></a>&ensp;&ensp;
@@ -52,8 +54,10 @@ Check this out for the full note:
 
 <https://github.com/prasanthrangan/hyprdots/assets/106020512/7f8fadc8-e293-4482-a851-e9c6464f5265>
 
+<br>
+
 <a id="installation"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=INSTALLATION" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATION" width="450"/>
 ---
 
 The installation script is designed for a minimal [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) install, but **may** work on some [Arch-based distros](https://wiki.archlinux.org/title/Arch-based_distributions).
@@ -97,8 +101,13 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 Please reboot after the install script completes and takes you to the SDDM login screen (or black screen) for the first time.
 For more details, please refer to the [installation wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
 <a id="updating"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=UPDATING" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=UPDATING" width="450"/>
 ---
 
 To update HyDE, you will need to pull the latest changes from GitHub and restore the configs by running the following commands:
@@ -124,7 +133,7 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 </div>
 
 <a id="themes"></a>  
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=THEMES" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMES" width="450"/>
 ---
 
 All our official themes are stored in a separate repository, allowing users to install them using themepatcher.
@@ -160,7 +169,7 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 </div>
 
 <a id="styles"></a>  
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=STYLES" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STYLES" width="450"/>
 ---
 
 <div align="center"><table><tr>Theme Select</tr><tr><td>
