@@ -53,28 +53,27 @@ VERBOSE
 fn_percentage() {
     if [[ "$battery_percentage" -ge "$unplug_charger_threshold" ]] && [[ "$battery_status" != "Discharging" ]] && [[ "$battery_status" != "Full" ]] && (((battery_percentage - last_notified_percentage) >= interval)); then
         steps=$(printf "%03d" $(((battery_percentage + 5) / 10 * 10)))
-        if $verbose; then
-            echo "Prompt:UNPLUG: $unplug_charger_threshold $battery_status $battery_percentage $steps" fi
-            notify-send -a "HyDE Power" -t 5000 -r 33 -u "CRITICAL" -i "battery-${steps:-100}-charging" "Battery Charged" "Battery is at $battery_percentage%. You can unplug the charger"
-            last_notified_percentage=$battery_percentage
-        elif [[ "$battery_percentage" -le "$battery_critical_threshold" ]]; then
-            count=$((timer > mnt ? timer : mnt)) # reset count
-            while [ $count -gt 0 ] && [[ $battery_status == "Discharging"* ]]; do
-                for battery in /sys/class/power_supply/BAT*; do battery_status=$(<"$battery/status"); done
-                if [[ $battery_status != "Discharging" ]]; then break; fi
-                notify-send -a "HyDE Power" -t 5000 -r 33 -u "CRITICAL" -i "xfce4-battery-critical" "Battery Critically Low" "$battery_percentage% is critically low. Device will execute $execute_critical in $((count / 60)):$((count % 60)) ."
-                count=$((count - 1))
-                sleep 1
-            done
-            [ $count -eq 0 ] && fn_action
-        elif [[ "$battery_percentage" -le "$battery_low_threshold" ]] && [[ "$battery_status" == "Discharging" ]] && (((last_notified_percentage - battery_percentage) >= interval)); then
-            steps=$(printf "%1d" $(((battery_percentage + 5) / 10 * 10)))
-            if $verbose; then echo "Prompt:LOW: $battery_low_threshold $battery_status $battery_percentage"; fi
-            notify-send -a "HyDE Power" -t 5000 -r 33 -u "CRITICAL" -i "battery-level-${steps:-10}-symbolic" "Battery Low" "Battery is at $battery_percentage%. Connect the charger."
-            last_notified_percentage=$battery_percentage
-        fi
+        if $verbose; then echo "Prompt:UNPLUG: $unplug_charger_threshold $battery_status $battery_percentage $steps"; fi
+        notify-send -a "HyDE Power" -t 5000 -r 5 -u "CRITICAL" -i "battery-${steps:-100}-charging" "Battery Charged" "Battery is at $battery_percentage%. You can unplug the charger"
+        last_notified_percentage=$battery_percentage
+    elif [[ "$battery_percentage" -le "$battery_critical_threshold" ]]; then
+        count=$((timer > mnt ? timer : mnt)) # reset count
+        while [ $count -gt 0 ] && [[ $battery_status == "Discharging"* ]]; do
+            for battery in /sys/class/power_supply/BAT*; do battery_status=$(<"$battery/status"); done
+            if [[ $battery_status != "Discharging" ]]; then break; fi
+            notify-send -a "HyDE Power" -t 5000 -r 5 -u "CRITICAL" -i "xfce4-battery-critical" "Battery Critically Low" "$battery_percentage% is critically low. Device will execute $execute_critical in $((count / 60)):$((count % 60)) ."
+            count=$((count - 1))
+            sleep 1
+        done
+        [ $count -eq 0 ] && fn_action
+    elif [[ "$battery_percentage" -le "$battery_low_threshold" ]] && [[ "$battery_status" == "Discharging" ]] && (((last_notified_percentage - battery_percentage) >= interval)); then
+        steps=$(printf "%1d" $(((battery_percentage + 5) / 10 * 10)))
+        if $verbose; then echo "Prompt:LOW: $battery_low_threshold $battery_status $battery_percentage"; fi
+        notify-send -a "HyDE Power" -t 5000 -r 5 -u "CRITICAL" -i "battery-level-${steps:-10}-symbolic" "Battery Low" "Battery is at $battery_percentage%. Connect the charger."
+        last_notified_percentage=$battery_percentage
     fi
 }
+
 fn_action() {                            #handles the $execute_critical command #? This is special as it will try to execute always
     count=$((timer > mnt ? timer : mnt)) # reset count
     nohup "$execute_critical" &>/dev/null &
@@ -92,7 +91,7 @@ fn_status() {
             prev_status=$battery_status
             urgency=$([[ $battery_percentage -le "$battery_low_threshold" ]] && echo "CRITICAL" || echo "NORMAL")
             steps=$(printf "%1d" $(((battery_percentage + 5) / 10 * 10)))
-            notify-send -a "HyDE Power" -t 5000 -r 33 -u "${urgency:-normal}" -i "battery-level-${steps:-10}-symbolic" "Charger Plug Out" "Battery is at $battery_percentage%."
+            notify-send -a "HyDE Power" -t 5000 -r 5 -u "${urgency:-normal}" -i "battery-level-${steps:-10}-symbolic" "Charger Plug Out" "Battery is at $battery_percentage%."
             $execute_discharging
         fi
         fn_percentage
@@ -100,12 +99,11 @@ fn_status() {
     "Not"* | "Charging")
         if $verbose; then echo "Case:$battery_status Level: $battery_percentage"; fi
         if [[ "$prev_status" == "Discharging" ]] || [[ "$prev_status" == "Not"* ]]; then
-            echo inside
             prev_status=$battery_status
             count=$((timer > mnt ? timer : mnt)) # reset count
             urgency=$([[ "$battery_percentage" -ge $unplug_charger_threshold ]] && echo "CRITICAL" || echo "NORMAL")
             steps=$(printf "%03d" $(((battery_percentage + 5) / 10 * 10)))
-            notify-send -a "HyDE Power" -t 5000 -r 33 -u "${urgency:-normal}" -i "battery-${steps:-100}-charging" "Charger Plug In" "Battery is at $battery_percentage%."
+            notify-send -a "HyDE Power" -t 5000 -r 5 -u "${urgency:-normal}" -i "battery-${steps:-100}-charging" "Charger Plug In" "Battery is at $battery_percentage%."
             $execute_charging
         fi
         fn_percentage
@@ -115,7 +113,7 @@ fn_status() {
         if [[ $battery_status != "Discharging" ]]; then
             now=$(date +%s)
             if [[ "$prev_status" == *"harging"* ]] || ((now - lt >= $((notify * 60)))); then
-                notify-send -a "HyDE Power" -t 5000 -r 33 -u "CRITICAL" -i "battery-full-charging-symbolic" "Battery Full" "Please unplug your Charger"
+                notify-send -a "HyDE Power" -t 5000 -r 5 -u "CRITICAL" -i "battery-full-charging-symbolic" "Battery Full" "Please unplug your Charger"
                 prev_status=$battery_status lt=$now
                 $execute_charging
             fi
@@ -217,7 +215,7 @@ HELP
     ;;
 esac
 
-mnc=2 mxc=50 mnl=10 mxl=80 mnu=50 mxu=100 mnt=60 mxt=1000 mnf=80 mxf=100 mnn=1 mxn=1140 mni=1 mxi=10 #Defaults Ranges
+mnc=2 mxc=50 mnl=10 mxl=80 mnu=40 mxu=100 mnt=60 mxt=1000 mnf=50 mxf=100 mnn=1 mxn=1140 mni=1 mxi=10 #Defaults Ranges
 
 check_range() {
     local var=$1 min=$2 max=$3 error_message=$4

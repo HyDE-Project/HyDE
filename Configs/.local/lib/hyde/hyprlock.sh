@@ -12,6 +12,27 @@ confDir="${confDir:-$XDG_CONFIG_HOME}"
 cacheDir="${HYDE_CACHE_HOME:-"${XDG_CACHE_HOME}/hyde"}"
 WALLPAPER="${cacheDir}/wall.set"
 
+USAGE() {
+    cat <<EOF
+    Usage: $(basename "${0}") --[arg]
+
+    arguments:
+      --background -b    - Converts and ensures background to be a png
+                            : \$BACKGROUND_PATH
+      --mpris <player>   - Handles mpris thumbnail generation
+                            : \$MPRIS_IMAGE
+      --profile          - Generates the profile picture
+                            : \$PROFILE_IMAGE
+      --cava             - Placeholder function for cava
+                            : \$CAVA_CMD
+      --art              - Prints the path to the mpris art"
+                            : \$MPRIS_ART
+      --select      -s     - Selects the hyprlock layout"
+                            : \$LAYOUT_PATH
+      --help       -h    - Displays this help message"
+EOF
+}
+
 # Converts and ensures background to be a png
 fn_background() {
     WP="$(realpath "${WALLPAPER}")"
@@ -33,22 +54,23 @@ fn_profile() {
 }
 
 fn_mpris() {
-    local player=${1:-""}
+    local player=${1:-$(playerctl --list-all 2>/dev/null | head -n 1)}
     THUMB="${cacheDir}/landing/mpris"
-    if [ "$(playerctl -p "${player}" status)" == "Playing" ]; then
+    player_status="$(playerctl -p "${player}" status 2>/dev/null)"
+    if [[ "${player_status}" == "Playing" ]]; then
         playerctl -p "${player}" metadata --format "{{xesam:title}} $(mpris_icon "${player}")  {{xesam:artist}}"
         mpris_thumb "${player}"
     else
         if [ -f "$HOME/.face.icon" ]; then
             if ! cmp -s "$HOME/.face.icon" "${THUMB}.png"; then
                 cp -f "$HOME/.face.icon" "${THUMB}.png"
-                pkill -USR2 hyprlock 2>/dev/null # updates the mpris thumbnail
+                pkill -USR2 hyprlock /dev/null 2>&1 # updates the mpris thumbnail
 
             fi
         else
             if ! cmp -s "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${THUMB}.png"; then
                 cp "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${THUMB}.png"
-                pkill -USR2 hyprlock 2>/dev/null # updates the mpris thumbnail
+                pkill -USR2 hyprlock /dev/null 2>&1 # updates the mpris thumbnail
             fi
         fi
         exit 1
@@ -85,7 +107,7 @@ mpris_thumb() { # Generate thumbnail for mpris
     echo "${artUrl}" >"${THUMB}".lnk
     curl -Lso "${THUMB}".art "$artUrl"
     magick "${THUMB}.art" -quality 50 "${THUMB}.png"
-    pkill -USR2 hyprlock 2>&/dev/null # updates the mpris thumbnail
+    pkill -USR2 hyprlock /dev/null 2>&1 # updates the mpris thumbnail
 }
 
 fn_cava() {
@@ -252,26 +274,6 @@ source = ${hyde_hyprlock_conf}
 CONF
 }
 
-fn_help() {
-    cat <<EOF
-    Usage: hyprlock.sh [command]"
-    Commands:"
-      --background -b    - Converts and ensures background to be a png
-                            : \$BACKGROUND_PATH
-      --mpris           - Handles mpris thumbnail generation
-                            : \$MPRIS_IMAGE
-      --profile          - Generates the profile picture
-                            : \$PROFILE_IMAGE
-      --cava             - Placeholder function for cava
-                            : \$CAVA_CMD
-      --art              - Prints the path to the mpris art"
-                            : \$MPRIS_ART
-      --select      -s     - Selects the hyprlock layout"
-                            : \$LAYOUT_PATH
-      --help       -h    - Displays this help message"
-EOF
-}
-
 if [ -z "${*}" ]; then
     if [ ! -f "$HYDE_CACHE_HOME/wallpapers/hyprlock.png" ]; then
         print_log -sec "hyprlock" -stat "setting" " $HYDE_CACHE_HOME/wallpapers/hyprlock.png"
@@ -281,17 +283,16 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONGOPTS="select,background,profile,mpris,cava,art,help"
+LONGOPTS="select,background,profile,mpris:,cava,art,help"
 
 # Parse options
 PARSED=$(
-    if getopt --options shb --longoptions $LONGOPTS --name "$0" -- "$@"; then
+    if ! getopt --options shb --longoptions $LONGOPTS --name "$0" -- "$@"; then
         exit 2
     fi
 )
 
 # Apply parsed options
-# echo "$PARSED"
 eval set -- "$PARSED"
 
 while true; do
@@ -321,13 +322,16 @@ while true; do
         exit 0
         ;;
     help | --help | -h)
-        fn_help
+        USAGE
         exit 0
         ;;
     --)
         shift
         break
         ;;
+    *)
+        break
+        ;;
     esac
-
+    shift
 done

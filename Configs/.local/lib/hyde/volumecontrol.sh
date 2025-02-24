@@ -55,16 +55,16 @@ notify_vol() {
     [ "$angle" -gt 100 ] && angle=100
     ico="${icodir}/${iconStyle}-${angle}.svg"
     bar=$(seq -s "." $((vol / 15)) | sed 's/[0-9]//g')
-    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 69 -t 800 -i "${ico}" "${vol}${bar}" "${nsink}"
+    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 8 -t 800 -i "${ico}" "${vol}${bar}" "${nsink}"
 }
 
 notify_mute() {
     mute=$(pamixer "${srce}" --get-mute | cat)
     [ "${srce}" == "--default-source" ] && dvce="microphone" || dvce="speaker"
     if [ "${mute}" == "true" ]; then
-        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/muted-${dvce}.svg" "muted" "${nsink}"
+        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 8 -t 800 -i "${icodir}/muted-${dvce}.svg" "muted" "${nsink}"
     else
-        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 69 -t 800 -i "${icodir}/unmuted-${dvce}.svg" "unmuted" "${nsink}"
+        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 8 -t 800 -i "${icodir}/unmuted-${dvce}.svg" "unmuted" "${nsink}"
     fi
 }
 
@@ -131,9 +131,9 @@ select_output() {
     if [ -n "$selection" ]; then
         device=$(pactl list sinks | grep -C2 -F "Description: $selection" | grep Name | cut -d: -f2 | xargs)
         if pactl set-default-sink "$device"; then
-            notify-send -t 2000 -i "${icodir}/unmuted-speaker.svg" -r 69 -u low "Activated: $selection"
+            notify-send -t 2000 -i "${icodir}/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
         else
-            notify-send -t 2000 -r 69 -u critical "Error activating $selection"
+            notify-send -t 2000 -r 8 -u critical "Error activating $selection"
         fi
     else
         pactl list sinks | grep -ie "Description:" | awk -F ': ' '{print $2}' | sort
