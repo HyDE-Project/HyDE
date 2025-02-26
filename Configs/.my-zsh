@@ -6,6 +6,8 @@ alias cat='bat'
 #alias nix='fish'
 alias q='exit'
 alias fast='fastfetch'
+alias hydir='cd ~/.local/share/hyde/'
+alias hy='hyde-shell'
 
 #NIX ALIASES
 alias hms='home-manager switch'
@@ -42,6 +44,6 @@ export FZF_DEFAULT_OPTS="--height 70% --layout=reverse --border --color=hl:#2dd4
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always -n --line-range :500 {}' --bind 'enter:execute(nvim {})'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
-alias fy="wtype -M ctrl t"
+#alias fy="wtype -M ctrl t"
 
 export PATH="$PATH:/home/zaryu/.UsefulCMD"

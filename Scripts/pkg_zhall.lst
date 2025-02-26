@@ -71,15 +71,15 @@ cpio                                                   # hyprpm deps
 meson                                                  # hyprpm deps
 cmake                                                  # hyprpm deps
 xorg-xhost                                             # hyprpm deps
-glaze
-hyprland-protocols
-uwsm
+#glaze
+#hyprland-protocols
+#uwsm
 
 bat                                                    # cat replacement
 mousepad                                               # text-editor
 video-downloader-git                                   # video downloader
 gparted                                                # partition manager
-brave-bin                                              # browser
+#brave-bin                                              # browser
 neovim                                                 # editor
 fish                                                   # shell
 less                                                   # pager
@@ -100,3 +100,10 @@ lsd                                                    # list with icon on termi
 ncdu                                                   # cli tools
 intel-media-sdk
 tilix
+xf86-video-intel
+xorg-xrandr
+#gnome-control-center
+lib32-mesa
+lib32-ocl-icd
+#intel-computer-runtime
+#haveged

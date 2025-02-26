@@ -3,6 +3,10 @@ MenuBar=Disabled
 [$Version]
 update_info=dolphin_detailsmodesettings.upd:rename-leading-padding
 
+[ExtractDialog]
+1366x768 screen: Window-Maximized=true
+DirHistory[$e]=$HOME/Documents/
+
 [General]
 ShowSelectionToggle=false
 ShowSpaceInfo=false
@@ -28,7 +32,6 @@ Places Icons Static Size=16
 
 [MainWindow]
 MenuBar=Disabled
-ToolBarsMovable=Disabled
 
 [MainWindow][Toolbar mainToolBar]
 IconSize=16
