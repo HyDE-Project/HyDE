@@ -4,7 +4,7 @@ import json
 import requests
 from datetime import datetime
 import os
-
+import sys
 
 ### Constants ###
 WEATHER_CODES = {
@@ -204,8 +204,9 @@ try:
 except ValueError:
     forecast_days = 3
 get_location = os.getenv(
-    "WEATHER_LOCATION", ""
-)  # Name of the location to get the weather from (default: '')
+    "WEATHER_LOCATION", "Santiago de Compostela"
+).replace(" ", "_")  # Name of the location to get the weather from (default: '')
+# Parse the location to wttr.in format (snake_case)
 
 # Check if the variables are set correctly
 if temp_unit not in ("c", "f"):
@@ -219,8 +220,15 @@ if forecast_days not in range(4):
 
 ### Main Logic ###
 data = {}
+URL = f"https://wttr.in/{get_location}?format=j1"
+
 # Get the weather data
-weather = requests.get(f"https://wttr.in/{get_location}?format=j1", timeout=10).json()
+headers = {"User-Agent": "Mozilla/5.0"}
+response = requests.get(URL, timeout=10, headers=headers)
+try:
+    weather = response.json()
+except json.decoder.JSONDecodeError:
+    sys.exit(1)
 current_weather = weather["current_condition"][0]
 
 # Get the data to display
@@ -246,7 +254,7 @@ if show_today_details:
 # Get the weather forecast for the next 2 days
 for i in range(forecast_days):
     day = weather["weather"][i]
-    data["tooltip"] += f"\n<b>"
+    data["tooltip"] += "\n<b>"
     if i == 0:
         data["tooltip"] += "Today, "
     if i == 1:
