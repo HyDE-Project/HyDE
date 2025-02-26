@@ -155,10 +155,11 @@ def format_chances(hour):
         "chanceofwindy": "Wind",
     }
 
-    conditions = []
-    for event in chances.keys():
-        if int(hour[event]) > 0:
-            conditions.append(chances[event] + " " + hour[event] + "%")
+    conditions = [
+        f"{chances[event]} {hour[event]}%"
+        for event in chances
+        if int(hour.get(event, 0)) > 0
+    ]
     return ", ".join(conditions)
 
 
@@ -204,7 +205,7 @@ try:
 except ValueError:
     FORECAST_DAYS = 3
 get_location = os.getenv(
-    "WEATHER_LOCATION", "Santiago de Compostela"
+    "WEATHER_LOCATION", ""
 ).replace(" ", "_")  # Name of the location to get the weather from (default: '')
 # Parse the location to wttr.in format (snake_case)
 
@@ -263,7 +264,7 @@ for i in range(forecast_days):
     data["tooltip"] += f"⬆️ {get_max_temp(day_instance)} ⬇️ {get_min_temp(day_instance)} "
     data["tooltip"] += f"🌅 {get_sunrise(day_instance)} 🌇 {get_sunset(day_instance)}\n"
     # Get the hourly forecast for the day
-    for hour in day["hourly"]:
+    for hour in day_instance["hourly"]:
         if i == 0:
             if int(format_time(hour["time"])) < datetime.now().hour - 2:
                 continue
