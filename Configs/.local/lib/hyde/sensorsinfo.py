@@ -16,10 +16,10 @@ DEVICE_GLYPHS = {
 }
 
 def get_device_glyph(device_name):
-    for key in DEVICE_GLYPHS:
-        if key in device_name:
-            return DEVICE_GLYPHS[key]
-    return DEVICE_GLYPHS["default"]
+    return next(
+        (glyph for key, glyph in DEVICE_GLYPHS.items() if key in device_name),
+        DEVICE_GLYPHS["default"]
+    )
 
 def format_columns(data, max_entries_per_column=15):
     if not data:
@@ -51,7 +51,7 @@ def get_current_page(total_pages):
     return 0
 
 def save_current_page(page):
-    with open(PAGE_FILE, 'w') as f:
+    with open(PAGE_FILE, 'w', encoding='utf-8') as f:
         f.write(str(page))
 
 def get_temp_color(temp):
