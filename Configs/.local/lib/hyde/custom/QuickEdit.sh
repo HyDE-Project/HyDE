@@ -23,7 +23,7 @@ menu(){
 }
 
 main() {
-    choice=$(menu | rofi -i -dmenu -config ~/.local/share/rofi/themes/clipboard.rasi | cut -d. -f1)
+    choice=$(menu | rofi -i -dmenu -config ~/.local/share/hyde/rofi/themes/clipboard.rasi | cut -d. -f1)
     case $choice in
         0)  $tty $editor "$QSDir/QuickEdit.sh"
 	    ;;	    

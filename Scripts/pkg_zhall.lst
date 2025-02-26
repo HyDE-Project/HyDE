@@ -107,3 +107,4 @@ lib32-mesa
 lib32-ocl-icd
 #intel-computer-runtime
 #haveged
+gnome-keyring
