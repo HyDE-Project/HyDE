@@ -350,11 +350,7 @@ def expand_meta_data(binds_data):
             submap_key_display = submap_keys[submap]["key_display"]
             bind["submap_mod"] = submap_mod_display
             bind["submap_key"] = submap_key_display
-            bind["displayed_keys"] = (
-                f"[{submap_mod_display} + {submap_key_display}] + {formatted_keys}".strip(
-                    " + "
-                )
-            )
+            bind["displayed_keys"] = ( f"{submap_mod_display} + {submap_key_display} + " if submap_mod_display else "") + f"{formatted_keys}"
             bind["description"] = f"[{submap}] {bind['description']}"
         else:
             bind["submap_mod"] = ""
