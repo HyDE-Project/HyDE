@@ -95,7 +95,7 @@ def get_temp_color(temp):
     return f"{temp}°C"
 
 
-def get_sensor_data(page=0):
+def get_sensor_data(result_sensors, page=0):
     try:
         sensors_data = json.loads(result_sensors.stdout)
     except json.JSONDecodeError:
@@ -222,5 +222,5 @@ if __name__ == "__main__":
         page = (page - 1 + total_pages) % total_pages
         subprocess.run(["pkill", "-RTMIN+19", "waybar"], check=False)
     save_current_page(page)
-    sensor_info = get_sensor_data(page)
+    sensor_info = get_sensor_data(result_sensors, page)
     print(json.dumps(sensor_info, separators=(",", ":")))

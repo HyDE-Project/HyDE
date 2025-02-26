@@ -10,7 +10,7 @@ export BIN_DIR LIB_DIR SHARE_DIR
 
 # shellcheck disable=SC1091
 if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
-    echo "Error: Could not load HyDe, broken installation?"
+    echo "Error: Could not load HyDE, broken installation?"
     exit 1
 fi
 
