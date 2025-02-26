@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-import json
-import requests
-from datetime import datetime
 import os
 import sys
+import json
+from datetime import datetime
+import requests
 
 ### Constants ###
 WEATHER_CODES = {
@@ -202,7 +202,7 @@ try:
         os.getenv("WEATHER_FORECAST_DAYS", "3")
     )  # Number of days to show the forecast for (default: 3)
 except ValueError:
-    forecast_days = 3
+    FORECAST_DAYS = 3
 get_location = os.getenv(
     "WEATHER_LOCATION", "Santiago de Compostela"
 ).replace(" ", "_")  # Name of the location to get the weather from (default: '')
@@ -210,13 +210,13 @@ get_location = os.getenv(
 
 # Check if the variables are set correctly
 if temp_unit not in ("c", "f"):
-    temp_unit = "c"
+    TEMP_UNIT = "c"
 if time_format not in ("12h", "24h"):
-    time_format = "12h"
+    TIME_FORMAT = "12h"
 if windspeed_unit not in ("km/h", "mph"):
-    windspeed_unit = "km/h"
+    WINDSPEED_UINT = "km/h"
 if forecast_days not in range(4):
-    forecast_days = 3
+    FORECAST_DAYS = 3
 
 ### Main Logic ###
 data = {}
