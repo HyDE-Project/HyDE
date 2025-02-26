@@ -51,7 +51,7 @@ WEATHER_CODES = {
 
 ### Functions ###
 def load_env_file(filepath):
-    with open(filepath) as f:
+    with open(filepath, encoding='utf-8') as f:
         for line in f:
             if line.strip() and not line.startswith("#"):
                 if line.startswith("export "):
@@ -71,43 +71,43 @@ def get_description(weatherinstance):
 def get_temperature(weatherinstance):
     if temp_unit == "c":
         return weatherinstance["temp_C"] + "°C"
-    else:
-        return weatherinstance["temp_F"] + "°F"
+
+    return weatherinstance["temp_F"] + "°F"
 
 
 def get_temperature_hour(weatherinstance):
     if temp_unit == "c":
         return weatherinstance["tempC"] + "°C"
-    else:
-        return weatherinstance["tempF"] + "°F"
+
+    return weatherinstance["tempF"] + "°F"
 
 
 def get_feels_like(weatherinstance):
     if temp_unit == "c":
         return weatherinstance["FeelsLikeC"] + "°C"
-    else:
-        return weatherinstance["FeelsLikeF"] + "°F"
+
+    return weatherinstance["FeelsLikeF"] + "°F"
 
 
 def get_wind_speed(weatherinstance):
     if windspeed_unit == "km/h":
         return weatherinstance["windspeedKmph"] + "Km/h"
-    else:
-        return weatherinstance["windspeedMiles"] + "Mph"
+
+    return weatherinstance["windspeedMiles"] + "Mph"
 
 
 def get_max_temp(day):
     if temp_unit == "c":
         return day["maxtempC"] + "°C"
-    else:
-        return day["maxtempF"] + "°F"
+
+    return day["maxtempF"] + "°F"
 
 
 def get_min_temp(day):
     if temp_unit == "c":
         return day["mintempC"] + "°C"
-    else:
-        return day["mintempF"] + "°F"
+
+    return day["mintempF"] + "°F"
 
 
 def get_sunrise(day):
@@ -139,8 +139,8 @@ def format_temp(temp):
 def get_timestamp(time_str):
     if time_format == "24h":
         return datetime.strptime(time_str, "%I:%M %p").strftime("%H:%M")
-    else:
-        return time_str
+
+    return time_str
 
 
 def format_chances(hour):
@@ -253,15 +253,15 @@ if show_today_details:
     data["tooltip"] += f"Humidity: {current_weather['humidity']}%\n"
 # Get the weather forecast for the next 2 days
 for i in range(forecast_days):
-    day = weather["weather"][i]
+    day_instance = weather["weather"][i]
     data["tooltip"] += "\n<b>"
     if i == 0:
         data["tooltip"] += "Today, "
     if i == 1:
         data["tooltip"] += "Tomorrow, "
-    data["tooltip"] += f"{day['date']}</b>\n"
-    data["tooltip"] += f"⬆️ {get_max_temp(day)} ⬇️ {get_min_temp(day)} "
-    data["tooltip"] += f"🌅 {get_sunrise(day)} 🌇 {get_sunset(day)}\n"
+    data["tooltip"] += f"{day_instance['date']}</b>\n"
+    data["tooltip"] += f"⬆️ {get_max_temp(day_instance)} ⬇️ {get_min_temp(day_instance)} "
+    data["tooltip"] += f"🌅 {get_sunrise(day_instance)} 🌇 {get_sunset(day_instance)}\n"
     # Get the hourly forecast for the day
     for hour in day["hourly"]:
         if i == 0:
