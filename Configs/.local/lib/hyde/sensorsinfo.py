@@ -45,7 +45,7 @@ PAGE_FILE = "/tmp/sensorinfo_page"
 
 def get_current_page(total_pages):
     if os.path.exists(PAGE_FILE):
-        with open(PAGE_FILE, 'r') as f:
+        with open(PAGE_FILE, 'r', encoding='utf-8') as f:
             page = int(f.read().strip())
             return page % total_pages
     return 0
@@ -89,15 +89,22 @@ def get_temp_color(temp):
     return f"{temp}°C"
 
 def get_sensor_data(page=0):
+    result_sensors = subprocess.run(
+                ["sensors", "-j"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                check=True
+            )
     try:
-        sensors_data = json.loads(result.stdout)
+        sensors_data = json.loads(result_sensors.stdout)
     except json.JSONDecodeError:
         print("Error: Failed to decode JSON from sensors output")
         return {"text": " N/A", "tooltip": "Error: Failed to decode JSON from sensors output"}
-    
+
     # Initialize variables
     device_data = {}
-    
+
     # Extract top-level sensor data
     for device in sorted(sensors_data.keys()):
         data = sensors_data[device]
@@ -122,20 +129,20 @@ def get_sensor_data(page=0):
                         device_data[device]["currents"].append(f"{sensor}: {value} A")
                     elif 'power' in key and 'input' in key:
                         device_data[device]["powers"].append(f"{sensor}: {value} W")
-    
+
     # Format the output
     text = " "
     tooltip_parts = []
-    
+
     devices = list(device_data.keys())
     total_pages = (len(devices) + PAGE_SIZE - 1) // PAGE_SIZE
     page = max(0, min(page, total_pages - 1))
     save_current_page(page)
-    
+
     start_index = page * PAGE_SIZE
     end_index = start_index + PAGE_SIZE
     devices = devices[start_index:end_index]
-    
+
     for device in devices:
         data = device_data[device]
         device_glyph = get_device_glyph(device)
@@ -164,20 +171,20 @@ def get_sensor_data(page=0):
         if has_data:
             tooltip_parts.append("\n".join(device_parts))
             tooltip_parts.append("\n")  # Add a newline after each device's information
-    
+
     # Add page indicator
     tooltip_parts.append(f"\nPage {page + 1}/{total_pages} ← →")
-    
+
     tooltip = "\n".join(tooltip_parts)
-    
-    with open("/tmp/sensorinfo", 'w') as f:
+
+    with open("/tmp/sensorinfo", 'w', encoding='utf-8') as f:
         f.write(tooltip)
-    
+
     return {"text": text, "tooltip": tooltip}
 
 if __name__ == "__main__":
     import sys
-    result = subprocess.run(["sensors", "-j"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
+    result = subprocess.run(["sensors", "-j"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, check=True)
     # result = subprocess.run(['sensors', '-j'], capture_output=True, text=True)
     # result = subprocess.run(['cat', '/tmp/beef'], capture_output=True, text=True)
     sensors_data = json.loads(result.stdout)
@@ -187,10 +194,10 @@ if __name__ == "__main__":
     page = get_current_page(total_pages)
     if '--next' in sys.argv:
         page = (page + 1) % total_pages
-        subprocess.run(['pkill', '-RTMIN+19', 'waybar'])
+        subprocess.run(['pkill', '-RTMIN+19', 'waybar'], check=False)
     elif '--prev' in sys.argv:
         page = (page - 1 + total_pages) % total_pages
-        subprocess.run(['pkill', '-RTMIN+19', 'waybar'])
+        subprocess.run(['pkill', '-RTMIN+19', 'waybar'] , check=False)
     save_current_page(page)
     sensor_info = get_sensor_data(page)
     print(json.dumps(sensor_info, separators=(',', ':')))
