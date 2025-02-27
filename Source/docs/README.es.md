@@ -216,7 +216,14 @@ Para obtener más información, visite [Temas HyDE](https://github.com/HyDE-Proj
 </div>
 -->
 
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
 
+<div align="right">
+  <sub>Última edición el: 27/02/2025<span id="last-edited"></span></sub>
+</div>
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=ESTRELLAS" width="450"/>
