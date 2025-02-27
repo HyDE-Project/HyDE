@@ -9,6 +9,7 @@ WARP_ENABLE_WAYLAND = 1
 custom_paths = [
     "$HOME/Pictures/Wallpapers",
 ] # List of paths to search for wallpapers
+backend = "swww" # Wallpaper backend, example: swww, hyprpaper, pcmanfm, feh, etc.
 
 [wallpaper.swww]
 # swwwallselect.sh configuration

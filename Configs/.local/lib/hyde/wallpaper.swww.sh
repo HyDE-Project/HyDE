@@ -22,6 +22,19 @@ scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
 
+# Handle transition
+case "${WALLPAPER_SET_FLAG}" in
+p)
+    xtrans=${WALLPAPER_SWWW_TRANSITION_PREV}
+    xtrans="${xtrans:-"outer"}"
+    ;;
+n)
+    xtrans=${WALLPAPER_SWWW_TRANSITION_NEXT}
+    xtrans="${xtrans:-"grow"}"
+    ;;
+
+esac
+
 selected_wall="$1"
 [ -z "${selected_wall}" ] && echo "No input wallpaper" && exit 1
 

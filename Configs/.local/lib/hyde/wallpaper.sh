@@ -206,18 +206,14 @@ main() {
     fi
 
     if [ -n "${wallpaper_setter_flag}" ]; then
+        export WALLPAPER_SET_FLAG="${wallpaper_setter_flag}"
         case "${wallpaper_setter_flag}" in
         n)
             Wall_Hash
-            xtrans=${WALLPAPER_SWWW_TRANSITION_NEXT}
-            xtrans="${xtrans:-"grow"}"
             Wall_Change n
             ;;
         p)
             Wall_Hash
-            xtrans=${WALLPAPER_SWWW_TRANSITION_PREV}
-            xtrans="${xtrans:-"outer"}"}
-            wallpaper_setter_flag=p
             Wall_Change p
             ;;
         r)
@@ -258,13 +254,16 @@ main() {
         esac
     fi
 
-    # TODO Add more backends. backend functions are used to e,g apply wallpaper or just a post processing like we do with swww
     # Apply wallpaper to  backend
     if [ -f "${scrDir}/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
         print_log -sec "wallpaper" "Using backend: ${wallpaper_backend}"
         "${scrDir}/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
     else
-        print_log -err "wallpaper" "Backend not found: ${wallpaper_backend}"
+        if command -v "wallpaper.${wallpaper_backend}.sh" >/dev/null; then
+            "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+        else
+            print_log -err "wallpaper" "Backend not found: ${wallpaper_backend}"
+        fi
     fi
 
     if [ "${wallpaper_setter_flag}" == "select" ]; then
@@ -297,7 +296,8 @@ PARSED=$(
     fi
 )
 
-wallpaper_setter_flag=
+wallpaper_backend="${WALLPAPER_BACKEND:-swww}"
+wallpaper_setter_flag=""
 # Apply parsed options
 eval set -- "$PARSED"
 while true; do

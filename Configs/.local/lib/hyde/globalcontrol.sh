@@ -42,7 +42,7 @@ get_hashmap() {
         [ "${wallSource}" == "--skipstrays" ] && skipStrays=1 && continue
         [ "${wallSource}" == "--verbose" ] && verboseMap=1 && continue
 
-        hashMap=$(find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) -exec "${hashMech}" {} + | sort -k2)
+        hashMap=$(find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*" -exec "${hashMech}" {} + | sort -k2)
         if [ -z "${hashMap}" ]; then
             echo "WARNING: No image found in \"${wallSource}\""
             continue

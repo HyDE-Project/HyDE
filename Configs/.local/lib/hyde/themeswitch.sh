@@ -191,7 +191,7 @@ find "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
 ' sh {} +
 
 if [ "$quiet" = true ]; then
-    "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend swww --global >/dev/null 2>&1
+    "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global >/dev/null 2>&1
 else
-    "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend swww --global
+    "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global
 fi

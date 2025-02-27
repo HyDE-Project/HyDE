@@ -29,7 +29,7 @@ Multi-language README support
 <a href="#styles"><kbd> <br> 风格 <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.zh.md"><kbd> <br> 按键映射 <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
-<a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
+<a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
 
 </div><br><br>
@@ -230,5 +230,5 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 </div>
 
 <div align="right">
-  <sub>最后编辑: 02/01/2025<span id="last-edited"></span></sub>
+  <sub>最后编辑: 27/02/2025<span id="last-edited"></span></sub>
 </div>
