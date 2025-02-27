@@ -25,7 +25,7 @@ Mehrsprachige README-Unterstützung
   <a href="#stile"><kbd> <br> Stile <br> </kbd></a>&ensp;&ensp;
   <a href="KEYBINDINGS.de.md"><kbd> <br> Tastenkombinationen <br> </kbd></a>&ensp;&ensp;
   <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
-  <a href="https://github.com/hyde-project/hyde/wiki"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
+  <a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
   <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
 </div><br><br>
 
@@ -237,5 +237,5 @@ Weitere Informationen finden Sie unter [HyDE-Project/hyde-themes](https://github
 </div>
 
 <div align="right">
-  <sub>Zuletzt bearbeitet am: 01.02.2025<span id="last-edited"></span></sub>
+  <sub>Zuletzt bearbeitet am: 27.02.2025<span id="last-edited"></span></sub>
 </div>
