@@ -4,7 +4,7 @@
     </a>
 </div>
 
-###### _<div align="right"><a id=-design-by-t2></a><sub>// design by t2</sub></div>_
+###### _<div align="right"><a id=-design-by-t2></a><sub>// 由t2设计</sub></div>_
 
 ![hyde_banner](../assets/hyde_banner.png)
 
@@ -24,13 +24,13 @@ Multi-language KEYBINDINGS support
 <br>
 
 <!-- <a href=#hyde-keybindings><kbd> <br> HyDE keybindings <br> </kbd></a>&ensp;&ensp; -->
-<a href=#window-management><kbd> <br> 窗口管理 <br> </kbd></a>&ensp;&ensp;
-<a href=#misc><kbd> <br> 杂项 <br> </kbd></a>&ensp;&ensp;
-<a href=#launcher><kbd> <br> 启动器 <br> </kbd></a>&ensp;&ensp;
-<a href=#hardware-controls><kbd> <br> 硬件控制 <br> </kbd></a>&ensp;&ensp;
-<a href=#utilities><kbd> <br> 组件 <br> </kbd></a>&ensp;&ensp;
-<a href="#theming-and-wallpaper"><kbd> <br> 主题和壁纸 <br> </kbd></a>&ensp;&ensp;
-<a href=#wokspaces><kbd> <br> 工作区 <br> </kbd></a>&ensp;&ensp;
+<a href=#窗口管理><kbd> <br> 窗口管理 <br> </kbd></a>&ensp;&ensp;
+<a href=#杂项><kbd> <br> 杂项 <br> </kbd></a>&ensp;&ensp;
+<a href=#启动器><kbd> <br> 启动器 <br> </kbd></a>&ensp;&ensp;
+<a href=#硬件控制><kbd> <br> 硬件控制 <br> </kbd></a>&ensp;&ensp;
+<a href=#组件><kbd> <br> 组件 <br> </kbd></a>&ensp;&ensp;
+<a href="#主题和壁纸"><kbd> <br> 主题和壁纸 <br> </kbd></a>&ensp;&ensp;
+<a href=#工作区><kbd> <br> 工作区 <br> </kbd></a>&ensp;&ensp;
 
 </div><br><br>
 
@@ -52,7 +52,7 @@ Multi-language KEYBINDINGS support
 > 按下<kbd>Super</kbd> + <kbd>/</kbd> 会列出可用的按键映射。
 
 <!-- ## <a id=window-management>Window Management</a> -->
-## <a id=window-management></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Window%20Management" width="450"/>
+## <a id=窗口管理></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=窗口管理" width="450"/>
 
 | 按键                                                 | 行为                          |
 | :--------------------------------------------------- | :------------------------------ |
@@ -103,7 +103,7 @@ Multi-language KEYBINDINGS support
 | <kbd>SUPER</kbd> + <kbd>X</kbd>         | 拖动窗口大小|
 
 <!-- ## <a id=misc>Misc</a> -->
-## <a id=misc></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Misc" width="450"/>
+## <a id=杂项></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=杂项" width="450"/>
 
 | 按键                                                                     | 行为                         |
 | :----------------------------------------------------------------------- | :----------------------------- |
@@ -113,7 +113,7 @@ Multi-language KEYBINDINGS support
 | <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>down</kbd>  | 将当前窗移动到下方|
 
 <!-- ## <a id=launcher>Launcher</a> -->
-## <a id=launcher></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Launcher" width="450"/>
+## <a id=启动器></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=启动器" width="450"/>
 
 ### 应用程序
 
@@ -140,7 +140,7 @@ Multi-language KEYBINDINGS support
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>A</kbd> | 选择 rofi 启动器界面 |
 
 <!-- ## <a id="hardware-controls">Hardware Controls</a> -->
-## <a id="hardware-controls"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Hardware%20Controls" width="450"/>
+## <a id="硬件控制"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=硬件控制" width="450"/>
 
 ### 音频
 
@@ -171,7 +171,7 @@ Multi-language KEYBINDINGS support
 | <kbd>None</kbd> + <kbd>XF86MonBrightnessDown</kbd> | 亮度减|
 
 <!-- ## <a id=utilities>Utilities</a> -->
-## <a id=utilities></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Utilities" width="450"/>
+## <a id=组件></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=组件" width="450"/>
 
 | 按键                                             | 行为                 |
 | :----------------------------------------------- | :--------------------- |
@@ -189,7 +189,7 @@ Multi-language KEYBINDINGS support
 | <kbd>None</kbd> + <kbd>Print</kbd>                 | 截取所有显示器     |
 
 <!-- ## <a id=theming-and-wallpaper>Theming and Wallpaper</a> -->
-## <a id=theming-and-wallpaper></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Theming%20and%20Wallpaper" width="450"/>
+## <a id=主题和壁纸></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=主题和壁纸" width="450"/>
 
 | 按键                                                 | 行为                 |
 | :--------------------------------------------------- | :--------------------- |
@@ -202,7 +202,7 @@ Multi-language KEYBINDINGS support
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | 选择主题         |
 
 <!-- ## <a id=workspaces>Workspaces</a> -->
-## <a id=workspaces></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Workspaces" width="450"/>
+## <a id=工作区></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=工作区" width="450"/>
 
 ### 导航
 
