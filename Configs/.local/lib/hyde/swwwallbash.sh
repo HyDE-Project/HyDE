@@ -315,7 +315,7 @@ fn_wallbash() {
                 s/<wallbash_4xa9_rgba(\([^)]*\))>/'"${dcol_4xa9_rgba}"'/g' "${temp_target_file}"
     fi
 
-    # Option to make dcol templates hande basic environment variables
+    # Option to make dcol templates handle basic environment variables
     sed -i 's|<<HOME>>|'"${HOME}"'|g' "${temp_target_file}"
 
     if [ -s "${temp_target_file}" ]; then
