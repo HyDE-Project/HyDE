@@ -1,0 +1,27 @@
+/* ? Inverse Leaf shape */
+
+window#waybar.top #leaf-inverse,
+window#waybar.top #leaf-inverse button,
+window#waybar.bottom #leaf-inverse,
+window#waybar.bottom #leaf-inverse button {
+    border-radius: 0 10pt 0 10pt;
+    border-width: 0em;
+}
+
+window#waybar.left #leaf-inverse,
+window#waybar.left #leaf-inverse button,
+window#waybar.right #leaf-inverse,
+window#waybar.right #leaf-inverse button {
+    border-radius: 0 10pt 0 10pt;
+    border-width: 0em;
+}
+
+window#waybar.top #leaf-inverse,
+window#waybar.bottom #leaf-inverse {
+    margin: 0.3em 1em 0.3em 0em;
+}
+
+window#waybar.left #leaf-inverse,
+window#waybar.right #leaf-inverse {
+    margin: 1em 0.3em 1em 0.3em;
+}

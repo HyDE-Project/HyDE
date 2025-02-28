@@ -1,0 +1,19 @@
+{
+    "memory": {
+        "states": {
+            "c": 90,
+            "h": 60,
+            "m": 30
+        },
+        "interval": 30,
+        "format": "\udb83\udf86 {used}GB",
+        "rotate": 0,
+        "format-m": "\udb83\udf85 {used}GB",
+        "format-h": "\udb81\udcc5 {used}GB",
+        "format-c": "\uf421 {used}GB",
+        "format-alt": "\udb83\udf86 {percentage}%",
+        "max-length": 10,
+        "tooltip": true,
+        "tooltip-format": "\udb83\udf86 {percentage}%\n\ue266 {used:0.1f}GB/{total:0.1f}GB"
+    }
+}
