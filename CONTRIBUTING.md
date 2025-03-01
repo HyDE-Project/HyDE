@@ -7,6 +7,7 @@ Multi-language CONTRIBUTING support
 <!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](CONTRIBUTING.md) -->
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/CONTRIBUTING.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/CONTRIBUTING.de.md)
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/docs/CONTRIBUTING.fr.md)
 
 Thank you for your interest in contributing to Community Standards! We welcome any contributions, including bug fixes, feature enhancements, documentation improvements, and other general improvements.
 
