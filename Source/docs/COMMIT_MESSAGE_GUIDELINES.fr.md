@@ -6,7 +6,6 @@ Support multi-langue pour COMMIT_MESSAGE_GUIDELINES
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../COMMIT_MESSAGE_GUIDELINES.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](COMMIT_MESSAGE_GUIDELINES.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](COMMIT_MESSAGE_GUIDELINES.de.md)
-<!-- [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](COMMIT_MESSAGE_GUIDELINES.fr.md) -->
 
 Un bon message de commit doit être descriptif et fournir du contexte sur les modifications apportées. Cela facilite la compréhension et la révision des changements à l’avenir.
 

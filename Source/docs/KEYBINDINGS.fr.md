@@ -17,7 +17,6 @@ Prise en charge multilingue des RACCOURCIS CLAVIER
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](KEYBINDINGS.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](KEYBINDINGS.zh.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](KEYBINDINGS.de.md)
-<!-- [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](KEYBINDINGS.fr.md) -->
 
 <div align="center">
 

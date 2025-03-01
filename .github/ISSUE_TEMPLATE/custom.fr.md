@@ -12,7 +12,6 @@ Support multilingue personnalisé
 [![en](https://img.shields.io/badge/lang-en-red.svg)](custom.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](custom.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](custom.de.md)
-<!-- [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](custom.fr.md) -->
 
 ## Template personnalisé
 

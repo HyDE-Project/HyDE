@@ -7,7 +7,6 @@ Support pour les modèles de CONTRIBUTING en plusieurs langues
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../CONTRIBUTING.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](CONTRIBUTING.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](CONTRIBUTING.de.md)
-<!-- [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](CONTRIBUTING.fr.md) -->
 
 Merci de votre intérêt pour la contribution aux Standards de la Communauté ! Nous acceptons toutes les contributions, y compris les corrections de bugs, les améliorations de fonctionnalités, les mises à jour de documentation et d’autres améliorations générales.
 
