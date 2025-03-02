@@ -29,7 +29,7 @@
         {
             "type": "custom",
             "format": ">-----------<+>------------------------------------------<",
-            "outputColor": "separator"
+            "outputColor": "blue"
         },
         {
             "type": "host",
@@ -61,7 +61,7 @@
         {
             "type": "custom",
             "format": ">-----------<+>------------------------------------------<",
-            "outputColor": "separator"
+            "outputColor": "blue"
         },
         {
             "type": "wmtheme",
@@ -102,7 +102,7 @@
         {
             "type": "custom",
             "format": ">-----------<+>------------------------------------------<",
-            "outputColor": "separator"
+            "outputColor": "blue"
         },
         {
             "type": "command",
@@ -118,7 +118,7 @@
         {
             "type": "custom",
             "format": ">-----------<+>------------------------------------------<",
-            "outputColor": "separator"
+            "outputColor": "blue"
         },
         "break",
         "break"
