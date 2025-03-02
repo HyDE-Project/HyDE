@@ -7,7 +7,6 @@ import argparse
 import logging
 import sys
 import signal
-import gi
 import json
 import os
 from typing import List
@@ -26,10 +25,8 @@ class PlayerManager:
     def __init__(self, selected_player=None):
         self.manager = Playerctl.PlayerManager()
         self.loop = GLib.MainLoop()
-        self.manager.connect(
-            "name-appeared", lambda *args: self.on_player_appeared(*args))
-        self.manager.connect(
-            "player-vanished", lambda *args: self.on_player_vanished(*args))
+        self.manager.connect("name-appeared", self.on_player_appeared)
+        self.manager.connect("player-vanished", self.on_player_vanished)
 
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
