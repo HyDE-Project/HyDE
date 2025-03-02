@@ -1,5 +1,6 @@
+{   
     "privacy": {
-        "icon-size": ${i_priv},
+        "icon-size": "${i_priv}",
         "icon-spacing": 5,
         "transition-duration": 250,
         "modules": [
@@ -14,5 +15,5 @@
                 "tooltip-icon-size": 24
             }
         ]
-    },
-
+    }
+}

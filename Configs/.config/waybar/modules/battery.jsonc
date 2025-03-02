@@ -1,3 +1,4 @@
+{   
     "battery": {
         "states": {
             "good": 95,
@@ -5,10 +6,10 @@
             "critical": 20
         },
         "format": "{icon} {capacity}%",
-        "rotate": ${r_deg},
+        "rotate": "${r_deg}",
         "format-charging": " {capacity}%",
         "format-plugged": " {capacity}%",
         "format-alt": "{time} {icon}",
         "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
-    },
-
+    }
+}

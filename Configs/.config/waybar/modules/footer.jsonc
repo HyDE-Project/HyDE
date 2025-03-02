@@ -1,6 +1,5 @@
-
 // modules for padding //
-
+{
     "custom/l_end": {
         "format": " ",
         "interval" : "once",
@@ -42,6 +41,4 @@
         "interval" : "once",
         "tooltip": false
     }
-
 }
-

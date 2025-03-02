@@ -1,6 +1,7 @@
+{   
     "hyprland/window": {
         "format": "  {}",
-        "rotate": ${r_deg},
+        "rotate": "${r_deg}",
         "separate-outputs": true,
         "rewrite": {
             "${USER}@${set_sysname}:(.*)": "$1 ",
@@ -20,8 +21,8 @@
             "(.*) — Github": "$1  ",
             "(.*)Github": "Github ",
             "(.*)Spotify Free": "Spotify 󰓇",
-            "(.*)Spotify Premiun": "Spotify 󰓇",
+            "(.*)Spotify Premiun": "Spotify 󰓇"
         },
         "max-length": 50
-    },
-
+    }
+}

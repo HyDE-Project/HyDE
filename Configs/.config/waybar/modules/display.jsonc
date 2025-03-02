@@ -1,6 +1,8 @@
-"custom/display": {
-    "format": "󱄄 ",
-    "rotate": ${r_deg},
-    "tooltip-format": "󱄄  display settings",
-    "on-click": "nwg-displays",
-},
+{   
+    "custom/display": {
+        "format": "󱄄 ",
+        "rotate": "${r_deg}",
+        "tooltip-format": "󱄄  display settings",
+        "on-click": "nwg-displays"
+    }
+}

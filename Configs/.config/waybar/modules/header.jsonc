@@ -4,11 +4,12 @@
 // sourced from header module //
 
     "layer": "top",
-    "output": [ ${w_output} ],
+    "output": [ "${w_output}" ],
     "position": "${w_position}",
     "mod": "dock",
-    "${hv_pos}": ${w_height},
+    "${hv_pos}": "${w_height}",
     "exclusive": true,
     "passthrough": false,
     "gtk-layer-shell": true,
-    "reload_style_on_change": true,
+    "reload_style_on_change": true
+}

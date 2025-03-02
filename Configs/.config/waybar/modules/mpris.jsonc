@@ -1,6 +1,7 @@
+{
     "mpris": {
         "format": "{player_icon} {dynamic}",
-        "rotate": ${r_deg},
+        "rotate": "${r_deg}",
         "format-paused": "{status_icon} <i>{dynamic}</i>",
         "player-icons": { 
             "default": "▶",
@@ -12,5 +13,6 @@
         // "ignored-players": ["firefox"]
         "max-length": 1000,
         "interval": 1
-    },
+    }
+}
 

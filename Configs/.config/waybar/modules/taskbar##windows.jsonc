@@ -1,7 +1,8 @@
+{
 	"wlr/taskbar#windows": {
 		"format": "{icon}{app_id}",
 		"rotate": "${r_deg}",
-		"icon-size": ${i_task},
+		"icon-size": "${i_task}",
 		"icon-theme": "${i_theme}",
         "spacing": 0,
 		"tooltip-format": "{title}",
@@ -14,5 +15,6 @@
 			"firefoxdeveloperedition": "firefox-developer-edition",
       "jetbrains-datagrip": "DataGrip"
 		}
-	},
+	}
+}
 
