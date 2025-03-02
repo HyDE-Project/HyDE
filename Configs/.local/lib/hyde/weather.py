@@ -156,9 +156,9 @@ def format_chances(hour):
     }
 
     conditions = [
-        f"{chances[event]} {hour[event]}%"
-        for event in chances
-        if int(hour.get(event, 0)) > 0
+        f"{description} {hour.get(key, 0)}%"
+        for key, description in chances.items()
+        if int(hour.get(key, 0)) > 0
     ]
     return ", ".join(conditions)
 
@@ -205,7 +205,7 @@ try:
 except ValueError:
     FORECAST_DAYS = 3
 get_location = os.getenv(
-    "WEATHER_LOCATION", ""
+    "WEATHER_LOCATIONS", ""
 ).replace(" ", "_")  # Name of the location to get the weather from (default: '')
 # Parse the location to wttr.in format (snake_case)
 
