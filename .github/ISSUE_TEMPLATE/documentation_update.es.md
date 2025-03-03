@@ -7,6 +7,7 @@ labels: "documentación, revisión de necesidades"
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](documentation_update.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](documentation_update.de.md)
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](documentation_update.fr.md)
 
 ## Actualización de documentación
 

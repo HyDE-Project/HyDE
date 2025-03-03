@@ -12,12 +12,11 @@
 Multi-language README support
 -->
 
-<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](README.md) -->
-
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../README.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](README.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 
 <div align="center">
 

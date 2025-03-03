@@ -6,7 +6,7 @@ Mehrsprachige PULL_REQUEST_TEMPLATE-Unterstützung
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](PULL_REQUEST_TEMPLATE.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](PULL_REQUEST_TEMPLATE.es.md)
-<!-- [![de](https://img.shields.io/badge/lang-de-black.svg)](PULL_REQUEST_TEMPLATE.de.md) -->
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](PULL_REQUEST_TEMPLATE.fr.md)
 
 ## Beschreibung
 
