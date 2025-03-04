@@ -1,18 +1,25 @@
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+
+*/
+{
     "memory": {
         "states": {
-            "c": 90, // critical
-            "h": 60, // high
-            "m": 30, // medium
+            "c": 90,
+            "h": 60,
+            "m": 30
         },
         "interval": 30,
-        "format": "󰾆 {used}GB",
-        "rotate": ${r_deg},
-        "format-m": "󰾅 {used}GB",
-        "format-h": "󰓅 {used}GB",
-        "format-c": " {used}GB",
-        "format-alt": "󰾆 {percentage}%",
+        "format": "\udb83\udf86 {used}GB",
+        "rotate": 0,
+        "format-m": "\udb83\udf85 {used}GB",
+        "format-h": "\udb81\udcc5 {used}GB",
+        "format-c": "\uf421 {used}GB",
+        "format-alt": "\udb83\udf86 {percentage}%",
         "max-length": 10,
         "tooltip": true,
-        "tooltip-format": "󰾆 {percentage}%\n {used:0.1f}GB/{total:0.1f}GB"
-    },
-
+        "tooltip-format": "\udb83\udf86 {percentage}%\n\ue266 {used:0.1f}GB/{total:0.1f}GB"
+    }
+}
