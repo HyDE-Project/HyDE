@@ -1,7 +1,7 @@
 # 嗨! 👋 这里是 Khing.
 
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](../../Hyprdots-to-HyDE.md.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](../../Hyprdots-to-HyDE.md)
 
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/Hyprdots-to-HyDE.zh.md)
 
