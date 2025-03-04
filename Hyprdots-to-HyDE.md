@@ -1,5 +1,7 @@
 # Hi! 👋 Khing here.
 
+[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/hyprdots-to-HyDE.zh.md)
+
 ## This fork will enhance and fix prasanthrangan/hyprdots over time.
 
 ### Why?
