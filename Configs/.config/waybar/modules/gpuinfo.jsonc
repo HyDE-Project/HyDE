@@ -3,7 +3,7 @@
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
+        "interval": 1, // once every 5 seconds
         "tooltip": true,
         "max-length": 1000,
         "on-click": "gpuinfo.sh --toggle",
@@ -14,7 +14,7 @@
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
+        "interval": 1, // once every 5 seconds
         "tooltip": true,
         "max-length": 1000,
     },
@@ -24,7 +24,7 @@
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
+        "interval": 1, // once every 5 seconds
         "tooltip": true,
         "max-length": 1000,
     },
@@ -34,7 +34,7 @@
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
+        "interval": 1, // once every 5 seconds
         "tooltip": true,
         "max-length": 1000,
     },
