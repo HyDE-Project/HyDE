@@ -107,13 +107,12 @@ r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;}wallbo
 
 # Show main menu if no arguments are passed
 if [ $# -eq 0 ]; then
-    main_action=$(echo -e "History\nDelete\nView Favorites\nManage Favorites\nClear History" | rofi -dmenu -theme-str "entry { placeholder: \"🔎 Choose action\";}" -theme-str "${font_override}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
+    main_action=$(echo -e "📜 History\n🗑️ Delete\n📌 View Favorites\n📓 Manage Favorites\n☢️  Clear History" | rofi -dmenu -theme-str "entry { placeholder: \"🔎 Choose action\";}" -theme-str "${font_override}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
 else
-    main_action="$1"
+    main_action="📜 History"
 fi
-
 case "${main_action}" in
--c | --copy | "History")
+-c | --copy | "📜 History")
     selected_item=$( (
         echo -e ":f:a:v:\t📌 Favorites"
         echo -e ":o:p:t:\t⚙️ Options"
@@ -128,13 +127,13 @@ case "${main_action}" in
     paste_string "${*}"
     echo -e "${selected_item}\t" | cliphist delete
     ;;
--d | --delete | "Delete")
+-d | --delete | "🗑️ Delete")
     export delMode=true
     (
         cliphist list
     ) | rofi -dmenu -multi-select -i -display-columns 2 -theme-str "${font_override}" -theme-str "entry { placeholder: \" 🗑️ Delete\";} ${rofi_position} ${r_override}" -theme "${cliphist_style}" | pastebin_process
     ;;
--f | --favorites | "View Favorites")
+-f | --favorites | "📌 View Favorites")
     if [ -f "$favoritesFile" ] && [ -s "$favoritesFile" ]; then
         # Read each Base64 encoded favorite as a separate line
         mapfile -t favorites <"$favoritesFile"
@@ -167,7 +166,7 @@ case "${main_action}" in
         notify-send "No favorites."
     fi
     ;;
--mf | -manage-fav | "Manage Favorites")
+-mf | -manage-fav | "📓 Manage Favorites")
     manage_action=$(echo -e "Add to Favorites\nDelete from Favorites\nClear All Favorites" | rofi -dmenu -theme-str "entry { placeholder: \"📓 Manage Favorites\";}" -theme-str "${font_override}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")
 
     case "${manage_action}" in
@@ -243,7 +242,7 @@ case "${main_action}" in
         ;;
     esac
     ;;
--w | --wipe | "Clear History")
+-w | --wipe | "☢️  Clear History")
     if [ "$(echo -e "Yes\nNo" | rofi -dmenu -theme-str "entry { placeholder: \"☢️ Clear Clipboard History?\";}" -theme-str "${font_override}" -theme-str "${r_override}" -theme-str "${rofi_position}" -theme "${cliphist_style}")" == "Yes" ]; then
         cliphist wipe
         notify-send "Clipboard history cleared."
