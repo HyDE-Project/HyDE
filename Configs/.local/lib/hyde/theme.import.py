@@ -1,18 +1,14 @@
 #!/usr/bin/env python
 import subprocess
-import logging as logger
 import os
 import json
 import argparse
 import sys
-import fzf_wrapper as fzf
+import pyutils.wrapper.fzf as fzf
+import pyutils.logger as logger
 import random
 
-log_level = os.getenv("LOG_LEVEL", "INFO").upper()
-logger.basicConfig(
-    level=getattr(logger, log_level, logger.INFO),
-    format="%(asctime)s - %(levelname)s - %(message)s",
-)
+logger = logger.get_logger()
 
 REPO_URL = "https://github.com/HyDE-Project/hyde-gallery.git"
 CLONE_DIR = os.path.join(

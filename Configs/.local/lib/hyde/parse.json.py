@@ -3,38 +3,9 @@ import json
 import argparse
 import sys
 import re
-import logging
-import os
+import pyutils.logger as logger
 
-
-def fmt_logging():
-    class ColoredFormatter(logging.Formatter):
-        COLORS = {
-            "DEBUG": "\033[94m",  # Blue
-            "INFO": "\033[92m",  # Green
-            "WARNING": "\033[93m",  # Yellow
-            "ERROR": "\033[91m",  # Red
-            "CRITICAL": "\033[95m",  # Magenta
-        }
-        RESET = "\033[0m"
-        DATE_COLOR = "\033[96m"  # Cyan
-
-        def format(self, record):
-            log_color = self.COLORS.get(record.levelname, self.RESET)
-            record.levelname = f"{log_color}{record.levelname}{self.RESET}"
-            record.asctime = (
-                f"{self.DATE_COLOR}{self.formatTime(record, self.datefmt)}{self.RESET}"
-            )
-            return super().format(record)
-
-    log_level = os.getenv("LOG_LEVEL", "INFO").upper()
-    log_format = os.getenv(
-        "LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    formatter = ColoredFormatter(log_format)
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    logging.basicConfig(level=log_level, handlers=[handler])
+logger = logger.get_logger()
 
 
 def remove_comments(json_data):
@@ -125,34 +96,29 @@ def arg_parser():
 
 
 def main():
-    fmt_logging()
     args = arg_parser()
     if args.file == "-":
         json_data = sys.stdin.read()
     else:
-        with open(args.file, "r+", encoding='UTF-8') as f:
+        with open(args.file, "r+", encoding="UTF-8") as f:
             json_data = f.read()
 
     if args.update:
         key, value = args.update
         result, error = update_json(json_data, key, value, args.skip_comments)
         if error:
-            # print(error, file=sys.stderr)
-            logging.error(error, file=sys.stderr)
-
+            logger.error(error)
             sys.exit(1)
         if args.file == "-":
             print(result)
         else:
-            with open(args.file, "w", encoding='UTF-8') as f:
+            with open(args.file, "w", encoding="UTF-8") as f:
                 f.write(result)
     elif args.query:
         result = parse_json(json_data, args.query, args.skip_comments, args.raw_output)
         print(result)
     else:
-        logging.error(
-            "Error: Either --query or --update must be specified.", file=sys.stderr
-        )
+        logger.error("Error: Either --query or --update must be specified.")
         sys.exit(1)
 
 
