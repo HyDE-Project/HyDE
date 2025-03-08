@@ -1,7 +1,14 @@
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+
+*/
+{
     "clock": {
         "format": "{:%I:%M %p}",
-        "rotate": ${r_deg},
-        "format-alt": "{:%R 󰃭 %d·%m·%y}",
+        "rotate": 0,
+        "format-alt": "{:%R \udb80\udced %d\u00b7%m\u00b7%y}",
         "tooltip-format": "<span>{calendar}</span>",
         "calendar": {
             "mode": "month",
@@ -21,5 +28,5 @@
             "on-scroll-up": "shift_up",
             "on-scroll-down": "shift_down"
         }
-    },
-
+    }
+}

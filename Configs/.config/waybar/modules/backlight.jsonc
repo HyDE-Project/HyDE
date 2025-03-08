@@ -1,11 +1,27 @@
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+
+*/
+{
     "backlight": {
         "device": "intel_backlight",
-        "rotate": ${r_deg},
+        "rotate": 0,
         "format": "{icon} {percent}%",
-        "format-icons": ["", "", "", "", "", "", "", "", ""],
-        "tooltip-format": "{icon} {percent}% ",
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
         "on-scroll-up": "brightnesscontrol.sh i 1",
         "on-scroll-down": "brightnesscontrol.sh d 1",
         "min-length": 6
-    },
-
+    }
+}

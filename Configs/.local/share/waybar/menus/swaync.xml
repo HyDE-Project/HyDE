@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <object class="GtkMenu" id="menu">
+
+
+        <child>
+            <object class="GtkMenuItem" id="toggle-dnd">
+                <property name="label"> Toggle DND</property>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkMenuItem" id="reload">
+                <property name="label">3 Reload</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+                        <child>
+                            <object class="GtkMenuItem" id="reload-config">
+                                <property name="label"> Reload Config</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="reload-css">
+                                <property name="label"> Reload Style </property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkSeparatorMenuItem" id="delimiter1" />
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="clear-all">
+                <property name="label"> Clear History</property>
+            </object>
+        </child>
+
+
+        <child>
+        </child>
+    </object>
+</interface>
