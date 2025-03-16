@@ -183,6 +183,8 @@ if [ -t 1 ];then
     # Optionally load user configuration // usefull for customizing the shell without modifying the main file
     [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
 
+    # Load plugins
+    load_zsh_plugins
 
     # Helpful aliases
     if [[ -x "$(which eza)" ]]; then
@@ -209,9 +211,6 @@ if [ -t 1 ];then
         .5='cd ../../../../..' \
         mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 
-
-    # Load plugins
-    load_zsh_plugins
 
     # Warn if the shell is slow to load
     autoload -Uz add-zsh-hook
