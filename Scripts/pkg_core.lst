@@ -42,7 +42,6 @@ hyprsunset                                             # blue light filter
 polkit-gnome                                           # authentication agent
 xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland
 pacman-contrib                                         # for system update check
-python-pyamdgpuinfo                                    # for amd gpu info
 parallel                                               # for parallel processing
 jq                                                     # for json processing
 imagemagick                                            # for image processing
@@ -70,6 +69,7 @@ unzip                                                  # extracting zip files
 vim                                                    # terminal text editor
 code                                                   # ide text editor
 nwg-displays                                           # monitor management utility
+fzf                                                    # Command-line fuzzy finder
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh

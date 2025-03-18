@@ -31,12 +31,18 @@ hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int'
 r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;}wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
 
 save_recent() {
-    #? Prepend the selected emoji to the top of the recentData file
-    # sed -i "1i\\$selEmoji" "${recentData}"
-    awk -v var="$dataEmoji" 'BEGIN{print var} {print}' "${recentData}" >temp && mv temp "${recentData}"
-    #?  Use awk to remove duplicates and empty lines, moving the most recent emoji to the top
+    # Only proceed if a valid emoji entry was selected
+    [ -z "${dataEmoji}" ] && return 0
+    # Verify that the full selected entry (emoji with description) exists in the valid list
+    if ! echo -e "${unique_entries}" | grep -Fxq "${dataEmoji}"; then
+        return 0
+    fi
+    # Prepend the full selected emoji entry to the top of the recentData file
+    awk -v var="$dataEmoji" 'BEGIN { print var } { print }' "${recentData}" >temp && mv temp "${recentData}"
+    # Remove duplicates and empty lines, keeping the most recent entry at the top
     awk 'NF' "${recentData}" | awk '!seen[$0]++' >temp && mv temp "${recentData}"
 }
+
 
 # Loop through all arguments
 while (($# > 0)); do

@@ -6,7 +6,7 @@ Mehrsprachige COMMIT_MESSAGE_GUIDELINES-Unterstützung
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../COMMIT_MESSAGE_GUIDELINES.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](COMMIT_MESSAGE_GUIDELINES.es.md)
-<!-- [![de](https://img.shields.io/badge/lang-de-black.svg)](COMMIT_MESSAGE_GUIDELINES.de.md) -->
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](/COMMIT_MESSAGE_GUIDELINES.fr.md)
 
 Eine gute Commit-Nachricht sollte beschreibend sein und einen Kontext zu den vorgenommenen Änderungen liefern. Das macht es einfacher, die Änderungen zu verstehen und in Zukunft zu überprüfen.
 
@@ -122,7 +122,7 @@ Deploy": Änderungen am Verteilungsprozess für das Projekt vornehmen
 Bereitstellen: Verteilungsskripte aktualisieren
 ```
 
-`init`: Erstellen oder Initialisieren eines neuen Repositorys oder Projekts
+`init`: Erstellen oder Initialisieren eines neuen Repositories oder Projekts
 
 ```Markdown
 init: Projekt initialisieren

@@ -176,8 +176,15 @@ while getopts "iop:stq" opt; do
         nsink=$(playerctl --list-all | grep -w "$srce")
         ;;
     s)
-
-        select_output "$(select_output | rofi -dmenu -theme "notification")"
+        if ! selected_output=$(hyprland-dialog --text "$(
+            echo -e "Devices:"
+            select_output | sed 's/^/           🔈 /'
+        )" \
+            --title "Choose an output device" \
+            --buttons "$(select_output | sed 's/$/;/')"); then
+            selected_output=$(select_output | rofi -dmenu -theme "notification")
+        fi
+        select_output "${selected_output}"
         exit
         ;;
     t)

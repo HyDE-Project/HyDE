@@ -16,7 +16,7 @@ fi
 
 rofi_config="${ROFI_LAUNCH_STYLE:-$rofi_config}"
 
-font_scale="${ROFI_LAUNCHER_SCALE}"
+font_scale="${ROFI_LAUNCH_SCALE}"
 [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
 
 #// rofi action

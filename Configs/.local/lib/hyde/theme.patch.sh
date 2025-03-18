@@ -23,7 +23,7 @@ Usage:
     $(print_log "$0 " -y "Theme-Name " -c "https://github.com/User/Repository")
     $(print_log "$0 " -y "Theme-Name " -c "https://github.com/User/Repository/tree/branch")
 
-Options:
+Envs:
     'export FULL_THEME_UPDATE=true'       Overwrites the archived files (useful for updates and changes in archives)
 
 Supported Archive Format:
@@ -297,11 +297,14 @@ fi
 
 # restore configs with theme override
 echo -en "${restore_list}" >"${Theme_Dir}/restore_cfg.lst"
-print_log -g "\n[exec] " "restore_cfg.sh \"${Theme_Dir}/restore_cfg.lst\" \"${Theme_Dir}/Configs\" \"${Fav_Theme}\"\n"
-"${scrDir}/restore.config.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null
+print_log -g "\n[exec] " "restore.config.sh \"${Theme_Dir}/restore_cfg.lst\" \"${Theme_Dir}/Configs\" \"${Fav_Theme}\"\n"
+bash "${scrDir}/restore.config.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null || {
+    print_log -r "[ERROR] " "restore.config.sh failed"
+    exit 1
+}
 if [ "${3}" != "--skipcaching" ]; then
-    "${scrDir}/swwwallcache.sh" -t "${Fav_Theme}"
-    "${scrDir}/themeswitch.sh"
+    bash "${scrDir}/swwwallcache.sh" -t "${Fav_Theme}"
+    bash "${scrDir}/themeswitch.sh"
 fi
 
 print_log -y "\nNote: Warnings are not errors. Review the output to check if it concerns you."

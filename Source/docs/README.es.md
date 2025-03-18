@@ -16,7 +16,7 @@ Soporte multilingüe para el README
 [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
-<!-- [![es](https://img.shields.io/badge/lang-es-yellow.svg)](README.es.md) -->
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 
 <div align="center">
 
@@ -56,8 +56,9 @@ Mira esto para ver la nota completa:
 
 <br>
 
-<a id="instalación"></a>  
+<a id="instalación"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALACI%C3%93N" width="450"/>
+
 ---
 
 El script de instalación está diseñado para un mínimo [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) instalar, pero **puede** funcionar en algunas [Distros basadas en arch](https://wiki.archlinux.org/title/Arch-based_distributions). Al instalar HyDE junto con otro [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) debería funcionar, debido a que es una configuración muy personalizada, **tendrá** conflicto con su [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) tematización, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. y es bajo su propio riesgo.
@@ -100,8 +101,9 @@ Para obtener más detalles, consulte la [wiki de instalación](https://github.co
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="actualizar"></a>  
+<a id="actualizar"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=ACTUALIZAR" width="450"/>
+
 ---
 
 Para actualizar HyDE, necesitarás extraer los últimos cambios de GitHub y restaurar las configuraciones ejecutando los siguientes comandos:
@@ -126,8 +128,9 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="temas"></a>  
+<a id="temas"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=TEMAS" width="450"/>
+
 ---
 
 Todos nuestros temas oficiales se almacenan en un repositorio separado, lo que permite a los usuarios instalarlos mediante themepatcher.
@@ -162,8 +165,9 @@ Para obtener más información, visite [Temas HyDE](https://github.com/HyDE-Proj
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="estilos"></a>  
+<a id="estilos"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=ESTILOS" width="450"/>
+
 ---
 
 <div align="center"><table><tr>Seleccionar tema</tr><tr><td>
@@ -227,6 +231,7 @@ Para obtener más información, visite [Temas HyDE](https://github.com/HyDE-Proj
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=ESTRELLAS" width="450"/>
+
 ---
 
 <a href="https://star-history.com/#hyde-project/hyde&hyde-project/hyde-gallery&hyde-project/hyde-themes&Timeline">
