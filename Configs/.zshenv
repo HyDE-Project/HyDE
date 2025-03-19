@@ -17,20 +17,72 @@
 # Command not found handler
 function command_not_found_handler {
     local purple='\e[1;35m' bright='\e[0;1m' green='\e[1;32m' reset='\e[0m'
+    local yellow='\e[1;33m'
     printf 'zsh: command not found: %s\n' "$1"
-    local entries=( ${(f)"$(/usr/bin/pacman -F --machinereadable -- "/usr/bin/$1")"} )
-    if (( ${#entries[@]} > 0 )); then
-        printf "${bright}$1${reset} may be found in the following packages:\n"
-        local pkg
-        for entry in "${entries[@]}"; do
-            local fields=( ${(0)entry} )
-            if [[ "$pkg" != "${fields[2]}" ]]; then
-                printf "${purple}%s/${bright}%s ${green}%s${reset}\n" "${fields[1]}" "${fields[2]}" "${fields[3]}"
-            fi
-            printf '    /%s\n' "${fields[4]}"
-            pkg="${fields[2]}"
-        done
+    
+    # Define priority list of AUR helpers to check
+    local aur_helpers=("paru" "yay" "pikaur" "aurman" "trizen")
+    local preferred_helper="${PREFERRED_AUR_HELPER:-}" # Allow override via env variable
+    local aurhelper=""
+    
+    # Use cached helper if available
+    local aur_cache_file="/tmp/.aurhelper.zshrc"
+    if [[ -f $aur_cache_file ]]; then
+        aurhelper=$(<"$aur_cache_file")
+        # Verify the cached helper is still installed
+        if ! pacman -Qi "$aurhelper" &>/dev/null; then
+            aurhelper=""
+        fi
     fi
+    
+    # If no cached helper or preferred helper is set, find one
+    if [[ -z "$aurhelper" || -n "$preferred_helper" ]]; then
+        # Check for preferred helper first if set
+        if [[ -n "$preferred_helper" ]] && pacman -Qi "$preferred_helper" &>/dev/null; then
+            aurhelper="$preferred_helper"
+        else
+            # Otherwise check the priority list
+            for helper in "${aur_helpers[@]}"; do
+                if pacman -Qi "$helper" &>/dev/null; then
+                    aurhelper="$helper"
+                    break
+                fi
+            done
+        fi
+        
+        # Cache the result if a helper was found
+        [[ -n "$aurhelper" ]] && echo "$aurhelper" > "$aur_cache_file"
+    fi
+    
+    # If no AUR helper found, use pacman -F as fallback
+    if [[ -z "$aurhelper" ]]; then
+        if pacman -F "$1" > /dev/null 2>&1; then
+            printf "The command '%s' might be provided by an official package.\n" "$1"
+            printf "${yellow}Do you want to install it with pacman?${reset} [y/N] "
+            read -q response
+            echo
+            if [[ "$response" =~ ^[Yy]$ ]]; then
+                sudo pacman -S "$1"
+            fi
+        else
+            printf "No packages found that provide the command '%s'\n" "$1"
+        fi
+        return 127
+    fi
+    
+    # Use detected AUR helper
+    if $aurhelper -Si "$1" > /dev/null 2>&1; then
+        printf "The command '%s' might be provided by the package '%s'.\n" "$1" "$1"
+        printf "${yellow}Do you want to install this package with %s?${reset} [y/N] " "$aurhelper"
+        read -q response
+        echo
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            $aurhelper -S "$1"
+        fi
+    else
+        printf "No packages found that provide the command '%s'\n" "$1"
+    fi
+    
     return 127
 }
 
