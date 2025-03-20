@@ -42,9 +42,28 @@ get_hashmap() {
         [ "${wallSource}" == "--skipstrays" ] && skipStrays=1 && continue
         [ "${wallSource}" == "--verbose" ] && verboseMap=1 && continue
 
-        hashMap=$(find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*" -exec "${hashMech}" {} + | sort -k2)
+        supported_files=(
+            "gif"
+            "jpg"
+            "jpeg"
+            "png"
+        )
+
+        supported_files+=("${WALLPAPER_FILETYPES=[@]}") # Add custom wallpaper types # ! this should conform to the backend
+
+        hashMap=$(
+            # shellcheck disable=SC2046
+            find "${wallSource}" -type f \
+                \( $(printf -- "-iname *.%s -o " "${supported_files[@]}" | sed 's/ -o $//') \) ! -path "*/logo/*" \
+                -exec "${hashMech}" {} + 2>/dev/null |
+                sort -k2
+        )
+        # hashMap=$(
+        # find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.mkv"  \) ! -path "*/logo/*" -exec "${hashMech}" {} + | sort -k2
+        # )
+
         if [ -z "${hashMap}" ]; then
-            echo "WARNING: No image found in \"${wallSource}\""
+            notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in \"${wallSource}\""
             continue
         fi
 
@@ -148,7 +167,7 @@ fi
 
 pkg_installed() {
     local pkgIn=$1
-    if pacman -Qi "${pkgIn}" &>/dev/null; then
+    if hyde-shell pm.sh pq "${pkgIn}" &>/dev/null; then
         return 0
     elif pacman -Qi "flatpak" &>/dev/null && flatpak info "${pkgIn}" &>/dev/null; then
         return 0
@@ -186,7 +205,7 @@ set_hash() {
 }
 
 print_log() {
-    # [ -t 1 ] && return 0 # Skip if not in the terminalp
+    # [ -t 1 ] && return 0 # Skip if not in the terminal
     while (("$#")); do
         # [ "${colored}" == "true" ]
         case "$1" in
@@ -395,4 +414,30 @@ toml_write() {
             sed -i "/^\[${group}\]/a ${key}=${value}" "${config_file}"
         fi
     fi
+}
+
+# Function to extract thumbnail from video
+# shellcheck disable=SC2317
+extract_thumbnail() {
+    local x_wall="${1}"
+    x_wall=$(realpath "${x_wall}")
+    local temp_image="${2}"
+    ffmpeg -y -i "${x_wall}" -vf "thumbnail,scale=1000:-1" -frames:v 1 -update 1 "${temp_image}" &>/dev/null
+}
+
+# Function to check if the file is supported by the wallpaper backend
+accepted_mime_types() {
+    local mime_types_array=${1}
+    local file=${2}
+
+    for mime_type in "${mime_types_array[@]}"; do
+        if file --mime-type -b "${file}" | grep -q "^${mime_type}"; then
+            return 0
+        else
+            print_log err "File type not supported for this wallpaper backend."
+            notify-send -u critical -a "HyDE-Alert" "File type not supported for this wallpaper backend."
+        fi
+
+    done
+
 }

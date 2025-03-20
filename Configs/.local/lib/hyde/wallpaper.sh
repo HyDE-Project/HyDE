@@ -236,9 +236,9 @@ main() {
             exit 0
             ;;
         o)
-            if [ -n "${walllpaper_output}" ]; then
-                print_log -sec "wallpaper" "Current wallpaper copied to: ${walllpaper_output}"
-                cp -f "${wallSet}" "${walllpaper_output}"
+            if [ -n "${wallpaper_output}" ]; then
+                print_log -sec "wallpaper" "Current wallpaper copied to: ${wallpaper_output}"
+                cp -f "${wallSet}" "${wallpaper_output}"
             fi
             ;;
         select)
@@ -262,7 +262,8 @@ main() {
         if command -v "wallpaper.${wallpaper_backend}.sh" >/dev/null; then
             "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
         else
-            print_log -err "wallpaper" "Backend not found: ${wallpaper_backend}"
+            print_log -warn "wallpaper" "No backend script found for ${wallpaper_backend}"
+            print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/${wallpaper_backend}.png instead"
         fi
     fi
 
@@ -287,7 +288,7 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONGOPTS="link,global,select,json,next,previous,random,set:,backend:,get,output,help"
+LONGOPTS="link,global,select,json,next,previous,random,set:,backend:,get,output:,help"
 
 # Parse options
 PARSED=$(
@@ -315,6 +316,7 @@ while true; do
         exit 0
         ;;
     -S | --select)
+        "${scrDir}/swwwallcache.sh" w &
         wallpaper_setter_flag=select
         shift
         ;;
@@ -347,7 +349,7 @@ while true; do
     -o | --output)
         # Accepts wallpaper output path
         wallpaper_setter_flag=o
-        walllpaper_output="${2}"
+        wallpaper_output="${2}"
         shift 2
         ;;
     -h | --help)

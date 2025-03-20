@@ -48,6 +48,7 @@ Bekijk de volledige notitie hier:
 
 <a id="installatie"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATIE" width="450"/>
+
 ---
 
 Het installatiescript is ontworpen voor een minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) installatie, maar het **kan** ook werken op sommige [Arch-gebaseerde distributies](https://wiki.archlinux.org/title/Arch-based_distributions).
@@ -80,7 +81,7 @@ cd ~/HyDE/Scripts
 
 > [!IMPORTANT]
 > Baseer je lijst op basis van `Scripts/pkg_extra.lst`
-> of je kunt `cp  Scripts/pkg_extra.lst Scripts/pkg_user.lst` Als je alle extra pakketten wilt installeren. 
+> of je kunt `cp  Scripts/pkg_extra.lst Scripts/pkg_user.lst` Als je alle extra pakketten wilt installeren.
 
 Start je systeem opnieuw op na het installatiescript klaar is en je voor de eerste keer naar het SDDM inlogscherm (of zwart scherm) brengt. Voor meer details, raadpleeg de [installatie wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
@@ -91,6 +92,7 @@ Start je systeem opnieuw op na het installatiescript klaar is en je voor de eers
 
 <a id="updaten"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=UPDATEN" width="450"/>
+
 ---
 
 Om de HyDE te updaten, moet je de laatste aanpassingen van Github ophalen en de configuraties herstellen door de volgende commando's uit te voeren:
@@ -110,8 +112,9 @@ git pull origin master
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="thema's"></a>  
+<a id="thema's"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMA'S" width="450"/>
+
 ---
 
 Al onze officiële thema's worden opgeslagen in een apart repository, waardoor gebruikers ze kunnen installeren met themepatcher.
@@ -146,8 +149,9 @@ Voor meer informatie, bezoek [HyDE-Project/hyde-themes](https://github.com/HyDE-
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="stijlen"></a>  
+<a id="stijlen"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STIJLEN" width="450"/>
+
 ---
 
 <div align="center"><table><tr>Thema Selectie</tr><tr><td>

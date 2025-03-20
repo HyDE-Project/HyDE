@@ -37,6 +37,16 @@ EOF
 fn_background() {
     WP="$(realpath "${WALLPAPER}")"
     BG="${cacheDir}/wall.set.png"
+
+    is_video=$(file --mime-type -b "${WP}" | grep -c '^video/')
+    if [ "${is_video}" -eq 1 ]; then
+        print_log -sec "wallpaper" -stat "converting video" "$WP"
+        mkdir -p "${HYDE_CACHE_HOME}/wallpapers/thumbnails"
+        cached_thumb="$HYDE_CACHE_HOME/wallpapers/$(${hashMech:-sha1sum} "${WP}" | cut -d' ' -f1).png"
+        extract_thumbnail "${WP}" "${cached_thumb}"
+        WP="${cached_thumb}"
+    fi
+
     cp -f "${WP}" "${BG}"
     mime=$(file --mime-type "${WP}" | grep -E "image/(png|jpg|webp)")
     #? Run this in the background because converting takes time

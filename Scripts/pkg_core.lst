@@ -42,7 +42,6 @@ hyprsunset                                             # blue light filter
 polkit-gnome                                           # authentication agent
 xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland
 pacman-contrib                                         # for system update check
-python-pyamdgpuinfo                                    # for amd gpu info
 parallel                                               # for parallel processing
 jq                                                     # for json processing
 imagemagick                                            # for image processing

@@ -141,7 +141,9 @@ wpCount="$(wc -l <<<"${wallpapers}")"
 
 # Get logos
 if [ -d "${Fav_Theme_Dir}/logo" ]; then
-    logos=$(find "${Fav_Theme_Dir}/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
+    logos=$(
+        find "${Fav_Theme_Dir}/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \)
+    )
     logosCount="$(wc -l <<<"${logos}")"
     { [ -z "${logos}" ] && print_log -y "[warn] " "No logos found"; } || { readonly logos && print_log -g "[OK] " "logos :: [count] ${logosCount}\n"; }
 fi

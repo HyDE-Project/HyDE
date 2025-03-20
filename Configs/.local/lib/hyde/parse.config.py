@@ -1,66 +1,59 @@
 #!/usr/bin/env python
 import tomllib
 import argparse
-import logging
 import os
 import time
 import threading
-import subprocess
+import pyutils.logger as logger
+import pyutils.wrapper.libnotify as notify
+from pyutils.xdg_base_dirs import (
+    xdg_config_home,
+    xdg_state_home,
+)
 
 
-def fmt_logging():
-    class ColoredFormatter(logging.Formatter):
-        COLORS = {
-            "DEBUG": "\033[94m",  # Blue
-            "INFO": "\033[92m",  # Green
-            "WARNING": "\033[93m",  # Yellow
-            "ERROR": "\033[91m",  # Red
-            "CRITICAL": "\033[95m",  # Magenta
-        }
-        RESET = "\033[0m"
-        DATE_COLOR = "\033[96m"  # Cyan
+logger = logger.get_logger()
 
-        def format(self, record):
-            log_color = self.COLORS.get(record.levelname, self.RESET)
-            record.levelname = f"{log_color}{record.levelname}{self.RESET}"
-            record.asctime = (
-                f"{self.DATE_COLOR}{self.formatTime(record, self.datefmt)}{self.RESET}"
-            )
-            return super().format(record)
 
-    log_level = os.getenv("LOG_LEVEL", "INFO").upper()
-    log_format = os.getenv(
-        "LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    formatter = ColoredFormatter(log_format)
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-    logging.basicConfig(level=log_level, handlers=[handler])
+def load_toml_file(toml_file):
+    try:
+        with open(toml_file, "rb") as file:
+            return tomllib.load(file)
+    except FileNotFoundError as e:
+        error_message = f"TOML file not found: {e}"
+        logger.error("TOML file not found: %s", e)
+        notify.send("HyDE Error", error_message)
+        return None
+    except tomllib.TOMLDecodeError as e:
+        error_message = f"Error decoding TOML file: {e}"
+        logger.error(f"Error decoding TOML file: {e}")
+        notify.send("HyDE Error", error_message)
+        return None
+    except IOError as e:
+        error_message = f"IO error: {e}"
+        logger.error("IO error: %s", e)
+        notify.send("HyDE Error", error_message)
+        return None
 
 
 def parse_toml_to_env(toml_file, env_file=None, export=False):
-    try:
-        with open(toml_file, "rb") as file:
-            toml_content = tomllib.load(file)
-    except FileNotFoundError as e:
-        error_message = f"TOML file not found: {e}"
-        logging.error("TOML file not found: %s", e)
-        subprocess.run(["notify-send", "HyDE Error", error_message], check=True)
-        return
-    except tomllib.TOMLDecodeError as e:
-        error_message = f"Error decoding TOML file: {e}"
-        logging.error("Error decoding TOML file: %s", e)
-        subprocess.run(["notify-send", "HyDE Error", error_message], check=True)
-        return
-    except IOError as e:
-        error_message = f"IO error: {e}"
-        logging.error("IO error: %s", e)
-        subprocess.run(["notify-send", "HyDE Error", error_message], check=True)
+    ignored_keys = ["$schema", "$SCHEMA", "hyprland", "hyprland-start", "hyprland-env"]
+
+    toml_content = load_toml_file(toml_file)
+    if toml_content is None:
         return
 
     def flatten_dict(d, parent_key=""):
+        logger.debug(f"Parent key: {parent_key}")
         items = []
         for k, v in d.items():
+            # Skip if current key or parent key is in ignored keys
+            if k in ignored_keys or parent_key.startswith("hyprland"):
+                logger.debug(f"Skipping ignored key: {k}")
+                continue
+
+            if k.startswith("$"):
+                continue
             new_key = f"{parent_key}_{k.upper()}" if parent_key else k.upper()
             if isinstance(v, dict):
                 items.extend(flatten_dict(v, new_key).items())
@@ -82,12 +75,76 @@ def parse_toml_to_env(toml_file, env_file=None, export=False):
     ]
 
     if env_file:
-        with open(env_file, "w", encoding='UTF-8') as file: #Use UTF-8 encoding
+        with open(env_file, "w", encoding="UTF-8") as file:  # Use UTF-8 encoding
             file.write("\n".join(output) + "\n")
-        logging.debug("Environment variables have been written to %s", env_file) # Use % lazy formatting for better performance in logging
+        logger.debug(
+            f"Environment variables have been written to {env_file}"
+        )  # Use % lazy formatting for better performance in logger
 
     else:
-        logging.debug("\n".join(output))
+        logger.debug("\n".join(output))
+
+
+def parse_toml_to_hypr(toml_file, hypr_file=None):
+    logger.debug("Parsing Hyprland variables...")
+    toml_content = load_toml_file(toml_file)
+    if toml_content is None:
+        return
+
+    def flatten_hypr_dict(d, parent_key=""):
+        logger.debug(f"Parent key: {parent_key}")
+        items = []
+        for k, v in d.items():
+            logger.debug(f"Current key=val: {k}={v}")
+            # Track if we're inside a hyprland section
+            is_hyprland_section = k.startswith("hyprland") or parent_key.startswith(
+                "hyprland"
+            )
+
+            if is_hyprland_section:
+                logger.debug(f"Found hyprland key: {k}")
+                # Remove 'hyprland_' prefix if it exists
+                new_key = k.replace("hyprland_", "") if k.startswith("hyprland_") else k
+                # If parent_key exists, combine it with current key
+                if parent_key and not parent_key.startswith("hyprland"):
+                    new_key = f"{parent_key}_{new_key}"
+                elif parent_key.startswith("hyprland"):
+                    new_key = (
+                        f"${parent_key[9:]}.{new_key.upper()}"
+                        if parent_key[9:]
+                        else f"${new_key.upper()}"
+                    )
+
+                if isinstance(v, dict):
+                    items.extend(flatten_hypr_dict(v, new_key).items())
+                elif isinstance(v, list):
+                    array_items = ", ".join(str(item) for item in v)
+                    items.append((new_key, array_items))
+                elif isinstance(v, bool):
+                    items.append((new_key, str(v).lower()))
+                elif isinstance(v, (int, float)):
+                    items.append((new_key, str(v)))
+                else:
+                    items.append((new_key, str(v)))
+
+            else:
+                logger.debug(f"Skipping key: {k}")
+        return dict(items)
+
+    flat_toml_content = flatten_hypr_dict(toml_content)
+    logger.debug(f"Toml Content {toml_content}")
+    output = [f"{key}={value}" for key, value in flat_toml_content.items()]
+
+    if not hypr_file:
+        hypr_file = HYPR_FILE
+
+    if hypr_file:
+        with open(hypr_file, "w", encoding="UTF-8") as file:
+            file.write("\n".join(output) + "\n")
+        logger.debug(f"Hyprland variables have been written to {hypr_file}")
+    else:
+        logger.debug("No hypr file specified.")
+        logger.debug("\n".join(output))
 
 
 def watch_file(toml_file, env_file=None, export=False):
@@ -98,15 +155,36 @@ def watch_file(toml_file, env_file=None, export=False):
         if current_mtime != last_mtime:
             last_mtime = current_mtime
             parse_toml_to_env(toml_file, env_file, export)
+            parse_toml_to_hypr(toml_file)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Parse a TOML file and optionally watch for changes."
     )
-    parser.add_argument("input_toml_file", help="The input TOML file to parse.")
     parser.add_argument(
-        "output_env_file", nargs="?", help="The output environment file."
+        "--input",
+        default=os.path.join(
+            xdg_config_home(),
+            "hyde/config.toml",
+        ),
+        help="The input TOML file to parse. Default is $XDG_CONFIG_HOME/hyde/config.toml",
+    )
+    parser.add_argument(
+        "--env",
+        default=os.path.join(
+            xdg_state_home(),
+            "hyde/config",
+        ),
+        help="The output environment file. Default is $XDG_STATE_HOME/hyde/config",
+    )
+    parser.add_argument(
+        "--hypr",
+        default=os.path.join(
+            xdg_state_home(),
+            "hyde/hyprland.conf",
+        ),
+        help="The output Hyprland file. Default is $XDG_STATE_HOME/hyprland.conf",
     )
     parser.add_argument(
         "--daemon", action="store_true", help="Run in daemon mode to watch for changes."
@@ -116,31 +194,35 @@ def parse_args():
 
 
 def main():
-    fmt_logging()
     args = parse_args()
 
-    input_toml_file = args.input_toml_file
-    output_env_file = args.output_env_file
+    global CONFIG_FILE, ENV_FILE, HYPR_FILE
+    CONFIG_FILE = args.input
+    ENV_FILE = args.env
+    HYPR_FILE = args.hypr
+
     daemon_mode = args.daemon
     export_mode = args.export
 
     if daemon_mode:
         # Generate the config on launch
-        parse_toml_to_env(input_toml_file, output_env_file, export_mode)
+        parse_toml_to_hypr(CONFIG_FILE, HYPR_FILE)
+        parse_toml_to_env(CONFIG_FILE, ENV_FILE, export_mode)
 
         watcher_thread = threading.Thread(
-            target=watch_file, args=(input_toml_file, output_env_file, export_mode)
+            target=watch_file, args=(CONFIG_FILE, ENV_FILE, export_mode)
         )
         watcher_thread.daemon = True
         watcher_thread.start()
-        logging.debug("Watching %s for changes...", input_toml_file) # Same as line 77
+        logger.debug("Watching %s for changes...", CONFIG_FILE)
         try:
             while True:
                 time.sleep(1)
         except KeyboardInterrupt:
-            logging.info("Daemon mode stopped.")
+            logger.info("Daemon mode stopped.")
     else:
-        parse_toml_to_env(input_toml_file, output_env_file, export_mode)
+        parse_toml_to_env(CONFIG_FILE, ENV_FILE, export_mode)
+        parse_toml_to_hypr(CONFIG_FILE, HYPR_FILE)
 
 
 if __name__ == "__main__":

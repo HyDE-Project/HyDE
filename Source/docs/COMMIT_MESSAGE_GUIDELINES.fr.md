@@ -1,4 +1,5 @@
 # Directives pour les Messages de Commit
+
 <!--
 Support multi-langue pour COMMIT_MESSAGE_GUIDELINES
 -->
@@ -116,14 +117,12 @@ config: Met à jour les fichiers de configuration
 
 ```markdown
 deploy: Met à jour les scripts de déploiement
-
 ```
 
 `init`: Création ou initialisation d’un nouveau dépôt ou projet
 
 ```markdown
 init: Initialise le projet
-
 ```
 
 `move`: Déplacement de fichiers ou de répertoires dans le projet
@@ -147,7 +146,7 @@ remove: Suppression de fichiers
 `update`: Mise à jour du code, des dépendances ou d’autres composants du projet
 
 ```markdown
-update: Met à jour le code. 
+update: Met à jour le code.
 ```
 
 Ce ne sont que quelques exemples, et vous pouvez également créer vos propres types de commit personnalisés. Cependant, il est important de les utiliser de manière cohérente et de rédiger des messages de commit clairs et descriptifs pour faciliter la compréhension des modifications apportées par les autres.
