@@ -35,6 +35,15 @@ hyde_distro_logo=${iconDir}/Wallbash-Icon/distro/$LOGO
 # Parse the main command
 case $1 in
 logo) # eats around 13 ms
+	fetch() {
+		local file
+		read -r file
+		if [[ -f $file && -s $file ]]; then
+			fastfetch --logo-type kitty --logo "$file"
+		else
+			echo "Wraning: File $file is non-existent or empty" >&2
+		fi
+	}
 	random() {
 		(
 			image_dirs+=("${confDir}/fastfetch/logo")
@@ -47,7 +56,7 @@ logo) # eats around 13 ms
 			[ -f "$HOME/.face.icon" ] && echo "$HOME/.face.icon"
 
 			find -L "${image_dirs[@]}" -maxdepth 1 -type f \( -name "wall.quad" -o -name "wall.sqre" -o -name "*.icon" -o -name "*logo*" -o -name "*.png" \) ! -path "*/wall.set*" ! -path "*/wallpapers/*.png" 2>/dev/null
-		) | shuf -n 1
+		) | shuf -n 1 | fetch
 	}
 	help() {
 		cat <<HELP
@@ -106,12 +115,10 @@ HELP
 		if [[ ${#image_dirs[@]} -gt 0 ]]; then
 			find -L "${image_dirs[@]}" -maxdepth 1 -type f \( -name "wall.quad" -o -name "wall.sqre" -o -name "*.icon" -o -name "*logo*" -o -name "*.png" \) ! -path "*/wall.set*" ! -path "*/wallpapers/*.png" 2>/dev/null
 		fi
-	) | shuf -n 1 | read -r logo && [ -n "$logo" ] && exec fastfetch --logo-type kitty --logo "$logo"
-
+	) | shuf -n 1 | fetch
 	;;
 --select | -S)
 	:
-
 	;;
 help | --help | -h)
 	USAGE
