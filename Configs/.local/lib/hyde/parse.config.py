@@ -37,7 +37,7 @@ def load_toml_file(toml_file):
 
 
 def parse_toml_to_env(toml_file, env_file=None, export=False):
-    blacklisted_keys = ["$schema", "$SCHEMA", "hyprland"]
+    ignored_keys = ["$schema", "$SCHEMA", "hyprland", "hyprland-start", "hyprland-env"]
 
     toml_content = load_toml_file(toml_file)
     if toml_content is None:
@@ -47,9 +47,9 @@ def parse_toml_to_env(toml_file, env_file=None, export=False):
         logger.debug(f"Parent key: {parent_key}")
         items = []
         for k, v in d.items():
-            # Skip if current key or parent key is in blacklist
-            if k in blacklisted_keys or parent_key.startswith("hyprland"):
-                logger.debug(f"Skipping blacklisted key: {k}")
+            # Skip if current key or parent key is in ignored keys
+            if k in ignored_keys or parent_key.startswith("hyprland"):
+                logger.debug(f"Skipping ignored key: {k}")
                 continue
 
             if k.startswith("$"):

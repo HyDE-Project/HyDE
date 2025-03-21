@@ -13,7 +13,7 @@
 # ? This file is a reference for:
 # * wiki table
 # * --json to generate the JSON schema
-# TODO --config to generate a copy of config.toml //! Not implemented yet
+# TODO --config to generate a copy of config.toml // ! Not implemented yet
 
 "$schema" = "http://json-schema.org/draft-07/schema#"
 type      = "object"

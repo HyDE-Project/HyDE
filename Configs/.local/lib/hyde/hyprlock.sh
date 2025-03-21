@@ -37,6 +37,16 @@ EOF
 fn_background() {
     WP="$(realpath "${WALLPAPER}")"
     BG="${cacheDir}/wall.set.png"
+
+    is_video=$(file --mime-type -b "${WP}" | grep -c '^video/')
+    if [ "${is_video}" -eq 1 ]; then
+        print_log -sec "wallpaper" -stat "converting video" "$WP"
+        mkdir -p "${HYDE_CACHE_HOME}/wallpapers/thumbnails"
+        cached_thumb="$HYDE_CACHE_HOME/wallpapers/$(${hashMech:-sha1sum} "${WP}" | cut -d' ' -f1).png"
+        extract_thumbnail "${WP}" "${cached_thumb}"
+        WP="${cached_thumb}"
+    fi
+
     cp -f "${WP}" "${BG}"
     mime=$(file --mime-type "${WP}" | grep -E "image/(png|jpg|webp)")
     #? Run this in the background because converting takes time
@@ -64,13 +74,12 @@ fn_mpris() {
         if [ -f "$HOME/.face.icon" ]; then
             if ! cmp -s "$HOME/.face.icon" "${THUMB}.png"; then
                 cp -f "$HOME/.face.icon" "${THUMB}.png"
-                pkill -USR2 hyprlock /dev/null 2>&1 # updates the mpris thumbnail
-
+                pkill -USR2 hyprlock >/dev/null 2>&1 # updates the mpris thumbnail
             fi
         else
             if ! cmp -s "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${THUMB}.png"; then
                 cp "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${THUMB}.png"
-                pkill -USR2 hyprlock /dev/null 2>&1 # updates the mpris thumbnail
+                pkill -USR2 hyprlock >/dev/null 2>&1 # updates the mpris thumbnail
             fi
         fi
         exit 1
@@ -107,7 +116,7 @@ mpris_thumb() { # Generate thumbnail for mpris
     echo "${artUrl}" >"${THUMB}".lnk
     curl -Lso "${THUMB}".art "$artUrl"
     magick "${THUMB}.art" -quality 50 "${THUMB}.png"
-    pkill -USR2 hyprlock /dev/null 2>&1 # updates the mpris thumbnail
+    pkill -USR2 hyprlock >/dev/null 2>&1 # updates the mpris thumbnail
 }
 
 fn_cava() {

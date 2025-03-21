@@ -29,22 +29,58 @@ fi
 fn_wallcache() {
     local x_hash="${1}"
     local x_wall="${2}"
+    local is_video
+    is_video=$(file --mime-type -b "${x_wall}" | grep -c '^video/')
+
+    if [ "${is_video}" -eq 1 ]; then
+        if
+            [ ! -e "${thmbDir}/${x_hash}.thmb" ] ||
+                [ ! -e "${thmbDir}/${x_hash}.sqre" ] ||
+                [ ! -e "${thmbDir}/${x_hash}.blur" ] ||
+                [ ! -e "${thmbDir}/${x_hash}.quad" ] ||
+                [ ! -e "${dcolDir}/${x_hash}.dcol" ]
+        then
+            local temp_image="/tmp/${x_hash}.png"
+            notify-send -a "HyDE wallpaper" "Extracting thumbnail from video wallpaper..."
+            extract_thumbnail "${x_wall}" "${temp_image}"
+            x_wall="${temp_image}"
+        fi
+    fi
+
     [ ! -e "${thmbDir}/${x_hash}.thmb" ] && magick "${x_wall}"[0] -strip -resize 1000 -gravity center -extent 1000 -quality 90 "${thmbDir}/${x_hash}.thmb"
-    [ ! -e "${thmbDir}/${x_hash}.sqre" ] && magick "${x_wall}"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "${thmbDir}/${x_hash}.sqre"
+    [ ! -e "${thmbDir}/${x_hash}.sqre" ] && magick "${x_wall}"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "${thmbDir}/${x_hash}.sqre.png" && mv "${thmbDir}/${x_hash}.sqre.png" "${thmbDir}/${x_hash}.sqre"
     [ ! -e "${thmbDir}/${x_hash}.blur" ] && magick "${x_wall}"[0] -strip -scale 10% -blur 0x3 -resize 100% "${thmbDir}/${x_hash}.blur"
-    [ ! -e "${thmbDir}/${x_hash}.quad" ] && magick "${thmbDir}/${x_hash}.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "${thmbDir}/${x_hash}.png" && mv "${thmbDir}/${x_hash}.png" "${thmbDir}/${x_hash}.quad"
+    [ ! -e "${thmbDir}/${x_hash}.quad" ] && magick "${thmbDir}/${x_hash}.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "${thmbDir}/${x_hash}.quad.png" && mv "${thmbDir}/${x_hash}.quad.png" "${thmbDir}/${x_hash}.quad"
     { [ ! -e "${dcolDir}/${x_hash}.dcol" ] || [ "$(wc -l <"${dcolDir}/${x_hash}.dcol")" -ne 89 ]; } && "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${thmbDir}/${x_hash}.thmb" "${dcolDir}/${x_hash}" &>/dev/null
+
+    if [ "${is_video}" -eq 1 ]; then
+        rm -f "${temp_image}"
+    fi
 }
 
 # shellcheck disable=SC2317
 fn_wallcache_force() {
     local x_hash="${1}"
     local x_wall="${2}"
+
+    is_video=$(file --mime-type -b "${x_wall}" | grep -c '^video/')
+
+    if [ "${is_video}" -eq 1 ]; then
+        local temp_image="/tmp/${x_hash}.png"
+        extract_thumbnail "${x_wall}" "${temp_image}"
+        x_wall="${temp_image}"
+    fi
+
     magick "${x_wall}"[0] -strip -resize 1000 -gravity center -extent 1000 -quality 90 "${thmbDir}/${x_hash}.thmb"
-    magick "${x_wall}"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "${thmbDir}/${x_hash}.sqre"
+    magick "${x_wall}"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "${thmbDir}/${x_hash}.sqre.png" && mv "${thmbDir}/${x_hash}.sqre.png" "${thmbDir}/${x_hash}.sqre"
     magick "${x_wall}"[0] -strip -scale 10% -blur 0x3 -resize 100% "${thmbDir}/${x_hash}.blur"
-    magick "${thmbDir}/${x_hash}.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "${thmbDir}/${x_hash}.png" && mv "${thmbDir}/${x_hash}.png" "${thmbDir}/${x_hash}.quad"
+    magick "${thmbDir}/${x_hash}.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "${thmbDir}/${x_hash}.quad.png" && mv "${thmbDir}/${x_hash}.quad.png" "${thmbDir}/${x_hash}.quad"
     "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${thmbDir}/${x_hash}.thmb" "${dcolDir}/${x_hash}" &>/dev/null
+
+    if [ "${is_video}" -eq 1 ]; then
+        rm -f "${temp_image}"
+    fi
+
 }
 
 # Function to cache any links that are hyde related
@@ -57,8 +93,7 @@ fn_envar_cache() {
     fi
 }
 
-export -f fn_wallcache
-export -f fn_wallcache_force
+export -f fn_wallcache fn_wallcache_force extract_thumbnail
 
 #// evaluate options
 
