@@ -59,8 +59,9 @@ usage() {
     echo "  si  search installed Interactively search between installed packages."
     echo "  w,  which            Print which package manager is being used."
     echo "  h,  help             Print this help."
-    echo "  pq,  query <pkg>   Check if a package is installed."
+    echo "  pq,  query <pkg>     Check if a package is installed."
     echo "  fq, file-query <file> Query the package owning a specific file."
+    echo "  cu, count-updates    Print the number of package needed to be updated."
     echo ""
     echo "Flags:"
     echo "  --pm <name>          Force package manager to use."
@@ -397,7 +398,7 @@ pacman_format_installed() {
 }
 
 pacman_is_installed() {
-    pacman -Qi "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    pacman -Qi "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 pacman_file_query() {
@@ -480,7 +481,7 @@ paru_format_installed() {
 }
 
 paru_is_installed() {
-    paru -Q "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    paru -Q "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 paru_file_query() {
@@ -532,7 +533,7 @@ yay_format_installed() {
 }
 
 yay_is_installed() {
-    yay -Q "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    yay -Q "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 yay_file_query() {
@@ -584,7 +585,7 @@ apt_format_installed() {
 }
 
 apt_is_installed() {
-    dpkg -l "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    dpkg -l "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 apt_file_query() {
@@ -637,7 +638,7 @@ dnf_format_installed() {
 }
 
 dnf_is_installed() {
-    rpm -q "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    rpm -q "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 dnf_file_query() {
@@ -688,7 +689,7 @@ zypper_format_installed() {
 }
 
 zypper_is_installed() {
-    zypper se --installed-only "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    zypper se --installed-only "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 zypper_file_query() {
@@ -739,7 +740,7 @@ apk_format_installed() {
 }
 
 apk_is_installed() {
-    apk info "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    apk info "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 apk_file_query() {
@@ -794,7 +795,7 @@ brew_format_installed() {
 }
 
 brew_is_installed() {
-    brew list --formula "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    brew list --formula "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 brew_file_query() {
@@ -850,7 +851,7 @@ scoop_format_installed() {
 }
 
 scoop_is_installed() {
-    scoop list "$1" >/dev/null 2>&1 && echo "Installed" || echo "Not installed"
+    scoop list "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 scoop_file_query() {
@@ -899,7 +900,7 @@ flatpak_format_installed() {
 }
 
 flatpak_is_installed() {
-    flatpak list --columns=application | grep -q "^$1$" && echo "Installed" || echo "Not installed"
+    flatpak list --columns=application | grep -q "^$1$" && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 flatpak_file_query() {
