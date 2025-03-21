@@ -103,8 +103,10 @@ HELP
 				;;
 			esac
 		done
-		find -L "${image_dirs[@]}" -maxdepth 1 -type f \( -name "wall.quad" -o -name "wall.sqre" -o -name "*.icon" -o -name "*logo*" -o -name "*.png" \) ! -path "*/wall.set*" ! -path "*/wallpapers/*.png" 2>/dev/null
-	) | shuf -n 1 | xargs fastfetch --logo
+		if [[ ${#image_dirs[@]} -gt 0 ]]; then
+			find -L "${image_dirs[@]}" -maxdepth 1 -type f \( -name "wall.quad" -o -name "wall.sqre" -o -name "*.icon" -o -name "*logo*" -o -name "*.png" \) ! -path "*/wall.set*" ! -path "*/wallpapers/*.png" 2>/dev/null
+		fi
+	) | shuf -n 1 | read -r logo && [ -n "$logo" ] && exec fastfetch --logo-type kitty --logo "$logo"
 
 	;;
 --select | -S)
