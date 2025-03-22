@@ -11,7 +11,7 @@
 ## Installation Scripts
 
 - [ ] `install.sh`
-- [ ] `install_pre.sh`
+- [x] `install_pre.sh`
 - [ ] `global_fn.sh`
 
 ## Package Management
@@ -41,8 +41,8 @@
 
 ## Notes
 
-- [ ] Added Athena repo for Pentesters
-- [ ] Added new grub theme
+- [x] Added Athena repo for Pentesters
+- [x] Added new grub theme
 
 ## Dependencies
 
