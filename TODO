@@ -6,6 +6,7 @@
 - [ ] Create rofi themes if needed
 - [ ] Add some usefull programs
 - [ ] Include support for ROG products
+- [ ] Tweak around new grub theme
 
 ## Installation Scripts
 
@@ -40,4 +41,9 @@
 
 ## Notes
 
-- [ ] Adding Athena repo for Pentesters 
+- [ ] Added Athena repo for Pentesters
+- [ ] Added new grub theme
+
+## Dependencies
+
+- [ ] Curl
