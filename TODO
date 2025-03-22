@@ -1,0 +1,43 @@
+# HyDE Installation Script TODO
+
+## High Priority
+
+- [ ] Add needed scripts
+- [ ] Create rofi themes if needed
+- [ ] Add some usefull programs
+- [ ] Include support for ROG products
+
+## Installation Scripts
+
+- [ ] `install.sh`
+- [ ] `install_pre.sh`
+- [ ] `global_fn.sh`
+
+## Package Management
+
+- [ ] `pkg_core.lst`
+- [ ] `install_pkg.sh`
+
+## Configuration
+
+- [ ] `restore_fnt.sh`
+- [ ] `restore_cfg.sh`
+- [ ] `restore_thm.sh`
+
+## System Services
+
+- [ ] `system_ctl.lst`
+
+## Documentation
+
+- [ ] Create folder for original README, and KEYBINDINGS
+- [ ] Create new README, and KEYBINDINGS that describes changes clearly
+- [ ] Document all script options and flags
+
+## Future Enhancements
+
+- [ ] Add TUI-installer like AthenaOS
+
+## Notes
+
+- [ ] Adding Athena repo for Pentesters 

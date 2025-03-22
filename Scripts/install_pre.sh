@@ -31,8 +31,9 @@ if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
         print_log -r "[bootloader] " -b " :: " "Select grub theme:" -r "\n[1]" -b " Retroboot (dark)" -r "\n[2]" -b " Pochita (light)"
         read -r -p " :: Press enter to skip grub theme <or> Enter option number : " grubopt
         case ${grubopt} in
-        1) grubtheme="Retroboot" ;;
-        2) grubtheme="Pochita" ;;
+        1) grubtheme="CyberRe" ;;
+        2) grubtheme="Retroboot" ;;
+        3) grubtheme="Pochita" ;;
         *) grubtheme="None" ;;
         esac
 
@@ -115,5 +116,32 @@ else
     if [ "${is_chaotic_aur}" == true ]; then
         sudo pacman-key --init
         sudo "${scrDir}/chaotic_aur.sh" --install
+    fi
+fi
+
+if grep -q '\[athena\]' /etc/pacman.conf; then
+    print_log -sec "ATHENA-OS" -stat "skipped" "Athena entry found in pacman.conf..."
+else
+    prompt_timer 120 "Would you like to include Athena-OS repo? [y/n] | q to quit "
+    is_athena_os=false
+
+    case "${PROMPT_INPUT}" in
+    y | Y)
+        is_athena_os=true
+        ;;
+    n | N)
+        is_athena_os=false
+        ;;
+    q | Q)
+        print_log -sec "Athena-OS" -crit "Quit" "Exiting..."
+        exit 1
+        ;;
+    *)
+        is_athena_os=true
+        ;;
+    esac
+    if [ "${is_athena_os}" == true ]; then
+        sudo pacman-key --init
+        sudo "${scrDir}/athena_os.sh" --install
     fi
 fi
