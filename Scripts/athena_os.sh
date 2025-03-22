@@ -2,7 +2,7 @@
 
 #! REQUIRED ROOT
 execName="$0 $*"
-rootOpts=("--install" "--purge" "--revert" "fresh") #? List Of Flags that needs to be in sudo
+rootOpts=("--install" "--uninstall" "fresh") #? List Of Flags that needs to be in sudo
 vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
 
 box_me() {
@@ -120,7 +120,7 @@ install() {
     box_me "Athena has been successfully installed!"
 }
 
-purge() {
+uninstall() {
     if pacman-key -l | grep A3F78B994C2171D5 >/dev/null; then
         box_me "Deleting the key"
         pacman-key --delete A3F78B994C2171D5 || {
@@ -199,7 +199,7 @@ case "$1" in
     install
     ;;
 --uninstall)
-    purge
+    uninstall
     ;;
 *)
     cat <<HELP
