@@ -1,0 +1,20 @@
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+
+*/
+{
+    "pulseaudio#microphone": {
+        "format": "{format_source}",
+        "rotate": 0,
+        "format-source": "\uf86b",
+        "format-source-muted": "\uf131",
+        "on-click": "pavucontrol -t 4",
+        "on-click-middle": "volumecontrol.sh -i m",
+        "on-scroll-up": "volumecontrol.sh -i i",
+        "on-scroll-down": "volumecontrol.sh -i d",
+        "tooltip-format": "{format_source} {source_desc} // {source_volume}%",
+        "scroll-step": 5
+    }
+}
