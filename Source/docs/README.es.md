@@ -19,7 +19,6 @@ Soporte multilingüe para el README
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 
-
 <div align="center">
 
 <br>
@@ -46,7 +45,7 @@ Soporte multilingüe para el README
 </div>
 
 Mira esto para ver la nota completa:
-[Viaje a HyDE y más allá](../../Hyprdots-to-HyDE.md)
+[Viaje a HyDE y más allá](./Hyprdots-to-HyDE.es.md)
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
@@ -65,7 +64,7 @@ Mira esto para ver la nota completa:
 
 El script de instalación está diseñado para un mínimo [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) instalar, pero **puede** funcionar en algunas [Distros basadas en arch](https://wiki.archlinux.org/title/Arch-based_distributions). Al instalar HyDE junto con otro [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) debería funcionar, debido a que es una configuración muy personalizada, **tendrá** conflicto con su [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) tematización, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. y es bajo su propio riesgo.
 
-Para apoyar a Nixos se mantiene un proyecto separado @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
+Para apoyar a NixOS se mantiene un proyecto separado @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
 > El script de instalación detectará automáticamente una tarjeta NVIDIA e instalará los controladores nvidia-dkms para su kernel.

@@ -19,7 +19,6 @@ Multi-language README support
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 
-
 <div align="center"><br>
   <a href="#installatie"><kbd> <br> Installatie <br> </kbd></a>&ensp;&ensp;
   <a href="#updaten"><kbd> <br> Updaten <br> </kbd></a>&ensp;&ensp;
@@ -56,7 +55,7 @@ Bekijk de volledige notitie hier:
 Het installatiescript is ontworpen voor een minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) installatie, maar het **kan** ook werken op sommige [Arch-gebaseerde distributies](https://wiki.archlinux.org/title/Arch-based_distributions).
 Hoewel het installeren van HyDE naast een andere [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) zou moeten werken. Gaat het, vanwege de sterk aangepaste setup, **conflicteren** met je [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) thema's, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), enz. Dit is volledig het op eigen risico.
 
-Voor Nixos-ondersteuning is er een apart project dat wordt onderhouden op [Hydenix](https://github.com/richen604/hydenix/tree/main)
+Voor NixOS-ondersteuning is er een apart project dat wordt onderhouden op [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
 > Het installatiescript detecteert automatisch een NVIDIA-kaart en installeert nvidia-dkms drivers voor je kernel.
@@ -203,3 +202,16 @@ Voor meer informatie, bezoek [HyDE-Project/hyde-themes](https://github.com/HyDE-
 <div align="right">
   <sub>Laatst bewerkt op: 21/03/2025<span id="last-edited"></span></sub>
 </div>
+
+<a id="star_history"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STERNE" width="450"/>
+
+---
+
+<a href="https://star-history.com/#hyde-project/hyde&hyde-project/hyde-gallery&hyde-project/hyde-themes&Timeline">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
+ </picture>
+</a>

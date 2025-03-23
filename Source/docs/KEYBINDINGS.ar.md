@@ -12,15 +12,12 @@
 Multi-language KEYBINDINGS support
 -->
 
-<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](KEYBINDINGS.md) -->
+[![en](https://img.shields.io/badge/lang-en-red.svg)](../../KEYBINDINGS.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](KEYBINDINGS.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](KEYBINDINGS.de.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](KEYBINDINGS.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](KEYBINDINGS.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](KEYBINDINGS.fr.md)
-[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](KEYBINDINGS.ar.md)
-
-
 
 <div align="center">
 
@@ -50,7 +47,7 @@ Multi-language KEYBINDINGS support
 <!-- # <a id=hyde-keybindings>HyDE Keybindings</a> -->
 <!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
 
->[!TIP]
+> [!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> يعرض روابط المفاتيح.
 
 ## <a id=window-management></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=إدارة%20النوافذ" width="450"/>
@@ -167,7 +164,6 @@ Multi-language KEYBINDINGS support
 | :------------------------------------------------ | :------------------------- |
 | <kbd>None</kbd> + <kbd>XF86MonBrightnessUp</kbd>     | زيادة السطوع                       |
 | <kbd>None</kbd> + <kbd>XF86MonBrightnessDown</kbd>   | تقليل السطوع                       |
-
 
 ## <a id=utilities></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=الأدوات%20المساعدة" width="450"/>
 

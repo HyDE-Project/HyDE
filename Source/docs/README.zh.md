@@ -19,7 +19,6 @@ Multi-language README support
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 
-
 <div align="center">
 
 <br>
@@ -67,7 +66,7 @@ Multi-language README support
 
 HyDE 是一个高度自定义的预设，在其他[桌面环境](https://wiki.archlinux.org/title/Desktop_environment)/[窗口管理器](https://wiki.archlinux.org/title/Window_manager)的上安装 HyDE 也许可行，但它可能会与您的[GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) 主题, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB)等等配置相冲突.您需自行承担风险。
 
-我们支持 Nixos， 但作为一个单独的仓库在 [Hydenix](https://github.com/richen604/hydenix/tree/main) 提供。
+我们支持 NixOS， 但作为一个单独的仓库在 [Hydenix](https://github.com/richen604/hydenix/tree/main) 提供。
 
 > [!IMPORTANT]
 > 安装脚本会自动检测英伟达显卡并安装 nvidia-dkms 内核驱动。
@@ -124,7 +123,7 @@ git pull origin master
 ```
 
 > [!IMPORTANT]
-> 请注意，在`Sctipts/restore_cfg.psv`中列出的配置中，您所做的任何个性化配置都会被覆盖。
+> 请注意，在`Scripts/restore_cfg.psv`中列出的配置中，您所做的任何个性化配置都会被覆盖。
 > 但是，所有被覆盖的配置会先被备份到`~/.config/cfg_backups/`中，以便找回。
 
 <!--

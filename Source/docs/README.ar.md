@@ -9,18 +9,16 @@
 
 ![hyde_banner](../assets/hyde_banner.png)
 
-
 <!--
 Multi-language README support
 -->
 
+[![en](https://img.shields.io/badge/lang-en-red.svg)](../../README.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](README.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
-[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
-
 
 <div align="center">
 <br>
@@ -62,7 +60,6 @@ Multi-language README support
 
 ---
 
-
 تم تصميم نص التثبيت للعمل مع نظام [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) الأساسي، ولكنه **قد** يعمل على بعض [التوزيعات المستندة إلى Arch](https://wiki.archlinux.org/title/Arch-based_distributions). عند تثبيت HyDE مع [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) آخر، قد يحدث تعارض مع تخصيصاتك الحالية مثل [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt)، [Shell](https://wiki.archlinux.org/title/Command-line_shell)، [SDDM](https://wiki.archlinux.org/title/SDDM)، [GRUB](https://wiki.archlinux.org/title/GRUB)، إلخ. ويكون ذلك على مسؤوليتك الخاصة.
 لدعم نظام NixOS، يتم صيانة مشروع منفصل @ [Hydenix](https://github.com/richen604/hydenix/tree/main).
 
@@ -73,6 +70,7 @@ Multi-language README support
 > [!CAUTION]
 > سيقوم البرنامج النصي بتغيير إعدادات `grub` أو `systemd-boot` لتمكين NVIDIA DRM.
 لتثبيت HyDE، قم بتنفيذ الأوامر التالية:
+
 ```shell
 pacman -S --needed git base-devel
 git clone --depth 1 https://github.com/HyDE-Project/HyDE ~/HyDE
@@ -107,6 +105,7 @@ cd ~/HyDE/Scripts
 ---
 
 للتحديث، تحتاج إلى استخراج أحدث التغييرات من GitHub واستعادة الإعدادات عن طريق تنفيذ الأوامر التالية:
+
 ```shell
 cd ~/HyDE/Scripts
 git pull origin master
@@ -124,13 +123,14 @@ git pull origin master
 
 <div align="right">
   <br>
-  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> 
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br>
   </kbd>
   </a>
 </div>
 
 <a id="السمات"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=السمات" width="450"/>
+
 ---
 
 جميع السمات الرسمية لدينا مخزنة في مستودع منفصل، مما يسمح للمستخدمين بتثبيتها باستخدام themepatcher.
@@ -166,6 +166,7 @@ git pull origin master
 
 <a id="الأنماط"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=الأنماط" width="450"/>
+
 ---
 
 <div align="center"><table><tr>اختيار السمة</tr><tr><td>
@@ -228,6 +229,7 @@ git pull origin master
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=النجوم" width="450"/>
+
 ---
 
 <a href="https://star-history.com/#hyde-project/hyde&hyde-project/hyde-gallery&hyde-project/hyde-themes&Timeline">

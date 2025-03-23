@@ -19,7 +19,6 @@ Multi-language KEYBINDINGS support
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](KEYBINDINGS.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](KEYBINDINGS.ar.md)
 
-
 <div align="center">
 
 <br>

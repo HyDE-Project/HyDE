@@ -19,7 +19,6 @@ Multi-language KEYBINDINGS support
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](KEYBINDINGS.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](KEYBINDINGS.ar.md)
 
-
 <div align="center">
 
 <br>
@@ -46,7 +45,8 @@ Multi-language KEYBINDINGS support
 
 Hier zijn alle HyDE-specifieke toetscombinaties opgesomd.
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> toont de toetscombinaties.
+> [!TIP]
+> <kbd>Super</kbd> + <kbd>/</kbd> toont de toetscombinaties.
 
 <!-- ## <a id="fenster-verwaltung">Fenster Verwaltung</a> -->
 

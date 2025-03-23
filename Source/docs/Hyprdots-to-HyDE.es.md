@@ -1,10 +1,10 @@
-# ¡Hola! 👋 Aquí Khing.
+# ¡Hola! 👋 Aquí Khing
 
-[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/Hyprdots-to-HyDE.de.md)
-[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/Hyprdots-to-HyDE.zh.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](./Hyprdots-to-HyDE.de.md)
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../Hyprdots-to-HyDE.md)
+[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](./Hyprdots-to-HyDE.zh.md)
 
-## Este fork mejorará y corregirá prasanthrangan/hyprdots con el tiempo.
+## Este fork mejorará y corregirá prasanthrangan/hyprdots con el tiempo
 
 ### ¿Por qué?
 
@@ -21,11 +21,11 @@
 
 ¿Quiénes son los $USER?
 
-✅ No quieren mantener un fork  
-✅ Quieren mantenerse actualizados con estos excelentes dotfiles  
-✅ No saben cómo funciona el repositorio  
-✅ No tienen tiempo para crear sus propios dotfiles, solo quieren inspiración  
-✅ Quieren un `~/.config` más limpio con todo estructurado como un paquete real de Linux  
+✅ No quieren mantener un fork
+✅ Quieren mantenerse actualizados con estos excelentes dotfiles
+✅ No saben cómo funciona el repositorio
+✅ No tienen tiempo para crear sus propios dotfiles, solo quieren inspiración
+✅ Quieren un `~/.config` más limpio con todo estructurado como un paquete real de Linux
 ✅ Exigen una experiencia similar a un entorno de escritorio (DE)
 
 ### HOJA DE RUTA 🛣️📍

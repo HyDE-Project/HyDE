@@ -19,7 +19,6 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](KEYBINDINGS.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](KEYBINDINGS.ar.md)
 
-
 <div align="center">
 
 <br>
@@ -49,7 +48,8 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 
 Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> zeigt die Tastenkombinationen.
+> [!TIP]
+> <kbd>Super</kbd> + <kbd>/</kbd> zeigt die Tastenkombinationen.
 
 <!-- ## <a id="fenster-verwaltung">Fenster Verwaltung</a> -->
 
@@ -67,7 +67,7 @@ Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>F</kbd>   | Pin auf fokussiertes Fenster umschalten       |
 | <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Delete</kbd> | Logout-Menü                                   |
 | <kbd>ALT</kbd> + <kbd>Control_R</kbd>                | waybar umschalten und Konfiguration neu laden |
-| <kbd>SUPER</kbd> + <kbd>J</kbd>                      | teilung umschalten                            |
+| <kbd>SUPER</kbd> + <kbd>J</kbd>                      | Teilung umschalten                            |
 
 ### Gruppen-Navigation
 
@@ -148,15 +148,15 @@ Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 
 ### Audio
 
-| Tasten                                            | Aktion                                  |
-| :------------------------------------------------ | :-------------------------------------- |
-| <kbd>None</kbd> + <kbd>F10</kbd>                  | Stummschaltung des Ausgangs umschalten  |
-| <kbd>None</kbd> + <kbd>XF86AudioMute</kbd>        | Stummschaltung des Ausgangs umschalten  |
-| <kbd>None</kbd> + <kbd>F11</kbd>                  | Lautstärke verringern                   |
-| <kbd>None</kbd> + <kbd>F12</kbd>                  | Lautstärke erhöhen                      |
-| <kbd>None</kbd> + <kbd>XF86AudioMicMute</kbd>     | Stummschaltung des Mikrofons umschalten |
-| <kbd>None</kbd> + <kbd>XF86AudioLowerVolume</kbd> | Lautstärke verringern                   |
-| <kbd>None</kbd> + <kbd>XF86AudioRaiseVolume</kbd> | Lautstärke erhöhen                      |
+| Tasten                                            | Aktion                                   |
+| :------------------------------------------------ | :--------------------------------------- |
+| <kbd>None</kbd> + <kbd>F10</kbd>                  | Stumm-schaltung des Ausgangs umschalten  |
+| <kbd>None</kbd> + <kbd>XF86AudioMute</kbd>        | Stumm-schaltung des Ausgangs umschalten  |
+| <kbd>None</kbd> + <kbd>F11</kbd>                  | Lautstärke verringern                    |
+| <kbd>None</kbd> + <kbd>F12</kbd>                  | Lautstärke erhöhen                       |
+| <kbd>None</kbd> + <kbd>XF86AudioMicMute</kbd>     | Stumm-schaltung des Mikrofons umschalten |
+| <kbd>None</kbd> + <kbd>XF86AudioLowerVolume</kbd> | Lautstärke verringern                    |
+| <kbd>None</kbd> + <kbd>XF86AudioRaiseVolume</kbd> | Lautstärke erhöhen                       |
 
 ### Medien
 
@@ -204,7 +204,7 @@ Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>W</kbd>   | ein Hintergrundbild auswählen |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Up</kbd>    | nächstes waybar-Layout        |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>Down</kbd>  | vorheriges waybar-Layout      |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>R</kbd>   | wallbash Modus auswähler      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>R</kbd>   | wallbash Modus auswählen      |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | ein Thema auswählen           |
 
 <!-- ## <a id=Arbeitsbereiche>Arbeitsbereiche</a> -->
