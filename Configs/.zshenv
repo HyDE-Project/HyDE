@@ -68,6 +68,11 @@ function in {
     local -a arch=()
     local -a aur=()
 
+    # If `in` is called with no argument, let the user choose the packages interactively
+    if [[ ${#inPkg[@]} -eq 0 ]]; then
+        ${PM} install
+    fi
+
     for pkg in "${inPkg[@]}"; do
         if pacman -Si "${pkg}" &>/dev/null; then
             arch+=("${pkg}")
@@ -81,7 +86,7 @@ function in {
     fi
 
     if [[ ${#aur[@]} -gt 0 ]]; then
-        ${PM} -S "${aur[@]}"
+        ${PM} install "${aur[@]}"
     fi
 }
 
@@ -198,10 +203,10 @@ if [ -t 1 ]; then
     fi
 
     alias c='clear' \
-        un='$PM uninstall' \
+        un='$PM remove' \
         up='$PM upgrade' \
         pl='$PM search installed' \
-        pa='$PM search installed' \
+        pa='$PM search all' \
         vc='code' \
         fastfetch='fastfetch --logo-type kitty' \
         ..='cd ..' \
