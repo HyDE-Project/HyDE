@@ -11,7 +11,7 @@
 
 # HyDE's ZSH env configuration
 # This file is sourced by ZSH on startup
-# And ensures that we have an obstruction free ~/.zshrc file
+# And ensures that we have an obstruction-free ~/.zshrc file
 # This also ensures that the proper HyDE $ENVs are loaded
 
 function command_not_found_handler {
@@ -211,8 +211,8 @@ if [ -t 1 ]; then
         .5='cd ../../../../..' \
         mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 
-    # TODO add handlers in pm.sh
-    # for this aliases please manually add the following lines to your .zshrc file. yay as the aur helper
+    # TODO: add handlers in pm.sh
+    # for these aliases please manually add the following lines to your .zshrc file.(Using yay as the aur helper)
     # pc='yay -Sc' # remove all cached packages
     # po='yay -Qtdq | $PM -Rns -' # remove orphaned packages
 
