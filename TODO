@@ -16,8 +16,8 @@
 
 ## Package Management
 
-- [ ] `pkg_core.lst`
-- [ ] `install_pkg.sh`
+- [x] `pkg_core.lst`
+- [x] `install_pkg.sh`
 
 ## Configuration
 
