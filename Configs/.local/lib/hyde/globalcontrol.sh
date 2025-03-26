@@ -274,6 +274,26 @@ print_log() {
     echo ""
 }
 
+check_package() {
+
+    local lock_file="${XDG_RUNTIME_DIR:-/tmp}/hyde/__package.lock"
+    mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/hyde"
+
+    if [ -f "$lock_file" ]; then
+        return 0
+    fi
+
+    for pkg in "$@"; do
+        if ! pkg_installed "${pkg}"; then
+            print_log -err "Package is not installed" "'${pkg}'"
+            rm -f "$lock_file"
+            exit 1
+        fi
+    done
+
+    touch "$lock_file"
+}
+
 # Yes this is so slow but it's the only way to ensure that parsing behaves correctly
 get_hyprConf() {
     local hyVar="${1}"

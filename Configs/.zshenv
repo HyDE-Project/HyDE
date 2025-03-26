@@ -20,13 +20,20 @@ function command_not_found_handler {
 
     PM="pm.sh"
     # Try to find pm.sh in common locations
-    if [ ! command -v pm.sh ] &>/dev/null; then
+    if [ ! command -v "${PM}" ] &>/dev/null; then
         for path in "/usr/lib/hyde" "/usr/local/lib/hyde" "$HOME/.local/lib/hyde" "$HOME/.local/bin"; do
             if [[ -x "$path/pm.sh" ]]; then
                 PM="$path/pm.sh"
                 break
+            else
+                unset PM
             fi
         done
+    fi
+
+    if ! command -v "${PM}" &>/dev/null; then
+        printf "${bright}${red}We cannot find package manager script (${purple}pm.sh${red}) from ${green}HyDE${reset}\n"
+        return 127
     fi
 
     if ! "${PM}" fq "/usr/bin/$1"; then
@@ -167,8 +174,7 @@ if [ -t 1 ]; then
 
     # Helpful aliases
     if [[ -x "$(which eza)" ]]; then
-        alias ls='eza' \
-            l='eza -lh --icons=auto' \
+        alias l='eza -lh --icons=auto' \
             ll='eza -lha --icons=auto --sort=name --group-directories-first' \
             ld='eza -lhD --icons=auto' \
             lt='eza --icons=auto --tree'

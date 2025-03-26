@@ -89,6 +89,15 @@ m)                                                                              
 	# shellcheck disable=SC2086
 	"$LIB_DIR/hyde/grimblast" copysave output $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} # intended globbing
 	;;
+sc) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
+	check_package tesseract-data-eng tesseract
+	GEOM=$(slurp)
+	grim -g "${GEOM}" "${temp_screenshot}"
+	pkg_installed imagemagick && magick "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
+	tesseract "${temp_screenshot}" - | wl-copy
+	notify-send -a "HyDE Alert" "OCR preview" -i "${temp_screenshot}" -e
+	rm -f "${temp_screenshot}"
+	;;
 *) # invalid option
 	USAGE ;;
 esac
