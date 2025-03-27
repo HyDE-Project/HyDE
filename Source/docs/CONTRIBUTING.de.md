@@ -12,7 +12,7 @@ Vielen Dank für Ihr Interesse, zu den Community Standards beizutragen! Wir freu
 
 ## Erste Schritte
 
-1. Forken Sie dieses Repository auf Ihr GitHub-Konto. Dadurch wird eine Kopie dieses Repositorys in Ihrem Konto erstellt. Sie können Änderungen an dieser Kopie vornehmen, ohne das Original-Repository zu verändern.
+1. Forken Sie dieses Repository auf Ihr GitHub-Konto. Dadurch wird eine Kopie dieses Repositories in Ihrem Konto erstellt. Sie können Änderungen an dieser Kopie vornehmen, ohne das Original-Repository zu verändern.
    - Um dieses Repository zu forken, klicken Sie auf die Schaltfläche **Fork** in der oberen rechten Ecke dieser Seite oder klicken Sie [hier](https://github.com/HyDE-Project/HyDE/fork).
 2. Klonen Sie Ihr geforktes Repository auf Ihren lokalen Rechner.
 

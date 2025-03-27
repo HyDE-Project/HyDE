@@ -17,12 +17,14 @@ Soporte multilingüe de KEYBINDINGS
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](KEYBINDINGS.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](KEYBINDINGS.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](KEYBINDINGS.fr.md)
+[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](KEYBINDINGS.ar.md)
 
 <div align="center">
 
 <br>
 
 <!-- <a href=#hyde-combinaciones><kbd> <br> HyDE combinaciones <br> </kbd></a>&ensp;&ensp; -->
+
 <a href=#gestión-de-ventanas><kbd> <br> Gestión de ventanas <br> </kbd></a>&ensp;&ensp;
 <a href=#varios><kbd> <br> Varios <br> </kbd></a>&ensp;&ensp;
 <a href=#lanzador><kbd> <br> Lanzador <br> </kbd></a>&ensp;&ensp;
@@ -45,12 +47,14 @@ Soporte multilingüe de KEYBINDINGS
 
 <!-- # <a id=hyde-combinaciones>HyDE Combinaciones</a> -->
 <!-- # <a id=hyde-combinaciones></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Combinaciones" width="450"/> -->
+
 Aquí están listados todos los keybindings específicos de HyDE.
 
->[!TIP]
+> [!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> muestra las combinaciones de teclas.
 
 <!-- ## <a id=gestión-de-ventanas>Gestión de ventanas</a> -->
+
 ## <a id="gestión-de-ventanas"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Gesti%C3%B3n%20de%20ventanas" width="450"/>
 
 | Teclas                                               | Acción                                                                  |
@@ -102,6 +106,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 | <kbd>SUPER</kbd> + <kbd>X</kbd>         | mantener presionado para cambiar el tamaño de la ventana |
 
 <!-- ## <a id=varios>Varios</a> -->
+
 ## <a id=varios></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Varios" width="450"/>
 
 | Teclas                                                                   | Acción                                 |
@@ -112,6 +117,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 | <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>down</kbd>  | Mover la ventana activa a hacia abajo  |
 
 <!-- ## <a id=lanzador>Lanzador</a> -->
+
 ## <a id=lanzador></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Lanzador" width="450"/>
 
 ### Apps
@@ -139,6 +145,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>A</kbd> | seleccione el lanzador rofi           |
 
 <!-- ## <a id=controles-de-hardware>Controles de hardware</a> -->
+
 ## <a id=controles-de-hardware></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Controles%20de%20hardware" width="450"/>
 
 ### Audio
@@ -170,6 +177,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 | <kbd>None</kbd> + <kbd>XF86MonBrightnessDown</kbd> | bajar el brillo |
 
 <!-- ## <a id=utilidades>Utilidades</a> -->
+
 ## <a id=utilidades></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Utilidades" width="450"/>
 
 | Teclas                                           | Acción                              |
@@ -188,6 +196,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 | <kbd>None</kbd> + <kbd>Print</kbd>                 | capturar pantalla a todos los monitores |
 
 <!-- ## <a id="tematización-y-fondos-de-pantalla">Tematización y fondos de pantalla</a> -->
+
 ## <a id=tematización-y-fondos-de-pantalla></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=520&lines=Tematizaci%C3%B3n%20y%20fondos%20de%20pantalla" width="450"/>
 
 | Teclas                                               | Acción                               |
@@ -201,6 +210,7 @@ Aquí están listados todos los keybindings específicos de HyDE.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | seleccione un tema                   |
 
 <!-- ## <a id="espacios-de-trabajo">Espacios de trabajo</a> -->
+
 ## <a id=espacios-de-trabajo></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Espacios%20de%20trabajo" width="450"/>
 
 ### Navegación
@@ -230,11 +240,11 @@ Aquí están listados todos los keybindings específicos de HyDE.
 
 #### Espacio de trabajo especial
 
-| Teclas                                                 | Acción                              |
-| :----------------------------------------------------- | :---------------------------------- |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>S</kbd>     | pasar al bloc de notas              |
-| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>S</kbd>       | mover al bloc de notas (silencioso) |
-| <kbd>SUPER</kbd> + <kbd>S</kbd>                        | alternar bloc de notas              |
+| Teclas                                             | Acción                              |
+| :------------------------------------------------- | :---------------------------------- |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>S</kbd> | pasar al bloc de notas              |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>S</kbd>   | mover al bloc de notas (silencioso) |
+| <kbd>SUPER</kbd> + <kbd>S</kbd>                    | alternar bloc de notas              |
 
 #### Mover la ventana silenciosamente
 

@@ -16,7 +16,7 @@ fi
 
 rofi_config="${ROFI_LAUNCH_STYLE:-$rofi_config}"
 
-font_scale="${ROFI_LAUNCHER_SCALE}"
+font_scale="${ROFI_LAUNCH_SCALE}"
 [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
 
 #// rofi action
@@ -52,6 +52,11 @@ h | --help)
     rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
     ;;
 esac
+
+# Run on uwsm if installed
+if pkg_installed uwsm; then
+    run_uwsm="uwsm app -- {cmd}"
+fi
 
 #// set overrides
 hypr_border="${hypr_border:-10}"
@@ -91,6 +96,7 @@ rofi -show "${r_mode}" \
     -theme-str "${font_override}" \
     -theme-str "${i_override}" \
     -theme-str "${r_override}" \
+    -run-command "${run_uwsm:-"{cmd}"}" \
     -theme "${rofi_config}" &
 disown
 

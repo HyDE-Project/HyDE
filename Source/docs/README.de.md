@@ -17,6 +17,7 @@ Mehrsprachige README-Unterstützung
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
+[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 
 <div align="center"><br>
   <a href="#installation"><kbd> <br> Installation <br> </kbd></a>&ensp;&ensp;
@@ -40,7 +41,7 @@ Mehrsprachige README-Unterstützung
 </div>
 
 Hier finden Sie die vollständige Notiz:
-[Reise zu HyDE und darüber hinaus](../../Hyprdots-to-HyDE.md)
+[Reise zu HyDE und darüber hinaus](./Hyprdots-to-HyDE.de.md)
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
@@ -54,16 +55,17 @@ Hier finden Sie die vollständige Notiz:
 
 <a id="installation"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATION" width="450"/>
+
 ---
 
 Das Installationsskript ist für eine minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux)-Installation gedacht, aber **kann** auf einigen [Arch-basierten Distributionen](https://wiki.archlinux.org/title/Arch-based_distributions) funktionieren.
 Während die Installation von HyDE neben einem anderen [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) funktionieren sollte, **wird** es aufgrund der stark angepassten Installation zu Konflikten mit Ihren [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) Themen, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), usw. kommen und geschieht auf eigene Gefahr.
 
-Für die Unterstützung von Nixos gibt es ein eigenes Projekt, das unter [Hydenix] (<https://github.com/richen604/hydenix/tree/main>) gepflegt wird.
+Für die Unterstützung von NixOS gibt es ein eigenes Projekt, das unter [Hydenix](https://github.com/richen604/hydenix/tree/main) gepflegt wird.
 
 > [!IMPORTANT]
 > Das Installationsskript erkennt automatisch eine NVIDIA-Karte und installiert nvidia-dkms Treiber für Ihren Kernel.
-> Vergewissern Sie sich, dass Ihre NVIDIA-Karte die dkms Treiber aus der [hier] bereitgestellten Liste unterstützt (<https://wiki.archlinux.org/title/NVIDIA>).
+> Vergewissern Sie sich, dass Ihre NVIDIA-Karte die dkms Treiber aus der [hier](https://wiki.archlinux.org/title/NVIDIA) bereitgestellten Liste unterstützt.
 
 > [!CAUTION]
 > Das Skript modifiziert Ihre `grub` oder `systemd-boot` Konfiguration, um NVIDIA DRM zu aktivieren.
@@ -86,7 +88,8 @@ cd ~/HyDE/Scripts
 
 > [!IMPORTANT]
 > Beziehen Sie Ihre Liste aus `Scripts/pkg_extra.lst`
-> oder Sie können `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst`, wenn Sie alle zusätzlichen Pakete installieren wollen.
+>
+> oder Sie können `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst` ausführen, wenn Sie alle zusätzlichen Pakete installieren wollen.
 
 <!--
 Als zweite Installationsoption können Sie auch `Hyde-install` verwenden, was für einige einfacher sein könnte.
@@ -94,7 +97,7 @@ Sehen Sie sich die Installationsanweisungen für HyDE in [Hyde-cli - Usage](http
 -->
 
 Bitte starten Sie neu, nachdem das Installationsskript abgeschlossen ist und Sie zum ersten Mal den SDDM-Anmeldebildschirm (oder einen schwarzen Bildschirm) sehen.
-Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki] (<https://github.com/HyDE-Project/HyDE/wiki/installation>).
+Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
 <div align="right">
   <br>
@@ -103,6 +106,7 @@ Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki] (<https://gith
 
 <a id="aktualisieren"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=AKTUALISIEREN" width="450"/>
+
 ---
 
 Um HyDE zu aktualisieren, müssen Sie die letzten Änderungen von GitHub ziehen und die Konfigurationen wiederherstellen, indem Sie die folgenden Befehle ausführen:
@@ -127,8 +131,9 @@ Weitere Details finden Sie in [Hyde-cli - dots management wiki](https://github.c
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="themen"></a>  
+<a id="themen"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMEN" width="450"/>
+
 ---
 
 Alle unsere offiziellen Themen sind in einem separaten Repository gespeichert, so dass Benutzer sie mit themepatcher installieren können.
@@ -136,7 +141,7 @@ Weitere Informationen finden Sie unter [HyDE-Project/hyde-themes](https://github
 
 <div align="center">
   <table><tr><td>
-  
+
   [![Catppuccin-Latte](https://placehold.co/130x30/dd7878/eff1f5?text=Catppuccin-Latte&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Latte)
   [![Catppuccin-Mocha](https://placehold.co/130x30/b4befe/11111b?text=Catppuccin-Mocha&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Mocha)
   [![Decay-Green](https://placehold.co/130x30/90ceaa/151720?text=Decay-Green&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Decay-Green)
@@ -164,6 +169,7 @@ Weitere Informationen finden Sie unter [HyDE-Project/hyde-themes](https://github
 
 <a id="stile"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STILE" width="450"/>
+
 ---
 
 <div align="center">
@@ -237,5 +243,18 @@ Weitere Informationen finden Sie unter [HyDE-Project/hyde-themes](https://github
 </div>
 
 <div align="right">
-  <sub>Zuletzt bearbeitet am: 27.02.2025<span id="last-edited"></span></sub>
+  <sub>Zuletzt bearbeitet am: 23/03/2025<span id="last-edited"></span></sub>
 </div>
+
+<a id="star_history"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STERNE" width="450"/>
+
+---
+
+<a href="https://star-history.com/#hyde-project/hyde&hyde-project/hyde-gallery&hyde-project/hyde-themes&Timeline">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
+ </picture>
+</a>

@@ -349,11 +349,6 @@ if [ -n "${single_template}" ]; then
     exit 0
 fi
 
-# Run when hyprland is running
-if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-    hyprctl keyword misc:disable_autoreload 1 -q
-    export HYPRLAND_RELOAD=1
-fi
 # Print to terminal the colors
 [ -t 1 ] && "${scrDir}/wallbash.print.colors.sh"
 
@@ -388,7 +383,3 @@ find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null |
 # Add post processing here
 
 toml_write "${confDir}/kdeglobals" "Colors:View" "BackgroundNormal" "#${dcol_pry1:-000000}"
-
-if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] && [ "$HYPRLAND_RELOAD" -eq 1 ]; then
-    hyprctl reload -q
-fi

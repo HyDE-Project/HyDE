@@ -40,7 +40,7 @@ stdout() {
 
     usage() {
         cat <<HELP
-Usage: $(basename "$0") [OPTIONS]
+Usage: $(basename "$0") "${cava_cmd}" [OPTIONS]
 Options:
   --bar <cava_bar>  Specify the characters to use for the bar animation (default: ▁▂▃▄▅▆▇█).
   --width <cava_width>   Specify the width of the bar.
@@ -107,15 +107,15 @@ HELP
         echo "Cava reached max instances, restarting cava"
         notify-send "Cava reached max instances, restarting cava... update the config file to increase the max instances"
         pkill -o -f "cava -p ${config_file}" # kill the oldest instance
-
     fi
+
     # // cava_stbmode - standby mode for stdout cava - default 0
     # 0: clean - totally hides the module
     # 1: blank - makes module expand as spaces
     # 2: full - occupies the module with full bar
     # 3: low - makes the module display the lowest set bar
     # <string>: - displays a string
-    case ${cava_stbmode:-} in
+    case ${cava_stbmode:-0} in
     0)
         stbBar=''
         ;; # Clean
@@ -139,7 +139,7 @@ HELP
     bar_range=${cava_range:-$((bar_length - 1))}
     # Create dictionary to replace char with bar
     dict="s/;//g"
-    stbAscii=$(printf '0%.0s' $(seq 1 "${bar_width}")) # predicts the amount of ancii characters to be used
+    stbAscii=$(printf '0%.0s' $(seq 1 "${bar_width}")) # predicts the amount of ascii characters to be used
     [ -n "${asciiBar}" ] || asciiBar="${stbAscii//0/${stbBar}}"
 
     dict="$dict;s/${stbAscii}/${asciiBar}/g"
@@ -172,19 +172,21 @@ EOF
 case $1 in
 stdout)
     shift
+    cava_cmd="stdout"
     cava_bar="$CAVA_STDOUT_BAR" cava_width="$CAVA_STDOUT_WIDTH" cava_range="$CAVA_STDOUT_RANGE" cava_stbmode="$CAVA_STDOUT_STANDBY"
     stdout "$@"
     ;;
 waybar)
+    shift
     cava_cmd="waybar"
-    max_instances=${CAVA_WAYBAR_MAX_INSTANCES:-1}
-    stdout --bar "$CAVA_WAYBAR_BAR" --width "$CAVA_WAYBAR_WIDTH" --range "$CAVA_WAYBAR_RANGE" --stb "$CAVA_WAYBAR_STANDBY"
+    cava_bar="$CAVA_WAYBAR_BAR" cava_width="$CAVA_WAYBAR_WIDTH" cava_range="$CAVA_WAYBAR_RANGE" cava_stbmode="$CAVA_WAYBAR_STANDBY"
+    stdout "$@"
     ;;
 hyprlock)
+    shift
     cava_cmd="hyprlock"
-    max_instances=${CAVA_HYPRLOCK_MAX_INSTANCES:-1}
-    stdout --bar "$CAVA_HYPRLOCK_BAR" --width "$CAVA_HYPRLOCK_WIDTH" --range "$CAVA_HYPRLOCK_RANGE" --stb "$CAVA_HYPRLOCK_STANDBY"
-
+    cava_bar="$CAVA_HYPRLOCK_BAR" cava_width="$CAVA_HYPRLOCK_WIDTH" cava_range="$CAVA_HYPRLOCK_RANGE" cava_stbmode="$CAVA_HYPRLOCK_STANDBY"
+    stdout "$@"
     ;;
 *)
     help_msg

@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
-# This script will soon be use to resolve $PATHS and LIB_DIR specific to hyde
+# This script will soon be used to resolve $PATHS and LIB_DIR specific to hyde
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
 
-BIN_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-LIB_DIR="${BIN_DIR/\/bin/\/lib}"
-SHARE_DIR="${BIN_DIR/\/bin/\/share}"
+if [[ -z "${BASH_SOURCE[0]}" ]]; then
+    echo "Script is sourced"
+    EXECUTABLE="${0}"
+else
+    EXECUTABLE="${BASH_SOURCE[0]}"
+fi
+
+BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
+LIB_DIR="${BIN_DIR}/../lib"
+SHARE_DIR="${BIN_DIR}/../share"
+PATH="$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
 
 export BIN_DIR LIB_DIR SHARE_DIR
 
@@ -27,7 +35,7 @@ Commands:
 
 Available HyDE commands:
 
-$(find "$LIB_DIR/hyde" -type f -name "*.sh" -exec basename {} .sh \;)
+$(list_script)
 
 USAGE
 
@@ -130,7 +138,11 @@ hyde_reload() {
 
     print_log -sec "hyde" "Reloading HyDE"
     "$LIB_DIR/hyde/swwwallcache.sh" -t ""
-    "$LIB_DIR/hyde/themeswitch.sh"
+    "$LIB_DIR/hyde/theme.switch.sh"
+}
+
+list_script() {
+    find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \;
 }
 
 if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
@@ -153,14 +165,30 @@ if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
     --help | help | -h)
         USAGE
         ;;
+    --list-script)
+        list_script
+        ;;
+    --list-script-path)
+        find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
+        ;;
     "")
         for func in $(compgen -A function); do
             export -f "${func?}"
         done
         ;;
     *)
-        if [ -f "$LIB_DIR/hyde/$1.sh" ]; then
-            "$LIB_DIR/hyde/$1.sh" "${@:2}"
+        if [ -f "${LIB_DIR}/hyde/${1}.sh" ]; then
+            bash "${LIB_DIR}/hyde/${1}.sh" "${@:2}"
+        elif [ -f "${LIB_DIR}/hyde/${1}.py" ]; then
+            python "${LIB_DIR}/hyde/${1}.py" "${@:2}"
+        elif [ -f "${LIB_DIR}/hyde/${1}" ]; then
+            "${LIB_DIR}/hyde/${1}" "${@:2}"
+        elif [ -f "${1}" ] && [ -x "${1}" ]; then
+            "$1" "${@:2}"
+        else
+            echo "Command not found: $1"
+            echo "Available commands:"
+            list_script
         fi
         ;;
     esac

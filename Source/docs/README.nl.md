@@ -17,6 +17,7 @@ Multi-language README support
 [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
+[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 
 <div align="center"><br>
   <a href="#installatie"><kbd> <br> Installatie <br> </kbd></a>&ensp;&ensp;
@@ -48,12 +49,13 @@ Bekijk de volledige notitie hier:
 
 <a id="installatie"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=INSTALLATIE" width="450"/>
+
 ---
 
 Het installatiescript is ontworpen voor een minimale [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) installatie, maar het **kan** ook werken op sommige [Arch-gebaseerde distributies](https://wiki.archlinux.org/title/Arch-based_distributions).
 Hoewel het installeren van HyDE naast een andere [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) zou moeten werken. Gaat het, vanwege de sterk aangepaste setup, **conflicteren** met je [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) thema's, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), enz. Dit is volledig het op eigen risico.
 
-Voor Nixos-ondersteuning is er een apart project dat wordt onderhouden op [Hydenix](https://github.com/richen604/hydenix/tree/main)
+Voor NixOS-ondersteuning is er een apart project dat wordt onderhouden op [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
 > Het installatiescript detecteert automatisch een NVIDIA-kaart en installeert nvidia-dkms drivers voor je kernel.
@@ -80,7 +82,7 @@ cd ~/HyDE/Scripts
 
 > [!IMPORTANT]
 > Baseer je lijst op basis van `Scripts/pkg_extra.lst`
-> of je kunt `cp  Scripts/pkg_extra.lst Scripts/pkg_user.lst` Als je alle extra pakketten wilt installeren. 
+> of je kunt `cp  Scripts/pkg_extra.lst Scripts/pkg_user.lst` Als je alle extra pakketten wilt installeren.
 
 Start je systeem opnieuw op na het installatiescript klaar is en je voor de eerste keer naar het SDDM inlogscherm (of zwart scherm) brengt. Voor meer details, raadpleeg de [installatie wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
 
@@ -91,6 +93,7 @@ Start je systeem opnieuw op na het installatiescript klaar is en je voor de eers
 
 <a id="updaten"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=UPDATEN" width="450"/>
+
 ---
 
 Om de HyDE te updaten, moet je de laatste aanpassingen van Github ophalen en de configuraties herstellen door de volgende commando's uit te voeren:
@@ -110,8 +113,9 @@ git pull origin master
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="thema's"></a>  
+<a id="thema's"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMA'S" width="450"/>
+
 ---
 
 Al onze officiële thema's worden opgeslagen in een apart repository, waardoor gebruikers ze kunnen installeren met themepatcher.
@@ -146,8 +150,9 @@ Voor meer informatie, bezoek [HyDE-Project/hyde-themes](https://github.com/HyDE-
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="stijlen"></a>  
+<a id="stijlen"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STIJLEN" width="450"/>
+
 ---
 
 <div align="center"><table><tr>Thema Selectie</tr><tr><td>
@@ -195,5 +200,18 @@ Voor meer informatie, bezoek [HyDE-Project/hyde-themes](https://github.com/HyDE-
 </div>
 
 <div align="right">
-  <sub>Laatst bewerkt op: 27/02/2025<span id="last-edited"></span></sub>
+  <sub>Laatst bewerkt op: 21/03/2025<span id="last-edited"></span></sub>
 </div>
+
+<a id="star_history"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STERNE" width="450"/>
+
+---
+
+<a href="https://star-history.com/#hyde-project/hyde&hyde-project/hyde-gallery&hyde-project/hyde-themes&Timeline">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
+ </picture>
+</a>

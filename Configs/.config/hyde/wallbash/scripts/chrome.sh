@@ -5,7 +5,7 @@
 
 # shellcheck disable=SC2154
 # shellcheck disable=SC1091
-if !  source "${cacheDir}/wallbash/shell-colors";then
+if ! source "${cacheDir}/wallbash/shell-colors"; then
   print_log -sec "chrome" -err "Failed to load" " 'shell-colors' file"
   exit 1
 fi
@@ -13,6 +13,9 @@ fi
 THEME_NAME="Wallbash"
 THEME_DIR="${cacheDir}/wallbash/$THEME_NAME-chrome-theme"
 
+if [ -e "$THEME_DIR" ]; then
+  rm -fr "$THEME_DIR"
+fi
 # Converts hex colors into rgb joined with comma
 # #fff -> 255, 255, 255
 hexToRgb() {

@@ -1,6 +1,10 @@
-# Hi! 👋 Khing here.
+# Hi! 👋 Khing here
 
-## This fork will enhance and fix prasanthrangan/hyprdots over time.
+[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/Hyprdots-to-HyDE.de.md)
+[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/Hyprdots-to-HyDE.zh.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/Hyprdots-to-HyDE.es.md)
+
+## This fork will enhance and fix prasanthrangan/hyprdots over time
 
 ### Why?
 
@@ -29,9 +33,9 @@ Who are the $USER?
 - [ ] **Portable**
 
   - [ ] HyDE-specific files should be imported into $USER, not the other way around
-  - [X] Keep it minimal
+  - [x] Keep it minimal
   - [ ] Make it packageable
-  - [X] Follow XDG specs
+  - [x] Follow XDG specs
   - [ ] Add Makefile
 
 - [ ] **Extensible**
@@ -45,20 +49,24 @@ Who are the $USER?
   - [ ] Make a single CLI to manage all the core script
 
 - [ ] **Manageable**
+
   - [ ] Fix scripts (shellcheck compatible)
-  - [X] Move scripts to `./lib/hyde`
-  - [X] Make `wallbash*.sh` scripts monolithic, to fix wallbash issues
+  - [x] Move scripts to `./lib/hyde`
+  - [x] Make `wallbash*.sh` scripts monolithic, to fix wallbash issues
+
 - [ ] **Better Abstraction**
+
   - [ ] Waybar
   - [x] Hyprlock
   - [x] Animations
   - [ ] ...
+
 - [ ] Clean up
 - [ ] **...**
 
 ---
 
-Here's how we can update HyDE-specific Hyprland settings without changing user preferences. We don't need the "userprefs" file. Instead, we can source HyDE's hyprland.conf and make $USER prefered changes directly in the config. With this approach, won't potentially break hyde and hyde won't break your own dots.
+Here's how we can update HyDE-specific Hyprland settings without changing user preferences. We don't need the "userprefs" file. Instead, we can source HyDE's `hyprland.conf` and make $USER preferred changes directly in the config. With this approach, won't potentially break hyde and hyde won't break your own dots.
 
 ![Hyprland structure](https://github.com/user-attachments/assets/91b35c2e-0003-458f-ab58-18fc29541268)
 
@@ -70,7 +78,7 @@ Here are some of my speculations:
 
 - **Hy**prdots **D**otfiles **E**nhanced - Enhanced version of hyprdots when @prasanthrangan introduced wallbash as our main theme management engine.
 - **Hy**prland **D**otfiles **E**xtended - Extensible Dotfiles for Hyprland.
-- But the one that make most sense is - **Hy**prland **D**esktop **E**nvironment - as hyprland is usually considered a WM for wayland, not a full fledged D.E and this 
+- But the one that make most sense is - **Hy**prland **D**esktop **E**nvironment - as Hyprland is usually considered a WM for Wayland, not a full fledged D.E and this
   dotfile kind of turns it into a full-blown D.E.
 
 Feel free to suggest your own meaning of HyDE. 🤔

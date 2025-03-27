@@ -4,7 +4,7 @@
   </a>
 </div>
 
-###### _<div align="right"><a id=-design-by-t2></a><sub>// 由t2设计</sub></div>_
+###### _<div align="right"><a id=-design-by-t2></a><sub>// 由 t2 设计</sub></div>_
 
 ![hyde_banner](../assets/hyde_banner.png)
 
@@ -17,16 +17,17 @@ Multi-language README support
 [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
+[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 
 <div align="center">
 
 <br>
 
-<a href="#安装"><kbd> <br> 安装 <br> </kbd></a>&ensp;&ensp;
+<a href="#安装"><kbd> <br>  安装  <br> </kbd></a>&ensp;&ensp;
 <a href="#更新"><kbd> <br> 更新 <br> </kbd></a>&ensp;&ensp;
-<a href="#主题"><kbd> <br> 主题 <br> </kbd></a>&ensp;&ensp;
-<a href="#风格"><kbd> <br> 风格 <br> </kbd></a>&ensp;&ensp;
-<a href="KEYBINDINGS.zh.md"><kbd> <br> 按键映射 <br> </kbd></a>&ensp;&ensp;
+<a href="#主题"><kbd> <br>  主题  <br> </kbd></a>&ensp;&ensp;
+<a href="#风格"><kbd> <br>  风格  <br> </kbd></a>&ensp;&ensp;
+<a href="KEYBINDINGS.zh.md"><kbd> <br>  按键映射  <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
 <a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
@@ -44,7 +45,7 @@ Multi-language README support
 </div>
 
 看这里了解完整说明：
-[Hyde之旅：起源与未来蓝图](../../Hyprdots-to-HyDE.md)
+[Hyde 之旅：起源与未来蓝图](./Hyprdots-to-HyDE.zh.md)
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
@@ -58,20 +59,21 @@ Multi-language README support
 
 <a id="安装"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=安装" width="450"/>
+
 ---
 
 安装脚本适用于最小 [Arch Linux](https://wiki.archlinux.org/title/Arch_Linux) 系统，但在某些[基于 Arch 的发行版](https://wiki.archlinux.org/title/Arch-based_distributions)上**可能**也能正常运行.
 
-HyDE是一个高度自定义的预设，在其他[桌面环境](https://wiki.archlinux.org/title/Desktop_environment)/[窗口管理器](https://wiki.archlinux.org/title/Window_manager)的上安装HyDE也许可行，但它可能会与您的[GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) 主题, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB)等等配置相冲突.您需自行承担风险。
+HyDE 是一个高度自定义的预设，在其他[桌面环境](https://wiki.archlinux.org/title/Desktop_environment)/[窗口管理器](https://wiki.archlinux.org/title/Window_manager)的上安装 HyDE 也许可行，但它可能会与您的[GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) 主题, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB)等等配置相冲突.您需自行承担风险。
 
-我们支持 Nixos， 但作为一个单独的仓库在 [Hydenix](https://github.com/richen604/hydenix/tree/main) 提供。
+我们支持 NixOS， 但作为一个单独的仓库在 [Hydenix](https://github.com/richen604/hydenix/tree/main) 提供。
 
 > [!IMPORTANT]
 > 安装脚本会自动检测英伟达显卡并安装 nvidia-dkms 内核驱动。
 > 请确保您的英伟达显卡支持 dkms 驱动，支持的具体型号可以查看[这个列表](https://wiki.archlinux.org/title/NVIDIA)。
 
 > [!CAUTION]
-> 这个脚本会修改您的 `grub` 或 `systemd-boot` 配置以启用英伟达DRM。
+> 这个脚本会修改您的 `grub` 或 `systemd-boot` 配置以启用英伟达 DRM。
 
 若要安装，请执行以下命令：
 
@@ -92,7 +94,7 @@ cd ~/HyDE/Scripts
 > [!IMPORTANT]
 > 请参照 `Scripts/pkg_extra.lst`编写您的安装列表，
 >
-> 如果您想安装额外的软件包，也可以  `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst`。
+> 如果您想安装额外的软件包，也可以 `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst`。
 
 <!--
 
@@ -100,7 +102,7 @@ As a second install option, you can also use `Hyde-install`, which might be easi
 View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com/kRHYME7/Hyde-cli?tab=readme-ov-file#usage).
 -->
 
-在安装脚本运行完成后请重启，首次启动时您将看到SDDM登录界面（或者黑屏）。更多细节请看[安装 wiki](https://github.com/HyDE-Project/HyDE/wiki/installation)
+在安装脚本运行完成后请重启，首次启动时您将看到 SDDM 登录界面（或者黑屏）。更多细节请看[安装 wiki](https://github.com/HyDE-Project/HyDE/wiki/installation)
 
 <div align="right">
   <br>
@@ -109,6 +111,7 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 
 <a id="更新"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=更新" width="450"/>
+
 ---
 
 要更新 HyDE, 您需要从 GitHub 中拉取最新更改并通过运行以下命令恢复配置：
@@ -120,7 +123,7 @@ git pull origin master
 ```
 
 > [!IMPORTANT]
-> 请注意，在`Sctipts/restore_cfg.psv`中列出的配置中，您所做的任何个性化配置都会被覆盖。
+> 请注意，在`Scripts/restore_cfg.psv`中列出的配置中，您所做的任何个性化配置都会被覆盖。
 > 但是，所有被覆盖的配置会先被备份到`~/.config/cfg_backups/`中，以便找回。
 
 <!--
@@ -133,8 +136,9 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="主题"></a>  
+<a id="主题"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=主题" width="450"/>
+
 ---
 
 所有的官方主题都作为单独的仓库存储，您可以用过主题补丁程序安装。
@@ -169,8 +173,9 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="风格"></a>  
+<a id="风格"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=风格" width="450"/>
+
 ---
 
 <div align="center"><table><tr>主题选择</tr><tr><td>
@@ -229,11 +234,12 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
 </div>
 
 <div align="right">
-  <sub>最后编辑: 27/02/2025<span id="last-edited"></span></sub>
+  <sub>最后编辑: 21/03/2025<span id="last-edited"></span></sub>
 </div>
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=星标" width="450"/>
+
 ---
 
 <a href="https://star-history.com/#hyde-project/hyde&hyde-project/hyde-gallery&hyde-project/hyde-themes&Timeline">

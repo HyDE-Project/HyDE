@@ -7,10 +7,8 @@ wttrbar                                                # for weather
 python-requests|wttrbar                                # script dependency
 ddcui                                                  # GUI to control brightness for external monitors
 # hyprgui-bin                                          # GUI for hyprland configuration // might mess your userprefs but convenient // Just disappeared
-# swappy                                               # screenshot editor, DEPRECATED in favor for satty
 
 # --------------------------------------------------- // Shell
-# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh // already installed locally
 
 
 # --------------------------------------------------- // Misc
