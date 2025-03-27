@@ -79,7 +79,7 @@ take_screenshot() {
 	local mode=$1
 	shift
 	local extra_args=("$@")
-	
+
 	# execute grimblast with given args
 	if "$LIB_DIR/hyde/grimblast" "${extra_args[@]}" copysave "$mode" "$temp_screenshot"; then
 		if ! "${annotation_tool}" "${annotation_args[@]}"; then
@@ -109,7 +109,10 @@ m) # print focused monitor
 	;;
 sc) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
 	check_package tesseract-data-eng tesseract
-	GEOM=$(slurp)
+	if ! GEOM=$(slurp); then
+		notify-send -a "HyDE Alert" "OCR preview: Invalid geometry" -e -i "dialog-error"
+		exit 1
+	fi
 	grim -g "${GEOM}" "${temp_screenshot}"
 	pkg_installed imagemagick && magick "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
 	tesseract "${temp_screenshot}" - | wl-copy
@@ -117,7 +120,7 @@ sc) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
 	rm -f "${temp_screenshot}"
 	;;
 *) # invalid option
-	USAGE 
+	USAGE
 	;;
 esac
 
