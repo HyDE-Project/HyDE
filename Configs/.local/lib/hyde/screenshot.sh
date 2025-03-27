@@ -2,7 +2,7 @@
 
 # shellcheck source=$HOME/.local/bin/hyde-shell
 # shellcheck disable=SC1091
-if ! source "$(which hyde-shell)"; then
+if ! source "$(command -v hyde-shell)"; then
 	echo "[wallbash] code :: Error: hyde-shell not found."
 	echo "[wallbash] code :: Is HyDE installed?"
 	exit 1
@@ -17,6 +17,7 @@ USAGE() {
 		s     Select area or window to screenshot
 		sf    Select area or window with frozen screen
 		m     Screenshot focused monitor
+		sc    Use tesseract to scan image, then add to clipboard
 
 USAGE
 }
@@ -40,6 +41,9 @@ post_cmd() {
 	done
 }
 
+# Create secure temporary file
+temp_screenshot=$(mktemp -t screenshot_XXXXXX.png)
+
 if [ -z "$XDG_PICTURES_DIR" ]; then
 	XDG_PICTURES_DIR="$HOME/Pictures"
 fi
@@ -47,9 +51,9 @@ fi
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 save_dir="${2:-$XDG_PICTURES_DIR/Screenshots}"
 save_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
-temp_screenshot="/tmp/screenshot.png"
 annotation_tool=${SCREENSHOT_ANNOTATION_TOOL}
 annotation_args=("-o" "${save_dir}/${save_file}" "-f" "${temp_screenshot}")
+
 if [[ -z "$annotation_tool" ]]; then
 	pkg_installed "swappy" && annotation_tool="swappy"
 	pkg_installed "satty" && annotation_tool="satty"
@@ -67,31 +71,48 @@ if [[ "$annotation_tool" == "satty" ]]; then
 	annotation_args+=("--copy-command" "wl-copy")
 fi
 
-annotation_args+=("${SCREENSHOT_ANNOTATION_ARGS[@]}")
-evaluated_annotation_args=$(eval echo "${annotation_args[@]}")
+# Add any additional annotation arguments
+[[ -n "${SCREENSHOT_ANNOTATION_ARGS[*]}" ]] && annotation_args+=("${SCREENSHOT_ANNOTATION_ARGS[@]}")
+
+# screenshot function, globbing was difficult to read and maintain
+take_screenshot() {
+	local mode=$1
+	shift
+	local extra_args=("$@")
+
+	# execute grimblast with given args
+	if "$LIB_DIR/hyde/grimblast" "${extra_args[@]}" copysave "$mode" "$temp_screenshot"; then
+		if ! "${annotation_tool}" "${annotation_args[@]}"; then
+			notify-send -a "HyDE Alert" "Screenshot Error" "Failed to open annotation tool"
+			return 1
+		fi
+	else
+		notify-send -a "HyDE Alert" "Screenshot Error" "Failed to take screenshot"
+		return 1
+	fi
+}
 
 pre_cmd
 
 case $1 in
 p) # print all outputs
-	# timeout 0.2 slurp # capture animation lol
-	# shellcheck disable=SC2086
-	"$LIB_DIR/hyde/grimblast" copysave screen $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} # intended globbing
+	take_screenshot "screen"
 	;;
 s) # drag to manually snip an area / click on a window to print it
-	# shellcheck disable=SC2086
-	"$LIB_DIR/hyde/grimblast" copysave area $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} ;; # intended globbing
-sf)                                                                                                               # frozen screen, drag to manually snip an area / click on a window to print it
-	# shellcheck disable=SC2086
-	"$LIB_DIR/hyde/grimblast" --freeze --cursor copysave area $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} ;; # intended globbing
-m)                                                                                                                                  # print focused monitor
-	# timeout 0.2 slurp                                                                                                                  # capture animation lol
-	# shellcheck disable=SC2086
-	"$LIB_DIR/hyde/grimblast" copysave output $temp_screenshot && "${annotation_tool}" ${evaluated_annotation_args} # intended globbing
+	take_screenshot "area"
+	;;
+sf) # frozen screen, drag to manually snip an area / click on a window to print it
+	take_screenshot "area" "--freeze" "--cursor"
+	;;
+m) # print focused monitor
+	take_screenshot "output"
 	;;
 sc) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
 	check_package tesseract-data-eng tesseract
-	GEOM=$(slurp)
+	if ! GEOM=$(slurp); then
+		notify-send -a "HyDE Alert" "OCR preview: Invalid geometry" -e -i "dialog-error"
+		exit 1
+	fi
 	grim -g "${GEOM}" "${temp_screenshot}"
 	pkg_installed imagemagick && magick "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
 	tesseract "${temp_screenshot}" - | wl-copy
@@ -99,7 +120,8 @@ sc) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
 	rm -f "${temp_screenshot}"
 	;;
 *) # invalid option
-	USAGE ;;
+	USAGE
+	;;
 esac
 
 [ -f "$temp_screenshot" ] && rm "$temp_screenshot"
