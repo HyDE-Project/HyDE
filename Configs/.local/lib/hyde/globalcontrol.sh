@@ -180,6 +180,7 @@ pkg_installed() {
     wait
     return 1
 }
+
 get_aurhlpr() {
     if pkg_installed yay; then
         aurhlpr="yay"
