@@ -165,13 +165,27 @@ fi
 
 #// extra fns
 
+# Check packages concurrently (faster) with fallback to sequential method
 pkg_installed() {
     local pkgIn="$1"
     parallel --halt now,success=1 --jobs 3 '{}' ::: \
-      "hyde-shell pm.sh pq '${pkgIn}' &>/dev/null" \
-      "( pacman -Qi flatpak >/dev/null 2>&1 && flatpak info '${pkgIn}' &>/dev/null )" \
-      "command -v '${pkgIn}' &>/dev/null" \
-    && return 0 || return 1
+        "hyde-shell pm.sh pq '${pkgIn}' &>/dev/null" \
+        "( pacman -Qi flatpak >/dev/null 2>&1 && flatpak info '${pkgIn}' &>/dev/null )" \
+        "command -v '${pkgIn}' &>/dev/null" &&
+        return 0 || return 1
+}
+
+pkg_installed_sequential() {
+    local pkgIn=$1
+    if hyde-shell pm.sh pq "${pkgIn}" &>/dev/null; then
+        return 0
+    elif pacman -Qi "flatpak" &>/dev/null && flatpak info "${pkgIn}" &>/dev/null; then
+        return 0
+    elif command -v "${pkgIn}" &>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 get_aurhlpr() {
