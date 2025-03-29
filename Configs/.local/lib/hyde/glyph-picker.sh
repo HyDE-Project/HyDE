@@ -9,9 +9,9 @@ fi
 
 #* This glyph Data is from `https://www.nerdfonts.com/cheat-sheet`
 #* I don't own any of it
-#TODO:   Needed a way to fetch the glyph from the NerdFonts source.
-#TODO:    find a way make the  DB update
-#TODO:    make the update Script run on User space
+#TODO:   Needed a way to fetch the glyph from the NerdFonts source.
+#TODO:    find a way make the  DB update
+#TODO:    make the update Script run on User space
 
 # Define paths and files
 glyph_dir=${HYDE_DATA_HOME:-$HOME/.local/share/hyde}
@@ -19,8 +19,20 @@ glyph_data="${glyph_dir}/glyph.db"
 cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
 recent_data="${cache_dir}/landing/show_glyph.recent"
 
+# checks if a glyph is valid, functionally identical logic to #344
+is_valid_glyph() {
+    local glyph="$1"
+
+    # return false if glyph is empty or unique_entries is not set
+    [[ -z "${glyph}" || -z "${unique_entries}" ]] && return 1
+
+    # uses bash's pattern matching instead of echo and grep
+    [[ $'\n'"${unique_entries}"$'\n' == *$'\n'"${glyph}"$'\n'* ]]
+}
+
 # save selected glyph to recent list, remove duplicates
 save_recent() {
+    is_valid_glyph "${data_glyph}" || return 0
     awk -v var="$data_glyph" 'BEGIN{print var} {print}' "${recent_data}" >temp && mv temp "${recent_data}"
     awk 'NF' "${recent_data}" | awk '!seen[$0]++' >temp && mv temp "${recent_data}"
 }
@@ -83,6 +95,9 @@ main() {
 
     # get glyph selection from rofi
     data_glyph=$(get_glyph_selection)
+
+    # avoid copying typed text to clipboard, only copy valid glyph
+    is_valid_glyph "${data_glyph}" || exit 0
 
     # extract and copy selected glyph
     local sel_glyph
