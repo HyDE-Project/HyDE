@@ -1,0 +1,44 @@
+/* ? half pill with the curve pointing to outwards */
+
+
+window#waybar.top #pill-out,
+window#waybar.top #pill-out button {
+    border-radius: 10pt 10pt 0 0;
+    border-width: 0em;
+}
+
+window#waybar.right #pill-out,
+window#waybar.right #pill-out button {
+    border-radius: 0 10pt 10pt 0;
+    border-width: 0em;
+}
+
+window#waybar.bottom #pill-out,
+window#waybar.bottom #pill-out button {
+    border-radius: 0 0 10pt 10pt;
+    border-width: 0em;
+}
+
+window#waybar.left #pill-out,
+window#waybar.left #pill-out button {
+    border-radius: 10pt 0 0 10pt;
+    border-width: 0em;
+}
+
+window#waybar.top #pill-out {
+    margin: 0.3em 1em 0em 1em;
+}
+
+window#waybar.right #pill-out {
+    margin: 1em 0.3em 1em 0em;
+}
+
+window#waybar.bottom #pill-out {
+    margin: 0em 1em 0.3em 1em;
+}
+
+window#waybar.left #pill-out {
+    margin: 1em 0em 1em 0.3em;
+}
+
+/* ============================ */

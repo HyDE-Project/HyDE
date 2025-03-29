@@ -1,14 +1,21 @@
-    "battery": {
-        "states": {
-            "good": 95,
-            "warning": 30,
-            "critical": 20
-        },
-        "format": "{icon} {capacity}%",
-        "rotate": ${r_deg},
-        "format-charging": " {capacity}%",
-        "format-plugged": " {capacity}%",
-        "format-alt": "{time} {icon}",
-        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
-    },
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
 
+*/
+{
+  "battery": {
+    "states": {
+      // "good": 95,
+      // "warning": 30,
+      // "critical": 20
+    },
+    "format": "{icon} {capacity}%",
+    "rotate": 0,
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-alt": "{time} {icon}",
+    "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+  }
+}
