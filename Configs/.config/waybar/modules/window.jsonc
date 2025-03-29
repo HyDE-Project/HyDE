@@ -20,7 +20,7 @@
             "(.*) — Github": "$1  ",
             "(.*)Github": "Github ",
             "(.*)Spotify Free": "Spotify 󰓇",
-            "(.*)Spotify Premiun": "Spotify 󰓇",
+            "(.*)Spotify Premium": "Spotify 󰓇",
         },
         "max-length": 50
     },
