@@ -99,15 +99,11 @@ main() {
     # avoid copying typed text to clipboard, only copy valid glyph
     is_valid_glyph "${data_glyph}" || exit 0
 
-    # extract and copy selected glyph
-    local sel_glyph
-
-    # using bash's built in param expansion instead of cut
-    sel_glyph="${data_glyph%% *}"
-    sel_glyph="${sel_glyph//[$'\n\r']/}"
-    # sel_glyph=$(printf "%s" "${data_glyph}" | cut -d' ' -f1 | tr -d '\n\r')
-
-    wl-copy "${sel_glyph}"
+    # extract and copy selected glyph(s)
+    local sel_glyphs
+    sel_glyphs=$(echo "${data_glyph}" | cut -d' ' -f1 | tr -d '\n\r')
+    
+    wl-copy "${sel_glyphs}"
     paste_string "${@}"
 }
 
