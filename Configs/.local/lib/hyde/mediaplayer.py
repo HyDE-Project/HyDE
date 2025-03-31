@@ -11,17 +11,19 @@ import signal
 import json
 
 logger = logging.getLogger(__name__)
-quote_timer_id = None  # Global variable to keep track of the quote timer
 
 
 def load_env_file(filepath):
-    with open(filepath, encoding="utf-8") as f:
-        for line in f:
-            if line.strip() and not line.startswith("#"):
-                if line.startswith("export "):
-                    line = line[len("export ") :]
-                key, value = line.strip().split("=", 1)
-                os.environ[key] = value.strip('"')
+    try:
+        with open(filepath, encoding="utf-8") as f:
+            for line in f:
+                if line.strip() and not line.startswith("#"):
+                    if line.startswith("export "):
+                        line = line[len("export ") :]
+                    key, value = line.strip().split("=", 1)
+                    os.environ[key] = value.strip('"')
+    except (FileNotFoundError, OSError) as e:
+        logger.error(f"Error loading environment file {filepath}: {e}")
 
 
 def write_output(track, artist, playing, player):
@@ -81,7 +83,6 @@ def on_metadata(player, metadata, manager):
 
 
 def on_player_appeared(manager, player, selected_player=None):
-    global quote_timer_id
     if player is not None and (
         selected_player is None or player.name == selected_player
     ):
