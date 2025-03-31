@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import gi
 
 gi.require_version("Playerctl", "2.0")
@@ -12,11 +13,15 @@ import json
 logger = logging.getLogger(__name__)
 quote_timer_id = None  # Global variable to keep track of the quote timer
 
-# Default variables (can be overridden by command-line arguments)
-prefix_playing = ""
-prefix_paused = "  "
-max_length_module = 70  # Maximum combined length of track + artist
-standby_text = "  Music"
+
+def load_env_file(filepath):
+    with open(filepath, encoding="utf-8") as f:
+        for line in f:
+            if line.strip() and not line.startswith("#"):
+                if line.startswith("export "):
+                    line = line[len("export ") :]
+                key, value = line.strip().split("=", 1)
+                os.environ[key] = value.strip('"')
 
 
 def write_output(track, artist, playing, player):
@@ -114,6 +119,9 @@ def signal_handler(sig, frame):
 
 
 def parse_arguments():
+    """
+    The options for prefix/paused/max_length/standby_text are loaded from env variables.
+    """
     parser = argparse.ArgumentParser(
         description="A media player status tool with customizable display options."
     )
@@ -130,47 +138,24 @@ def parse_arguments():
     # Define for which player we're listening
     parser.add_argument("--player", help="Specify the player to listen to.")
 
-    # Customizable display options
-    parser.add_argument(
-        "--prefix-playing",
-        type=str,
-        default=prefix_playing,
-        help="Prefix displayed when media is playing (default: '%s')" % prefix_playing,
-    )
-    parser.add_argument(
-        "--prefix-paused",
-        type=str,
-        default=prefix_paused,
-        help="Prefix displayed when media is paused (default: '%s')" % prefix_paused,
-    )
-    parser.add_argument(
-        "--max-length",
-        type=int,
-        default=max_length_module,
-        help="Maximum combined length of track and artist (default: %d)"
-        % max_length_module,
-    )
-    parser.add_argument(
-        "--standby-text",
-        type=str,
-        default=standby_text,
-        help="Text to display when no player is active (default: '%s')" % standby_text,
-    )
-
     return parser.parse_args()
 
 
 def main():
     global prefix_playing, prefix_paused, max_length_module, standby_text
 
+    # Load environment variables from your config file:
+    load_env_file(os.path.expanduser("~/.local/state/hyde/config"))
+
+    # Pull values from environment variables
+    # You can configure these in ~/.config/hyde/config.toml
+    prefix_playing = os.getenv("MEDIAPLAYER_PREFIX_PLAYING", "")
+    prefix_paused = os.getenv("MEDIAPLAYER_PREFIX_PAUSED", "  ")
+    max_length_module = int(os.getenv("MEDIAPLAYER_MAX_LENGTH", "70"))
+    standby_text = os.getenv("MEDIAPLAYER_STANDBY_TEXT", "  Music")
+
     arguments = parse_arguments()
     player_found = False
-
-    # Override defaults with command-line arguments if provided
-    prefix_playing = arguments.prefix_playing
-    prefix_paused = arguments.prefix_paused
-    max_length_module = arguments.max_length
-    standby_text = arguments.standby_text
 
     # Initialize logging
     logging.basicConfig(
@@ -179,7 +164,7 @@ def main():
         format="%(name)s %(levelname)s %(message)s",
     )
 
-    # Set logging level based on verbosity
+    # Adjust logging level based on verbosity
     logger.setLevel(max((3 - arguments.verbose) * 10, 0))
 
     logger.debug("Arguments received {}".format(vars(arguments)))
