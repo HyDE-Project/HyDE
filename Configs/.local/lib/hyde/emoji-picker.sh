@@ -77,11 +77,6 @@ parse_arguments() {
             use_rofile=${2}
             shift
             ;;
-        --deps)
-            # nonexistent function?
-            resolve_deps
-            exit 0
-            ;;
         -*)
             cat <<HELP
 Usage:
