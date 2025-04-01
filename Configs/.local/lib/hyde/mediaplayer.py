@@ -12,8 +12,19 @@ import json
 
 logger = logging.getLogger(__name__)
 
+#
+# Global dictionary to store the track, artist, and total duration
+# for each player.  Key = player_name
+#
+players_data = {}
 
-def load_env_file(filepath):
+
+def load_env_file(filepath: str) -> None:
+    """
+    Load environment variables from filepath.
+    Each line should be in the format KEY=VALUE.
+    Lines starting with '#' are ignored.
+    """
     try:
         with open(filepath, encoding="utf-8") as f:
             for line in f:
@@ -26,11 +37,37 @@ def load_env_file(filepath):
         logger.error(f"Error loading environment file {filepath}: {e}")
 
 
-def write_output(track, artist, playing, player):
+def format_time(seconds) -> str:
+    """
+    Convert seconds into mm:ss format.
+    """
+    m = int(seconds // 60)
+    s = int(seconds % 60)
+    return f"{m:02d}:{s:02d}"
+
+
+def create_tooltip_text(
+    artist, track, current_position_seconds, duration_seconds
+) -> str:
+    """
+    Build the tooltip text showing artist, track, and current position vs duration.
+    """
+    tooltip = ""
+    if artist or track:
+        tooltip += f"{artist}\n{track}\n"
+    if duration_seconds > 0:
+        tooltip += (
+            f"{format_time(current_position_seconds)}/"
+            f"{format_time(duration_seconds)}"
+        )
+    return tooltip
+
+
+def write_output(track, artist, playing, player, tooltip_text):
     logger.info("Writing output")
 
     # Use the appropriate prefix based on playback status
-    output = prefix_playing if playing else prefix_paused
+    prefix = prefix_playing if playing else prefix_paused
     max_length = max_length_module
 
     # Calculate the total length and truncate track if necessary
@@ -41,21 +78,22 @@ def write_output(track, artist, playing, player):
             f"{track[:available_length]}..." if len(track) > available_length else track
         )
 
-    # Generate the output based on the presence of track and artist
+    # Generate the "text" based on the presence of track and artist
     if track and not artist:
-        output = f"{output}  <b>{track}</b>"
+        output_text = f"{prefix}  <b>{track}</b>"
     elif track and artist:
-        output = f"{output}  <i>{artist}</i> ~ <b>{track}</b>"
+        output_text = f"{prefix}  <i>{artist}</i> ~ <b>{track}</b>"
     else:
-        output = "<b>Nothing playing</b>"
+        output_text = "<b>Nothing playing</b>"
 
-    output = {
-        "text": output,
+    output_data = {
+        "text": output_text,
         "class": "custom-" + player.props.player_name,
         "alt": player.props.player_name,
+        "tooltip": tooltip_text,
     }
 
-    sys.stdout.write(json.dumps(output) + "\n")
+    sys.stdout.write(json.dumps(output_data) + "\n")
     sys.stdout.flush()
 
 
@@ -65,21 +103,38 @@ def on_play(player, status, manager):
 
 
 def on_metadata(player, metadata, manager):
+    """
+    Called whenever the metadata changes (new track, etc.).
+    We extract track, artist, total duration, store them in players_data,
+    and immediately write the output once so it refreshes promptly.
+    """
     logger.info("Received new metadata")
-    track = ""
-    artist = ""
-    playing = False
 
-    if player.get_artist() != "" and player.get_title() != "":
-        track = f"{player.get_title()}"
-        artist = f"{player.get_artist()}"
-    else:
-        track = player.get_title()
+    # Grab track and artist
+    full_track = player.get_title() or ""
+    full_artist = player.get_artist() or ""
+    track, artist = full_track, full_artist
 
-    if track and player.props.status == "Playing":
-        playing = True
+    # Playback state
+    playing = player.props.status == "Playing"
 
-    write_output(track, artist, playing, player)
+    # Duration and position
+    length_microseconds = metadata["mpris:length"]
+    duration_seconds = length_microseconds / 1e6
+    current_position_seconds = player.get_position() / 1e6
+
+    # Store relevant info so our timer callback can update the position every second
+    players_data[player.props.player_name] = {
+        "track": track,
+        "artist": artist,
+        "duration": duration_seconds,
+    }
+
+    # Build the tooltip
+    tooltip_text = create_tooltip_text(
+        artist, track, current_position_seconds, duration_seconds
+    )
+    write_output(track, artist, playing, player, tooltip_text)
 
 
 def on_player_appeared(manager, player, selected_player=None):
@@ -93,10 +148,18 @@ def on_player_appeared(manager, player, selected_player=None):
 
 def on_player_vanished(manager, player, loop):
     logger.info("Player has vanished")
+
+    # Remove from our stored dictionary
+    pname = player.props.player_name
+    if pname in players_data:
+        del players_data[pname]
+
+    # Output "standby" text
     output = {
         "text": standby_text,
         "class": "custom-nothing-playing",
         "alt": "player-closed",
+        "tooltip": "",
     }
 
     sys.stdout.write(json.dumps(output) + "\n")
@@ -110,6 +173,35 @@ def init_player(manager, name):
     player.connect("metadata", on_metadata, manager)
     manager.manage_player(player)
     on_metadata(player, player.props.metadata, manager)
+
+
+def update_positions(manager):
+    """
+    This is the callback run once every second.
+    It loops over each known player, reads its current position,
+    updates the tooltip, and rewrites the output to stdout.
+    """
+    # manager.props.players gives us the current active Player objects
+    for player in manager.props.players:
+        pname = player.props.player_name
+        # If we haven't stored metadata for this player yet, skip
+        if pname not in players_data:
+            continue
+
+        playing = player.props.status == "Playing"
+        track = players_data[pname]["track"]
+        artist = players_data[pname]["artist"]
+        duration_seconds = players_data[pname]["duration"]
+
+        current_position_seconds = player.get_position() / 1e6
+        tooltip_text = create_tooltip_text(
+            artist, track, current_position_seconds, duration_seconds
+        )
+
+        write_output(track, artist, playing, player, tooltip_text)
+
+    # Return True so the timer continues calling this function
+    return True
 
 
 def signal_handler(sig, frame):
@@ -200,10 +292,14 @@ def main():
             "text": standby_text,
             "class": "custom-nothing-playing",
             "alt": "player-closed",
+            "tooltip": "",
         }
 
         sys.stdout.write(json.dumps(output) + "\n")
         sys.stdout.flush()
+
+    # Set up a single 1-second timer to update song position
+    GLib.timeout_add_seconds(1, update_positions, manager)
 
     loop.run()
 
