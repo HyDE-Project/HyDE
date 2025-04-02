@@ -1,12 +1,310 @@
-"Catppuccin Mocha" "https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Mocha"
-"Catppuccin Latte" "https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Latte"
-"Rosé Pine" "https://github.com/HyDE-Project/hyde-themes/tree/Rose-Pine"
-"Tokyo Night" "https://github.com/HyDE-Project/hyde-themes/tree/Tokyo-Night"
-"Material Sakura" "https://github.com/HyDE-Project/hyde-themes/tree/Material-Sakura"
-"Graphite Mono" "https://github.com/HyDE-Project/hyde-themes/tree/Graphite-Mono"
-"Decay Green" "https://github.com/HyDE-Project/hyde-themes/tree/Decay-Green"
-"Edge Runner" "https://github.com/HyDE-Project/hyde-themes/tree/Edge-Runner"
-"Frosted Glass" "https://github.com/HyDE-Project/hyde-themes/tree/Frosted-Glass"
-"Gruvbox Retro" "https://github.com/HyDE-Project/hyde-themes/tree/Gruvbox-Retro"
-"Synth Wave" "https://github.com/HyDE-Project/hyde-themes/tree/Synth-Wave"
-"Nordic Blue" "https://github.com/HyDE-Project/hyde-themes/tree/Nordic-Blue"
+[
+  {
+    "THEME": "Code Garden",
+    "LINK": "https://github.com/jacobfranco/Code-Garden",
+    "OWNER": "https://github.com/jacobfranco",
+    "DESCRIPTION": "A sleek and transparent, color-agnostic theme.",
+    "COLORSCHEME": ["#000000", "#FFFFFF"]
+  },
+  {
+    "THEME": "DoomBringers",
+    "LINK": "https://github.com/xaicat/DoomBringers",
+    "OWNER": "https://github.com/xaicat",
+    "DESCRIPTION": "When shadows catch fire, sharp edges leave their mark.",
+    "COLORSCHEME": ["#351810", "#FABD2F"]
+  },
+  {
+    "THEME": "Bad Blood",
+    "LINK": "https://github.com/HyDE-Project/hyde-gallery/tree/Bad-Blood",
+    "OWNER": "https://github.com/HyDE-Project",
+    "DESCRIPTION": "Red & Black based theme.",
+    "COLORSCHEME": ["#030000", "#DF1010"]
+  },
+  {
+    "THEME": "Mac OS",
+    "LINK": "https://github.com/HyDE-Project/hyde-gallery/tree/Mac-Os",
+    "OWNER": "https://github.com/T-Crypt",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#857990", "#B9D7EA"]
+  },
+  {
+    "THEME": "Windows 11",
+    "LINK": "https://github.com/HyDE-Project/hyde-gallery/tree/Windows-11",
+    "OWNER": "https://github.com/T-Crypt",
+    "DESCRIPTION": "We love Windows! Wew",
+    "COLORSCHEME": ["#277AE6", "#D2DCFD"]
+  },
+  {
+    "THEME": "Hack the Box",
+    "LINK": "https://github.com/HyDE-Project/hyde-gallery/tree/Hack-the-Box",
+    "OWNER": "https://github.com/T-Crypt",
+    "DESCRIPTION": "Hacker based theme",
+    "COLORSCHEME": ["#061234", "#50AA09"]
+  },
+  {
+    "THEME": "One Dark",
+    "LINK": "https://github.com/RAprogramm/HyDe-Themes/tree/One-Dark",
+    "OWNER": "https://github.com/RAprogramm",
+    "DESCRIPTION": "One Dark based theme",
+    "COLORSCHEME": ["#1E212B", "#5B6B76"]
+  },
+  {
+    "THEME": "Dracula",
+    "LINK": "https://github.com/RAprogramm/HyDe-Themes/tree/Dracula",
+    "OWNER": "https://github.com/RAprogramm",
+    "DESCRIPTION": "Dracula based theme",
+    "COLORSCHEME": ["#2B2E3B", "#607988"]
+  },
+  {
+    "THEME": "Catppuccin Latte",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Latte",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#dd7878", "#eff1f5"]
+  },
+  {
+    "THEME": "Catppuccin Mocha",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Mocha",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#b4befe", "#11111b"]
+  },
+  {
+    "THEME": "Decay Green",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Decay-Green",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#14161E", "#95D3AF"]
+  },
+  {
+    "THEME": "Edge Runner",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Edge-Runner",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#fada16", "#000000"]
+  },
+  {
+    "THEME": "Frosted Glass",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Frosted-Glass",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#7ed6ff", "#1e4c84"]
+  },
+  {
+    "THEME": "Graphite Mono",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Graphite-Mono",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#222222", "#D9D9D9"]
+  },
+  {
+    "THEME": "Gruvbox Retro",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Gruvbox-Retro",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#353842", "#ADAE89"]
+  },
+  {
+    "THEME": "Material Sakura",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Material-Sakura",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#f2e9e1", "#b4637a"]
+  },
+  {
+    "THEME": "Nordic Blue",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Nordic-Blue",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#7B98B8", "#CAD7E1"]
+  },
+  {
+    "THEME": "Sci-fi",
+    "LINK": "https://github.com/KaranRaval123/Sci-fi",
+    "OWNER": "https://github.com/KaranRaval123",
+    "DESCRIPTION": "Sci-fi based theme",
+    "COLORSCHEME": ["#0D55B2", "#249CB6"]
+  },
+  {
+    "THEME": "Synth Wave",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Synth-Wave",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#495495", "#ff7edb"]
+  },
+  {
+    "THEME": "Tokyo Night",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Tokyo-Night",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#7aa2f7", "#24283b"]
+  },
+  {
+    "THEME": "Rosé Pine",
+    "LINK": "https://github.com/HyDE-Project/hyde-themes/tree/Rose-Pine",
+    "OWNER": "https://github.com/prasanthrangan",
+    "DESCRIPTION": "Official Theme",
+    "COLORSCHEME": ["#c4a7e7", "#191724"]
+  },
+  {
+    "THEME": "AbyssGreen",
+    "LINK": "https://github.com/Itz-Abhishek-Tiwari/AbyssGreen",
+    "OWNER": "https://github.com/Itz-Abhishek-Tiwari",
+    "DESCRIPTION": "AbyssGreen is a theme based on the Everforst color scheme",
+    "COLORSCHEME": ["#373C3F", "#83B38E"]
+  },
+  {
+    "THEME": "Abyssal-Wave",
+    "LINK": "https://github.com/Itz-Abhishek-Tiwari/Abyssal-Wave",
+    "OWNER": "https://github.com/Itz-Abhishek-Tiwari",
+    "DESCRIPTION": "Dive into the deep, where elegance meets the infinite night.",
+    "COLORSCHEME": ["#16161D", "#C8C093"]
+  },
+  {
+    "THEME": "Red Stone",
+    "LINK": "https://github.com/mahaveergurjar/Theme-Gallery/tree/Red_Stone",
+    "OWNER": "https://github.com/mahaveergurjar",
+    "DESCRIPTION": "Hot Red based theme",
+    "COLORSCHEME": ["#7E5655", "#C94342"]
+  },
+  {
+    "THEME": "Rain Dark",
+    "LINK": "https://github.com/rishav12s/Rain-Dark",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Cozy new Rain based theme for HyDE",
+    "COLORSCHEME": ["#1E2233", "#822195"]
+  },
+  {
+    "THEME": "Paranoid Sweet",
+    "LINK": "https://github.com/rishav12s/Paranoid-Sweet",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Dark purple based theme for HyDE",
+    "COLORSCHEME": ["#821595", "#51ABAB"]
+  },
+  {
+    "THEME": "Solarized Dark",
+    "LINK": "https://github.com/rishav12s/Solarized-Dark",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Solarized Dark based theme for HyDE",
+    "COLORSCHEME": ["#044655", "#259E9C"]
+  },
+  {
+    "THEME": "Green Lush",
+    "LINK": "https://github.com/abenezerw/Green-Lush",
+    "OWNER": "https://github.com/abenezerw",
+    "DESCRIPTION": "A ghibli based theme for Hyde",
+    "COLORSCHEME": ["#89E574", "#153550"]
+  },
+  {
+    "THEME": "Greenify",
+    "LINK": "https://github.com/mahaveergurjar/Theme-Gallery/tree/Greenify",
+    "OWNER": "https://github.com/mahaveergurjar",
+    "DESCRIPTION": "Dark Green based theme for Hyde",
+    "COLORSCHEME": ["#0e120f", "#295233"]
+  },
+  {
+    "THEME": "Monokai",
+    "LINK": "https://github.com/mahaveergurjar/Theme-Gallery/tree/Monokai",
+    "OWNER": "https://github.com/mahaveergurjar",
+    "DESCRIPTION": "Monokai based theme for Hyde",
+    "COLORSCHEME": ["#2d2a2e", "#f92672"]
+  },
+  {
+    "THEME": "Scarlet Night",
+    "LINK": "https://github.com/abenezerw/Scarlet-Night",
+    "OWNER": "https://github.com/abenezerw",
+    "DESCRIPTION": "Hot-Red + Deep-Black",
+    "COLORSCHEME": ["#FF0000", "#0A0A0A"]
+  },
+  {
+    "THEME": "Oxo Carbon",
+    "LINK": "https://github.com/rishav12s/Oxo-Carbon",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Oxo Carbon based theme for Hyde",
+    "COLORSCHEME": ["#161616", "#EE5396"]
+  },
+  {
+    "THEME": "Ice Age",
+    "LINK": "https://github.com/saber-88/Ice-Age",
+    "OWNER": "https://github.com/saber-88",
+    "DESCRIPTION": "Winter based Ice Age theme for Hyde",
+    "COLORSCHEME": ["#00c1e4cc", "#0E2840B3"]
+  },
+  {
+    "THEME": "Cat Latte",
+    "LINK": "https://github.com/rishav12s/Cat-Latte",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Better Catppuccin-Latte that fixes the inconsistencies of the official theme",
+    "COLORSCHEME": ["#EFF1F5", "#DD7878"]
+  },
+  {
+    "THEME": "Monterey Frost",
+    "LINK": "https://github.com/rishav12s/Monterey-Frost",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Mac-OS inspired dark theme",
+    "COLORSCHEME": ["#3B4252", "#D8DEE9"]
+  },
+  {
+    "THEME": "Pixel Dream",
+    "LINK": "https://github.com/rishav12s/Pixel-Dream",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Pixel Art inspired theme",
+    "COLORSCHEME": ["#282828", "#EBDDB2"]
+  },
+  {
+    "THEME": "Crimson Blade",
+    "LINK": "https://github.com/cyb3rgh0u1/Crimson-Blade",
+    "OWNER": "https://github.com/cyb3rgh0u1",
+    "DESCRIPTION": "A striking fusion of sharp elegance, cutting through the darkness with bold hues.",
+    "COLORSCHEME": ["#082451", "#D32D6B"]
+  },
+  {
+    "THEME": "Vanta Black",
+    "LINK": "https://github.com/rishav12s/Vanta-Black",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Vanta Black inspired theme having the deepest blacks",
+    "COLORSCHEME": ["#000000", "#FFFFFF"]
+  },
+  {
+    "THEME": "Another World",
+    "LINK": "https://github.com/cyb3rgh0u1/Another-World",
+    "OWNER": "https://github.com/cyb3rgh0u1",
+    "DESCRIPTION": "Step beyond the horizon, where reality fades and imagination reigns supreme.",
+    "COLORSCHEME": ["#11111B", "#6AA9C9"]
+  },
+  {
+    "THEME": "Eternal Arctic",
+    "LINK": "https://github.com/rishav12s/Eternal-Arctic",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Serene Nord-inspired theme having frosty aesthetic blues",
+    "COLORSCHEME": ["#2E3440", "#88C0D0"]
+  },
+  {
+    "THEME": "Ever Blushing",
+    "LINK": "https://github.com/rishav12s/Ever-Blushing",
+    "OWNER": "https://github.com/rishav12s",
+    "DESCRIPTION": "Ever-Blush inspired dark aesthetic minimal theme",
+    "COLORSCHEME": ["#141b1e", "#67b0e8"]
+  },
+  {
+    "THEME": "BlueSky",
+    "LINK": "https://github.com/richen604/BlueSky",
+    "OWNER": "https://github.com/richen604",
+    "DESCRIPTION": "A serene theme inspired by bright cloudy skies",
+    "COLORSCHEME": ["#294052", "#AACBF0"]
+  },
+  {
+    "THEME": "Moonlight",
+    "LINK": "https://github.com/Maroc02/Moonlight",
+    "OWNER": "https://github.com/Maroc02",
+    "DESCRIPTION": "Moonlight inspired cozy theme",
+    "COLORSCHEME": ["#403C64", "#40FFFF"]
+  },
+  {
+    "THEME": "Cosmic Blue",
+    "LINK": "https://github.com/Maroc02/Cosmic-Blue",
+    "OWNER": "https://github.com/Maroc02",
+    "DESCRIPTION": "Galaxy inspired relaxed theme",
+    "COLORSCHEME": ["#444B6A", "#7AA2F7"]
+  }
+]

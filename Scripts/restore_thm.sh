@@ -20,9 +20,14 @@ fi
 
 if [ "$flg_ThemeInstall" -eq 1 ]; then
     print_log -g "[THEME] " -warn "imports" "from List $THEME_IMPORT_FILE"
-    while IFS='"' read -r _ themeName _ themeRepo; do
-        themeNameQ+=("${themeName//\"/}")
-        themeRepoQ+=("${themeRepo//\"/}")
+    
+    # Read JSON array and process each theme
+    jq -c '.[]' "$THEME_IMPORT_FILE" | while IFS= read -r line; do
+        themeName=$(echo "$line" | jq -r '.THEME')
+        themeRepo=$(echo "$line" | jq -r '.LINK')
+
+        themeNameQ+=("$themeName")
+        themeRepoQ+=("$themeRepo")
         themePath="${confDir}/hyde/themes/${themeName}"
         [ -d "${themePath}" ] || mkdir -p "${themePath}"
         [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" >"${themePath}/.sort"
@@ -37,8 +42,9 @@ if [ "$flg_ThemeInstall" -eq 1 ]; then
             print_log -g "[THEME] " -stat "added" "${themeName}"
         fi
 
-    done <"$THEME_IMPORT_FILE"
+    done
 
+    # Parallel execution if async is enabled
     if [ "${THEME_IMPORT_ASYNC}" -eq 1 ]; then
         set +e
         parallel --bar --link "\"${scrDir}/themepatcher.sh\"" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
