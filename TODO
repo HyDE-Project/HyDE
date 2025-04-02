@@ -12,7 +12,7 @@
 
 - [ ] `install.sh`
 - [x] `install_pre.sh`
-- [ ] `global_fn.sh`
+- [x] `global_fn.sh`
 
 ## Package Management
 
@@ -21,9 +21,9 @@
 
 ## Configuration
 
-- [ ] `restore_fnt.sh`
-- [ ] `restore_cfg.sh`
-- [ ] `restore_thm.sh`
+- [x] `restore_fnt.sh`
+- [x] `restore_cfg.sh`
+- [x] `restore_thm.sh`
 
 ## System Services
 
