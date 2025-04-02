@@ -1,29 +1,17 @@
 # --------------------------------------------------- // System
-# downgrade                                            # downgrade packages
-# trash-cli-git                                        # cli to manage trash files
-# libinput-gestures                                    # actions touchpad gestures using libinput
-# gestures                                             # gui for libinput-gestures
-wttrbar                                                # for weather
 python-requests|wttrbar                                # script dependency
 ddcui                                                  # GUI to control brightness for external monitors
-# hyprgui-bin                                          # GUI for hyprland configuration // might mess your userprefs but convenient // Just disappeared
-# swappy                                               # screenshot editor, DEPRECATED in favor for satty
-# python-pyamdgpuinfo                                  # for amd gpu info // Deprecated as of https://github.com/HyDE-Project/HyDE/pull/345
+mpv                                                    # Media Player
 
 # --------------------------------------------------- // Shell
-# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh // already installed locally
-
 
 # --------------------------------------------------- // Misc
 xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
-# emote                                                # emoji picker gtk3
+emote                                                  # emoji picker gtk3
 
 # --------------------------------------------------- // Gaming
-steam                                                  # gaming platform
-gamemode                                               # daemon and library for game optimizations
-mangohud                                               # system performance overlay
-# gamescope                                            # micro-compositor for gaming
-# lutris                                               # Lutris is an open source gaming platform for Linux
+cachyos-gaming-meta                                    # Meta packages for Gaming
+cachyos-gaming-applications                            # Common applications for Gaming
 
 # --------------------------------------------------- // Music
 cava                                                   # audio visualizer
@@ -31,23 +19,19 @@ spotify                                                # proprietary music strea
 spicetify-cli                                          # cli to customize spotify client
 
 # --------------------------------------------------- // Apps
-# neovim                                               # vim based text editor
+neovim                                                 # vim based text editor
 
 # --------------------------------------------------- // Shell
-# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh
-# pokemon-colorscripts-git|zsh                           # display pokemon sprites (optional)
+bat                                                    # Cat clone with syntax highlighting and git integration
 
 # --------------------------------------------------- // Editor
-# vscodium                                              # Full oss text editor
-# vscodium-marketplace|vscodium                         # VSCodium marketplace
-# code-marketplace|code                                 # Code-Oss marketplace
-# visual-studio-code-bin                                # MS  text editor
+vscodium                                               # Full oss text editor
 
 # --------------------------------------------------- // Backends
-#electron                                              # electron backend
+electron                                              # electron backend
 
 # --------------------------------------------------- // Lockscreen
-#swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
+swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
 
 # --------------------------------------------------- // OSD
-swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
+swayosd-git                                            #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
