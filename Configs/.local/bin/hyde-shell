@@ -3,7 +3,6 @@
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
 
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    echo "Script is sourced"
     EXECUTABLE="${0}"
 else
     EXECUTABLE="${BASH_SOURCE[0]}"

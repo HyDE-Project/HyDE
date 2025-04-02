@@ -167,11 +167,11 @@ fi
 
 pkg_installed() {
     local pkgIn=$1
-    if hyde-shell pm.sh pq "${pkgIn}" &>/dev/null; then
+    if command -v "${pkgIn}" &>/dev/null; then
         return 0
-    elif pacman -Qi "flatpak" &>/dev/null && flatpak info "${pkgIn}" &>/dev/null; then
+    elif command -v "flatpak" &>/dev/null && flatpak info "${pkgIn}" &>/dev/null; then
         return 0
-    elif command -v "${pkgIn}" &>/dev/null; then
+    elif hyde-shell pm.sh pq "${pkgIn}" &>/dev/null; then
         return 0
     else
         return 1

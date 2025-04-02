@@ -222,10 +222,12 @@ main() {
             Wall_Cache "${wallList[setIndex]}"
             ;;
         s)
-            if [ -n "${wallpaper_path}" ] && [ -f "${wallpaper_path}" ]; then
-                get_hashmap "${wallpaper_path}"
+            if [ -z "${wallpaper_path}" ] && [ ! -f "${wallpaper_path}" ]; then
+                print_log -err "wallpaper" "Wallpaper not found: ${wallpaper_path}"
+                exit 1
             fi
-            Wall_Cache "${wallList[setIndex]}"
+            get_hashmap "${wallpaper_path}"
+            Wall_Cache
             ;;
         g)
             if [ ! -e "${wallSet}" ]; then

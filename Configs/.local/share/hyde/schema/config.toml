@@ -721,3 +721,27 @@ type      = "object"
     default     = "resetxdgportal.sh"
     description = "XDG portal reset script."
     type        = "string"
+
+[properties.mediaplayer]
+    description = "mediaplayer.py configuration."
+    type        = "object"
+
+[properties.mediaplayer.properties.prefix_playing]
+    default     = ""
+    description = "Prefix for playing media."
+    type        = "string"
+
+[properties.mediaplayer.properties.prefix_paused]
+    default     = "  "
+    description = "Prefix for paused media."
+    type        = "string"
+
+[properties.mediaplayer.properties.max_length]
+    default     = 70
+    description = "Max length of song and artist string."
+    type        = "integer"
+
+[properties.mediaplayer.properties.standby_text]
+    default     = "  Music"
+    description = "To display on standby."
+    type        = "string"

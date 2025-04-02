@@ -1,6 +1,6 @@
     "custom/spotify": {
         "exec": "mediaplayer.py --player spotify",
-        "format": " {}",
+        "format": "{}",
         "rotate": ${r_deg},
         "return-type": "json",
         "on-click": "playerctl play-pause --player spotify",
@@ -8,8 +8,6 @@
         "on-click-middle": "playerctl previous --player spotify",
         "on-scroll-up": "volumecontrol.sh -p spotify i",
         "on-scroll-down": "volumecontrol.sh -p spotify d",
-        "max-length": 25,
-        "escape": true,
         "tooltip": true
     },
 
