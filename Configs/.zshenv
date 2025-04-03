@@ -122,9 +122,6 @@ function no_such_file_or_directory_handler {
     return 127
 }
 
-# ==============================
-# XDG Base Directory Setup
-
 # Define XDG base directories
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-$HOME/.config}"
@@ -151,16 +148,12 @@ XDG_VIDEOS_DIR="$(xdg-user-dir VIDEOS)"
 # Other settings
 LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
 PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
-
-# wget configuration
 WGETRC="${XDG_CONFIG_HOME}/wgetrc"
 SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 
 # Export all variables
 export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
     XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR WGETRC SCREENRC
-
-# ==============================
 
 if [ -t 1 ]; then
     # We are loading the prompt on start so users can see the prompt immediately
