@@ -122,30 +122,45 @@ function no_such_file_or_directory_handler {
     return 127
 }
 
-# cleaning up home folder
+# ==============================
+# XDG Base Directory Setup
+
+# Define XDG base directories
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 XDG_DATA_DIRS="${XDG_DATA_DIRS:-$XDG_DATA_HOME:/usr/local/share:/usr/share}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
-XDG_DOWNLOAD_DIR="${XDG_DOWNLOAD_DIR:-$HOME/Downloads}"
-XDG_TEMPLATES_DIR="${XDG_TEMPLATES_DIR:-$HOME/Templates}"
-XDG_PUBLICSHARE_DIR="${XDG_PUBLICSHARE_DIR:-$HOME/Public}"
-XDG_DOCUMENTS_DIR="${XDG_DOCUMENTS_DIR:-$HOME/Documents}"
-XDG_MUSIC_DIR="${XDG_MUSIC_DIR:-$HOME/Music}"
-XDG_PICTURES_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}"
-XDG_VIDEOS_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}"
+
+# Load user-defined directories from user-dirs.dirs if available
+if [ -f "${XDG_CONFIG_HOME}/user-dirs.dirs" ]; then
+    source "${XDG_CONFIG_HOME}/user-dirs.dirs"
+fi
+
+# Use xdg-user-dir to dynamically retrieve directory paths
+XDG_DESKTOP_DIR="$(xdg-user-dir DESKTOP)"
+XDG_DOWNLOAD_DIR="$(xdg-user-dir DOWNLOAD)"
+XDG_TEMPLATES_DIR="$(xdg-user-dir TEMPLATES)"
+XDG_PUBLICSHARE_DIR="$(xdg-user-dir PUBLICSHARE)"
+XDG_DOCUMENTS_DIR="$(xdg-user-dir DOCUMENTS)"
+XDG_MUSIC_DIR="$(xdg-user-dir MUSIC)"
+XDG_PICTURES_DIR="$(xdg-user-dir PICTURES)"
+XDG_VIDEOS_DIR="$(xdg-user-dir VIDEOS)"
+
+# Other settings
 LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
 PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
 
-# wget
+# wget configuration
 WGETRC="${XDG_CONFIG_HOME}/wgetrc"
-SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
+SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 
+# Export all variables
 export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
     XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR WGETRC SCREENRC
+
+# ==============================
 
 if [ -t 1 ]; then
     # We are loading the prompt on start so users can see the prompt immediately
