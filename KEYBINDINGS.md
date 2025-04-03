@@ -8,18 +8,6 @@
 
 ![hyde_banner](Source/assets/hyde_banner.png)
 
-<!--
-Multi-language KEYBINDINGS support
--->
-
-<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](KEYBINDINGS.md) -->
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/KEYBINDINGS.es.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/KEYBINDINGS.de.md)
-[![nl](https://img.shields.io/badge/lang-nl-green.svg)](Source/docs/KEYBINDINGS.nl.md)
-[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/KEYBINDINGS.zh.md)
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/docs/KEYBINDINGS.fr.md)
-[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](Source/docs/KEYBINDINGS.ar.md)
-
 <div align="center">
 
 <br>
