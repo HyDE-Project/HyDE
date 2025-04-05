@@ -1,0 +1,16 @@
+{
+  "mpris": {
+    "format": "{player_icon} {dynamic}",
+    "rotate": 0,
+    "format-paused": "{status_icon} <i>{dynamic}</i>",
+    "player-icons": {
+      "default": "\u25b6",
+      "mpv": "\ud83c\udfb5"
+    },
+    "status-icons": {
+      "paused": "\uf04c"
+    },
+    "max-length": 1000,
+    "interval": 1
+  }
+}
