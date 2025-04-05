@@ -8,7 +8,6 @@ if ! source "$(command -v hyde-shell)"; then
 fi
 
 # define paths and files
-conf_dir="${XDG_CONFIG_HOME:-$HOME/.config}" # unused?
 cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
 favorites_file="${cache_dir}/landing/cliphist_favorites"
 [ -f "$HOME/.cliphist_favorites" ] && favorites_file="$HOME/.cliphist_favorites"
