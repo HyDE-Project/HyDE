@@ -12,7 +12,7 @@
 Mehrsprachige KEYBINDINGS-Unterstützung
 -->
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](../../KEYBINDINGS.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](../../../KEYBINDINGS.md)
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](KEYBINDINGS.es.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](KEYBINDINGS.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](KEYBINDINGS.zh.md)

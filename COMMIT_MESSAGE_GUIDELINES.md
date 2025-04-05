@@ -1,14 +1,5 @@
 # Commit Message Guidelines
 
-<!--
-Multi-language COMMIT_MESSAGE_GUIDELINES support
--->
-
-<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](COMMIT_MESSAGE_GUIDELINES.md) -->
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/COMMIT_MESSAGE_GUIDELINES.es.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/COMMIT_MESSAGE_GUIDELINES.de.md)
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/docs/COMMIT_MESSAGE_GUIDELINES.fr.md)
-
 A good commit message should be descriptive and provide context about the changes made. This makes it easier to understand and review the changes in the future.
 
 Here are some guidelines for writing descriptive commit messages:

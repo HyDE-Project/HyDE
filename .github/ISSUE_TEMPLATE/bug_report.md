@@ -5,14 +5,6 @@ title: "[Bug]: Short description of the issue"
 labels: "bug, needs triage"
 ---
 
-<!--
-Multi-language bug_report support
--->
-
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](bug_report.es.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](bug_report.de.md)
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](bug_report.fr.md)
-
 ## Bug Report
 
 ### Description
