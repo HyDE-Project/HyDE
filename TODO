@@ -6,7 +6,6 @@
 - [ ] Create rofi themes if needed
 - [ ] Add some usefull programs
 - [ ] Include support for ROG products
-- [ ] Tweak around new grub theme
 
 ## Installation Scripts
 
@@ -52,6 +51,7 @@
 ## Future Enhancements
 
 - [ ] Add TUI-installer like AthenaOS
+- [ ] Sort out nightTab bookmarks. change wallpaper too
 
 ## Notes
 
