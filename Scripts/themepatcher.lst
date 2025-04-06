@@ -154,8 +154,8 @@
     "COLORSCHEME": ["#373C3F", "#83B38E"]
   },
   {
-    "THEME": "Abyssal-Wave",
-    "LINK": "https://github.com/Itz-Abhishek-Tiwari/Abyssal-Wave",
+    "OUT-THEME": "Abyssal-Wave",
+    "OUT-LINK": "https://github.com/Itz-Abhishek-Tiwari/Abyssal-Wave",
     "OWNER": "https://github.com/Itz-Abhishek-Tiwari",
     "DESCRIPTION": "Dive into the deep, where elegance meets the infinite night.",
     "COLORSCHEME": ["#16161D", "#C8C093"]
