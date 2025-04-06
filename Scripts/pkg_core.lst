@@ -48,7 +48,7 @@ ffmpegthumbs                                           # for dolphin video thumb
 kde-cli-tools                                          # for dolphin file type defaults
 libnotify                                              # for notifications
 noto-fonts-emoji                                       # emoji font
-python-requests|wttrbar                                # script dependency
+python-requests                                        # script dependency
 ddcui                                                  # GUI to control brightness for external monitors
 electron                                               # electron backend
 
