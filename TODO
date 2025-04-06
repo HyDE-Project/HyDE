@@ -10,28 +10,42 @@
 
 ## Installation Scripts
 
-- [ ] `install.sh`
-- [x] `install_pre.sh`
+- [x] `athena_os.sh`
+- [x] `chaotic_aur.sh`
 - [x] `global_fn.sh`
+- [x] `install_aur.sh`
+- [x] `install_pkg.sh`
+- [x] `install_pre.sh`
+- [x] `install_pst.sh`
+- [x] `install.sh`
+- [x] `restore_cfg.sh`
+- [ ] `restore_fnt.sh`
+- [ ] `restore_shl.sh`
+- [x] `restore_thm.sh`
+- [x] `themepatcher.sh`
+- [x] `uninstall.sh`
 
-## Package Management
+## List Management
 
 - [x] `pkg_core.lst`
-- [x] `install_pkg.sh`
+- [x] `pkg_extra.lst`
+- [x] `restore_cfg.lst`
+- [x] `restore_cfg.psv`
+- [ ] `restore_fnt.lst`
 
-## Configuration
+## Folders
 
-- [x] `restore_fnt.sh`
-- [x] `restore_cfg.sh`
-- [x] `restore_thm.sh`
+- [x] `extra`
+- [x] `nvidia-db`
+- [ ] `Source`
+- [ ] `Configs`
 
 ## System Services
 
-- [ ] `system_ctl.lst`
+- [x] `system_ctl.lst`
 
 ## Documentation
 
-- [ ] Create folder for original README, and KEYBINDINGS
 - [ ] Create new README, and KEYBINDINGS that describes changes clearly
 - [ ] Document all script options and flags
 
@@ -42,8 +56,7 @@
 ## Notes
 
 - [x] Added Athena repo for Pentesters
-- [x] Added new grub theme
 
 ## Dependencies
 
-- [ ] Curl
+- [ ] N/A
