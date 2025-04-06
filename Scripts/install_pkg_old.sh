@@ -23,8 +23,6 @@ aurhPkg=()
 ofs=$IFS
 IFS='|'
 
-mapfile -t pkg_installed_lst < <(pacman -Qq)
-
 #-----------------------------#
 # remove blacklisted packages #
 #-----------------------------#
@@ -44,7 +42,7 @@ while read -r pkg deps; do
         while read -r cdep; do
             pass=$(cut -d '#' -f 1 "${listPkg}" | awk -F '|' -v chk="${cdep}" '{if($1 == chk) {print 1;exit}}')
             if [ -z "${pass}" ]; then
-                if [[ " ${pkg_installed_lst[*]}" =~ ${cdep} ]]; then
+                if pkg_installed "${cdep}"; then
                     pass=1
                 else
                     break
@@ -58,7 +56,7 @@ while read -r pkg deps; do
         fi
     fi
 
-    if [[ " ${pkg_installed_lst[*]} " =~ ${pkg} ]]; then
+    if pkg_installed "${pkg}"; then
         print_log -y "[skip] " "${pkg}"
     elif pkg_available "${pkg}"; then
         repo=$(pacman -Si "${pkg}" | awk -F ': ' '/Repository / {print $2}')
