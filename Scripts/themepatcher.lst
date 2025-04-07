@@ -210,8 +210,8 @@
     "COLORSCHEME": ["#2d2a2e", "#f92672"]
   },
   {
-    "THEME": "Scarlet Night",
-    "LINK": "https://github.com/abenezerw/Scarlet-Night",
+    "OUT-THEME": "Scarlet Night",
+    "OUT-LINK": "https://github.com/abenezerw/Scarlet-Night",
     "OWNER": "https://github.com/abenezerw",
     "DESCRIPTION": "Hot-Red + Deep-Black",
     "COLORSCHEME": ["#FF0000", "#0A0A0A"]
@@ -266,8 +266,8 @@
     "COLORSCHEME": ["#000000", "#FFFFFF"]
   },
   {
-    "THEME": "Another World",
-    "LINK": "https://github.com/cyb3rgh0u1/Another-World",
+    "OUT-THEME": "Another World",
+    "OUT-LINK": "https://github.com/cyb3rgh0u1/Another-World",
     "OWNER": "https://github.com/cyb3rgh0u1",
     "DESCRIPTION": "Step beyond the horizon, where reality fades and imagination reigns supreme.",
     "COLORSCHEME": ["#11111B", "#6AA9C9"]
@@ -301,8 +301,8 @@
     "COLORSCHEME": ["#403C64", "#40FFFF"]
   },
   {
-    "THEME": "Cosmic Blue",
-    "LINK": "https://github.com/Maroc02/Cosmic-Blue",
+    "OUT-THEME": "Cosmic Blue",
+    "OUT-LINK": "https://github.com/Maroc02/Cosmic-Blue",
     "OWNER": "https://github.com/Maroc02",
     "DESCRIPTION": "Galaxy inspired relaxed theme",
     "COLORSCHEME": ["#444B6A", "#7AA2F7"]
