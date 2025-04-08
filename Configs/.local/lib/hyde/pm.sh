@@ -398,7 +398,7 @@ pacman_format_installed() {
 }
 
 pacman_is_installed() {
-    pacman -Qi "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
+    pacman -Q "$1" >/dev/null 2>&1 && echo "Installed" || { echo "Not installed" && return 1; }
 }
 
 pacman_file_query() {

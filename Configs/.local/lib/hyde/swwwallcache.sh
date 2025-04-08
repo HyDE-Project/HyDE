@@ -133,7 +133,7 @@ done
 fn_envar_cache
 wallPathArray=("${cacheIn}")
 wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
-get_hashmap "${wallPathArray[@]}"
+get_hashmap "${wallPathArray[@]}" --no-notify
 # shellcheck disable=SC2154
 parallel --bar --link "fn_wallcache${mode}" ::: "${wallHash[@]}" ::: "${wallList[@]}"
 exit 0

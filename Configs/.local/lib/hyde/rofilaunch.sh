@@ -19,12 +19,17 @@ rofi_config="${ROFI_LAUNCH_STYLE:-$rofi_config}"
 font_scale="${ROFI_LAUNCH_SCALE}"
 [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
 
+rofi_args=(
+    -show-icons
+)
+
 #// rofi action
 
 case "${1}" in
 d | --drun)
     r_mode="drun"
     rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
+    rofi_args+=("--run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
     ;;
 w | --window)
     r_mode="window"
@@ -37,6 +42,7 @@ f | --filebrowser)
 r | --run)
     r_mode="run"
     rofi_config="${ROFI_LAUNCH_RUN_STYLE:-$rofi_config}"
+    rofi_args+=("--run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
     ;;
 h | --help)
     echo -e "$(basename "${0}") [action]"
@@ -85,14 +91,15 @@ font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} ${font_scale}\
 i_override="$(get_hyprConf "ICON_THEME")"
 i_override="configuration {icon-theme: \"${i_override}\";}"
 
+rofi_args+=(
+    -theme-str "${font_override}"
+    -theme-str "${i_override}"
+    -theme-str "${r_override}"
+    -theme "${rofi_config}"
+)
+
 #// launch rofi
-rofi -show "${r_mode}" \
-    -show-icons \
-    -theme-str "${font_override}" \
-    -theme-str "${i_override}" \
-    -theme-str "${r_override}" \
-    -run-command "sh -c 'uwsm app -- {cmd} || {cmd}'" \
-    -theme "${rofi_config}" &
+rofi -show "${r_mode}" "${rofi_args[@]}" &
 disown
 
 #// Set full screen state

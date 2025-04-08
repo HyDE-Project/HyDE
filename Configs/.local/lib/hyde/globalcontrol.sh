@@ -39,31 +39,51 @@ get_hashmap() {
 
     for wallSource in "$@"; do
         [ -z "${wallSource}" ] && continue
+        [ "${wallSource}" == "--no-notify" ] && no_notify=1 && continue
         [ "${wallSource}" == "--skipstrays" ] && skipStrays=1 && continue
         [ "${wallSource}" == "--verbose" ] && verboseMap=1 && continue
+        [ -e "${wallSource}" ] || continue
+        wallSource="$(realpath "${wallSource}")"
 
-        supported_files=(
-            "gif"
-            "jpg"
-            "jpeg"
-            "png"
-        )
+        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "wallSource:" "${wallSource}"
 
-        supported_files+=("${WALLPAPER_FILETYPES=[@]}") # Add custom wallpaper types # ! this should conform to the backend
+        list_extensions() {
+            # Define supported file extensions
+            supported_files=(
+                "gif"
+                "jpg"
+                "jpeg"
+                "png"
+                "${WALLPAPER_FILETYPES[@]}"
+            )
+            printf -- "-iname *.%s -o " "${supported_files[@]}" | sed 's/ -o $//'
+        }
 
-        hashMap=$(
-            # shellcheck disable=SC2046
-            find "${wallSource}" -type f \
-                \( $(printf -- "-iname *.%s -o " "${supported_files[@]}" | sed 's/ -o $//') \) ! -path "*/logo/*" \
-                -exec "${hashMech}" {} + 2>/dev/null |
-                sort -k2
-        )
+        find_wallpapers() {
+            local wallSource="$1"
+
+            if [ -z "${wallSource}" ]; then
+                print_log -err "ERROR: wallSource is empty"
+                return 1
+            fi
+
+            local find_command
+            find_command="find \"${wallSource}\" -type f \\( $(list_extensions) \\) ! -path \"*/logo/*\" -exec \"${hashMech}\" {} + 2>/dev/null"
+
+            [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "Running command:" "${find_command}"
+
+            eval "${find_command}" | sort -k2
+        }
+
+        hashMap=$(find_wallpapers "${wallSource}") # Enable debug mode for testing
+
         # hashMap=$(
         # find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.mkv"  \) ! -path "*/logo/*" -exec "${hashMech}" {} + | sort -k2
         # )
 
         if [ -z "${hashMap}" ]; then
-            notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in \"${wallSource}\""
+            no_wallpapers+=("${wallSource}")
+            print_log -warn "No compatible wallpapers found in: " "${wallSource}"
             continue
         fi
 
@@ -72,6 +92,11 @@ get_hashmap() {
             wallList+=("${image}")
         done <<<"${hashMap}"
     done
+
+    # Notify the list of directories without compatible wallpapers
+    if [ "${#no_wallpapers[@]}" -gt 0 ]; then
+        [ -n "${no_notify}" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
+    fi
 
     if [ -z "${#wallList[@]}" ] || [[ "${#wallList[@]}" -eq 0 ]]; then
         if [[ "${skipStrays}" -eq 1 ]]; then
@@ -210,68 +235,68 @@ print_log() {
         # [ "${colored}" == "true" ]
         case "$1" in
         -r | +r)
-            echo -ne "\e[31m$2\e[0m"
+            echo -ne "\e[31m$2\e[0m" >&2
             shift 2
             ;; # Red
         -g | +g)
-            echo -ne "\e[32m$2\e[0m"
+            echo -ne "\e[32m$2\e[0m" >&2
             shift 2
             ;; # Green
         -y | +y)
-            echo -ne "\e[33m$2\e[0m"
+            echo -ne "\e[33m$2\e[0m" >&2
             shift 2
             ;; # Yellow
         -b | +b)
-            echo -ne "\e[34m$2\e[0m"
+            echo -ne "\e[34m$2\e[0m" >&2
             shift 2
             ;; # Blue
         -m | +m)
-            echo -ne "\e[35m$2\e[0m"
+            echo -ne "\e[35m$2\e[0m" >&2
             shift 2
-            ;; # Magenta
+            ;; # Magentass
         -c | +c)
-            echo -ne "\e[36m$2\e[0m"
+            echo -ne "\e[36m$2\e[0m" >&2
             shift 2
             ;; # Cyan
         -wt | +w)
-            echo -ne "\e[37m$2\e[0m"
+            echo -ne "\e[37m$2\e[0m" >&2
             shift 2
             ;; # White
         -n | +n)
-            echo -ne "\e[96m$2\e[0m"
+            echo -ne "\e[96m$2\e[0m" >&2
             shift 2
             ;; # Neon
         -stat)
-            echo -ne "\e[4;30;46m $2 \e[0m :: "
+            echo -ne "\e[4;30;46m $2 \e[0m :: " >&2
             shift 2
             ;; # status
         -crit)
-            echo -ne "\e[30;41m $2 \e[0m :: "
+            echo -ne "\e[30;41m $2 \e[0m :: " >&2
             shift 2
             ;; # critical
         -warn)
-            echo -ne "WARNING :: \e[30;43m $2 \e[0m :: "
+            echo -ne "WARNING :: \e[30;43m $2 \e[0m :: " >&2
             shift 2
             ;; # warning
         +)
-            echo -ne "\e[38;5;$2m$3\e[0m"
+            echo -ne "\e[38;5;$2m$3\e[0m" >&2
             shift 3
             ;; # Set color manually
         -sec)
-            echo -ne "\e[32m[$2] \e[0m"
+            echo -ne "\e[32m[$2] \e[0m" >&2
             shift 2
             ;; # section use for logs
         -err)
-            echo -ne "ERROR :: \e[4;31m$2 \e[0m"
+            echo -ne "ERROR :: \e[4;31m$2 \e[0m" >&2
             shift 2
             ;; #error
         *)
-            echo -ne "$1"
+            echo -ne "$1" >&2
             shift
             ;;
         esac
     done
-    echo ""
+    echo "" >&2
 }
 
 check_package() {

@@ -28,6 +28,38 @@ Theme_Change() {
     done
 }
 
+sanitize_hypr_theme() {
+    input_file="${1}"
+    output_file="${2}"
+    buffer_file="$(mktemp)"
+
+    sed '1d' "${input_file}" >"${buffer_file}"
+    # Define an array of patterns to remove
+    # Supports regex patterns
+    dirty_regex=(
+        "^ *exec"
+        "^ *decoration[^:]*: *drop_shadow"
+        "^ *drop_shadow"
+        "^ *decoration[^:]*: *shadow *="
+        "^ *decoration[^:]*: *col.shadow* *="
+        "^ *shadow_"
+        "^ *col.shadow*"
+    )
+
+    dirty_regex+=("${HYPR_CONFIG_SANITIZE[@]}")
+
+    # Loop through each pattern and remove matching lines
+    for pattern in "${dirty_regex[@]}"; do
+        grep -E "${pattern}" "${buffer_file}" | while read -r line; do
+            sed -i "\|${line}|d" "${buffer_file}"
+            print_log -sec "theme" -warn "sanitize" "${line}"
+        done
+    done
+    cat "${buffer_file}" >"${output_file}"
+    rm -f "${buffer_file}"
+
+}
+
 #// evaluate options
 quiet=false
 while getopts "qnps:" option; do
@@ -73,7 +105,9 @@ source "${scrDir}/globalcontrol.sh"
 
 #// hypr
 # shellcheck disable=SC2154
-sed '1d' "${HYDE_THEME_DIR}/hypr.theme" >"${confDir}/hypr/themes/theme.conf" # Useless and already handled by swwwallbash.sh but kept for robustness
+# Updates the compositor theme data in advance
+sanitize_hypr_theme "${HYDE_THEME_DIR}/hypr.theme" "${XDG_CONFIG_HOME}/hypr/themes/theme.conf"
+
 # shellcheck disable=SC2154
 if [ "${enableWallDcol}" -eq 0 ]; then
     gtkTheme="$(get_hyprConf "GTK_THEME")"
@@ -120,6 +154,11 @@ toml_write "${confDir}/kdeglobals" "UiSettings" "ColorScheme" "colors"
 
 toml_write "${confDir}/kdeglobals" "KDE" "widgetStyle" "kvantum"
 # toml_write "${confDir}/kdeglobals" "Colors:View" "BackgroundNormal" "#00000000" #! This is set on wallbash
+
+# // The default cursor theme // fallback
+
+toml_write "${XDG_DATA_HOME}/icons/default/index.theme" "Icon Theme" "Inherits" "${cursorTheme}"
+toml_write "${HOME}/.icons/default/index.theme" "Icon Theme" "Inherits" "${cursorTheme}"
 
 # // gtk2
 

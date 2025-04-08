@@ -3,17 +3,35 @@ import os
 import gi
 
 gi.require_version("Playerctl", "2.0")
-from gi.repository import Playerctl, GLib
-import argparse
-import logging
-import sys
-import signal
-import json
+from gi.repository import Playerctl, GLib  # noqa: E402
+import argparse  # noqa: E402
+import logging  # noqa: E402
+import sys  # noqa: E402
+import signal  # noqa: E402
+import json  # noqa: E402
+import pyutils.logger as logger  # noqa: E402
+from pyutils.xdg_base_dirs import (  # noqa: E402
+    xdg_state_home,
+    xdg_cache_home,
+)
 
-logger = logging.getLogger(__name__)
+
+logger = logger.get_logger()
 
 
-def load_env_file(filepath):
+#
+# Global dictionary to store the track, artist, and total duration
+# for each player.  Key = player_name
+#
+players_data = {}
+
+
+def load_env_file(filepath: str) -> None:
+    """
+    Load environment variables from filepath.
+    Each line should be in the format KEY=VALUE.
+    Lines starting with '#' are ignored.
+    """
     try:
         with open(filepath, encoding="utf-8") as f:
             for line in f:
@@ -26,11 +44,39 @@ def load_env_file(filepath):
         logger.error(f"Error loading environment file {filepath}: {e}")
 
 
-def write_output(track, artist, playing, player):
+def format_time(seconds) -> str:
+    """
+    Convert seconds into mm:ss format.
+    """
+    m = int(seconds // 60)
+    s = int(seconds % 60)
+    return f"{m:02d}:{s:02d}"
+
+
+def create_tooltip_text(
+    artist, track, current_position_seconds, duration_seconds
+) -> str:
+    """
+    Build the tooltip text showing artist, track, and current position vs duration.
+    Use Pango markup to style the artist as italic and the track as bold.
+    """
+    tooltip = ""
+
+    if artist or track:
+        tooltip += f'<span foreground="{track_color}"><b>{track}</b></span>\n<span foreground="{artist_color}"><i>{artist}</i></span>\n'
+        if duration_seconds > 0:
+            progress = int((current_position_seconds / duration_seconds) * 20)
+            bar = f'<span foreground="{progress_color}">{"━" * progress}</span><span foreground="{empty_color}">{"─" * (20 - progress)}</span>'
+            tooltip += f'<span foreground="{time_color}">{format_time(current_position_seconds)}</span> {bar} <span foreground="{time_color}">{format_time(duration_seconds)}</span>'
+
+    return tooltip
+
+
+def write_output(track, artist, playing, player, tooltip_text):
     logger.info("Writing output")
 
     # Use the appropriate prefix based on playback status
-    output = prefix_playing if playing else prefix_paused
+    prefix = prefix_playing if playing else prefix_paused
     max_length = max_length_module
 
     # Calculate the total length and truncate track if necessary
@@ -38,24 +84,25 @@ def write_output(track, artist, playing, player):
     if total_length > max_length:
         available_length = max(0, max_length - len(artist))
         track = (
-            f"{track[:available_length]}..." if len(track) > available_length else track
+            f"{track[:available_length]}…" if len(track) > available_length else track
         )
 
-    # Generate the output based on the presence of track and artist
+    # Generate the "text" based on the presence of track and artist
     if track and not artist:
-        output = f"{output}  <b>{track}</b>"
+        output_text = f"{prefix}  <b>{track}</b>"
     elif track and artist:
-        output = f"{output}  <i>{artist}</i> ~ <b>{track}</b>"
+        output_text = f"{prefix}  <i>{artist}</i>  <b>{track}</b>"
     else:
-        output = "<b>Nothing playing</b>"
+        output_text = "<b>Nothing playing</b>"
 
-    output = {
-        "text": output,
+    output_data = {
+        "text": output_text,
         "class": "custom-" + player.props.player_name,
         "alt": player.props.player_name,
+        "tooltip": tooltip_text,
     }
 
-    sys.stdout.write(json.dumps(output) + "\n")
+    sys.stdout.write(json.dumps(output_data) + "\n")
     sys.stdout.flush()
 
 
@@ -65,21 +112,38 @@ def on_play(player, status, manager):
 
 
 def on_metadata(player, metadata, manager):
+    """
+    Called whenever the metadata changes (new track, etc.).
+    We extract track, artist, total duration, store them in players_data,
+    and immediately write the output once so it refreshes promptly.
+    """
     logger.info("Received new metadata")
-    track = ""
-    artist = ""
-    playing = False
 
-    if player.get_artist() != "" and player.get_title() != "":
-        track = f"{player.get_title()}"
-        artist = f"{player.get_artist()}"
-    else:
-        track = player.get_title()
+    # Grab track and artist
+    full_track = player.get_title() or ""
+    full_artist = player.get_artist() or ""
+    track, artist = full_track, full_artist
 
-    if track and player.props.status == "Playing":
-        playing = True
+    # Playback state
+    playing = player.props.status == "Playing"
 
-    write_output(track, artist, playing, player)
+    # Duration and position
+    length_microseconds = metadata["mpris:length"]
+    duration_seconds = length_microseconds / 1e6
+    current_position_seconds = player.get_position() / 1e6
+
+    # Store relevant info so our timer callback can update the position every second
+    players_data[player.props.player_name] = {
+        "track": track,
+        "artist": artist,
+        "duration": duration_seconds,
+    }
+
+    # Build the tooltip
+    tooltip_text = create_tooltip_text(
+        artist, track, current_position_seconds, duration_seconds
+    )
+    write_output(track, artist, playing, player, tooltip_text)
 
 
 def on_player_appeared(manager, player, selected_player=None):
@@ -93,10 +157,18 @@ def on_player_appeared(manager, player, selected_player=None):
 
 def on_player_vanished(manager, player, loop):
     logger.info("Player has vanished")
+
+    # Remove from our stored dictionary
+    p_name = player.props.player_name
+    if p_name in players_data:
+        del players_data[p_name]
+
+    # Output "standby" text
     output = {
         "text": standby_text,
         "class": "custom-nothing-playing",
         "alt": "player-closed",
+        "tooltip": "",
     }
 
     sys.stdout.write(json.dumps(output) + "\n")
@@ -110,6 +182,35 @@ def init_player(manager, name):
     player.connect("metadata", on_metadata, manager)
     manager.manage_player(player)
     on_metadata(player, player.props.metadata, manager)
+
+
+def update_positions(manager):
+    """
+    This is the callback run once every second.
+    It loops over each known player, reads its current position,
+    updates the tooltip, and rewrites the output to stdout.
+    """
+    # manager.props.players gives us the current active Player objects
+    for player in manager.props.players:
+        p_name = player.props.player_name
+        # If we haven't stored metadata for this player yet, skip
+        if p_name not in players_data:
+            continue
+
+        playing = player.props.status == "Playing"
+        track = players_data[p_name]["track"]
+        artist = players_data[p_name]["artist"]
+        duration_seconds = players_data[p_name]["duration"]
+
+        current_position_seconds = player.get_position() / 1e6
+        tooltip_text = create_tooltip_text(
+            artist, track, current_position_seconds, duration_seconds
+        )
+
+        write_output(track, artist, playing, player, tooltip_text)
+
+    # Return True so the timer continues calling this function
+    return True
 
 
 def signal_handler(sig, frame):
@@ -127,15 +228,6 @@ def parse_arguments():
         description="A media player status tool with customizable display options."
     )
 
-    # Increase verbosity with every occurrence of -v
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="count",
-        default=0,
-        help="Increase output verbosity (e.g. -v, -vv)",
-    )
-
     # Define for which player we're listening
     parser.add_argument("--player", help="Specify the player to listen to.")
 
@@ -144,9 +236,15 @@ def parse_arguments():
 
 def main():
     global prefix_playing, prefix_paused, max_length_module, standby_text
+    global artist_color, track_color, progress_color, empty_color, time_color
 
     # Load environment variables from your config file:
-    load_env_file(os.path.expanduser("~/.local/state/hyde/config"))
+    config_file = os.path.join(xdg_state_home(), "hyde", "config")
+    colors_file = os.path.join(xdg_cache_home(), "hyde/wall.dcol")
+    if os.path.exists(config_file):
+        load_env_file(config_file)
+    if os.path.exists(colors_file):
+        load_env_file(colors_file)
 
     # Pull values from environment variables
     # You can configure these in ~/.config/hyde/config.toml
@@ -154,6 +252,23 @@ def main():
     prefix_paused = os.getenv("MEDIAPLAYER_PREFIX_PAUSED", "  ")
     max_length_module = int(os.getenv("MEDIAPLAYER_MAX_LENGTH", "70"))
     standby_text = os.getenv("MEDIAPLAYER_STANDBY_TEXT", "  Music")
+
+    # Initialize tooltip colors
+    artist_color = os.getenv(
+        "MEDIAPLAYER_TOOLTIP_ARTIST_COLOR", "#" + os.getenv("dcol_3xa8", "FFFFFF")
+    )
+    track_color = os.getenv(
+        "MEDIAPLAYER_TOOLTIP_TRACK_COLOR", "#" + os.getenv("dcol_txt1", "FFFFFF")
+    )
+    progress_color = os.getenv(
+        "MEDIAPLAYER_TOOLTIP_PROGRESS_COLOR", "#" + os.getenv("dcol_pry4", "FFFFFF")
+    )
+    empty_color = os.getenv(
+        "MEDIAPLAYER_TOOLTIP_EMPTY_COLOR", "#" + os.getenv("dcol_1xa3", "FFFFFF")
+    )
+    time_color = os.getenv(
+        "MEDIAPLAYER_TOOLTIP_TIME_COLOR", "#" + os.getenv("dcol_txt1", "FFFFFF")
+    )
 
     arguments = parse_arguments()
     player_found = False
@@ -164,9 +279,6 @@ def main():
         level=logging.DEBUG,
         format="%(name)s %(levelname)s %(message)s",
     )
-
-    # Adjust logging level based on verbosity
-    logger.setLevel(max((3 - arguments.verbose) * 10, 0))
 
     logger.debug("Arguments received {}".format(vars(arguments)))
 
@@ -200,10 +312,14 @@ def main():
             "text": standby_text,
             "class": "custom-nothing-playing",
             "alt": "player-closed",
+            "tooltip": "",
         }
 
         sys.stdout.write(json.dumps(output) + "\n")
         sys.stdout.flush()
+
+    # Set up a single 1-second timer to update song position
+    GLib.timeout_add_seconds(1, update_positions, manager)
 
     loop.run()
 
