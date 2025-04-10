@@ -6,6 +6,7 @@
 - [ ] Create rofi themes if needed
 - [ ] Add some usefull programs
 - [ ] Include support for ROG products
+- [ ] Reconfigure Keybinds
 
 ## Installation Scripts
 
@@ -42,6 +43,7 @@
 ## System Services
 
 - [x] `system_ctl.lst`
+- [ ] `rog compability layer`
 
 ## Documentation
 
@@ -56,7 +58,7 @@
 ## Notes
 
 - [x] Added Athena repo for Pentesters
-- [x] Abysal wave got stuck
+- [ ] Clean out 3 themes.
 
 ## Dependencies
 
