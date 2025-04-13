@@ -4,7 +4,16 @@ import os
 import sys
 import json
 from datetime import datetime
-import requests
+
+
+import pyutils.pip_env as pip_env
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+pip_env.v_import(
+    "requests"
+)  # fetches the module by name // does `pip install --update requests` under the hood
+import requests  # noqa: E402
+
 
 ### Constants ###
 WEATHER_CODES = {
@@ -51,7 +60,7 @@ WEATHER_CODES = {
 
 ### Functions ###
 def load_env_file(filepath):
-    with open(filepath, encoding='utf-8') as f:
+    with open(filepath, encoding="utf-8") as f:
         for line in f:
             if line.strip() and not line.startswith("#"):
                 if line.startswith("export "):
@@ -204,9 +213,9 @@ try:
     )  # Number of days to show the forecast for (default: 3)
 except ValueError:
     FORECAST_DAYS = 3
-get_location = os.getenv(
-    "WEATHER_LOCATION", ""
-).replace(" ", "_")  # Name of the location to get the weather from (default: '')
+get_location = os.getenv("WEATHER_LOCATION", "").replace(
+    " ", "_"
+)  # Name of the location to get the weather from (default: '')
 # Parse the location to wttr.in format (snake_case)
 
 # Check if the variables are set correctly

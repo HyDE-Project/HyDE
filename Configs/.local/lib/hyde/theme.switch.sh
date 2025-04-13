@@ -117,6 +117,7 @@ fi
 gtkIcon="$(get_hyprConf "ICON_THEME")"
 cursorTheme="$(get_hyprConf "CURSOR_THEME")"
 font_name="$(get_hyprConf "FONT")"
+font_size="$(get_hyprConf "FONT_SIZE")"
 monospace_font_name="$(get_hyprConf "MONOSPACE_FONT")"
 
 # legacy and directory resolution
@@ -169,8 +170,10 @@ sed -i -e "/^gtk-theme-name=/c\gtk-theme-name=\"${gtkTheme}\"" \
 
 #// gtk3
 
-sed -i -e "/^gtk-theme-name=/c\gtk-theme-name=\"${gtkTheme}\"" \
-    -e "/^gtk-icon-theme-name=/c\gtk-icon-theme-name=\"${gtkIcon}\"" "$confDir/gtk-3.0/settings.ini"
+toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-theme-name" "${gtkTheme}"
+toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-icon-theme-name" "${gtkIcon}"
+toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-cursor-theme-name" "${cursorTheme}"
+toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-font-name" "${font_name} ${font_size}"
 
 #// gtk4
 if [ -d "${themesDir}/${gtkTheme}/gtk-4.0" ]; then

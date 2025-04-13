@@ -38,14 +38,22 @@ get_hashmap() {
     unset verboseMap
 
     for wallSource in "$@"; do
+
+        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "arg:" "${wallSource}"
+
         [ -z "${wallSource}" ] && continue
         [ "${wallSource}" == "--no-notify" ] && no_notify=1 && continue
         [ "${wallSource}" == "--skipstrays" ] && skipStrays=1 && continue
         [ "${wallSource}" == "--verbose" ] && verboseMap=1 && continue
-        [ -e "${wallSource}" ] || continue
+
         wallSource="$(realpath "${wallSource}")"
 
-        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "wallSource:" "${wallSource}"
+        [ -e "${wallSource}" ] || {
+            print_log -err "ERROR:" -b "wallpaper source does not exist:" "${wallSource}" -y " skipping..."
+            continue
+        }
+
+        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "wallSource path:" "${wallSource}"
 
         list_extensions() {
             # Define supported file extensions
@@ -68,11 +76,15 @@ get_hashmap() {
             fi
 
             local find_command
-            find_command="find \"${wallSource}\" -type f \\( $(list_extensions) \\) ! -path \"*/logo/*\" -exec \"${hashMech}\" {} + 2>/dev/null"
+            find_command="find \"${wallSource}\" -type f \\( $(list_extensions) \\) ! -path \"*/logo/*\" -exec \"${hashMech}\" {} +"
 
             [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "Running command:" "${find_command}"
 
-            eval "${find_command}" | sort -k2
+            tmpfile=$(mktemp)
+            eval "${find_command}" 2>"$tmpfile" | sort -k2
+            error_output=$(<"$tmpfile") && rm -f "$tmpfile"
+            [ -n "${error_output}" ] && print_log -err "ERROR:" -b "found an error: " -r "${error_output}" -y " skipping..."
+
         }
 
         hashMap=$(find_wallpapers "${wallSource}") # Enable debug mode for testing
@@ -95,7 +107,8 @@ get_hashmap() {
 
     # Notify the list of directories without compatible wallpapers
     if [ "${#no_wallpapers[@]}" -gt 0 ]; then
-        [ -n "${no_notify}" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
+        # [ -n "${no_notify}" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
+        print_log -warn "No compatible wallpapers found in:" "${no_wallpapers[*]}"
     fi
 
     if [ -z "${#wallList[@]}" ] || [[ "${#wallList[@]}" -eq 0 ]]; then
@@ -103,6 +116,7 @@ get_hashmap() {
             return 1
         else
             echo "ERROR: No image found in any source"
+            [ -n "${no_notify}" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
             exit 1
         fi
     fi
