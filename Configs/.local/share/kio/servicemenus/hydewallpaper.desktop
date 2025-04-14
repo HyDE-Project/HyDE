@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Service
-MimeType=image/png;image/jpeg;image/jpg;image/gif
+MimeType=image/png;image/jpeg;image/jpg;image/gif;image/webp
 Actions=Menu-Refresh
 X-KDE-Submenu=Set As Wallpaper...
 

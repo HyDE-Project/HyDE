@@ -1,8 +1,8 @@
 # ------------------------------------------- // System
 com.github.tchx84.Flatseal                     # Flatseal
 io.github.flattool.Warehouse                   # Warehouse
-io.missioncenter.MissionCenter                 # MissionCenter
-com.usebottles.bottles                         # Bottles
+# io.missioncenter.MissionCenter               # MissionCenter
+# com.usebottles.bottles                       # Bottles
 # io.github.dimtpap.coppwr                     # Coppwr
 
 # ------------------------------------------- // Browser
@@ -12,18 +12,18 @@ com.usebottles.bottles                         # Bottles
 # ------------------------------------------- // Social
 # org.signal.Signal                            # Signal
 # com.discordapp.Discord                       # Discord
-dev.vencord.Vesktop                            # Vesktop
+# dev.vencord.Vesktop                          # Vesktop
 # io.github.spacingbat3.webcord                # Webcord
 
 # ------------------------------------------- // Productivity
-md.obsidian.Obsidian                           # Obsidian
+# md.obsidian.Obsidian                         # Obsidian
 # org.mozilla.Thunderbird                      # Thunderbird
 # io.github.alainm23.planify                   # Planify
 
 # ------------------------------------------- // Image/Graphics
 # org.inkscape.Inkscape                          # Inkscape
 # org.kde.krita                                  # Krita
-org.gimp.GIMP                                  # Gimp
+# org.gimp.GIMP                                  # Gimp
 # org.blender.Blender                            # Blender
 # io.gitlab.theevilskeleton.Upscaler             # ImageUpscaler
 
@@ -36,11 +36,11 @@ org.gimp.GIMP                                  # Gimp
 # ------------------------------------------- // Audio/Video
 # com.spotify.Client                           # Spotify
 # org.kde.kdenlive                             # Kdenlive
-com.obsproject.Studio                          # Obs
+# com.obsproject.Studio                          # Obs
 # com.github.rafostar.Clapper                  # Clapper
 com.github.unrud.VideoDownloader               # VideoDownloader
 
 # ------------------------------------------- // Gaming
 # hu.kramo.Cartridges                          # Cartridges
 # com.github.Matoking.protontricks             # ProtonTricks
-net.davidotek.pupgui2                        # ProtonUp
+# net.davidotek.pupgui2                        # ProtonUp

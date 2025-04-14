@@ -46,13 +46,10 @@ S|${HOME}/.config|qt5ct|qt5ct
 S|${HOME}/.config|qt6ct|qt6ct
 S|${HOME}/.config/hyde|wallbash|hyprland
 S|${HOME}/.config/hypr|animations|hyprland  
-
 O|${HOME}/.local/share|hyde|hyprland
 O|${HOME}/.local/lib|hyde|hyprland
 
  Editor 
-P|${HOME}/.config/Code - OSS/User|settings.json|code
-P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
 P|${HOME}/.config/VSCodium/User|settings.json|vscodium
 
  Bar 
@@ -69,8 +66,6 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
 
  Shell 
 P|${HOME}/.config|fish|fish
-P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh zsh-theme-powerlevel10k
-S|${HOME}|.zshenv|zsh zsh-theme-powerlevel10k
 
  File Explorer 
 P|${HOME}/.local/state|dolphinstaterc|dolphin
@@ -78,6 +73,7 @@ P|${HOME}/.config|baloofilerc|dolphin
 S|${HOME}/.config/menus|applications.menu|dolphin
 S|${HOME}/.config|dolphinrc|dolphin
 S|${HOME}/.config|kdeglobals|dolphin
+S|${HOME}/.config|kwalletrc|dolphin
 S|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
 S|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
 S|${HOME}/.local/share|dolphin|dolphin
@@ -101,7 +97,6 @@ P|${HOME}/.config|rofi|rofi
 S|${HOME}/.config|wlogout|wlogout
 
  Lock Screen 
-S|${HOME}/.config|swaylock|swaylock-effects
 P|${HOME}/.config/hypr|hyprlock.conf|hyprlock
 S|${HOME}/.config/hypr|hyprlock|hyprlock
 

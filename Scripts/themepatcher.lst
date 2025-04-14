@@ -154,13 +154,6 @@
     "COLORSCHEME": ["#373C3F", "#83B38E"]
   },
   {
-    "OUT-THEME": "Abyssal-Wave",
-    "OUT-LINK": "https://github.com/Itz-Abhishek-Tiwari/Abyssal-Wave",
-    "OWNER": "https://github.com/Itz-Abhishek-Tiwari",
-    "DESCRIPTION": "Dive into the deep, where elegance meets the infinite night.",
-    "COLORSCHEME": ["#16161D", "#C8C093"]
-  },
-  {
     "THEME": "Red Stone",
     "LINK": "https://github.com/mahaveergurjar/Theme-Gallery/tree/Red_Stone",
     "OWNER": "https://github.com/mahaveergurjar",
@@ -208,13 +201,6 @@
     "OWNER": "https://github.com/mahaveergurjar",
     "DESCRIPTION": "Monokai based theme for Hyde",
     "COLORSCHEME": ["#2d2a2e", "#f92672"]
-  },
-  {
-    "OUT-THEME": "Scarlet Night",
-    "OUT-LINK": "https://github.com/abenezerw/Scarlet-Night",
-    "OWNER": "https://github.com/abenezerw",
-    "DESCRIPTION": "Hot-Red + Deep-Black",
-    "COLORSCHEME": ["#FF0000", "#0A0A0A"]
   },
   {
     "THEME": "Oxo Carbon",
@@ -266,13 +252,6 @@
     "COLORSCHEME": ["#000000", "#FFFFFF"]
   },
   {
-    "OUT-THEME": "Another World",
-    "OUT-LINK": "https://github.com/cyb3rgh0u1/Another-World",
-    "OWNER": "https://github.com/cyb3rgh0u1",
-    "DESCRIPTION": "Step beyond the horizon, where reality fades and imagination reigns supreme.",
-    "COLORSCHEME": ["#11111B", "#6AA9C9"]
-  },
-  {
     "THEME": "Eternal Arctic",
     "LINK": "https://github.com/rishav12s/Eternal-Arctic",
     "OWNER": "https://github.com/rishav12s",
@@ -299,12 +278,5 @@
     "OWNER": "https://github.com/Maroc02",
     "DESCRIPTION": "Moonlight inspired cozy theme",
     "COLORSCHEME": ["#403C64", "#40FFFF"]
-  },
-  {
-    "OUT-THEME": "Cosmic Blue",
-    "OUT-LINK": "https://github.com/Maroc02/Cosmic-Blue",
-    "OWNER": "https://github.com/Maroc02",
-    "DESCRIPTION": "Galaxy inspired relaxed theme",
-    "COLORSCHEME": ["#444B6A", "#7AA2F7"]
   }
 ]

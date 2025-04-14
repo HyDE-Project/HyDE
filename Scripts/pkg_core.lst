@@ -29,7 +29,6 @@ rofi-wayland                                           # application launcher
 waybar                                                 # system bar
 swww                                                   # wallpaper
 hyprlock                                               # lock screen
-swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
 wlogout                                                # logout menu
 grim                                                   # screenshot tool
 hyprpicker                                             # color picker
@@ -79,6 +78,10 @@ mpv                                                    # Media Player
 cava                                                   # audio visualizer
 spotify                                                # proprietary music streaming service
 spicetify-cli                                          # cli to customize spotify client
+vesktop                                                # Discord
+obsidian                                               # Note Taking Application
+gimp                                                   # Picture editor
+obs-studio                                             # Recorder
 
 # --------------------------------------------------- // Shell
 lsd|zsh                                                # file lister for zsh

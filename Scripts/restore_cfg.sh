@@ -42,13 +42,8 @@ deploy_list() {
                     [[ ${flg_DryRun} -ne 1 ]] && mkdir -p "${BkpDir}${tgt}"
                 fi
 
-                if [ "${ovrWrte}" == "Y" ]; then
-                    [[ ${flg_DryRun} -ne 1 ]] && mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-                else
-
-                    [[ ${flg_DryRun} -ne 1 ]] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-                fi
-                echo -e "\033[0;34m[backup]\033[0m ${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
+                [[ ${flg_DryRun} -ne 1 ]] && rsync -a "${pth}/${cfg_chk}/" "${BkpDir}${tgt}/"
+                echo -e "\033[0;34m[sync backup]\033[0m ${pth}/${cfg_chk} <-> ${BkpDir}${tgt}..."
             fi
 
             if [ ! -d "${pth}" ]; then
@@ -56,11 +51,11 @@ deploy_list() {
             fi
 
             if [ ! -f "${pth}/${cfg_chk}" ]; then
-                [[ ${flg_DryRun} -ne 1 ]] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
-                echo -e "\033[0;32m[restore]\033[0m ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}..."
+                [[ ${flg_DryRun} -ne 1 ]] && rsync -a "${CfgDir}${tgt}/${cfg_chk}/" "${pth}/"
+                echo -e "\033[0;32m[sync restore]\033[0m ${pth} <-> ${CfgDir}${tgt}/${cfg_chk}..."
             elif [ "${ovrWrte}" == "Y" ]; then
-                [[ ${flg_DryRun} -ne 1 ]] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
-                echo -e "\033[0;33m[overwrite]\033[0m ${pth} <-- ${CfgDir}${tgt}/${cfg_chk}..."
+                [[ ${flg_DryRun} -ne 1 ]] && rsync -a "${CfgDir}${tgt}/${cfg_chk}/" "${pth}/"
+                echo -e "\033[0;33m[sync overwrite]\033[0m ${pth} <-> ${CfgDir}${tgt}/${cfg_chk}..."
             else
                 echo -e "\033[0;33m[preserve]\033[0m Skipping ${pth}/${cfg_chk} to preserve user setting..."
             fi
@@ -135,28 +130,28 @@ deploy_psv() {
                     print_log -g "[copy backup]" -b " :: " "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
                     ;;
                 "O")
-                    [ "${flg_DryRun}" -ne 1 ] && mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-                    [ "${flg_DryRun}" -ne 1 ] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
-                    print_log -r "[move to backup]" " > " -r "[overwrite]" -b " :: " "${pth}" -r " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+                    [ "${flg_DryRun}" -ne 1 ] && rsync -a "${pth}/${cfg_chk}/" "${BkpDir}${tgt}/"
+                    [ "${flg_DryRun}" -ne 1 ] && rsync -a "${CfgDir}${tgt}/${cfg_chk}/" "${pth}/"
+                    print_log -r "[sync backup]" " > " -r "[sync overwrite]" -b " :: " "${pth}" -r " <->  " "${CfgDir}${tgt}/${cfg_chk}"
                     ;;
                 "S")
-                    [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-                    [ "${flg_DryRun}" -ne 1 ] && cp -rf "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
-                    print_log -g "[copy to backup]" " > " -y "[sync]" -b " :: " "${pth}" -r " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+                    [ "${flg_DryRun}" -ne 1 ] && rsync -a "${pth}/${cfg_chk}/" "${BkpDir}${tgt}/"
+                    [ "${flg_DryRun}" -ne 1 ] && rsync -a "${CfgDir}${tgt}/${cfg_chk}/" "${pth}/"
+                    print_log -g "[sync backup]" " > " -y "[sync]" -b " :: " "${pth}" -r " <->  " "${CfgDir}${tgt}/${cfg_chk}"
                     ;;
                 "P")
-                    [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-                    if ! [ "${flg_DryRun}" -ne 1 ] && cp -rn "${CfgDir}${tgt}/${cfg_chk}" "${pth}" 2>/dev/null; then
-                        print_log -g "[copy to backup]" " > " -g "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"
+                    [ "${flg_DryRun}" -ne 1 ] && rsync -a "${pth}/${cfg_chk}/" "${BkpDir}${tgt}/"
+                    if ! [ "${flg_DryRun}" -ne 1 ] && rsync -a --ignore-existing "${CfgDir}${tgt}/${cfg_chk}/" "${pth}/" 2>/dev/null; then
+                        print_log -g "[sync backup]" " > " -g "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"
                     else
-                        print_log -g "[copy to backup]" " > " -g "[preserved]" -b " :: " "${pth}" + 208 " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+                        print_log -g "[sync backup]" " > " -g "[preserved]" -b " :: " "${pth}" + 208 " <->  " "${CfgDir}${tgt}/${cfg_chk}"
                     fi
                     ;;
                 esac
             else
                 if [ "${ctlFlag}" != "B" ]; then
-                    [ "${flg_DryRun}" -ne 1 ] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
-                    print_log -y "[*populate*]" -b " :: " "${pth}" -r " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+                    [ "${flg_DryRun}" -ne 1 ] && rsync -a "${CfgDir}${tgt}/${cfg_chk}/" "${pth}/"
+                    print_log -y "[*sync populate*]" -b " :: " "${pth}" -r " <->  " "${CfgDir}${tgt}/${cfg_chk}"
                 fi
             fi
 
