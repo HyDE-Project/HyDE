@@ -69,7 +69,7 @@
                 "clock",
                 "custom/updates",
                 "custom/keybindhint",
-                "custom/gamemode",
+                "custom/workmode",
                 "custom/weather"
             ]
         }
@@ -207,7 +207,7 @@
                 "clock",
                 "custom/updates",
                 "custom/keybindhint",
-                "custom/gamemode",
+                "custom/workmode",
                 "custom/weather"
             ]
         }

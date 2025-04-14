@@ -1,0 +1,9 @@
+{
+    "custom/workmode": {
+        "format": "{}",
+        "tooltip-format": "󰸳  toggle workflow mode",
+        "exec": "workmode.sh g",
+        "on-click": "workmode.sh",
+        "signal": 10
+    }
+}

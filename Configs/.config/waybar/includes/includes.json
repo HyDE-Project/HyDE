@@ -53,6 +53,7 @@
         "/home/khing/.local/share/waybar/modules/custom-display.jsonc",
         "/home/khing/.local/share/waybar/modules/custom-dunst.jsonc",
         "/home/khing/.local/share/waybar/modules/custom-gamemode.jsonc",
+        "/home/khing/.local/share/waybar/modules/custom-workmode.jsonc",
         "/home/khing/.local/share/waybar/modules/custom-github_hyde.jsonc",
         "/home/khing/.local/share/waybar/modules/custom-gpuinfo#amd.jsonc",
         "/home/khing/.local/share/waybar/modules/custom-gpuinfo#intel.jsonc",
