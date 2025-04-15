@@ -677,7 +677,7 @@
                     "type": "integer"
                 },
                 "cursor_theme": {
-                    "default": "Bibata-Modern-Ice",
+                    "default": "McMojave",
                     "description": "Cursor theme.",
                     "type": "string"
                 },
