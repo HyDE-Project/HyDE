@@ -55,6 +55,11 @@ fi
 fn_select() {
     animation_items=$(find "$animations_dir" -name "*.conf" ! -name "disable.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
 
+    if [ -z "$animation_items" ]; then
+        notify-send -i "preferences-desktop-display" "Error" "No .conf files found in $animations_dir"
+        exit 1
+    fi
+
     # Set rofi scaling
     font_scale="${ROFI_ANIMATION_SCALE}"
     [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
