@@ -63,7 +63,7 @@ get_hashmap() {
         fi
 
         local find_command
-        find_command="find \"${wallSource}\" -type f \\( $(list_extensions) \\) -exec \"${hashMech}\" {} +"
+        find_command="find \"${wallSource}\" -type f \\( $(list_extensions) \\) ! -path \"*/logo/*\" -exec \"${hashMech}\" {} +"
 
         [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "Running command:" "${find_command}"
 
