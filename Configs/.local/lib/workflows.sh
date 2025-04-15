@@ -139,7 +139,7 @@ fn_update() {
 \$WORKFLOW = ${current_workflow}
 \$WORKFLOW_ICON = ${current_icon}
 \$WORKFLOW_DESCRIPTION = ${current_description}
-\$WORKFLOWS_PATH = ~/.config/hypr/workflows/${current_workflow}.conf
+\$WORKFLOWS_PATH = ./workflows/${current_workflow}.conf
 source = \$WORKFLOWS_PATH
 
 EOF
