@@ -23,7 +23,9 @@ qt5-quickcontrols2                                     # for sddm theme ui eleme
 qt5-graphicaleffects                                   # for sddm theme effects
 
 # --------------------------------------------------- // Window Manager
-hyprland                                               # wlroots-based wayland compositor
+hyprland                                               # independent wayland compositor
+uwsm                                                   # universal wayland session manager
+app2unit                                               # launch applications as systemd units
 dunst                                                  # notification daemon
 rofi-wayland                                           # application launcher
 waybar                                                 # system bar

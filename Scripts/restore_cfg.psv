@@ -35,6 +35,7 @@ P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
 P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
 P|${HOME}/.local/state/hyde|hyprland.conf|hyprland
 
+S|${HOME}/.config/uwsm|env|uwsm
 S|${HOME}/.config/hypr|hyprland.conf|hyprland
 O|${HOME}/.local/bin|hyde-shell hydectl|hyprland
 S|${HOME}/.config|gtk-3.0|nwg-look

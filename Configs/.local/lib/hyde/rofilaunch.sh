@@ -29,7 +29,7 @@ case "${1}" in
 d | --drun)
     r_mode="drun"
     rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
-    rofi_args+=("--run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
+    rofi_args+=("-run-command" "sh -c 'command -v app2unit >/dev/null && (app2unit "{cmd}" & disown) || {cmd}'")
     ;;
 w | --window)
     r_mode="window"
@@ -42,7 +42,7 @@ f | --filebrowser)
 r | --run)
     r_mode="run"
     rofi_config="${ROFI_LAUNCH_RUN_STYLE:-$rofi_config}"
-    rofi_args+=("--run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
+    rofi_args+=("-run-command" "sh -c 'command -v app2unit >/dev/null && (app2unit "{cmd}" & disown) || {cmd}'")
     ;;
 h | --help)
     echo -e "$(basename "${0}") [action]"
