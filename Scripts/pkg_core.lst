@@ -17,10 +17,7 @@ brightnessctl                                          # screen brightness contr
 udiskie                                                # manage removable media
 
 # --------------------------------------------------- // Display Manager
-sddm                                                   # display manager for KDE plasma
-qt5-quickcontrols                                      # for sddm theme ui elements
-qt5-quickcontrols2                                     # for sddm theme ui elements
-qt5-graphicaleffects                                   # for sddm theme effects
+greetd-tuigreet
 
 # --------------------------------------------------- // Window Manager
 hyprland                                               # independent wayland compositor

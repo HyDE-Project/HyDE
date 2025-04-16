@@ -13,38 +13,17 @@ fi
 
 cloneDir="${cloneDir:-$CLONE_DIR}"
 
-# sddm
-if pkg_installed sddm; then
-    print_log -c "[DISPLAYMANAGER] " -b "detected :: " "sddm"
-    if [ ! -d /etc/sddm.conf.d ]; then
-        sudo mkdir -p /etc/sddm.conf.d
-    fi
-    if [ ! -f /etc/sddm.conf.d/backup_the_hyde_project.conf ] || [ "${HYDE_INSTALL_SDDM}" = true ]; then
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "configuring sddm..."
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Corners"
-        read -p " :: Enter option number : " -r sddmopt
+# greetd
+sudo sed -i '/\[default_session\]/,/^\[/ s|^command = .*|command = "tuigreet -r --remember-user-session --user-menu"|' /etc/greetd/config.toml
+grep -q '\[initial_session\]' /etc/greetd/config.toml || {
+USERNAME=$(whoami)
+sudo tee -a /etc/greetd/config.toml > /dev/null <<EOF
 
-        case $sddmopt in
-        1) sddmtheme="Candy" ;;
-        *) sddmtheme="Corners" ;;
-        esac
-
-        sudo tar -xzf "${cloneDir}/Source/arcs/Sddm_${sddmtheme}.tar.gz" -C /usr/share/sddm/themes/
-        sudo touch /etc/sddm.conf.d/the_hyde_project.conf
-        sudo cp /etc/sddm.conf.d/the_hyde_project.conf /etc/sddm.conf.d/backup_the_hyde_project.conf
-        sudo cp /usr/share/sddm/themes/${sddmtheme}/the_hyde_project.conf /etc/sddm.conf.d/
-    else
-        print_log -y "[DISPLAYMANAGER] " -b " :: " "sddm is already configured..."
-    fi
-
-    if [ ! -f "/usr/share/sddm/faces/${USER}.face.icon" ] && [ -f "${cloneDir}/Source/misc/${USER}.face.icon" ]; then
-        sudo cp "${cloneDir}/Source/misc/${USER}.face.icon" /usr/share/sddm/faces/
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "avatar set for ${USER}..."
-    fi
-
-else
-    print_log -y "[DISPLAYMANAGER] " -b " :: " "sddm is not installed..."
-fi
+[initial_session]
+command = "uwsm start -- hyprland.desktop > /dev/null 2>&1"
+user = "$USERNAME"
+EOF
+}
 
 # dolphin
 if pkg_installed dolphin && pkg_installed xdg-utils; then
