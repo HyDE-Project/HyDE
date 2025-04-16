@@ -13,6 +13,18 @@ fi
 
 cloneDir="${cloneDir:-$CLONE_DIR}"
 
+#remove sddm
+if pkg_installed sddm; then
+    sudo systemctl disable sddm || true
+    for pkg in \
+        sddm \
+        qt5-quickcontrols \
+        qt5-quickcontrols2 \
+        qt5-graphicaleffects; do
+        sudo pacman -Rns --noconfirm "$pkg" 2>/dev/null || echo "Not installed: $pkg"
+    done
+fi
+
 # greetd
 sudo sed -i '/\[default_session\]/,/^\[/ s|^command = .*|command = "tuigreet -r --remember-user-session --user-menu"|' /etc/greetd/config.toml
 grep -q '\[initial_session\]' /etc/greetd/config.toml || {
@@ -24,6 +36,7 @@ command = "uwsm start -- hyprland.desktop > /dev/null 2>&1"
 user = "$USERNAME"
 EOF
 }
+sudo systemctl enable greetd || true
 
 # dolphin
 if pkg_installed dolphin && pkg_installed xdg-utils; then
