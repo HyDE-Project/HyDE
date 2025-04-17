@@ -139,8 +139,10 @@ fn_wallbash() {
     if [ -s "${temp_target_file}" ]; then
         mv "${temp_target_file}" "${target_file}"
     fi
-    [ -z "${exec_command}" ] || bash -c "${exec_command}" &
-    disown
+    [ -z "${exec_command}" ] || {
+        bash -c "${exec_command}" &
+        disown
+    }
 }
 
 scrDir="$(dirname "$(realpath "$0")")"
