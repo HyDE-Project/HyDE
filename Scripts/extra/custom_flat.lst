@@ -24,7 +24,7 @@ md.obsidian.Obsidian                         # Obsidian
 
 # ------------------------------------------- // Image/Graphics
 org.inkscape.Inkscape                          # Inkscape
-# org.kde.krita                                  # Krita
+org.kde.krita                                  # Krita
 # org.gimp.GIMP                                  # Gimp
 # org.blender.Blender                            # Blender
 # io.gitlab.theevilskeleton.Upscaler             # ImageUpscaler
@@ -43,6 +43,6 @@ org.inkscape.Inkscape                          # Inkscape
 # com.github.unrud.VideoDownloader               # VideoDownloader
 
 # ------------------------------------------- // Gaming
-# hu.kramo.Cartridges                          # Cartridges
-# com.github.Matoking.protontricks             # ProtonTricks
-# net.davidotek.pupgui2                        # ProtonUp
+hu.kramo.Cartridges                          # Cartridges
+com.github.Matoking.protontricks             # ProtonTricks
+net.davidotek.pupgui2                        # ProtonUp
