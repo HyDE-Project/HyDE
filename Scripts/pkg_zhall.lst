@@ -18,11 +18,11 @@ xdg-desktop-portal-gtk                                 # xdg desktop portal usin
 # emote                                                # emoji picker gtk3
 
 # --------------------------------------------------- // Gaming
-steam                                                  # gaming platform
-gamemode                                               # daemon and library for game optimizations
-mangohud                                               # system performance overlay
-gamescope                                            # micro-compositor for gaming
-lutris                                               # Lutris is an open source gaming platform for Linux
+# steam                                                  # gaming platform
+# gamemode                                               # daemon and library for game optimizations
+# mangohud                                               # system performance overlay
+# gamescope                                            # micro-compositor for gaming
+# lutris                                               # Lutris is an open source gaming platform for Linux
 
 # --------------------------------------------------- // Music
 # cava                                                   # audio visualizer
@@ -102,7 +102,7 @@ intel-media-sdk
 tilix
 xf86-video-intel
 xorg-xrandr
-gnome-control-center
+#gnome-control-center
 lib32-mesa
 lib32-ocl-icd
 #intel-computer-runtime
