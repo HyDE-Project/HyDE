@@ -55,7 +55,7 @@ download_and_extract() {
             mkdir -p "${font_dir}/hyde"
             mv "$file" "${font_dir}/hyde/$name.ttf"
             echo "[font] $name installed successfully. Please restart hyprlock to apply changes."
-            notify-send -i "preferences-desktop-font" "HyDE font" "${name} Intalled successfully"
+            notify-send -i "preferences-desktop-font" "HyDE font" "${name} Installed successfully"
             return 0
             ;;
         *)
@@ -70,7 +70,7 @@ download_and_extract() {
             notify-send -i "preferences-desktop-font" "HyDE font" "Failed to extract $file"
             return 1
         fi
-        notify-send -i "preferences-desktop-font" "HyDE font" "${name} Intalled successfully"
+        notify-send -i "preferences-desktop-font" "HyDE font" "${name} Installed successfully"
     done
 
     rm -rf "$temp_dir"
@@ -90,5 +90,10 @@ resolve() {
         fi
     done
 }
+
+# Expand ~ to $HOME in all arguments
+for arg in "$@"; do
+    eval "set -- \"\${@} \"\${arg//\~/\$HOME}\""
+done
 
 "${@}"
