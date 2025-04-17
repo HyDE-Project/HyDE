@@ -49,7 +49,7 @@ Wall_Cache() {
     if [ "${set_as_global}" == "true" ]; then
         print_log -sec "wallpaper" "Setting Wallpaper as global"
         "${scrDir}/swwwallcache.sh" -w "${wallList[setIndex]}" &>/dev/null
-        "${scrDir}/swwwallbash.sh" "${wallList[setIndex]}" &
+        "${scrDir}/color.set.sh" "${wallList[setIndex]}" &
         ln -fs "${thmbDir}/${wallHash[setIndex]}.sqre" "${wallSqr}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.thmb" "${wallTmb}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.blur" "${wallBlr}"
