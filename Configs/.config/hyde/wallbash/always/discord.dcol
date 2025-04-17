@@ -1,74 +1,25 @@
-${cacheDir}/wallbash/discord.css|${WALLBASH_SCRIPTS}/discord.sh
+${XDG_CACHE_HOME}/hyde/wallbash/discord.css|${WALLBASH_SCRIPTS}/discord.sh
+@import url('https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css');
 
 :root {
-	--accent-color: #<wallbash_1xa1>;
-	--border-color: #<wallbash_1xa3>;
-	--background-1: #<wallbash_pry1>;
-	--background-2: #<wallbash_1xa2>;
-	--background-tertiary: #<wallbash_pry1>66;
-	--background-mentioned: #<wallbash_2xa3> !important;
-	--background-mentioned-hover: #<wallbash_2xa2> !important;
-	--background-modifier-hover: #<wallbash_3xa4> !important;
-	--background-modifier-active: #<wallbash_4xa4> !important;
-	--text-normal: #<wallbash_txt1> !important;
-	--text-positive: #<wallbash_3xa9> !important;
-	--text-muted: #<wallbash_txt1>66 !important;
-	--text-link: #<wallbash_pry4> !important;
-  --channel-default: #<wallbash_txt1>99 !important;
-	--button-background: #<wallbash_pry1> !important;
-	--button-background-hover: #<wallbash_pry1> !important;
-	--button-background-active: #<wallbash_pry1> !important;
-	--button-accent: #<wallbash_pry1> !important;
-	--button-accent-hover: #<wallbash_pry1> !important;
-	--button-accent-active: #<wallbash_pry1> !important;
-	--button-destructive: #<wallbash_pry1> !important;
-	--button-destructive-hover: #<wallbash_pry1> !important;
-	--button-destructive-active: #<wallbash_pry1> !important;
-	--settings-icon-color: #<wallbash_pry1> !important;
-	--tab-selected: #<wallbash_pry1> !important;
-	--switch: #<wallbash_pry1> !important;
+  --accentcolor: <wallbash_pry1_rgb>;
+  --accentcolor2: <wallbash_pry2_rgb>;
+  --linkcolor: <wallbash_txt2_rgb>;
+  --mentioncolor: <wallbash_1xa5_rgb>;
+  --textbrightest: <wallbash_txt1_rgb>;
+  --textbrighter: <wallbash_txt2_rgb>;
+  --textbright: <wallbash_1xa9_rgb>;
+  --textdark: <wallbash_3xa9_rgb>;
+  --textdarker: <wallbash_txt3_rgb>;
+  --textdarkest: <wallbash_txt4_rgb>;
 
-	--background-primary: var(--background-1);
-	--background-primary-alt: var(--background-1);
-	--background-secondary: var(--background-tertiary);
-	--background-secondary-alt: var(--background-tertiary);
-	--background-accent-gradient: var(--background-1);
-	--background-floating: var(--background-2);
-	--background-modifier-selected: var(--accent-color);
-	--background-modifier-accent: var(--border-color);
-	--background-message-hover: transparent;
-	--interactive-selected: var(--background-primary);
-	--interactive-active: var(--text-positive);
-	--interactive-normal: var(--text-normal);
-  --interactive-muted: var(--text-muted);
-	--channels-default: var(--channel-default);
-	--header-primary: var(--text-normal);
-	--header-secondary: var(--text-muted);
-	--control-brand-foreground: var(--accent-color);
-	--info-warning-foreground: var(--accent-color);
-	--activity-card-background: var(--background-1);
-	--brand-experiment: var(--accent-color) !important;
-	--close-button-color: var(--accent-color);
-	--maximize-button-color: var(--accent-color);
-	--minimize-button-color: var(--accent-color);
-	--scrollbar-color-alt: var(--accent-color);
-	--scrollbar-thin-track: transparent;
-	--scrollbar-auto-thumb: transparent;
-	--scrollbar-auto-thumb-hover: var(--accent-color);
-	--scrollbar-auto-track: transparent;
-	--scrollbar-auto-scrollbar-color-thumb: var(--accent-color);
-	--scrollbar-auto-scrollbar-color-track: transparent;
-	--channeltextarea-background: var(--accent-color);
-	--channeltextarea-background-hover: var(--background-tertiary);
-	--avatar-roundess: 5px;
+  --backgroundaccent: <wallbash_1xa5_rgb>;
+  --backgroundprimary: <wallbash_2xa1_rgb>;
+  --backgroundsecondary: <wallbash_pry1_rgb>;
+  --backgroundsecondaryalt: <wallbash_pry1_rgb>;
+  --backgroundtertiary: <wallbash_pry1_rgb>;
+  --backgroundfloating: <wallbash_2xa1_rgb>;;
+  --settingsicons: 1;
 }
 
-.theme-dark {
-	--background-primary: var(--background-1);
-	--background-primary-alt: var(--background-1);
-	--background-secondary: var(--background-tertiary);
-	--background-secondary-alt: var(--background-tertiary);
-	--background-floating: var(--background-2);
-	--background-mentioned: var(--accent-color);
-	--background-mentioned-hover: var(--scrollbar-auto-thumb);
-}
+/* Any custom CSS below here */
