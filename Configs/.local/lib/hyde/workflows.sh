@@ -7,7 +7,6 @@ if ! source "$(which hyde-shell)"; then
     echo "[wallbash] code :: Is HyDE installed?"
     exit 1
 fi
-
 # Set variables
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 workflows_dir="$confDir/hypr/workflows"
@@ -25,7 +24,9 @@ Usage: $0 [OPTIONS]
 
 Options:
     --select | -S       Select a workflow from the available options
+    --waybar            Get workflow info for Waybar
     --help   | -h       Show this help message
+    
 HELP
 }
 
@@ -35,10 +36,10 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONGOPTS="select,help"
-
+LONG_OPTS="select,waybar,help"
+SHORT_OPTS="Sh"
 # Parse options
-PARSED=$(getopt --options Sh --longoptions "${LONGOPTS}" --name "$0" -- "$@")
+PARSED=$(getopt --options ${SHORT_OPTS} --longoptions "${LONG_OPTS}" --name "$0" -- "$@")
 if [ $? -ne 0 ]; then
     exit 2
 fi
@@ -53,7 +54,7 @@ fi
 
 # Functions
 fn_select() {
-    workflow_items=$(find "$workflows_dir" -name "*.conf" ! -name "unset.conf" 2>/dev/null | sed 's/\.conf$//')
+    workflow_items=$(find "$workflows_dir" -name "*.conf" ! -name "default.conf" 2>/dev/null | sed 's/\.conf$//')
 
     # Set rofi scaling
     font_scale="${ROFI_WORKFLOW_SCALE}"
@@ -74,9 +75,9 @@ fn_select() {
     hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
     r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;} wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
 
-    workflow_items="unset
+    workflow_items="default
 $workflow_items"
-    rofi_select="${HYPR_WORKFLOW/unset/unset}"
+    rofi_select="${HYPR_WORKFLOW/default/default}"
 
     # Display options using Rofi with custom scaling, positioning, and placeholder
     selected_workflow=$(awk -F/ '{print $NF}' <<<"$workflow_items" |
@@ -93,8 +94,8 @@ $workflow_items"
         exit 0
     fi
     case $selected_workflow in
-    "unset")
-        selected_workflow="unset"
+    "default")
+        selected_workflow="default"
         ;;
     esac
 
@@ -104,22 +105,21 @@ $workflow_items"
     notify-send -i "preferences-desktop-display" "Workflow:" "$selected_workflow"
 }
 
-fn_prepare() {
+get_info() {
 
     [ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
     [ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
-    local workflowDir="$workflows_dir"
-    current_workflow=${HYPR_WORKFLOW:-"unset"}
+    current_workflow=${HYPR_WORKFLOW:-"default"}
 
-    current_icon=$(get_hyprConf "WORKFLOW_ICON" "${workflowDir}/${current_workflow}.conf")
+    current_icon=$(get_hyprConf "WORKFLOW_ICON" "${workflows_dir}/${current_workflow}.conf")
     current_icon=${current_icon:0:1}
-    current_description=$(get_hyprConf "WORKFLOW_DESCRIPTION" "${workflowDir}/${current_workflow}.conf")
+    current_description=$(get_hyprConf "WORKFLOW_DESCRIPTION" "${workflows_dir}/${current_workflow}.conf")
     current_description=${current_description:-"No description available"}
     export current_icon current_workflow current_description
 }
 
 fn_update() {
-    fn_prepare
+    get_info
     echo "$current_icon $current_workflow: $current_description"
     cat <<EOF >"${confDir}/hypr/workflows.conf"
 #! █░█░█ █▀█ █▀█ █▄▀ █▀▀ █░░ █▀█ █░█░█ █▀
@@ -138,14 +138,21 @@ fn_update() {
 \$WORKFLOW = ${current_workflow}
 \$WORKFLOW_ICON = ${current_icon}
 \$WORKFLOW_DESCRIPTION = ${current_description}
-\$WORKFLOWS_PATH = ~/.config/hypr/workflows/${current_workflow}.conf
+\$WORKFLOWS_PATH = ./workflows/${current_workflow}.conf
 source = \$WORKFLOWS_PATH
 
 EOF
 }
 
 handle_waybar() {
-    :
+    get_info
+    text="$current_icon"
+    tooltip="Mode: ${current_icon} ${current_workflow} \n${current_description}"
+    class="custom-workflows"
+
+    echo "{\"text\": \"${text}\", \"tooltip\": \"${tooltip}\", \"class\": \"${class}\"}"
+
+    pkill -RTMIN+7 waybar
 }
 
 # Process options
