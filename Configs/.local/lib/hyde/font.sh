@@ -79,9 +79,14 @@ download_and_extract() {
 }
 
 resolve() {
-    local layout="${1}"
+    local layout_path="${1}"
+    layout_path="$(realpath "${layout_path}")"
+    if [[ ! -f "${layout_path}" ]]; then
+        echo "[font] Layout file not found: ${layout_path}"
+        return 1
+    fi
     # shellcheck disable=SC2016
-    grep -Eo '^\s*\$resolve\.font\s*=\s*[^|]+\s*\|\s*[^ ]+' "${layout}" | while IFS='=' read -r _ font; do
+    grep -Eo '^\s*\$resolve\.font\s*=\s*[^|]+\s*\|\s*[^ ]+' "${layout_path}" | while IFS='=' read -r _ font; do
         name=$(echo "$font" | awk -F'|' '{print $1}' | xargs)
         url=$(echo "$font" | awk -F'|' '{print $2}' | xargs)
         if ! fc-list | grep -q "${name}"; then
@@ -90,10 +95,5 @@ resolve() {
         fi
     done
 }
-
-# Expand ~ to $HOME in all arguments
-for arg in "$@"; do
-    eval "set -- \"\${@} \"\${arg//\~/\$HOME}\""
-done
 
 "${@}"
