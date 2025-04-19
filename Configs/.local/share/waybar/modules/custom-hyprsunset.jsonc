@@ -1,0 +1,18 @@
+{
+  "custom/hyprsunset": {
+    "return-type": "json",
+    "format": "{icon} ",
+    "format-icons": {
+      "active": "",
+      "inactive": ""
+    },
+    "exec": "hyde-shell hyprsunset.sh r q",
+    "rotate": 0,
+    "on-click": "hyde-shell hyprsunset.sh t",
+    "on-scroll-up": "hyde-shell hyprsunset.sh i",
+    "on-scroll-down": "hyde-shell hyprsunset.sh d",
+    "interval": 1,
+    "tooltip": true,
+    "escape": true
+  }
+}
