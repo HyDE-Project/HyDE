@@ -16,6 +16,12 @@ blueman                                                # bluetooth manager gui
 brightnessctl                                          # screen brightness control
 udiskie                                                # manage removable media
 
+# --------------------------------------------------- // ROG
+power-profiles-daemon                                  # fan speed profiles
+asusctl                                                # overall control
+supergfxctl                                            # additional
+rog-control-center                                     # GUI control center
+
 # --------------------------------------------------- // Display Manager
 sddm                                                   # display manager for KDE plasma
 qt5-quickcontrols                                      # for sddm theme ui elements
@@ -94,3 +100,7 @@ bat                                                    # Cat clone with syntax h
 
 # --------------------------------------------------- // HyDE
 hypridle                                               # idle daemon
+
+# --------------------------------------------------- // Gaming
+cachyos-gaming-meta                                    # Meta packages for Gaming
+cachyos-gaming-applications                            # Common applications for Gaming

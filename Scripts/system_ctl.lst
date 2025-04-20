@@ -1,4 +1,5 @@
 NetworkManager
 bluetooth
 sddm
-rog-control-center
+supergfxctl
+power-profiles-daemon
