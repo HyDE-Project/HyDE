@@ -1,9 +1,10 @@
-# 嗨! 👋 这里是 Khing.
+# 嗨! 👋 这里是 Khing
 
-
+[![de](https://img.shields.io/badge/lang-de-black.svg)](./Hyprdots-to-HyDE.de.md)
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../Hyprdots-to-HyDE.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](./Hyprdots-to-HyDE.es.md)
 
-## 这个分支项目会逐渐修复 prasanthrangan/hyprdots 项目中的漏洞，并不断优化。
+## 这个分支项目会逐渐修复 prasanthrangan/hyprdots 项目中的漏洞，并不断优化
 
 ### 为什么要这么做?
 
@@ -31,7 +32,7 @@
 
 - [ ] **可移植**
 
-  - [ ] HyDE-相关文件应该导入 \$USER，而不是相反。 
+  - [ ] HyDE-相关文件应该导入 \$USER，而不是相反。
   - [X] 保持项目轻便简洁
   - [ ] 使其易于打包
   - [X] 依照 XDG 文档

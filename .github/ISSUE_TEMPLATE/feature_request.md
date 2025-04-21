@@ -5,14 +5,6 @@ title: "[Feature Request]: Short description of the feature"
 labels: "enhancement, needs triage, feature request"
 ---
 
-<!--
-Multi-language feature_request support
--->
-
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](feature_request.es.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](feature_request.de.md)
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](feature_request.fr.md)
-
 ## Feature Request
 
 ### Description

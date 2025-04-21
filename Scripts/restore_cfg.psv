@@ -30,13 +30,13 @@ B = Backup - Backup the target
 
  Hyde core files 
 P|${HOME}/.config/hyde|config.toml|hyprland
-P|${HOME}/.config/hypr|hyde.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
+P|${HOME}/.config/hypr|hyde.conf workflows.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
 P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
 P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
 P|${HOME}/.local/state/hyde|hyprland.conf|hyprland
 
 S|${HOME}/.config/hypr|hyprland.conf|hyprland
-S|${HOME}/.local|bin|hyprland
+O|${HOME}/.local/bin|hyde-shell hydectl|hyprland
 S|${HOME}/.config|gtk-3.0|nwg-look
 S|${HOME}/.config|nwg-look|nwg-look
 S|${HOME}/.config|xsettingsd|nwg-look
@@ -46,6 +46,7 @@ S|${HOME}/.config|qt5ct|qt5ct
 S|${HOME}/.config|qt6ct|qt6ct
 S|${HOME}/.config/hyde|wallbash|hyprland
 S|${HOME}/.config/hypr|animations|hyprland  
+S|${HOME}/.config/hypr|workflows|hyprland
 
 O|${HOME}/.local/share|hyde|hyprland
 O|${HOME}/.local/lib|hyde|hyprland

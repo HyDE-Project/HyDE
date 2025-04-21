@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
-#!          ░▒▓         
-#!        ░▒▒░▓▓         
+#!          ░▒▓
+#!        ░▒▒░▓▓
 #!      ░▒▒▒░░░▓▓           ___________
 #!    ░░▒▒▒░░░░░▓▓        //___________/
 #!   ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
@@ -11,25 +11,41 @@
 
 # HyDE's ZSH env configuration
 # This file is sourced by ZSH on startup
-# And ensures that we have an obstruction free ~/.zshrc file
+# And ensures that we have an obstruction-free ~/.zshrc file
 # This also ensures that the proper HyDE $ENVs are loaded
 
-# Command not found handler
 function command_not_found_handler {
     local purple='\e[1;35m' bright='\e[0;1m' green='\e[1;32m' reset='\e[0m'
-    printf 'zsh: command not found: %s\n' "$1"
-    local entries=( ${(f)"$(/usr/bin/pacman -F --machinereadable -- "/usr/bin/$1")"} )
-    if (( ${#entries[@]} > 0 )); then
-        printf "${bright}$1${reset} may be found in the following packages:\n"
-        local pkg
-        for entry in "${entries[@]}"; do
-            local fields=( ${(0)entry} )
-            if [[ "$pkg" != "${fields[2]}" ]]; then
-                printf "${purple}%s/${bright}%s ${green}%s${reset}\n" "${fields[1]}" "${fields[2]}" "${fields[3]}"
+    printf "${green}zsh${reset}: command ${purple}NOT${reset} found: ${bright}'%s'${reset}\n" "$1"
+
+    PM="pm.sh"
+    # Try to find pm.sh in common locations
+    if [ ! command -v "${PM}" ] &>/dev/null; then
+        for path in "/usr/lib/hyde" "/usr/local/lib/hyde" "$HOME/.local/lib/hyde" "$HOME/.local/bin"; do
+            if [[ -x "$path/pm.sh" ]]; then
+                PM="$path/pm.sh"
+                break
+            else
+                unset PM
             fi
-            printf '    /%s\n' "${fields[4]}"
-            pkg="${fields[2]}"
         done
+    fi
+
+    if ! command -v "${PM}" &>/dev/null; then
+        printf "${bright}${red}We cannot find package manager script (${purple}pm.sh${red}) from ${green}HyDE${reset}\n"
+        return 127
+    fi
+
+    if ! "${PM}" fq "/usr/bin/$1"; then
+        printf "${bright}${green}[ ${1} ]${reset} ${purple}NOT${reset} found in the system and no package provides it.\n"
+        return 127
+    else
+        printf "${green}[ ${1} ] ${reset} might be provided by the above packages.\n"
+        for entry in $entries; do
+            # Assuming the entry already has ANSI color codes, we don't add more colors
+            printf "  %s\n" "${entry}"
+        done
+
     fi
     return 127
 }
@@ -43,37 +59,14 @@ function load_zsh_plugins {
     )
     for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
     # Load Plugins
-    hyde_plugins=( git zsh-256color zsh-autosuggestions zsh-syntax-highlighting )
-    plugins+=( "${plugins[@]}" "${hyde_plugins[@]}" git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
+    hyde_plugins=(git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
+    plugins+=("${plugins[@]}" "${hyde_plugins[@]}" git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
     # Deduplicate plugins
     plugins=("${plugins[@]}")
     plugins=($(printf "%s\n" "${plugins[@]}" | sort -u))
 
     # Loads om-my-zsh
     [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
-}
-
-# Install packages from both Arch and AUR
-function in {
-    local -a inPkg=("$@")
-    local -a arch=()
-    local -a aur=()
-
-    for pkg in "${inPkg[@]}"; do
-    if pacman -Si "${pkg}" &>/dev/null; then
-    arch+=("${pkg}")
-    else
-    aur+=("${pkg}")
-    fi
-    done
-
-    if [[ ${#arch[@]} -gt 0 ]]; then
-    sudo pacman -S "${arch[@]}"
-    fi
-
-    if [[ ${#aur[@]} -gt 0 ]]; then
-    ${aurhelper} -S "${aur[@]}"
-    fi
 }
 
 # Function to display a slow load warning
@@ -129,7 +122,6 @@ function no_such_file_or_directory_handler {
     return 127
 }
 
-
 # cleaning up home folder
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-$HOME/.config}"
@@ -153,11 +145,9 @@ WGETRC="${XDG_CONFIG_HOME}/wgetrc"
 SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
 
 export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
-XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR WGETRC SCREENRC 
+    XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR WGETRC SCREENRC
 
-
-
-if [ -t 1 ];then
+if [ -t 1 ]; then
     # We are loading the prompt on start so users can see the prompt immediately
     # Powerlevel10k theme path
     P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
@@ -166,21 +156,17 @@ if [ -t 1 ];then
     # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
     [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-    # Detect AUR wrapper and cache it for faster subsequent loads
-    aur_cache_file="/tmp/.aurhelper.zshrc"
-    if [[ -f $aur_cache_file ]]; then
-        aurhelper=$(<"$aur_cache_file")
-    else
-        if pacman -Qi yay &>/dev/null; then
-            aurhelper="yay"
-        elif pacman -Qi paru &>/dev/null; then
-            aurhelper="paru"
-        fi
-        echo "$aurhelper" > "$aur_cache_file"
+    PM="pm.sh"
+    # Try to find pm.sh in common locations
+    if [ ! which "${PM}" ] &>/dev/null; then
+        for path in "/usr/lib/hyde" "/usr/local/lib/hyde" "$HOME/.local/lib/hyde" "$HOME/.local/bin"; do
+            if [[ -x "$path/pm.sh" ]]; then
+                PM="$path/pm.sh"
+                break
+            fi
+        done
     fi
-
-
-    # Optionally load user configuration // usefull for customizing the shell without modifying the main file
+    # Optionally load user configuration // useful for customizing the shell without modifying the main file
     [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
 
     # Load plugins
@@ -188,20 +174,18 @@ if [ -t 1 ];then
 
     # Helpful aliases
     if [[ -x "$(which eza)" ]]; then
-        alias ls='eza' \
-            l='eza -lh --icons=auto' \
+        alias l='eza -lh --icons=auto' \
             ll='eza -lha --icons=auto --sort=name --group-directories-first' \
             ld='eza -lhD --icons=auto' \
             lt='eza --icons=auto --tree'
     fi
 
     alias c='clear' \
-        un='$aurhelper -Rns' \
-        up='$aurhelper -Syu' \
-        pl='$aurhelper -Qs' \
-        pa='$aurhelper -Ss' \
-        pc='$aurhelper -Sc' \
-        po='$aurhelper -Qtdq | $aurhelper -Rns -' \
+        in='$PM install' \
+        un='$PM remove' \
+        up='$PM upgrade' \
+        pl='$PM search installed' \
+        pa='$PM search all' \
         vc='code' \
         fastfetch='fastfetch --logo-type kitty' \
         ..='cd ..' \
@@ -211,6 +195,10 @@ if [ -t 1 ];then
         .5='cd ../../../../..' \
         mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 
+    # TODO: add handlers in pm.sh
+    # for these aliases please manually add the following lines to your .zshrc file.(Using yay as the aur helper)
+    # pc='yay -Sc' # remove all cached packages
+    # po='yay -Qtdq | $PM -Rns -' # remove orphaned packages
 
     # Warn if the shell is slow to load
     autoload -Uz add-zsh-hook

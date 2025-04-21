@@ -13,7 +13,7 @@
 # ? This file is a reference for:
 # * wiki table
 # * --json to generate the JSON schema
-# TODO --config to generate a copy of config.toml //! Not implemented yet
+# TODO --config to generate a copy of config.toml // ! Not implemented yet
 
 "$schema" = "http://json-schema.org/draft-07/schema#"
 type      = "object"
@@ -720,4 +720,28 @@ type      = "object"
 [properties.hyprland_start.properties.xdg_portal_reset]
     default     = "resetxdgportal.sh"
     description = "XDG portal reset script."
+    type        = "string"
+
+[properties.mediaplayer]
+    description = "mediaplayer.py configuration."
+    type        = "object"
+
+[properties.mediaplayer.properties.prefix_playing]
+    default     = ""
+    description = "Prefix for playing media."
+    type        = "string"
+
+[properties.mediaplayer.properties.prefix_paused]
+    default     = "  "
+    description = "Prefix for paused media."
+    type        = "string"
+
+[properties.mediaplayer.properties.max_length]
+    default     = 70
+    description = "Max length of song and artist string."
+    type        = "integer"
+
+[properties.mediaplayer.properties.standby_text]
+    default     = "  Music"
+    description = "To display on standby."
     type        = "string"

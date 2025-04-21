@@ -9,7 +9,7 @@ if ! source "$(which hyde-shell)"; then
 fi
 
 # Set variables
-confDir="${confDir:-$XDG_CONFIG_HOME}"
+confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 animations_dir="$confDir/hypr/animations"
 
 # Ensure the animations directory exists
@@ -18,15 +18,47 @@ if [ ! -d "$animations_dir" ]; then
     exit 1
 fi
 
-# List available .conf files in animations directory
-animation_items=$(find "$animations_dir" -name "*.conf" ! -name "disable.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
+# Show help function
+show_help() {
+    cat <<HELP
+Usage: $0 [OPTIONS]
 
-if [ -z "$animation_items" ]; then
-    notify-send -i "preferences-desktop-display" "Error" "No .conf files found in $animations_dir"
+Options:
+    --select | -S       Select an animation from the available options  
+    --help   | -h       Show this help message
+HELP
+}
+
+if [ -z "${*}" ]; then
+    echo "No arguments provided"
+    show_help
+fi
+
+# Define long options
+LONGOPTS="select,help"
+
+# Parse options
+PARSED=$(
+    if getopt --options Sh --longoptions "${LONGOPTS}" --name "$0" -- "$@"; then
+        exit 2
+    fi
+)
+eval set -- "${PARSED}"
+# Default action if no arguments are provided
+if [ -z "$1" ]; then
+    echo "No arguments provided"
+    show_help
     exit 1
 fi
 
+# Functions
 fn_select() {
+    animation_items=$(find "$animations_dir" -name "*.conf" ! -name "disable.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
+
+    if [ -z "$animation_items" ]; then
+        notify-send -i "preferences-desktop-display" "Error" "No .conf files found in $animations_dir"
+        exit 1
+    fi
 
     # Set rofi scaling
     font_scale="${ROFI_ANIMATION_SCALE}"
@@ -96,22 +128,33 @@ fn_update() {
 # See https://wiki.hyprland.org/Configuring/Animations/
 # HyDE Controlled content // DO NOT EDIT
 # Edit or add animations in the ./hypr/animations/ directory
-# and run the 'animations.sh select' command to update this file
+# and run the 'animations.sh --select' command to update this file 
 
 \$ANIMATION=${current_animation}
-\$ANIMATION_PATH=${animDir}/${current_animation}.conf
-
+\$ANIMATION_PATH=./animations/${current_animation}.conf
 EOF
     # cat "${animDir}/${current_animation}.conf" >>"${confDir}/hypr/animations.conf"
 }
 
-if declare -f "fn_${1}" >/dev/null; then
-    "fn_${1}"
-else
-    cat <<HELP
-Usage:
-    select    Select an animation from the available options
-    update    Update the animation to the selected option
-
-HELP
-fi
+# Process options
+while true; do
+    case "$1" in
+    -S | --select)
+        fn_select
+        exit 0
+        ;;
+    --help | -h)
+        show_help
+        exit 0
+        ;;
+    --)
+        shift
+        break
+        ;;
+    *)
+        echo "Invalid option: $1"
+        show_help
+        exit 1
+        ;;
+    esac
+done

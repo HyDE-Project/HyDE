@@ -1,9 +1,10 @@
-# Hallo! 👋 Delphin hier.
+# Hallo! 👋 Delphin hier
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../Hyprdots-to-HyDE.md)
-![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Hyprdots-to-HyDE.zh.md)
+[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](./Hyprdots-to-HyDE.zh.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](./Hyprdots-to-HyDE.es.md)
 
-## Dieser Fork wird prasanthrangan/hyprdots im Laufe der Zeit verbessern und korrigieren.
+## Dieser Fork wird prasanthrangan/hyprdots im Laufe der Zeit verbessern und korrigieren
 
 ### Warum?
 
@@ -63,8 +64,8 @@
 
 ---
 
-So können wir HyDE-spezifische Hyprland-Einstellungen aktualisieren, ohne die Benutzereinstellungen zu ändern. Wir brauchen die „userprefs“-Datei nicht. Stattdessen können wir HyDEs `hyprland.conf` auslesen und $USER bevorzugte Änderungen direkt in der Konfiguration vornehmen. Mit diesem Ansatz wird hyde nicht kaputt gehen und hyde wird Ihre eigenen Punkte nicht kaputt machen.
-![Hyprland structure](https://github.com/user-attachments/assets/91b35c2e-0003-458f-ab58-18fc29541268)
+So können wir HyDE-spezifische Hyprland-Einstellungen aktualisieren, ohne die Benutzereinstellungen zu ändern. Wir brauchen die „userprefs“-Datei nicht. Stattdessen können wir HyDEs `hyprland.conf` auslesen und $USER bevorzugte Änderungen direkt in der Konfiguration vornehmen. Mit diesem Ansatz wird HyDE nicht kaputt gehen und HyDE wird Ihre eigenen Punkte nicht kaputt machen.
+![Hyprland-Struktur](https://github.com/user-attachments/assets/91b35c2e-0003-458f-ab58-18fc29541268)
 
 # Warum der Name HyDE?
 

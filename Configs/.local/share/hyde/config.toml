@@ -2,6 +2,8 @@
 # Environment variables should be on top
 # Add your custom configuration in '~/.config/hyde/config.toml'
 
+"$schema" = "./schema.json"
+
 WARP_ENABLE_WAYLAND = 1
 
 

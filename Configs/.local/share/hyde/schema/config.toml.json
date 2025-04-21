@@ -793,6 +793,32 @@
                     "type": "string"
                 }
             }
+        },
+        "mediaplayer": {
+            "description": "mediaplayer.py configuration.",
+            "type": "object",
+            "properties": {
+                "prefix_playing": {
+                    "default": "\uf001",
+                    "description": "Prefix for playing media.",
+                    "type": "string"
+                },
+                "prefix_paused": {
+                    "default": "\uf001  \uf04c",
+                    "description": "Prefix for paused media.",
+                    "type": "string"
+                },
+                "max_length": {
+                    "default": 70,
+                    "description": "Max length of song and artist string.",
+                    "type": "integer"
+                },
+                "standby_text": {
+                    "default": "\uf001  Music",
+                    "description": "To display on standby.",
+                    "type": "string"
+                }
+            }
         }
     }
 }

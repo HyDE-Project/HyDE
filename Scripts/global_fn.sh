@@ -23,7 +23,7 @@ export shlList
 pkg_installed() {
     local PkgIn=$1
 
-    if pacman -Qi "${PkgIn}" &>/dev/null; then
+    if pacman -Q "${PkgIn}" &>/dev/null; then
         return 0
     else
         return 1

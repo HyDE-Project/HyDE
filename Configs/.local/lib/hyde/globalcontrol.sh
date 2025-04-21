@@ -35,16 +35,72 @@ get_hashmap() {
     unset wallHash
     unset wallList
     unset skipStrays
-    unset verboseMap
+    unset filetypes
+
+    list_extensions() {
+        # Define supported file extensions
+        supported_files=(
+            "gif"
+            "jpg"
+            "jpeg"
+            "png"
+            "${WALLPAPER_FILETYPES[@]}"
+        )
+        if [ -n "${WALLPAPER_OVERRIDE_FILETYPES}" ]; then
+            supported_files=("${WALLPAPER_OVERRIDE_FILETYPES[@]}")
+        fi
+
+        printf -- "-iname \"*.%s\" -o " "${supported_files[@]}" | sed 's/ -o $//'
+
+    }
+
+    find_wallpapers() {
+        local wallSource="$1"
+
+        if [ -z "${wallSource}" ]; then
+            print_log -err "ERROR: wallSource is empty"
+            return 1
+        fi
+
+        local find_command
+        find_command="find \"${wallSource}\" -type f \\( $(list_extensions) \\) ! -path \"*/logo/*\" -exec \"${hashMech}\" {} +"
+
+        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "Running command:" "${find_command}"
+
+        tmpfile=$(mktemp)
+        eval "${find_command}" 2>"$tmpfile" | sort -k2
+        error_output=$(<"$tmpfile") && rm -f "$tmpfile"
+        [ -n "${error_output}" ] && print_log -err "ERROR:" -b "found an error: " -r "${error_output}" -y " skipping..."
+
+    }
 
     for wallSource in "$@"; do
+
+        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "arg:" "${wallSource}"
+
         [ -z "${wallSource}" ] && continue
+        [ "${wallSource}" == "--no-notify" ] && no_notify=1 && continue
         [ "${wallSource}" == "--skipstrays" ] && skipStrays=1 && continue
         [ "${wallSource}" == "--verbose" ] && verboseMap=1 && continue
 
-        hashMap=$(find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*" -exec "${hashMech}" {} + | sort -k2)
+        wallSource="$(realpath "${wallSource}")"
+
+        [ -e "${wallSource}" ] || {
+            print_log -err "ERROR:" -b "wallpaper source does not exist:" "${wallSource}" -y " skipping..."
+            continue
+        }
+
+        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "wallSource path:" "${wallSource}"
+
+        hashMap=$(find_wallpapers "${wallSource}") # Enable debug mode for testing
+
+        # hashMap=$(
+        # find "${wallSource}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.mkv"  \) ! -path "*/logo/*" -exec "${hashMech}" {} + | sort -k2
+        # )
+
         if [ -z "${hashMap}" ]; then
-            echo "WARNING: No image found in \"${wallSource}\""
+            no_wallpapers+=("${wallSource}")
+            print_log -warn "No compatible wallpapers found in: " "${wallSource}"
             continue
         fi
 
@@ -54,11 +110,18 @@ get_hashmap() {
         done <<<"${hashMap}"
     done
 
+    # Notify the list of directories without compatible wallpapers
+    if [ "${#no_wallpapers[@]}" -gt 0 ]; then
+        # [ -n "${no_notify}" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
+        print_log -warn "No compatible wallpapers found in:" "${no_wallpapers[*]}"
+    fi
+
     if [ -z "${#wallList[@]}" ] || [[ "${#wallList[@]}" -eq 0 ]]; then
         if [[ "${skipStrays}" -eq 1 ]]; then
             return 1
         else
             echo "ERROR: No image found in any source"
+            [ -n "${no_notify}" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
             exit 1
         fi
     fi
@@ -148,11 +211,11 @@ fi
 
 pkg_installed() {
     local pkgIn=$1
-    if pacman -Qi "${pkgIn}" &>/dev/null; then
+    if command -v "${pkgIn}" &>/dev/null; then
         return 0
-    elif pacman -Qi "flatpak" &>/dev/null && flatpak info "${pkgIn}" &>/dev/null; then
+    elif command -v "flatpak" &>/dev/null && flatpak info "${pkgIn}" &>/dev/null; then
         return 0
-    elif command -v "${pkgIn}" &>/dev/null; then
+    elif hyde-shell pm.sh pq "${pkgIn}" &>/dev/null; then
         return 0
     else
         return 1
@@ -186,73 +249,93 @@ set_hash() {
 }
 
 print_log() {
-    # [ -t 1 ] && return 0 # Skip if not in the terminalp
+    # [ -t 1 ] && return 0 # Skip if not in the terminal
     while (("$#")); do
         # [ "${colored}" == "true" ]
         case "$1" in
         -r | +r)
-            echo -ne "\e[31m$2\e[0m"
+            echo -ne "\e[31m$2\e[0m" >&2
             shift 2
             ;; # Red
         -g | +g)
-            echo -ne "\e[32m$2\e[0m"
+            echo -ne "\e[32m$2\e[0m" >&2
             shift 2
             ;; # Green
         -y | +y)
-            echo -ne "\e[33m$2\e[0m"
+            echo -ne "\e[33m$2\e[0m" >&2
             shift 2
             ;; # Yellow
         -b | +b)
-            echo -ne "\e[34m$2\e[0m"
+            echo -ne "\e[34m$2\e[0m" >&2
             shift 2
             ;; # Blue
         -m | +m)
-            echo -ne "\e[35m$2\e[0m"
+            echo -ne "\e[35m$2\e[0m" >&2
             shift 2
-            ;; # Magenta
+            ;; # Magentass
         -c | +c)
-            echo -ne "\e[36m$2\e[0m"
+            echo -ne "\e[36m$2\e[0m" >&2
             shift 2
             ;; # Cyan
         -wt | +w)
-            echo -ne "\e[37m$2\e[0m"
+            echo -ne "\e[37m$2\e[0m" >&2
             shift 2
             ;; # White
         -n | +n)
-            echo -ne "\e[96m$2\e[0m"
+            echo -ne "\e[96m$2\e[0m" >&2
             shift 2
             ;; # Neon
         -stat)
-            echo -ne "\e[4;30;46m $2 \e[0m :: "
+            echo -ne "\e[4;30;46m $2 \e[0m :: " >&2
             shift 2
             ;; # status
         -crit)
-            echo -ne "\e[30;41m $2 \e[0m :: "
+            echo -ne "\e[30;41m $2 \e[0m :: " >&2
             shift 2
             ;; # critical
         -warn)
-            echo -ne "WARNING :: \e[30;43m $2 \e[0m :: "
+            echo -ne "WARNING :: \e[30;43m $2 \e[0m :: " >&2
             shift 2
             ;; # warning
         +)
-            echo -ne "\e[38;5;$2m$3\e[0m"
+            echo -ne "\e[38;5;$2m$3\e[0m" >&2
             shift 3
             ;; # Set color manually
         -sec)
-            echo -ne "\e[32m[$2] \e[0m"
+            echo -ne "\e[32m[$2] \e[0m" >&2
             shift 2
             ;; # section use for logs
         -err)
-            echo -ne "ERROR :: \e[4;31m$2 \e[0m"
+            echo -ne "ERROR :: \e[4;31m$2 \e[0m" >&2
             shift 2
             ;; #error
         *)
-            echo -ne "$1"
+            echo -ne "$1" >&2
             shift
             ;;
         esac
     done
-    echo ""
+    echo "" >&2
+}
+
+check_package() {
+
+    local lock_file="${XDG_RUNTIME_DIR:-/tmp}/hyde/__package.lock"
+    mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/hyde"
+
+    if [ -f "$lock_file" ]; then
+        return 0
+    fi
+
+    for pkg in "$@"; do
+        if ! pkg_installed "${pkg}"; then
+            print_log -err "Package is not installed" "'${pkg}'"
+            rm -f "$lock_file"
+            exit 1
+        fi
+    done
+
+    touch "$lock_file"
 }
 
 # Yes this is so slow but it's the only way to ensure that parsing behaves correctly
@@ -395,4 +478,30 @@ toml_write() {
             sed -i "/^\[${group}\]/a ${key}=${value}" "${config_file}"
         fi
     fi
+}
+
+# Function to extract thumbnail from video
+# shellcheck disable=SC2317
+extract_thumbnail() {
+    local x_wall="${1}"
+    x_wall=$(realpath "${x_wall}")
+    local temp_image="${2}"
+    ffmpeg -y -i "${x_wall}" -vf "thumbnail,scale=1000:-1" -frames:v 1 -update 1 "${temp_image}" &>/dev/null
+}
+
+# Function to check if the file is supported by the wallpaper backend
+accepted_mime_types() {
+    local mime_types_array=${1}
+    local file=${2}
+
+    for mime_type in "${mime_types_array[@]}"; do
+        if file --mime-type -b "${file}" | grep -q "^${mime_type}"; then
+            return 0
+        else
+            print_log err "File type not supported for this wallpaper backend."
+            notify-send -u critical -a "HyDE-Alert" "File type not supported for this wallpaper backend."
+        fi
+
+    done
+
 }

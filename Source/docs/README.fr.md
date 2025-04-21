@@ -17,6 +17,7 @@ Support multilingue pour le README
 [![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
+[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 
 <div align="center">
 
@@ -44,7 +45,7 @@ Support multilingue pour le README
 </div>
 
 Consultez ceci pour voir la note complète :
-[Voyage vers HyDE et au-delà](./Hyprdots-to-HyDE.md)
+[Voyage vers HyDE et au-delà](../../Hyprdots-to-HyDE.md)
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
@@ -63,7 +64,7 @@ Consultez ceci pour voir la note complète :
 
 Le script d'installation est conçu pour une installation minimale d'[Arch Linux](https://wiki.archlinux.org/title/Arch_Linux), mais **peut** fonctionner sur certaines [distributions basées sur Arch](https://wiki.archlinux.org/title/Arch-based_distributions). Lors de l'installation de HyDE avec un autre [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager), cela devrait fonctionner, mais en raison de sa configuration très personnalisée, **il y aura** des conflits avec votre thème [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt), [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc., et c'est à vos risques et périls.
 
-Pour supporter Nixos, un projet séparé est maintenu @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
+Pour supporter NixOS, un projet séparé est maintenu @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
 > Le script d'installation détectera automatiquement une carte NVIDIA et installera les pilotes nvidia-dkms pour votre noyau.
@@ -230,7 +231,7 @@ Pour plus d'informations, visitez [HyDE-Project/hyde-themes](https://github.com/
 </div>
 
 <div align="right">
-  <sub>Dernière modification : 01/03/2025<span id="last-edited"></span></sub>
+  <sub>Dernière modification : 21/03/2025<span id="last-edited"></span></sub>
 </div>
 
 <a id="star_history"></a>
