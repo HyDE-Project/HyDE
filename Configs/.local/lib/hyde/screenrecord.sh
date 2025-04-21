@@ -27,10 +27,10 @@ Usage: 'hyde-shell screenrecord' [option]
 
 Options:
 
-    -r | --record   Screen record
+    --start    Screen record
     --backend       Use 'wl-screenrec' or 'wf-recorder' as the backend 
     --file          Specify the output file
-    --quit          Stop the recording
+    --quit     Stop the recording
     --help          Show this help message
     --              Pass additional arguments to '${RECORDER}'
 
@@ -123,7 +123,7 @@ while [[ $# -gt 0 ]]; do
         shift
         RECORDER="$1"
         ;;
-    -r | --record)
+    --start)
         handle_recording "$@"
         exit 0
         ;;
