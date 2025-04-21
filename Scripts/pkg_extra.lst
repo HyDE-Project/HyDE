@@ -14,6 +14,7 @@ ddcui                                                  # GUI to control brightne
 # --------------------------------------------------- // Misc
 xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
 # emote                                                # emoji picker gtk3
+# wf-recorder                                          # screen recording tool
 
 # --------------------------------------------------- // Gaming
 steam                                                  # gaming platform
