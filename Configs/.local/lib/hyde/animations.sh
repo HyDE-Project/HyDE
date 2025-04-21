@@ -128,11 +128,10 @@ fn_update() {
 # See https://wiki.hyprland.org/Configuring/Animations/
 # HyDE Controlled content // DO NOT EDIT
 # Edit or add animations in the ./hypr/animations/ directory
-# and run the 'animations.sh select' command to update this file
+# and run the 'animations.sh --select' command to update this file 
 
 \$ANIMATION=${current_animation}
-\$ANIMATION_PATH=~/.config/hypr/animations/${current_animation}.conf
-
+\$ANIMATION_PATH=./animations/${current_animation}.conf
 EOF
     # cat "${animDir}/${current_animation}.conf" >>"${confDir}/hypr/animations.conf"
 }
