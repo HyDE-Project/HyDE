@@ -70,8 +70,8 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
 
  Shell 
 P|${HOME}/.config|fish|fish
-P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh zsh-theme-powerlevel10k pokego-bin
-S|${HOME}|.zshenv|zsh zsh-theme-powerlevel10k
+P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh
+S|${HOME}|.zshenv|zsh
 
  File Explorer 
 P|${HOME}/.local/state|dolphinstaterc|dolphin

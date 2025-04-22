@@ -119,7 +119,7 @@ fn_wallbash() {
     [ -z "${target_file}" ] && eval target_file="$(head -1 "${template}" | awk -F '|' '{print $1}')"
     [ ! -d "$(dirname "${target_file}")" ] && print_log -sec "wallbash" -warn "skip 'missing directory'" "${target_file} // Do you have the dependency installed?" && return 0
     export wallbashScripts="${WALLBASH_SCRIPTS}"
-    export WALLBASH_SCRIPTS confDir hydeConfDir cacheDir thmbDir dcolDir iconsDir themesDir fontsDir wallbashDirs enableWallDcol HYDE_THEME_DIR HYDE_THEME gtkIcon gtkTheme cursorTheme
+    export WALLBASH_SCRIPTS confDir hydeConfDir cacheDir thmbDir dcolDir iconsDir themesDir fontsDir wallbashDirs enableWallDcol HYDE_THEME_DIR HYDE_THEME GTK_ICON GTK_THEME CURSOR_THEME
     export -f pkg_installed print_log
     exec_command="${exec_command:-"$(head -1 "${template}" | awk -F '|' '{print $2}')"}"
     temp_target_file="$(mktemp)"
@@ -149,6 +149,7 @@ scrDir="$(dirname "$(realpath "$0")")"
 export scrDir
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
+confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
 wallbash_image="${1}"
 
 # Parse arguments
@@ -219,16 +220,16 @@ fi
 [ "${dcol_mode}" == "dark" ] && dcol_invt="light" || dcol_invt="dark"
 set +a
 
-if [ -z "$gtkTheme" ]; then
+if [ -z "$GTK_THEME" ]; then
     if [ "${enableWallDcol}" -eq 0 ]; then
-        gtkTheme="$(get_hyprConf "GTK_THEME")"
+        GTK_THEME="$(get_hyprConf "GTK_THEME")"
     else
-        gtkTheme="Wallbash-Gtk"
+        GTK_THEME="Wallbash-Gtk"
     fi
 fi
-[ -z "$gtkIcon" ] && gtkIcon="$(get_hyprConf "ICON_THEME")"
-[ -z "$cursorTheme" ] && cursorTheme="$(get_hyprConf "CURSOR_THEME")"
-export gtkTheme gtkIcon cursorTheme
+[ -z "$GTK_ICON" ] && GTK_ICON="$(get_hyprConf "ICON_THEME")"
+[ -z "$CURSOR_THEME" ] && CURSOR_THEME="$(get_hyprConf "CURSOR_THEME")"
+export GTK_THEME GTK_ICON CURSOR_THEME
 
 # Preprocess substitutions once before processing any templates
 preprocess_substitutions
@@ -269,6 +270,10 @@ toml_write "${confDir}/kdeglobals" "Colors:View" "BackgroundNormal" "#${dcol_pry
 
 #// switch theme <//> wall based colors
 
+[[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && {
+    hyprctl keyword misc:disable_autoreload 1 -q
+    trap "hyprctl reload config-only -q" EXIT
+}
 # shellcheck disable=SC2154
 if [ "${enableWallDcol}" -eq 0 ] && [[ "${reload_flag}" -eq 1 ]]; then
 
