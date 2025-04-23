@@ -71,7 +71,7 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
  Shell 
 P|${HOME}/.config|fish|fish
 P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh
-P|${HOME}/.config|starship.toml|starship
+P|${HOME}/.config/starship|starship.toml|starship
 S|${HOME}|.zshenv|zsh
 
  File Explorer 
