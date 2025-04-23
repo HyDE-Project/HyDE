@@ -151,23 +151,22 @@ export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOM
 if [ -t 1 ]; then
     # Currently We are loading Starship and p10k prompts on start so users can see the prompt immediately
     # You can remove either starship or p10k to slightly improve start time
- 
-    # ===== START Initialize Powerlevel10k theme =====
-    P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
-    [[ -r $P10k_THEME ]] && source $P10k_THEME
-    # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-    # ===== END Initialize Powerlevel10k theme =====
 
-
-    # ===== START Initialize Starship prompt =====
-    if command -v starship &> /dev/null; then
+    if command -v starship &>/dev/null; then
+        # ===== START Initialize Starship prompt =====
         eval "$(starship init zsh)"
         export STARSHIP_CACHE=$XDG_CACHE_HOME/starship
         export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
         # starship.toml can be swapped with : brackets.toml  heavy-right.toml  lualine.toml  powerline.toml
-    fi
     # ===== END Initialize Starship prompt =====
+    elif [ -f ~/.p10k.zsh ]; then
+        # ===== START Initialize Powerlevel10k theme =====
+        P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
+        [[ -r $P10k_THEME ]] && source $P10k_THEME
+        # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
+        [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+    # ===== END Initialize Powerlevel10k theme =====
+    fi
 
     PM="pm.sh"
     # Try to find pm.sh in common locations
