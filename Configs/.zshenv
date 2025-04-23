@@ -80,6 +80,7 @@ function slow_load_warning {
         touch $lock_file
 
         # Display the warning if load time exceeds the limit
+        #FIX: remove 4. when fully migrated to starship form p10k
         time_limit=3
         if ((load_time > time_limit)); then
             cat <<EOF
@@ -159,9 +160,8 @@ if [ -t 1 ]; then
     # Initialize Starship prompt
     if command -v starship &> /dev/null; then
         eval "$(starship init zsh)"
-        #FIX:use XDG dynamic paths
-        export STARSHIP_CACHE=~/.starship/cache
-        export STARSHIP_CONFIG=~/.config/starship/starship.toml
+        export STARSHIP_CACHE=$XDG_CACHE_HOME/starship
+        export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
         #can be swapped with : brackets.toml  heavy-right.toml  lualine.toml  powerline.toml
     fi
 
