@@ -284,7 +284,7 @@ Here are all HyDE specific keybindings listed.
 
 ## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Custom%20Keybindings" width="450"/>
 
-You can define your own keybindings by editing your Hyprland preferences file at:
+You can define your own keybindings by editing your preferences file at:
 
 ```bash
 ~/.config/hypr/userprefs.conf
