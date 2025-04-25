@@ -5,13 +5,18 @@
 # 2. ~/.zshenv - for updating the zsh environment variables handled by HyDE // this will be modified across updates
 
 # NOTE:to use transient prompt for starship in zsh, un comment the following lines
-# eval "$(starship init zsh)"
-# set-long-prompt() { PROMPT=$(starship prompt) }
-# precmd_functions=(set-long-prompt)
-# set-short-prompt() { if]; then PROMPT=$(starship module character) zle.reset-prompt fi }
-# zle-line-finish() { set-short-prompt }
-# zle -N zle-line-finish
-# trap 'set-short-prompt' INT
+#eval "$(starship init zsh)"
+#set-long-prompt() { PROMPT=$(starship prompt) }
+#precmd_functions=(set-long-prompt)
+#set-short-prompt() {
+#  if [[ $PROMPT != '%# ' ]]; then
+#      PROMPT=$(starship module character)
+#    zle .reset-prompt
+#  fi
+#}
+#zle-line-finish() { set-short-prompt }
+#zle -N zle-line-finish
+#trap 'set-short-prompt; return 130' INT
 # NOTE:checkout 'https://starship.rs/advanced-config/' for other shells
 
 # you can choose between different presets by exporting the config file:
