@@ -374,6 +374,34 @@ case "$1" in
   echo -e "Initialized Variable:\n$(cat "${gpuinfo_file}" || true)\n\nReboot or '$0 --reset' to RESET Variables"
   exit
   ;;
+"--stat")
+  case "$2" in
+  "amd")
+    if [[ "${GPUINFO_AMD_ENABLE}" -eq 1 ]]; then
+      echo "GPUINFO_AMD_ENABLE: ${GPUINFO_AMD_ENABLE}"
+      exit 0
+    fi
+    ;;
+  "intel")
+    if [[ "${GPUINFO_INTEL_ENABLE}" -eq 1 ]]; then
+      echo "GPUINFO_INTEL_ENABLE: ${GPUINFO_INTEL_ENABLE}"
+      exit 0
+    fi
+    ;;
+  "nvidia")
+    if [[ "${GPUINFO_NVIDIA_ENABLE}" -eq 1 ]]; then
+      echo "GPUINFO_NVIDIA_ENABLE: ${GPUINFO_NVIDIA_ENABLE}"
+      exit 0
+    fi
+    ;;
+  *)
+    echo "Error: Invalid argument for --stat. Use amd, intel, or nvidia."
+    exit 1
+    ;;
+  esac
+  echo "GPU not enabled."
+  exit 1
+  ;;
 *"-"*)
   GPUINFO_AVAILABLE=${GPUINFO_AVAILABLE//GPUINFO_/}
   cat <<EOF

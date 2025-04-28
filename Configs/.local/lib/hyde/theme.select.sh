@@ -166,7 +166,7 @@ rofiSel=$(
 #// apply theme
 
 if [ -n "${rofiSel}" ]; then
-    "${LIB_DIR}/hyde/themeswitch.sh" -s "${rofiSel}"
+    "${LIB_DIR}/hyde/theme.switch.sh" -s "${rofiSel}"
     # shellcheck disable=SC2154
     notify-send -a "HyDE Alert" -i "${iconsDir}/Wallbash-Icon/hyde.png" " ${rofiSel}"
 fi

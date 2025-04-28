@@ -55,7 +55,7 @@ download_and_extract() {
             mkdir -p "${font_dir}/hyde"
             mv "$file" "${font_dir}/hyde/$name.ttf"
             echo "[font] $name installed successfully. Please restart hyprlock to apply changes."
-            notify-send -i "preferences-desktop-font" "HyDE font" "${name} Intalled successfully"
+            notify-send -i "preferences-desktop-font" "HyDE font" "${name} Installed successfully"
             return 0
             ;;
         *)
@@ -70,7 +70,7 @@ download_and_extract() {
             notify-send -i "preferences-desktop-font" "HyDE font" "Failed to extract $file"
             return 1
         fi
-        notify-send -i "preferences-desktop-font" "HyDE font" "${name} Intalled successfully"
+        notify-send -i "preferences-desktop-font" "HyDE font" "${name} Installed successfully"
     done
 
     rm -rf "$temp_dir"
@@ -79,9 +79,15 @@ download_and_extract() {
 }
 
 resolve() {
-    local layout="${1}"
+    local layout_path="${1}"
+    layout_path="$(printf "%s" "${layout_path}")"
+    layout_path="$(realpath "${layout_path}")"
+    if [[ ! -f "${layout_path}" ]]; then
+        echo "[font] Layout file not found: ${layout_path}"
+        return 1
+    fi
     # shellcheck disable=SC2016
-    grep -Eo '^\s*\$resolve\.font\s*=\s*[^|]+\s*\|\s*[^ ]+' "${layout}" | while IFS='=' read -r _ font; do
+    grep -Eo '^\s*\$resolve\.font\s*=\s*[^|]+\s*\|\s*[^ ]+' "${layout_path}" | while IFS='=' read -r _ font; do
         name=$(echo "$font" | awk -F'|' '{print $1}' | xargs)
         url=$(echo "$font" | awk -F'|' '{print $2}' | xargs)
         if ! fc-list | grep -q "${name}"; then

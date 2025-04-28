@@ -19,6 +19,7 @@ options:
     -g, --get                 Get current wallpaper of specified backend
     -o, --output <file>       Copy current wallpaper to specified file
         --link                Resolved the linked wallpaper according to the theme
+    -t  --filetypes <types>   Specify file types to override (colon-separated ':')
     -h, --help                Display this help message
 
 flags:
@@ -48,7 +49,7 @@ Wall_Cache() {
     if [ "${set_as_global}" == "true" ]; then
         print_log -sec "wallpaper" "Setting Wallpaper as global"
         "${scrDir}/swwwallcache.sh" -w "${wallList[setIndex]}" &>/dev/null
-        "${scrDir}/swwwallbash.sh" "${wallList[setIndex]}" &
+        "${scrDir}/color.set.sh" "${wallList[setIndex]}" &
         ln -fs "${thmbDir}/${wallHash[setIndex]}.sqre" "${wallSqr}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.thmb" "${wallTmb}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.blur" "${wallBlr}"
@@ -290,14 +291,17 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONGOPTS="link,global,select,json,next,previous,random,set:,backend:,get,output:,help"
+LONGOPTS="link,global,select,json,next,previous,random,set:,backend:,get,output:,help,filetypes:"
 
 # Parse options
 PARSED=$(
-    if getopt --options GSjnprb:s:go:h --longoptions $LONGOPTS --name "$0" -- "$@"; then
+    if getopt --options GSjnprb:s:t:go:h --longoptions $LONGOPTS --name "$0" -- "$@"; then
         exit 2
     fi
 )
+
+# Initialize the array for filetypes
+WALLPAPER_OVERRIDE_FILETYPES=()
 
 wallpaper_backend="${WALLPAPER_BACKEND:-swww}"
 wallpaper_setter_flag=""
@@ -352,6 +356,16 @@ while true; do
         # Accepts wallpaper output path
         wallpaper_setter_flag=o
         wallpaper_output="${2}"
+        shift 2
+        ;;
+    -t | --filetypes)
+        IFS=':' read -r -a WALLPAPER_OVERRIDE_FILETYPES <<<"$2"
+        if [ "${LOG_LEVEL}" == "debug" ]; then
+            for i in "${WALLPAPER_OVERRIDE_FILETYPES[@]}"; do
+                print_log -g "DEBUG:" -b "filetype overrides : " "'${i}'"
+            done
+        fi
+        export WALLPAPER_OVERRIDE_FILETYPES
         shift 2
         ;;
     -h | --help)

@@ -4,10 +4,10 @@
 #|-/ /--| kRHYME7                      |-/ /--|#
 #|/ /---+------------------------------+/ /---|#
 
-scrDir=$(dirname "$(realpath "$0")")
+script_dir=$(dirname "$(realpath "$0")")
 # shellcheck disable=SC1091
 # if [ $? -ne 0 ]; then
-if ! source "${scrDir}/globalcontrol.sh"; then
+if ! source "${script_dir}/globalcontrol.sh"; then
     echo "Error: unable to source globalcontrol.sh..."
     exit 1
 fi
@@ -27,7 +27,7 @@ Envs:
     'export FULL_THEME_UPDATE=true'       Overwrites the archived files (useful for updates and changes in archives)
 
 Supported Archive Format:
-    | File prfx          | Hyprland variable | Target dir                      |
+    | File prefix        | Hyprland variable | Target Directory                |
     | ---------------    | ----------------- | --------------------------------|
     | Gtk_               | \$GTK_THEME        | \$HOME/.local/share/themes     |
     | Icon_              | \$ICON_THEME       | \$HOME/.local/share/icons      |
@@ -52,100 +52,103 @@ if [[ -z $1 || -z $2 ]]; then
     exit 1
 fi
 
-wallbashDirs=(
-    "$HOME/.config/hyde/wallbash"
-    "$HOME/.local/share/hyde/wallbash"
+WALLBASH_DIRS=(
+    "${XDG_CONFIG_HOME:-$HOME.config}/hyde/wallbash"
+    "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/wallbash"
     "/usr/local/share/hyde/wallbash"
     "/usr/share/hyde/wallbash"
 )
 
 # set parameters
-Fav_Theme="$1"
+THEME_NAME="$1"
 
 if [ -d "$2" ]; then
-    Theme_Dir="$2"
+    THEME_DIR="$2"
 else
-    Git_Repo=${2%/}
-    if echo "$Git_Repo" | grep -q "/tree/"; then
-        branch=${Git_Repo#*tree/}
-        Git_Repo=${Git_Repo%/tree/*}
+    git_repo=${2%/}
+    if echo "$git_repo" | grep -q "/tree/"; then
+        branch=${git_repo#*tree/}
+        git_repo=${git_repo%/tree/*}
     else
-        branches=$(curl -s "https://api.github.com/repos/${Git_Repo#*://*/}/branches" | jq -r '.[].name')
+        branches_array=$(curl -s "https://api.github.com/repos/${git_repo#*://*/}/branches" | jq -r '.[].name')
         # shellcheck disable=SC2206
-        branches=($branches)
-        if [[ ${#branches[@]} -le 1 ]]; then
-            branch=${branches[0]}
+        branches_array=($branches_array)
+        if [[ ${#branches_array[@]} -le 1 ]]; then
+            branch=${branches_array[0]}
         else
             echo "Select a Branch"
-            select branch in "${branches[@]}"; do
+            select branch in "${branches_array[@]}"; do
                 [[ -n $branch ]] && break || echo "Invalid selection. Please try again."
             done
         fi
     fi
 
-    Git_Path=${Git_Repo#*://*/}
-    Git_Owner=${Git_Path%/*}
+    git_path=${git_repo#*://*/}
+    git_owner=${git_path%/*}
+    git_theme=${git_path#*/}
     branch_dir=${branch//\//_}
-    cacheDir=${cacheDir:-"$HOME/.cache/hyde"}
-    Theme_Dir="${cacheDir}/themepatcher/${branch_dir}-${Git_Owner}"
+    cache_dir="${XDG_CACHE_HOME:-"$HOME/.cache"}/hyde"
+    dir_suffix=${git_owner}-${branch_dir}-${git_theme}
+    dir_suffix=${dir_suffix//[ \/]/_}
+    THEME_DIR="${cache_dir}/themepatcher/${dir_suffix}"
 
-    if [ -d "$Theme_Dir" ]; then
-        print_log "Directory $Theme_Dir already exists. Using existing directory."
-        if cd "$Theme_Dir"; then
+    if [ -d "$THEME_DIR" ]; then
+        print_log "Directory $THEME_DIR" -y " already exists. Using existing directory."
+        if cd "$THEME_DIR"; then
             git fetch --all &>/dev/null
             git reset --hard "@{upstream}" &>/dev/null
             cd - &>/dev/null || exit
         else
-            print_log -y "Could not navigate to $Theme_Dir. Skipping git pull."
+            print_log -y "Could not navigate to $THEME_DIR. Skipping git pull."
         fi
     else
-        print_log "Directory $Theme_Dir does not exist. Cloning repository into new directory."
-        if ! git clone -b "$branch" --depth 1 "$Git_Repo" "$Theme_Dir" &>/dev/null; then
+        print_log "Directory $THEME_DIR does not exist. Cloning repository into new directory."
+        if ! git clone -b "$branch" --depth 1 "$git_repo" "$THEME_DIR" &>/dev/null; then
             print_log "Git clone failed"
             exit 1
         fi
     fi
 fi
 
-print_log "Patching" -g " --// ${Fav_Theme} //-- " "from " -b "${Theme_Dir}\n"
+print_log "Patching" -g " --// ${THEME_NAME} //-- " "from " -b "${THEME_DIR}\n"
 
-Fav_Theme_Dir="${Theme_Dir}/Configs/.config/hyde/themes/${Fav_Theme}"
-[ ! -d "${Fav_Theme_Dir}" ] && print_log -r "[ERROR] " "'${Fav_Theme_Dir}'" -y " Do not Exist" && exit 1
+FAV_THEME_DIR="${THEME_DIR}/Configs/.config/hyde/themes/${THEME_NAME}"
+[ ! -d "${FAV_THEME_DIR}" ] && print_log -r "[ERROR] " "'${FAV_THEME_DIR}'" -y " Do not Exist" && exit 1
 
-# config=$(find "${dcolDir}" -type f -name "*.dcol" | awk -v favTheme="${Fav_Theme}" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
-config=$(find "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | awk -v favTheme="${Fav_Theme}" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
+# config=$(find "${dcolDir}" -type f -name "*.dcol" | awk -v favTheme="${THEME_NAME}" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
+config=$(find "${WALLBASH_DIRS[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | awk -v favTheme="${THEME_NAME}" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
 restore_list=""
 
 while IFS= read -r fileCheck; do
-    if [[ -e "${Theme_Dir}/Configs/${fileCheck}" ]]; then
-        print_log -g "[found] " "${fileCheck}"
-        fileBase=$(basename "${fileCheck}")
-        fileDir=$(dirname "${fileCheck}")
-        restore_list+="Y|Y|\${HOME}/${fileDir}|${fileBase}|hyprland\n"
+    if [[ -e "${THEME_DIR}/Configs/${fileCheck}" ]]; then
+        print_log -g "[pass]  " "${fileCheck}"
+        file_base=$(basename "${fileCheck}")
+        file_dir=$(dirname "${fileCheck}")
+        restore_list+="Y|Y|\${HOME}/${file_dir}|${file_base}|hyprland\n"
     else
-        print_log -y "[warn] " "${fileCheck} --> do not exist in ${Theme_Dir}/Configs/"
+        print_log -y "[note] " "${fileCheck} --> " -r "do not exist in " "${THEME_DIR}/Configs/"
     fi
 done <<<"$config"
-if [ -f "${Fav_Theme_Dir}/theme.dcol" ]; then
+if [ -f "${FAV_THEME_DIR}/theme.dcol" ]; then
     print_log -n "[note] " "found theme.dcol to override wallpaper dominant colors"
-    restore_list+="Y|Y|\${HOME}/.config/hyde/themes/${Fav_Theme}|theme.dcol|hyprland\n"
+    restore_list+="Y|Y|\${HOME}/.config/hyde/themes/${THEME_NAME}|theme.dcol|hyprland\n"
 fi
 readonly restore_list
 
 # Get Wallpapers
 wallpapers=$(
-    find "${Fav_Theme_Dir}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*"
+    find "${FAV_THEME_DIR}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*"
 )
 wpCount="$(wc -l <<<"${wallpapers}")"
-{ [ -z "${wallpapers}" ] && print_log -r "[ERROR] " "No wallpapers found" && exit_flag=true; } || { readonly wallpapers && print_log -g "\n[OK] " "wallpapers :: [count] ${wpCount} (.gif+.jpg+.jpeg+.png)"; }
+{ [ -z "${wallpapers}" ] && print_log -r "[ERROR] " "No wallpapers found" && exit_flag=true; } || { readonly wallpapers && print_log -g "\n[pass]  " "wallpapers :: [count] ${wpCount} (.gif+.jpg+.jpeg+.png)"; }
 
 # Get logos
-if [ -d "${Fav_Theme_Dir}/logo" ]; then
+if [ -d "${FAV_THEME_DIR}/logo" ]; then
     logos=$(
-        find "${Fav_Theme_Dir}/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \)
+        find "${FAV_THEME_DIR}/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \)
     )
     logosCount="$(wc -l <<<"${logos}")"
-    { [ -z "${logos}" ] && print_log -y "[warn] " "No logos found"; } || { readonly logos && print_log -g "[OK] " "logos :: [count] ${logosCount}\n"; }
+    { [ -z "${logos}" ] && print_log -y "[note] " "No logos found"; } || { readonly logos && print_log -g "[pass]  " "logos :: [count] ${logosCount}\n"; }
 fi
 
 # parse thoroughly 😁
@@ -160,59 +163,59 @@ check_tars() {
     gsVal="$(
         case "${gsLow}" in
         sddm)
-            grep "^[[:space:]]*\$SDDM[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$SDDM[-_]THEME\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         gtk)
-            grep "^[[:space:]]*\$GTK[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$GTK[-_]THEME\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         icon)
-            grep "^[[:space:]]*\$ICON[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$ICON[-_]THEME\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         cursor)
-            grep "^[[:space:]]*\$CURSOR[-_]THEME\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$CURSOR[-_]THEME\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         font)
-            grep "^[[:space:]]*\$FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$FONT\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         document-font)
-            grep "^[[:space:]]*\$DOCUMENT[-_]FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$DOCUMENT[-_]FONT\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         monospace-font)
-            grep "^[[:space:]]*\$MONOSPACE[-_]FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$MONOSPACE[-_]FONT\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         bar-font)
-            grep "^[[:space:]]*\$BAR[-_]FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$BAR[-_]FONT\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         menu-font)
-            grep "^[[:space:]]*\$MENU[-_]FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$MENU[-_]FONT\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         notification-font)
-            grep "^[[:space:]]*\$NOTIFICATION[-_]FONT\s*=" "${Fav_Theme_Dir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+            grep "^[[:space:]]*\$NOTIFICATION[-_]FONT\s*=" "${FAV_THEME_DIR}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
 
         *) # fallback to older method
-            awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"${gsLow}"'-theme[[:space:]]*/ {last=$2} END {print last}' "${Fav_Theme_Dir}/hypr.theme"
+            awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"${gsLow}"'-theme[[:space:]]*/ {last=$2} END {print last}' "${FAV_THEME_DIR}/hypr.theme"
             ;;
         esac
     )"
 
     # fallback to older method
-    gsVal=${gsVal:-$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"${gsLow}"'-theme[[:space:]]*/ {last=$2} END {print last}' "${Fav_Theme_Dir}/hypr.theme")}
+    gsVal=${gsVal:-$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"${gsLow}"'-theme[[:space:]]*/ {last=$2} END {print last}' "${FAV_THEME_DIR}/hypr.theme")}
 
     if [ -n "${gsVal}" ]; then
 
         if [[ "${gsVal}" =~ ^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$ ]]; then # check is a variable is set into a variable eg $FONT=$DOCUMENT_FONT
-            print_log -y "[warn] " "Variable ${gsVal} detected,be sure ${gsVal} is set in hypr.theme, skipping check"
+            print_log -warn "Variable ${gsVal} detected! " "be sure ${gsVal} is set as a different name or on a different file, skipping check"
         else
-            print_log -g "[OK] " "hypr.theme :: [${gsLow}]" -b " ${gsVal}"
-            trArc="$(find "${Theme_Dir}" -type f -name "${inVal}_*.tar.*")"
+            print_log -g "[pass]  " "hypr.theme :: [${gsLow}]" -b " ${gsVal}"
+            trArc="$(find "${THEME_DIR}" -type f -name "${inVal}_*.tar.*")"
             [ -f "${trArc}" ] && [ "$(echo "${trArc}" | wc -l)" -eq 1 ] && trVal="$(basename "$(tar -tf "${trArc}" | cut -d '/' -f1 | sort -u)")" && trVal="$(echo "${trVal}" | grep -w "${gsVal}")"
-            print_log -g "[OK] " "../*.tar.* :: [${gsLow}]" -b " ${trVal}"
+            print_log -g "[pass]  " "../*.tar.* :: [${gsLow}]" -b " ${trVal}"
             [ "${trVal}" != "${gsVal}" ] && print_log -r "[ERROR] " "${gsLow} set in hypr.theme does not exist in ${inVal}_*.tar.*" && exit_flag=true
         fi
     else
-        [ "${2}" == "--mandatory" ] && print_log -r "[ERROR] " "hypr.theme :: [${gsLow}] Not Found" && exit_flag=true && return 0
-        print_log -y "[warn] " "hypr.theme :: [${gsLow}] Not Found, don't worry if it's not needed"
+        [ "${2}" == "--mandatory" ] && print_log -r "[ERROR] " "hypr.theme :: [${gsLow}]" -r " Not Found" && exit_flag=true && return 0
+        print_log -y "[note] " "hypr.theme :: [${gsLow}] " -r "Not Found, " -y "📣 OPTIONAL package, continuing... "
     fi
 }
 
@@ -243,7 +246,7 @@ declare -A archive_map=(
 )
 
 for prefix in "${!archive_map[@]}"; do
-    tarFile="$(find "${Theme_Dir}" -type f -name "${prefix}_*.tar.*")"
+    tarFile="$(find "${THEME_DIR}" -type f -name "${prefix}_*.tar.*")"
     [ -f "${tarFile}" ] || continue
     tgtDir="${archive_map[$prefix]}"
 
@@ -260,7 +263,7 @@ for prefix in "${!archive_map[@]}"; do
     fi
 
     tgtChk="$(basename "$(tar -tf "${tarFile}" | cut -d '/' -f1 | sort -u)")"
-    [[ "${FULL_THEME_UPDATE}" = true ]] || { [ -d "${tgtDir}/${tgtChk}" ] && print_log -y "[skip] " "\"${tgtDir}/${tgtChk}\" already exists" && continue; }
+    [[ "${FULL_THEME_UPDATE}" = true ]] || { [ -d "${tgtDir}/${tgtChk}" ] && print_log -y "[skip] " "\"${tgtDir}/${tgtChk}\"" -y " already exists" && continue; }
     print_log -g "[extracting] " "${tarFile} --> ${tgtDir}"
 
     if [ -w "${tgtDir}" ]; then
@@ -278,37 +281,37 @@ done
 confDir=${XDG_CONFIG_HOME:-"$HOME/.config"}
 
 # populate wallpaper
-Fav_Theme_Walls="${confDir}/hyde/themes/${Fav_Theme}/wallpapers"
-[ ! -d "${Fav_Theme_Walls}" ] && mkdir -p "${Fav_Theme_Walls}"
+theme_wallpapers="${confDir}/hyde/themes/${THEME_NAME}/wallpapers"
+[ ! -d "${theme_wallpapers}" ] && mkdir -p "${theme_wallpapers}"
 while IFS= read -r walls; do
-    cp -f "${walls}" "${Fav_Theme_Walls}"
+    cp -f "${walls}" "${theme_wallpapers}"
 done <<<"${wallpapers}"
 
 # populate logos
-Fav_Theme_Logos="${confDir}/hyde/themes/${Fav_Theme}/logo"
+theme_logos="${confDir}/hyde/themes/${THEME_NAME}/logo"
 if [ -n "${logos}" ]; then
-    [ ! -d "${Fav_Theme_Logos}" ] && mkdir -p "${Fav_Theme_Logos}"
+    [ ! -d "${theme_logos}" ] && mkdir -p "${theme_logos}"
     while IFS= read -r logo; do
         if [ -f "${logo}" ]; then
-            cp -f "${logo}" "${Fav_Theme_Logos}"
+            cp -f "${logo}" "${theme_logos}"
         else
-            print_log -y "[warn] " "${logo} --> do not exist"
+            print_log -y "[note] " "${logo} --> do not exist"
         fi
     done <<<"${logos}"
 fi
 
 # restore configs with theme override
-echo -en "${restore_list}" >"${Theme_Dir}/restore_cfg.lst"
-print_log -g "\n[exec] " "restore.config.sh \"${Theme_Dir}/restore_cfg.lst\" \"${Theme_Dir}/Configs\" \"${Fav_Theme}\"\n"
-bash "${scrDir}/restore.config.sh" "${Theme_Dir}/restore_cfg.lst" "${Theme_Dir}/Configs" "${Fav_Theme}" &>/dev/null || {
+echo -en "${restore_list}" >"${THEME_DIR}/restore_cfg.lst"
+print_log -g "\n[exec] " "restore.config.sh \"${THEME_DIR}/restore_cfg.lst\" \"${THEME_DIR}/Configs\" \"${THEME_NAME}\"\n"
+bash "${script_dir}/restore.config.sh" "${THEME_DIR}/restore_cfg.lst" "${THEME_DIR}/Configs" "${THEME_NAME}" &>/dev/null || {
     print_log -r "[ERROR] " "restore.config.sh failed"
     exit 1
 }
 if [ "${3}" != "--skipcaching" ]; then
-    bash "${scrDir}/swwwallcache.sh" -t "${Fav_Theme}"
-    bash "${scrDir}/themeswitch.sh"
+    bash "${script_dir}/swwwallcache.sh" -t "${THEME_NAME}"
+    bash "${script_dir}/theme.switch.sh"
 fi
 
-print_log -y "\nNote: Warnings are not errors. Review the output to check if it concerns you."
+print_log -y "\nNote: " "Warnings are not errors. Review the output to check if it concerns you."
 
 exit 0

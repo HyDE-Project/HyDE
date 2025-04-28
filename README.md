@@ -1,4 +1,3 @@
-
 <div align = center>
   <a href="https://discord.gg/AYbJ9MJez7">
     <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
@@ -28,6 +27,7 @@ Multi-language README support
 <a href="#updating"><kbd> <br> Updating <br> </kbd></a>&ensp;&ensp;
 <a href="#themes"><kbd> <br> Themes <br> </kbd></a>&ensp;&ensp;
 <a href="#styles"><kbd> <br> Styles <br> </kbd></a>&ensp;&ensp;
+<a href="CONTRIBUTING.md"><kbd> <br> Contributing <br> </kbd></a>&ensp;&ensp;
 <a href="KEYBINDINGS.md"><kbd> <br> Keybindings <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
 <a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
@@ -107,6 +107,30 @@ For more details, please refer to the [installation wiki](https://github.com/HyD
 <div align="right">
   <br>
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
+<a id="contributing"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=CONTRIBUTING" width="450"/>
+
+---
+
+We welcome contributions from the community! To get started:
+
+- Check our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
+- Read about team roles in [TEAM_ROLES.md](TEAM_ROLES.md)
+- Review our release process in [RELEASE_POLICY.md](RELEASE_POLICY.md)
+- Add yourself to [CONTRIBUTORS.md](CONTRIBUTORS.md) when making your first PR
+
+Whether you're helping with code, testing, or documentation, we appreciate your support in making HyDE better for everyone.
+
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
 <a id="updating"></a>

@@ -74,11 +74,15 @@ Here's how we can update HyDE-specific Hyprland settings without changing user p
 
 As the last man standing collaborator, I don't know what the original creator intended. But I think it's a good name. I just don't know what it stands for. 🤷‍♂️
 
-Here are some of my speculations:
+Here are the speculations from some of the contributors:
 
-- **Hy**prdots **D**otfiles **E**nhanced - Enhanced version of hyprdots when @prasanthrangan introduced wallbash as our main theme management engine.
-- **Hy**prland **D**otfiles **E**xtended - Extensible Dotfiles for Hyprland.
-- But the one that make most sense is - **Hy**prland **D**esktop **E**nvironment - as Hyprland is usually considered a WM for Wayland, not a full fledged D.E and this
-  dotfile kind of turns it into a full-blown D.E.
+Here are the speculations from some of the contributors:
 
-Feel free to suggest your own meaning of HyDE. 🤔
+> - "**Hy**pr**D**otfiles **E**nhanced" - Enhanced version of hyprdots when @prasanthrangan introduced wallbash as our main theme management engine.
+
+> - But the one that makes the most sense is - "**Hy**prland **D**esktop **E**nvironment" - as Hyprland is usually considered a WM for Wayland, not a full-fledged D.E. and this dotfile kind of turns it into a full-blown D.E.
+>   -chrollorifat
+
+> - "HyDE, your Development Environment" - khing
+
+**Feel free to suggest your own meaning of HyDE. 🤔**

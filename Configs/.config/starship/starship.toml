@@ -1,0 +1,234 @@
+# "$schema" = 'https://starship.rs/config-schema.json'
+add_newline = false
+format = """\
+  󰣇 \
+  $directory\
+  $git_branch$git_commit$git_state $git_status\
+  $character\n\n\n
+"""
+right_format = """
+$singularity\
+$kubernetes\
+$vcsh\
+$hg_branch\
+$pijul_channel\
+$docker_context\
+$c\
+$cmake\
+$cobol\
+$daml\
+$dart\
+$deno\
+$dotnet\
+$elixir\
+$elm\
+$erlang\
+$fennel\
+$golang\
+$guix_shell\
+$haskell\
+$haxe\
+$helm\
+$java\
+$julia\
+$kotlin\
+$gradle\
+$lua\
+$nim\
+$nodejs\
+$ocaml\
+$opa\
+$perl\
+$php\
+$pulumi\
+$purescript\
+$python\
+$raku\
+$rlang\
+$red\
+$ruby\
+$rust\
+$scala\
+$solidity\
+$swift\
+$terraform\
+$vlang\
+$vagrant\
+$zig\
+$buf\
+$conda\
+$meson\
+$spack\
+$memory_usage\
+$aws\
+$gcloud\
+$openstack\
+$azure\
+$crystal\
+$custom\
+$status\
+$os\
+$time"""
+
+continuation_prompt = '▶▶ '
+
+
+# style_choices:
+# bold
+# italic
+# underline
+# dimmed
+# inverted
+# blink
+# hidden
+# strikethrough
+# bg:<color>
+# fg:<color>
+# <color>
+# none
+
+#NTOE: you can customize the symbol(s, e.g:
+# [character]
+# success_symbol = "[  ]($bold fg:#f8f8f2)"
+# error_symbol = "[ ➤ ]($bold fg:#fb4934)"
+
+[directory]
+disabled = false
+format = "[$path](bold fg:#8be9fd)"
+truncate_to_repo = false
+# home_symbol = "" 
+
+[git_branch]
+format = " [  $branch](fg:#9198a1)"
+
+[git_status]
+ahead = '⇡${count}'
+behind = '⇣${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+format = '[[( $all_status$ahead_behind )](fg:#769ff0)]($style)'
+style = "bg:#394260"
+
+
+[time]
+disabled = false
+format = '[[  $time ](fg:#a0a9cb )]($style)'
+time_format = "%R"                            # Hour:Minute Format
+
+[deno]
+format = " [deno](italic) [∫ $version](green bold)"
+version_format = "${raw}"
+
+[lua]
+format = " [lua](italic) [${symbol}${version}]($style)"
+style = "bold bright-yellow"
+symbol = "⨀ "
+version_format = "${raw}"
+
+[nodejs]
+detect_extensions = []
+detect_files = ["package-lock.json", "yarn.lock"]
+detect_folders = ["node_modules"]
+format = " [node](italic) [◫ ](bold bright-green)"
+version_format = "${raw}"
+
+[python]
+format = " [py](italic) [${symbol}${version}]($style)"
+style = "bold bright-yellow"
+symbol = "[⌉](bold bright-blue)⌊ "
+version_format = "${raw}"
+
+[ruby]
+format = " [rb](italic) [${symbol}${version}]($style)"
+style = "bold red"
+symbol = "◆ "
+version_format = "${raw}"
+
+[rust]
+format = " rs $symbol"
+symbol = " "
+
+[swift]
+format = " [sw](italic) [${symbol}${version}]($style)"
+style = "bold bright-red"
+symbol = "◁ "
+version_format = "${raw}"
+
+[aws]
+disabled = true
+format = " [aws](italic) [$symbol $profile $region]($style)"
+style = "bold blue"
+symbol = "▲ "
+
+[buf]
+format = " [buf](italic) [$symbol $version $buf_version]($style)"
+symbol = "■ "
+
+[c]
+format = " [$symbol($version(-$name))]($style)"
+symbol = "ℂ "
+
+[conda]
+format = " conda [$symbol$environment]($style)"
+symbol = "◯ "
+
+[dart]
+format = " dart [$symbol($version )]($style)"
+symbol = "◁◅ "
+
+[docker_context]
+format = " docker [$symbol$context]($style)"
+symbol = "◧ "
+
+[elixir]
+format = " exs [$symbol $version OTP $otp_version ]($style)"
+symbol = "△ "
+
+[elm]
+format = " elm [$symbol($version )]($style)"
+symbol = "◩ "
+
+[golang]
+format = " go [$symbol($version )]($style)"
+symbol = "∩ "
+
+[haskell]
+format = " hs [$symbol($version )]($style)"
+symbol = "❯λ "
+
+[java]
+format = " java [${symbol}(${version} )]($style)"
+symbol = "∪ "
+
+[julia]
+format = " jl [$symbol($version )]($style)"
+symbol = "◎ "
+
+[memory_usage]
+format = " mem [${ram}( ${swap})]($style)"
+symbol = "▪▫▪ "
+
+[nim]
+format = " nim [$symbol($version )]($style)"
+symbol = "▴▲▴ "
+
+[nix_shell]
+format = '[$symbol nix⎪$state⎪]($style) [$name](italic dimmed white)'
+impure_msg = '[⌽](bold dimmed red)'
+pure_msg = '[⌾](bold dimmed green)'
+style = 'bold italic dimmed blue'
+symbol = '✶'
+unknown_msg = '[◌](bold dimmed ellow)'
+
+[spack]
+format = " spack [$symbol$environment]($style)"
+symbol = "◇ "
+
+
+[zig]
+format = " zig [$symbol]($style)"
+symbol = " "
+
+
+[scala]
+format = " scala [$symbol]($style)"
+symbol = " "

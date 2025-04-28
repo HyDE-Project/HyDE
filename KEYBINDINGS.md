@@ -13,6 +13,7 @@ Multi-language KEYBINDINGS support
 -->
 
 <!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](KEYBINDINGS.md) -->
+
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/assets/keybinds/KEYBINDINGS.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](Source/assets/keybinds/KEYBINDINGS.de.md)
 [![nl](https://img.shields.io/badge/lang-nl-green.svg)](Source/assets/keybinds/KEYBINDINGS.nl.md)
@@ -25,6 +26,7 @@ Multi-language KEYBINDINGS support
 <br>
 
 <!-- <a href=#hyde-keybindings><kbd> <br> HyDE keybindings <br> </kbd></a>&ensp;&ensp; -->
+
 <a href=#window-management><kbd> <br> Window Management <br> </kbd></a>&ensp;&ensp;
 <a href=#misc><kbd> <br> Misc <br> </kbd></a>&ensp;&ensp;
 <a href=#launcher><kbd> <br> Launcher <br> </kbd></a>&ensp;&ensp;
@@ -47,12 +49,13 @@ Multi-language KEYBINDINGS support
 
 <!-- # <a id=hyde-keybindings>HyDE Keybindings</a> -->
 <!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
+
 Here are all HyDE specific keybindings listed.
 
->[!TIP]
-> <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
+> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
 
 <!-- ## <a id=window-management>Window Management</a> -->
+
 ## <a id=window-management></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Window%20Management" width="450"/>
 
 | Keys                                                 | Action                          |
@@ -104,6 +107,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>X</kbd>         | hold to resize window |
 
 <!-- ## <a id=misc>Misc</a> -->
+
 ## <a id=misc></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Misc" width="450"/>
 
 | Keys                                                                     | Action                         |
@@ -114,6 +118,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>down</kbd>  | move activewindow down         |
 
 <!-- ## <a id=launcher>Launcher</a> -->
+
 ## <a id=launcher></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Launcher" width="450"/>
 
 ### Apps
@@ -130,7 +135,7 @@ Here are all HyDE specific keybindings listed.
 
 | Keys                                               | Action               |
 | :------------------------------------------------- | :------------------- |
-| <kbd>ALT</kbd> + <kbd>space</kbd>                  | application finder   |
+| <kbd>SUPER</kbd> + <kbd>A</kbd>                    | application finder   |
 | <kbd>SUPER</kbd> + <kbd>TAB</kbd>                  | window switcher      |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>E</kbd> | file finder          |
 | <kbd>SUPER</kbd> + <kbd>slash</kbd>                | keybindings hint     |
@@ -141,6 +146,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>A</kbd> | select rofi launcher |
 
 <!-- ## <a id="hardware-controls">Hardware Controls</a> -->
+
 ## <a id="hardware-controls"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Hardware%20Controls" width="450"/>
 
 ### Audio
@@ -172,6 +178,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>None</kbd> + <kbd>XF86MonBrightnessDown</kbd> | decrease brightness |
 
 <!-- ## <a id=utilities>Utilities</a> -->
+
 ## <a id=utilities></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Utilities" width="450"/>
 
 | Keys                                             | Action                 |
@@ -190,6 +197,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>None</kbd> + <kbd>Print</kbd>                 | print all monitors     |
 
 <!-- ## <a id=theming-and-wallpaper>Theming and Wallpaper</a> -->
+
 ## <a id=theming-and-wallpaper></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Theming%20and%20Wallpaper" width="450"/>
 
 | Keys                                                 | Action                 |
@@ -203,6 +211,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | select a theme         |
 
 <!-- ## <a id=workspaces>Workspaces</a> -->
+
 ## <a id=workspaces></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Workspaces" width="450"/>
 
 ### Navigation
@@ -232,8 +241,8 @@ Here are all HyDE specific keybindings listed.
 
 #### Special workspace
 
-| Keys                                                   | Action                      |
-| :----------------------------------------------------- | :-------------------------- |
+| Keys                                               | Action                      |
+| :------------------------------------------------- | :-------------------------- |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>S</kbd> | move to scratchpad          |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>S</kbd>   | move to scratchpad (silent) |
 | <kbd>SUPER</kbd> + <kbd>S</kbd>                    | toggle scratchpad           |

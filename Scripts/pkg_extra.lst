@@ -13,7 +13,9 @@ ddcui                                                  # GUI to control brightne
 
 # --------------------------------------------------- // Misc
 xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
+wf-recorder                                          # Screen recorder for wlroots-based compositors such as sway
 # emote                                                # emoji picker gtk3
+# wl-screenrec                                         # High performance hardware accelerated wlroots screen recorder // NO support for NVIDIA
 
 # --------------------------------------------------- // Gaming
 steam                                                  # gaming platform
@@ -33,6 +35,7 @@ spicetify-cli                                          # cli to customize spotif
 # --------------------------------------------------- // Shell
 # oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh
 # pokemon-colorscripts-git|zsh                           # display pokemon sprites (optional)
+# pokego-bin|zsh                                         # display pokemon sprites in terminal (written GO)
 
 # --------------------------------------------------- // Editor
 # vscodium                                              # Full oss text editor

@@ -9,8 +9,8 @@ else
 fi
 
 BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
-LIB_DIR="${BIN_DIR}/../lib"
-SHARE_DIR="${BIN_DIR}/../share"
+LIB_DIR=$(realpath "${BIN_DIR}/../lib")
+SHARE_DIR=$(realpath "${BIN_DIR}/../share")
 PATH="$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
 
 export BIN_DIR LIB_DIR SHARE_DIR

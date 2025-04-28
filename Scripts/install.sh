@@ -228,7 +228,7 @@ fi
 if [ ${flg_Restore} -eq 1 ]; then
     cat <<"EOF"
 
-             _           _
+             _           _d
  ___ ___ ___| |_ ___ ___|_|___ ___
 |  _| -_|_ -|  _| . |  _| |   | . |
 |_| |___|___|_| |___|_| |_|_|_|_  |
@@ -246,7 +246,7 @@ EOF
     print_log -g "[generate] " "cache ::" "Wallpapers..."
     if [ "${flg_DryRun}" -ne 1 ]; then
         "$HOME/.local/lib/hyde/swwwallcache.sh" -t ""
-        "$HOME/.local/lib/hyde/themeswitch.sh" -q || true
+        "$HOME/.local/lib/hyde/theme.switch.sh" -q || true
         echo "[install] reload :: Hyprland"
     fi
 
