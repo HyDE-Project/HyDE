@@ -126,7 +126,7 @@ We welcome contributions from the community! To get started:
 - Review our release process in [RELEASE_POLICY.md](RELEASE_POLICY.md)
 - Add yourself to [CONTRIBUTORS.md](CONTRIBUTORS.md) when making your first PR
 
-Whether you're helping with code, testing, or documentation, we appreciate your support in making HyDE better for everyone.
+Whether you're helping with code, testing, or documentation, we appreciate your support in making HyDE better for everyone. Thank you!
 
 <div align="right">
   <br>
