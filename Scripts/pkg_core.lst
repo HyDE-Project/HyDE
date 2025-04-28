@@ -64,13 +64,14 @@ qt5-wayland                                            # wayland support in qt5
 qt6-wayland                                            # wayland support in qt6
 
 # --------------------------------------------------- // Applications
-firefox                                                # browser
+# firefox                                              # browser
 kitty                                                  # terminal
 dolphin                                                # kde file manager
+# nautilus					                           # GNOME File Manager
 ark                                                    # kde file archiver
 unzip                                                  # extracting zip files
-vim                                                    # terminal text editor
-code                                                   # ide text editor
+# vim                                                  # terminal text editor
+# code                                                 # ide text editor
 nwg-displays                                           # monitor management utility
 fzf                                                    # Command-line fuzzy finder
 
