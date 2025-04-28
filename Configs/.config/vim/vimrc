@@ -1,0 +1,11 @@
+" Source the Hyde vimrc
+source $XDG_CONFIG_HOME/vim/hyde.vim
+
+" Setting the colorscheme
+" colorscheme zaibatsu "the only nice built-in colorscheme 
+
+" Remapping vim keys
+inoremap <C-c> <Esc>
+"nnoremap <leader>ff :w<CR>
+"nnoremap ; :
+"vnoremap ; :
