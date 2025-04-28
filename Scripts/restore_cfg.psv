@@ -71,9 +71,13 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
  Shell 
 P|${HOME}/.config|fish|fish
 P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh
-P|${HOME}|.vimrc|vim
 P|${HOME}/.config/starship|starship.toml|starship
 S|${HOME}|.zshenv|zsh
+
+ Vim 
+P|${HOME}|.config/vim|vimrc|vim
+S|${HOME}|.config/vim/colors|wallbash.vim|vim
+S|${HOME}|.config/vim|hyde.vim|vim
 
  File Explorer 
 P|${HOME}/.local/state|dolphinstaterc|dolphin
