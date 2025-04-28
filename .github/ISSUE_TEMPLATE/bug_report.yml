@@ -60,15 +60,19 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: Please add any other relevant information about the bug and remove the unnecessary lines.
+      description: Please run the command below and attach the output. This information is required to properly diagnose your issue.
       placeholder: |
-        - Linux Distro: [e.g., ArchLinux, EndeavourOS]
-        - Linux Version, output of `uname -a`:
-        - Hyprland Version, output of `hyprctl version`:
+        Run this command and paste the output here:
+
+        ```bash
+        hyprctl systeminfo -c > /tmp/hyde_environment && cat /tmp/hyde_environment
+        ```
+
+        Additional information (if needed):
         - Installation Environment: [e.g., On The Main Hardware, On A Virtual Machine]
-        - Other info: [e.g., Display Resolution, Resolution, etc]
+        - Other info: [e.g., Display Resolution, etc]
     validations:
-      required: false
+      required: true
 
   - type: textarea
     id: additional
