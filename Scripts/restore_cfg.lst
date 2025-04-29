@@ -33,6 +33,7 @@ This is a punnet square of the flags, But the outputs are unexpected
 
 
 N|Y|${HOME}|.zshrc .p10k.zsh|zsh oh-my-zsh-git zsh-theme-powerlevel10k pokemon-colorscripts-git
+N|Y|${HOME}|.vimrc|vim
 N|Y|${HOME}/.config/starship|starship.toml|starship
 N|Y|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
 N|Y|${HOME}/.config/Code - OSS/User|settings.json|code

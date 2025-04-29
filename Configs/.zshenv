@@ -4,7 +4,7 @@
 #!      ░▒▒▒░░░▓▓           ___________
 #!    ░░▒▒▒░░░░░▓▓        //___________/
 #!   ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
-#!   ░░▒▒░░░░░▓▓▓▓▓▓ | | | | |  | |  __/
+#!   ░░▒▒░░░░░▓▓▓▓▓ | | | | |  | |  __/
 #!    ░▒▒░░░░▓▓   ▓▓ | |_| | |_/ /| |___
 #!     ░▒▒░░▓▓   ▓▓   \__  |____/ |____/    ▀█ █▀ █░█
 #!       ░▒▓▓   ▓▓  //____/                █▄ ▄█ █▀█
@@ -36,6 +36,8 @@ function command_not_found_handler {
         return 127
     fi
 
+    printf "${bright}Searching for packages that provide '${bright}%s${green}'...${reset} " "$1"
+
     if ! "${PM}" fq "/usr/bin/$1"; then
         printf "${bright}${green}[ ${1} ]${reset} ${purple}NOT${reset} found in the system and no package provides it.\n"
         return 127
@@ -51,6 +53,7 @@ function command_not_found_handler {
 }
 
 function load_zsh_plugins {
+    unset -f load_zsh_plugins
     # Oh-my-zsh installation path
     zsh_paths=(
         "$HOME/.oh-my-zsh"
@@ -60,16 +63,16 @@ function load_zsh_plugins {
     for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
     # Load Plugins
     hyde_plugins=(git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
-    plugins+=("${plugins[@]}" "${hyde_plugins[@]}" git zsh-256color zsh-autosuggestions zsh-syntax-highlighting)
+    plugins+=("${plugins[@]}" "${hyde_plugins[@]}")
     # Deduplicate plugins
     plugins=("${plugins[@]}")
     plugins=($(printf "%s\n" "${plugins[@]}" | sort -u))
-
-    # Loads om-my-zsh
-    [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
+    # Defer oh-my-zsh loading until after prompt appears
+    typeset -g DEFER_OMZ_LOAD=1
 }
 
 # Function to display a slow load warning
+# the intention is for hyprdots users who might have multiple zsh initialization
 function slow_load_warning {
     local lock_file="/tmp/.hyde_slow_load_warning.lock"
     local load_time=$SECONDS
@@ -80,7 +83,6 @@ function slow_load_warning {
         touch $lock_file
 
         # Display the warning if load time exceeds the limit
-        #FIX: remove 4. when fully migrated to starship form p10k
         time_limit=3
         if ((load_time > time_limit)); then
             cat <<EOF
@@ -95,7 +97,6 @@ function slow_load_warning {
             - Check the '.zshrc' file from the repo for a clean configuration.
                 https://github.com/HyDE-Project/HyDE/blob/master/Configs/.zshrc
         3. Check the '~/.hyde.zshrc' file for any slow initialization scripts.
-        4. Check the '~/.p10k.zsh' file for any slow initialization scripts.
 
     For more information, on the possible causes of slow shell startup, see:
         🌐 https://github.com/HyDE-Project/HyDE/wiki
@@ -112,79 +113,16 @@ function handle_init_error {
     fi
 }
 
-# Function to remove the lock file on exit
-function cleanup {
-    rm -f /tmp/.hyde_slow_load_warning.lock
-}
-
 function no_such_file_or_directory_handler {
     local red='\e[1;31m' reset='\e[0m'
     printf "${red}zsh: no such file or directory: %s${reset}\n" "$1"
     return 127
 }
 
-# cleaning up home folder
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-$HOME/.config}"
-XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-XDG_DATA_DIRS="${XDG_DATA_DIRS:-$XDG_DATA_HOME:/usr/local/share:/usr/share}"
-XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
-XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
-XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
-XDG_DOWNLOAD_DIR="${XDG_DOWNLOAD_DIR:-$HOME/Downloads}"
-XDG_TEMPLATES_DIR="${XDG_TEMPLATES_DIR:-$HOME/Templates}"
-XDG_PUBLICSHARE_DIR="${XDG_PUBLICSHARE_DIR:-$HOME/Public}"
-XDG_DOCUMENTS_DIR="${XDG_DOCUMENTS_DIR:-$HOME/Documents}"
-XDG_MUSIC_DIR="${XDG_MUSIC_DIR:-$HOME/Music}"
-XDG_PICTURES_DIR="${XDG_PICTURES_DIR:-$HOME/Pictures}"
-XDG_VIDEOS_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}"
-LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
-PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
+function load_persistent_aliases {
+    #! Persistent Aliases are loaded after zshrc is loaded you cannot overwrite them
+    unset -f load_persistent_aliases
 
-# wget
-WGETRC="${XDG_CONFIG_HOME}/wgetrc"
-SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
-
-export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
-    XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR WGETRC SCREENRC
-
-if [ -t 1 ]; then
-    # Currently We are loading Starship and p10k prompts on start so users can see the prompt immediately
-    # You can remove either starship or p10k to slightly improve start time
-
-    if command -v starship &>/dev/null; then
-        # ===== START Initialize Starship prompt =====
-        eval "$(starship init zsh)"
-        export STARSHIP_CACHE=$XDG_CACHE_HOME/starship
-        export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
-        # starship.toml can be swapped with : brackets.toml  heavy-right.toml  lualine.toml  powerline.toml
-    # ===== END Initialize Starship prompt =====
-    elif [ -f ~/.p10k.zsh ]; then
-        # ===== START Initialize Powerlevel10k theme =====
-        P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
-        [[ -r $P10k_THEME ]] && source $P10k_THEME
-        # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-        [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-    # ===== END Initialize Powerlevel10k theme =====
-    fi
-
-    PM="pm.sh"
-    # Try to find pm.sh in common locations
-    if [ ! which "${PM}" ] &>/dev/null; then
-        for path in "/usr/lib/hyde" "/usr/local/lib/hyde" "$HOME/.local/lib/hyde" "$HOME/.local/bin"; do
-            if [[ -x "$path/pm.sh" ]]; then
-                PM="$path/pm.sh"
-                break
-            fi
-        done
-    fi
-    # Optionally load user configuration // useful for customizing the shell without modifying the main file
-    [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
-
-    # Load plugins
-    load_zsh_plugins
-
-    # Helpful aliases
     if [[ -x "$(which eza)" ]]; then
         alias l='eza -lh --icons=auto' \
             ll='eza -lha --icons=auto --sort=name --group-directories-first' \
@@ -192,28 +130,123 @@ if [ -t 1 ]; then
             lt='eza --icons=auto --tree'
     fi
 
-    alias c='clear' \
-        in='$PM install' \
-        un='$PM remove' \
-        up='$PM upgrade' \
-        pl='$PM search installed' \
-        pa='$PM search all' \
-        vc='code' \
-        fastfetch='fastfetch --logo-type kitty' \
-        ..='cd ..' \
-        ...='cd ../..' \
-        .3='cd ../../..' \
-        .4='cd ../../../..' \
-        .5='cd ../../../../..' \
-        mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+}
 
-    # TODO: add handlers in pm.sh
-    # for these aliases please manually add the following lines to your .zshrc file.(Using yay as the aur helper)
-    # pc='yay -Sc' # remove all cached packages
-    # po='yay -Qtdq | $PM -Rns -' # remove orphaned packages
+# Load oh-my-zsh when line editor initializes // before user input
+function load_omz_on_init() {
+    if [[ -n $DEFER_OMZ_LOAD ]]; then
+        unset DEFER_OMZ_LOAD
+        [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
 
-    # Warn if the shell is slow to load
-    autoload -Uz add-zsh-hook
-    add-zsh-hook -Uz precmd slow_load_warning
-    # add-zsh-hook zshexit cleanup
-fi
+        # Load my package manager
+        #? This is a custom package manager for HyDE
+        PM="pm.sh"
+        # Try to find pm.sh in common locations
+        if [ ! which "${PM}" ] &>/dev/null; then
+            for path in "/usr/lib/hyde" "/usr/local/lib/hyde" "$HOME/.local/lib/hyde" "$HOME/.local/bin"; do
+                if [[ -x "$path/pm.sh" ]]; then
+                    PM="$path/pm.sh"
+                    break
+                fi
+            done
+        fi
+        load_persistent_aliases
+    fi
+}
+
+function load_if_terminal {
+    if [ -t 1 ]; then
+
+        unset -f load_if_terminal
+
+        # Currently We are loading Starship and p10k prompts on start so users can see the prompt immediately
+        # You can remove either starship or p10k to slightly improve start time
+
+        if command -v starship &>/dev/null; then
+            # ===== START Initialize Starship prompt =====
+            eval "$(starship init zsh)"
+            export STARSHIP_CACHE=$XDG_CACHE_HOME/starship
+            export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
+        # ===== END Initialize Starship prompt =====
+        elif [ -r ~/.p10k.zsh ]; then
+            # ===== START Initialize Powerlevel10k theme =====
+            POWERLEVEL10K_TRANSIENT_PROMPT=same-dir
+            P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
+            [[ -r $P10k_THEME ]] && source $P10k_THEME
+            # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
+            [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+        # ===== END Initialize Powerlevel10k theme =====
+        fi
+
+        # Optionally load user configuration // useful for customizing the shell without modifying the main file
+        [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
+
+        # Load plugins
+        load_zsh_plugins
+
+        # Load zsh hooks module once
+
+        #? Methods to load oh-my-zsh lazily
+        zle -N zle-line-init load_omz_on_init # Loads when the line editor initializes // The best option
+
+        autoload -Uz add-zsh-hook
+        # add-zsh-hook zshaddhistory load_omz_deferred # loads after the first command is added to history
+        # add-zsh-hook precmd load_omz_deferred # Loads when shell is ready to accept commands
+        # add-zsh-hook preexec load_omz_deferred # Loads before the first command executes
+
+        # TODO: add handlers in pm.sh
+        # for these aliases please manually add the following lines to your .zshrc file.(Using yay as the aur helper)
+        # pc='yay -Sc' # remove all cached packages
+        # po='yay -Qtdq | $PM -Rns -' # remove orphaned packages
+
+        # Warn if the shell is slow to load
+        add-zsh-hook -Uz precmd slow_load_warning
+
+        alias c='clear' \
+            in='$PM install' \
+            un='$PM remove' \
+            up='$PM upgrade' \
+            pl='$PM search installed' \
+            pa='$PM search all' \
+            vc='code' \
+            fastfetch='fastfetch --logo-type kitty' \
+            ..='cd ..' \
+            ...='cd ../..' \
+            .3='cd ../../..' \
+            .4='cd ../../../..' \
+            .5='cd ../../../../..' \
+            mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+
+    fi
+
+}
+
+# cleaning up home folder
+PATH="$HOME/.local/bin:$PATH"
+XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-"$(xdg-user-dir CONFIG)"}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+XDG_DATA_DIRS="${XDG_DATA_DIRS:-$XDG_DATA_HOME:/usr/local/share:/usr/share}"
+XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+# XDG User Directories
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"$(xdg-user-dir CONFIG)"}"
+XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-"$(xdg-user-dir DESKTOP)"}"
+XDG_DOWNLOAD_DIR="${XDG_DOWNLOAD_DIR:-"$(xdg-user-dir DOWNLOAD)"}"
+XDG_TEMPLATES_DIR="${XDG_TEMPLATES_DIR:-"$(xdg-user-dir TEMPLATES)"}"
+XDG_PUBLICSHARE_DIR="${XDG_PUBLICSHARE_DIR:-"$(xdg-user-dir PUBLICSHARE)"}"
+XDG_DOCUMENTS_DIR="${XDG_DOCUMENTS_DIR:-"$(xdg-user-dir DOCUMENTS)"}"
+XDG_MUSIC_DIR="${XDG_MUSIC_DIR:-"$(xdg-user-dir MUSIC)"}"
+XDG_PICTURES_DIR="${XDG_PICTURES_DIR:-"$(xdg-user-dir PICTURES)"}"
+XDG_VIDEOS_DIR="${XDG_VIDEOS_DIR:-"$(xdg-user-dir VIDEOS)"}"
+
+LESSHISTFILE=${LESSHISTFILE:-/tmp/less-hist}
+PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
+SCREENRC="$XDG_CONFIG_HOME"/screen/screenrc
+
+HISTFILE=$HOME/.zsh_history # history file for zsh // fixes history not loaded on startup
+
+export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
+    XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR SCREENRC HISTFILE
+
+load_if_terminal
