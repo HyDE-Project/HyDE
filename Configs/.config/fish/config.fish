@@ -2,9 +2,14 @@ set -g fish_greeting
 
 source ~/.config/fish/hyde_config.fish
 
-if status is-interactive
+if type -q starship
     starship init fish | source
+    set -gx STARSHIP_CACHE $XDG_CACHE_HOME/starship
+    set -gx STARSHIP_CONFIG $XDG_CONFIG_HOME/starship/starship.toml
 end
+
+set fish_pager_color_prefix cyan
+set fish_color_autosuggestion brblack 
 
 # List Directory
 alias l='eza -lh  --icons=auto' # long list
