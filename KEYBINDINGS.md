@@ -52,7 +52,8 @@ Multi-language KEYBINDINGS support
 
 Here are all HyDE specific keybindings listed.
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
+> [!TIP]  
+> <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
 
 <!-- ## <a id=window-management>Window Management</a> -->
 
