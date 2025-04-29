@@ -12,7 +12,6 @@ $kubernetes\
 $vcsh\
 $hg_branch\
 $pijul_channel\
-$docker_context\
 $c\
 $cmake\
 $cobol\
@@ -105,7 +104,7 @@ format = " [  $branch](fg:#9198a1)"
 ahead = '⇡${count}'
 behind = '⇣${count}'
 diverged = '⇕⇡${ahead_count}⇣${behind_count}'
-format = '[[( $all_status$ahead_behind )](fg:#769ff0)]($style)'
+format = '[[( $all_status$ahead_behind )](fg:#769ff0)]($style)'
 style = "bg:#394260"
 
 
@@ -115,7 +114,7 @@ format = '[[  $time ](fg:#a0a9cb )]($style)'
 time_format = "%R"                            # Hour:Minute Format
 
 [deno]
-format = " [deno](italic) [∫ $version](green bold)"
+format = " [deno](italic) [ $version](green bold)"
 version_format = "${raw}"
 
 [lua]
@@ -128,19 +127,19 @@ version_format = "${raw}"
 detect_extensions = []
 detect_files = ["package-lock.json", "yarn.lock"]
 detect_folders = ["node_modules"]
-format = " [node](italic) [◫ ](bold bright-green)"
+format = "[ ](bold bright-green)"
 version_format = "${raw}"
 
 [python]
 format = " [py](italic) [${symbol}${version}]($style)"
 style = "bold bright-yellow"
-symbol = "[⌉](bold bright-blue)⌊ "
+symbol = "[ ](bold bright-blue)⌊ "
 version_format = "${raw}"
 
 [ruby]
 format = " [rb](italic) [${symbol}${version}]($style)"
 style = "bold red"
-symbol = "◆ "
+symbol = " "
 version_format = "${raw}"
 
 [rust]
@@ -150,14 +149,14 @@ symbol = " "
 [swift]
 format = " [sw](italic) [${symbol}${version}]($style)"
 style = "bold bright-red"
-symbol = "◁ "
+symbol = " "
 version_format = "${raw}"
 
 [aws]
 disabled = true
 format = " [aws](italic) [$symbol $profile $region]($style)"
 style = "bold blue"
-symbol = "▲ "
+symbol = " "
 
 [buf]
 format = " [buf](italic) [$symbol $version $buf_version]($style)"
@@ -173,15 +172,12 @@ symbol = "◯ "
 
 [dart]
 format = " dart [$symbol($version )]($style)"
-symbol = "◁◅ "
+symbol = " "
 
-[docker_context]
-format = " docker [$symbol$context]($style)"
-symbol = "◧ "
 
 [elixir]
 format = " exs [$symbol $version OTP $otp_version ]($style)"
-symbol = "△ "
+symbol = " "
 
 [elm]
 format = " elm [$symbol($version )]($style)"
@@ -197,7 +193,7 @@ symbol = "❯λ "
 
 [java]
 format = " java [${symbol}(${version} )]($style)"
-symbol = "∪ "
+symbol = " "
 
 [julia]
 format = " jl [$symbol($version )]($style)"
@@ -216,7 +212,7 @@ format = '[$symbol nix⎪$state⎪]($style) [$name](italic dimmed white)'
 impure_msg = '[⌽](bold dimmed red)'
 pure_msg = '[⌾](bold dimmed green)'
 style = 'bold italic dimmed blue'
-symbol = '✶'
+symbol = ' '
 unknown_msg = '[◌](bold dimmed ellow)'
 
 [spack]
