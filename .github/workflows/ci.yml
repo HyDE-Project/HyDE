@@ -20,8 +20,15 @@ jobs:
       - name: Generate commit history and schedule
         id: generate-commits
         run: |
-          # Get the commit history between master and dev
-          COMMIT_LIST=$(git log --pretty=format:"* %s (%h) by %an" origin/master..origin/dev)
+          # Get the commit history between master and dev in conventional commit format
+          COMMIT_LIST=$(git log --pretty=format:"* %s (%h) by %an" origin/master..dev | 
+            while IFS= read -r line; do
+              if [[ ! $line =~ ^"* feat"* && ! $line =~ ^"* fix"* && ! $line =~ ^"* docs"* ]]; then
+                echo "* chore${line:1}"
+              else
+                echo "$line"
+              fi
+            done)
 
           # Handle empty commit list (branches are identical)
           if [ -z "$COMMIT_LIST" ]; then
@@ -77,7 +84,7 @@ jobs:
           script: |
             const { repo, owner } = context.repo;
             const prBranch = "automated-dev-to-master-branch";
-            const prTitle = "chore(dev):Promote `dev` to `master`";
+            const prTitle = "chore: release automated changes from dev to master";
             const prBody = process.env.PR_BODY;
 
             // Retry helper function
@@ -150,10 +157,28 @@ jobs:
     if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v3
         id: release
         with:
           release-type: simple
+          include-v-in-tag: true
+          package-name: hyde
+          command: github-release
+          token: ${{ secrets.GITHUB_TOKEN }}
+          default-branch: master
+          changelog-types: |
+            [
+              {"type":"feat","section":"Features","hidden":false},
+              {"type":"fix","section":"Bug Fixes","hidden":false},
+              {"type":"docs","section":"Documentation","hidden":false},
+              {"type":"style","section":"Styles","hidden":false},
+              {"type":"refactor","section":"Code Refactoring","hidden":false},
+              {"type":"perf","section":"Performance Improvements","hidden":false},
+              {"type":"test","section":"Tests","hidden":false},
+              {"type":"build","section":"Build System","hidden":false},
+              {"type":"ci","section":"Continuous Integration","hidden":false},
+              {"type":"chore","section":"Miscellaneous Chores","hidden":true}
+            ]
       - uses: actions/checkout@v4
       - name: tag stable versions
         if: ${{ steps.release.outputs.release_created }}
