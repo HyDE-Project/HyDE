@@ -16,11 +16,18 @@ on:
 jobs:
   refresh-release:
     runs-on: ubuntu-latest
+    # Add permissions for GitHub token
+    permissions:
+      contents: write # Needed to push to branches
+      pull-requests: write # Needed to create/update PRs
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Add token for authentication
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Git
         run: |
