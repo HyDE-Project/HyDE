@@ -151,6 +151,10 @@ function load_if_terminal {
             [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
         # ===== END Initialize Powerlevel10k theme =====
         fi
+        # initialize fzf
+        if command -v fzf &>/dev/null; then
+            eval "$(fzf --zsh)"
+        fi
 
         # Optionally load user configuration // useful for customizing the shell without modifying the main file
         [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
@@ -189,7 +193,9 @@ function load_if_terminal {
             .3='cd ../../..' \
             .4='cd ../../../..' \
             .5='cd ../../../../..' \
-            mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+            mkdir='mkdir -p'\ # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+            cat='bat --plain' \ # same as cat but with syntax highlighting
+            bat='bat --style=full' 
 
     fi
 
