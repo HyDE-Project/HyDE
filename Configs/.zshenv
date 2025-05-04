@@ -38,8 +38,8 @@ function command_not_found_handler {
     return 127
 }
 
-function load_zsh_plugins {
-    unset -f load_zsh_plugins
+function _load_zsh_plugins {
+    unset -f _load_zsh_plugins
     # Oh-my-zsh installation path
     zsh_paths=(
         "$HOME/.oh-my-zsh"
@@ -59,7 +59,7 @@ function load_zsh_plugins {
 
 # Function to display a slow load warning
 # the intention is for hyprdots users who might have multiple zsh initialization
-function slow_load_warning {
+function _slow_load_warning {
     local lock_file="/tmp/.hyde_slow_load_warning.lock"
     local load_time=$SECONDS
 
@@ -105,9 +105,10 @@ function no_such_file_or_directory_handler {
     return 127
 }
 
-function load_persistent_aliases {
-    #! Persistent Aliases are loaded after zshrc is loaded you cannot overwrite them
-    unset -f load_persistent_aliases
+function _load_persistent_aliases {
+    # Persistent aliases are loaded after the plugin is loaded
+    # This way omz will not override them
+    unset -f _load_persistent_aliases
 
     if [[ -x "$(command -v eza)" ]]; then
         alias l='eza -lh --icons=auto' \
@@ -118,52 +119,43 @@ function load_persistent_aliases {
 
 }
 
-load_zsh_dot_files() {
-    local dots
-    local dot_dir="${ZDOTDIR:-$HOME}"
-    dots=(
-        "$dot_dir/.zprofile"
-        "$dot_dir/.zshrc"
-        "$dot_dir/.zlogin"
-        "$dot_dir/.zlogout"
-    )
-
-    for dot in "${dots[@]}"; do
-        if [[ -f $dot ]]; then
-            source "$dot"
-        fi
-    done
-
-}
-
-# Load oh-my-zsh when line editor initializes // before user input
-function load_omz_on_init() {
+function _load_omz_on_init() {
+    # Load oh-my-zsh when line editor initializes // before user input
     if [[ -n $DEFER_OMZ_LOAD ]]; then
         unset DEFER_OMZ_LOAD
         [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
-
-        load_persistent_aliases
-
-        # Load the  .zshrc file
-        ZDOTDIR="${__ZDOTDIR}"
-        load_zsh_dot_files
-        autoload -U compinit && compinit
-
-        # Load hydectl completion
-        if command -v hydectl &>/dev/null; then
-            compdef _hydectl hydectl
-            eval "$(hydectl completion zsh)"
-        fi
+        ZDOTDIR="${__ZDOTDIR:-$HOME}"
+        _load_post_init
     fi
 }
 
-function load_if_terminal {
+function _load_post_init() {
+    #! Never load time consuming functions here
+    _load_persistent_aliases
+    autoload -U compinit && compinit
+
+    # Load hydectl completion
+    if command -v hydectl &>/dev/null; then
+        compdef _hydectl hydectl
+        eval "$(hydectl completion zsh)"
+    fi
+
+    # Initiate fzf
+    if command -v fzf &>/dev/null; then
+        eval "$(fzf --zsh)"
+    fi
+
+    # User rc file always overrides
+    [[ -f $HOME/.zshrc ]] && source $HOME/.zshrc
+
+}
+
+function _load_if_terminal {
     if [ -t 1 ]; then
 
-        unset -f load_if_terminal
+        unset -f _load_if_terminal
 
         # Currently We are loading Starship and p10k prompts on start so users can see the prompt immediately
-        # You can remove either starship or p10k to slightly improve start time
 
         if command -v starship &>/dev/null; then
             # ===== START Initialize Starship prompt =====
@@ -180,10 +172,6 @@ function load_if_terminal {
             [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
         # ===== END Initialize Powerlevel10k theme =====
         fi
-        # initialize fzf
-        if command -v fzf &>/dev/null; then
-            eval "$(fzf --zsh)"
-        fi
 
         # Optionally load user configuration // useful for customizing the shell without modifying the main file
         if [[ -f $HOME/.hyde.zshrc ]]; then
@@ -193,15 +181,14 @@ function load_if_terminal {
         fi
 
         # Load plugins
-        load_zsh_plugins
+        _load_zsh_plugins
 
         # Load zsh hooks module once
 
         #? Methods to load oh-my-zsh lazily
         __ZDOTDIR="${ZDOTDIR:-$HOME}"
-        readonly __ZDOTDIR
         ZDOTDIR=/tmp
-        zle -N zle-line-init load_omz_on_init # Loads when the line editor initializes // The best option
+        zle -N zle-line-init _load_omz_on_init # Loads when the line editor initializes // The best option
 
         autoload -Uz add-zsh-hook
         # add-zsh-hook zshaddhistory load_omz_deferred # loads after the first command is added to history
@@ -214,7 +201,7 @@ function load_if_terminal {
         # po='yay -Qtdq | ${PM_COMMAND[@]} -Rns -' # remove orphaned packages
 
         # Warn if the shell is slow to load
-        add-zsh-hook -Uz precmd slow_load_warning
+        add-zsh-hook -Uz precmd _slow_load_warning
 
         alias c='clear' \
             in='${PM_COMMAND[@]} install' \
@@ -270,4 +257,4 @@ export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME \
     XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR \
     SCREENRC ZSH_AUTOSUGGEST_STRATEGY HISTFILE
 
-load_if_terminal
+_load_if_terminal
