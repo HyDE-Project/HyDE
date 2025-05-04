@@ -230,8 +230,6 @@ function load_if_terminal {
             .4='cd ../../../..' \
             .5='cd ../../../../..' \
             mkdir='mkdir -p'\ # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
-            cat='bat --plain' \ # same as cat but with syntax highlighting
-            bat='bat --style=full' 
 
     fi
 
