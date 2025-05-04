@@ -129,6 +129,60 @@ function _load_omz_on_init() {
     fi
 }
 
+# best fzf aliases ever
+_fuzzy_open_directory() {
+    local initial_query="$1"
+    local selected_dir
+    local fzf_options=('--preview=ls -p {}' '--preview-window=right:60%')
+    local max_depth=5
+
+    if [[ -n "$initial_query" ]]; then
+        fzf_options+=("--query=$initial_query")
+    fi
+
+    #type -d
+    selected_dir=$(find . -maxdepth max_depth -type d \( -name .git -o -name node_modules -o -name .venv -o -name target \) -prune -o -print 2>/dev/null | fzf "${fzf_options[@]}")
+
+    if [[ -n "$selected_dir" && -d "$selected_dir" ]]; then
+        cd "$selected_dir" || return 1 #  if cd fails
+    else
+        return 1
+    fi
+}
+
+_fuzzy_edit_search_file() {
+    local initial_query="$1"
+    local selected_file
+    local fzf_options=()
+    local max_depth=5
+
+    if [[ -n "$initial_query" ]]; then
+        fzf_options+=("--query=$initial_query")
+    fi
+
+    # -type f: only find files
+    selected_file=$(find . -maxdepth max_depth -type f 2>/dev/null | fzf "${fzf_options[@]}")
+
+    if [[ -n "$selected_file" && -f "$selected_file" ]]; then
+        $EDITOR "$selected_file"
+        #FIX: if ! $EDITOR case
+    else
+        return 1
+    fi
+}
+
+_fuzzy_edit_search_file_content() {
+    # [f]uzzy [e]dit  [s]earch [f]ile [c]ontent
+    local selected_file
+    selected_file=$(grep -irl "${1:-}" ./ | fzf --preview 'cat {}' --preview-window right:60%)
+
+    if [[ -n "$selected_file" ]]; then
+        nvim "$selected_file"
+    else
+        echo "No file selected or search returned no results."
+    fi
+}
+
 function _load_post_init() {
     #! Never load time consuming functions here
     _load_persistent_aliases
@@ -143,6 +197,9 @@ function _load_post_init() {
     # Initiate fzf
     if command -v fzf &>/dev/null; then
         eval "$(fzf --zsh)"
+        alias f_efc='_fuzzy_edit_search_file_content' # [fz]f [e]dit  [f]ile, search by [c]ontent
+        alias fcd='_fuzzy_open_directory'             # [fz]f [o]pen [d]irectory
+        alias f_ef='_fuzzy_edit_search_file'          # [fz]f [e]dit [f]ile
     fi
 
     # User rc file always overrides
