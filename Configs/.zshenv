@@ -118,6 +118,24 @@ function load_persistent_aliases {
 
 }
 
+load_zsh_dot_files() {
+    local dots
+    local dot_dir="${ZDOTDIR:-$HOME}"
+    dots=(
+        "$dot_dir/.zprofile"
+        "$dot_dir/.zshrc"
+        "$dot_dir/.zlogin"
+        "$dot_dir/.zlogout"
+    )
+
+    for dot in "${dots[@]}"; do
+        if [[ -f $dot ]]; then
+            source "$dot"
+        fi
+    done
+
+}
+
 # Load oh-my-zsh when line editor initializes // before user input
 function load_omz_on_init() {
     if [[ -n $DEFER_OMZ_LOAD ]]; then
@@ -125,6 +143,17 @@ function load_omz_on_init() {
         [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
 
         load_persistent_aliases
+
+        # Load the  .zshrc file
+        ZDOTDIR="${__ZDOTDIR}"
+        load_zsh_dot_files
+        autoload -U compinit && compinit
+
+        # Load hydectl completion
+        if command -v hydectl &>/dev/null; then
+            compdef _hydectl hydectl
+            eval "$(hydectl completion zsh)"
+        fi
     fi
 }
 
@@ -142,18 +171,22 @@ function load_if_terminal {
             export STARSHIP_CACHE=$XDG_CACHE_HOME/starship
             export STARSHIP_CONFIG=$XDG_CONFIG_HOME/starship/starship.toml
         # ===== END Initialize Starship prompt =====
-        elif [ -r ~/.p10k.zsh ]; then
+        elif [ -r $HOME/.p10k.zsh ]; then
             # ===== START Initialize Powerlevel10k theme =====
             POWERLEVEL10K_TRANSIENT_PROMPT=same-dir
             P10k_THEME=${P10k_THEME:-/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme}
             [[ -r $P10k_THEME ]] && source $P10k_THEME
-            # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh
-            [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+            # To customize prompt, run `p10k configure` or edit $HOME/.p10k.zsh
+            [[ ! -f $HOME/.p10k.zsh ]] || source $HOME/.p10k.zsh
         # ===== END Initialize Powerlevel10k theme =====
         fi
 
         # Optionally load user configuration // useful for customizing the shell without modifying the main file
-        [[ -f ~/.hyde.zshrc ]] && source ~/.hyde.zshrc
+        if [[ -f $HOME/.hyde.zshrc ]]; then
+            source $HOME/.hyde.zshrc # for backward compatibility
+        elif [[ -f $HOME/.user.zsh ]]; then
+            source $HOME/.user.zsh # renamed to .user.zsh for intuitiveness that it is a user config
+        fi
 
         # Load plugins
         load_zsh_plugins
@@ -161,6 +194,9 @@ function load_if_terminal {
         # Load zsh hooks module once
 
         #? Methods to load oh-my-zsh lazily
+        __ZDOTDIR="${ZDOTDIR:-$HOME}"
+        readonly __ZDOTDIR
+        ZDOTDIR=/tmp
         zle -N zle-line-init load_omz_on_init # Loads when the line editor initializes // The best option
 
         autoload -Uz add-zsh-hook
