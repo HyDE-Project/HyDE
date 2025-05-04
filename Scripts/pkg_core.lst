@@ -71,7 +71,6 @@ vim                                                    # terminal text editor
 code                                                   # ide text editor
 nwg-displays                                           # monitor management utility
 fzf                                                    # Command-line fuzzy finder
-bat                                                    # cat replacement with syntax highlighting
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
