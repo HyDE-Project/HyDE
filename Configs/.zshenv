@@ -229,7 +229,7 @@ function load_if_terminal {
             .3='cd ../../..' \
             .4='cd ../../../..' \
             .5='cd ../../../../..' \
-            mkdir='mkdir -p'\ # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
+            mkdir='mkdir -p' # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 
     fi
 
