@@ -16,6 +16,7 @@ _These contributors help with code review, triaging, and development._
 - [@T-Crypt](https://github.com/T-Crypt)
 - [@Guillaumecoi](https://github.com/Guillaumecoi)
 - [@rubiin](https://github.com/rubiin)
+- [@Metalhearf](https://github.com/Metalhearf)
 
 ## Testers
 
