@@ -164,8 +164,12 @@ _fuzzy_edit_search_file() {
     selected_file=$(find . -maxdepth max_depth -type f 2>/dev/null | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" && -f "$selected_file" ]]; then
-        $EDITOR "$selected_file"
-        #FIX: if ! $EDITOR case
+        if command -v "$EDITOR" &>/dev/null; then
+            "$EDITOR" "$selected_file"
+        else
+            echo "EDITOR is not specified. using vim.  (you can export EDITOR in ~/.zshrc)"
+            vim "$selected_file"
+        fi
     else
         return 1
     fi
@@ -177,7 +181,13 @@ _fuzzy_edit_search_file_content() {
     selected_file=$(grep -irl "${1:-}" ./ | fzf --preview 'cat {}' --preview-window right:60%)
 
     if [[ -n "$selected_file" ]]; then
-        nvim "$selected_file"
+        if command -v "$EDITOR" &>/dev/null; then
+            "$EDITOR" "$selected_file"
+        else
+            echo "EDITOR is not specified. using vim.  (you can export EDITOR in ~/.zshrc)"
+            vim "$selected_file"
+        fi
+
     else
         echo "No file selected or search returned no results."
     fi
