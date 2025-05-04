@@ -141,7 +141,7 @@ _fuzzy_open_directory() {
     fi
 
     #type -d
-    selected_dir=$(find . -maxdepth max_depth -type d \( -name .git -o -name node_modules -o -name .venv -o -name target \) -prune -o -print 2>/dev/null | fzf "${fzf_options[@]}")
+    selected_dir=$(find . -maxdepth $max_depth -type d \( -name .git -o -name node_modules -o -name .venv -o -name target \) -prune -o -print 2>/dev/null | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_dir" && -d "$selected_dir" ]]; then
         cd "$selected_dir" || return 1 #  if cd fails
@@ -161,7 +161,7 @@ _fuzzy_edit_search_file() {
     fi
 
     # -type f: only find files
-    selected_file=$(find . -maxdepth max_depth -type f 2>/dev/null | fzf "${fzf_options[@]}")
+    selected_file=$(find . -maxdepth $max_depth -type f 2>/dev/null | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" && -f "$selected_file" ]]; then
         if command -v "$EDITOR" &>/dev/null; then
