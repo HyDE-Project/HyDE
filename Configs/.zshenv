@@ -135,7 +135,7 @@ _fuzzy_open_directory() {
     local initial_query="$1"
     local selected_dir
     local fzf_options=('--preview=ls -p {}' '--preview-window=right:60%')
-    local max_depth=5
+    local max_depth=7
 
     if [[ -n "$initial_query" ]]; then
         fzf_options+=("--query=$initial_query")
@@ -145,7 +145,7 @@ _fuzzy_open_directory() {
     selected_dir=$(find . -maxdepth $max_depth \( -name .git -o -name node_modules -o -name .venv -o -name target -o -name .cache \) -prune -o -type d -print 2>/dev/null | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_dir" && -d "$selected_dir" ]]; then
-        cd "$selected_dir" || return 1 #  if cd fails
+        cd "$selected_dir" || return 1 
     else
         return 1
     fi
@@ -483,6 +483,7 @@ function _load_if_terminal {
             mkdir='mkdir -p' \
             ffec='_fuzzy_edit_search_file --content' \
             ffcd='_fuzzy_change_directory' \
+            ffsd='_fuzzy_search_directory' \
             ffe='_fuzzy_edit_search_file'
 
     fi
