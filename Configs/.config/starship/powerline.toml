@@ -64,7 +64,7 @@ $gcloud\
 $openstack\
 $azure\
 $crystal\
-[ ](fg:#86BBD8 bg:#06969A)\
+[](fg:#86BBD8 bg:#06969A)\
 $docker_context\
 [](fg:#06969A bg:#33658A)\
 $time\
@@ -150,7 +150,7 @@ format = "[ ](bold bright-green)"
 version_format = "${raw}"
 
 [python]
-format = "[${symbol}(${virtualenv})]($style)"
+format = "[${symbol}(${virtualenv}) ${version}]($style)"
 style = "bold bright-yellow"
 symbol = "[ ](bold bright-blue)"
 version_format = "${raw}"
