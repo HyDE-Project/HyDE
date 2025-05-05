@@ -129,8 +129,30 @@ function _load_omz_on_init() {
     fi
 }
 
-# fzf aliases ever
-_fuzzy_change_directory() {
+# best fzf aliases ever
+
+_fuzzy_open_directory() {
+    local initial_query="$1"
+    local selected_dir
+    local fzf_options=('--preview=ls -p {}' '--preview-window=right:60%')
+    local max_depth=5
+
+    if [[ -n "$initial_query" ]]; then
+        fzf_options+=("--query=$initial_query")
+    fi
+
+    #type -d
+    selected_dir=$(find . -maxdepth $max_depth -type d \( -name .git -o -name node_modules -o -name .venv -o -name target \) -prune -o -print 2>/dev/null | fzf "${fzf_options[@]}")
+
+    if [[ -n "$selected_dir" && -d "$selected_dir" ]]; then
+        cd "$selected_dir" || return 1 #  if cd fails
+    else
+        return 1
+    fi
+}
+
+
+_fuzzy_search_directory() {
     # Set search directory from argument, default to current directory
     local search_dir="."
     [[ $# -gt 0 && -d "${(e)1}" ]] && search_dir="${(e)1}"
