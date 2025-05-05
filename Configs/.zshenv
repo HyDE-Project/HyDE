@@ -134,6 +134,7 @@ _fuzzy_change_directory() {
     local initial_query="$1"
     local selected_dir
     local fzf_options=('--preview=ls -p {}' '--preview-window=right:60%')
+    fzf_options+=(--height "80%" --layout=reverse --preview-window right:60% --cycle)
     local max_depth=7
 
     if [[ -n "$initial_query" ]]; then
@@ -153,7 +154,7 @@ _fuzzy_change_directory() {
 _fuzzy_edit_search_file_content() {
     # [f]uzzy [e]dit  [s]earch [f]ile [c]ontent
     local selected_file
-    selected_file=$(grep -irl "${1:-}" ./ | fzf --preview 'cat {}' --preview-window right:60%)
+    selected_file=$(grep -irl "${1:-}" ./ | fzf --height "80%" --layout=reverse --preview-window right:60% --cycle --preview 'cat {}' --preview-window right:60%)
 
     if [[ -n "$selected_file" ]]; then
         if command -v "$EDITOR" &>/dev/null; then
@@ -172,6 +173,7 @@ _fuzzy_edit_search_file() {
     local initial_query="$1"
     local selected_file
     local fzf_options=()
+    fzf_options+=(--height "80%" --layout=reverse --preview-window right:60% --cycle)
     local max_depth=5
 
     if [[ -n "$initial_query" ]]; then
