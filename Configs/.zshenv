@@ -130,8 +130,7 @@ function _load_omz_on_init() {
 }
 
 # best fzf aliases ever
-
-_fuzzy_open_directory() {
+_fuzzy_change_directory() {
     local initial_query="$1"
     local selected_dir
     local fzf_options=('--preview=ls -p {}' '--preview-window=right:60%')
@@ -151,154 +150,45 @@ _fuzzy_open_directory() {
     fi
 }
 
-_fuzzy_edit_search_file() {
-    # Parse arguments
-    local content_search=false
-    local use_regex=false
-    local args=()
-    local search_dir="."
-    local search_term=""
-
-    # Parse command arguments
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-        --content)
-            content_search=true
-            shift
-            ;;
-        --regex)
-            use_regex=true
-            shift
-            ;;
-        -d | --dir)
-            search_dir="$2"
-            shift 2
-            ;;
-        *)
-            # Collect remaining args
-            args+=("$1")
-            shift
-            ;;
-        esac
-    done
-
-    # Set search term from first arg if available
-    [[ ${#args[@]} -gt 0 ]] && search_term="${args[0]}"
-
-    # Initialize variables
+_fuzzy_edit_search_file_content() {
+    # [f]uzzy [e]dit  [s]earch [f]ile [c]ontent
     local selected_file
-    local max_search_depth=5 # How deep to search
-    local fzf_options=()
+    selected_file=$(grep -irl "${1:-}" ./ | fzf --preview 'cat {}' --preview-window right:60%)
 
-    # Configure preview
-    if command -v bat &>/dev/null; then
-        fzf_options+=(--preview 'bat --color=always --style=numbers --line-range :500 {} 2>/dev/null')
-    elif command -v cat &>/dev/null; then
-        fzf_options+=(--preview 'cat {} 2>/dev/null')
-    fi
-
-    # Add fuzzy matching options to make it more flexible
-    fzf_options+=(
-        --height "80%"
-        --layout=reverse
-        # Enhanced fuzzy matching
-        --exact
-        --nth=1
-        # Improve scoring for adjacent character matches
-        --algo=v2
-        --preview-window
-        right:60% --cycle
-    )
-
-    # If search term is provided, add it as initial query
-    [[ -n "$search_term" ]] && fzf_options+=(--query="$search_term")
-
-    # Set grep options based on regex flag
-    local grep_options="-i"                        # Default to case-insensitive
-    [[ "$use_regex" = true ]] && grep_options="-E" # Use extended regex if --regex flag is set
-
-    # Create the search command based on the mode (content or filename)
-    if [[ "$content_search" = true ]]; then
-        # Content search mode
-        if [[ -n "$search_term" ]]; then
-            # If search term provided, use grep directly with exclusions
-            selected_file=$(grep -l --include="*" $grep_options -r "$search_term" "$search_dir" 2>/dev/null |
-                fzf ${fzf_options[@]} 2>/dev/null)
+    if [[ -n "$selected_file" ]]; then
+        if command -v "$EDITOR" &>/dev/null; then
+            "$EDITOR" "$selected_file"
         else
-            # Set up fzf with dynamic content search
-            fzf_options+=(--bind "change:reload:sleep 0.1; {
-                query={q}
-                if [[ -n \"\$query\" ]]; then
-                    grep -l --include=\"*\" \
-                        $grep_options -r \"\$query\" \"$search_dir\" 2>/dev/null || echo ''
-                else
-                    find '$search_dir' -type f -maxdepth 3 2>/dev/null
-                fi
-            }"
-                --ansi --phony)
-
-            # Start with an empty list - will be populated by change event
-            selected_file=$(echo "" | fzf ${fzf_options[@]} 2>/dev/null)
+            echo "EDITOR is not specified. using vim.  (you can export EDITOR in ~/.zshrc)"
+            vim "$selected_file"
         fi
+
     else
-        # Filename search mode (existing functionality)
-        # Adjust grep command based on regex flag
-        local grep_cmd=""
-        if [[ "$use_regex" = true ]]; then
-            grep_cmd="grep -E"
-        else
-            grep_cmd="grep -i"
-        fi
+        echo "No file selected or search returned no results."
+    fi
+}
 
-        local search_cmd='
-            query={q}
-            if [[ -n "$query" ]]; then
-                # Progressive depth search only when there is a query
-                # Level 1 (current directory)
-                find '$search_dir' -maxdepth 1 -type f 2>/dev/null | '"$grep_cmd"' "$query" 2>/dev/null
-                    
-                # Level 2
-                find '$search_dir' -mindepth 2 -maxdepth 2 -type f 2>/dev/null | '"$grep_cmd"' "$query" 2>/dev/null
-                    
-                # Level 3
-                find '$search_dir' -mindepth 3 -maxdepth 3 -type f 2>/dev/null | '"$grep_cmd"' "$query" 2>/dev/null
-                    
-                # Level 4+
-                find '$search_dir' -mindepth 4 -type f 2>/dev/null | '"$grep_cmd"' "$query" 2>/dev/null
-            else
-                # If no query, list all files recursively
-                find '$search_dir' -type f -maxdepth 3 2>/dev/null
-            fi || echo ""
-        '
+_fuzzy_edit_search_file() {
+    local initial_query="$1"
+    local selected_file
+    local fzf_options=()
+    local max_depth=5
 
-        # Set up fzf with both start and change events
-        fzf_options+=(
-            --bind "start:reload:$search_cmd"
-            --bind "change:reload:sleep 0.1; $search_cmd"
-            --ansi --phony
-        )
-
-        # Start with an empty list
-        selected_file=$(echo "" | fzf ${fzf_options[@]} 2>/dev/null)
+    if [[ -n "$initial_query" ]]; then
+        fzf_options+=("--query=$initial_query")
     fi
 
-    # Open selected file with editor
+    # -type f: only find files
+    selected_file=$(find . -maxdepth $max_depth -type f 2>/dev/null | fzf "${fzf_options[@]}")
+
     if [[ -n "$selected_file" && -f "$selected_file" ]]; then
         if command -v "$EDITOR" &>/dev/null; then
             "$EDITOR" "$selected_file"
-        elif command -v nvim &>/dev/null; then
-            nvim "$selected_file"
-        elif command -v vim &>/dev/null; then
-            vim "$selected_file"
-        elif command -v vi &>/dev/null; then
-            vi "$selected_file"
-        elif command -v nano &>/dev/null; then
-            nano "$selected_file"
         else
-            echo "EDITOR is not specified. set 'EDITOR' in your ~/.zshrc file, e.g. 'export EDITOR=nano"
+            echo "EDITOR is not specified. using vim.  (you can export EDITOR in ~/.zshrc)"
+            vim "$selected_file"
         fi
     else
-        echo "No file selected." >&2
         return 1
     fi
 }
@@ -393,7 +283,7 @@ function _load_if_terminal {
             .4='cd ../../../..' \
             .5='cd ../../../../..' \
             mkdir='mkdir -p' \
-            ffec='_fuzzy_edit_search_file --content' \
+            ffec='_fuzzy_edit_search_file_content' \
             ffcd='_fuzzy_change_directory' \
             ffe='_fuzzy_edit_search_file'
 
