@@ -136,7 +136,7 @@ format = "[ ](bold bright-green)"
 version_format = "${raw}"
 
 [python]
-format = "[${symbol}(${virtualenv})]($style)"
+format = "[${symbol}(${virtualenv}) ${version}]($style)"
 style = "bold bright-yellow"
 symbol = "[ ](bold bright-blue)"
 version_format = "${raw}"
