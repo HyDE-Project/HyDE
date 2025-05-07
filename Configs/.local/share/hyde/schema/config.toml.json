@@ -783,7 +783,7 @@
                     "type": "string"
                 },
                 "wallpaper": {
-                    "default": "$scrPath/wallpaper.sh --global",
+                    "default": "$HYDE_LIB_DIR/wallpaper.sh --global",
                     "description": "Wallpaper script.",
                     "type": "string"
                 },

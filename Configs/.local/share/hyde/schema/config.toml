@@ -713,7 +713,7 @@ type      = "object"
     type        = "string"
 
 [properties.hyprland_start.properties.wallpaper]
-    default     = "$scrPath/wallpaper.sh --global"
+    default     = "$HYDE_LIB_DIR/wallpaper.sh --global"
     description = "Wallpaper script."
     type        = "string"
 

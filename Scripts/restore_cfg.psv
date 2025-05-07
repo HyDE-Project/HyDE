@@ -117,3 +117,8 @@ S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 
 P|${HOME}/.config/hypr|hypridle.conf|hypridle
+
+ Session manager 
+P|${HOME}/.config/uwsm|env-Hyprland|uwsm
+S|${HOME}/.config/uwsm/hyde|env|uwsm
+S|${HOME}/.config/uwsm/hyde|env-nvidia|uwsm nvidia-utils
