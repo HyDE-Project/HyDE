@@ -1,0 +1,27 @@
+{
+  "custom/hyde-menu": {
+    "format": " ",
+    "tooltip": "Right-click for more options",
+    "menu": "on-click-right",
+    "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/hyde-menu.xml",
+    "menu-actions": {
+      "animations-select": "hyde-shell animations.sh --select",
+      "wallpaper-select": "hyde-shell wallpaper.sh --select --global",
+      "wallpaper-next": "hyde-shell wallpaper.sh --backend swww --next --global",
+      "wallpaper-previous": "hyde-shell wallpaper.sh --backend swww --previous --global",
+      "wallpaper-random": "hyde-shell wallpaper.sh --backend swww --random --global",
+      "theme-next": "hyde-shell themeswitch.sh -n",
+      "theme-previous": "hyde-shell themeswitch.sh -p",
+      "theme-select": "hyde-shell themeselect.sh",
+      "theme-import": "gnome-terminal -- theme.import.py --select",
+      "waybar-restart": "waybar.py -ubg",
+      "waybar-reload-css": "sed -i '${/^$/d;}'  $XDG_CONFIG_HOME/waybar/style.css",
+      "waybar-layout-select": "waybar.py --select",
+      "waybar-layout-next": "waybar.py --update --next",
+      "waybar-layout-previous": "waybar.py --update --prev",
+      "workflows-select": "hyde-shell workflows.sh --select",
+      "checkbox": "notify-send 'Checkbox' 'This is a checkbox'",
+      "about-hyde": "xdg-open https://hydeproject.pages.dev"
+    }
+  }
+}

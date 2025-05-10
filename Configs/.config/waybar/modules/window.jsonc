@@ -1,27 +1,18 @@
-    "hyprland/window": {
-        "format": "  {}",
-        "rotate": ${r_deg},
-        "separate-outputs": true,
-        "rewrite": {
-            "${USER}@${set_sysname}:(.*)": "$1 ",
-            "(.*) — Mozilla Firefox": "$1 󰈹",
-            "(.*)Mozilla Firefox": "Firefox 󰈹",
-            "(.*) - Visual Studio Code": "$1 󰨞",
-            "(.*)Visual Studio Code": "Code 󰨞",
-            "(.*) - Code - OSS": "$1 󰨞",
-            "(.*)Code - OSS": "Code 󰨞",
-            "(.*) — Dolphin": "$1 󰉋",
-            "(.*)Spotify": "Spotify 󰓇",
-            "(.*)Steam": "Steam 󰓓",
-            "(.*) - Discord": "$1  ",
-            "(.*)Netflix": "Netflix 󰝆 ",
-            "(.*) — Google chrome": "$1  ",
-            "(.*)Google chrome": "Google chrome  ",
-            "(.*) — Github": "$1  ",
-            "(.*)Github": "Github ",
-            "(.*)Spotify Free": "Spotify 󰓇",
-            "(.*)Spotify Premiun": "Spotify 󰓇",
-        },
-        "max-length": 50
-    },
+/* DEPRECATED
+Instead of this file, please use 
+			custom-module.jsonc for 'custom/module' 
+			wlr-module.jsonc for 'wlr/module'
+			hyprland-module.jsonc for 'hyprland/module'
 
+? These files are deprecated and will be removed in a future release.
+
+* Please Manually REMOVE this module inside the "modules" folder, to avoid any clutter.
+
+TODO: Manual removal will be announced in the release notes after  the removal of this module upstream.
+
+code:   e3b0c44298fc1c14   - lol just a random hash so we can identify the file in the future
+
+
+{} // Empty Object to avoid syntax errors
+*/
+{}
