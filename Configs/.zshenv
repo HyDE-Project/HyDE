@@ -211,6 +211,11 @@ function _load_post_init() {
         eval "$(fzf --zsh)"
     fi
 
+    # zsh-autosuggestions won't work on first prompt when deferred
+    if typeset -f _zsh_autosuggest_start > /dev/null; then
+      _zsh_autosuggest_start
+    fi
+
     # User rc file always overrides
     [[ -f $HOME/.zshrc ]] && source $HOME/.zshrc
 
