@@ -107,14 +107,14 @@ if [ "$action" = "read" ]; then
         # Fetch current running temperature
         current_running_temp=$(hyprctl hyprsunset temperature)
         if [ "$current_running_temp" != "$currentTemp" ]; then
-            hyprctl hyprsunset temperature "$currentTemp" > /dev/null
+            hyprctl --quiet hyprsunset temperature "$currentTemp"
         fi
     fi
 else
     if [ "$toggle_mode" -eq 0 ]; then
-        hyprctl hyprsunset identity > /dev/null
+        hyprctl --quiet hyprsunset identity
     else
-        hyprctl hyprsunset temperature "$newTemp" > /dev/null
+        hyprctl --quiet hyprsunset temperature "$newTemp"
     fi
 fi
 
