@@ -84,6 +84,7 @@ O|${HOME}/.local/share/fastfetch/presets|hyde|fastfetch
 
 S|${HOME}/.config/kitty|hyde.conf theme.conf|kitty
 S|${HOME}/.config/kitty|kitty.conf|kitty
+P|${HOME}/.config/kitty|userprefs.conf|kitty
 
  Shell 
 S|${HOME}/.config/fish|conf.d functions completions|fish
