@@ -2,3 +2,35 @@
 # Environment variables should be on top
 # Updated config.toml file can be found at $HOME/.local/share/hyde/config.toml
 "$schema" = "https://raw.githubusercontent.com/HyDE-Project/HyDE/refs/heads/master/Configs/.local/share/hyde/schema/config.toml.json"
+
+[rofi]
+font = "JetBrainsMono Nerd Font"
+scale = 10
+
+[rofi.launch]
+scale = 10
+
+[rofi.cliphist]
+scale = 10
+
+[screenshot]
+annotation_tool = "swappy"
+
+[mediaplayer]
+prefix_playing = " "
+prefix_paused = " "
+max_length = 22
+standby_text = ""
+artist_track_separator = " - "
+
+[hyprland]
+lockscreen = "hyprlock"
+cursor_theme = "Bibata-Modern-Ice"
+cursor_size = 24
+
+[waybar]
+scale = 12
+
+[volume]
+boost = true
+boost_limit = 150
