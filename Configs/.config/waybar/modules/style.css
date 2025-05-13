@@ -109,6 +109,10 @@ ${modules_ls}
     padding-${x4}: ${g_paddin}px;
 }
 
+#language {
+    min-width: ${g_minwidth}px;
+}
+
 #workspaces,
 #taskbar {
     padding: 0px;
