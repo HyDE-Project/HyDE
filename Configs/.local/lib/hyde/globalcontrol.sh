@@ -154,7 +154,7 @@ get_themes() {
         [ -f "${thmDir}/.sort" ] && thmSortS+=("$(head -1 "${thmDir}/.sort")") || thmSortS+=("0")
         thmWallS+=("${realWallPath}")
         thmListS+=("${thmDir##*/}") # Use this instead of basename
-    done < <(find "${hydeConfDir}/themes" -mindepth 1 -maxdepth 1 -type d)
+    done < <(find "${HYDE_CONFIG_HOME}/themes" -mindepth 1 -maxdepth 1 -type d)
 
     while IFS='|' read -r sort theme wall; do
         thmSort+=("${sort}")
@@ -179,14 +179,14 @@ case "${enableWallDcol}" in
 *) enableWallDcol=0 ;;
 esac
 
-if [ -z "${HYDE_THEME}" ] || [ ! -d "${hydeConfDir}/themes/${HYDE_THEME}" ]; then
+if [ -z "${HYDE_THEME}" ] || [ ! -d "${HYDE_CONFIG_HOME}/themes/${HYDE_THEME}" ]; then
     get_themes
     HYDE_THEME="${thmList[0]}"
 fi
 
-HYDE_THEME_DIR="${hydeConfDir}/themes/${HYDE_THEME}"
+HYDE_THEME_DIR="${HYDE_CONFIG_HOME}/themes/${HYDE_THEME}"
 wallbashDirs=(
-    "${hydeConfDir}/wallbash"
+    "${HYDE_CONFIG_HOME}/wallbash"
     "${XDG_DATA_HOME}/hyde/wallbash"
     "/usr/local/share/hyde/wallbash"
     "/usr/share/hyde/wallbash"

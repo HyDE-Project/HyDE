@@ -1,0 +1,52 @@
+name: Refresh Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: "Type of version bump (patch, minor, major)"
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  refresh-release:
+    runs-on: ubuntu-latest
+    # Add permissions for GitHub token
+    permissions:
+      contents: write # Needed to push to branches
+      pull-requests: write # Needed to create/update PRs
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Add token for authentication
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      - name: Create conventional commit to trigger release
+        run: |
+          # Create empty commit with appropriate conventional commit message
+          if [[ "${{ github.event.inputs.version_bump }}" == "minor" ]]; then
+            git commit --allow-empty -m "feat: trigger new release refresh"
+          elif [[ "${{ github.event.inputs.version_bump }}" == "major" ]]; then
+            git commit --allow-empty -m "feat!: trigger major release refresh"
+          else
+            git commit --allow-empty -m "fix: trigger patch release refresh"
+          fi
+
+          # Push to master branch
+          git push origin HEAD:master
+
+      - name: Provide feedback
+        run: echo "Release refresh triggered successfully with a ${{ github.event.inputs.version_bump }} version bump!"

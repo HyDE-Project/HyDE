@@ -48,12 +48,15 @@ pidFile="$HYDE_RUNTIME_DIR/sysmonlaunch.pid"
 if [ -f "$pidFile" ]; then
   while IFS= read -r line; do
     pid=$(awk -F ':::' '{print $1}' <<<"$line")
-    cmd=$(awk -F ':::' '{print $2}' <<<"$line")
-    pkill -P "$pid"
-    pkg_installed flatpak && flatpak kill "$cmd" 2>/dev/null
+    if [ -d "/proc/${pid}" ]; then
+      cmd=$(awk -F ':::' '{print $2}' <<<"$line")
+      pkill -P "$pid"
+      pkg_installed flatpak && flatpak kill "$cmd" 2>/dev/null
+      rm "$pidFile"
+      exit 0
+    fi
   done <"$pidFile"
   rm "$pidFile"
-  exit 0
 fi
 
 pkgChk=("io.missioncenter.MissionCenter" "htop" "btop" "top")                     # Array of commands to check

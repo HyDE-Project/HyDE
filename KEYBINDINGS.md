@@ -52,7 +52,8 @@ Multi-language KEYBINDINGS support
 
 Here are all HyDE specific keybindings listed.
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
+> [!TIP]  
+> <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
 
 <!-- ## <a id=window-management>Window Management</a> -->
 
@@ -87,6 +88,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>Right</kbd> | focus right |
 | <kbd>SUPER</kbd> + <kbd>Up</kbd>    | focus up    |
 | <kbd>SUPER</kbd> + <kbd>Down</kbd>  | focus down  |
+| <kbd>ALT</kbd> + <kbd>Tab</kbd>     | cycle focus |
 
 ### Resize Active Window
 

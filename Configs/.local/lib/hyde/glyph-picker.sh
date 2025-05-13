@@ -77,7 +77,7 @@ main() {
     # create recent data file if it doesn't exist
     if [[ ! -f "${recent_data}" ]]; then
         mkdir -p "$(dirname "${recent_data}")"
-        echo " Arch linux - I use Arch, BTW" >"${recent_data}"
+        echo -e " \tArch linux - I use Arch, BTW" >"${recent_data}"
     fi
 
     # read recent and main entries

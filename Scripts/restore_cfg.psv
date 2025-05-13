@@ -33,6 +33,7 @@ P|${HOME}/.config/hyde|config.toml|hyprland
 P|${HOME}/.config/hypr|hyde.conf workflows.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
 P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
 P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
+S|${HOME}/.config/systemd|user|systemd
 P|${HOME}/.local/state/hyde|hyprland.conf|hyprland
 
 S|${HOME}/.config/hypr|hyprland.conf|hyprland
@@ -70,7 +71,8 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
 
  Shell 
 P|${HOME}/.config|fish|fish
-P|${HOME}|.zshrc .hyde.zshrc .p10k.zsh|zsh
+P|${HOME}|.zshrc .user.zsh|zsh  
+P|${HOME}|.p10k.zsh|zsh zsh-theme-powerlevel10k
 P|${HOME}/.config/starship|starship.toml|starship
 S|${HOME}|.zshenv|zsh
 

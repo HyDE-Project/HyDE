@@ -93,7 +93,7 @@ cd ~/HyDE/Scripts
 
 > [!IMPORTANT]
 > Refer your list from `Scripts/pkg_extra.lst`
-> or you can `cp  Scripts/pkg_extra.lst Scripts/pkg_user.lst` if you wish to install all extra packages.
+> or you can `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst` if you wish to install all extra packages.
 
 <!--
 
@@ -126,7 +126,7 @@ We welcome contributions from the community! To get started:
 - Review our release process in [RELEASE_POLICY.md](RELEASE_POLICY.md)
 - Add yourself to [CONTRIBUTORS.md](CONTRIBUTORS.md) when making your first PR
 
-Whether you're helping with code, testing, or documentation, we appreciate your support in making HyDE better for everyone.
+Whether you're helping with code, testing, or documentation, we appreciate your support in making HyDE better for everyone. Thank you!
 
 <div align="right">
   <br>
