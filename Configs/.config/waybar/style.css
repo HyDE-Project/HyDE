@@ -146,6 +146,10 @@ tooltip {
     padding-right: 4px;
 }
 
+#language {
+    min-width: 11px;
+}
+
 #workspaces,
 #taskbar {
     padding: 0px;
