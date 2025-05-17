@@ -1,0 +1,25 @@
+{
+  "image#hyde-menu": {
+    "path": "$HOME/.face.icon",
+    "size": 13,
+    "interval": 60,
+    "menu": "on-click-right",
+    "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/hyde-menu.xml",
+    "menu-actions": {
+      "wallpaper-select": "wallpaper.sh --backend swww --select --global",
+      "wallpaper-next": "wallpaper.sh --backend swww --next --global",
+      "wallpaper-previous": "wallpaper.sh --backend swww --previous --global",
+      "wallpaper-random": "wallpaper.sh --backend swww --random --global",
+      "theme-next": "themeswitch.sh -n",
+      "theme-previous": "themeswitch.sh -p",
+      "theme-select": "themeselect.sh",
+      "waybar-restart": "waybar.py -ubg",
+      "waybar-reload-css": "sed -i '${/^$/d;}'  $XDG_CONFIG_HOME/waybar/style.css ",
+      "waybar-layout-select": "waybar.py -j",
+      "waybar-layout-next": "waybar.py --update --next",
+      "waybar-layout-previous": "waybar.py --update --prev",
+      "checkbox": "notify-send 'Checkbox' 'This is a checkbox'",
+      "about-hyde": "xdg-open https://hydeproject.pages.dev"
+    }
+  }
+}

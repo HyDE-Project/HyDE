@@ -1,0 +1,42 @@
+{
+  "custom/swaync": {
+    "format": "{icon} {0}",
+    "tooltip": true,
+    "format-icons": {
+      "notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-notification": "<span foreground='red'><sup></sup></span>",
+      "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+      "dnd-inhibited-none": "",
+      "dnd-none": "",
+      "email-notification": "<span foreground='white'><sup></sup></span>",
+      "chat-notification": "󱋊<span foreground='white'><sup></sup></span>",
+      "warning-notification": "󱨪<span foreground='yellow'><sup></sup></span>",
+      "error-notification": "󱨪<span foreground='red'><sup></sup></span>",
+      "network-notification": "󱂇<span foreground='white'><sup></sup></span>",
+      "battery-notification": "󰁺<span foreground='white'><sup></sup></span>",
+      "update-notification": "󰚰<span foreground='white'><sup></sup></span>",
+      "music-notification": "󰝚<span foreground='white'><sup></sup></span>",
+      "volume-notification": "󰕿<span foreground='white'><sup></sup></span>",
+      "dnd": "",
+      "none": ""
+    },
+    // "interval": "once",
+    "return-type": "json",
+    "exec-if": "sleep 5 && swaync-client --count --skip-wait 1>2 /dev/null", // This is to check if swaync daemon is running
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    // "on-click-right": "swaync-client -d -sw",
+    "escape": true,
+    // "on-click-right": "menu",
+    "menu": "on-click-right",
+    "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/swaync.xml",
+    "menu-actions": {
+      "toggle-dnd": "swaync-client --toggle-dnd",
+      "reload-config": "swaync-client --reload-config",
+      "reload-css": "swaync-client --reload-css",
+      "clear-all": "swaync-client --close-all"
+    }
+  }
+}
