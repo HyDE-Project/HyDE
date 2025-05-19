@@ -48,7 +48,8 @@ Multi-language KEYBINDINGS support
 <!-- # <a id=hyde-keybindings>HyDE Keybindings</a> -->
 <!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> يعرض روابط المفاتيح.
+>[!TIP] 
+> <kbd>Super</kbd> + <kbd>/</kbd> يعرض روابط المفاتيح.
 
 ## <a id=window-management></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=إدارة%20النوافذ" width="450"/>
 

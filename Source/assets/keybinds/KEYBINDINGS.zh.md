@@ -50,7 +50,7 @@ Multi-language KEYBINDINGS support
 
 这里列出了所有 HyDE 的详细按键映射。
 
-> [!TIP]
+>[!TIP]
 > 按下<kbd>Super</kbd> + <kbd>/</kbd> 会列出可用的按键映射。
 
 <!-- ## <a id=window-management>Window Management</a> -->

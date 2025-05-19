@@ -50,7 +50,8 @@ Soporte multilingüe de KEYBINDINGS
 
 Aquí están listados todos los keybindings específicos de HyDE.
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> muestra las combinaciones de teclas.
+>[!TIP]
+> <kbd>Super</kbd> + <kbd>/</kbd> muestra las combinaciones de teclas.
 
 <!-- ## <a id=gestión-de-ventanas>Gestión de ventanas</a> -->
 

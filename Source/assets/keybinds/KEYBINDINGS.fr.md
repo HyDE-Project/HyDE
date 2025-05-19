@@ -47,7 +47,8 @@ Prise en charge multilingue des RACCOURCIS CLAVIER
 
 Voici tous les raccourcis clavier spécifiques à HyDE.
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> affiche les raccourcis clavier.
+>[!TIP] 
+> <kbd>Super</kbd> + <kbd>/</kbd> affiche les raccourcis clavier.
 
 <!-- ## <a id="gestion-fenetre">Gestion des Fenêtres</a> -->
 

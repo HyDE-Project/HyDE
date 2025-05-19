@@ -48,7 +48,8 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 
 Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 
-> [!TIP] > <kbd>Super</kbd> + <kbd>/</kbd> zeigt die Tastenkombinationen.
+>[!TIP] 
+> <kbd>Super</kbd> + <kbd>/</kbd> zeigt die Tastenkombinationen.
 
 <!-- ## <a id="fenster-verwaltung">Fenster Verwaltung</a> -->
 
