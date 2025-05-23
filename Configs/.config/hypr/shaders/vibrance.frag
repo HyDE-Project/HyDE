@@ -41,7 +41,6 @@ We only need to match the file name and use 'inc' to incdicate that
 precision highp float;
 varying vec2 v_texcoord;
 uniform sampler2D tex;
-uniform float myValue;
 
 
 const float VIBRANCE = VIBRANCE_INTENSITY; 
