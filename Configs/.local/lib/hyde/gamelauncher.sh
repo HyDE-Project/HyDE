@@ -3,7 +3,6 @@
 # set variables
 MODE=${1}
 scrDir=$(dirname "$(realpath "$0")")
-thumbName="library_600x900.jpg"
 source $scrDir/globalcontrol.sh
 # ThemeSet="${confDir}/hypr/themes/theme.conf"
 
@@ -20,6 +19,11 @@ icon_border=$((elem_border - 3))
 r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:${icon_border}px;}"
 
 fn_steam() {
+
+  notify-send -a "HyDE Alert" "Please wait... " -t 4000
+
+  libraryThumbName="library_600x900.jpg"
+  libraryHeaderName="header.jpg"
   # Get all manifests found within steam libs
   # SteamLib might contain more than one path
   ManifestList=$(grep '"path"' $SteamLib | awk -F '"' '{print $4}' | while read sp; do
@@ -28,6 +32,9 @@ fn_steam() {
   find "${sp}/steamapps" -type f -name "appmanifest_*.acf" 2>/dev/null 
   done)
 
+  if [ -z "${ManifestList}" ]; then
+    notify-send -a "HyDE Alert" "Cannot Fetch Steam Games!" && exit 1
+  fi
 
   # read installed games
   GameList=$(echo "$ManifestList" | while read acf; do
@@ -47,9 +54,8 @@ fn_steam() {
     echo "$GameList" | while read acf; do
       appid=$(echo "${acf}" | cut -d '|' -f 2)
       game=$(echo "${acf}" | cut -d '|' -f 1)
-
       # find the lib image
-      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${thumbName}")
+      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${libraryThumbName}" | head  -1)
       printf "%s\x00icon\x1f${libImage}\n" "${game}" >&2
       printf "%s\x00icon\x1f${libImage}\n" "${game}"
     done | rofi -dmenu \
@@ -58,12 +64,13 @@ fn_steam() {
   )
 
   # launch game
-  if [ -n "$RofiSel" ]; then
+  if [ -n "$RofiSel" ]; then 
     launchid=$(echo "$GameList" | grep "$RofiSel" | cut -d '|' -f 2)
+
+    headerImage=$(find "${SteamThumb}/${launchid}/" -type f -name "*${libraryHeaderName}")
     ${steamlaunch} -applaunch "${launchid} [gamemoderun %command%]" &
     # dunstify "HyDE Alert" -a "Launching ${RofiSel}..." -i ${SteamThumb}/${launchid}_header.jpg -r 91190 -t 2200
-    notify-send -a "HyDE Alert" -i "${SteamThumb}/${launchid}_header.jpg" "Launching ${RofiSel}..."
-
+    notify-send -a "HyDE Alert" -i "$headerImage" "Launching ${RofiSel}..."
   fi
 }
 
