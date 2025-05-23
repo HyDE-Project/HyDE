@@ -1,0 +1,45 @@
+name: Documentation update
+description: Propose a change to the project documentation
+title: "[Docs]: Short description of the change"
+labels: ["documentation", "needs review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Documentation Update
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a clear and concise description of the documentation update you'd like to see made.
+      placeholder: Provide a clear and concise description of the documentation update you'd like to see made.
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_documentation
+    attributes:
+      label: Current Documentation
+      description: Provide a link to the current documentation or describe where it can be found.
+      placeholder: Provide a link to the current documentation or describe where it can be found.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_documentation
+    attributes:
+      label: Proposed Documentation
+      description: Provide a clear and concise description of the updated documentation that you'd like to see added.
+      placeholder: Provide a clear and concise description of the updated documentation that you'd like to see added.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_information
+    attributes:
+      label: Additional Information
+      description: Add any other information about the documentation update here.
+      placeholder: Add any other information about the documentation update here. For example, you might include links to similar documentation in other projects, or screenshots or diagrams to help explain your idea.
+    validations:
+      required: false

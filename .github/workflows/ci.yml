@@ -1,0 +1,282 @@
+name: CI
+on:
+  push:
+    branches:
+      - dev
+      - master
+  pull_request:
+
+jobs:
+  dev-to-master-pr:
+    name: Create or Update PR from Dev to Master
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Generate commit history and calculate suggested merge date
+      - name: Generate commit history and schedule
+        id: generate-commits
+        run: |
+          chmod +x .github/scripts/promote_to_master.sh
+          bash .github/scripts/promote_to_master.sh
+
+      # Check if there are any commits between master and dev
+      - name: Check for commits between branches
+        id: check-commits
+        run: |
+          # Fetch master branch to make sure it exists locally
+          git fetch origin master:master || true
+
+          # We're already on dev branch since the job runs when dev is pushed
+          # Compare dev to master to see if there are any differences
+          if git rev-parse --verify master >/dev/null 2>&1; then
+            COMMIT_COUNT=$(git rev-list --count master..dev)
+            echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+            if [ "$COMMIT_COUNT" -gt 0 ]; then
+              echo "Detected $COMMIT_COUNT commit(s) between master and dev"
+              echo "has_commits=true" >> $GITHUB_OUTPUT
+            else
+              echo "No commits detected between master and dev"
+              echo "has_commits=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "Master branch doesn't exist yet. Assuming changes need to be propagated."
+            echo "commit_count=999" >> $GITHUB_OUTPUT  # Use a high number to indicate there are changes
+            echo "has_commits=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Set up git for potential operations
+      - name: Setup git
+        if: steps.check-commits.outputs.has_commits == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      # Create or update PR using GitHub API with retry logic
+      - name: Create or Update Pull Request
+        if: steps.check-commits.outputs.has_commits == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { repo, owner } = context.repo;
+            const prBranch = "dev";
+            const prTitle = "chore: release automated changes from dev to master";
+            const prBody = process.env.PR_BODY;
+
+            // Retry helper function
+            async function retryOperation(operation, maxRetries = 3, delay = 5000) {
+              let lastError;
+              for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                  return await operation();
+                } catch (error) {
+                  lastError = error;
+                  console.log(`Attempt ${attempt}/${maxRetries} failed: ${error.message}`);
+                  if (attempt < maxRetries) {
+                    console.log(`Waiting ${delay/1000} seconds before retry...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                  }
+                }
+              }
+              throw lastError;
+            }
+
+            // Check if PR already exists
+            const prs = await retryOperation(async () => {
+              return github.rest.pulls.list({
+                owner,
+                repo,
+                head: `${owner}:${prBranch}`,
+                base: 'master',
+                state: 'open'
+              });
+            });
+
+            if (prs.data.length > 0) {
+              // Update existing PR
+              console.log(`Updating existing PR #${prs.data[0].number}`);
+              await retryOperation(async () => {
+                return github.rest.pulls.update({
+                  owner,
+                  repo,
+                  pull_number: prs.data[0].number,
+                  title: prTitle,
+                  body: prBody
+                });
+              });
+              console.log(`PR #${prs.data[0].number} updated successfully.`);
+            } else {
+              // Create new PR
+              try {
+                const result = await retryOperation(async () => {
+                  return github.rest.pulls.create({
+                    owner,
+                    repo,
+                    title: prTitle,
+                    body: prBody,
+                    head: prBranch,
+                    base: 'master'
+                  });
+                });
+                console.log(`PR created: ${result.data.html_url}`);
+              } catch (error) {
+                console.log(`All attempts to create PR failed: ${error.message}`);
+                
+                // As a fallback, output command for manual PR creation
+                console.log(`To create the PR manually, visit: https://github.com/${owner}/${repo}/compare/master...${prBranch}`);
+                throw error;
+              }
+            }
+
+      # Output message when no commits are found
+      - name: No Commits Message
+        if: steps.check-commits.outputs.has_commits == 'false'
+        run: |
+          echo "::notice::No new commits detected between master and dev branches. Skipping PR creation."
+          echo "The branches master and dev are already in sync."
+
+  release:
+    name: release
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v3
+        id: release
+        with:
+          release-type: simple
+          include-v-in-tag: true
+          package-name: hyde
+          command: github-release
+          token: ${{ secrets.GITHUB_TOKEN }}
+          default-branch: master
+          changelog-types: |
+            [
+              {"type":"feat","section":"Features","hidden":false},
+              {"type":"fix","section":"Bug Fixes","hidden":false},
+              {"type":"docs","section":"Documentation","hidden":false},
+              {"type":"style","section":"Styles","hidden":false},
+              {"type":"refactor","section":"Code Refactoring","hidden":false},
+              {"type":"perf","section":"Performance Improvements","hidden":false},
+              {"type":"test","section":"Tests","hidden":false},
+              {"type":"build","section":"Build System","hidden":false},
+              {"type":"ci","section":"Continuous Integration","hidden":false},
+              {"type":"chore","section":"Miscellaneous Chores","hidden":true}
+            ]
+
+      # Checkout code to work with tags and commits
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Always update the latest release description, even if no new release is created
+      - name: Update Latest Release Description
+        if: ${{ !steps.release.outputs.release_created }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { repo, owner } = context.repo;
+
+            // Get latest release
+            const releases = await github.rest.repos.listReleases({
+              owner,
+              repo,
+              per_page: 1
+            });
+
+            if (releases.data.length === 0) {
+              console.log('No releases found to update');
+              return;
+            }
+
+            const latestRelease = releases.data[0];
+            console.log(`Found latest release: ${latestRelease.tag_name}`);
+
+            // Get previous release to calculate commits in between
+            const allReleases = await github.rest.repos.listReleases({
+              owner,
+              repo,
+              per_page: 2
+            });
+
+            const previousTag = allReleases.data.length > 1 ? 
+              allReleases.data[1].tag_name : 
+              'HEAD~20'; // Fallback to last 20 commits if no previous release
+
+            // Get commits between the two tags
+            const { execSync } = require('child_process');
+            let commitList;
+            try {
+              commitList = execSync(
+                `git log --pretty=format:"* %s (%h)" ${previousTag}..${latestRelease.tag_name} | grep -v "Merge pull request"`
+              ).toString().trim();
+            } catch (e) {
+              console.log('Error getting commit list:', e);
+              commitList = 'Could not generate commit list automatically';
+            }
+
+            // Format the release notes with sections
+            const features = commitList.split('\n')
+              .filter(line => line.includes('feat:') || line.includes('feat('))
+              .join('\n');
+              
+            const fixes = commitList.split('\n')
+              .filter(line => line.includes('fix:') || line.includes('fix('))
+              .join('\n');
+              
+            const docs = commitList.split('\n')
+              .filter(line => line.includes('docs:') || line.includes('docs('))
+              .join('\n');
+              
+            const other = commitList.split('\n')
+              .filter(line => !line.includes('feat:') && !line.includes('fix:') && !line.includes('docs:') &&
+                             !line.includes('feat(') && !line.includes('fix(') && !line.includes('docs('))
+              .join('\n');
+
+            // Build release body
+            let releaseBody = `# What's Changed\n\n`;
+
+            if (features) {
+              releaseBody += `## Features\n${features}\n\n`;
+            }
+
+            if (fixes) {
+              releaseBody += `## Bug Fixes\n${fixes}\n\n`;
+            }
+
+            if (docs) {
+              releaseBody += `## Documentation\n${docs}\n\n`;
+            }
+
+            if (other) {
+              releaseBody += `## Other Changes\n${other}\n\n`;
+            }
+
+            releaseBody += `**Full Changelog**: https://github.com/${owner}/${repo}/compare/${previousTag}...${latestRelease.tag_name}`;
+
+            // Update the release
+            console.log(`Updating release ${latestRelease.id} with new description`);
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: latestRelease.id,
+              body: releaseBody
+            });
+
+            console.log('Release description updated successfully');
+
+      # Tag stable version (existing logic)
+      - name: tag stable versions
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/google-github-actions/release-please-action.git"
+          git tag -d stable || true
+          git push origin :stable || true
+          git tag -a stable -m "Last Stable Release v${{ steps.release.outputs.version }}"
+          git push origin stable

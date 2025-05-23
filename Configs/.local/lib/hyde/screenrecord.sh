@@ -42,7 +42,7 @@ Note:
     Additional arguments are passed to '${RECORDER}'.
 
 Example:
-        'hyde-shell screenrecord' --record -- --audio --codec libx264
+        'hyde-shell screenrecord' --start -- --audio --codec libx264
 
 
     To see all available options for '${RECORDER}', run:

@@ -285,14 +285,13 @@ if [ "${enableWallDcol}" -eq 0 ] && [[ "${reload_flag}" -eq 1 ]]; then
         [ -z "${fKey}" ] && deployList+=("${pKey}")
     done < <(find "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
 
-    # Add a timeout to parallel to prevent hanging
-    parallel --timeout 10 fn_wallbash ::: "${deployList[@]}" || true
+    # Process templates in parallel
+    parallel fn_wallbash ::: "${deployList[@]}" || true
 
 elif [ "${enableWallDcol}" -gt 0 ]; then
     print_log -sec "wallbash" -stat "apply ${dcol_mode} colors" "Wallbash theme"
     # This is the reason we avoid SPACES for the wallbash template names
-    # Add a timeout to parallel to prevent hanging
-    find "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel --timeout 10 fn_wallbash {} || true
+    find "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true
 fi
 
 #  Theme mode: detects the color-scheme set in hypr.theme and falls back if nothing is parsed.
@@ -300,5 +299,5 @@ revert_colors=0
 [ "${enableWallDcol}" -eq 0 ] && { grep -q "${dcol_mode}" <<<"$(get_hyprConf "COLOR_SCHEME")" || revert_colors=1; }
 export revert_colors
 
-# Add a timeout to parallel to prevent hanging
-find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | sort | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel --timeout 10 fn_wallbash {} || true
+# Process "always" templates in parallel
+find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | sort | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true

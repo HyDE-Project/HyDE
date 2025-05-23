@@ -2,16 +2,16 @@ ${XDG_CACHE_HOME}/hyde/wallbash/discord.css|${WALLBASH_SCRIPTS}/discord.sh
 @import url('https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css');
 
 :root {
-  --accentcolor: <wallbash_pry1_rgb>;
+  --accentcolor: <wallbash_1xa6_rgb>;
   --accentcolor2: <wallbash_pry2_rgb>;
-  --linkcolor: <wallbash_txt2_rgb>;
+  --linkcolor: <wallbash_1xa6_rgb>;
   --mentioncolor: <wallbash_1xa5_rgb>;
   --textbrightest: <wallbash_txt1_rgb>;
   --textbrighter: <wallbash_txt2_rgb>;
   --textbright: <wallbash_1xa9_rgb>;
   --textdark: <wallbash_3xa9_rgb>;
-  --textdarker: <wallbash_txt3_rgb>;
-  --textdarkest: <wallbash_txt4_rgb>;
+  --textdarker: <wallbash_3xa5_rgb>;
+  --textdarkest: <wallbash_3xa1_rgb>;
 
   --backgroundaccent: <wallbash_1xa5_rgb>;
   --backgroundprimary: <wallbash_2xa1_rgb>;
@@ -19,7 +19,7 @@ ${XDG_CACHE_HOME}/hyde/wallbash/discord.css|${WALLBASH_SCRIPTS}/discord.sh
   --backgroundsecondaryalt: <wallbash_pry1_rgb>;
   --backgroundtertiary: <wallbash_pry1_rgb>;
   --backgroundfloating: <wallbash_2xa1_rgb>;;
-  --settingsicons: 1;
+  --settingsicons: 0;
 }
 
 /* Any custom CSS below here */

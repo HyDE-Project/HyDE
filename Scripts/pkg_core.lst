@@ -75,8 +75,8 @@ fzf                                                    # Command-line fuzzy find
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
 zsh-theme-powerlevel10k-git|zsh                        # Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
+starship|zsh                                           # customizable shell prompt written in Rust
 # starship-git                                         # The cross-shell prompt for astronauts  
-pokego-bin|zsh                                         # display pokemon sprites in terminal (written GO)
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt
 fastfetch                                              # system information fetch tool

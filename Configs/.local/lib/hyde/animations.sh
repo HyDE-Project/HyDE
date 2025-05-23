@@ -132,6 +132,7 @@ fn_update() {
 
 \$ANIMATION=${current_animation}
 \$ANIMATION_PATH=./animations/${current_animation}.conf
+source = \$ANIMATION_PATH
 EOF
     # cat "${animDir}/${current_animation}.conf" >>"${confDir}/hypr/animations.conf"
 }

@@ -43,7 +43,7 @@ scale = 8
 # glyph-picker.sh configuration
 scale = 8
 
-[rofi.launcher]
+[rofi.launch]
 # rofilaunch.sh configuration
 # style = "10"
 scale = 5

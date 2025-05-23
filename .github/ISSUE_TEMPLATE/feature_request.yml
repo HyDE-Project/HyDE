@@ -1,0 +1,54 @@
+name: Feature request
+description: Suggest a feature for this project
+title: "[Feature Request]: Short description of the feature"
+labels: ["enhancement", "needs triage", "feature request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a clear and concise description of the feature you'd like to see added.
+      placeholder: Provide a clear and concise description of the feature you'd like to see added.
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: Describe how this feature would be useful to you or to other users of the project.
+      placeholder: Describe how this feature would be useful to you or to other users of the project.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: If you have a specific solution in mind, describe it here.
+      placeholder: If you have a specific solution in mind, describe it here. If not, you can skip this section.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives
+      description: Are there any alternative solutions or workarounds that you've considered?
+      placeholder: Are there any alternative solutions or workarounds that you've considered? If so, describe them here.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_information
+    attributes:
+      label: Additional Information
+      description: Add any other information about the feature request here.
+      placeholder: Add any other information about the feature request here. For example, you might include links to similar features in other projects, or screenshots or diagrams to help explain your idea.
+    validations:
+      required: false

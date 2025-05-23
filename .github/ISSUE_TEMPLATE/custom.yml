@@ -1,0 +1,75 @@
+name: Custom template
+description: Use this template to submit a custom issue
+title: "[Custom]: Short description of the issue"
+labels: ["custom"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Custom Template
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a clear and concise description of the issue or request.
+      placeholder: Provide a clear and concise description of the issue or request.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce (if applicable)
+      description: Steps to reproduce the behavior if applicable
+      placeholder: |
+        1. First Step
+        2. Second Step
+        3. and so on...
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: What did you expect to happen?
+    validations:
+      required: false
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: What actually happened?
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots (if applicable)
+      description: If applicable, add screenshots to help explain your problem.
+      placeholder: If applicable, add screenshots to help explain your problem.
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution (if applicable)
+      description: If you have a specific solution in mind, describe it here.
+      placeholder: If you have a specific solution in mind, describe it here. If not, you can skip this section.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_information
+    attributes:
+      label: Additional Information
+      description: Add any other information about the issue or request here.
+      placeholder: Add any other information about the issue or request here. For example, you might include links to similar features in other projects, or screenshots or diagrams to help explain your idea.
+    validations:
+      required: false

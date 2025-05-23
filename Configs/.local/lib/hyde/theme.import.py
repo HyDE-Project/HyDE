@@ -279,8 +279,7 @@ def fzf_menu():
             print("\n❌ Operation cancelled.\n")
             return
         print("\n🚀 Proceeding with theme installation...\n")
-        for theme in SELECTED_THEMES:
-            patch_themes(SELECTED_THEMES)
+        patch_themes(SELECTED_THEMES)
         subprocess.run(["hyde-shell", "reload"], check=True)
 
     except KeyboardInterrupt:
