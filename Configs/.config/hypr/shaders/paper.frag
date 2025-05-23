@@ -39,7 +39,7 @@ Use 'inc' to indicate that this is an "include" file for custom defines.
 #define PAPER_SEPIA 0.
 #endif
 #ifndef PAPER_GRAIN
-#define PAPER_GRAIN.7
+#define PAPER_GRAIN 0.7
 #endif
 
 precision highp float;
