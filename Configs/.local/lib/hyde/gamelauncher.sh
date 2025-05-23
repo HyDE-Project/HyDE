@@ -3,7 +3,6 @@
 # set variables
 MODE=${1}
 scrDir=$(dirname "$(realpath "$0")")
-thumbName="library_600x900.jpg"
 source $scrDir/globalcontrol.sh
 # ThemeSet="${confDir}/hypr/themes/theme.conf"
 
@@ -33,7 +32,7 @@ fn_steam() {
   find "${sp}/steamapps" -type f -name "appmanifest_*.acf" 2>/dev/null 
   done)
 
-if [ -z "${ManifestList}" ]; then
+  if [ -z "${ManifestList}" ]; then
     notify-send -a "HyDE Alert" "Cannot Fetch Steam Games!" && exit 1
   fi
 
@@ -57,7 +56,7 @@ if [ -z "${ManifestList}" ]; then
       game=$(echo "${acf}" | cut -d '|' -f 1)
 
       # find the lib image
-      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${thumbName}")
+      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${libraryThumbName}")
       printf "%s\x00icon\x1f${libImage}\n" "${game}" >&2
       printf "%s\x00icon\x1f${libImage}\n" "${game}"
     done | rofi -dmenu \
@@ -66,12 +65,13 @@ if [ -z "${ManifestList}" ]; then
   )
 
   # launch game
-  if [ -n "$RofiSel" ]; then
+  if [ -n "$RofiSel" ]; then 
     launchid=$(echo "$GameList" | grep "$RofiSel" | cut -d '|' -f 2)
+
+    headerImage=$(find "${SteamThumb}/${launchid}/" -type f -name "*${libraryHeaderName}")
     ${steamlaunch} -applaunch "${launchid} [gamemoderun %command%]" &
     # dunstify "HyDE Alert" -a "Launching ${RofiSel}..." -i ${SteamThumb}/${launchid}_header.jpg -r 91190 -t 2200
-    notify-send -a "HyDE Alert" -i "${SteamThumb}/${launchid}_header.jpg" "Launching ${RofiSel}..."
-
+    notify-send -a "HyDE Alert" -i "$headerImage" "Launching ${RofiSel}..."
   fi
 }
 
