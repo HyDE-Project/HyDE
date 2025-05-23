@@ -3,6 +3,7 @@
 # set variables
 MODE=${1}
 scrDir=$(dirname "$(realpath "$0")")
+thumbName="library_600x900.jpg"
 source $scrDir/globalcontrol.sh
 # ThemeSet="${confDir}/hypr/themes/theme.conf"
 
@@ -19,14 +20,22 @@ icon_border=$((elem_border - 3))
 r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:${icon_border}px;}"
 
 fn_steam() {
-  # check steam mount paths
-  SteamPaths=$(grep '"path"' $SteamLib | awk -F '"' '{print $4}')
-  ManifestList=$(find "${SteamPaths}/steamapps/" -type f -name "appmanifest_*.acf" 2>/dev/null)
+  # Get all manifests found within steam libs
+  # SteamLib might contain more than one path
+  ManifestList=$(grep '"path"' $SteamLib | awk -F '"' '{print $4}' | while read sp; do
+
+  #Manifests for current path
+  find "${sp}/steamapps" -type f -name "appmanifest_*.acf" 2>/dev/null 
+  done)
+
+
   # read installed games
   GameList=$(echo "$ManifestList" | while read acf; do
     appid=$(grep '"appid"' $acf | cut -d '"' -f 4)
-    if [ -f ${SteamThumb}/${appid}/library_600x900.jpg ]; then
-      game=$(grep '"name"' $acf | cut -d '"' -f 4)
+    gameName=$(grep '"name"' $acf | cut -d '"' -f 4)
+    # Ignore Proton or Steam Runtimes
+    if [[ ${gameName} != *"Proton"* && ${gameName} != *"Steam"* ]]; then
+      game=$gameName
       echo "$game|$appid"
     else
       continue
@@ -38,8 +47,11 @@ fn_steam() {
     echo "$GameList" | while read acf; do
       appid=$(echo "${acf}" | cut -d '|' -f 2)
       game=$(echo "${acf}" | cut -d '|' -f 1)
-      printf "%s\x00icon\x1f${SteamThumb}/${appid}/library_600x900.jpg\n" "${game}" >&2
-      printf "%s\x00icon\x1f${SteamThumb}/${appid}/library_600x900.jpg\n" "${game}"
+
+      # find the lib image
+      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${thumbName}")
+      printf "%s\x00icon\x1f${libImage}\n" "${game}" >&2
+      printf "%s\x00icon\x1f${libImage}\n" "${game}"
     done | rofi -dmenu \
       -theme-str "${r_override}" \
       -config $RofiConf
