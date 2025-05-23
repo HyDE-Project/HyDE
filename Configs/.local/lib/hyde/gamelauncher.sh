@@ -54,9 +54,8 @@ fn_steam() {
     echo "$GameList" | while read acf; do
       appid=$(echo "${acf}" | cut -d '|' -f 2)
       game=$(echo "${acf}" | cut -d '|' -f 1)
-
       # find the lib image
-      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${libraryThumbName}")
+      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${libraryThumbName}" | head  -1)
       printf "%s\x00icon\x1f${libImage}\n" "${game}" >&2
       printf "%s\x00icon\x1f${libImage}\n" "${game}"
     done | rofi -dmenu \
