@@ -20,6 +20,11 @@ icon_border=$((elem_border - 3))
 r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:${icon_border}px;}"
 
 fn_steam() {
+
+  notify-send -a "HyDE Alert" "Please wait... " -t 4000
+
+  libraryThumbName="library_600x900.jpg"
+  libraryHeaderName="header.jpg"
   # Get all manifests found within steam libs
   # SteamLib might contain more than one path
   ManifestList=$(grep '"path"' $SteamLib | awk -F '"' '{print $4}' | while read sp; do
@@ -28,6 +33,9 @@ fn_steam() {
   find "${sp}/steamapps" -type f -name "appmanifest_*.acf" 2>/dev/null 
   done)
 
+if [ -z "${ManifestList}" ]; then
+    notify-send -a "HyDE Alert" "Cannot Fetch Steam Games!" && exit 1
+  fi
 
   # read installed games
   GameList=$(echo "$ManifestList" | while read acf; do
