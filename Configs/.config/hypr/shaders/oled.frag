@@ -36,7 +36,7 @@ this is an "include" file.
 */
 
 #ifndef OLED_MONITOR
-#define OLED_MONITOR-1
+#define OLED_MONITOR -1
 #endif
 
 #ifndef OLED_FILL_COLOR
