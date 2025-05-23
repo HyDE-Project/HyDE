@@ -117,7 +117,7 @@ Example:
 #define COLOR_VISION_MODE 0// Color vision mode
 #endif
 #ifndef COLOR_VISION_INTENSITY
-#define COLOR_VISION_INTENSITY.0// Intensity of color vision effect (0.0-1.0)
+#define COLOR_VISION_INTENSITY 0.0// Intensity of color vision effect (0.0-1.0)
 #endif
 
 precision highp float;
