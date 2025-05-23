@@ -76,7 +76,7 @@ Example:
 #define BLUE_LIGHT_FILTER_TEMPERATURE 3000.0// Color temperature in Kelvin (lower = warmer)
 #endif
 #ifndef BLUE_LIGHT_FILTER_INTENSITY
-#define BLUE_LIGHT_FILTER_INTENSITY.0// Intensity of the filter (0.0-1.0)
+#define BLUE_LIGHT_FILTER_INTENSITY 0.0// Intensity of the filter (0.0-1.0)
 #endif
 
 // Vibrance defines
