@@ -84,7 +84,7 @@ Example:
 #define VIBRANCE_INTENSITY 0.3// Vibrance level: -1.0 to 1.0
 #endif
 #ifndef SHADER_VIBRANCE_SKIN_TONE_PROTECTION
-#define SHADER_VIBRANCE_SKIN_TONE_PROTECTION.75// Balance: 0.0 to 1.0
+#define SHADER_VIBRANCE_SKIN_TONE_PROTECTION 0.75// Balance: 0.0 to 1.0
 #endif
 
 // Grayscale defines
