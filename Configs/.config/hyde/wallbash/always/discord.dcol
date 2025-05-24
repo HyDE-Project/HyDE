@@ -22,7 +22,6 @@ ${XDG_CACHE_HOME}/hyde/wallbash/discord.css|${WALLBASH_SCRIPTS}/discord.sh
   --settingsicons: 0;
 }
 
-
 ::-webkit-scrollbar {
   width: 10px !important;
 }
@@ -35,4 +34,5 @@ ${XDG_CACHE_HOME}/hyde/wallbash/discord.css|${WALLBASH_SCRIPTS}/discord.sh
   background-clip: content-box !important;
   border: 2px solid transparent !important; /* Margin for the scrollbar */
 }
+
 /* Any custom CSS below here */
