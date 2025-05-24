@@ -19,14 +19,30 @@ icon_border=$((elem_border - 3))
 r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:${icon_border}px;}"
 
 fn_steam() {
-  # check steam mount paths
-  SteamPaths=$(grep '"path"' $SteamLib | awk -F '"' '{print $4}')
-  ManifestList=$(find "${SteamPaths}/steamapps/" -type f -name "appmanifest_*.acf" 2>/dev/null)
+
+  notify-send -a "HyDE Alert" "Please wait... " -t 4000
+
+  libraryThumbName="library_600x900.jpg"
+  libraryHeaderName="header.jpg"
+  # Get all manifests found within steam libs
+  # SteamLib might contain more than one path
+  ManifestList=$(grep '"path"' $SteamLib | awk -F '"' '{print $4}' | while read sp; do
+
+  #Manifests for current path
+  find "${sp}/steamapps" -type f -name "appmanifest_*.acf" 2>/dev/null 
+  done)
+
+  if [ -z "${ManifestList}" ]; then
+    notify-send -a "HyDE Alert" "Cannot Fetch Steam Games!" && exit 1
+  fi
+
   # read installed games
   GameList=$(echo "$ManifestList" | while read acf; do
     appid=$(grep '"appid"' $acf | cut -d '"' -f 4)
-    if [ -f ${SteamThumb}/${appid}/library_600x900.jpg ]; then
-      game=$(grep '"name"' $acf | cut -d '"' -f 4)
+    gameName=$(grep '"name"' $acf | cut -d '"' -f 4)
+    # Ignore Proton or Steam Runtimes
+    if [[ ${gameName} != *"Proton"* && ${gameName} != *"Steam"* ]]; then
+      game=$gameName
       echo "$game|$appid"
     else
       continue
@@ -38,20 +54,23 @@ fn_steam() {
     echo "$GameList" | while read acf; do
       appid=$(echo "${acf}" | cut -d '|' -f 2)
       game=$(echo "${acf}" | cut -d '|' -f 1)
-      printf "%s\x00icon\x1f${SteamThumb}/${appid}/library_600x900.jpg\n" "${game}" >&2
-      printf "%s\x00icon\x1f${SteamThumb}/${appid}/library_600x900.jpg\n" "${game}"
+      # find the lib image
+      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${libraryThumbName}" | head  -1)
+      printf "%s\x00icon\x1f${libImage}\n" "${game}" >&2
+      printf "%s\x00icon\x1f${libImage}\n" "${game}"
     done | rofi -dmenu \
       -theme-str "${r_override}" \
       -config $RofiConf
   )
 
   # launch game
-  if [ -n "$RofiSel" ]; then
+  if [ -n "$RofiSel" ]; then 
     launchid=$(echo "$GameList" | grep "$RofiSel" | cut -d '|' -f 2)
+
+    headerImage=$(find "${SteamThumb}/${launchid}/" -type f -name "*${libraryHeaderName}")
     ${steamlaunch} -applaunch "${launchid} [gamemoderun %command%]" &
     # dunstify "HyDE Alert" -a "Launching ${RofiSel}..." -i ${SteamThumb}/${launchid}_header.jpg -r 91190 -t 2200
-    notify-send -a "HyDE Alert" -i "${SteamThumb}/${launchid}_header.jpg" "Launching ${RofiSel}..."
-
+    notify-send -a "HyDE Alert" -i "$headerImage" "Launching ${RofiSel}..."
   fi
 }
 
