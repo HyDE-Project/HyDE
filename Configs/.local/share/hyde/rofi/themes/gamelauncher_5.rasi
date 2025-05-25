@@ -27,12 +27,13 @@ window {
     height:                      850px;
     transparency:                "real";
     cursor:                      "default";
-    spacing:                     0px;
-    padding:                     0px;
-    border:                      0px;
-    border-radius:               0px;
+    spacing:                     0em;
+    padding:                     0em;
+    border:                      0em;
+    border-radius:               0em;
     border-color:                transparent;
-    background-image:            url("~/.local/share/hyde/rofi/assets/steamdeck_holographic.png", width);
+//background-image: this is dynamically set
+    background-image:            url("~/.local/share/hyde/rofi/steamdeck_holographic.png", width);
     background-color:            transparent;
 }
 mainbox {
@@ -40,8 +41,8 @@ mainbox {
     children:                    [ "listview" ];
     background-color:            transparent;
     orientation:                 horizontal;
-    spacing:                     0px;
-    padding:                     42px 442px 50px 450px;
+    spacing:                     0em;
+    padding:                     4.2em 44.2em 5em 45em;
 }
 
 
@@ -51,18 +52,18 @@ listview {
     columns:                     5;
     rows:                        2;
     flow:                        horizontal;
-    spacing:                     25px;
-    padding:                     20px 50px 20px 50px;
+    spacing:                     2.5em;
+    padding:                     3em 5em 2em 5em;
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
-    reverse:                     true;
-    fixed-height:                false;
+    reverse:                     false;
+    fixed-height:                true;
     fixed-columns:               false;
     cursor:                      "default";
     background-color:            @main-bg;
     text-color:                  @main-fg;
-    border-radius:               8px;
+    border-radius:               1em;
 }
 
 
@@ -70,9 +71,9 @@ listview {
 element {
     enabled:                     true;
     orientation:                 vertical;
-    spacing:                     0px;
-    padding:                     5px;
-    border-radius:               0px;
+    spacing:                     0em;
+    padding:                     0.1em;
+    border-radius:               0em;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
@@ -82,18 +83,18 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        300px;
-    spacing:                     0px;
-    padding:                     0px;
+    size:                        8em;
+    spacing:                     0em;
+    padding:                     0em;
     cursor:                      inherit;
-    border-radius:               0px;
+    border-radius:               0em;
     background-color:            transparent;
     text-color:                  inherit;
 }
 element-text {
     vertical-align:              0.5;
     horizontal-align:            0.5;
-    spacing:                     0px;
+    spacing:                     0em;
     padding:                     10px;
     cursor:                      inherit;
     background-color:            transparent;

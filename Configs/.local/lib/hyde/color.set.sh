@@ -265,9 +265,6 @@ fi
 # Print to terminal the colors
 [ -t 1 ] && "${scrDir}/wallbash.print.colors.sh"
 
-# Add some hooks here
-toml_write "${confDir}/kdeglobals" "Colors:View" "BackgroundNormal" "#${dcol_pry1:-000000}"
-
 #// switch theme <//> wall based colors
 
 [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && {
@@ -301,3 +298,7 @@ export revert_colors
 
 # Process "always" templates in parallel
 find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | sort | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true
+
+# Add configuration hooks
+toml_write "${confDir}/kdeglobals" "Colors:View" "BackgroundNormal" "#${dcol_pry1:-000000}FF"
+toml_write "${confDir}/Kvantum/wallbash/wallbash.kvconfig" '%General' 'reduce_menu_opacity' 0
