@@ -1,5 +1,6 @@
 // Invert colors shader
 // Known to have some quirks with some frames, example: when exiting an application,animations, and some blur effects
+// https://github.com/HyDE-Project/HyDE/pull/656
 // TODO: Fix the quirkiness of this shader, it is not a priority right now!!!
 
 /*
