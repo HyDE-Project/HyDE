@@ -1,0 +1,9 @@
+{
+  "custom/cava": {
+    "format": "{0}",
+    "exec": "hyde-shell cava.sh waybar",
+    "restart-interval": 1,
+    "hide-empty": true
+  },
+  "_comments": []
+}

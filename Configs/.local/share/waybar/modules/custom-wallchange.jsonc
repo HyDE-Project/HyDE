@@ -1,0 +1,12 @@
+{
+    "custom/wallchange": {
+        "format": "{0}",
+        "rotate": 0,
+        "exec": "echo ; echo \udb80\udd8a switch wallpaper",
+        "on-click": "swwwallpaper.sh -n",
+        "on-click-right": "swwwallpaper.sh -p",
+        "on-click-middle": "sleep 0.1 && swwwallselect.sh",
+        "interval": 86400,
+        "tooltip": true
+    }
+}

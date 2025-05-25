@@ -1,0 +1,250 @@
+/* Group Styles */
+
+/* Pill Styles */
+@import "groups/pill.css";
+@import "groups/pill-up.css";
+@import "groups/pill-right.css";
+@import "groups/pill-down.css";
+@import "groups/pill-left.css";
+@import "groups/pill-in.css";
+@import "groups/pill-out.css";
+/* Leaf Style */
+@import "groups/leaf.css";
+@import "groups/leaf-inverse.css";
+
+
+/* Dynamic Stuff */
+/*
+"../../../" Use relative path to navigate $HOME $HOME/
+*/
+@import "../../../../.config/waybar/includes/border-radius.css";
+@import "../../../../.config/waybar/includes/global.css";
+
+/* Base HyDE Styles */
+
+window#waybar {
+    background: @bar-bg;
+}
+
+/*
+ These are groups/islands configs
+
+*/
+#leaf,
+#leaf-inverse,
+#leaf-up,
+#leaf-down,
+#leaf-right,
+#leaf-left,
+#pill,
+#pill-right,
+#pill-left,
+#pill-down,
+#pill-up,
+#pill-in,
+#pill-out {
+    background-color: @main-bg;
+    border-style: solid;
+    border-color: @main-bg;
+}
+
+
+
+
+
+#workspaces button {
+    box-shadow: none;
+    text-shadow: none;
+    padding: 0em;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    margin-left: 0em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    margin-right: 0em;
+    color: @main-fg;
+    animation: ws_normal 20s ease-in-out 1;
+}
+
+#workspaces button.active {
+    background: @wb-act-bg;
+    color: @wb-act-fg;
+    margin-left: 0.3em;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    margin-right: 0.3em;
+    animation: ws_active 20s ease-in-out 1;
+    transition: all 0.4s cubic-bezier(.55, -0.68, .48, 1.682);
+}
+
+#workspaces button:hover {
+    background: @wb-hvr-bg;
+    color: @wb-hvr-fg;
+    animation: ws_hover 20s ease-in-out 1;
+    transition: all 0.3s cubic-bezier(.55, -0.68, .48, 1.682);
+}
+
+#taskbar button {
+    box-shadow: none;
+    text-shadow: none;
+    padding: 0em;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    margin-left: 0em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    margin-right: 0em;
+    color: @wb-color;
+    animation: tb_normal 20s ease-in-out 1;
+}
+
+#taskbar button.active {
+    background: @wb-act-bg;
+    color: @wb-act-color;
+    margin-left: 0.3em;
+    padding-left: 1.2em;
+    padding-right: 1.2em;
+    margin-right: 0.3em;
+    animation: tb_active 20s ease-in-out 1;
+    transition: all 0.4s cubic-bezier(.55, -0.68, .48, 1.682);
+}
+
+#taskbar button:hover {
+    background: @wb-hvr-bg;
+    color: @wb-hvr-color;
+    animation: tb_hover 20s ease-in-out 1;
+    transition: all 0.3s cubic-bezier(.55, -0.68, .48, 1.682);
+}
+
+
+
+#workspaces,
+#taskbar {
+    padding: 0em;
+}
+
+
+window#waybar.top .modules-left,
+window#waybar.top .modules-center,
+window#waybar.top .modules-right,
+window#waybar.bottom .modules-left,
+window#waybar.bottom .modules-center,
+window#waybar.bottom .modules-right {
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    margin-left: 0.3em;
+    margin-right: 0.3em;
+
+}
+
+window#waybar.top label.module,
+window#waybar.bottom label.module {
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+}
+
+window#waybar.left label.module,
+window#waybar.right label.module {
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+window#waybar.right #leaf,
+window#waybar.left #leaf,
+window#waybar.right #leaf-inverse,
+window#waybar.left #leaf-inverse,
+window#waybar.right #leaf-up,
+window#waybar.left #leaf-up,
+window#waybar.right #leaf-down,
+window#waybar.left #leaf-down,
+window#waybar.right #leaf-right,
+window#waybar.left #leaf-right,
+window#waybar.right #leaf-left,
+window#waybar.left #leaf-left,
+window#waybar.right #pill,
+window#waybar.left #pill,
+window#waybar.right #pill-right,
+window#waybar.left #pill-right,
+window#waybar.right #pill-left,
+window#waybar.left #pill-left,
+window#waybar.right #pill-down,
+window#waybar.left #pill-down,
+window#waybar.right #pill-up,
+window#waybar.left #pill-up,
+window#waybar.right #pill-in,
+window#waybar.left #pill-in,
+window#waybar.right #pill-out,
+window#waybar.left #pill-out {
+    padding: 0em;
+}
+
+window#waybar.bottom #leaf,
+window#waybar.bottom #leaf-inverse,
+window#waybar.bottom #leaf-up,
+window#waybar.bottom #leaf-down,
+window#waybar.bottom #leaf-right,
+window#waybar.bottom #leaf-left,
+window#waybar.bottom #pill,
+window#waybar.bottom #pill-right,
+window#waybar.bottom #pill-left,
+window#waybar.bottom #pill-down,
+window#waybar.bottom #pill-up,
+window#waybar.bottom #pill-in,
+window#waybar.bottom #pill-out,
+window#waybar.top #leaf,
+window#waybar.top #leaf-inverse,
+window#waybar.top #leaf-up,
+window#waybar.top #leaf-down,
+window#waybar.top #leaf-right,
+window#waybar.top #leaf-left,
+window#waybar.top #pill,
+window#waybar.top #pill-right,
+window#waybar.top #pill-left,
+window#waybar.top #pill-down,
+window#waybar.top #pill-up,
+window#waybar.top #pill-in,
+window#waybar.top #pill-out {
+    padding: 0em 1em;
+}
+
+/* ? Dynamic button */
+
+window#waybar.top button,
+window#waybar.bottom button {
+    margin: 0.41em 0.11em;
+    border: 0em;
+    /* padding: 0.1em 0.5em; */
+
+}
+
+window#waybar.left button,
+window#waybar.right button {
+    margin: 0.11em 0.41em;
+    border: 0em
+}
+
+
+tooltip {
+    /* all: unset; */
+    background: @main-bg;
+    color: @main-fg;
+    border-width: 0.1pt;
+    border-color: @main-fg ;
+}
+
+#tray menu * {
+    min-height: 1.6em;
+
+}
+
+#tray menu separator {
+    min-height: 0.1em;
+}
+
+#language {
+    min-width: 1.11em;
+}

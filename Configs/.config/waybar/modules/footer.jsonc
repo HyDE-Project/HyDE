@@ -1,47 +1,18 @@
+/* DEPRECATED
+Instead of this file, please use 
+			custom-module.jsonc for 'custom/module' 
+			wlr-module.jsonc for 'wlr/module'
+			hyprland-module.jsonc for 'hyprland/module'
 
-// modules for padding //
+? These files are deprecated and will be removed in a future release.
 
-    "custom/l_end": {
-        "format": " ",
-        "interval" : "once",
-        "tooltip": false
-    },
+* Please Manually REMOVE this module inside the "modules" folder, to avoid any clutter.
 
-    "custom/r_end": {
-        "format": " ",
-        "interval" : "once",
-        "tooltip": false
-    },
+TODO: Manual removal will be announced in the release notes after  the removal of this module upstream.
 
-    "custom/sl_end": {
-        "format": " ",
-        "interval" : "once",
-        "tooltip": false
-    },
+code:   e3b0c44298fc1c14   - lol just a random hash so we can identify the file in the future
 
-    "custom/sr_end": {
-        "format": " ",
-        "interval" : "once",
-        "tooltip": false
-    },
 
-    "custom/rl_end": {
-        "format": " ",
-        "interval" : "once",
-        "tooltip": false
-    },
-
-    "custom/rr_end": {
-        "format": " ",
-        "interval" : "once",
-        "tooltip": false
-    },
-
-    "custom/padd": {
-        "format": "  ",
-        "interval" : "once",
-        "tooltip": false
-    }
-
-}
-
+{} // Empty Object to avoid syntax errors
+*/
+{}
