@@ -2,7 +2,12 @@
 
 hyprctl dispatch togglefloating
 
-#Only resize window when it is floating
+#Use default togglefloating behavior
+if [ $# -eq 0 ]; then    
+    exit
+fi
+
+#Only resize window when it's floating
 if [[ $(hyprctl activewindow -j | jq -r '.floating') == "true" ]]; then
     hyprctl --batch "dispatch resizeactive exact $1 $1; dispatch centerwindow"
 
