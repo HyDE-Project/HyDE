@@ -50,7 +50,7 @@ Multi-language KEYBINDINGS support
 
 这里列出了所有 HyDE 的详细按键映射。
 
-> [!TIP]
+>[!TIP]
 > 按下<kbd>Super</kbd> + <kbd>/</kbd> 会列出可用的按键映射。
 
 <!-- ## <a id=window-management>Window Management</a> -->
@@ -280,6 +280,29 @@ Multi-language KEYBINDINGS support
 | :--------------------------------------------------------------------- | :--------------- |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Right</kbd> | 移动到下个工作区 |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Left</kbd>  | 移动到上个工作区 |
+
+## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=自定义快捷键" width="450"/>
+
+你可以通过编辑以下文件来自定义快捷键：
+
+```bash
+~/.config/hypr/userprefs.conf
+```
+
+例如，想要创建一个快捷键来启动 **HyDE Game Launcher**，可以添加以下内容：
+
+```ini
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+```
+
+这样你就可以通过 <kbd>SUPER</kbd> + <kbd>空格</kbd> 来启动 Game Launcher。  
+你可以将 `SPACE` 替换为你喜欢的任意按键。
+
+`gamelauncher.sh` 是默认包含的脚本，路径如下：
+
+```bash
+~/.local/lib/hyde/gamelauncher.sh
+```
 
 <!--
 <div align="right">

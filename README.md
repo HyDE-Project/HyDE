@@ -18,6 +18,7 @@ Multi-language README support
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/README.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/docs/README.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](Source/docs/README.ar.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](Source/docs/README.pt-br.md)
 
 <div align="center">
 

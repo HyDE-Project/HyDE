@@ -48,7 +48,7 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 
 Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 
-> [!TIP]
+>[!TIP] 
 > <kbd>Super</kbd> + <kbd>/</kbd> zeigt die Tastenkombinationen.
 
 <!-- ## <a id="fenster-verwaltung">Fenster Verwaltung</a> -->
@@ -278,6 +278,29 @@ Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 | :--------------------------------------------------------------------- | :------------------------------------------------------------- |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Right</kbd> | Fenster in den nächsten relativen Arbeitsbereich verschieben   |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Left</kbd>  | Fenster in den vorherigen relativen Arbeitsbereich verschieben |
+
+## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Benutzerdefinierte%20Tastenkombinationen" width="450"/>
+
+Du kannst deine eigenen Tastenkombinationen definieren, indem du die Datei bearbeitest:
+
+```bash
+~/.config/hypr/userprefs.conf
+```
+
+Zum Beispiel, um eine Tastenkombination für den **HyDE Game Launcher** zu erstellen, füge diese Zeile hinzu:
+
+```ini
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+```
+
+Dies weist den **Game Launcher** der Kombination <kbd>SUPER</kbd> + <kbd>Leertaste</kbd> zu.  
+Du kannst `SPACE` durch jede andere Taste ersetzen.
+
+Das Skript `gamelauncher.sh` ist standardmäßig enthalten und befindet sich unter:
+
+```bash
+~/.local/lib/hyde/gamelauncher.sh
+```
 
 <!--
 <div align="right">

@@ -45,7 +45,7 @@ Multi-language KEYBINDINGS support
 
 Hier zijn alle HyDE-specifieke toetscombinaties opgesomd.
 
-> [!TIP]
+>[!TIP] 
 > <kbd>Super</kbd> + <kbd>/</kbd> toont de toetscombinaties.
 
 <!-- ## <a id="fenster-verwaltung">Fenster Verwaltung</a> -->
@@ -263,6 +263,29 @@ Hier zijn alle HyDE-specifieke toetscombinaties opgesomd.
 | :---------------------------------------------------------------------- | :--------------------------------------------------- |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Rechts</kbd> | verplaats venster naar volgende relatieve werkruimte |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Links</kbd>  | verplaats venster naar vorige relatieve werkruimte   |
+
+## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Aangepaste%20Sneltoetsen" width="450"/>
+
+Je kunt je eigen sneltoetsen instellen door dit bestand te bewerken:
+
+```bash
+~/.config/hypr/userprefs.conf
+```
+
+Bijvoorbeeld, om een sneltoets toe te voegen voor het starten van de **HyDE Game Launcher**, voeg deze regel toe:
+
+```ini
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+```
+
+Hiermee koppel je de Game Launcher aan <kbd>SUPER</kbd> + <kbd>Spatie</kbd>.  
+Je kunt `SPACE` vervangen door een andere gewenste toets.
+
+Het script `gamelauncher.sh` is standaard inbegrepen en staat op:
+
+```bash
+~/.local/lib/hyde/gamelauncher.sh
+```
 
 <div align="right">
   <br>
