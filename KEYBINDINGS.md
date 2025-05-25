@@ -284,6 +284,29 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Right</kbd> | move window to next relative workspace     |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Left</kbd>  | move window to previous relative workspace |
 
+## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Custom%20Keybindings" width="450"/>
+
+You can define your own keybindings by editing your preferences file at:
+
+```bash
+~/.config/hypr/userprefs.conf
+```
+
+For example, to create a keybinding that launches the **HyDE Game Launcher**, add the following line:
+
+```ini
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+```
+
+This will bind the **Game Launcher** to <kbd>SUPER</kbd> + <kbd>Space</kbd>.  
+You can replace `SPACE` with any other key you prefer.
+
+The `gamelauncher.sh` script is included by default and lives at:
+
+```bash
+~/.local/lib/hyde/gamelauncher.sh
+```
+
 <!--
 <div align="right">
   <br>
