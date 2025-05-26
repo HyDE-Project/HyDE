@@ -14,6 +14,7 @@ bluez                                                  # bluetooth protocol stac
 bluez-utils                                            # bluetooth utility cli
 blueman                                                # bluetooth manager gui
 brightnessctl                                          # screen brightness control
+playerctl                                              # media controls
 udiskie                                                # manage removable media
 
 # --------------------------------------------------- // Display Manager
