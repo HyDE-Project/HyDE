@@ -3,8 +3,8 @@
 # shellcheck source=$HOME/.local/bin/hyde-shell
 # shellcheck disable=SC1091
 if ! source "$(which hyde-shell)"; then
-    echo "[wallbash] code :: Error: hyde-shell not found."
-    echo "[wallbash] code :: Is HyDE installed?"
+    echo "[$0] :: Error: hyde-shell not found."
+    echo "[$0] :: Is HyDE installed?"
     exit 1
 fi
 
@@ -125,10 +125,14 @@ fn_update() {
 #! ▄▀█ █▄░█ █ █▀▄▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█
 #! █▀█ █░▀█ █ █░▀░█ █▀█ ░█░ █ █▄█ █░▀█
 
-# See https://wiki.hyprland.org/Configuring/Animations/
-# HyDE Controlled content // DO NOT EDIT
-# Edit or add animations in the ./hypr/animations/ directory
-# and run the 'animations.sh --select' command to update this file 
+
+#*┌────────────────────────────────────────────────────────────────────────────┐
+#*│ # See https://wiki.hyprland.org/Configuring/Animations/                    │
+#*│ # HyDE Controlled content // DO NOT EDIT                                   │
+#*│ # Edit or add animations in the ./hypr/animations/ directory               │
+#*│ # and run the 'animations.sh --select' command to update this file         │
+#*│                                                                            │
+#*└────────────────────────────────────────────────────────────────────────────┘
 
 \$ANIMATION=${current_animation}
 \$ANIMATION_PATH=./animations/${current_animation}.conf

@@ -23,13 +23,13 @@ window {
     enabled:                     true;
     fullscreen:                  false;
     width:                       100%;
-    height:                      800px;
+    height:                      80%;
     transparency:                "real";
     cursor:                      "default";
-    spacing:                     0px;
-    padding:                     0px;
-    border:                      0px;
-    border-radius:               0px;
+    spacing:                     0em;
+    padding:                     0em;
+    border:                      0em;
+    border-radius:               0em;
     border-color:                transparent;
     background-color:            transparent;
 }
@@ -43,17 +43,17 @@ mainbox {
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     9;
+    columns:                     6;
     lines:                       1;
-    spacing:                     30px;
-    padding:                     30px 200px 30px 200px;
+    spacing:                     3em;
+    padding:                     3em;
     cycle:                       true;
     dynamic:                     false;
     scrollbar:                   false;
     layout:                      vertical;
-    reverse:                     true;
-    fixed-height:                true;
-    fixed-columns:               true;
+    reverse:                     false;
+    fixed-height:                false;
+    fixed-columns:               false;
     cursor:                      "default";
     background-color:            transparent;
     text-color:                  @main-fg;
@@ -64,9 +64,9 @@ listview {
 element {
     enabled:                     true;
     orientation:                 vertical;
-    spacing:                     0px;
-    padding:                     5px;
-    border-radius:               0px;
+    spacing:                     1em;
+    padding:                     0.5em;
+    border-radius:               0em;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
@@ -76,19 +76,19 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        29%;
-    spacing:                     0px;
-    padding:                     0px;
+    size:                        10em;
+    spacing:                     0em;
+    padding:                     0em;
     cursor:                      inherit;
-    border-radius:               35px;
+    border-radius:               3.5em;
     background-color:            transparent;
     text-color:                  inherit;
 }
 element-text {
     vertical-align:              0.5;
     horizontal-align:            0.5;
-    spacing:                     0px;
-    padding:                     10px;
+    spacing:                     0em;
+    padding:                     1%;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;
