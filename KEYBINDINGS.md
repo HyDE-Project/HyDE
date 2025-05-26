@@ -128,6 +128,7 @@ Here are all HyDE specific keybindings listed.
 | Keys                                                   | Action            |
 | :----------------------------------------------------- | :---------------- |
 | <kbd>SUPER</kbd> + <kbd>T</kbd>                        | terminal emulator |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>T</kbd>       | dropdown terminal |
 | <kbd>SUPER</kbd> + <kbd>E</kbd>                        | file explorer     |
 | <kbd>SUPER</kbd> + <kbd>C</kbd>                        | text editor       |
 | <kbd>SUPER</kbd> + <kbd>B</kbd>                        | web browser       |
