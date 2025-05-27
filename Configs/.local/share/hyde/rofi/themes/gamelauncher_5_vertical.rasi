@@ -42,14 +42,14 @@ mainbox {
     background-color:            transparent;
     orientation:                 horizontal;
     spacing:                     0em;
-    padding:                     17.8% 19.6% 18.4% 19.8%;
+    padding:                     38.4% 19.6% 38.6% 19.8%;
 }
 
 
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     5;
+    columns:                     3;
     flow:                        horizontal;
     spacing:                     2.5em;
     padding:                     3em 5em 2em 5em;
@@ -82,7 +82,7 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        13em;
+    size:                        9em;
     spacing:                     0em;
     padding:                     0em;
     cursor:                      inherit;

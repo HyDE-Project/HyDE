@@ -15,9 +15,53 @@ fi
 RofiConf=${RofiConf:-"gamelauncher_5"}
 
 # set rofi override
-elem_border=$((hypr_border * 2))
+elem_border=$((hypr_border * 3))
 icon_border=$((elem_border - 3))
 r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:${icon_border}px;}"
+
+
+case $MODE in
+5)
+monitor_info=()
+eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
+    "monitor_info=(\(.width) \(.height) \(.scale) \(.x) \(.y) \(.transform)) reserved_info=(\(.reserved | join(" ")))"')"
+
+# Remove decimal point from scale and convert to integer (e.g., 1.25 -> 125)
+monitor_scale="${monitor_info[2]//./}"
+
+monitor_width=0
+monitor_height=0
+monitor_transform=${monitor_info[5]}
+
+# Calculate display width adjusted for scale (95% of actual width)
+# Account for vertical dislays 1 = 90deg, 3 = 270deg
+if [ ${monitor_transform} == 1 ] || [ ${monitor_transform} == 3 ]; then 
+  monitor_width=$((monitor_info[1] * 95 / monitor_scale))
+  monitor_height=$((monitor_info[0] * 95 / monitor_scale))
+  RofiConf="vertical_gamelauncher_5"
+else
+  monitor_width=$((monitor_info[0] * 95 / monitor_scale))
+  monitor_height=$((monitor_info[1] * 95 / monitor_scale))
+fi
+
+  BG=$HOME/.local/share/hyde/rofi/assets/steamdeck_holographic.png
+  BGfx=$HOME/.cache/hyde/landing/steamdeck_holographic_${monitor_width}x${monitor_height}.png
+
+  # Construct the command
+  if [ ! -e "${BGfx}" ]; then
+    magick "${BG}" -resize ${monitor_width}x${monitor_height} -background none -gravity center -extent ${monitor_width}x${monitor_height} "$BGfx"
+  fi
+
+  r_override="window {width: ${monitor_width}px; height: ${monitor_height}px;
+                background-image: url('${BGfx}',width);}  
+                element {border-radius:${elem_border}px;} 
+                element-icon {border-radius:${icon_border}px;}
+                "
+  # top right bottom left
+  ;;
+
+*) : ;;
+esac
 
 fn_steam() {
   # Get all manifests found within steam libs
@@ -58,12 +102,13 @@ fn_steam() {
   )
 
   # launch game
-  if [ -n "$RofiSel" ]; then
+  if [ -n "$RofiSel" ]; then 
     launchid=$(echo "$GameList" | grep "$RofiSel" | cut -d '|' -f 2)
+
+    headerImage=$(find "${SteamThumb}/${launchid}/" -type f -name "*${libraryHeaderName}")
     ${steamlaunch} -applaunch "${launchid} [gamemoderun %command%]" &
     # dunstify "HyDE Alert" -a "Launching ${RofiSel}..." -i ${SteamThumb}/${launchid}_header.jpg -r 91190 -t 2200
-    notify-send -a "HyDE Alert" -i "${SteamThumb}/${launchid}_header.jpg" "Launching ${RofiSel}..."
-
+    notify-send -a "HyDE Alert" -i "$headerImage" "Launching ${RofiSel}..."
   fi
 }
 
