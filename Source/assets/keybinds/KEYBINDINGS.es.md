@@ -50,7 +50,7 @@ Soporte multilingüe de KEYBINDINGS
 
 Aquí están listados todos los keybindings específicos de HyDE.
 
-> [!TIP]
+>[!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> muestra las combinaciones de teclas.
 
 <!-- ## <a id=gestión-de-ventanas>Gestión de ventanas</a> -->
@@ -280,6 +280,29 @@ Aquí están listados todos los keybindings específicos de HyDE.
 | :--------------------------------------------------------------------- | :-------------------------------------------------------- |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Right</kbd> | mover la ventana al siguiente espacio de trabajo relativo |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Left</kbd>  | mover la ventana al espacio de trabajo relativo anterior  |
+
+## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Atajos%20Personalizados" width="450"/>
+
+Puedes definir tus propios atajos editando tu archivo de preferencias en:
+
+```bash
+~/.config/hypr/userprefs.conf
+```
+
+Por ejemplo, para crear un atajo que inicie el **HyDE Game Launcher**, agrega esta línea:
+
+```ini
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+```
+
+Esto asignará el **Game Launcher** a <kbd>SUPER</kbd> + <kbd>Espacio</kbd>.  
+Puedes reemplazar `SPACE` con cualquier otra tecla que prefieras.
+
+El script `gamelauncher.sh` viene incluido por defecto y se encuentra en:
+
+```bash
+~/.local/lib/hyde/gamelauncher.sh
+```
 
 <!--
 <div align="right">

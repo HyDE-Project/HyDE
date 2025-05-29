@@ -47,7 +47,7 @@ Prise en charge multilingue des RACCOURCIS CLAVIER
 
 Voici tous les raccourcis clavier spécifiques à HyDE.
 
-> [!TIP]
+>[!TIP] 
 > <kbd>Super</kbd> + <kbd>/</kbd> affiche les raccourcis clavier.
 
 <!-- ## <a id="gestion-fenetre">Gestion des Fenêtres</a> -->
@@ -277,6 +277,29 @@ Voici tous les raccourcis clavier spécifiques à HyDE.
 | :--------------------------------------------------------------------- | -------------------------------------------------------------- |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Right</kbd> | Déplacer la fenêtre vers l'espace de travail relatif suivant   |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Left</kbd>  | Déplacer la fenêtre vers l'espace de travail relatif précédent |
+
+## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Raccourcis%20Personnalisés" width="450"/>
+
+Vous pouvez définir vos propres raccourcis clavier en modifiant le fichier suivant :
+
+```bash
+~/.config/hypr/userprefs.conf
+```
+
+Par exemple, pour créer un raccourci qui lance le **HyDE Game Launcher**, ajoutez cette ligne :
+
+```ini
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+```
+
+Cela assignera le Game Launcher à <kbd>SUPER</kbd> + <kbd>Espace</kbd>.  
+Vous pouvez remplacer `SPACE` par une autre touche de votre choix.
+
+Le script `gamelauncher.sh` est inclus par défaut et se trouve ici :
+
+```bash
+~/.local/lib/hyde/gamelauncher.sh
+```
 
 <div align="right">
   <br>

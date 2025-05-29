@@ -18,6 +18,39 @@ elem_border=$((hypr_border * 2))
 icon_border=$((elem_border - 3))
 r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:${icon_border}px;}"
 
+
+case $MODE in
+5)
+monitor_info=()
+eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
+    "monitor_info=(\(.width) \(.height) \(.scale) \(.x) \(.y)) reserved_info=(\(.reserved | join(" ")))"')"
+
+# Remove decimal point from scale and convert to integer (e.g., 1.25 -> 125)
+monitor_scale="${monitor_info[2]//./}"
+# Calculate display width adjusted for scale (95% of actual width)
+monitor_width=$((monitor_info[0] * 95 / monitor_scale))
+# Calculate display height adjusted for scale (95% of actual height)
+monitor_height=$((monitor_info[1] * 95 / monitor_scale))
+
+  BG=$HOME/.local/share/hyde/rofi/assets/steamdeck_holographic.png
+  BGfx=$HOME/.cache/hyde/landing/steamdeck_holographic_${monitor_width}x${monitor_height}.png
+
+  # Construct the command
+  if [ ! -e "${BGfx}" ]; then
+    magick "${BG}" -resize ${monitor_width}x${monitor_height} -background none -gravity center -extent ${monitor_width}x${monitor_height} "$BGfx"
+  fi
+
+  r_override="window {width: ${monitor_width}px; height: ${monitor_height}; background-image: url('${BGfx}',width);}  
+                element {border-radius:${elem_border}px;} 
+                element-icon {border-radius:${icon_border}px;}
+                mainbox { padding: 25% 21% 25% 21%;}
+                "
+  # top right bottom left
+  ;;
+
+*) : ;;
+esac
+
 fn_steam() {
 
   notify-send -a "HyDE Alert" "Please wait... " -t 4000

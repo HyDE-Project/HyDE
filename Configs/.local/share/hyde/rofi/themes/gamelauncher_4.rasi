@@ -25,10 +25,10 @@ window {
     width:                       100%;
     transparency:                "real";
     cursor:                      "default";
-    spacing:                     0px;
-    padding:                     0px;
-    border:                      0px;
-    border-radius:               0px;
+    spacing:                     0em;
+    padding:                     0em;
+    border:                      0em;
+    border-radius:               0em;
     border-color:                transparent;
     background-color:            transparent;
 }
@@ -42,17 +42,17 @@ mainbox {
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     10;
-    lines:                       1;
-    spacing:                     30px;
-    padding:                     40px 100px 40px 100px;
+    columns:                     10;  // Set a reasonable number of columns
+    lines:                       1;  
+    spacing:                     1.9em;
+    padding:                     1em 3em; 
     cycle:                       true;
-    dynamic:                     false;
+    dynamic:                     false;  // Keep dynamic layout disabled to prevent crashes
     scrollbar:                   false;
     layout:                      vertical;
-    reverse:                     true;
-    fixed-height:                true;
-    fixed-columns:               true;
+    reverse:                     false;
+    fixed-height:                false;
+    fixed-columns:               false;
     cursor:                      "default";
     background-color:            transparent;
     text-color:                  @main-fg;
@@ -63,9 +63,9 @@ listview {
 element {
     enabled:                     true;
     orientation:                 vertical;
-    spacing:                     0px;
-    padding:                     5px;
-    border-radius:               0px;
+    spacing:                     0em;
+    padding:                     1em;
+    border-radius:               0em;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
@@ -75,19 +75,19 @@ element selected.normal {
     text-color:                  @select-fg;
 }
 element-icon {
-    size:                        30%;
-    spacing:                     0px;
-    padding:                     0px;
+    size:                        10em;
+    spacing:                     0em;
+    padding:                     0em;
     cursor:                      inherit;
-    border-radius:               35px;
+    border-radius:               2.2em;
     background-color:            transparent;
     text-color:                  inherit;
 }
 element-text {
     vertical-align:              0.5;
     horizontal-align:            0.5;
-    spacing:                     0px;
-    padding:                     10px;
+    spacing:                     0em;
+    padding:                     0.625em;
     cursor:                      inherit;
     background-color:            transparent;
     text-color:                  inherit;
