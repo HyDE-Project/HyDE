@@ -195,6 +195,14 @@ _fuzzy_edit_search_file() {
     fi
 }
 
+_df() {
+    if [[ $# -ge 1 && -e "${@: -1}" ]]; then
+        duf "${@: -1}"
+    else
+        duf
+    fi
+}
+
 function _load_post_init() {
     #! Never load time consuming functions here
     _load_persistent_aliases
@@ -292,7 +300,8 @@ function _load_if_terminal {
             mkdir='mkdir -p' \
             ffec='_fuzzy_edit_search_file_content' \
             ffcd='_fuzzy_change_directory' \
-            ffe='_fuzzy_edit_search_file'
+            ffe='_fuzzy_edit_search_file' \
+            df='_df'
 
         # Some binds won't work on first prompt when deferred
         bindkey '\e[H' beginning-of-line
