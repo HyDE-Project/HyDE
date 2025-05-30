@@ -79,7 +79,7 @@ def format_artist_track(artist, track, playing, max_length):
     full_length = len(artist + track)
 
     if track and not artist:
-        if len(track) != track[:max_length]:
+        if len(track) != len(track[:max_length]):
             track = track[:max_length].rstrip() + "…"
         output_text = f"{prefix}{prefix_separator}<b>{track}</b>"
     elif track and artist:
@@ -90,9 +90,9 @@ def format_artist_track(artist, track, playing, max_length):
             artist_limit = int(max_length * artist_weight)
             track_limit = int(max_length * track_weight)
 
-            if len(artist) != artist[:artist_limit]:
+            if len(artist) != len(artist[:artist_limit]):
                 artist = artist[:artist_limit].rstrip() + "…"
-            if len(track) != track[:track_limit]:
+            if len(track) != len(track[:track_limit]):
                 track = track[:track_limit].rstrip() + "…"
 
         output_text = f"{prefix}{prefix_separator}<i>{artist}</i>{separator}<b>{track}</b>"
