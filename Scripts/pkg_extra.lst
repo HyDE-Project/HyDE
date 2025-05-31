@@ -7,6 +7,7 @@ wttrbar                                                # for weather
 python-requests|wttrbar                                # script dependency
 ddcui                                                  # GUI to control brightness for external monitors
 # hyprgui-bin                                          # GUI for hyprland configuration // might mess your userprefs but convenient // Just disappeared
+# power-profiles-daemon                                # for managing power profiles from waybar
 
 # --------------------------------------------------- // Shell
 

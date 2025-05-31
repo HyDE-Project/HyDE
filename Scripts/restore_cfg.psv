@@ -59,8 +59,9 @@ P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
 P|${HOME}/.config/VSCodium/User|settings.json|vscodium
 
  Bar 
-P|${HOME}/.config/waybar|config.ctl|waybar
-S|${HOME}/.config/waybar|modules config.jsonc theme.css style.css|waybar
+P|${HOME}/.config/waybar|user-style.css|waybar
+S|${HOME}/.config/waybar|modules styles layouts menus config.jsonc theme.css style.css|waybar
+S|${HOME}/.local/share|waybar|waybar
 
  Terminal 
 P|${HOME}/.config|lsd|lsd
