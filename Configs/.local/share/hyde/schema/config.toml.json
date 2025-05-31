@@ -817,6 +817,11 @@
                     "default": "\uf001  Music",
                     "description": "To display on standby.",
                     "type": "string"
+                },
+                "artist_track_separator": {
+                    "default": "\u2004\uf444 ",
+                    "description": "Separator symbols to display between artist and track.",
+                    "type": "string"
                 }
             }
         }

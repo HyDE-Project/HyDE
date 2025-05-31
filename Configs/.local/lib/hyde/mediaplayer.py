@@ -75,7 +75,6 @@ def format_artist_track(artist, track, playing, max_length):
     # Use the appropriate prefix based on playback status
     prefix = prefix_playing if playing else prefix_paused
     prefix_separator = "  "
-    separator = "  "
     full_length = len(artist + track)
 
     if track and not artist:
@@ -95,7 +94,7 @@ def format_artist_track(artist, track, playing, max_length):
             if len(track) != len(track[:track_limit]):
                 track = track[:track_limit].rstrip() + "…"
 
-        output_text = f"{prefix}{prefix_separator}<i>{artist}</i>{separator}<b>{track}</b>"
+        output_text = f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
     else:
         output_text = "<b>Nothing playing</b>"
     return output_text
@@ -244,7 +243,7 @@ def parse_arguments():
 
 
 def main():
-    global prefix_playing, prefix_paused, max_length_module, standby_text
+    global prefix_playing, prefix_paused, max_length_module, standby_text, artist_track_separator
     global artist_color, track_color, progress_color, empty_color, time_color
 
     # Load environment variables from your config file:
@@ -261,6 +260,7 @@ def main():
     prefix_paused = os.getenv("MEDIAPLAYER_PREFIX_PAUSED", "  ")
     max_length_module = int(os.getenv("MEDIAPLAYER_MAX_LENGTH", "70"))
     standby_text = os.getenv("MEDIAPLAYER_STANDBY_TEXT", "  Music")
+    artist_track_separator = os.getenv("MEDIAPLAYER_ARTIST_TRACK_SEPARATOR", "  ")
 
     # Initialize tooltip colors
     artist_color = os.getenv(
