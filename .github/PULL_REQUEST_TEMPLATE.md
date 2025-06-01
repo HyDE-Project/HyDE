@@ -26,9 +26,9 @@ Please put an `x` in the boxes that apply:
 
 Please put an `x` in the boxes that apply:
 
-- [ ] I have read the [CONTRIBUTING](https://github.com/prasanthrangan/hyprdots/blob/main/CONTRIBUTING.md) document.
+- [ ] I have read the [CONTRIBUTING](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) document.
 - [ ] My code follows the code style of this project.
-- [ ] My commit message follows the [commit guidelines](https://github.com/prasanthrangan/hyprdots/blob/main/CONTRIBUTING.md#git-commit-messages).
+- [ ] My commit message follows the [commit guidelines](https://github.com/HyDE-Project/HyDE/blob/master/COMMIT_MESSAGE_GUIDELINES.md).
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the documentation accordingly.
 - [ ] I have added a changelog entry.

@@ -745,3 +745,8 @@ type      = "object"
     default     = "  Music"
     description = "To display on standby."
     type        = "string"
+
+[properties.mediaplayer.properties.artist_track_separator]
+    default     = "  "
+    description = "Separator symbols to display between artist and track."
+    type        = "string"

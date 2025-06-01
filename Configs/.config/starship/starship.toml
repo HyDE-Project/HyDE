@@ -91,7 +91,7 @@ continuation_prompt = '▶▶ '
 # <color>
 # none
 
-#NTOE: you can customize the symbol(s, e.g:
+#NOTE: you can customize the symbols, e.g:
 # [character]
 # success_symbol = "[  ]($bold fg:#f8f8f2)"
 # error_symbol = "[ ➤ ]($bold fg:#fb4934)"
