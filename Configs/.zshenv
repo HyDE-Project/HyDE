@@ -315,14 +315,13 @@ function _load_if_terminal {
 
 # cleaning up home folder
 PATH="$HOME/.local/bin:$PATH"
-XDG_CONFIG_DIR="${XDG_CONFIG_DIR:-"$(xdg-user-dir CONFIG)"}"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 XDG_DATA_DIRS="${XDG_DATA_DIRS:-$XDG_DATA_HOME:/usr/local/share:/usr/share}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 
 # XDG User Directories
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-"$(xdg-user-dir CONFIG)"}"
 XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-"$(xdg-user-dir DESKTOP)"}"
 XDG_DOWNLOAD_DIR="${XDG_DOWNLOAD_DIR:-"$(xdg-user-dir DOWNLOAD)"}"
 XDG_TEMPLATES_DIR="${XDG_TEMPLATES_DIR:-"$(xdg-user-dir TEMPLATES)"}"
@@ -352,7 +351,7 @@ setopt HIST_IGNORE_ALL_DUPS   # Delete an old recorded event if a new event is a
 # HyDE Package Manager
 PM_COMMAND=(hyde-shell pm)
 
-export XDG_CONFIG_HOME XDG_CONFIG_DIR XDG_DATA_HOME XDG_STATE_HOME \
+export XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME \
     XDG_CACHE_HOME XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR \
     XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR XDG_DOCUMENTS_DIR \
     XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR \
