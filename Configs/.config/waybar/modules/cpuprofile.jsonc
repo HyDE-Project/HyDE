@@ -1,0 +1,14 @@
+"custom/cpuprofile": {
+  "format": "{icon}",
+  "tooltip-format": "Power Profile: {alt}",
+  "tooltip": true,
+  "return-type": "json",
+  "format-icons": {
+    "performance": "",
+    "balanced": " ",
+    "powersave": ""
+  },
+  "exec": "cpu_profile.sh",
+  "interval": 1,
+  "on-click": "cpu_profile.sh toggle"
+},
