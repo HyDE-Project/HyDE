@@ -47,7 +47,7 @@ fi
 # Check for AUR updates
 aur=$(${aurhlpr} -Qua | wc -l)
 ofc=$(
-    temp_db=$(mktemp -t checkupdates_db_XXXXXX)
+    temp_db=$(mktemp -u /tmp/checkupdates_db_XXXXXX)
     trap '[ -f "$temp_db" ] && rm "$temp_db" 2>/dev/null' EXIT INT TERM
     CHECKUPDATES_DB="$temp_db" checkupdates 2>/dev/null | wc -l
 )

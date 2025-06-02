@@ -76,8 +76,6 @@ As the last man standing collaborator, I don't know what the original creator in
 
 Here are the speculations from some of the contributors:
 
-Here are the speculations from some of the contributors:
-
 > - "**Hy**pr**D**otfiles **E**nhanced" - Enhanced version of hyprdots when @prasanthrangan introduced wallbash as our main theme management engine.
 
 > - But the one that makes the most sense is - "**Hy**prland **D**esktop **E**nvironment" - as Hyprland is usually considered a WM for Wayland, not a full-fledged D.E. and this dotfile kind of turns it into a full-blown D.E.

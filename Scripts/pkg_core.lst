@@ -14,6 +14,7 @@ bluez                                                  # bluetooth protocol stac
 bluez-utils                                            # bluetooth utility cli
 blueman                                                # bluetooth manager gui
 brightnessctl                                          # screen brightness control
+playerctl                                              # media controls
 udiskie                                                # manage removable media
 
 # --------------------------------------------------- // Display Manager
@@ -76,9 +77,11 @@ fzf                                                    # Command-line fuzzy find
 eza|zsh                                                # file lister for zsh
 zsh-theme-powerlevel10k-git|zsh                        # Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
 starship|zsh                                           # customizable shell prompt written in Rust
+duf|zsh                                                # prettier version of df for zsh
 # starship-git                                         # The cross-shell prompt for astronauts  
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt
+duf|fish                                               # prettier version of df for fish
 fastfetch                                              # system information fetch tool
 
 # --------------------------------------------------- // HyDE

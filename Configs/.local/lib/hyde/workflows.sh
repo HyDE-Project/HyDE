@@ -3,8 +3,8 @@
 # shellcheck source=$HOME/.local/bin/hyde-shell
 # shellcheck disable=SC1091
 if ! source "$(which hyde-shell)"; then
-  echo "[wallbash] code :: Error: hyde-shell not found."
-  echo "[wallbash] code :: Is HyDE installed?"
+  echo "[$0] :: Error: hyde-shell not found."
+  echo "[$0] :: Is HyDE installed?"
   exit 1
 fi
 # Set variables
@@ -130,17 +130,21 @@ fn_update() {
 #! █░█░█ █▀█ █▀█ █▄▀ █▀▀ █░░ █▀█ █░█░█ █▀
 #! ▀▄▀▄▀ █▄█ █▀▄ █░█ █▀░ █▄▄ █▄█ ▀▄▀▄▀ ▄█
 
-# This file sets the current workflow for Hyprland
-# HyDE Controlled content // DO NOT EDIT
-# Edit or add workflows in the ./workflows/ directory
-# and run the 'workflows.sh select' command to update this file
 
-#  Workflows are a set of configurations that can be applied to Hyprland
-#   that suits the actual workflow you are doing. 
-# It can be gaming mode, work mode, or anything else you can think of.
-# you can also exec a command within the workflow
+#*┌────────────────────────────────────────────────────────────────────────────┐
+#*│ # HyDE Controlled content // DO NOT EDIT                                   │
+#*│ # This file sets the current workflow for Hyprland                         │
+#*│ # Edit or add workflows in the ./workflows/ directory                      │
+#*│ # and run the 'workflows.sh --select' command to update this file          │
+#*│                                                                            │
+#*│ #  Workflows are a set of configurations that can be applied to Hyprland   │
+#*│ #   that suits the actual workflow you are doing.                          │
+#*│ # It can be gaming mode, work mode, or anything else you can think of.     │
+#*│ # you can also exec a command within the workflow                          │
+#*│                                                                            │
+#*└────────────────────────────────────────────────────────────────────────────┘
 
-\$WORKFLOW = ${current_workflow}
+\$WORKFLOW = ${ucrrent_workflow}
 \$WORKFLOW_ICON = ${current_icon}
 \$WORKFLOW_DESCRIPTION = ${current_description}
 \$WORKFLOWS_PATH = ./workflows/${current_workflow}.conf

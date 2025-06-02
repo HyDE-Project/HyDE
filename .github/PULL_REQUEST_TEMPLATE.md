@@ -6,6 +6,7 @@ Please read these instructions and remove unnecessary text.
 
 - Try to include a summary of the changes and which issue is fixed.
 - Also include relevant motivation and context (if applicable).
+- Make sure to make PR against dev and not the master
 - List any dependencies that are required for this change. (e.g., packages or other PRs)
 - Provide a link if there is an issue related to this pull request. e.g., Fixes # (issue)
 - Please add Reviewers, Assignees, Labels, Projects, and Milestones to the PR. (if applicable)
@@ -25,9 +26,9 @@ Please put an `x` in the boxes that apply:
 
 Please put an `x` in the boxes that apply:
 
-- [ ] I have read the [CONTRIBUTING](https://github.com/prasanthrangan/hyprdots/blob/main/CONTRIBUTING.md) document.
+- [ ] I have read the [CONTRIBUTING](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) document.
 - [ ] My code follows the code style of this project.
-- [ ] My commit message follows the [commit guidelines](https://github.com/prasanthrangan/hyprdots/blob/main/CONTRIBUTING.md#git-commit-messages).
+- [ ] My commit message follows the [commit guidelines](https://github.com/HyDE-Project/HyDE/blob/master/COMMIT_MESSAGE_GUIDELINES.md).
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the documentation accordingly.
 - [ ] I have added a changelog entry.

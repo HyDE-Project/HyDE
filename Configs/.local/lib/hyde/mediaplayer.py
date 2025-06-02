@@ -71,32 +71,40 @@ def create_tooltip_text(
 
     return tooltip
 
+def format_artist_track(artist, track, playing, max_length):
+    # Use the appropriate prefix based on playback status
+    prefix = prefix_playing if playing else prefix_paused
+    prefix_separator = "  "
+    full_length = len(artist + track)
+
+    if track and not artist:
+        if len(track) != len(track[:max_length]):
+            track = track[:max_length].rstrip() + "…"
+        output_text = f"{prefix}{prefix_separator}<b>{track}</b>"
+    elif track and artist:
+        if full_length > max_length:
+            # proportion how to share max length between track and artist
+            artist_weight = 0.65
+            track_weight = 1 - artist_weight
+            artist_limit = int(max_length * artist_weight)
+            track_limit = int(max_length * track_weight)
+
+            if len(artist) != len(artist[:artist_limit]):
+                artist = artist[:artist_limit].rstrip() + "…"
+            if len(track) != len(track[:track_limit]):
+                track = track[:track_limit].rstrip() + "…"
+
+        output_text = f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
+    else:
+        output_text = "<b>Nothing playing</b>"
+    return output_text
+
 
 def write_output(track, artist, playing, player, tooltip_text):
     logger.info("Writing output")
 
-    # Use the appropriate prefix based on playback status
-    prefix = prefix_playing if playing else prefix_paused
-    max_length = max_length_module
-
-    # Calculate the total length and truncate track if necessary
-    total_length = len(track) + len(artist)
-    if total_length > max_length:
-        available_length = max(0, max_length - len(artist))
-        track = (
-            f"{track[:available_length]}…" if len(track) > available_length else track
-        )
-
-    # Generate the "text" based on the presence of track and artist
-    if track and not artist:
-        output_text = f"{prefix}  <b>{track}</b>"
-    elif track and artist:
-        output_text = f"{prefix}  <i>{artist}</i>  <b>{track}</b>"
-    else:
-        output_text = "<b>Nothing playing</b>"
-
     output_data = {
-        "text": output_text,
+        "text": format_artist_track(artist, track, playing, max_length_module),
         "class": "custom-" + player.props.player_name,
         "alt": player.props.player_name,
         "tooltip": tooltip_text,
@@ -235,7 +243,7 @@ def parse_arguments():
 
 
 def main():
-    global prefix_playing, prefix_paused, max_length_module, standby_text
+    global prefix_playing, prefix_paused, max_length_module, standby_text, artist_track_separator
     global artist_color, track_color, progress_color, empty_color, time_color
 
     # Load environment variables from your config file:
@@ -252,6 +260,7 @@ def main():
     prefix_paused = os.getenv("MEDIAPLAYER_PREFIX_PAUSED", "  ")
     max_length_module = int(os.getenv("MEDIAPLAYER_MAX_LENGTH", "70"))
     standby_text = os.getenv("MEDIAPLAYER_STANDBY_TEXT", "  Music")
+    artist_track_separator = os.getenv("MEDIAPLAYER_ARTIST_TRACK_SEPARATOR", "  ")
 
     # Initialize tooltip colors
     artist_color = os.getenv(

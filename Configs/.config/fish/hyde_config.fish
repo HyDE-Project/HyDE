@@ -17,10 +17,6 @@ if test -z "$XDG_CONFIG_HOME"
     set -gx XDG_CONFIG_HOME "$HOME/.config"
 end
 
-if test -z "$XDG_CONFIG_DIR"
-    set -gx XDG_CONFIG_DIR "$HOME/.config"
-end
-
 if test -z "$XDG_DATA_HOME"
     set -gx XDG_DATA_HOME "$HOME/.local/share"
 end
