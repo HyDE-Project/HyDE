@@ -7,9 +7,6 @@ from collections import defaultdict
 import time
 
 
-# filepath: /home/khing/.local/lib/hyde/keybinds.hint.py
-
-
 def get_hyprctl_binds():
     while True:
         try:
@@ -350,7 +347,11 @@ def expand_meta_data(binds_data):
             submap_key_display = submap_keys[submap]["key_display"]
             bind["submap_mod"] = submap_mod_display
             bind["submap_key"] = submap_key_display
-            bind["displayed_keys"] = ( f"{submap_mod_display} + {submap_key_display} + " if submap_mod_display else "") + f"{formatted_keys}"
+            bind["displayed_keys"] = (
+                f"{submap_mod_display} + {submap_key_display} + "
+                if submap_mod_display
+                else ""
+            ) + f"{formatted_keys}"
             bind["description"] = f"[{submap}] {bind['description']}"
         else:
             bind["submap_mod"] = ""
