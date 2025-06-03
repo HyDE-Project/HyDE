@@ -213,6 +213,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>R</kbd>   | wallbash mode selector |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>T</kbd>   | select a theme         |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>Y</kbd>   | select animations      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>U</kbd>   | select hyprlock layout |
 
 <!-- ## <a id=workspaces>Workspaces</a> -->
 

@@ -47,12 +47,7 @@ logo) # eats around 13 ms
       image_dirs+=("$HYDE_CACHE_HOME/wall.quad")
       image_dirs+=("$HYDE_CACHE_HOME/wall.sqre")
       [ -f "$HOME/.face.icon" ] && image_dirs+=("$HOME/.face.icon")
-      [ -f "$hyde_distro_logo" ] && image_dirs+=("$hyde_distro_logo")
-      image_dirs+=("${confDir}/fastfetch/logo")
-      image_dirs+=("${iconDir}/Wallbash-Icon/fastfetch/")
-      if [ -n "${HYDE_THEME}" ] && [ -d "${confDir}/hyde/themes/${HYDE_THEME}/logo" ]; then
-        image_dirs+=("${confDir}/hyde/themes/${HYDE_THEME}/logo")
-      fi
+      # also .bash_logout may be matched with this find
       find -L "${image_dirs[@]}" -maxdepth 1 -type f \( -name "wall.quad" -o -name "wall.sqre" -o -name "*.icon" -o -name "*logo*" -o -name "*.png" \) ! -path "*/wall.set*" ! -path "*/wallpapers/*.png" 2>/dev/null
     ) | shuf -n 1
   }
