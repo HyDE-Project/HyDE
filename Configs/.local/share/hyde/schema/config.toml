@@ -619,7 +619,7 @@ type      = "object"
     type        = "string"
 
 [properties.hyprland.properties.button_layout]
-    default     = "appmenu:minimize,maximize,close"
+    default     = ""
     description = "Button layout. (gtk only)"
     type        = "string"
 
