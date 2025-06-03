@@ -37,7 +37,14 @@ def load_toml_file(toml_file):
 
 
 def parse_toml_to_env(toml_file, env_file=None, export=False):
-    ignored_keys = ["$schema", "$SCHEMA", "hyprland","hyprland-ipc","hyprland-start", "hyprland-env"]
+    ignored_keys = [
+        "$schema",
+        "$SCHEMA",
+        "hyprland",
+        "hyprland-ipc",
+        "hyprland-start",
+        "hyprland-env",
+    ]
 
     toml_content = load_toml_file(toml_file)
     if toml_content is None:
