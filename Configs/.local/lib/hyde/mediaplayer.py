@@ -96,7 +96,7 @@ def format_artist_track(artist, track, playing, max_length):
                 track = track[:track_limit].rstrip() + "…"
 
         output_text = (
-            f"{prefix}{prefix_separator}<i>{artist}</i>{separator}<b>{track}</b>"
+            f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
         )
     else:
         output_text = "<b>Nothing playing</b>"
