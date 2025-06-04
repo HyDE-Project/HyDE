@@ -303,7 +303,7 @@ print_log -stat "Log" "View logs at ${cacheDir}/logs/${HYDE_LOG}"
 if [ $flg_Install -eq 1 ] ||
     [ $flg_Restore -eq 1 ] ||
     [ $flg_Service -eq 1 ]; then
-    print_log -stat "HyDE" "It is recommended to reboot the system after first installation of HyDE. Do you want to reboot the system now? (y/N)"
+    print_log -stat "HyDE" "It is recommended to reboot the system after installing or upgrading HyDE. Do you want to reboot the system now? (y/N)"
     read -r answer
 
     if [[ "$answer" == [Yy] ]]; then
