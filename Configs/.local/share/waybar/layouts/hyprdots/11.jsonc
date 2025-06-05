@@ -39,10 +39,14 @@
         ]
     },
     "modules-center": [
-	            "wlr/taskbar"
-
+        "group/pill#center1"
     ],
-
+    "group/pill#center1": {
+        "orientation": "inherit",
+        "modules": [
+            "wlr/taskbar"
+        ]
+    },
     "modules-right": [
         "group/pill#right1",
         "group/pill#right2"
