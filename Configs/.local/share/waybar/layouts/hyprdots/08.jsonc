@@ -19,8 +19,7 @@
     // positions generated based on config.ctl //
     "modules-left": [
         "group/pill#left1",
-        "group/pill#left2",
-        "group/pill#left3"
+        "group/pill#left2"
     ],
     "group/pill#left1": {
         "orientation": "inherit",
@@ -35,13 +34,6 @@
         "modules": [
             "wlr/taskbar",
             "custom/spotify"
-        ]
-    },
-    "group/pill#left3": {
-        "orientation": "inherit",
-        "modules": [
-            "idle_inhibitor",
-            "clock"
         ]
     },
     "modules-center": [
