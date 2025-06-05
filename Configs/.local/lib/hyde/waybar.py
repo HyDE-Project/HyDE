@@ -44,6 +44,8 @@ LAYOUT_DIRS = [
     os.path.join("usr", "share", "waybar", "layouts"),
 ]
 
+LAYOUT_IGNORE = ["test.jsonc", "dock#sample.jsonc"]
+
 STYLE_DIRS = [
     os.path.join(str(xdg_config_home()), "waybar", "styles"),
     os.path.join(str(xdg_data_home()), "waybar", "styles"),
@@ -85,7 +87,7 @@ def find_layout_files():
     for layout_dir in LAYOUT_DIRS:
         for root, _, files in os.walk(layout_dir):
             for file in files:
-                if file.endswith(".jsonc"):
+                if file.endswith(".jsonc") and file not in LAYOUT_IGNORE:
                     layouts.append(os.path.join(root, file))
     return sorted(layouts)
 
