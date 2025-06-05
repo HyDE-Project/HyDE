@@ -1,4 +1,4 @@
-# Configuration file for HyDE
+# Example configuration file for HyDE
 # Environment variables should be on top
 # Add your custom configuration in '~/.config/hyde/config.toml'
 
@@ -6,70 +6,61 @@
 
 WARP_ENABLE_WAYLAND = 1
 
-
 [wallpaper]
-custom_paths = [
-    "$HOME/Pictures/Wallpapers",
-] # List of paths to search for wallpapers
-backend = "swww" # Wallpaper backend, example: swww, hyprpaper, pcmanfm, feh, etc.
+custom_paths = ["$HOME/Pictures/Wallpapers"]
+backend = "swww"
 
 [wallpaper.swww]
-# swwwallselect.sh configuration
-framerate = 60 # transition framerate
-duration = 1   # transition duration
-# Transition type [ none | simple | fade | left | right | top | bottom | wipe | wave | grow | center | any | outer | random ]
-transition_next = "grow"    # transition type for next wallpaper
-transition_prev = "outer"   # transition type for previous wallpaper
-transition_default = "grow" # transition type for default wallpaper
-
-
-# NOTE: 
-# for [rofi.*] 
-# style <--script's built-in styles, also accepts themes from rofi-theme-selector
+framerate = 60
+duration = 1
+transition_next = "grow"
+transition_prev = "outer"
+transition_default = "grow"
 
 [rofi]
-# global rofi configuration`
-scale = 10 # rofi default scaling
+scale = 10
 
 [rofi.hyprlock]
-# 'hyprlock.sh select' configuration
 scale = 10
 
 [rofi.animation]
-# ' animation.sh select' configuration
 scale = 8
 
 [rofi.glyph]
-# glyph-picker.sh configuration
 scale = 8
 
 [rofi.launch]
-# rofilaunch.sh configuration
-# style = "10"
 scale = 5
 
 [rofi.cliphist]
-# cliphist.sh configuration
 scale = 8
 
 [rofi.wallpaper]
-#swwwallselect.sh configuration
 scale = 8
 
 [rofi.emoji]
-# emoji-picker.sh configuration
 style = 2
 scale = 8
 
 [rofi.theme]
-# themeselect.sh configuration
 scale = 6
+
+[rofi.keybind.hint]
+delimiter = "\t"
+width = "40em"
+height = "40em"
+line = 16
+
+[rofi.bookmark]
+file = "$HOME/.config/hyde/bookmarks.lst"
+
+[rofi.search]
+file = "$HOME/.config/hyde/search.lst"
 
 [wlogout]
 style = 2
 
 [battery.notify]
-# batterynotify.sh configuration
 timer = 120
 notify = 1140
 interval = 5
@@ -81,7 +72,6 @@ critical = 10
 low = 20
 unplug = 80
 
-
 [battery.notify.execute]
 unplug = ""
 low = ""
@@ -90,106 +80,111 @@ charging = ""
 discharging = ""
 
 [keybind.hint]
-# keybind.hint.py configuration
-
-
-[rofi.keybind.hint]
-# keybind_hint.sh configuration
-delimiter = "\t"
-width = "40em"
-height = "40em"
-line = 16
 
 [screenshot]
-# screenshot.sh configuration
-annotation_tool = "swappy" # Annotation tool
-annotation_pre_command = [
-    # 'shader=$(hyprshade current) && hyprshade off && trap restore_shader EXIT', # Use this when you're using hyprshade
-] # Pre command for annotation tool
-annotation_post_command = [
-    # "[ -n \"\\$shader\" ] && hyprshade on \\$shader", # Use this when you're using hyprshade
-    "",
-] # Post command for annotation tool
-
-
-[rofi.bookmark]
-file = "$HOME/.config/hyde/bookmarks.lst"
-
-[rofi.search]
-file = "$HOME/.config/hyde/search.lst"
-
+annotation_tool = "swappy"
+annotation_pre_command = []
+annotation_post_command = [""]
 
 [wallbash]
-skip_template = [
-    "",
-]    # skips the template when using wallbash. Requires full path to the template
+skip_template = [""]
 
 [waybar]
 font = "JetBrainsMono Nerd Font"
-scale=30                                # total scaling
-# output = ["", ""]                     # Default monitor output for waybar
+scale = 30
 
 [weather]
-temperature_unit='c'	# Temperature unit to °C or °F ('c' or 'f')
-time_format='24h'		# Time format ('12h or 24h')
-windspeed_unit='km/h'	# Windspeed unit ('kh/h' or 'mph')
-show_icon= true			# Show the weather icon in waybar
-show_location= true	    # Show the location in waybar
-show_today= true		# Detailed description of today in tooltip
-forecast_days= 3 		# Number of days to show forecast (0-3)
-location = ''			# Location/coordinates string for the weather output
+temperature_unit = "c"
+time_format = "24h"
+windspeed_unit = "km/h"
+show_icon = true
+show_location = true
+show_today = true
+forecast_days = 3
+location = ""
 
 [cava.stdout]
-# 'cava.sh stdout' configuration
-max_instances = 1 # Maximum number of cava instances // fix and workaround when a process won't kill 'cava ' process
+max_instances = 1
 bar = "▁▂▃▄▅▆▇█"
 width = 20
-range = 7         # Number of (bars -1)
+range = 7
 standby = "🎶"
 
 [cava.hyprlock]
-# 'cava.sh hyprlock' configuration
-max_instances = 1 # Maximum number of cava instances // fix and workaround when a process won't kill 'cava ' process
+max_instances = 1
 bar = "🌑🌒🌓🌔🌕🌖🌗🌘"
 width = 20
 range = 7
 standby = "🎶"
 
 [cava.waybar]
-# 'cava.sh waybar' configuration
-max_instances = 1 # Maximum number of cava instances // fix and workaround when waybar won't kill 'cava ' process
+max_instances = 1
 bar = "▁▂▃▄▅▆▇█"
 width = 20
 range = 7
 standby = "🎶"
 
-
 [hypr.config]
-# List of regex to sanitize in the theme.config // Useful for deprecated options to be removed from the theme.config
-sanitize = [
-    '.*rgba\(.*,*,*,*,',
-] # Remove all rgba colors // workarounds for rgba colors crashing hyprland
+sanitize = ['.*rgba\(.*,*,*,*,']
 
 [volume]
-# volumecontrol.sh configuration
-notify = true # Useful for systems that have their own OSD
-steps = 5     # Number of steps to increase/decrease volume
-boost = false # Enable volume boost
-boost_limit = 150 # Volume boost limit // Don't kill your ears/speakers
+notify = true
+steps = 5
+boost = false
+boost_limit = 150
 
 [brightness]
-# brightnesscontrol.sh configuration
-notify = true # Useful for systems that have their own OSD
-steps = 5     # Number of steps to increase/decrease brightness
-
+notify = true
+steps = 5
 
 [sysmonitor]
-#  sysmonlaunch.sh configuration // System monitor configuration
-execute = "btop"                   # Default command to execute // accepts executable or app.desktop
-commands = ["btop", "htop", "top"] # Fallback command options
-
+execute = "btop"
+commands = [
+    "btop",
+    "htop",
+    "top",
+]
 
 [notification]
-# notification script can use this configuration
-font = "mononoki Nerd Font"         # Font for notifications
-font_size = 8                     # Font size for notifications
+font = "mononoki Nerd Font"
+font_size = 8
+
+[hyprland]
+browser = "firefox"
+editor = "code"
+explorer = "dolphin"
+idle = "hypridle"
+lockscreen = "lockscreen.sh"
+quickapps = "kitty"
+terminal = "kitty"
+bar = "waybar"
+color_scheme = "prefer-light"
+gtk_theme = "Wallbash-Gtk"
+icon_theme = "Tela-circle-dracula"
+cursor_size = 24
+cursor_theme = "Bibata-Modern-Ice"
+button_layout = "appmenu:minimize,maximize,close"
+document_font_size = 10
+font = "Canterell"
+font_antialiasing = "rgba"
+font_hinting = "full"
+font_size = 10
+monospace_font = "CaskaydiaCove Nerd Font Mono"
+monospace_font_size = 9
+background_path = "$HYPRLOCK_BACKGROUND"
+
+[hyprland-start]
+apptray_bluetooth = "blueman-applet"
+auth_dialogue = "polkitkdeauth.sh"
+bar = "hyde-shell waybar --watch"
+battery_notify = "batterynotify.sh"
+dbus_share_picker = "dbus-update-activation-environment --systemd --all"
+idle_daemon = "hypridle"
+image_clipboard = "wl-paste --type image --watch cliphist store"
+network_manager = "nm-applet --indicator"
+notifications = "swaync"
+removable_media = "udiskie --no-automount --smart-tray"
+systemd_share_picker = "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+text_clipboard = "wl-paste --type text --watch cliphist store"
+wallpaper = "$scrPath/wallpaper.sh --global"
+xdg_portal_reset = "resetxdgportal.sh"

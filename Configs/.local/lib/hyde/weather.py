@@ -208,7 +208,7 @@ show_today_details = os.getenv("WEATHER_SHOW_TODAY_DETAILS", "True").lower() in 
     "yes",
 )  # True or False     (default: True)
 try:
-    forecast_days = int(
+    FORECAST_DAYS = int(
         os.getenv("WEATHER_FORECAST_DAYS", "3")
     )  # Number of days to show the forecast for (default: 3)
 except ValueError:
@@ -225,7 +225,7 @@ if time_format not in ("12h", "24h"):
     TIME_FORMAT = "12h"
 if windspeed_unit not in ("km/h", "mph"):
     WINDSPEED_UINT = "km/h"
-if forecast_days not in range(4):
+if FORECAST_DAYS not in range(4):
     FORECAST_DAYS = 3
 
 ### Main Logic ###
@@ -262,7 +262,7 @@ if show_today_details:
     data["tooltip"] += f"Wind: {get_wind_speed(current_weather)}\n"
     data["tooltip"] += f"Humidity: {current_weather['humidity']}%\n"
 # Get the weather forecast for the next 2 days
-for i in range(forecast_days):
+for i in range(FORECAST_DAYS):
     day_instance = weather["weather"][i]
     data["tooltip"] += "\n<b>"
     if i == 0:

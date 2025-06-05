@@ -1,0 +1,282 @@
+[
+    {
+        "layer": "top",
+        "output": "eDP-1",
+        "position": "top",
+        "mod": "dock",
+        "exclusive": true,
+        "passthrough": false,
+        "gtk-layer-shell": true,
+        "reload_style_on_change": true,
+        "include": [
+            "$XDG_CONFIG_HOME/waybar/modules/*json*"
+        ],
+        "modules-left": [
+            "group/leaf-inverse",
+            "group/leaf"
+        ],
+        "modules-center": [
+            "group/pill#power",
+            "group/pill-in#center",
+            "group/pill#spotify"
+        ],
+        "modules-right": [
+            "group/leaf"
+        ],
+        "group/leaf-inverse": {
+            "orientation": "inherit",
+            "modules": [
+                "hyprland/workspaces",
+                "wlr-taskbar"
+            ]
+        },
+        "group/leaf": {
+            "orientation": "inherit",
+            "modules": [
+                "privacy",
+                "backlight",
+                "tray",
+                "network",
+                "custom/bluetooth",
+                "pulseaudio",
+                "pulseaudio#microphone",
+                "battery",
+                "custom/gpuinfo",
+                "custom/cpuinfo",
+                "custom/sensorsinfo",
+                "custom/swaync",
+                "custom/dunst"
+            ]
+        },
+        "group/pill#power": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/powermenu"
+            ]
+        },
+        "group/pill#spotify": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/spotify"
+            ]
+        },
+        "group/pill-in#center": {
+            "orientation": "inherit",
+            "modules": [
+                "keyboard-state",
+                "custom/hyprsunset",
+                "idle_inhibitor",
+                "clock",
+                "custom/updates",
+                "custom/keybindhint",
+                "custom/gamemode",
+                "custom/weather"
+            ]
+        }
+    },
+    {
+        "layer": "bottom",
+        "output": "eDP-1",
+        "position": "bottom",
+        "mod": "dock",
+        "exclusive": true,
+        "passthrough": false,
+        "gtk-layer-shell": true,
+        "reload_style_on_change": true,
+        "include": [
+            "$XDG_CONFIG_HOME/waybar/modules/*json*"
+        ],
+        "modules-left": [
+            "group/pill-down",
+            "group/pill-in"
+        ],
+        "modules-center": [
+            "group/pill-left",
+            "group/pill-out",
+            "group/pill-right"
+        ],
+        "modules-right": [
+            "group/pill-up"
+        ],
+        "group/pill-down": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/cava",
+                "custom/wallchange"
+            ]
+        },
+        "group/pill-in": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/clipboard",
+                "custom/cliphist"
+            ]
+        },
+        "group/pill-left": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/display",
+                "custom/dunst"
+            ]
+        },
+        "group/pill-out": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/github_hyde",
+                "custom/gpuinfo#amd"
+            ]
+        },
+        "group/pill-right": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/gpuinfo#intel",
+                "custom/gpuinfo#nvidia"
+            ]
+        },
+        "group/pill-up": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/power",
+                "custom/theme"
+            ]
+        }
+    },
+    {
+        "layer": "left",
+        "output": "eDP-1",
+        "position": "left",
+        "mod": "dock",
+        "exclusive": true,
+        "passthrough": false,
+        "gtk-layer-shell": true,
+        "reload_style_on_change": true,
+        "include": [
+            "$XDG_CONFIG_HOME/waybar/modules/*json*"
+        ],
+        "modules-left": [
+            "group/leaf-inverse",
+            "group/leaf"
+        ],
+        "modules-center": [
+            "group/pill#power",
+            "group/pill-in#center",
+            "group/pill#spotify"
+        ],
+        "modules-right": [
+            "group/leaf"
+        ],
+        "group/leaf-inverse": {
+            "orientation": "inherit",
+            "modules": [
+                "hyprland/workspaces",
+                "wlr-taskbar"
+            ]
+        },
+        "group/leaf": {
+            "orientation": "inherit",
+            "modules": [
+                "privacy",
+                "backlight",
+                "network",
+                "custom/bluetooth",
+                "pulseaudio",
+                "pulseaudio#microphone",
+                "battery",
+                "custom/swaync",
+                "custom/dunst"
+            ]
+        },
+        "group/pill#power": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/powermenu"
+            ]
+        },
+        "group/pill#spotify": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/spotify"
+            ]
+        },
+        "group/pill-in#center": {
+            "orientation": "inherit",
+            "modules": [
+                "keyboard-state",
+                "custom/hyprsunset",
+                "idle_inhibitor",
+                "clock",
+                "custom/updates",
+                "custom/keybindhint",
+                "custom/gamemode",
+                "custom/weather"
+            ]
+        }
+    },
+    {
+        "layer": "right",
+        "output": "eDP-1",
+        "position": "right",
+        "mod": "dock",
+        "exclusive": true,
+        "passthrough": false,
+        "gtk-layer-shell": true,
+        "reload_style_on_change": true,
+        "include": [
+            "$XDG_CONFIG_HOME/waybar/modules/*json*"
+        ],
+        "modules-left": [
+            "group/pill-down",
+            "group/pill-in"
+        ],
+        "modules-center": [
+            "group/pill-left",
+            "group/pill-out",
+            "group/pill-right"
+        ],
+        "modules-right": [
+            "group/pill-up"
+        ],
+        "group/pill-down": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/cava",
+                "custom/wallchange"
+            ]
+        },
+        "group/pill-in": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/clipboard",
+                "custom/cliphist"
+            ]
+        },
+        "group/pill-left": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/display",
+                "custom/dunst"
+            ]
+        },
+        "group/pill-out": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/github_hyde",
+                "custom/gpuinfo#amd"
+            ]
+        },
+        "group/pill-right": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/gpuinfo#intel",
+                "custom/gpuinfo#nvidia"
+            ]
+        },
+        "group/pill-up": {
+            "orientation": "inherit",
+            "modules": [
+                "custom/power",
+                "custom/theme"
+            ]
+        }
+    }
+]

@@ -1,0 +1,28 @@
+{
+    "hyprland/window": {
+        "format": " \uf303 {0}",
+        "rotate": 0,
+        "separate-outputs": true,
+        "rewrite": {
+            "(.*)@archlinux:(.*)": "$1 \uf489",
+            "(.*) \u2014 Mozilla Firefox": "$1 \udb80\ude39",
+            "(.*)Mozilla Firefox": "Firefox \udb80\ude39",
+            "(.*) - Visual Studio Code": "$1 \udb82\ude1e",
+            "(.*)Visual Studio Code": "Code \udb82\ude1e",
+            "(.*) - Code - OSS": "$1 \udb82\ude1e",
+            "(.*)Code - OSS": "Code \udb82\ude1e",
+            "(.*) \u2014 Dolphin": "$1 \udb80\ude4b",
+            "(.*)Spotify": "Spotify \udb81\udcc7",
+            "(.*)Steam": "Steam \udb81\udcd3",
+            "(.*) - Discord": "$1 \uf1ff ",
+            "(.*)Netflix": "Netflix \udb81\udf46 ",
+            "(.*) \u2014 Google chrome": "$1 \ue743 ",
+            "(.*)Google chrome": "Google chrome \ue743 ",
+            "(.*) \u2014 Github": "$1 \ue709 ",
+            "(.*)Github": "Github \ue709",
+            "(.*)Spotify Free": "Spotify \udb81\udcc7",
+            "(.*)Spotify Premiun": "Spotify \udb81\udcc7"
+        },
+        "max-length": 50
+    }
+}

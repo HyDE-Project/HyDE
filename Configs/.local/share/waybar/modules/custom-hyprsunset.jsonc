@@ -1,0 +1,19 @@
+{
+  "custom/hyprsunset": {
+    "return-type": "json",
+    "format": "{icon} ",
+    "format-icons": {
+      "active": "",
+      "inactive": ""
+    },
+    "exec": "hyde-shell hyprsunset r q",
+    "rotate": 0,
+    "on-click": "hyde-shell hyprsunset t;pkill -RTMIN+19 waybar",
+    "on-scroll-up": "hyde-shell hyprsunset i;pkill -RTMIN+19 waybar",
+    "on-scroll-down": "hyde-shell hyprsunset d;pkill -RTMIN+19 waybar",
+    "interval": "once",
+    "tooltip": true,
+    "escape": true,
+    "signal": 19
+  }
+}

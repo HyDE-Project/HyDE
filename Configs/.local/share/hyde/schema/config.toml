@@ -533,7 +533,7 @@ type      = "object"
     type        = "array"
 
 [properties.sysmonitor.properties.commands.items]
-    type = "string"
+    type        = "string"
 
 [properties.notification]
     description = "Notification script configuration."
@@ -583,6 +583,11 @@ type      = "object"
     description = "Terminal."
     type        = "string"
 
+[properties.hyprland.properties.quickapps]
+    default     = "kitty"
+    description = "Quick apps."
+    type        = "string"
+
 [properties.hyprland.properties.bar]
     default     = "waybar"
     description = "Bar."
@@ -611,6 +616,11 @@ type      = "object"
 [properties.hyprland.properties.cursor_theme]
     default     = "Bibata-Modern-Ice"
     description = "Cursor theme."
+    type        = "string"
+
+[properties.hyprland.properties.button_layout]
+    default     = ""
+    description = "Button layout. (gtk only)"
     type        = "string"
 
 [properties.hyprland.properties.document_font_size]
@@ -648,6 +658,11 @@ type      = "object"
     description = "Monospace font size."
     type        = "integer"
 
+[properties.hyprland.properties.background_path]
+    default     = ""
+    description = "LockScreen's Background path." 
+    type        = "string"
+
 [properties.hyprland_start]
     description = "Hyprland start configuration."
     type        = "object"
@@ -663,7 +678,7 @@ type      = "object"
     type        = "string"
 
 [properties.hyprland_start.properties.bar]
-    default     = "$BAR"
+    default     = "hyde-shell waybar --watch"
     description = "Bar."
     type        = "string"
 

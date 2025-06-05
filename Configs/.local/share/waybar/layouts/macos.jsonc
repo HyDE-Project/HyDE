@@ -1,0 +1,89 @@
+{
+  // General Waybar configuration
+  "layer": "top",
+  "margin": 0,
+  "spacing": 10,
+  "border-size": 1,
+  "padding": 1,
+  "include": [
+    "$XDG_CONFIG_HOME/waybar/includes/includes.json" 
+  ],
+  // Modules configuration
+  "modules-left": [
+    "custom/launcher",
+    "hyprland/window",
+    "custom/text#two",
+    "custom/text#three",
+    "custom/text#four",
+    "custom/text#five"
+  ],
+  "modules-right": ["image#wallpaper", "clock#date", "clock"],
+  // Module-specific configurations
+  "clock#12": {
+    "format": "{:%H:%M %p}",
+    "tooltip-format": "{:%A, %B %d, %Y}"
+  },
+  "clock": {
+    "format": "{:%H:%M}",
+    "tooltip-format": "{:%A, %B %d, %Y}"
+  },
+  "clock#date": {
+    "format": "{:%a %b %d}",
+    "rotate": 0,
+    // "format-alt": "{:%R \udb80\udced %d\u00b7%m\u00b7%y}",
+    "tooltip-format": "<span>{calendar}</span>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "on-scroll": 1,
+      "on-click-right": "mode",
+      "format": {
+        "months": "<span color='#ffead3'><b>{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b>{}</b></span>"
+      }
+    },
+    "actions": {
+      "on-click-right": "mode",
+      "on-click-forward": "tz_up",
+      "on-click-backward": "tz_down",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
+  "hyprland/window": {
+    "format": "{class}",
+    "max-length": 20,
+    "rewrite": {
+      // if any window is focused display Finder
+      "^(?!.*\\S).*": "Finder"
+    }
+  },
+  "custom/launcher": {
+    "format": "",
+    "on-click": "hyde-shell rofilaunch"
+  },
+  "custom/text#two": {
+    "exec": "echo 'File'",
+    "interval": 60,
+    "return-type": "plain",
+    "on-click": "hyde-shell hyde-launch --fall dolphin file-manager" //or you favorite Filer Explorer
+  },
+  "custom/text#three": {
+    "exec": "echo 'Edit'",
+    "interval": 60,
+    "return-type": "plain",
+    "on-click": "krita" // or you favorite Image editor
+  },
+  "custom/text#four": {
+    "exec": "echo 'View'",
+    "interval": 60,
+    "return-type": "plain"
+  },
+  "custom/text#five": {
+    "exec": "echo 'Help'",
+    "interval": 60,
+    "return-type": "plain",
+    "on-click": "yad --title='Help' --text-info --width=600 --height=400 --filename=<(man hyprland | col -bx)"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "custom/sensorsinfo": {
+    "exec": "hyde-shell sensorsinfo",
+    "return-type": "json",
+    "format": "{0}",
+    "rotate": 0,
+    "class": "default-margin-padding",
+    "interval": 5,
+    "tooltip": true,
+    "max-length": 1000,
+    "on-click": "hyde-shell sensorsinfo --next",
+    "signal": 19
+  }
+}

@@ -651,6 +651,11 @@
                     "description": "Terminal.",
                     "type": "string"
                 },
+                "quickapps": {
+                    "default": "kitty",
+                    "description": "Quick apps.",
+                    "type": "string"
+                },
                 "bar": {
                     "default": "waybar",
                     "description": "Bar.",
@@ -679,6 +684,11 @@
                 "cursor_theme": {
                     "default": "Bibata-Modern-Ice",
                     "description": "Cursor theme.",
+                    "type": "string"
+                },
+                "button_layout": {
+                    "default": "",
+                    "description": "Button layout. (gtk only)",
                     "type": "string"
                 },
                 "document_font_size": {
@@ -715,6 +725,11 @@
                     "default": 9,
                     "description": "Monospace font size.",
                     "type": "integer"
+                },
+                "background_path": {
+                    "default": "",
+                    "description": "LockScreen's Background path.",
+                    "type": "string"
                 }
             }
         },
@@ -733,7 +748,7 @@
                     "type": "string"
                 },
                 "bar": {
-                    "default": "$BAR",
+                    "default": "hyde-shell waybar --watch",
                     "description": "Bar.",
                     "type": "string"
                 },

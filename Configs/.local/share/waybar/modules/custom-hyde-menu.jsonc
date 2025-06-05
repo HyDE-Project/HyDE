@@ -1,0 +1,28 @@
+{
+  "custom/hyde-menu": {
+    "format": " ",
+    "tooltip": "Right-click for more options",
+    "menu": "on-click-right",
+    "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/hyde-menu.xml",
+    "menu-actions": {
+      "animations-select": "hyde-shell animations --select",
+      "wallpaper-select": "hyde-shell wallpaper --select --global",
+      "wallpaper-next": "hyde-shell wallpaper --backend swww --next --global",
+      "wallpaper-previous": "hyde-shell wallpaper --backend swww --previous --global",
+      "wallpaper-random": "hyde-shell wallpaper --backend swww --random --global",
+      "theme-next": "hyde-shell themeswitch -n",
+      "theme-previous": "hyde-shell themeswitch -p",
+      "theme-select": "hyde-shell themeselect",
+      "theme-import": "gnome-terminal -- hyde-shell theme.import --select",
+      "waybar-restart": "hyde-shell waybar -ubg",
+      "waybar-reload-css": "sed -i '${/^$/d;}'  $XDG_CONFIG_HOME/waybar/style.css",
+      "waybar-layout-select": "hyde-shell waybar --select",
+      "waybar-layout-next": "hyde-shell waybar --update --next",
+      "waybar-layout-previous": "hyde-shell waybar --update --prev",
+      "workflows-select": "hyde-shell workflows --select;pkill -RTMIN+19 waybar",
+      "shaders-select": "hyde-shell shaders --select;pkill -RTMIN+19 waybar",
+      "keybinds-hint":"hyde-shell keybinds_hint",
+      "about-hyde": "xdg-open https://hydeproject.pages.dev"
+    }
+  }
+}

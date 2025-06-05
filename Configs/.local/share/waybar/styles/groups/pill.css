@@ -1,0 +1,27 @@
+/* ? Full Pill  shape*/
+
+window#waybar.bottom #pill,
+window#waybar.bottom #pill button,
+window#waybar.top #pill,
+window#waybar.top #pill button {
+    border-radius: 10pt 10pt 10pt 10pt;
+    border-width: 0 0.411em;
+}
+
+window#waybar.left #pill,
+window#waybar.left #pill button,
+window#waybar.right #pill,
+window#waybar.right #pill button {
+    border-radius: 10pt 10pt 10pt 10pt;
+    border-width: 0;
+}
+
+window#waybar.top #pill,
+window#waybar.bottom #pill {
+    margin: 0.3em 1em 0.3em 1em;
+}
+
+window#waybar.left #pill,
+window#waybar.right #pill {
+    margin: 1em 0.3em 1em 0.3em;
+}

@@ -1,0 +1,15 @@
+{
+    "custom/powermenu": {
+        "format": "⏻",
+        "tooltip": false,
+        "menu": "on-click-right",
+        "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/power.xml",
+        "menu-actions": {
+            "shutdown": "shutdown",
+            "reboot": "reboot",
+            "suspend": "systemctl suspend",
+            "hibernate": "systemctl hibernate"
+        },
+        "signal": 1
+    }
+}

@@ -1,39 +1,18 @@
+/* DEPRECATED
+Instead of this file, please use 
+			custom-module.jsonc for 'custom/module' 
+			wlr-module.jsonc for 'wlr/module'
+			hyprland-module.jsonc for 'hyprland/module'
 
-"hyprland/workspaces": {
-    "rotate": 0,
-    "all-outputs": true,
-    "active-only": false,
-    "on-click": "activate",
-    "disable-scroll": false,
-    "on-scroll-up": "hyprctl dispatch workspace -1",
-    "on-scroll-down": "hyprctl dispatch workspace +1",
-    "format": "{icon}",
-    "persistent-workspaces": {
-        "*": 5
-        },
-        "format-icons": {
-            "1": "一",
-            "2": "二",
-            "3": "三",
-            "4": "四",
-            "5": "五",
-            "6": "六",
-            "7": "七",
-            "8": "八",
-            "9": "九",
-            "10": "十",
-            "11": "十一",
-            "12": "十二",
-            "13": "十三",
-            "14": "十四",
-            "15": "十五",
-            "16": "十六",
-            "17": "十七",
-            "18": "十八",
-            "19": "十九",
-            "20": "二十",
-            "urgent": "",
-            "focused": "",
-            "default": " "
-    }
-},
+? These files are deprecated and will be removed in a future release.
+
+* Please Manually REMOVE this module inside the "modules" folder, to avoid any clutter.
+
+TODO: Manual removal will be announced in the release notes after  the removal of this module upstream.
+
+code:   e3b0c44298fc1c14   - lol just a random hash so we can identify the file in the future
+
+
+{} // Empty Object to avoid syntax errors
+*/
+{}

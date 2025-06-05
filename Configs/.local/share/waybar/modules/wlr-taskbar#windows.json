@@ -1,0 +1,6 @@
+{
+    "wlr/taskbar#windows": {
+        "icon-size": "This is a placeholder -> actual size = font * multiplier", 
+        "icon-size-multiplier": 1.6
+    }
+}

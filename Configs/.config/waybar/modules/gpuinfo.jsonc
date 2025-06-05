@@ -1,41 +1,18 @@
-    "custom/gpuinfo": {
-        "exec": " gpuinfo.sh",
-        "return-type": "json",
-        "format": "{}",
-        "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
-        "tooltip": true,
-        "max-length": 1000,
-        "on-click": "gpuinfo.sh --toggle",
-    },
+/* DEPRECATED
+Instead of this file, please use 
+			custom-module.jsonc for 'custom/module' 
+			wlr-module.jsonc for 'wlr/module'
+			hyprland-module.jsonc for 'hyprland/module'
 
-    "custom/gpuinfo#nvidia": {
-        "exec": " gpuinfo.sh --use nvidia ",
-        "return-type": "json",
-        "format": "{}",
-        "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
-        "tooltip": true,
-        "max-length": 1000,
-    },
+? These files are deprecated and will be removed in a future release.
 
-    "custom/gpuinfo#amd": {
-        "exec": " gpuinfo.sh --use amd ",
-        "return-type": "json",
-        "format": "{}",
-        "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
-        "tooltip": true,
-        "max-length": 1000,
-    },
+* Please Manually REMOVE this module inside the "modules" folder, to avoid any clutter.
 
-    "custom/gpuinfo#intel": {
-        "exec": " gpuinfo.sh --use intel ",
-        "return-type": "json",
-        "format": "{}",
-        "rotate": ${r_deg},
-        "interval": 5, // once every 5 seconds
-        "tooltip": true,
-        "max-length": 1000,
-    },
+TODO: Manual removal will be announced in the release notes after  the removal of this module upstream.
 
+code:   e3b0c44298fc1c14   - lol just a random hash so we can identify the file in the future
+
+
+{} // Empty Object to avoid syntax errors
+*/
+{}

@@ -1,0 +1,12 @@
+{
+    "custom/wbar": {
+        "format": "{0}", //    //
+        "rotate": 0,
+        "exec": "echo ; echo \uf205 switch bar // \uf2d5 dock",
+        "on-click": "hyde-shell waybar -n",
+        "on-click-right": "hyde-shell waybar -p",
+        "on-click-middle": "hyde-shell quickapps", 
+        "interval": 86400,
+        "tooltip": true
+    }
+}

@@ -1,0 +1,8 @@
+{
+    "custom/gamemode": {
+        "format": " ",
+        "tooltip-format": " toggle gamemode",
+        "rotate": 0,
+        "on-click": "hyde-shell gamemode"
+    }
+}

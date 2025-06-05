@@ -1,0 +1,47 @@
+/* 
+? half pill with the curve pointing inwards 
+*/
+
+window#waybar.top #pill-in,
+window#waybar.top #pill-in button {
+    border-radius: 0 0 10pt 10pt;
+    border-width: 0em;
+}
+
+window#waybar.right #pill-in,
+window#waybar.right #pill-in button {
+    border-radius: 10pt 0 0 10pt;
+    border-width: 0em;
+}
+
+window#waybar.bottom #pill-in,
+window#waybar.bottom #pill-in button {
+    border-radius: 10pt 10pt 0 0;
+    border-width: 0em;
+}
+
+window#waybar.left #pill-in,
+window#waybar.left #pill-in button {
+    border-radius: 0 10pt 10pt 0;
+    border-width: 0em;
+}
+
+
+
+window#waybar.top #pill-in {
+    margin: 0em 1em 0.3em;
+}
+
+
+window#waybar.right #pill-in {
+    margin: 1em 0em 1em 0.3em;
+}
+
+
+window#waybar.bottom #pill-in {
+    margin: 0.3em 1em 0em 1em;
+}
+
+window#waybar.left #pill-in {
+    margin: 1em 0.3em 1em 0em;
+}

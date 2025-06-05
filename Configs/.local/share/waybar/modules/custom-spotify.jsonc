@@ -1,0 +1,27 @@
+{
+  "custom/spotify": {
+    "exec": "hyde-shell mediaplayer --player spotify",
+    "format": "{}",
+    "rotate": 0,
+    "return-type": "json",
+    "on-click": "playerctl play-pause --player spotify",
+    "on-click-middle": "playerctl stop --player spotify",
+    "on-scroll-up": "hyde-shell volumecontrol -p spotify i",
+    "on-scroll-down": "hyde-shell volumecontrol -p spotify d",
+    "tooltip": true,
+    "menu": "on-click-right",
+    "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/spotify.xml",
+    "menu-actions": {
+      "play-pause": "playerctl play-pause --player spotify",
+      "next": "playerctl next --player spotify",
+      "previous": "playerctl previous --player spotify",
+      "stop": "playerctl stop --player spotify",
+      "shuffle": "playerctl shuffle toggle--player spotify",
+      "repeat": "playerctl loop Track --player spotify",
+      "loop": "playerctl loop Playlist --player spotify",
+      "disable-loop": "playerctl loop None --player spotify",
+      "volume": "hyde-shell volumecontrol -p spotify",
+      "open": "gtk-launch spotify || gtk-launch spotify-launcher"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+/* ? half pill with the curve pointing to left */
+
+window#waybar.top #pill-left,
+window#waybar.top #pill-left button,
+window#waybar.bottom #pill-left,
+window#waybar.bottom #pill-left button {
+    border-radius: 10pt 0 0 10pt;
+    border-width: 0em;
+}
+
+window#waybar.left #pill-left,
+window#waybar.left #pill-left button,
+window#waybar.right #pill-left,
+window#waybar.right #pill-left button {
+    border-radius: 10pt 0 0 10pt;
+    border-width: 0em;
+}
+
+window#waybar.top #pill-left,
+window#waybar.bottom #pill-left {
+    margin: 0.3em 0em 0.3em 1em;
+}
+
+window#waybar.left #pill-left,
+window#waybar.right #pill-left {
+    margin: 1em 0em 1em 0.3em;
+}

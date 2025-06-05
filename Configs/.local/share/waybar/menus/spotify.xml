@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <object class="GtkMenu" id="menu">
+        <child>
+            <object class="GtkMenuItem" id="play-pause">
+                <property name="label"> Play/Pause</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="next">
+                <property name="label">怜 Next</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="previous">
+                <property name="label">玲 Previous</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="stop">
+                <property name="label">栗 Stop</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="shuffle">
+                <property name="label"> Shuffle</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="repeat">
+                <property name="label">綾 Repeat Once</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="loop">
+                <property name="label">凌 Repeat</property>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkMenuItem" id="disable-loop">
+                <property name="label">稜 Disable loop</property>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkMenuItem" id="open">
+                <property name="label"> Open Spotify</property>
+            </object>
+        </child>
+    </object>
+</interface>

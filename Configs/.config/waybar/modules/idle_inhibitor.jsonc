@@ -1,10 +1,9 @@
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "rotate": ${r_deg},
-        "format-icons": {
-            "activated": "󰅶 ",
-            "deactivated": "󰛊 "
-        },
-        "tooltip-format-activated":"Caffeine Mode Active",
-        "tooltip-format-deactivated":"Caffeine Mode Inactive"
-    },
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+
+
+See https://man.archlinux.org/man/extra/waybar/waybar-idle-inhibitor.5.en
+*/
+{}

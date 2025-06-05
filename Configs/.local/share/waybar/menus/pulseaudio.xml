@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+    <object class="GtkMenu" id="menu">
+        <child>
+            <object class="GtkMenuItem" id="toggle-output">
+                <property name="label">Cycle Outputs</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="toggle-mute">
+                <property name="label">Toggle Mute</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="select-output">
+                <property name="label">Select Output</property>
+                <child>
+                    <object class="GtkMenu" id="select-output-menu">
+                        <child>
+                            <object class="GtkMenuItem" id="output1">
+                                <property name="label">Output 1</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="output2">
+                                <property name="label">Output 2</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="output3">
+                                <property name="label">Output 3</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+        <child>
+        </child>
+    </object>
+</interface>

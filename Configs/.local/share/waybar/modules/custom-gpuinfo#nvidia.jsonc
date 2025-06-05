@@ -1,0 +1,12 @@
+{
+  "custom/gpuinfo#nvidia": {
+    "exec-if": "hyde-shell  gpuinfo --stat nvidia",
+    "exec": "hyde-shell  gpuinfo --use nvidia ",
+    "return-type": "json",
+    "format": "{0}",
+    "rotate": 0,
+    "interval": 5,
+    "tooltip": true,
+    "max-length": 1000
+  }
+}

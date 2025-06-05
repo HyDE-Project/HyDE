@@ -1,0 +1,17 @@
+{
+  "privacy": {
+    "rotate": 0,
+    "icon-spacing": 5,
+    "transition-duration": 250,
+    "modules": [
+      {
+        "type": "screenshare",
+        "tooltip": true
+      },
+      {
+        "type": "audio-in",
+        "tooltip": true
+      }
+    ]
+  }
+}

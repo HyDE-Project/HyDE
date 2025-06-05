@@ -1,0 +1,61 @@
+{
+    "output": [
+        "*"
+    ],
+    "position": "bottom",
+    "layer": "top",
+    // "passthrough": true, // if true I can click  the taskbar
+    "passthrough": false, // if false I can't click through the taskbar
+    "exclusive": true,
+    "height": 10,
+    "fixed-center": true,
+    "gtk-layer-shell": true,
+    "reload_style_on_change": true,
+    "name": "dock#sample",
+    "include": [
+        "$XDG_CONFIG_HOME/waybar/modules/*json*", 
+        "$XDG_CONFIG_HOME/waybar/includes/includes.json" 
+    ],
+    "class": "bar-taskbar",
+    "modules-center": [
+        "group/dock#sample",
+    ],
+    "modules-left": [
+        ""
+    ],
+    "group/dock#sample": {
+        "modules": [
+            "custom/drawer",
+            "wlr/taskbar#dock"
+        ],
+        "drawer": {
+            "transition-duration": 250,
+            "children-class": "taskbar-icons",
+            "transition-left-to-right": true,
+        },
+        // "orientation": "inherit",
+        "class": "group-taskbar dock-taskbar"
+    },
+    "wlr/taskbar#dock": {
+        "all-outputs": false,
+        // "active-first": false,
+        // "markup": true,
+        "tooltip": true,
+        "format": "{icon}",
+        "rotate": 0,
+        // "icon-size": 1,
+        "spacing": 20,
+        "tooltip-format": "{title}{app_id}",
+        "on-click": "activate",
+        // "on-click-right": "fullscreen",
+        "on-click-middle": "close",
+        // "menu": "on-click-right",
+        // "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/dunst.xml",
+        "class": "mod-taskbar",
+        "cursor": "pointer"
+    },
+    "custom/drawer": {
+        "class": "drawer",
+        "format": ""
+    }
+}

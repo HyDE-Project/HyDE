@@ -1,0 +1,28 @@
+/* ? half pill with the curve pointing dowmwards */
+
+
+window#waybar.top #pill-down,
+window#waybar.top #pill-down button,
+window#waybar.bottom #pill-down,
+window#waybar.bottom #pill-down button {
+    border-radius: 0em 0em 10pt 10pt;
+    border-width: 0em;
+}
+
+window#waybar.left #pill-down,
+window#waybar.left #pill-down button,
+window#waybar.right #pill-down,
+window#waybar.right #pill-down button {
+    border-radius: 0 0 10pt 10pt;
+    border-width: 0em;
+}
+
+window#waybar.top #pill-down,
+window#waybar.bottom #pill-down {
+    margin: 0em 1em 0.3em 1em;
+}
+
+window#waybar.left #pill-down,
+window#waybar.right #pill-down {
+    margin: 1em 1em 1em 1em;
+}

@@ -1,18 +1,7 @@
-    "privacy": {
-        "icon-size": ${i_priv},
-        "icon-spacing": 5,
-        "transition-duration": 250,
-        "modules": [
-            {
-                "type": "screenshare",
-                "tooltip": true,
-                "tooltip-icon-size": 24
-            },
-            {
-                "type": "audio-in",
-                "tooltip": true,
-                "tooltip-icon-size": 24
-            }
-        ]
-    },
-
+/*
+To use updated module, please delete this file. 
+To modify the module, 
+    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
+https://man.archlinux.org/man/extra/waybar/waybar-privacy.5
+*/
+{}

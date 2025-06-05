@@ -1,0 +1,19 @@
+{
+    "custom/cliphist": {
+        "format": "{0}",
+        "rotate": 0,
+        "exec": "echo ; echo \udb80\udd47 clipboard history",
+        "on-click": "sleep 0.1 && hyde-shell cliphist -c",
+        "menu": "on-click-right",
+        "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/clipboard.xml",
+        "menu-actions": {
+            "favorites": "hyde-shell cliphist --favorites",
+            "history": "hyde-shell cliphist --copy",
+            "delete-history": "hyde-shell cliphist --delete",
+            "manage-favorites": "hyde-shell cliphist 'Manage Favorites'",
+            "clear-history": "hyde-shell cliphist --wipe"
+        },
+        "interval": 86400,
+        "tooltip": true
+    }
+}

@@ -1,11 +1,18 @@
-    "custom/wallchange": {
-        "format": "{}",
-        "rotate": ${r_deg},
-        "exec": "echo ; echo 󰆊 switch wallpaper",
-        "on-click": "swwwallpaper.sh -n",
-        "on-click-right": "swwwallpaper.sh -p",
-        "on-click-middle": "sleep 0.1 && swwwallselect.sh",
-        "interval" : 86400, // once every day
-        "tooltip": true
-    },
+/* DEPRECATED
+Instead of this file, please use 
+			custom-module.jsonc for 'custom/module' 
+			wlr-module.jsonc for 'wlr/module'
+			hyprland-module.jsonc for 'hyprland/module'
 
+? These files are deprecated and will be removed in a future release.
+
+* Please Manually REMOVE this module inside the "modules" folder, to avoid any clutter.
+
+TODO: Manual removal will be announced in the release notes after  the removal of this module upstream.
+
+code:   e3b0c44298fc1c14   - lol just a random hash so we can identify the file in the future
+
+
+{} // Empty Object to avoid syntax errors
+*/
+{}
