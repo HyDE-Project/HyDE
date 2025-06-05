@@ -1,6 +1,6 @@
 {
   "hyprland/language": {
-    "format": "{short}",
+    "format": "{shortDescription}",
     "rotate": 0,
     "on-click": "hyde-shell keyboardswitch"
   }

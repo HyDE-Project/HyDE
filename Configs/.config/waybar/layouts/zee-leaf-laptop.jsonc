@@ -1,0 +1,87 @@
+{
+    "layer": "top",
+    "output": [
+        "*"
+    ],
+    "position": "top",
+    "mod": "dock",
+    "height": 10,
+    "exclusive": true,
+    "passthrough": false,
+    "gtk-layer-shell": true,
+    "reload_style_on_change": true,
+    "include": [
+        "$XDG_CONFIG_HOME/waybar/modules/*json*",
+        "$XDG_CONFIG_HOME/waybar/includes/includes.json"
+    ],
+    "modules-left": [
+        "group/leaf-inverse#left1",
+        "group/leaf-inverse#left2",
+        "group/leaf-inverse#left3"
+    ],
+    "group/leaf-inverse#left1": {
+        "orientation": "inherit",
+        "modules": [
+            "cpu",
+            "memory",
+            "temperature#laptopcpu"
+        ]
+    },
+    "group/leaf-inverse#left2": {
+        "orientation": "inherit",
+        "modules": [
+            "idle_inhibitor",
+            "clock"
+        ]
+    },
+    "group/leaf-inverse#left3": {
+        "orientation": "inherit",
+        "modules": [
+            "hyprland/workspaces"
+        ]
+    },
+    "modules-center": [
+        "group/pill-in#center"
+    ],
+    "group/pill-in#center": {
+        "modules": [
+            "wlr/taskbar"
+        ],
+        "orientation": "inherit"
+    },
+    "modules-right": [
+        "group/leaf#right1",
+        "group/leaf#right2",
+        "group/leaf#right3",
+        "group/leaf#right4"
+    ],
+    "group/leaf#right1": {
+        "modules": [
+            "custom/spotify",
+            "pulseaudio"
+        ],
+        "orientation": "inherit"
+    },
+    "group/leaf#right2": {
+        "modules": [
+            "custom/keybindhint",
+            "hyprland/language"
+        ],
+        "orientation": "inherit"
+    },
+    "group/leaf#right3": {
+        "modules": [
+            "privacy",
+            "tray",
+            "battery"
+        ],
+        "orientation": "inherit"
+    },
+    "group/leaf#right4": {
+        "modules": [
+            "custom/hyde-menu",
+            "custom/power"
+        ],
+        "orientation": "inherit"
+    }
+}

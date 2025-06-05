@@ -1,0 +1,25 @@
+{
+  "temperature#laptopgpu": {
+    "hwmon-path": ["/sys/class/hwmon/hwmon3/temp1_input"],
+
+    // Temperature thresholds for GPU
+    "critical-threshold": 80, // GPU critical temp
+    "warning-threshold": 65, // GPU warning temp
+
+    // Update frequency
+    "interval": 2,
+
+    // Display formats with GPU-specific styling
+    "format": " {temperatureC}°C",
+    "format-warning": "<span foreground='#fab387'></span> <span foreground='#fab387'>{temperatureC}°C</span>",
+    "format-critical": "<span foreground='#f38ba8'></span> <span foreground='#f38ba8'>{temperatureC}°C</span>",
+
+    // Tooltip
+    "tooltip": true,
+    "tooltip-format": "GPU Temperature: {temperatureC}°C",
+
+    // Appearance
+    "max-length": 12,
+    "min-length": 2
+  }
+}
