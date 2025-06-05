@@ -58,6 +58,7 @@ INCLUDES_DIRS = [
 
 CONFIG_JSONC = Path(os.path.join(str(xdg_config_home()), "waybar", "config.jsonc"))
 STATE_FILE = Path(os.path.join(str(xdg_state_home()), "hyde", "staterc"))
+HYDE_CONFIG = Path(os.path.join(str(xdg_state_home()), "hyde", "config"))
 
 
 def source_env_file(filepath):
@@ -99,6 +100,19 @@ def get_state_value(key, default=None):
         for line in file:
             if line.startswith(f"{key}="):
                 return line.split("=", 1)[1].strip()
+    return default
+
+
+def get_config_value(key, default=None):
+    """Get a value from the config file or state file."""
+    if HYDE_CONFIG.exists():
+        with open(HYDE_CONFIG, "r") as file:
+            for line in file:
+                clean_line = line.strip()
+                if clean_line.startswith("export "):
+                    clean_line = clean_line[7:]  # Remove "export "
+                if clean_line.startswith(f"{key}="):
+                    return clean_line.split("=", 1)[1].strip()
     return default
 
 
@@ -487,6 +501,7 @@ def run_waybar_command(command):
 
 def kill_waybar():
     """Kill only the Waybar process, not anything with 'waybar' in the name."""
+    subprocess.run(["pkill", "-x", "waybar"])
     logger.debug("Killed Waybar processes.")
 
 
@@ -886,6 +901,7 @@ def main():
             manage_waybar_lock("show")
             run_waybar_command("killall waybar; waybar & disown")
             sys.exit(0)
+        else:  # args.hide == "toggle"
             if manage_waybar_lock("toggle"):
                 kill_waybar()
             else:
@@ -899,6 +915,12 @@ def main():
     if args.watch:
         watch_waybar()
     else:
+        # Check if waybar should be hidden before starting
+        lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
+        if os.path.exists(lock_file):
+            logger.debug("Waybar hide lock file exists, not starting waybar")
+            return
+            
         update_icon_size()
         update_border_radius()
         generate_includes()
@@ -1015,25 +1037,31 @@ def get_waybar_font_family():
 
 def get_waybar_font_size():
     """Get font size for waybar following the priority stack."""
-    font_size = get_font_from_hypr_theme("$BAR_FONT_SIZE")
 
-    if font_size:
+    def _try_parse_font_size(font_size, source_name):
+        """Helper function to parse font size and log appropriately."""
+        if not font_size:
+            return None
+
         try:
             font_size_int = int(font_size)
-            logger.debug(f"Got font size from hypr.theme: {font_size_int}")
+            logger.debug(f"Got font size from {source_name}: {font_size_int}")
             return font_size_int
         except ValueError:
-            logger.debug(f"Invalid font size from hypr.theme: {font_size}")
+            logger.debug(f"Invalid font size from {source_name}: {font_size}")
+            return None
 
-    font_size = get_state_value("BAR_FONT_SIZE")
+    font_sources = [
+        (lambda: get_config_value("WAYBAR_SCALE"), "WAYBAR_SCALE config"),
+        (lambda: get_state_value("BAR_FONT_SIZE"), "state file"),
+        (lambda: get_font_from_hypr_theme("$BAR_FONT_SIZE"), "hypr.theme"),
+    ]
 
-    if font_size:
-        try:
-            font_size_int = int(font_size)
-            logger.debug(f"Got font size from state file: {font_size_int}")
-            return font_size_int
-        except ValueError:
-            logger.debug(f"Invalid font size from state file: {font_size}")
+    for get_font_func, source_name in font_sources:
+        font_size = get_font_func()
+        parsed_size = _try_parse_font_size(font_size, source_name)
+        if parsed_size is not None:
+            return parsed_size
 
     logger.debug("Using default font size: 10")
     return 10
