@@ -961,7 +961,7 @@ def update_icon_size():
             for key, value in data.items():
                 if isinstance(value, dict):
                     icon_size_multiplier = value.get("icon-size-multiplier", 1)
-                    final_icon_size = icon_size * icon_size_multiplier
+                    final_icon_size = int(icon_size * icon_size_multiplier)
 
                     data[key] = modify_json_key(value, "icon-size", final_icon_size)
                     data[key] = modify_json_key(
