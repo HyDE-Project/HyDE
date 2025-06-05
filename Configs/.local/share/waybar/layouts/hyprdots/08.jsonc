@@ -26,10 +26,8 @@
         "orientation": "inherit",
         "modules": [
             "custom/power",
-            "custom/cliphist",
-            "custom/wbar",
-            "custom/theme",
-            "custom/wallchange"
+            "custom/hyde-menu",
+            "custom/cliphist"
         ]
     },
     "group/pill#left2": {

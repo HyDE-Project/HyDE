@@ -25,10 +25,8 @@
         "orientation": "inherit",
         "modules": [
             "custom/power",
+            "custom/hyde-menu",
             "custom/cliphist",
-            "custom/wbar",
-            "custom/theme",
-            "custom/wallchange",
             "wlr/taskbar",
             "custom/spotify"
         ]

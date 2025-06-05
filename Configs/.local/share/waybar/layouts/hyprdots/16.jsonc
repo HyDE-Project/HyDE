@@ -58,7 +58,8 @@
             "custom/gpuinfo",
             "custom/cpuinfo",
             "custom/sensorsinfo",
-            "custom/swaync"
+            "custom/swaync",
+            "custom/hyde-menu"
         ]
     }
 }
