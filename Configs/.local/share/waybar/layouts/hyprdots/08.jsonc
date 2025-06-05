@@ -26,7 +26,10 @@
         "modules": [
             "custom/power",
             "custom/hyde-menu",
-            "custom/cliphist"
+            "custom/cliphist",
+            "custom/wbar",
+            "custom/theme",
+            "custom/wallchange"
         ]
     },
     "group/pill#left2": {

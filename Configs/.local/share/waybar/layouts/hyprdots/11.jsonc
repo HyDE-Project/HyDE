@@ -62,14 +62,16 @@
             "custom/updates",
             "custom/keybindhint"
         ]
-    }
-},
+    },
     "group/pill#right2": {
         "orientation": "inherit",
         "modules": [
             "privacy",
             "tray",
             "battery",
+            "custom/wallchange",
+            "custom/theme",
+            "custom/wbar",
             "custom/cliphist",
             "custom/hyde-menu",
             "custom/power"

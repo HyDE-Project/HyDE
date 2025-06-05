@@ -56,6 +56,9 @@
     "group/pill#center5": {
         "orientation": "inherit",
         "modules": [
+            "custom/wbar",
+            "custom/wallchange",
+            "custom/theme",
             "custom/hyde-menu"
         ]
     },

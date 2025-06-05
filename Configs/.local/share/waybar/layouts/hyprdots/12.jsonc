@@ -57,6 +57,9 @@
             "privacy",
             "tray",
             "battery",
+            "custom/wallchange",
+            "custom/theme",
+            "custom/wbar",
             "custom/cliphist",
             "custom/hyde-menu",
             "custom/power"
