@@ -1093,7 +1093,7 @@ def get_waybar_icon_size():
 
 
 def get_value_from_hypr_theme(variable_name):
-    """Get font setting from hypr.theme file using hyq."""
+    """Get named setting from hypr.theme file using hyq."""
     theme_name = None
     if STATE_FILE.exists():
         try:
