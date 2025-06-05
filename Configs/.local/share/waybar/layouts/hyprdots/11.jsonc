@@ -39,9 +39,9 @@
         ]
     },
     "modules-center": [
-        "group/pill#center1"
+        "group/pill#center"
     ],
-    "group/pill#center1": {
+    "group/pill#center": {
         "orientation": "inherit",
         "modules": [
             "wlr/taskbar"
@@ -51,6 +51,7 @@
         "group/pill#right1",
         "group/pill#right2"
     ],
+
     "group/pill#right1": {
         "orientation": "inherit",
         "modules": [
@@ -61,7 +62,8 @@
             "custom/updates",
             "custom/keybindhint"
         ]
-    },
+    }
+},
     "group/pill#right2": {
         "orientation": "inherit",
         "modules": [

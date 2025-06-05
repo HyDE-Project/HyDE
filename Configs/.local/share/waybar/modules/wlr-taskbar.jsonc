@@ -1,7 +1,7 @@
 {
     "wlr/taskbar": {
         "all-outputs": true,
-        "active-first": true,
+        "active-first": false,
         "markup": true,
         "format": "{icon}",
         "rotate": 0,
