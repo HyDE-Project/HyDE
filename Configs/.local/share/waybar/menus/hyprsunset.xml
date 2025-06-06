@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<interface>
+    <object class="GtkMenu" id="menu">
+
+        <child>
+            <object class="GtkMenuItem" id="temperature_menu">
+                <property name="label">Temperature</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="warm-candle">
+                                <property name="label">Warm Candle (3000K)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="soft-warm">
+                                <property name="label">Soft Warm (4000K)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="neutral-white">
+                                <property name="label">Neutral White (5000K)</property>
+                            </object>
+                        </child>
+
+                        <child>
+                            <object class="GtkMenuItem" id="daylight">
+                                <property name="label">Daylight (6500K)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="cool-white">
+                                <property name="label">Cool White (7500K)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="bright-blue">
+                                <property name="label">Bright Blue (9000K)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="arctic-blue">
+                                <property name="label">Arctic Blue (10000K)</property>
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkMenuItem" id="gamma_menu">
+                <property name="label">Gamma</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-100">
+                                <property name="label">Default (100)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-90">
+                                <property name="label">Slightly Dimmer (90)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-80">
+                                <property name="label">Dimmer (80)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-70">
+                                <property name="label">Quite Dim (70)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-60">
+                                <property name="label">Dim (60)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-50">
+                                <property name="label">Very Dim (50)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-40">
+                                <property name="label">Extra Dim (40)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-30">
+                                <property name="label">Super Dim (30)</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="gamma-20">
+                                <property name="label">Ultra Dim (20)</property>
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+    </object>
+</interface>

@@ -58,7 +58,8 @@
         "modules": [
             "custom/wbar",
             "custom/wallchange",
-            "custom/theme"
+            "custom/theme",
+            "custom/hyde-menu"
         ]
     },
     "modules-right": []

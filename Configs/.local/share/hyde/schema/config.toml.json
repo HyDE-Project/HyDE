@@ -377,8 +377,13 @@
                     "type": "string"
                 },
                 "scale": {
-                    "default": 30,
+                    "default": 10,
                     "description": "Total scaling for waybar.",
+                    "type": "integer"
+                },
+                "icon_size": {
+                    "default": 10,
+                    "description": "Icon size for waybar.",
                     "type": "integer"
                 }
             }
