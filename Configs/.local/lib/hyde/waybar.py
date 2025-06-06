@@ -44,6 +44,8 @@ LAYOUT_DIRS = [
     os.path.join("usr", "share", "waybar", "layouts"),
 ]
 
+LAYOUT_IGNORE = ["test.jsonc", "dock#sample.jsonc"]
+
 STYLE_DIRS = [
     os.path.join(str(xdg_config_home()), "waybar", "styles"),
     os.path.join(str(xdg_data_home()), "waybar", "styles"),
@@ -86,7 +88,7 @@ def find_layout_files():
     for layout_dir in LAYOUT_DIRS:
         for root, _, files in os.walk(layout_dir):
             for file in files:
-                if file.endswith(".jsonc"):
+                if file.endswith(".jsonc") and file not in LAYOUT_IGNORE:
                     layouts.append(os.path.join(root, file))
     return sorted(layouts)
 
@@ -950,8 +952,7 @@ def update_icon_size():
     else:
         includes_data = {"include": []}
 
-    font_size = os.getenv("WAYBAR_FONT_SIZE", os.getenv("FONT_SIZE", "10"))
-    icon_size = int(os.getenv("WAYBAR_ICON_SIZE", font_size) or "10")
+    icon_size = get_waybar_icon_size()
 
     updated_entries = {}
 
@@ -962,7 +963,7 @@ def update_icon_size():
             for key, value in data.items():
                 if isinstance(value, dict):
                     icon_size_multiplier = value.get("icon-size-multiplier", 1)
-                    final_icon_size = icon_size * icon_size_multiplier
+                    final_icon_size = int(icon_size * icon_size_multiplier)
 
                     data[key] = modify_json_key(value, "icon-size", final_icon_size)
                     data[key] = modify_json_key(
@@ -1017,58 +1018,84 @@ def update_global_css():
     logger.debug(f"Successfully generated global CSS at '{global_css_path}'")
 
 
+def get_waybar_value_from_sources(value_name, default_value, sources):
+
+    def _try_parse_value(raw_value, source_name):
+        if type(default_value) is str:
+            return _try_parse_str_value(raw_value, source_name)
+        if type(default_value) is int:
+            return _try_parse_int_value(raw_value, source_name)
+
+    def _try_parse_str_value(raw_value, source_name):
+        """Helper function to parse str value and log appropriately."""
+        if not raw_value:
+            return None
+
+        logger.debug(f"Got {value_name} from {source_name}: {raw_value}")
+        return raw_value
+
+    def _try_parse_int_value(raw_value, source_name):
+        """Helper function to parse int value and log appropriately."""
+        if not raw_value:
+            return None
+
+        try:
+            int_value = int(raw_value)
+            logger.debug(f"Got {value_name} from {source_name}: {int_value}")
+            return int_value
+        except ValueError:
+            logger.debug(f"Invalid {value_name} from {source_name}: {raw_value}")
+            return None
+
+    for get_source_func, source_name in sources:
+        raw_value = get_source_func()
+        parsed_value = _try_parse_value(raw_value, source_name)
+        if parsed_value is not None:
+            return parsed_value
+
+    logger.debug(f"Using default {value_name}: {default_value}")
+    return default_value
+
+
 def get_waybar_font_family():
     """Get font family for waybar following the priority stack."""
-    font_family = get_font_from_hypr_theme("$BAR_FONT")
 
-    if font_family:
-        logger.debug(f"Got font family from hypr.theme: {font_family}")
-        return font_family
+    font_family_sources = [
+        (lambda: get_config_value("WAYBAR_FONT"), "WAYBAR_FONT config"),
+        (lambda: get_value_from_hypr_theme("$BAR_FONT"), "hypr.theme"),
+        (lambda: get_state_value("BAR_FONT"), "state file"),
+    ]
 
-    font_family = get_state_value("BAR_FONT")
-
-    if font_family:
-        logger.debug(f"Got font family from state file: {font_family}")
-        return font_family
-
-    logger.debug("Using default font family: JetBrainsMono Nerd Font")
-    return "JetBrainsMono Nerd Font"
+    return get_waybar_value_from_sources("font family", "JetBrainsMono Nerd Font", font_family_sources)
 
 
 def get_waybar_font_size():
     """Get font size for waybar following the priority stack."""
 
-    def _try_parse_font_size(font_size, source_name):
-        """Helper function to parse font size and log appropriately."""
-        if not font_size:
-            return None
-
-        try:
-            font_size_int = int(font_size)
-            logger.debug(f"Got font size from {source_name}: {font_size_int}")
-            return font_size_int
-        except ValueError:
-            logger.debug(f"Invalid font size from {source_name}: {font_size}")
-            return None
-
-    font_sources = [
+    font_size_sources = [
         (lambda: get_config_value("WAYBAR_SCALE"), "WAYBAR_SCALE config"),
         (lambda: get_state_value("BAR_FONT_SIZE"), "state file"),
-        (lambda: get_font_from_hypr_theme("$BAR_FONT_SIZE"), "hypr.theme"),
+        (lambda: get_value_from_hypr_theme("$BAR_FONT_SIZE"), "hypr.theme"),
     ]
 
-    for get_font_func, source_name in font_sources:
-        font_size = get_font_func()
-        parsed_size = _try_parse_font_size(font_size, source_name)
-        if parsed_size is not None:
-            return parsed_size
-
-    logger.debug("Using default font size: 10")
-    return 10
+    return get_waybar_value_from_sources("font size", 10, font_size_sources)
 
 
-def get_font_from_hypr_theme(variable_name):
-    """Get font setting from hypr.theme file using hyq."""
+def get_waybar_icon_size():
+    """Get icon size for waybar following the priority stack."""
+
+    icon_sources = [
+        (lambda: get_config_value("WAYBAR_ICON_SIZE"), "WAYBAR_ICON_SIZE config"),
+        (lambda: get_config_value("WAYBAR_SCALE"), "WAYBAR_SCALE config"),
+        (lambda: get_state_value("BAR_ICON_SIZE"), "state file"),
+        (lambda: get_value_from_hypr_theme("$BAR_ICON_SIZE"), "hypr.theme"),
+    ]
+
+    return get_waybar_value_from_sources("icon size", 10, icon_sources)
+
+
+def get_value_from_hypr_theme(variable_name):
+    """Get named setting from hypr.theme file using hyq."""
     theme_name = None
     if STATE_FILE.exists():
         try:
