@@ -9,7 +9,7 @@ on:
 jobs:
   dev-to-master-pr:
     name: Create or Update PR from Dev to Master
-    if: github.ref == 'refs/heads/dev'
+    if: github.ref == 'refs/heads/dev' && github.event.repository.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -141,7 +141,7 @@ jobs:
 
   release:
     name: release
-    if: ${{ github.ref == 'refs/heads/master' }}
+    if: github.ref == 'refs/heads/master' && github.event.repository.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v3
