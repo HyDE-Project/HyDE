@@ -27,7 +27,7 @@ if [ "$flg_ThemeInstall" -eq 1 ]; then
         [ -d "${themePath}" ] || mkdir -p "${themePath}"
         [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" >"${themePath}/.sort"
 
-        if [ "${THEME_IMPORT_ASYNC}" -ne 1 ]; then
+        if [ "${THEME_IMPORT_ASYNC}" -ne 1 ] && [ "${flg_DryRun}" -ne 1 ]; then
             if ! "${scrDir}/themepatcher.sh" "${themeName}" "${themeRepo}" "--skipcaching" "false"; then
                 print_log -r "[THEME] " -crit "error" "importing" "${themeName}"
             else

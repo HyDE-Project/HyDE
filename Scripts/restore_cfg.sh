@@ -100,7 +100,7 @@ deploy_psv() {
             # Call the function pkg_installed with the argument pkg_chk. If the function returns false (the package is not installed), then...
             if ! pkg_installed "${pkg_chk}"; then
                 # Print a message stating that the current configuration is being skipped because a dependency is not installed
-                print_log -y "[skip]  " -r "missing" -b " :: " "${pth}/${cfg} " -c "missing dependency" "'${pkg_chk}' as dependency"
+                print_log -y "[skip] " -r "missing" -b " :: " -y "missing dependency" -g " '${pkg_chk}'" -r " --> " "${pth}/${cfg}"
                 # Skip the rest of the current loop iteration and proceed to the next iteration
                 continue 2
             fi
@@ -137,7 +137,7 @@ deploy_psv() {
                 "O")
                     [ "${flg_DryRun}" -ne 1 ] && mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
-                    print_log -r "[move to backup]" " > " -r "[overwrite]" -b " :: " "${pth}" -r " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+                    print_log -r "[move to backup]" " > " -r "[overwrite]" -b " :: " "${pth}" -r " <-- " "${CfgDir}${tgt}/${cfg_chk}"
                     ;;
                 "S")
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
@@ -147,9 +147,9 @@ deploy_psv() {
                 "P")
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
                     if ! [ "${flg_DryRun}" -ne 1 ] && cp -rn "${CfgDir}${tgt}/${cfg_chk}" "${pth}" 2>/dev/null; then
-                        print_log -g "[copy to backup]" " > " -g "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"
+                        print_log -g "[copy to backup]" " > " -y "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"
                     else
-                        print_log -g "[copy to backup]" " > " -g "[preserved]" -b " :: " "${pth}" + 208 " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+                        print_log -g "[copy to backup]" " > " -y "[preserved]" -b " :: " "${pth}" + 208 " <--  " "${CfgDir}${tgt}/${cfg_chk}"
                     fi
                     ;;
                 esac
@@ -200,7 +200,7 @@ fi
 
 file_extension="${CfgLst##*.}"
 echo ""
-print_log -g "[file extension]" -b "::" "${file_extension}"
+print_log -g "[file extension]" -b " :: " "${file_extension}"
 case "${file_extension}" in
 "lst")
     deploy_list "${CfgLst}"
@@ -212,3 +212,4 @@ json)
     deploy_json "${CfgLst}"
     ;;
 esac
+echo ""

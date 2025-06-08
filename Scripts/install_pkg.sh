@@ -59,11 +59,11 @@ while read -r pkg deps; do
     if pkg_installed "${pkg}"; then
         print_log -y "[skip] " "${pkg}"
     elif pkg_available "${pkg}"; then
-        repo=$(pacman -Si "${pkg}" | awk -F ': ' '/Repository / {print $2}')
-        print_log -b "[queue] " -g "${repo}" -b "::" "${pkg}"
+        repo=$(pacman -Si "${pkg}" | awk -F ': ' '/Repository / {print $2}' | tr '\n' ' ')
+        print_log -b "[queue] " "${pkg}" -b " :: " -g "${repo}"
         archPkg+=("${pkg}")
     elif aur_available "${pkg}"; then
-        print_log -b "[queue] " -g "aur" -b "::" "${pkg}"
+        print_log -b "[queue] " "${pkg}" -b " :: " -g "aur"
         aurhPkg+=("${pkg}")
     else
         print_log -r "[error] " "unknown package ${pkg}..."
@@ -72,14 +72,24 @@ done < <(cut -d '#' -f 1 "${listPkg}")
 
 IFS=${ofs}
 
-if [ "${flg_DryRun}" -ne 1 ]; then
-    if [[ ${#archPkg[@]} -gt 0 ]]; then
-        print_log -b "[install] " "arch packages..."
-        sudo pacman ${use_default:+"$use_default"} -S "${archPkg[@]}"
-    fi
+install_packages() {
+    local -n pkg_array=$1
+    local pkg_type=$2
+    local install_cmd=$3
 
-    if [[ ${#aurhPkg[@]} -gt 0 ]]; then
-        print_log -b "[install] " "aur packages..."
-        "${aurhlpr}" ${use_default:+"$use_default"} -S "${aurhPkg[@]}"
+    if [[ ${#pkg_array[@]} -gt 0 ]]; then
+        print_log -b "[install] " "$pkg_type packages..."
+        if [ "${flg_DryRun}" -eq 1 ]; then
+            for pkg in "${pkg_array[@]}"; do
+                print_log -b "[pkg] " "${pkg}"
+            done
+        else
+            $install_cmd ${use_default:+"$use_default"} -S "${pkg_array[@]}"
+        fi
     fi
-fi
+}
+
+echo ""
+install_packages archPkg "arch" "sudo pacman"
+echo ""
+install_packages aurhPkg "aur" "${aurhlpr}"
