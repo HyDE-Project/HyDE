@@ -68,10 +68,18 @@ Usage: $0 [options]
             d : install hyprland [d]efaults without configs --noconfirm
             r : [r]estore config files
             s : enable system [s]ervices
-            n : ignore/[n]o [n]vidia actions
+            n : ignore/[n]o [n]vidia actions (-irsn to ignore nvidia)
             h : re-evaluate S[h]ell
             m : no the[m]e reinstallations
             t : [t]est run without executing (-irst to dry run all)
+
+NOTE: 
+        running without args is equivalent to -irs
+        to ignore nvidia, run -irsn
+
+WRONG:
+        install.sh -n # This will not work
+
 EOF
         exit 1
         ;;
