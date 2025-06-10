@@ -121,9 +121,10 @@ else
     esac
     if [ "${is_chaotic_aur}" == true ]; then
         print_log -sec "Chaotic-aur" -stat "Installation" "Installing Chaotic AUR..."
-        [ "${flg_DryRun}" -ne 1 ] || exit 0
-        sudo pacman-key --init
-        sudo "${scrDir}/chaotic_aur.sh" --install
+        if [[ "${flg_DryRun}" -ne 1 ]]; then
+            sudo pacman-key --init
+            sudo "${scrDir}/chaotic_aur.sh" --install
+        fi
     else
         print_log -sec "Chaotic-aur" -stat "Skipped" "Chaotic AUR installation skipped..."
     fi
