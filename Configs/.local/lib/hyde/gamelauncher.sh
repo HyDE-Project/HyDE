@@ -18,7 +18,7 @@ elem_border=$((hypr_border * 2))
 icon_border=$((elem_border - 3))
 r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:${icon_border}px;}"
 
-
+[[ -z $MODE ]] && MODE=5
 case $MODE in
 5)
 monitor_info=()

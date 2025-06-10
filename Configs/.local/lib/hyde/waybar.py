@@ -994,6 +994,9 @@ def update_global_css():
     font_family = get_waybar_font_family()
     font_size = get_waybar_font_size()
 
+    if font_family:
+        font_family = font_family.strip().strip('"').strip("'")
+
     logger.debug(f"Final font family: {font_family}")
     logger.debug(f"Final font size: {font_size}")
 
@@ -1031,8 +1034,9 @@ def get_waybar_value_from_sources(value_name, default_value, sources):
         if not raw_value:
             return None
 
-        logger.debug(f"Got {value_name} from {source_name}: {raw_value}")
-        return raw_value
+        sanitized_value = raw_value.strip().strip('"').strip("'")
+        logger.debug(f"Got {value_name} from {source_name}: {sanitized_value}")
+        return sanitized_value
 
     def _try_parse_int_value(raw_value, source_name):
         """Helper function to parse int value and log appropriately."""
