@@ -293,7 +293,6 @@ source = ${hyde_hyprlock_conf}
 #│   cmd [update:1000] \$MPRIS_TEXT                                           │
 #│   - Text from media players in "Title  Author" format.                    │
 #│                                                                            │
-#│                                                                            │
 #│   cmd [update:1000] \$SPLASH_CMD                                           │
 #│   - Outputs the song title when MPRIS is available,                        │
 #│   - otherwise, it will output the splash command.                          │
@@ -305,10 +304,6 @@ source = ${hyde_hyprlock_conf}
 #│   cmd [update:5000] \$BATTERY_ICON                                         │
 #│   - The battery icon to be displayed on the lock screen.                   │
 #│   - Only works if the battery is available.                                │
-#│                                                                            │
-#│   cmd [update:1000] \$KEYBOARD_LAYOUT                                      │
-#│   - The current keyboard layout                                            │
-#│   - SUPER + K to change the keyboard layout (or any binding you set)       │
 #│                                                                            │
 #└────────────────────────────────────────────────────────────────────────────┘
 
