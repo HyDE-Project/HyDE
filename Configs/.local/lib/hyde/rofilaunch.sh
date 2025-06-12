@@ -30,7 +30,7 @@ d | --drun)
     r_mode="drun"
     rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
     rofi_args+=("${ROFI_LAUNCH_DRUN_ARGS:-}")
-    rofi_args+=("--run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
+    rofi_args+=("-run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
     ;;
 w | --window)
     r_mode="window"
@@ -45,7 +45,7 @@ f | --filebrowser)
 r | --run)
     r_mode="run"
     rofi_config="${ROFI_LAUNCH_RUN_STYLE:-$rofi_config}"
-    rofi_args+=("--run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
+    rofi_args+=("-run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
     rofi_args+=("${ROFI_LAUNCH_RUN_ARGS:-}")
     ;;
 h | --help)
@@ -60,6 +60,7 @@ h | --help)
     r_mode="drun"
     ROFI_LAUNCH_DRUN_STYLE="${ROFI_LAUNCH_DRUN_STYLE:-$ROFI_LAUNCH_STYLE}"
     rofi_args+=("${ROFI_LAUNCH_DRUN_ARGS:-}")
+    rofi_args+=("-run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
     rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
     ;;
 esac

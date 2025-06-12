@@ -36,6 +36,7 @@ hyprpicker                                             # color picker
 slurp                                                  # region select for screenshot/screenshare
 satty                                                  # Modern Screenshot Annotation
 cliphist                                               # clipboard manager
+wl-clip-persist                                        # Keep Wayland clipboard even after programs close (avoids crashes)
 hyprsunset                                             # blue light filter
 
 # --------------------------------------------------- // Dependencies

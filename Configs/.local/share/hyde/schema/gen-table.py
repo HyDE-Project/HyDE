@@ -47,8 +47,10 @@ def generate_markdown_table(toml_file_path):
         lines.append("| Key | Description | Default |")
         lines.append("| --- | ----------- | ------- |")
         
-        # Process each property
-        for key, value in properties.items():
+        # Process each property in alphabetical order
+        sorted_prop_keys = sorted(properties.keys())
+        for key in sorted_prop_keys:
+            value = properties[key]
             if isinstance(value, dict) and "default" in value:
                 description = value.get("description", "")
                 default = format_value(value["default"])
@@ -61,10 +63,14 @@ def generate_markdown_table(toml_file_path):
         """Recursively process properties and generate tables."""
         all_lines = []
         
-        for key, value in properties.items():
+        # Sort keys alphabetically for consistent output
+        sorted_keys = sorted(properties.keys())
+        
+        for key in sorted_keys:
             if key.startswith("$") or key == "type":
                 continue
             
+            value = properties[key]
             current_path = f"{prefix}.{key}" if prefix else key
             
             if isinstance(value, dict):
@@ -86,7 +92,7 @@ def generate_markdown_table(toml_file_path):
                     if direct_props:
                         all_lines.extend(generate_section_table(current_path, direct_props, section_description))
                     
-                    # Process subsections recursively
+                    # Process subsections recursively (will be sorted in recursive call)
                     if subsections:
                         all_lines.extend(process_properties(subsections, current_path))
                 
@@ -106,8 +112,9 @@ def generate_markdown_table(toml_file_path):
         "HyDE exposes `xdg_config/hyde/config.toml` file for users to modify. This lets users have the ability to interact the scripts without using command arguments.",
         "",
         "Users are encouraged to use an editor that support schema validation to ensure the configuration file is valid.",
-        "",
+        "```toml",
         "\"$schema\" = \"https://raw.githubusercontent.com/HyDE-Project/HyDE/refs/heads/master/Configs/.local/share/hyde/schema/config.toml.json\"",
+        "```",
         "---",
     ]
     
