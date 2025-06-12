@@ -1403,7 +1403,7 @@ def watch_waybar():
                 time.sleep(2)
                 continue
 
-            result = subprocess.run(["ps", "-C", "waybar"], capture_output=True)
+            result = subprocess.run(["ps", "-C", "waybar,.waybar-wrapped"], capture_output=True)
             if result.returncode != 0:
                 run_waybar_command("killall waybar; waybar & disown")
                 logger.debug("Waybar restarted")
