@@ -6,11 +6,10 @@
         "*"
     ],
     "position": "top",
-    "mod": "dock",
+    "mode": "dock",
     "height": 10,
     "exclusive": true,
     "passthrough": false,
-    "gtk-layer-shell": true,
     "reload_style_on_change": true,
     "include": [
         "$XDG_CONFIG_HOME/waybar/modules/*json*", 
