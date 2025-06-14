@@ -6,7 +6,6 @@
         "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"
@@ -81,7 +80,6 @@
         "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"
@@ -148,7 +146,6 @@
         "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"
@@ -219,7 +216,6 @@
         "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"
