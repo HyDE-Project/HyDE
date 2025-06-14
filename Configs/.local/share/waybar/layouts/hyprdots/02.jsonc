@@ -5,7 +5,7 @@
         "*"
     ],
     "position": "top",
-    "mod": "dock",
+    "mode": "dock",
     "height": 10,
     "exclusive": true,
     "passthrough": false,
