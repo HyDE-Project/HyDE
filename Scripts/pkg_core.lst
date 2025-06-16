@@ -73,6 +73,9 @@ vim                                                    # terminal text editor
 code                                                   # ide text editor
 nwg-displays                                           # monitor management utility
 fzf                                                    # Command-line fuzzy finder
+ripgrep                                                # recursively searches directories for a regex pattern while respecting your gitignore
+bat                                                    # A cat clone with syntax highlighting and Git integration.
+fd                                                     # A simple, fast and user-friendly alternative to 'find'
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
