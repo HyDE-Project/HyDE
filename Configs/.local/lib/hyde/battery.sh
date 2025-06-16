@@ -25,6 +25,15 @@ fi
 total_capacity=0
 battery_count=0
 
+# Find the first available battery
+battery_path=""
+for bat in /sys/class/power_supply/BAT*; do
+    if [[ -d "$bat" ]]; then
+        battery_path="$bat"
+        break
+    fi
+done
+
 for capacity in /sys/class/power_supply/BAT*/capacity; do
     if [[ -f "$capacity" ]]; then
         total_capacity=$((total_capacity + $(<"$capacity")))
@@ -42,11 +51,12 @@ average_capacity=$((total_capacity / battery_count))
 index=$((average_capacity / 10))
 
 # Define icons for charging, discharging, and status
-charging_icons=(" " " " " " " " " " " " " ")
+# Charging icons from 0% to 100% (last icons repeated to fill 11 levels)
+charging_icons=(" " " " " " " " " " " " " " " " " " " " " ") 
 discharging_icons=("󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹")
 status_icons=("" "X" "󰂇") # Add appropriate icons for different statuses
 
-battery_status=$(cat /sys/class/power_supply/BAT0/status)
+battery_status=$(cat "$battery_path/status")
 
 # Parse format options
 formats=("$@")
