@@ -133,7 +133,7 @@ function _load_omz_on_init() {
 _fuzzy_change_directory() {
     local initial_query="$1"
     local selected_dir
-    local fzf_options=('--preview=ls -p {}' '--preview-window=right:60%')
+    local fzf_options=('--preview=lsd {}' '--preview-window=right:60%')
     fzf_options+=(--height "80%" --layout=reverse --preview-window right:60% --cycle)
     local max_depth=7
 
@@ -142,7 +142,13 @@ _fuzzy_change_directory() {
     fi
 
     #type -d
-    selected_dir=$(find . -maxdepth $max_depth \( -name .git -o -name node_modules -o -name .venv -o -name target -o -name .cache \) -prune -o -type d -print 2>/dev/null | fzf "${fzf_options[@]}")
+    selected_dir=$(fd --type d --max-depth $max_depth \
+      --exclude .git \
+      --exclude node_modules \
+      --exclude .venv \
+      --exclude target \
+      --exclude .cache \
+      2>/dev/null | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_dir" && -d "$selected_dir" ]]; then
         cd "$selected_dir" || return 1
@@ -154,7 +160,9 @@ _fuzzy_change_directory() {
 _fuzzy_edit_search_file_content() {
     # [f]uzzy [e]dit  [s]earch [f]ile [c]ontent
     local selected_file
-    selected_file=$(grep -irl "${1:-}" ./ | fzf --height "80%" --layout=reverse --preview-window right:60% --cycle --preview 'cat {}' --preview-window right:60%)
+    local fzf_options=(--height "80%" --layout=reverse --preview-window=right:60% --cycle '--preview=bat --color always {}' --preview-window=right:60%)
+
+    selected_file=$(rg -i -l "${1:-}" ./ | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" ]]; then
         if command -v "$EDITOR" &>/dev/null; then
@@ -181,7 +189,13 @@ _fuzzy_edit_search_file() {
     fi
 
     # -type f: only find files
-    selected_file=$(find . -maxdepth $max_depth -type f 2>/dev/null | fzf "${fzf_options[@]}")
+    selected_file=$(fd --type f --max-depth $max_depth \
+      --exclude .git \
+      --exclude node_modules \
+      --exclude .venv \
+      --exclude target \
+      --exclude .cache \
+      2>/dev/null | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" && -f "$selected_file" ]]; then
         if command -v "$EDITOR" &>/dev/null; then
