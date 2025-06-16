@@ -79,7 +79,6 @@ fd                                                     # A simple, fast and user
 
 # --------------------------------------------------- // Shell
 eza|zsh                                                # file lister for zsh
-zsh-theme-powerlevel10k-git|zsh                        # Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
 starship|zsh                                           # customizable shell prompt written in Rust
 duf|zsh                                                # prettier version of df for zsh
 # starship-git                                         # The cross-shell prompt for astronauts  

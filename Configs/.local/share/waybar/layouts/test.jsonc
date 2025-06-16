@@ -3,10 +3,9 @@
         "layer": "top",
         "output": "eDP-1",
         "position": "top",
-        "mod": "dock",
+        "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"
@@ -78,10 +77,9 @@
         "layer": "bottom",
         "output": "eDP-1",
         "position": "bottom",
-        "mod": "dock",
+        "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"
@@ -145,10 +143,9 @@
         "layer": "left",
         "output": "eDP-1",
         "position": "left",
-        "mod": "dock",
+        "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"
@@ -216,10 +213,9 @@
         "layer": "right",
         "output": "eDP-1",
         "position": "right",
-        "mod": "dock",
+        "mode": "dock",
         "exclusive": true,
         "passthrough": false,
-        "gtk-layer-shell": true,
         "reload_style_on_change": true,
         "include": [
             "$XDG_CONFIG_HOME/waybar/modules/*json*"

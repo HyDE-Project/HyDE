@@ -9,7 +9,6 @@
     "exclusive": true,
     "height": 10,
     "fixed-center": true,
-    "gtk-layer-shell": true,
     "reload_style_on_change": true,
     "name": "dock#sample",
     "include": [
