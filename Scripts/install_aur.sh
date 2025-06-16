@@ -17,6 +17,8 @@ if chk_list "aurhlpr" "${aurList[@]}"; then
     exit 0
 fi
 
+echo "llego aqui :O"
+exit 1
 aurhlpr="${1:-yay-bin}"
 
 if [ -d "$HOME/Clone" ]; then
