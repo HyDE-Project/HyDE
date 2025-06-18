@@ -320,9 +320,6 @@ if [ -z "${*}" ]; then
     print_log -sec "hyprlock" -stat "setting" " $HYDE_CACHE_HOME/wallpapers/hyprlock.png"
     "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend hyprlock
   fi
-  # A simple cleanup as hyprlock fragments memory after sleep
-  pkill -x hyprlock >/dev/null 2>&1
-  trap 'pkill -x hyprlock' EXIT
   uwsm app -- hyprlock || hyprlock
   exit 0
 fi
