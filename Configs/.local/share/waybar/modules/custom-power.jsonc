@@ -10,7 +10,7 @@
             "shutdown-now": "systemctl shutdown now",
             "shutdown-wait": "systemctl poweroff",
             "reboot-now": "systemctl reboot",
-            "reeboot-firmware": "systemctl reboot --firmware-setup",
+            "reboot-firmware": "systemctl reboot --firmware-setup",
             "suspend": "systemctl suspend",
             "hibernate": "systemctl hibernate"
         },

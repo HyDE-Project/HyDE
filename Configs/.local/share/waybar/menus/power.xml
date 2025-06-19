@@ -61,7 +61,7 @@
                             </object>
                         </child>
                         <child>
-                            <object class="GtkMenuItem" id="reeboot-firmware">
+                            <object class="GtkMenuItem" id="reboot-firmware">
                                 <property name="label">Reboot to UEFI</property>
                             </object>
                         </child>
