@@ -9,7 +9,8 @@
         "menu-actions": {
             "shutdown-now": "systemctl shutdown now",
             "shutdown-wait": "systemctl poweroff",
-            "reboot": "reboot",
+            "reboot-now": "systemctl reboot",
+            "reeboot-firmware": "systemctl reboot --firmware-setup",
             "suspend": "systemctl suspend",
             "hibernate": "systemctl hibernate"
         },
