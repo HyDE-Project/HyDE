@@ -117,6 +117,11 @@ function _load_persistent_aliases {
             lt='eza --icons=auto --tree'
     fi
 
+    if [[ -x "$(command -v bat)" ]]; then
+        alias -g -- -h='-h 2>&1 | bat --language=help --style=plain --paging=never --color always'
+        alias -g -- --help='--help 2>&1 | bat --language=help --style=plain --paging=never --color always'
+        alias cat='bat --style=plain --paging=never --color always'
+    fi
 }
 
 function _load_omz_on_init() {
@@ -154,7 +159,15 @@ _fuzzy_change_directory() {
 _fuzzy_edit_search_file_content() {
     # [f]uzzy [e]dit  [s]earch [f]ile [c]ontent
     local selected_file
-    selected_file=$(grep -irl "${1:-}" ./ | fzf --height "80%" --layout=reverse --preview-window right:60% --cycle --preview 'cat {}' --preview-window right:60%)
+    local fzf_options=()
+    local preview_cmd
+    if [[ -x "$(command -v bat)" ]]; then
+        preview_cmd="'bat --color always --style=plain --paging=never {}'"
+    else
+        preview_cmd="'cat {}'"
+    fi
+    fzf_options+=(--height "80%" --layout=reverse --cycle --preview-window right:60% --preview $preview_cmd)
+    selected_file=$(grep -irl "${1:-}" ./ | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" ]]; then
         if command -v "$EDITOR" &>/dev/null; then

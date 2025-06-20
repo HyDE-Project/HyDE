@@ -8,32 +8,29 @@ if type -q starship
     set -gx STARSHIP_CONFIG $XDG_CONFIG_HOME/starship/starship.toml
 end
 
-
 # fzf 
 if type -q fzf
     fzf --fish | source 
 end
 
-
-
-
-
-
-
-# example integration with bat : <cltr+f>
-# bind -M insert \ce '$EDITOR $(fzf --preview="bat --color=always --plain {}")' 
-
-
 set fish_pager_color_prefix cyan
 set fish_color_autosuggestion brblack 
 
-# List Directory
-alias l='eza -lh  --icons=auto' # long list
-alias ls='eza -1   --icons=auto' # short list
-alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
-alias ld='eza -lhD --icons=auto' # long list dirs
-alias lt='eza --icons=auto --tree' # list folder as tree
-alias vc='code'
+if type -q eza
+    # List Directory
+    alias l='eza -lh  --icons=auto' # long list
+    alias ls='eza -1   --icons=auto' # short list
+    alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
+    alias ld='eza -lhD --icons=auto' # long list dirs
+    alias lt='eza --icons=auto --tree' # list folder as tree
+    alias vc='code'
+end
+
+if type -q bat
+    abbr -a --position anywhere -- --help '--help | bat --language=help --style=plain --paging=never'
+    abbr -a --position anywhere -- -h '-h | bat --language=help --style=plain --paging=never'
+    abbr cat 'bat --style=plain --paging=never'
+end
 
 # Handy change dir shortcuts
 abbr .. 'cd ..'
