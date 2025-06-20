@@ -32,12 +32,12 @@
                 <child type="submenu">
                     <object class="GtkMenu">
                         <child>
-                            <object class="GtkMenuItem" id="shutdown_now">
-                                <property name="label">Suspend Now</property>
+                            <object class="GtkMenuItem" id="shutdown-now">
+                                <property name="label">Shutdown Now</property>
                             </object>
                         </child>
                         <child>
-                            <object class="GtkMenuItem" id="shutdown_wait">
+                            <object class="GtkMenuItem" id="shutdown-wait">
                                 <property name="label">Shutdown (wait)</property>
                             </object>
                         </child>
@@ -50,8 +50,23 @@
 
 
         <child>
-            <object class="GtkMenuItem" id="reboot">
+            <object class="GtkMenuItem" id="reboot_sub">
                 <property name="label">Reboot</property>
+
+                <child type="submenu">
+                    <object class="GtkMenu">
+                        <child>
+                            <object class="GtkMenuItem" id="reboot-now">
+                                <property name="label">Reboot</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="reboot-firmware">
+                                <property name="label">Reboot to UEFI</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
             </object>
         </child>
 
