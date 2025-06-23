@@ -82,6 +82,7 @@ S|${HOME}/.config/zsh/functions|error-handlers.zsh|zsh
 S|${HOME}/.config/zsh/functions|fzf.zsh|zsh fzf
 S|${HOME}/.config/zsh/functions|duf.zsh|zsh duf
 S|${HOME}/.config/zsh/functions|eza.zsh|zsh eza
+S|${HOME}/.config/zsh/functions|bat.zsh|zsh bat
 S|${HOME}/.config/zsh/completions|fzf.zsh|zsh fzf
 S|${HOME}/.config/zsh/completions|hydectl.zsh|zsh
 
