@@ -75,17 +75,14 @@ nwg-displays                                           # monitor management util
 fzf                                                    # Command-line fuzzy finder
 
 # --------------------------------------------------- // Shell
-fastfetch                                              # system information fetch tool
-## -------------------------------------------------- // zsh
 eza|zsh                                                # file lister for zsh
 starship|zsh                                           # customizable shell prompt written in Rust
-# starship-git                                         # The cross-shell prompt for astronauts  
 duf|zsh                                                # prettier version of df for zsh
-bat|zsh                                                # enhanced version of cat
-## -------------------------------------------------- // fish
+# starship-git                                         # The cross-shell prompt for astronauts  
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt
 duf|fish                                               # prettier version of df for fish
+fastfetch                                              # system information fetch tool
 
 # --------------------------------------------------- // HyDE
 hypridle                                               # idle daemon
