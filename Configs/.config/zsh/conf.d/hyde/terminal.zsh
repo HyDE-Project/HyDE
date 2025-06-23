@@ -31,23 +31,8 @@ function _load_zsh_plugins {
     typeset -g DEFER_OMZ_LOAD=1
 }
 
-function _load_persistent_aliases {
-    # Persistent aliases are loaded after the plugin is loaded
-    # This way omz will not override them
-    unset -f _load_persistent_aliases
-
-    if [[ -x "$(command -v eza)" ]]; then
-        alias l='eza -lh --icons=auto' \
-            ll='eza -lha --icons=auto --sort=name --group-directories-first' \
-            ld='eza -lhD --icons=auto' \
-            lt='eza --icons=auto --tree'
-    fi
-
-}
-
 function _load_post_init() {
     #! Never load time consuming functions here
-    _load_persistent_aliases
 
     # Add your completions directory to fpath
     fpath=($ZDOTDIR/completions "${fpath[@]}")
