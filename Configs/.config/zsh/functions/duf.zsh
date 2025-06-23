@@ -6,4 +6,6 @@ _df() {
     fi
 }
 
-alias duf='_df'
+if command -v "duf" &>/dev/null; then
+    alias df='_df'
+fi

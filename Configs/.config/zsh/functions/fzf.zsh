@@ -24,7 +24,15 @@ _fuzzy_change_directory() {
 _fuzzy_edit_search_file_content() {
     # [f]uzzy [e]dit  [s]earch [f]ile [c]ontent
     local selected_file
-    selected_file=$(grep -irl "${1:-}" ./ | fzf --height "80%" --layout=reverse --preview-window right:60% --cycle --preview 'cat {}' --preview-window right:60%)
+    local fzf_options=()
+    local preview_cmd
+    if command -v "bat" &>/dev/null; then
+        preview_cmd="'bat --color always --style=plain --paging=never {}'"
+    else
+        preview_cmd="'cat {}'"
+    fi
+    fzf_options+=(--height "80%" --layout=reverse --cycle --preview-window right:60% --preview $preview_cmd)
+    selected_file=$(grep -irl "${1:-}" ./ | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" ]]; then
         if command -v "$EDITOR" &>/dev/null; then
@@ -65,7 +73,6 @@ _fuzzy_edit_search_file() {
     fi
 }
 
-    alias ffec='_fuzzy_edit_search_file_content' \
-    ffcd='_fuzzy_change_directory' \
-    ffe='_fuzzy_edit_search_file' \
-    df='_df'
+alias ffec='_fuzzy_edit_search_file_content' \
+ffcd='_fuzzy_change_directory' \
+ffe='_fuzzy_edit_search_file'
