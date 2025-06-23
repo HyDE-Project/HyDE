@@ -7,9 +7,10 @@
         "menu": "on-click-right",
         "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/power.xml",
         "menu-actions": {
-            "shutdown-now": "systemctl shutdown now",
+            "shutdown-now": "shutdown now",
             "shutdown-wait": "systemctl poweroff",
-            "reboot": "reboot",
+            "reboot-now": "systemctl reboot",
+            "reboot-firmware": "systemctl reboot --firmware-setup",
             "suspend": "systemctl suspend",
             "hibernate": "systemctl hibernate"
         },
