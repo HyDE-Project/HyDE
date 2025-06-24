@@ -108,7 +108,7 @@ function do_render {
 _load_deferred_plugin_system_by_hyde() {
 
     # Exit early if HYDE_ZSH_DEFER is not set to 1
-    if [[ -z "${HYDE_ZSH_DEFER}" ]]; then
+    if [[ "${HYDE_ZSH_DEFER}" != "1" ]]; then
         unset -f _load_deferred_plugin_system_by_hyde
         return
     fi
@@ -145,26 +145,20 @@ _load_deferred_plugin_system_by_hyde() {
 #? Override this environment variable in ~/.zshrc
 # cleaning up home folder
 # ZSH Plugin Configuration
+
+HYDE_ZSH_DEFER="1" #Unset this variable in $ZDOTDIR/user.zsh to disable HyDE's deferred Zsh loading.
+HYDE_ZSH_PROMPT="1" #Unset this variable in $ZDOTDIR/user.zsh to disable HyDE's prompt customization.
+
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
-# History configuration
+# # History configuration
 HISTFILE=${HISTFILE:-$ZDOTDIR/.zsh_history}
 if [[ -f $HOME/.zsh_history ]] && [[ ! -f $HISTFILE ]]; then
-    echo "Please manually move $HOME/.zsh_history to $HISTFILE"
-    echo "Or move it somewhere else to avoid conflicts"
+     echo "Please manually move $HOME/.zsh_history to $HISTFILE"
+     echo "Or move it somewhere else to avoid conflicts"
 fi
-HISTSIZE=10000
-SAVEHIST=10000
 
-setopt EXTENDED_HISTORY       # Write the history file in the ':start:elapsed;command' format
-setopt INC_APPEND_HISTORY     # Write to the history file immediately, not when the shell exits
-setopt SHARE_HISTORY          # Share history between all sessions
-setopt HIST_EXPIRE_DUPS_FIRST # Expire a duplicate event first when trimming history
-setopt HIST_IGNORE_DUPS       # Do not record an event that was just recorded again
-setopt HIST_IGNORE_ALL_DUPS   # Delete an old recorded event if a new event is a duplicate
-
-# Export ZSH-specific variables
-export ZSH_AUTOSUGGEST_STRATEGY HISTFILE
+export HISTFILE ZSH_AUTOSUGGEST_STRATEGY
 
 # HyDE Package Manager
 PM_COMMAND=(hyde-shell pm)
