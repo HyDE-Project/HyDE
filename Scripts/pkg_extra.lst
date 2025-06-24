@@ -34,7 +34,7 @@ spicetify-cli                                          # cli to customize spotif
 # neovim                                               # vim based text editor
 
 # --------------------------------------------------- // Shell
-## -------------------------------------------------- // zsh
+# --------------------------------------------------- // zsh
 # oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh
 # pokemon-colorscripts-git|zsh                           # display pokemon sprites (optional)
 # pokego-bin|zsh                                         # display pokemon sprites in terminal (written GO)
