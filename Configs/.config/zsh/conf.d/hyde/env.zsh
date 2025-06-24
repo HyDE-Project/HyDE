@@ -15,10 +15,12 @@ PATH="$HOME/.local/bin:$PATH"
 
 # XDG Base Directory Specification variables with defaults
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 XDG_DATA_DIRS="${XDG_DATA_DIRS:-$XDG_DATA_HOME:/usr/local/share:/usr/share}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
 
 # XDG User Directories (fallback to xdg-user-dir command if available)
 if command -v xdg-user-dir >/dev/null 2>&1; then
@@ -38,6 +40,8 @@ LESSHISTFILE="${LESSHISTFILE:-/tmp/less-hist}"
 # Application config files
 PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
 SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
+TERMINFO="$XDG_DATA_HOME"/terminfo
+TERMINFO_DIRS="$XDG_DATA_HOME"/terminfo:/usr/share/terminfo
 
 # Export all variables
 export PATH \
