@@ -76,7 +76,8 @@ deploy_psv() {
         # Skip lines that do not have exactly 4 columns
         if [ "$(awk -F '|' '{print NF}' <<<"${lst}")" -ne 4 ]; then
             if [[ "${lst}" =~ ^\  ]]; then
-                print_log -b "SECTION:" -b " :: " "${lst}"
+                echo ""
+                print_log -b "${lst}"
             fi
             continue
         fi
