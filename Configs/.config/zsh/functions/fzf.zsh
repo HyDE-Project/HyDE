@@ -1,4 +1,3 @@
-
 # best fzf aliases ever
 _fuzzy_change_directory() {
     local initial_query="$1"
@@ -27,11 +26,11 @@ _fuzzy_edit_search_file_content() {
     local fzf_options=()
     local preview_cmd
     if command -v "bat" &>/dev/null; then
-        preview_cmd="'bat --color always --style=plain --paging=never {}'"
+        preview_cmd=('bat --color always --style=plain --paging=never {}')
     else
-        preview_cmd="'cat {}'"
+        preview_cmd=('cat {}')
     fi
-    fzf_options+=(--height "80%" --layout=reverse --cycle --preview-window right:60% --preview $preview_cmd)
+    fzf_options+=(--height "80%" --layout=reverse --cycle --preview-window right:60% --preview ${preview_cmd[@]})
     selected_file=$(grep -irl "${1:-}" ./ | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" ]]; then
@@ -74,5 +73,5 @@ _fuzzy_edit_search_file() {
 }
 
 alias ffec='_fuzzy_edit_search_file_content' \
-ffcd='_fuzzy_change_directory' \
-ffe='_fuzzy_edit_search_file'
+    ffcd='_fuzzy_change_directory' \
+    ffe='_fuzzy_edit_search_file'
