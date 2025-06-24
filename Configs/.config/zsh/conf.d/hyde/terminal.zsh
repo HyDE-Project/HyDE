@@ -148,12 +148,14 @@ _load_deferred_plugin_system_by_hyde() {
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 # History configuration
-HISTFILE=${HISTFILE:-$HOME/.zsh_history}
-if [[ ! -f $HISTFILE ]]; then
-    HISTFILE=${ZDOTDIR/.zsh_history/}
+HISTFILE=${HISTFILE:-$ZDOTDIR/.zsh_history}
+if [[ -f $HOME/.zsh_history ]] && [[ ! -f $HISTFILE ]]; then
+    echo "Please manually move $HOME/.zsh_history to $HISTFILE"
+    echo "Or move it somewhere else to avoid conflicts"
 fi
 HISTSIZE=10000
 SAVEHIST=10000
+
 setopt EXTENDED_HISTORY       # Write the history file in the ':start:elapsed;command' format
 setopt INC_APPEND_HISTORY     # Write to the history file immediately, not when the shell exits
 setopt SHARE_HISTORY          # Share history between all sessions
