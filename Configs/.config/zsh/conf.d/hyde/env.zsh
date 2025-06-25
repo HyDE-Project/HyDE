@@ -43,6 +43,7 @@ SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 TERMINFO="$XDG_DATA_HOME"/terminfo
 TERMINFO_DIRS="$XDG_DATA_HOME"/terminfo:/usr/share/terminfo
 WGETRC="${XDG_CONFIG_HOME}/wgetrc"
+PYTHON_HISTORY="$XDG_STATE_HOME/python_history"
 
 
 # Export all variables
