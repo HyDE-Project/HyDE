@@ -7,7 +7,7 @@ if [ "$HYPRGAMEMODE" = 1 ]; then
         hyprctl -q --batch "\
         keyword animations:enabled 0;\
         keyword decoration:shadow:enabled 0;\
-        keyword decoration:shadow:xray 1;\
+        keyword decoration:blur:xray 1;\
         keyword decoration:blur:enabled 0;\
         keyword general:gaps_in 0;\
         keyword general:gaps_out 0;\
@@ -15,7 +15,6 @@ if [ "$HYPRGAMEMODE" = 1 ]; then
         keyword decoration:rounding 0 ;\
         keyword decoration:active_opacity 1 ;\
         keyword decoration:inactive_opacity 1 ;\
-        keyword decoration:fullscreen_opacity 1 ;\
         keyword decoration:fullscreen_opacity 1 ;\
         keyword layerrule noanim,waybar ;\
         keyword layerrule noanim,swaync-notification-window ;\
