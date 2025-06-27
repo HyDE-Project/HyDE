@@ -4,6 +4,17 @@
 
     <object class="GtkMenu" id="menu">
 
+        <child>
+            <object class="GtkMenuItem" id="lock">
+                <property name="label">Lock</property>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkMenuItem" id="logout">
+                <property name="label">Logout</property>
+            </object>
+        </child>
 
         <child>
             <object class="GtkMenuItem" id="suspend">
