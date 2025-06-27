@@ -1,0 +1,16 @@
+{
+  "custom/cpuprofile": {
+    "format": "{icon}",
+    "tooltip-format": "Power Profile: {alt}",
+    "tooltip": true,
+    "return-type": "json",
+    "format-icons": {
+      "performance": "",
+      "balanced": " ",
+      "powersave": ""
+    },
+    "exec": "~/.local/lib/hyde/cpu_profile.sh",
+    "signal": 8,
+    "on-click": "~/.local/lib/hyde/cpu_profile.sh toggle"
+  }
+}
