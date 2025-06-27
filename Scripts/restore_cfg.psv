@@ -59,8 +59,8 @@ P|${HOME}/.config/Code/User|settings.json|visual-studio-code-bin
 P|${HOME}/.config/VSCodium/User|settings.json|vscodium
 
  Bar 
-P|${HOME}/.config/waybar|user-style.css|waybar
-S|${HOME}/.config/waybar|modules styles layouts menus config.jsonc theme.css style.css|waybar
+P|${HOME}/.config/waybar|user-style.css config.jsonc theme.css style.css|waybar
+I|${HOME}/.config/waybar|modules styles layouts menus|waybar
 S|${HOME}/.local/share|waybar|waybar
 
  Terminal 
@@ -73,10 +73,23 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
 
  Shell 
 P|${HOME}/.config|fish|fish
-P|${HOME}|.zshrc .user.zsh|zsh  
-P|${HOME}|.p10k.zsh|zsh zsh-theme-powerlevel10k
 P|${HOME}/.config/starship|starship.toml|starship
+
 S|${HOME}|.zshenv|zsh
+S|${HOME}/.config/zsh|.zshenv|zsh
+S|${HOME}/.config/zsh/conf.d|hyde 00-hyde.zsh|zsh
+S|${HOME}/.config/zsh/functions|error-handlers.zsh|zsh 
+S|${HOME}/.config/zsh/functions|fzf.zsh|zsh fzf
+S|${HOME}/.config/zsh/functions|duf.zsh|zsh duf
+S|${HOME}/.config/zsh/functions|eza.zsh|zsh eza
+S|${HOME}/.config/zsh/functions|bat.zsh|zsh bat
+S|${HOME}/.config/zsh/completions|fzf.zsh|zsh fzf
+S|${HOME}/.config/zsh/completions|hydectl.zsh|zsh
+
+
+P|${HOME}/.config/zsh|.zshrc user.zsh|zsh
+P|${HOME}/.config/zsh|.p10k.zsh|zsh zsh-theme-powerlevel10k
+
 
  Vim 
 P|${HOME}/.config/vim|vimrc|vim
