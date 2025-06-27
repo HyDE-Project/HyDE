@@ -67,7 +67,7 @@ fn_select() {
     workflow_icon=$(get_hyprConf "WORKFLOW_ICON" "$workflow_path")
     workflow_icon=${workflow_icon:0:1}
     workflow_list="${workflow_list}\n${workflow_icon}\t ${workflow_name}"
-  done < <(find "$workflows_dir" -type f -name "*.conf" 2>/dev/null)
+  done < <(find "$workflows_dir" -follow -type f -name "*.conf" 2>/dev/null)
 
   # Set rofi scaling
   font_scale="${ROFI_WORKFLOW_SCALE}"
@@ -144,7 +144,7 @@ fn_update() {
 #*│                                                                            │
 #*└────────────────────────────────────────────────────────────────────────────┘
 
-\$WORKFLOW = ${ucrrent_workflow}
+\$WORKFLOW = ${current_workflow}
 \$WORKFLOW_ICON = ${current_icon}
 \$WORKFLOW_DESCRIPTION = ${current_description}
 \$WORKFLOWS_PATH = ./workflows/${current_workflow}.conf
