@@ -15,7 +15,6 @@ PATH="$HOME/.local/bin:$PATH"
 
 # XDG Base Directory Specification variables with defaults
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-XDG_DESKTOP_DIR="${XDG_DESKTOP_DIR:-$HOME/Desktop}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 XDG_DATA_DIRS="${XDG_DATA_DIRS:-$XDG_DATA_HOME:/usr/local/share:/usr/share}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
