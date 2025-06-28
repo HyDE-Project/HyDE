@@ -70,11 +70,15 @@ deploy_list() {
 }
 
 deploy_psv() {
-
+    print_log -g "[file extension]" -b " :: " "File: ${CfgLst}"
     while read -r lst; do
 
         # Skip lines that do not have exactly 4 columns
         if [ "$(awk -F '|' '{print NF}' <<<"${lst}")" -ne 4 ]; then
+            if [[ "${lst}" =~ ^\  ]]; then
+                echo ""
+                print_log -b "${lst}"
+            fi
             continue
         fi
         # Skip lines that start with '#' or any space followed by '#'
@@ -90,7 +94,7 @@ deploy_psv() {
 
         # Check if ctlFlag is not one of the values 'O', 'R', 'B', 'S', or 'P'
         if [[ "${ctlFlag}" = "I" ]]; then
-            print_log -r "[ignore] //" "${pth}/${cfg}"
+            print_log -r "[ignore] :: " "${pth}/${cfg}"
             continue 2
         fi
 

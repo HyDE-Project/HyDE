@@ -16,7 +16,7 @@
       "next": "playerctl next --player spotify",
       "previous": "playerctl previous --player spotify",
       "stop": "playerctl stop --player spotify",
-      "shuffle": "playerctl shuffle toggle--player spotify",
+      "shuffle": "playerctl shuffle toggle --player spotify",
       "repeat": "playerctl loop Track --player spotify",
       "loop": "playerctl loop Playlist --player spotify",
       "disable-loop": "playerctl loop None --player spotify",
