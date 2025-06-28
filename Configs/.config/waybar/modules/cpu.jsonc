@@ -1,8 +1,0 @@
-    "cpu": {
-        "interval": 10,
-        "format": "󰍛 {usage}%",
-        "rotate": ${r_deg},
-        "format-alt": "{icon0}{icon1}{icon2}{icon3}",
-        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
-    },
-
