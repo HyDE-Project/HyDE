@@ -35,8 +35,11 @@ this is an "include" file.
 └────────────────────────────────────────────────────────────────────────────┘
 */
 
+#version 300 es
+#define HYPRLAND_HOOK debug:damage_tracking false
+
 #ifndef OLED_MONITOR
-#define OLED_MONITOR-1
+#define OLED_MONITOR -1
 #endif
 
 #ifndef OLED_FILL_COLOR
@@ -52,17 +55,18 @@ this is an "include" file.
 #endif
 
 precision highp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 fragColor;
 uniform sampler2D tex;
 uniform int wl_output;
 uniform float time;
 
 void main(){
-    vec4 originalColor=texture2D(tex,v_texcoord);
+    vec4 originalColor=texture(tex,v_texcoord);
     
     // If OLED_MONITOR is -1, always enable effect. Otherwise, only for matching monitor.
     if(OLED_MONITOR!=-1&&wl_output!=OLED_MONITOR){
-        gl_FragColor=originalColor;
+        fragColor=originalColor;
         return;
     }
     
@@ -87,11 +91,11 @@ void main(){
     bool inArea=fragCoord.x>=area.x&&fragCoord.x<=(area.x+area.z)&&
     fragCoord.y>=area.y&&fragCoord.y<=(area.y+area.w);
     #ifdef OLED_INVERT_AREA
-    gl_FragColor=inArea?originalColor:color;
+    fragColor=inArea?originalColor:color;
     #else
-    gl_FragColor=inArea?color:originalColor;
+    fragColor=inArea?color:originalColor;
     #endif
     #else
-    gl_FragColor=color;
+    fragColor=color;
     #endif
 }

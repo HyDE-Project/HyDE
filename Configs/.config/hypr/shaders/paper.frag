@@ -42,8 +42,10 @@ Use 'inc' to indicate that this is an "include" file for custom defines.
 #define PAPER_GRAIN 0.7
 #endif
 
+#version 300 es
 precision highp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 fragColor;
 uniform sampler2D tex;
 
 // Paper grain texture (simple random noise)
@@ -61,7 +63,7 @@ vec3 to_sepia(vec3 color){
 }
 
 void main(){
-    vec4 pixColor=texture2D(tex,v_texcoord);
+    vec4 pixColor=texture(tex,v_texcoord);
     float gray=dot(pixColor.rgb,vec3(.299,.587,.114));
     vec3 colorResult;
     if(PAPER_GRAYSCALE<0.){
@@ -84,5 +86,5 @@ void main(){
     colorResult=clamp(colorResult+grain*PAPER_GRAIN,0.,1.);
     // Minimal highlight compression: just cap the max gray value to avoid pure white
     colorResult=min(colorResult,vec3(.88));
-    gl_FragColor=vec4(colorResult,pixColor.a);
+    fragColor=vec4(colorResult,pixColor.a);
 }
