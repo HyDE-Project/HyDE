@@ -6,8 +6,8 @@ on:
 
 jobs:
   warn-master-branch-pr:
-    name: Warn about PR from master branch
-    if: github.event.pull_request.head.ref == 'master'
+    name: Warn about PR targeting master branch
+    if: github.event.pull_request.base.ref == 'master'
     runs-on: ubuntu-latest
     steps:
       - name: Add warning comment
@@ -27,7 +27,7 @@ jobs:
             
             const botComment = comments.data.find(comment => 
               comment.user.login === 'github-actions[bot]' && 
-              comment.body.includes('⚠️ Warning: PR from master branch')
+              comment.body.includes('⚠️ Warning: PR targeting master branch')
             );
             
             if (!botComment) {
@@ -35,7 +35,7 @@ jobs:
                 owner,
                 repo,
                 issue_number,
-                body: "⚠️ **Warning: PR from master branch detected!**\n\nThis pull request appears to be created from the `master` branch. This is typically not recommended because:\n\n1. **Development workflow**: Contributions should usually be made from feature branches or the `dev` branch\n2. **Merge conflicts**: Working directly on master can lead to merge conflicts and complications\n3. **Best practices**: It's safer to create a feature branch for your changes\n\n**Recommended action:**\n- Create a new branch from your current changes: `git checkout -b feature/your-feature-name`\n- Push the new branch and create a new PR from that branch instead\n\nIf this PR is intentional (e.g., hotfix or emergency change), you can ignore this warning.\n\n---\n*This is an automated message. If you believe this warning is incorrect, please contact the maintainers.*"
+                body: "⚠️ **Warning: PR targeting master branch detected!**\n\nThis pull request is attempting to merge changes into the `master` branch. This is typically not recommended because:\n\n1. **Protected workflow**: The master branch should usually be protected and only updated through specific processes\n2. **Stability concerns**: Direct merges to master can introduce instability to the main codebase\n3. **Best practices**: Changes should typically go through a development branch (like `dev` or `develop`) first\n\n**Recommended action:**\n- Consider changing the target branch to `dev` or `develop` instead\n- If this is a hotfix or emergency change, ensure it has been properly reviewed\n- Make sure all tests pass and the change has been thoroughly tested\n\nIf this PR targeting master is intentional and has been approved by maintainers, you can ignore this warning.\n\n---\n*This is an automated message. If you believe this warning is incorrect, please contact the maintainers.*"
               });
               console.log('Warning comment added to PR #' + issue_number);
             } else {
