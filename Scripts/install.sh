@@ -40,7 +40,7 @@ flg_Shell=0
 flg_Nvidia=1
 flg_ThemeInstall=1
 
-while getopts idrstmnh: RunStep; do
+while getopts idrstmnh RunStep; do
     case $RunStep in
     i) flg_Install=1 ;;
     d)
@@ -56,7 +56,7 @@ while getopts idrstmnh: RunStep; do
         ;;
     h)
         # shellcheck disable=SC2034
-        export flg_Shell=0
+        export flg_Shell=1
         print_log -r "[shell] " -b "Reevaluate :: " "shell options"
         ;;
     t) flg_DryRun=1 ;;
