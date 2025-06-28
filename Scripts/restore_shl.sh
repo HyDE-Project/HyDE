@@ -23,19 +23,22 @@ fi
 
 # add zsh plugins
 if pkg_installed zsh; then
+    prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
 
-    if ! pkg_installed oh-my-zsh-git; then
-        if [[ ! -e "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
-            print_log -sec "SHELL" -stat "cloning" "oh-my-zsh"
-            [ ${flg_DryRun} -eq 1 ] || if ! sh -c "$(curl -fsSL https://install.ohmyz.sh/)" "" --unattended --keep-zshrc; then
-                print_log -err "oh-my-zsh update failed..." "Please resolve this issue manually LATER ..."
-                print_log -warn "Continuing" "with existing oh-my-zsh..."
-                exit 0
+    if [ "${PROMPT_INPUT}" == "y" ]; then
+        if ! pkg_installed oh-my-zsh-git; then
+            if [[ ! -e "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
+                print_log -sec "SHELL" -stat "cloning" "oh-my-zsh"
+                [ ${flg_DryRun} -eq 1 ] || if ! sh -c "$(curl -fsSL https://install.ohmyz.sh/)" "" --unattended --keep-zshrc; then
+                    print_log -err "oh-my-zsh update failed..." "Please resolve this issue manually LATER ..."
+                    print_log -warn "Continuing" "with existing oh-my-zsh..."
+                    exit 0
+                fi
+
+            else
+                print_log -sec "SHELL" -stat "updating" "oh-my-zsh"
+                zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/upgrade.sh)"
             fi
-
-        else
-            print_log -sec "SHELL" -stat "updating" "oh-my-zsh"
-            zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/upgrade.sh)"
         fi
     fi
 
@@ -85,6 +88,7 @@ if pkg_installed zsh; then
             print_log -sec "SHELL" -err "error" "oh-my-zsh not installed, skipping plugin installation..."
         fi
     fi
+
 fi
 
 # set shell
