@@ -1,22 +1,13 @@
-#  Startup 
-# Commands to execute on startup (before the prompt is shown)
-# Check if the interactive shell option is set
-if [[ $- == *i* ]]; then
-    # This is a good place to load graphic/ascii art, display system information, etc.
-    if command -v pokego >/dev/null; then
-        pokego --no-title -r 1,3,6
-    elif command -v pokemon-colorscripts >/dev/null; then
-        pokemon-colorscripts --no-title -r 1,3,6
-    elif command -v fastfetch >/dev/null; then
-        if do_render "image"; then
-            fastfetch --logo-type kitty
-        fi
-    fi
-fi
-# fastfetch.sh
+# Add user configurations here
+# For HyDE to not touch your beloved configurations,
+# we added a config file for you to customize HyDE before loading zshrc
+# Edit $ZDOTDIR/.user.zsh to customize HyDE before loading zshrc
+
+#  Plugins 
+# oh-my-zsh plugins are loaded  in $ZDOTDIR/.user.zsh file, see the file for more information
 
 #  Aliases 
-# Override aliases here or in '~/.zshrc' (already set in .zshenv)
+# Override aliases here in '$ZDOTDIR/.zshrc' (already set in .zshenv)
 
 # # Helpful aliases
 # alias c='clear'                                                        # clear terminal
@@ -44,12 +35,9 @@ fi
 # # Always mkdir a path (this doesn't inhibit functionality to make a single dir)
 # alias mkdir='mkdir -p'
 
-#  Plugins 
-# manually add your oh-my-zsh plugins here
-plugins=(
-    "sudo"
-    # "git"                     # (default)
-    # "zsh-autosuggestions"     # (default)
-    # "zsh-syntax-highlighting" # (default)
-    # "zsh-completions"         # (default)
-)
+#  This is your file 
+# Add your configurations here
+# export EDITOR=nvim
+export EDITOR=code
+
+# unset -f command_not_found_handler # Uncomment to prevent searching for commands not found in package manager
