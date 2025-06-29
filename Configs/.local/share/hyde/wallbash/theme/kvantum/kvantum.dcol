@@ -195,39 +195,39 @@ $HOME/.config/Kvantum/wallbash/wallbash.svg
  <rect id="grip-focused" style="opacity:0" width="5" height="5" x="579.3" y="636.64"/>
  <rect id="grip-pressed" style="opacity:0" width="5" height="5" x="609.3" y="636.64"/>
  <g id="itemview-toggled-left" transform="matrix(0.44036689,0,0,-1.999996,510.85999,2181.7643)">
-  <rect style="fill:#<wallbash_4xa9>" width="2" height="21" x="-721.81" y="789.58"/>
+  <rect style="fill:#<wallbash_4xa6>" width="2" height="21" x="-721.81" y="789.58"/>
  </g>
  <g id="itemview-toggled-bottom" transform="matrix(0.84070043,0,0,-1.1999995,799.02299,1538.1001)">
-  <rect style="fill:#<wallbash_4xa9>" width="55" height="2" x="-719.81" y="777.58"/>
+  <rect style="fill:#<wallbash_4xa6>" width="55" height="2" x="-719.81" y="777.58"/>
  </g>
- <rect id="itemview-toggled-top" style="fill:#<wallbash_4xa9>" width="46.239" height="3.6" x="193.88" y="-560.6" transform="scale(1,-1)"/>
+ <rect id="itemview-toggled-top" style="fill:#<wallbash_4xa6>" width="46.239" height="3.6" x="193.88" y="-560.6" transform="scale(1,-1)"/>
  <g id="itemview-toggled-right" transform="matrix(0.44036689,0,0,-1.999996,532.87829,2181.7643)">
-  <rect style="fill:#<wallbash_4xa9>" width="2" height="21" x="-664.81" y="789.58"/>
+  <rect style="fill:#<wallbash_4xa6>" width="2" height="21" x="-664.81" y="789.58"/>
  </g>
- <rect id="itemview-toggled" style="fill:#<wallbash_4xa9>" width="46.239" height="42" x="193.88" y="-602.6" transform="scale(1,-1)"/>
- <path id="itemview-toggled-topleft" style="fill:#<wallbash_4xa9>" d="m 193.88074,556.99973 c -0.48641,0 -0.88073,1.0745 -0.88073,2.4 v 1.2 h 0.88073 v -1.2 z"/>
- <path id="itemview-toggled-bottomright" style="fill:#<wallbash_4xa9>" d="m 241,602.59961 a 0.88073379,2.3999989 0 0 1 -0.88074,2.4 v -2.4 z"/>
- <path id="itemview-toggled-bottomleft" style="fill:#<wallbash_4xa9>" d="m 193,602.59961 a 0.88073379,2.3999989 0 0 0 0.88074,2.4 v -2.4 z"/>
- <path id="itemview-toggled-topright" style="fill:#<wallbash_4xa9>" d="m 240.11927,556.99973 c 0.48641,0 0.88073,1.0745 0.88073,2.4 v 1.2 h -0.88073 v -1.2 z"/>
+ <rect id="itemview-toggled" style="fill:#<wallbash_4xa6>" width="46.239" height="42" x="193.88" y="-602.6" transform="scale(1,-1)"/>
+ <path id="itemview-toggled-topleft" style="fill:#<wallbash_4xa6>" d="m 193.88074,556.99973 c -0.48641,0 -0.88073,1.0745 -0.88073,2.4 v 1.2 h 0.88073 v -1.2 z"/>
+ <path id="itemview-toggled-bottomright" style="fill:#<wallbash_4xa6>" d="m 241,602.59961 a 0.88073379,2.3999989 0 0 1 -0.88074,2.4 v -2.4 z"/>
+ <path id="itemview-toggled-bottomleft" style="fill:#<wallbash_4xa6>" d="m 193,602.59961 a 0.88073379,2.3999989 0 0 0 0.88074,2.4 v -2.4 z"/>
+ <path id="itemview-toggled-topright" style="fill:#<wallbash_4xa6>" d="m 240.11927,556.99973 c 0.48641,0 0.88073,1.0745 0.88073,2.4 v 1.2 h -0.88073 v -1.2 z"/>
  <g id="toolbar-normal-top" transform="matrix(0.83636363,0,0,0.5,616.0229,-304.79001)">
   <path style="fill:#<wallbash_1xa1>" transform="matrix(1.25,0,0,2,-738.56,609.52204)" d="m 15,84.029297 v 0.5 0.5 h 44 v -0.5 -0.5 z"/>
  </g>
  <rect id="toolbar-normal" style="fill:#<wallbash_1xa1>" width="46" height="46" x="14" y="85"/>
  <g id="itemview-pressed-left" transform="matrix(0.44036689,0,0,-1.999996,588.86,2181.7643)">
-  <rect style="fill:#<wallbash_4xa9>" width="2" height="21" x="-721.81" y="789.58"/>
+  <rect style="fill:#<wallbash_4xa6>" width="2" height="21" x="-721.81" y="789.58"/>
  </g>
  <g id="itemview-pressed-bottom" transform="matrix(0.84070043,0,0,-1.1999995,877.02311,1538.1001)">
-  <rect style="fill:#<wallbash_4xa9>" width="55" height="2" x="-719.81" y="777.58"/>
+  <rect style="fill:#<wallbash_4xa6>" width="55" height="2" x="-719.81" y="777.58"/>
  </g>
- <rect id="itemview-pressed-top" style="fill:#<wallbash_4xa9>" width="46.239" height="3.6" x="271.88" y="-560.6" transform="scale(1,-1)"/>
+ <rect id="itemview-pressed-top" style="fill:#<wallbash_4xa6>" width="46.239" height="3.6" x="271.88" y="-560.6" transform="scale(1,-1)"/>
  <g id="itemview-pressed-right" transform="matrix(0.44036689,0,0,-1.999996,610.8783,2181.7643)">
-  <rect style="fill:#<wallbash_4xa9>" width="2" height="21" x="-664.81" y="789.58"/>
+  <rect style="fill:#<wallbash_4xa6>" width="2" height="21" x="-664.81" y="789.58"/>
  </g>
- <rect id="itemview-pressed" style="fill:#<wallbash_4xa9>" width="46.239" height="42" x="271.88" y="-602.6" transform="scale(1,-1)"/>
- <path id="itemview-pressed-topleft" style="fill:#<wallbash_4xa9>" d="m 271.88074,556.99973 c -0.48641,0 -0.88073,1.0745 -0.88073,2.4 v 1.2 h 0.88073 v -1.2 z"/>
- <path id="itemview-pressed-bottomright" style="fill:#<wallbash_4xa9>" d="m 319,602.59961 a 0.88073379,2.3999989 0 0 1 -0.88074,2.4 v -2.4 z"/>
- <path id="itemview-pressed-bottomleft" style="fill:#<wallbash_4xa9>" d="m 271,602.59961 a 0.88073379,2.3999989 0 0 0 0.88074,2.4 v -2.4 z"/>
- <path id="itemview-pressed-topright" style="fill:#<wallbash_4xa9>" d="m 318.11927,556.99973 c 0.48641,0 0.88073,1.0745 0.88073,2.4 v 1.2 h -0.88073 v -1.2 z"/>
+ <rect id="itemview-pressed" style="fill:#<wallbash_4xa6>" width="46.239" height="42" x="271.88" y="-602.6" transform="scale(1,-1)"/>
+ <path id="itemview-pressed-topleft" style="fill:#<wallbash_4xa6>" d="m 271.88074,556.99973 c -0.48641,0 -0.88073,1.0745 -0.88073,2.4 v 1.2 h 0.88073 v -1.2 z"/>
+ <path id="itemview-pressed-bottomright" style="fill:#<wallbash_4xa6>" d="m 319,602.59961 a 0.88073379,2.3999989 0 0 1 -0.88074,2.4 v -2.4 z"/>
+ <path id="itemview-pressed-bottomleft" style="fill:#<wallbash_4xa6>" d="m 271,602.59961 a 0.88073379,2.3999989 0 0 0 0.88074,2.4 v -2.4 z"/>
+ <path id="itemview-pressed-topright" style="fill:#<wallbash_4xa6>" d="m 318.11927,556.99973 c 0.48641,0 0.88073,1.0745 0.88073,2.4 v 1.2 h -0.88073 v -1.2 z"/>
  <g id="splitter-grip-focused" style="opacity:0" transform="translate(502.42498,-393.92675)">
   <path style="fill:#<wallbash_4xa9>" d="m 227.5,690 c 0,1.3807 -1.11929,2.5 -2.5,2.5 -1.38071,0 -2.5,-1.1193 -2.5,-2.5 0,-1.3807 1.11929,-2.5 2.5,-2.5 1.38071,0 2.5,1.1193 2.5,2.5 z"/>
   <g style="fill:#<wallbash_4xa9>">

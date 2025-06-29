@@ -76,7 +76,7 @@ P|${HOME}/.config|fish|fish
 P|${HOME}/.config/starship|starship.toml|starship
 
 S|${HOME}|.zshenv|zsh
-S|${HOME}/.config/zsh|.zshenv user.zsh|zsh
+S|${HOME}/.config/zsh|.zshenv|zsh
 S|${HOME}/.config/zsh/conf.d|hyde 00-hyde.zsh|zsh
 S|${HOME}/.config/zsh/functions|error-handlers.zsh|zsh 
 S|${HOME}/.config/zsh/functions|fzf.zsh|zsh fzf
@@ -87,7 +87,7 @@ S|${HOME}/.config/zsh/completions|fzf.zsh|zsh fzf
 S|${HOME}/.config/zsh/completions|hydectl.zsh|zsh
 
 
-P|${HOME}/.config/zsh|.zshrc|zsh
+P|${HOME}/.config/zsh|.zshrc user.zsh|zsh
 P|${HOME}/.config/zsh|.p10k.zsh|zsh zsh-theme-powerlevel10k
 
 

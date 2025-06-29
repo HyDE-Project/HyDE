@@ -19,7 +19,7 @@ We only need to match the file name and use 'inc' to incdicate that
 
 
  */
-
+#version 300 es
 
 #ifndef BLUE_LIGHT_FILTER_TEMPERATURE
     #define BLUE_LIGHT_FILTER_TEMPERATURE 3000.0 // Default fallback value
@@ -30,7 +30,8 @@ We only need to match the file name and use 'inc' to incdicate that
 
 
 precision highp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 fragColor;
 uniform sampler2D tex;
 
 
@@ -55,7 +56,7 @@ vec3 colorTemperatureToRGB(const in float TEMPERATURE) {
 }
 
 void main() {
-    vec4 pixColor = texture2D(tex, v_texcoord);
+    vec4 pixColor = texture(tex, v_texcoord);
 
     // RGB
     vec3 color = vec3(pixColor[0], pixColor[1], pixColor[2]);
@@ -69,5 +70,5 @@ void main() {
 
     vec4 outCol = vec4(color, pixColor[3]);
 
-    gl_FragColor = outCol;
+    fragColor = outCol;
 }

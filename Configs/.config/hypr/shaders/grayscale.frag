@@ -46,8 +46,10 @@ We only need to match the file name and use 'inc' to incdicate that
     #define GRAYSCALE_LUMINOSITY 0 // Default fallback value
 #endif
 
+#version 300 es
 precision highp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 fragColor;
 uniform sampler2D tex;
 
 // Enum for type of grayscale conversion
@@ -72,7 +74,7 @@ const int HDR = GRAYSCALE_LUMINOSITY_HDR; // Default to HDR standard
 const int LuminosityType = HDTV; // Default to HDTV standard
 
 void main() {
-    vec4 pixColor = texture2D(tex, v_texcoord);
+    vec4 pixColor = texture(tex, v_texcoord);
 
     float gray;
     if (Type == LUMINOSITY) {
@@ -93,5 +95,5 @@ void main() {
     }
     vec3 grayscale = vec3(gray);
 
-    gl_FragColor = vec4(grayscale, pixColor.a);
+    fragColor = vec4(grayscale, pixColor.a);
 }
