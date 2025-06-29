@@ -43,7 +43,6 @@ TERMINFO_DIRS="$XDG_DATA_HOME"/terminfo:/usr/share/terminfo
 WGETRC="${XDG_CONFIG_HOME}/wgetrc"
 PYTHON_HISTORY="$XDG_STATE_HOME/python_history"
 
-
 # Export all variables
 export PATH \
   XDG_CONFIG_HOME XDG_DATA_HOME XDG_DATA_DIRS XDG_STATE_HOME XDG_CACHE_HOME \
