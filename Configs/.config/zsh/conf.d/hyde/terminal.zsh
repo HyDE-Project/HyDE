@@ -184,7 +184,7 @@ fi
 _load_compinit
 
     # Try to load prompts immediately
-if ! source ${ZDOTDIR}/prompt.zsh; then
+if ! source ${ZDOTDIR}/prompt.zsh &>/dev/null; then
     [[ -f $ZDOTDIR/conf.d/hyde/prompt.zsh ]] && source $ZDOTDIR/conf.d/hyde/prompt.zsh
 fi
 
