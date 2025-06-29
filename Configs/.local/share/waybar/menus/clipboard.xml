@@ -3,27 +3,27 @@
     <object class="GtkMenu" id="menu">
         <child>
             <object class="GtkMenuItem" id="favorites">
-                <property name="label">Favorites</property>
+                <property name="label">󰓎  Favorites</property>
             </object>
         </child>
         <child>
             <object class="GtkMenuItem" id="history">
-                <property name="label">History</property>
+                <property name="label">󰋚  History</property>
             </object>
         </child>
         <child>
             <object class="GtkMenuItem" id="delete-history">
-                <property name="label">Delete History</property>
-            </object>
-        </child>
-        <child>
-            <object class="GtkMenuItem" id="manage-favorites">
-                <property name="label">Manage Favorites</property>
+                <property name="label">󰆴  Delete History</property>
             </object>
         </child>
         <child>
             <object class="GtkMenuItem" id="clear-history">
-                <property name="label">Clear History</property>
+                <property name="label">󰎟  Clear History</property>
+            </object>
+        </child>
+        <child>
+            <object class="GtkMenuItem" id="manage-favorites">
+                <property name="label">󱕣  Manage Favorites</property>
             </object>
         </child>
     </object>

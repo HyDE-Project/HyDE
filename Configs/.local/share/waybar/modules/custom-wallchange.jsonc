@@ -1,8 +1,8 @@
 {
     "custom/wallchange": {
-        "format": "{0}",
+        "format": "\udb80\udd8a {0}",
         "rotate": 0,
-        "exec": "echo ; echo \udb80\udd8a switch wallpaper",
+        "tooltip-format": "\udb80\udd8a Switch wallpaper",
         "on-click": "hyde-shell wallpaper -n",
         "on-click-right": "hyde-shell wallpaper -p",
         "on-click-middle": "hyde-shell wallpaper --select", 
