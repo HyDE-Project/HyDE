@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import os
+from re import split
+from warnings import catch_warnings
 import gi
 
 gi.require_version("Playerctl", "2.0")
@@ -24,6 +26,7 @@ logger = logger.get_logger()
 # for each player.  Key = player_name
 #
 players_data = {}
+currentplayer = None
 
 
 def load_env_file(filepath: str) -> None:
@@ -54,7 +57,7 @@ def format_time(seconds) -> str:
 
 
 def create_tooltip_text(
-    artist, track, current_position_seconds, duration_seconds
+    artist, track, current_position_seconds, duration_seconds, p_name
 ) -> str:
     """
     Build the tooltip text showing artist, track, and current position vs duration.
@@ -63,7 +66,7 @@ def create_tooltip_text(
     tooltip = ""
 
     if artist or track:
-        tooltip += f'<span foreground="{track_color}"><b>{track}</b></span>\n<span foreground="{artist_color}"><i>{artist}</i></span>\n'
+        tooltip += f'<span foreground="{track_color}"><b>{track}</b></span>\n<span foreground="{artist_color}"><i>{artist}</i></span>\n<span>{p_name}</span>\n'
         if duration_seconds > 0:
             progress = int((current_position_seconds / duration_seconds) * 20)
             bar = f'<span foreground="{progress_color}">{"━" * progress}</span><span foreground="{empty_color}">{"─" * (20 - progress)}</span>'
@@ -83,21 +86,29 @@ def format_artist_track(artist, track, playing, max_length):
             track = track[:max_length].rstrip() + "…"
         output_text = f"{prefix}{prefix_separator}<b>{track}</b>"
     elif track and artist:
+        artist = artist.split(",")[0].split("&")[0].strip()
         if full_length > max_length:
             # proportion how to share max length between track and artist
             artist_weight = 0.65
-            track_weight = 1 - artist_weight
-            artist_limit = int(max_length * artist_weight)
-            track_limit = int(max_length * track_weight)
+            artist_limit = min(int(max_length * artist_weight), len(artist))
+            a_gain = max(0, artist_weight - (artist_limit / max_length))
+            track_weight = 1 - artist_weight + a_gain
+            track_limit = min(int(max_length * track_weight), len(track))
+            t_gain = max(0, track_weight - (track_limit / max_length))
+
+            if a_gain == 0 and t_gain > 0:
+                gain = int(max_length * t_gain)
+                artist_limit = artist_limit + gain
+            elif a_gain > 0 and t_gain == 0:
+                gain = int(max_length * t_gain)
+                artist_limit = artist_limit + gain
 
             if len(artist) != len(artist[:artist_limit]):
                 artist = artist[:artist_limit].rstrip() + "…"
             if len(track) != len(track[:track_limit]):
                 track = track[:track_limit].rstrip() + "…"
 
-        output_text = (
-            f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
-        )
+        output_text = f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
     else:
         output_text = "<b>Nothing playing</b>"
     return output_text
@@ -107,10 +118,10 @@ def write_output(track, artist, playing, player, tooltip_text):
     logger.info("Writing output")
 
     output_data = {
-        "text": format_artist_track(artist, track, playing, max_length_module),
+        "text": escape(format_artist_track(artist, track, playing, max_length_module)),
         "class": "custom-" + player.props.player_name,
         "alt": player.props.player_name,
-        "tooltip": tooltip_text,
+        "tooltip": escape(tooltip_text),
     }
 
     sys.stdout.write(json.dumps(output_data) + "\n")
@@ -118,6 +129,10 @@ def write_output(track, artist, playing, player, tooltip_text):
 
 
 def on_play(player, status, manager):
+    set_player(manager, player)
+
+
+def on_playback_changed(player, status, manager):
     logger.info("Received new playback status")
     on_metadata(player, player.props.metadata, manager)
 
@@ -150,16 +165,10 @@ def on_metadata(player, metadata, manager):
         "duration": duration_seconds,
     }
 
-    # Build the tooltip
-    tooltip_text = create_tooltip_text(
-        artist, track, current_position_seconds, duration_seconds
-    )
-    write_output(track, artist, playing, player, tooltip_text)
 
-
-def on_player_appeared(manager, player, selected_player=None):
+def on_player_appeared(manager, player, selected_players=None):
     if player is not None and (
-        selected_player is None or player.name == selected_player
+        selected_players is None or player.name in selected_players
     ):
         init_player(manager, player)
     else:
@@ -168,31 +177,36 @@ def on_player_appeared(manager, player, selected_player=None):
 
 def on_player_vanished(manager, player, loop):
     logger.info("Player has vanished")
+    if currentplayer.props.player_name == player.props.player_name:
+        if manager.props.players:
+            set_player(manager, manager.props.players[0])
+            on_metadata(player, player.props.metadata, manager)
+            update_positions(manager)
 
-    # Remove from our stored dictionary
-    p_name = player.props.player_name
-    if p_name in players_data:
-        del players_data[p_name]
-
-    # Output "standby" text
-    output = {
-        "text": standby_text,
-        "class": "custom-nothing-playing",
-        "alt": "player-closed",
-        "tooltip": "",
-    }
-
-    sys.stdout.write(json.dumps(output) + "\n")
-    sys.stdout.flush()
+        # Remove from our stored dictionary
+        p_name = player.props.player_name
+        if p_name in players_data:
+            del players_data[p_name]
+        # Output "standby" text
+        output = {
+            "text": standby_text,
+            "class": "custom-nothing-playing",
+            "alt": "player-closed",
+            "tooltip": "",
+        }
+        sys.stdout.write(json.dumps(output) + "\n")
+        sys.stdout.flush()
 
 
 def init_player(manager, name):
     logger.debug("Initialize player: {player}".format(player=name.name))
     player = Playerctl.Player.new_from_name(name)
-    player.connect("playback-status", on_play, manager)
+    player.connect("playback-status", on_playback_changed, manager)
+    player.connect("playback-status::playing", on_play, manager)
     player.connect("metadata", on_metadata, manager)
     manager.manage_player(player)
     on_metadata(player, player.props.metadata, manager)
+    return player
 
 
 def update_positions(manager):
@@ -202,21 +216,33 @@ def update_positions(manager):
     updates the tooltip, and rewrites the output to stdout.
     """
     # manager.props.players gives us the current active Player objects
-    for player in manager.props.players:
-        p_name = player.props.player_name
-        # If we haven't stored metadata for this player yet, skip
-        if p_name not in players_data:
-            continue
+    if manager.props.players:
+        tooltip_text = ""
+        for player in manager.props.players:
+            p_name = player.props.player_name
+            # If we haven't stored metadata for this player yet, skip
+            if p_name not in players_data:
+                continue
 
+            playing = player.props.status == "Playing"
+            track = players_data[p_name]["track"]
+            artist = players_data[p_name]["artist"]
+            duration_seconds = players_data[p_name]["duration"]
+
+            current_position_seconds = player.get_position() / 1e6
+            tooltip_text += (
+                create_tooltip_text(
+                    artist, track, current_position_seconds, duration_seconds, p_name
+                )
+                + "\n\n"
+            )
+
+        player = manager.props.players[0]
+        p_name = player.props.player_name
         playing = player.props.status == "Playing"
         track = players_data[p_name]["track"]
         artist = players_data[p_name]["artist"]
         duration_seconds = players_data[p_name]["duration"]
-
-        current_position_seconds = player.get_position() / 1e6
-        tooltip_text = create_tooltip_text(
-            artist, track, current_position_seconds, duration_seconds
-        )
 
         write_output(track, artist, playing, player, tooltip_text)
 
@@ -240,14 +266,15 @@ def parse_arguments():
     )
 
     # Define for which player we're listening
-    parser.add_argument("--player", help="Specify the player to listen to.")
+    parser.add_argument("--players", nargs="*", type=str)
+    parser.add_argument("--player", type=str)
 
     return parser.parse_args()
 
 
 def main():
     global prefix_playing, prefix_paused, max_length_module, standby_text, artist_track_separator
-    global artist_color, track_color, progress_color, empty_color, time_color
+    global artist_color, artist_weight, track_color, progress_color, empty_color, time_color
 
     # Load environment variables from your config file:
     config_file = os.path.join(xdg_state_home(), "hyde", "config")
@@ -281,6 +308,10 @@ def main():
     time_color = os.getenv(
         "MEDIAPLAYER_TOOLTIP_TIME_COLOR", "#" + os.getenv("dcol_txt1", "FFFFFF")
     )
+    artist_weight = os.getenv("MEDIAPLAYER_ARTIST_WEIGHT", 0.65)
+    players = os.getenv("MEDIAPLAYER_PLAYERS", None)
+    if players:
+        players = players.split(",")
 
     arguments = parse_arguments()
     player_found = False
@@ -295,29 +326,56 @@ def main():
     logger.debug("Arguments received {}".format(vars(arguments)))
 
     manager = Playerctl.PlayerManager()
+    choose = False
+    if not (arguments.players or arguments.player) and not players:
+        players = [name.name for name in manager.props.player_names]
+    else:
+        choose = True
+        if arguments.players:
+            players = arguments.players
+        elif arguments.player:
+            players = [arguments.player]
     loop = GLib.MainLoop()
 
     manager.connect(
-        "name-appeared", lambda *args: on_player_appeared(*args, arguments.player)
+        "name-appeared",
+        # if player didn't select a player(s)
+        # then allow all mediaplayer.py to watch
+        # all players that appear
+        lambda *args: on_player_appeared(*args, players if choose else []),
     )
     manager.connect("player-vanished", lambda *args: on_player_vanished(*args, loop))
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+    signal.signal(signal.SIGRTMIN + 1, lambda *args: control_music(*args, "previous"))
+    signal.signal(signal.SIGRTMIN + 2, lambda *args: control_music(*args, "next"))
+    signal.signal(signal.SIGRTMIN, lambda *args: control_music(*args, "play_pause"))
 
+    found = [None] * len(players)
     for player in manager.props.player_names:
-        if arguments.player is not None and arguments.player != player.name:
+        if (
+            players is not None and player.name not in players
+        ) or player.name == "plasma-browser-integration":
             logger.debug(
                 "{player} is not the filtered player, skipping it".format(
                     player=player.name
                 )
             )
             continue
-
-        init_player(manager, player)
+        p = init_player(manager, player)
+        found[players.index(player.name)] = p
+    if found:
+        found = list(filter(lambda x: x is not None, found))
+        try:
+            p = next(player for player in found if player.props.status == "Playing")
+        except StopIteration:
+            p = None
+        if not p:
+            p = found[0]
+        set_player(manager, p)
         player_found = True
-
     # If no player is found, generate the standby output
     if not player_found:
         output = {
@@ -334,6 +392,24 @@ def main():
     GLib.timeout_add_seconds(1, update_positions, manager)
 
     loop.run()
+
+
+def set_player(manager, player):
+    global currentplayer
+    if currentplayer:
+        if currentplayer.props.player_name != player.props.player_name:
+            currentplayer.pause()
+    currentplayer = player
+    manager.move_player_to_top(player)
+
+
+def control_music(sig, frame, action):
+    if currentplayer:
+        getattr(currentplayer, action)()
+
+
+def escape(string):
+    return string.replace("&", "&amp;")
 
 
 if __name__ == "__main__":
