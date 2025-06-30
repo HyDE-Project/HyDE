@@ -320,7 +320,7 @@ if [ -z "${*}" ]; then
     print_log -sec "hyprlock" -stat "setting" " $HYDE_CACHE_HOME/wallpapers/hyprlock.png"
     "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend hyprlock
   fi
-  uwsm app -- hyprlock || hyprlock
+  pidof hyprlock || hyprlock
   exit 0
 fi
 

@@ -14,7 +14,7 @@
     "format-alt": "\udb83\udf86 {percentage}%",
     "max-length": 10,
     "tooltip": true,
-    "tooltip-format": "\udb83\udf86 {percentage}%\n\ue266 {used:0.1f}GB/{total:0.1f}GB",
+    //"tooltip-format": "\udb83\udf86 {percentage}%\n\ue266 {used:0.1f}GB/{total:0.1f}GB",
     "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f}GB / {total:0.2f}GB\n\uf85a Available: {avail:0.2f}GB\n\uf233 Swap used: {swapUsed:0.2f}GB / {swapTotal:0.2f}GB ({swapPercentage}%)"
   }
 }

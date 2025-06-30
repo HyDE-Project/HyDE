@@ -3,12 +3,12 @@
     <object class="GtkMenu" id="menu">
         <child>
             <object class="GtkMenuItem" id="show">
-                <property name="label"> Show History</property>
+                <property name="label">󰋚  Show History</property>
             </object>
         </child>
         <child>
             <object class="GtkMenuItem" id="toggle-dnd">
-                <property name="label"> Toggle DND</property>
+                <property name="label">  Toggle DND</property>
             </object>
         </child>
 
@@ -20,12 +20,12 @@
 
         <child>
             <object class="GtkMenuItem" id="clear">
-                <property name="label"> Clear History</property>
+                <property name="label">󰎟  Clear History</property>
             </object>
         </child>
         <child>
             <object class="GtkMenuItem" id="close">
-                <property name="label"> Close</property>
+                <property name="label">󰱞  Close</property>
             </object>
         </child>
         <child>
