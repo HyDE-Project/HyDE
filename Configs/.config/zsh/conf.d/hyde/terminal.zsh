@@ -208,6 +208,7 @@ if [[ ${HYDE_ZSH_NO_OMZ} != "1" ]]; then
     fi
 else
     _load_prompt
+    _load_functions
     _load_completions
 
     chmod +r $ZDOTDIR/.zshrc # Make sure .zshrc is readable
