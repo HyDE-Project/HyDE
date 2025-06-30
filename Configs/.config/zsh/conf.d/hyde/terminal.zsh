@@ -163,7 +163,7 @@ function _load_prompt() {
 
 HYDE_ZSH_DEFER="1"      #Unset this variable in $ZDOTDIR/user.zsh to disable HyDE's deferred Zsh loading.
 HYDE_ZSH_PROMPT="1"     #Unset this variable in $ZDOTDIR/user.zsh to disable HyDE's prompt customization.
-HYDE_ZSH_NO_PLUGINS="1" #Unset this variable in $ZDOTDIR/user.zsh to disable HyDE's Zsh plugin loading.
+HYDE_ZSH_NO_PLUGINS="0" #Set this variable to "1" in $ZDOTDIR/user.zsh to disable HyDE's Zsh plugin loading.
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
@@ -191,20 +191,18 @@ fi
 _load_compinit
 
 
-if [[ ${HYDE_ZSH_NO_OMZ} != "1" ]]; then
-    if [[ ${HYDE_ZSH_NO_PLUGINS} == "1" ]]; then
-        # Deduplicate omz plugins()
-        _dedup_zsh_plugins
+if [[ ${HYDE_ZSH_NO_PLUGINS} != "1" ]]; then
+    # Deduplicate omz plugins()
+    _dedup_zsh_plugins
 
-        if [[ "$HYDE_ZSH_OMZ_DEFER" == "1" ]]; then
-            _load_deferred_plugin_system_by_hyde
-            _load_prompt # This disables transient prompts sadly
-        else
-            [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
-            _load_prompt
-            _load_functions
-            _load_completions
-        fi
+    if [[ "$HYDE_ZSH_OMZ_DEFER" == "1" ]]; then
+        _load_deferred_plugin_system_by_hyde
+        _load_prompt # This disables transient prompts sadly
+    else
+        [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
+        _load_prompt
+        _load_functions
+        _load_completions
     fi
 else
     _load_prompt
