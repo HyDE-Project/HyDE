@@ -1,6 +1,6 @@
 {
   "custom/updates": {
-    "exec": "hyde-shell  systemupdate",
+    "exec": "hyde-shell systemupdate",
     "return-type": "json",
     "format": "{0}",
     "rotate": 0,

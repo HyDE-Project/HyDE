@@ -106,35 +106,71 @@ fn_select() {
 
 concat_shader_files() {
     local files=("$@")
-    true >"$shaders_dir/.compiled.cache.glsl" # Truncate file
+    local version_directive=""
+    local compiled_file="$shaders_dir/.compiled.cache.glsl"
+    
+    # Extract version directive from the main .frag file (last file in array)
+    local main_frag_file="${files[-1]}"
+    if [ -f "$main_frag_file" ]; then
+        version_directive=$(grep -E '^\s*#version\s+' "$main_frag_file" | head -n1)
+        if [ -n "$version_directive" ]; then
+            print_log -g "Found version directive" " $version_directive"
+        else
+            print_log -y "Warning" " No #version directive found in $main_frag_file"
+            version_directive="#version 300 es"  # Default fallback
+        fi
+    fi
+    
+    # Start with version directive
+    echo "$version_directive" > "$compiled_file"
+    echo "" >> "$compiled_file"
+    
+    # Process each file and remove #version directives
     for f in "${files[@]}"; do
         if [ -f "$f" ]; then
             print_log -g "Processing shader" " file: $f"
-            cat "$f" >>"$shaders_dir/.compiled.cache.glsl"
+            # Remove #version lines and append to compiled file
+            sed '/^\s*#version\s/d' "$f" >> "$compiled_file"
+            echo "" >> "$compiled_file"  # Add blank line between files
         fi
-
     done
 }
 
 parse_includes_and_update() {
     local selected_shader="$1"
     local files=()
+    
     # Look for a comment line with !source = ... (whitespace-insensitive)
     local source_var
     source_var=$(grep -iE '^\s*//\s*!source\s*=\s*.*' "$shaders_dir/${selected_shader}.frag" 2>/dev/null | head -n1 | sed -E 's/^\s*\/\/\s*!source\s*=\s*//I' | xargs)
     if [ -n "$source_var" ]; then
         # Expand variables in the source path
         source_var=$(eval echo "$source_var")
-        files+=("$source_var")
+        if [ -f "$source_var" ]; then
+            files+=("$source_var")
+            print_log -g "Found source include" " $source_var"
+        else
+            print_log -y "Warning" " Source file not found: $source_var"
+        fi
     fi
 
     # Automatically include .inc file if it exists
     local inc_file="$shaders_dir/${selected_shader}.inc"
     if [ -f "$inc_file" ]; then
         files+=("$inc_file")
+        print_log -g "Found inc file" " $inc_file"
     fi
+    
+    # Add main .frag file last (to extract version from it)
     files+=("$shaders_dir/${selected_shader}.frag")
-    concat_shader_files "${files[@]}"
+    
+    # Compile the shader files
+    if concat_shader_files "${files[@]}"; then
+        print_log -g "Shader" " $selected_shader compiled successfully."
+    else
+        print_log -r "Error" " Failed to compile shader $selected_shader"
+        return 1
+    fi
     # Write the shaders.conf file with the requested banner and path
     cat <<EOF >"$confDir/hypr/shaders.conf"
 
@@ -146,7 +182,7 @@ parse_includes_and_update() {
 # *│ HyDE Controlled content DO NOT EDIT!                                      |
 # *│ Edit or add shaders in the ./shaders/ directory                           |
 # *│ and run the 'shaders.sh --select' command to update this file             |
-# *│ Modify ./shaders/user-defines.frag to add your own custom defines         |
+# *│ Modify ./shaders/shader-name.inc to add your own custom defines         |
 # *│ The 'shader.sh' script will automatically copy this file to the cache     |
 # *│ and the cache will be used in the shader                                  |
 # *│                                                                            |

@@ -37,9 +37,10 @@ We only need to match the file name and use 'inc' to incdicate that
     #define SHADER_VIBRANCE_SKIN_TONE_PROTECTION 0.75  // Default fallback value
 #endif
 
-
+#version 300 es
 precision highp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 fragColor;
 uniform sampler2D tex;
 
 
@@ -83,12 +84,12 @@ float getSaturation(vec3 color) {
 
 void main() {
     // Get the pixel color from the texture
-    vec4 pixColor = texture2D(tex, v_texcoord);
+    vec4 pixColor = texture(tex, v_texcoord);
     vec3 color = pixColor.rgb;
     
     // Early exit if vibrance is zero
     if (VIBRANCE == 0.0) {
-        gl_FragColor = pixColor;
+        fragColor = pixColor;
         return;
     }
     
@@ -123,5 +124,5 @@ void main() {
     }
     
     // Final color with original alpha
-    gl_FragColor = vec4(result, pixColor.a);
+    fragColor = vec4(result, pixColor.a);
 }

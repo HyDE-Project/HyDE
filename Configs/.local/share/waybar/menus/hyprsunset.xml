@@ -5,7 +5,7 @@
 
         <child>
             <object class="GtkMenuItem" id="temperature_menu">
-                <property name="label">Temperature</property>
+                <property name="label">  Temperature</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
@@ -53,7 +53,7 @@
 
         <child>
             <object class="GtkMenuItem" id="gamma_menu">
-                <property name="label">Gamma</property>
+                <property name="label">󰃝  Gamma</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
