@@ -87,7 +87,7 @@ S|${HOME}/.config/zsh/completions|fzf.zsh|zsh fzf
 S|${HOME}/.config/zsh/completions|hydectl.zsh|zsh
 
 
-P|${HOME}/.config/zsh|.zshrc user.zsh|zsh
+P|${HOME}/.config/zsh|.zshrc user.zsh prompt.zsh|zsh
 P|${HOME}/.config/zsh|.p10k.zsh|zsh zsh-theme-powerlevel10k
 
 
