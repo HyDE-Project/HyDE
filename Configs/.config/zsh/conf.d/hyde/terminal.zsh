@@ -152,9 +152,9 @@ function _load_compinit() {
 
 function _load_prompt() {
     # Try to load prompts immediately
-if ! source ${ZDOTDIR}/prompt.zsh > /dev/null 2>&1; then
-    [[ -f $ZDOTDIR/conf.d/hyde/prompt.zsh ]] && source $ZDOTDIR/conf.d/hyde/prompt.zsh
-fi
+    if ! source ${ZDOTDIR}/prompt.zsh >/dev/null 2>&1; then
+        [[ -f $ZDOTDIR/conf.d/hyde/prompt.zsh ]] && source $ZDOTDIR/conf.d/hyde/prompt.zsh
+    fi
 
 }
 
@@ -191,7 +191,6 @@ fi
 
 _load_compinit
 
-
 if [[ ${HYDE_ZSH_NO_PLUGINS} == "1" ]]; then
     # Deduplicate omz plugins()
     _dedup_zsh_plugins
@@ -206,7 +205,6 @@ if [[ ${HYDE_ZSH_NO_PLUGINS} == "1" ]]; then
 
     fi
 fi
-
 
 alias c='clear' \
     in='${PM_COMMAND[@]} install' \
