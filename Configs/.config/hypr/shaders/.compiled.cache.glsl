@@ -1,3 +1,5 @@
+#version 300 es
+
 /* 
   ┌─────────────────────────────────────────────────────────────────────────┐
   │ This is a blank shader to disable hyprland shaders.                     │
@@ -5,9 +7,12 @@
  */
 
 precision mediump float;
-varying vec2 v_texcoord;
+
+in vec2 v_texcoord;
+out vec4 fragColor;
+
 uniform sampler2D tex;
 
 void main() {
-    gl_FragColor = texture2D(tex, v_texcoord);
+    fragColor = texture(tex, v_texcoord);
 }
