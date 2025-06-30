@@ -12,8 +12,9 @@
 
 /* 
 To override this parameters create a file named './color-vision.inc'
-We only need to match the file name and use 'inc' to incdicate that
+We only need to match the file name and use 'inc' to indicate that
  this is an "include" file
+ NOTE: You also need to restate the #version  on top example: #version 300 es
  Example: 
   ┌────────────────────────────────────────────────────────────────────────────┐
   │  //file: ./color-vision.inc                                                │
@@ -25,6 +26,7 @@ We only need to match the file name and use 'inc' to incdicate that
   └────────────────────────────────────────────────────────────────────────────┘
  */
 
+#version 300 es
 
 #ifndef COLOR_VISION_MODE
     #define COLOR_VISION_MODE 0 // Default fallback value
@@ -40,7 +42,8 @@ We only need to match the file name and use 'inc' to incdicate that
  */
 
 precision highp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 fragColor;
 uniform sampler2D tex;
 
 
@@ -135,12 +138,12 @@ vec3 daltonize(vec3 color, vec3 simulation) {
 
 void main() {
     // Sample the texture at the current fragment's texture coordinates
-    vec4 pixColor = texture2D(tex, v_texcoord);
+    vec4 pixColor = texture(tex, v_texcoord);
     vec3 color = pixColor.rgb;
     
     // No effect needed for normal vision with no intensity
     if (MODE == 0 && INTENSITY == 0.0) {
-        gl_FragColor = pixColor;
+        fragColor = pixColor;
         return;
     }
     
@@ -177,5 +180,5 @@ void main() {
     }
     
     // Output the final color with the original alpha value
-    gl_FragColor = vec4(result, pixColor.a);
+    fragColor = vec4(result, pixColor.a);
 }

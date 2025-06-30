@@ -120,8 +120,10 @@ Example:
 #define COLOR_VISION_INTENSITY 0.0// Intensity of color vision effect (0.0-1.0)
 #endif
 
+#version 300 es
 precision highp float;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 fragColor;
 uniform sampler2D tex;
 
 // ======== Blue Light Filter Functions ========
@@ -345,7 +347,7 @@ return mix(color,colorTransformed,CV_INTENSITY);
 
 void main(){
 // Get original pixel color
-vec4 pixColor=texture2D(tex,v_texcoord);
+vec4 pixColor=texture(tex,v_texcoord);
 vec3 color=pixColor.rgb;
 
 // Apply effects in sequence based on enable flags
@@ -370,5 +372,5 @@ color=applyColorVision(color);
 #endif
 
 // Output final color
-gl_FragColor=vec4(color,pixColor.a);
+fragColor=vec4(color,pixColor.a);
 }
