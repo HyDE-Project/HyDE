@@ -144,6 +144,52 @@ list_script() {
     find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \;
 }
 
+get_version() {
+    # shellcheck source=/dev/null
+    if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
+        echo "HyDE version file not found. Please update HyDE."
+        exit 1
+    fi
+    source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
+    # Extract only the date part from HYDE_VERSION using Bash parameter expansion
+    # HYDE_VERSION_DATE="${HYDE_VERSION%%-*}"
+    cat <<VERSION
+HyDE, your Development Environment
+
+Version: $HYDE_VERSION
+Branch: $HYDE_BRANCH
+Commit Hash: $HYDE_COMMIT_HASH
+Remote: $HYDE_REMOTE
+Restore Date: $HYDE_VERSION_LAST_CHECKED
+Last Commit Message: $HYDE_VERSION_COMMIT_MSG
+
+Tools:
+hydectl: $(hydectl version || echo "hydectl not found")
+$(hyprland -v | head -n1 || echo "hyprland not found")
+$(if hyprctl_output=$(hyprctl version 2>/dev/null | head -n1); then echo "$hyprctl_output (Running Instance)"; else echo "hyprctl not found or not running"; fi)
+$(hyde-ipc --version || echo "hyde-ipc not found")
+
+
+HyDE updates every friday, so please check for updates regularly.
+Run 'hyde-shell release-notes' to see the latest changes.
+HyDE is a community-driven project, and contributions are welcome.
+
+VERSION
+
+}
+
+get_release_notes() {
+    # shellcheck source=/dev/null
+    if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
+        echo "HyDE version file not found. Please update HyDE."
+        exit 1
+    fi
+    source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
+    echo "HyDE Release Notes:"
+    echo "$HYDE_RELEASE_NOTES"
+}
+
+
 if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
 
     case $1 in
@@ -160,6 +206,12 @@ if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
     wallbash)
         shift
         call_wallbashScript "$@"
+        ;;
+    --release-notes | release-notes)
+        get_release_notes
+        ;;
+    --version | version| -v)
+        get_version
         ;;
     --help | help | -h)
         USAGE
