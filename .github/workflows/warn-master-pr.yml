@@ -18,6 +18,13 @@ jobs:
             const { repo, owner } = context.repo;
             const issue_number = context.issue.number;
             
+            // Skip if the PR author is github-actions[bot] (automated PR)
+            const prAuthor = context.payload.pull_request.user.login;
+            if (prAuthor === 'github-actions[bot]') {
+              console.log('Skipping warning for automated PR from github-actions[bot]');
+              return;
+            }
+            
             // Check if we already commented on this PR
             const comments = await github.rest.issues.listComments({
               owner,

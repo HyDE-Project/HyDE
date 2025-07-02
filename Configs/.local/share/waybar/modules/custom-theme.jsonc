@@ -2,7 +2,7 @@
     "custom/theme": {
         "format": "{0}",
         "rotate": 0,
-        "exec": "echo ; echo \udb81\udfe1 switch theme",
+        "tooltip-format": "\udb81\udfe1 Switch theme",
         "on-click": "hyde-shell themeswitch -n",
         "on-click-right": "hyde-shell themeswitch -p",
         "on-click-middle": "sleep 0.1 && hyde-shell themeselect", 
