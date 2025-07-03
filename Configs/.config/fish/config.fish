@@ -1,7 +1,7 @@
 set -g fish_greeting
 
 source ~/.config/fish/conf.d/hyde.fish
-source ~/.config/fish/userprefs.fish
+source ~/.config/fish/user.fish
 
 
 
