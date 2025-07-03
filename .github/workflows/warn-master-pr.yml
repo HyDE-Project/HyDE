@@ -9,6 +9,9 @@ jobs:
     name: Warn about PR targeting master branch
     if: github.event.pull_request.base.ref == 'master'
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
       - name: Add warning comment
         uses: actions/github-script@v6
@@ -25,26 +28,78 @@ jobs:
               return;
             }
             
-            // Check if we already commented on this PR
-            const comments = await github.rest.issues.listComments({
-              owner,
-              repo,
-              issue_number
-            });
+            // Check if this is a PR from a fork (external contributor)
+            const isFromFork = context.payload.pull_request.head.repo.full_name !== context.payload.pull_request.base.repo.full_name;
             
-            const botComment = comments.data.find(comment => 
-              comment.user.login === 'github-actions[bot]' && 
-              comment.body.includes('⚠️ Warning: PR targeting master branch')
-            );
-            
-            if (!botComment) {
-              await github.rest.issues.createComment({
+            if (isFromFork) {
+              console.log('PR is from a fork (external contributor)');
+              // For fork PRs, we can only create PR reviews, not issue comments
+              try {
+                // Check if we already have a review
+                const reviews = await github.rest.pulls.listReviews({
+                  owner,
+                  repo,
+                  pull_number: issue_number
+                });
+                
+                const botReview = reviews.data.find(review => 
+                  review.user.login === 'github-actions[bot]' && 
+                  review.body && review.body.includes('⚠️ Warning: PR targeting master branch')
+                );
+                
+                if (!botReview) {
+                  await github.rest.pulls.createReview({
+                    owner,
+                    repo,
+                    pull_number: issue_number,
+                    event: 'REQUEST_CHANGES',
+                    body: "⚠️ **Warning: PR targeting master branch detected!**\n\n**This PR is targeting `master` but should target `dev` instead.**\n\nAccording to our [CONTRIBUTING.md](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) and [RELEASE_POLICY.md](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md):\n\n- **All pull requests must be submitted to the `dev` branch**\n- Changes go through `dev` first for testing before being merged to `master` during release windows\n- **PRs to `master` are only allowed for emergencies**\n\n**Required Action:**\n1. **Change the base branch from `master` to `dev`**\n2. Follow the [pull request template](https://github.com/HyDE-Project/HyDE/blob/master/.github/PULL_REQUEST_TEMPLATE.md)\n\n**If this is an emergency fix, please add a comment explaining why it needs to target `master` directly.**\n\n---\n*This is an automated review enforcing our contribution workflow.*"
+                  });
+                  console.log('Warning review added to fork PR #' + issue_number);
+                } else {
+                  console.log('Warning review already exists for fork PR #' + issue_number);
+                }
+              } catch (error) {
+                console.log('Failed to create review for fork PR:', error.message);
+                // Fallback: try to add a regular comment anyway
+                try {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number,
+                    body: "⚠️ **Warning: PR targeting master branch detected!** Please change the base branch to `dev` instead of `master`. See our [CONTRIBUTING.md](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) for details."
+                  });
+                  console.log('Fallback comment added to fork PR #' + issue_number);
+                } catch (fallbackError) {
+                  console.log('Both review and comment failed for fork PR:', fallbackError.message);
+                }
+              }
+            } else {
+              // For PRs from the same repo (internal contributors)
+              // Check if we already commented on this PR
+            } else {
+              // For PRs from the same repo (internal contributors)
+              // Check if we already commented on this PR
+              const comments = await github.rest.issues.listComments({
                 owner,
                 repo,
-                issue_number,
-                body: "⚠️ **Warning: PR targeting master branch detected!**\n\n**This PR is targeting `master` but should target `dev` instead.**\n\nAccording to our [CONTRIBUTING.md](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) and [RELEASE_POLICY.md](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md):\n\n- **All pull requests must be submitted to the `dev` branch**\n- Changes go through `dev` first for testing before being merged to `master` during release windows\n- **PRs to `master` are only allowed for emergencies**\n\n**Required Action:**\n1. **Rebase this PR to target the `dev` branch instead**\n2. Update the base branch from `master` to `dev`\n3. Follow the [pull request template](https://github.com/HyDE-Project/HyDE/blob/master/.github/PULL_REQUEST_TEMPLATE.md)\n\n**If this is an emergency fix, please add a comment explaining why it needs to target `master` directly.**\n\n---\n*This is an automated message enforcing our contribution workflow.*"
+                issue_number
               });
-              console.log('Warning comment added to PR #' + issue_number);
-            } else {
-              console.log('Warning comment already exists for PR #' + issue_number);
+              
+              const botComment = comments.data.find(comment => 
+                comment.user.login === 'github-actions[bot]' && 
+                comment.body.includes('⚠️ Warning: PR targeting master branch')
+              );
+              
+              if (!botComment) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number,
+                  body: "⚠️ **Warning: PR targeting master branch detected!**\n\n**This PR is targeting `master` but should target `dev` instead.**\n\nAccording to our [CONTRIBUTING.md](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) and [RELEASE_POLICY.md](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md):\n\n- **All pull requests must be submitted to the `dev` branch**\n- Changes go through `dev` first for testing before being merged to `master` during release windows\n- **PRs to `master` are only allowed for emergencies**\n\n**Required Action:**\n1. **Rebase this PR to target the `dev` branch instead**\n2. Update the base branch from `master` to `dev`\n3. Follow the [pull request template](https://github.com/HyDE-Project/HyDE/blob/master/.github/PULL_REQUEST_TEMPLATE.md)\n\n**If this is an emergency fix, please add a comment explaining why it needs to target `master` directly.**\n\n---\n*This is an automated message enforcing our contribution workflow.*"
+                });
+                console.log('Warning comment added to internal PR #' + issue_number);
+              } else {
+                console.log('Warning comment already exists for internal PR #' + issue_number);
+              }
             }
