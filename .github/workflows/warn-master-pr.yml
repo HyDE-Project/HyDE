@@ -77,9 +77,6 @@ jobs:
             } else {
               // For PRs from the same repo (internal contributors)
               // Check if we already commented on this PR
-            } else {
-              // For PRs from the same repo (internal contributors)
-              // Check if we already commented on this PR
               const comments = await github.rest.issues.listComments({
                 owner,
                 repo,
