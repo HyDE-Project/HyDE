@@ -8,7 +8,7 @@ on:
 
 jobs:
   dev-to-master-pr:
-    name: Create or Update PR from Dev to Master
+    name: Create Quarterly Release PR from Dev to Master
     if: github.ref == 'refs/heads/dev' && github.repository == 'HyDE-Project/HyDE'
     runs-on: ubuntu-latest
     steps:
@@ -64,7 +64,7 @@ jobs:
           script: |
             const { repo, owner } = context.repo;
             const prBranch = "dev";
-            const prTitle = "chore: release automated changes from dev to master";
+            const prTitle = "chore: quarterly release - dev → master";
             const prBody = process.env.PR_BODY;
 
             // Retry helper function
@@ -140,7 +140,7 @@ jobs:
           echo "The branches master and dev are already in sync."
 
   release:
-    name: release
+    name: Quarterly Snapshot Release
     if: github.ref == 'refs/heads/master' && github.repository == 'HyDE-Project/HyDE'
     runs-on: ubuntu-latest
     steps:
