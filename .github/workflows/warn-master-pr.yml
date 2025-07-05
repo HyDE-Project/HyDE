@@ -1,22 +1,39 @@
 name: Warn Master Branch PR
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, synchronize]
 
 jobs:
   warn-master-branch-pr:
     name: Warn about PR targeting master branch
-    if: github.event.pull_request.base.ref == 'master'
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
     steps:
+      - name: Debug PR info
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            console.log('=== PR DEBUG INFO ===');
+            console.log('Base ref:', context.payload.pull_request.base.ref);
+            console.log('Head ref:', context.payload.pull_request.head.ref);
+            console.log('Base repo:', context.payload.pull_request.base.repo.full_name);
+            console.log('Head repo:', context.payload.pull_request.head.repo?.full_name);
+            console.log('PR author:', context.payload.pull_request.user.login);
+            console.log('PR number:', context.payload.pull_request.number);
+            console.log('=== END DEBUG ===');
+            
       - name: Add warning comment
+        if: github.event.pull_request.base.ref == 'master'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { repo, owner } = context.repo;
-            const issue_number = context.issue.number;
+            const issue_number = context.payload.pull_request.number;
             
             // Skip if the PR author is github-actions[bot] (automated PR)
             const prAuthor = context.payload.pull_request.user.login;
@@ -25,7 +42,9 @@ jobs:
               return;
             }
             
-            // Check if we already commented on this PR
+            console.log(`Processing PR #${issue_number} from ${prAuthor}`);
+            
+            // Check if we already commented
             const comments = await github.rest.issues.listComments({
               owner,
               repo,
@@ -42,7 +61,7 @@ jobs:
                 owner,
                 repo,
                 issue_number,
-                body: "⚠️ **Warning: PR targeting master branch detected!**\n\n**This PR is targeting `master` but should target `dev` instead.**\n\nAccording to our [CONTRIBUTING.md](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) and [RELEASE_POLICY.md](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md):\n\n- **All pull requests must be submitted to the `dev` branch**\n- Changes go through `dev` first for testing before being merged to `master` during release windows\n- **PRs to `master` are only allowed for emergencies**\n\n**Required Action:**\n1. **Rebase this PR to target the `dev` branch instead**\n2. Update the base branch from `master` to `dev`\n3. Follow the [pull request template](https://github.com/HyDE-Project/HyDE/blob/master/.github/PULL_REQUEST_TEMPLATE.md)\n\n**If this is an emergency fix, please add a comment explaining why it needs to target `master` directly.**\n\n---\n*This is an automated message enforcing our contribution workflow.*"
+                body: "⚠️ **Warning: PR targeting master branch detected!**\n\n**This PR is targeting `master` but should target `dev` instead.**\n\nAccording to our [CONTRIBUTING.md](https://github.com/HyDE-Project/HyDE/blob/master/CONTRIBUTING.md) and [RELEASE_POLICY.md](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md):\n\n- **All pull requests must be submitted to the `dev` branch**\n- Changes go through `dev` first for testing before being merged to `master` during release windows\n- **PRs to `master` are only allowed for emergencies**\n\n**Required Action:**\n1. **Change the base branch from `master` to `dev`**\n2. Follow the [pull request template](https://github.com/HyDE-Project/HyDE/blob/master/.github/PULL_REQUEST_TEMPLATE.md)\n\n**If this is an emergency fix, please add a comment explaining why it needs to target `master` directly.**\n\n---\n*This is an automated message enforcing our contribution workflow.*"
               });
               console.log('Warning comment added to PR #' + issue_number);
             } else {

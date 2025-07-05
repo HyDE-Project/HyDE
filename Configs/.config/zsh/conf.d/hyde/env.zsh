@@ -8,7 +8,7 @@
 #! ╚═════╝░░╚════╝░  ╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░  ╚══════╝╚═════╝░╚═╝░░░╚═╝░░░
 
 # Hyde's Shell Environment Initialization Script
-# If users used UWSM, uwsm will override any variables set anywhere in you shell configurations
+# If users used UWSM, uwsm will override any variables set anywhere in your shell configurations
 
 # Basic PATH prepending (user local bin)
 PATH="$HOME/.local/bin:$PATH"
