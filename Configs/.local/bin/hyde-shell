@@ -11,9 +11,11 @@ fi
 BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
 LIB_DIR=$(realpath "${BIN_DIR}/../lib")
 SHARE_DIR=$(realpath "${BIN_DIR}/../share")
-PATH="$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
+PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
+# Define hyde scripts search paths (colon-separated, user configurable)
+HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}"
 
-export BIN_DIR LIB_DIR SHARE_DIR
+export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 # shellcheck disable=SC1091
 if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
@@ -27,9 +29,7 @@ USAGE() {
 Usage: $(basename "$0") [command]
 Commands:
   --help, help, -h : Display this help message
-  -i, interactive  : Start an interactive shell
   -r, reload       : Reload HyDE
-  zoom             : Zoom in/out Hyprland
   wallbash         : Execute a wallbash script
 
 Available HyDE commands:
@@ -38,61 +38,6 @@ $(list_script)
 
 USAGE
 
-}
-
-interactive_shell() {
-    history_file="/tmp/.hyde_shell_history"
-    touch "$history_file"
-    history -r "$history_file"
-
-    while true; do
-        read -rep "hyde-shell> " cmd
-        if [[ "$cmd" == "exit" ]]; then
-            break
-        elif declare -f "${cmd%% *}" >/dev/null; then
-            eval "$cmd"
-            history -s "$cmd"
-            history -w "$history_file"
-        else
-            echo "Available commands:"
-            compgen -A function
-            echo -e "\e[31mCommand not found: $cmd\e[0m"
-            echo -e "\e[32mAvailable commands:\e[0m"
-            compgen -A function | while read -r function; do
-                echo -e "\e[34m$function\e[0m"
-            done
-        fi
-    done
-
-}
-
-zoom() { #? Zoom in/out Hyprland
-    # case
-    intensity=${2:-0.1}
-    local cursor_state
-    local cursor_state
-    cursor_state="$(hyprctl getoption cursor:no_hardware_cursors 1 -j | jq .int)"
-    trap 'hyprctl -q keyword cursor:no_hardware_cursors "$cursor_state"' EXIT
-    case $1 in
-    in) #? Zoom in
-        hyprctl -q keyword cursor:no_hardware_cursors 1
-        hyprctl -q keyword cursor:zoom_factor "$(hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$intensity" '.float + ($zoomFactor | tonumber)')"
-        ;;
-    out) #? Zoom out
-        hyprctl -q keyword cursor:no_hardware_cursors 1
-        hyprctl -q keyword cursor:zoom_factor "$(
-            hyprctl getoption cursor:zoom_factor -j | jq --arg zoomFactor "$intensity" '
-    if (.float - ($zoomFactor | tonumber)) < 1 then 1 else (.float - ($zoomFactor | tonumber)) end'
-        )"
-        ;;
-    reset) #? Reset Zoom
-        hyprctl -q keyword cursor:zoom_factor 1
-        ;;
-    *)
-        echo "Usage: zoom [in|out|reset] [intensity]"
-
-        ;;
-    esac
 }
 
 call_wallbashScript() {
@@ -141,25 +86,355 @@ hyde_reload() {
 }
 
 list_script() {
-    find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \;
+    # Use HYDE_SCRIPTS_PATH to find scripts from all configured directories
+    local HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}"
+    
+    # Convert to array, deduplicate, and filter out empty entries
+    IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
+    declare -A seen_dirs
+    local SCRIPT_DIRS=()
+    for dir in "${RAW_DIRS[@]}"; do
+        # Skip empty entries (handles multiple colons like :::)
+        [[ -z "$dir" ]] && continue
+        # Deduplicate directories
+        [[ -n "${seen_dirs[$dir]}" ]] && continue
+        seen_dirs["$dir"]=1
+        # Only add existing directories
+        [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
+    done
+    
+    # Find scripts in all configured directories
+    for dir in "${SCRIPT_DIRS[@]}"; do
+        find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
+    done | sort -u
 }
 
-if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
+list_script_path() {
+    find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
+}
+
+get_version() {
+    # shellcheck source=/dev/null
+    if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
+        echo "HyDE version file not found. Please update HyDE."
+        exit 1
+    fi
+    # shellcheck source=/dev/null
+    source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
+    # Extract only the date part from HYDE_VERSION using Bash parameter expansion
+    # HYDE_VERSION_DATE="${HYDE_VERSION%%-*}"
+    cat <<VERSION
+HyDE, your Development Environment
+
+Version: $HYDE_VERSION
+Branch: $HYDE_BRANCH
+Commit Hash: $HYDE_COMMIT_HASH
+Remote: $HYDE_REMOTE
+Restore Date: $HYDE_VERSION_LAST_CHECKED
+Last Commit Message: $HYDE_VERSION_COMMIT_MSG
+
+Tools:
+hydectl: $(hydectl version || echo "hydectl not found")
+$(hyprland -v | head -n1 || echo "hyprland not found")
+$(if hyprctl_output=$(hyprctl version 2>/dev/null | head -n1); then echo "$hyprctl_output (Running Instance)"; else echo "hyprctl not found or not running"; fi)
+$(hyde-ipc --version || echo "hyde-ipc not found")
+
+
+HyDE updates every friday, so please check for updates regularly.
+Run 'hyde-shell release-notes' to see the latest changes.
+HyDE is a community-driven project, and contributions are welcome.
+
+VERSION
+
+}
+
+get_release_notes() {
+    # shellcheck source=/dev/null
+    if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
+        echo "HyDE version file not found. Please update HyDE."
+        exit 1
+    fi
+    #shellcheck source=/dev/null
+    source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
+    echo "HyDE Release Notes:"
+    echo "$HYDE_RELEASE_NOTES"
+}
+
+get_completion_data() {
+    # Get all available commands and scripts
+    local built_in_commands=("--help" "help" "-h" "-r" "reload" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions")
+    local hyde_scripts=()
+    local wallbash_scripts=()
+
+    # Get HyDE scripts (remove extensions)
+    while IFS= read -r script; do
+        if [[ -n "$script" ]]; then
+            script_name="${script%.*}"
+            hyde_scripts+=("$script_name")
+        fi
+    done < <(list_script 2>/dev/null | sort -u)
+
+    # Get wallbash scripts
+    local dirs=("${wallbashDirs[@]}")
+    wallbash_scripts=("--help")  # Add --help as first option
+    # Simplified - just --help for now since dynamic parsing is complex
+
+    # Export arrays for use by completion generators
+    export HYDE_BUILT_IN_COMMANDS="${built_in_commands[*]}"
+    export HYDE_SCRIPTS="${hyde_scripts[*]}"
+    export HYDE_WALLBASH_SCRIPTS="${wallbash_scripts[*]}"
+}
+
+gen_bash_completion() {
+    get_completion_data
+
+    cat <<'BASH_COMPLETION'
+# Bash completion for hyde-shell
+_hyde_shell_completion() {
+    local cur prev words cword
+    _init_completion 2>/dev/null || {
+        COMPREPLY=()
+        cur="${COMP_WORDS[COMP_CWORD]}"
+        prev="${COMP_WORDS[COMP_CWORD-1]}"
+    }
+    
+    local built_in_commands hyde_scripts wallbash_scripts
+    built_in_commands="--help help -h -r reload wallbash --version version -v --release-notes release-notes --list-script --list-script-path --completions"
+    
+    # Get dynamic completions from hyde-shell
+    if command -v hyde-shell >/dev/null 2>&1; then
+        hyde_scripts=$(hyde-shell --list-script 2>/dev/null | sed 's/\.[^.]*$//' | tr '\n' ' ')
+        
+        # Get wallbash scripts - just --help for now
+        wallbash_scripts="--help"
+    fi
+    
+    # Only provide completions for the first argument
+    if [[ $COMP_CWORD -eq 1 ]]; then
+        # First argument: complete with all available commands
+        local all_commands="$built_in_commands $hyde_scripts"
+        COMPREPLY=($(compgen -W "$all_commands" -- "$cur"))
+    elif [[ $COMP_CWORD -eq 2 ]]; then
+        # Second argument: only for specific commands that take arguments
+        case $prev in
+            wallbash)
+                COMPREPLY=($(compgen -W "$wallbash_scripts" -- "$cur"))
+                return 0
+                ;;
+            --completions)
+                COMPREPLY=($(compgen -W "bash zsh fish" -- "$cur"))
+                return 0
+                ;;
+            *)
+                # No completion for other commands
+                COMPREPLY=()
+                return 0
+                ;;
+        esac
+    else
+        # No completion for 3rd argument and beyond
+        COMPREPLY=()
+        return 0
+    fi
+}
+
+complete -F _hyde_shell_completion hyde-shell
+BASH_COMPLETION
+}
+
+gen_zsh_completion() {
+    get_completion_data
+
+    cat <<'ZSH_COMPLETION'
+#compdef hyde-shell
+
+_hyde_shell() {
+    local cur prev words
+    cur="${words[CURRENT]}"
+    prev="${words[CURRENT-1]}"
+    
+    local built_in_commands hyde_scripts wallbash_scripts
+    built_in_commands=("--help" "help" "-h" "-r" "reload" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions")
+    
+    # Get dynamic completions
+    if (( $+commands[hyde-shell] )); then
+        local scripts_raw
+        scripts_raw=(${(f)"$(hyde-shell --list-script 2>/dev/null)"})
+        hyde_scripts=(${scripts_raw[@]%.*})  # Remove extensions
+        
+        # Get wallbash scripts - just --help for now
+        wallbash_scripts=("--help")
+    fi
+    
+    # Only complete for first two arguments max
+    if [[ $CURRENT -eq 2 ]]; then
+        # First argument: all commands
+        local all_commands=($built_in_commands $hyde_scripts)
+        compadd -a all_commands
+    elif [[ $CURRENT -eq 3 ]]; then
+        # Second argument: only for specific commands
+        case $words[2] in
+            wallbash)
+                compadd -a wallbash_scripts
+                return 0
+                ;;
+            --completions)
+                compadd "bash" "zsh" "fish"
+                return 0
+                ;;
+            *)
+                # No completion for other commands
+                return 0
+                ;;
+        esac
+    else
+        # No completion for 3rd argument and beyond
+        return 0
+    fi
+}
+
+compdef _hyde_shell hyde-shell
+ZSH_COMPLETION
+}
+
+gen_fish_completion() {
+    get_completion_data
+
+    cat <<'FISH_COMPLETION'
+# Fish completion for hyde-shell
+
+function __hyde_shell_get_commands
+    echo "--help
+help
+-h
+-r
+reload
+wallbash
+--version
+version
+-v
+--release-notes
+release-notes
+--list-script
+--list-script-path
+--completions"
+    
+    # Get hyde scripts
+    if command -v hyde-shell >/dev/null 2>&1
+        hyde-shell --list-script 2>/dev/null | sed 's/\.[^.]*$//'
+    end
+end
+
+function __hyde_shell_get_wallbash_scripts
+    # Just --help for now
+    echo "--help"
+end
+
+# Main completions
+complete -c hyde-shell -f
+
+# First argument completions
+complete -c hyde-shell -n "not __fish_seen_subcommand_from (__hyde_shell_get_commands)" -a "(__hyde_shell_get_commands)" -d "Hyde shell commands"
+
+# Wallbash subcommand completions
+complete -c hyde-shell -n "__fish_seen_subcommand_from wallbash" -a "(__hyde_shell_get_wallbash_scripts)" -d "Wallbash scripts"
+
+# Completions subcommand
+complete -c hyde-shell -n "__fish_seen_subcommand_from --completions" -a "bash zsh fish" -d "Shell completion types"
+
+# Option descriptions
+complete -c hyde-shell -s h -l help -d "Display help message"
+complete -c hyde-shell -s r -d "Reload HyDE"
+complete -c hyde-shell -s v -l version -d "Show version information"
+complete -c hyde-shell -l release-notes -d "Show release notes"
+complete -c hyde-shell -l list-script -d "List available scripts"
+complete -c hyde-shell -l list-script-path -d "List scripts with full paths"
+complete -c hyde-shell -l completions -d "Generate shell completions"
+FISH_COMPLETION
+}
+
+generate_completions() {
+    local shell_type="$1"
+
+    case "$shell_type" in
+    bash)
+        gen_bash_completion
+        ;;
+    zsh)
+        gen_zsh_completion
+        ;;
+    fish)
+        gen_fish_completion
+        ;;
+    *)
+        echo "Usage: hyde-shell --completions [bash|zsh|fish]"
+        echo "Generate shell completions for the specified shell"
+        return 1
+        ;;
+    esac
+}
+
+run_command() {
+
+    # Convert to array, deduplicate, and filter out empty entries
+    IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
+    declare -A seen_dirs
+    SCRIPT_DIRS=()
+    for dir in "${RAW_DIRS[@]}"; do
+        # Skip empty entries (handles multiple colons like :::)
+        [[ -z "$dir" ]] && continue
+        # Deduplicate directories
+        [[ -n "${seen_dirs[$dir]}" ]] && continue
+        seen_dirs["$dir"]=1
+        # Only add existing directories
+        [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
+    done
+
+    # Try to find and execute the command in priority order
+    for dir in "${SCRIPT_DIRS[@]}"; do
+        # Try .sh extension first
+        if [[ -f "$dir/${1}.sh" ]]; then
+            exec bash "$dir/${1}.sh" "${@:2}"
+        # Try .py extension
+        elif [[ -f "$dir/${1}.py" ]]; then
+            exec python "$dir/${1}.py" "${@:2}"
+        # Try exact name (executable)
+        elif [[ -f "$dir/${1}" && -x "$dir/${1}" ]]; then
+            exec "$dir/${1}" "${@:2}"
+        fi
+    done
+
+    # Finally try as a direct file path
+    if [[ -f "$1" && -x "$1" ]]; then
+        exec "$1" "${@:2}"
+    else
+        echo "Command not found: $1"
+        echo "Available commands:"
+        list_script
+        # Show user scripts from all configured directories
+        for dir in "${SCRIPT_DIRS[@]}"; do
+            echo "Scripts in $dir:"
+            find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
+        done
+    fi
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
     case $1 in
-    -i | interactive)
-        interactive_shell
-        ;;
     -r | reload)
         hyde_reload
         ;;
-    zoom)
-        shift
-        zoom "$@"
-        ;;
+
     wallbash)
         shift
         call_wallbashScript "$@"
+        ;;
+    --release-notes | release-notes)
+        get_release_notes
+        ;;
+    --version | version | -v)
+        get_version
         ;;
     --help | help | -h)
         USAGE
@@ -168,7 +443,11 @@ if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
         list_script
         ;;
     --list-script-path)
-        find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
+        list_script_path
+        ;;
+    --completions)
+        shift
+        generate_completions "$1"
         ;;
     "")
         for func in $(compgen -A function); do
@@ -176,20 +455,11 @@ if [[ ! "${BASH_SOURCE[0]}" != "${0}" ]]; then
         done
         ;;
     *)
-        if [ -f "${LIB_DIR}/hyde/${1}.sh" ]; then
-            bash "${LIB_DIR}/hyde/${1}.sh" "${@:2}"
-        elif [ -f "${LIB_DIR}/hyde/${1}.py" ]; then
-            python "${LIB_DIR}/hyde/${1}.py" "${@:2}"
-        elif [ -f "${LIB_DIR}/hyde/${1}" ]; then
-            "${LIB_DIR}/hyde/${1}" "${@:2}"
-        elif [ -f "${1}" ] && [ -x "${1}" ]; then
-            "$1" "${@:2}"
-        else
-            echo "Command not found: $1"
-            echo "Available commands:"
-            list_script
-        fi
+        run_command "$@"
         ;;
     esac
+
+else
+    echo "HyDE shell script sourced. Use 'hyde-shell --help' for usage information."
 
 fi

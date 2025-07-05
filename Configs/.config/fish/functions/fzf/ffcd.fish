@@ -1,4 +1,4 @@
-function ffcd
+function ffcd "Fuzzy search directories with respect to cwd"
     set initial_query
     set max_depth 7
     if set -q argv[1]

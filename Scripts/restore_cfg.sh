@@ -217,3 +217,6 @@ json)
     ;;
 esac
 echo ""
+
+print_log -g "[version]" -b " :: " "saving version info..."
+"${scrDir}/version.sh" --cache || echo "Failed to save version info."

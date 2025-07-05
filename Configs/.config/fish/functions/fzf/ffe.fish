@@ -1,4 +1,4 @@
-function ffe
+function ffe -d "Find file with fzf and open in Editor"
     set initial_query
     if set -q argv[1]
         set initial_query $argv[1]
@@ -18,8 +18,10 @@ function ffe
     set selected_file (find . -maxdepth $max_depth -type f 2>/dev/null | fzf $fzf_options)
 
     if test -n "$selected_file"; and test -f "$selected_file"
-        nvim "$selected_file"
+        cd (dirname $selected_file)
+        nvim (basename $selected_file)
     else
         return 1
     end
 end
+

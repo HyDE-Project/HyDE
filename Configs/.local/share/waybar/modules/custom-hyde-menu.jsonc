@@ -1,7 +1,8 @@
 {
   "custom/hyde-menu": {
     "format": " ",
-    "tooltip": "Right-click for more options",
+    "tooltip": true,
+    "tooltip-format": "Right-click for more HyDE options",
     "menu": "on-click-right",
     "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/hyde-menu.xml",
     "menu-actions": {

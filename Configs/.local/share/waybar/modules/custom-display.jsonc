@@ -2,7 +2,7 @@
     "custom/display": {
         "format": "\udb84\udd04 ",
         "rotate": 0,
-        "tooltip-format": "\udb84\udd04  display settings",
+        "tooltip-format": "\udb84\udd04  Display settings",
         "on-click": "nwg-displays"
     }
 }
