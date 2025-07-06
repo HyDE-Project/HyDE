@@ -5,7 +5,7 @@ source ~/.config/fish/user.fish
 
 # Fix theme colors in kitty terminal
 if test -n "$KITTY_WINDOW_ID"
-    hyde-shell wallbash kitty
+    killall -SIGUSR1 kitty
 end
 
 if type -q starship
