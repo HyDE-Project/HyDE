@@ -14,11 +14,10 @@ if type -q fzf
     fzf --fish | source 
 end
 
-
-
-
-
-
+# Fix theme colors in kitty
+if test -n "$KITTY_WINDOW_ID"
+    /home/null/.local/share/hyde/wallbash/scripts/kitty.sh
+end
 
 # example integration with bat : <cltr+f>
 # bind -M insert \ce '$EDITOR $(fzf --preview="bat --color=always --plain {}")' 
