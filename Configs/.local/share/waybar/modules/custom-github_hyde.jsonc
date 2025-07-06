@@ -2,7 +2,7 @@
     "custom/github_hyde": {
         "format": "\ue709 ",
         "rotate": 0,
-        "tooltip-format": " \ue709 HyDE repository",
+        "tooltip-format": "\ue709 HyDE repository",
         "on-click": "xdg-open https://github.com/HyDE-Project/HyDE"
     }
 }

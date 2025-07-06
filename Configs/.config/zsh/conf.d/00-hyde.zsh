@@ -15,6 +15,6 @@ if ! . "$ZDOTDIR/conf.d/hyde/env.zsh"; then
     return 1
 fi
 
-if [ -t 1 ] && [ -f "$ZDOTDIR/conf.d/hyde/terminal.zsh" ]; then
+if [[ $- == *i* ]] && [ -f "$ZDOTDIR/conf.d/hyde/terminal.zsh" ]; then
     . "$ZDOTDIR/conf.d/hyde/terminal.zsh" || echo "Error: Could not source $ZDOTDIR/conf.d/hyde/terminal.zsh"
 fi

@@ -24,6 +24,7 @@ Usage: $0 [OPTIONS]
 
 Options:
     --select | -S       Select a workflow from the available options
+    --set               Set the given workflow
     --waybar            Get workflow info for Waybar
     --help   | -h       Show this help message
     
@@ -36,7 +37,7 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONG_OPTS="select,waybar,help"
+LONG_OPTS="select,set:,waybar,help"
 SHORT_OPTS="Sh"
 # Parse options
 PARSED=$(getopt --options ${SHORT_OPTS} --longoptions "${LONG_OPTS}" --name "$0" -- "$@")
@@ -67,7 +68,7 @@ fn_select() {
     workflow_icon=$(get_hyprConf "WORKFLOW_ICON" "$workflow_path")
     workflow_icon=${workflow_icon:0:1}
     workflow_list="${workflow_list}\n${workflow_icon}\t ${workflow_name}"
-  done < <(find "$workflows_dir" -type f -name "*.conf" 2>/dev/null)
+  done < <(find "$workflows_dir" -follow -type f -name "*.conf" 2>/dev/null)
 
   # Set rofi scaling
   font_scale="${ROFI_WORKFLOW_SCALE}"
@@ -144,7 +145,7 @@ fn_update() {
 #*│                                                                            │
 #*└────────────────────────────────────────────────────────────────────────────┘
 
-\$WORKFLOW = ${ucrrent_workflow}
+\$WORKFLOW = ${current_workflow}
 \$WORKFLOW_ICON = ${current_icon}
 \$WORKFLOW_DESCRIPTION = ${current_description}
 \$WORKFLOWS_PATH = ./workflows/${current_workflow}.conf
@@ -172,6 +173,20 @@ while true; do
   case "$1" in
   -S | --select)
     fn_select
+    # refresh waybar module only if waybar is running
+    if pgrep -x waybar >/dev/null; then
+      pkill -RTMIN+7 waybar
+    fi
+
+    exit 0
+    ;;
+  --set)
+    if [ -z "$2" ]; then
+      echo "Error: --set requires a workflow name"
+      exit 1
+    fi
+    set_conf "HYPR_WORKFLOW" "$2"
+    fn_update
     # refresh waybar module only if waybar is running
     if pgrep -x waybar >/dev/null; then
       pkill -RTMIN+7 waybar

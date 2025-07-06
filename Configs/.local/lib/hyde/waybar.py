@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+# TODO: Use namespaces
 import json
 import os
 import glob
@@ -729,213 +729,6 @@ def cleanup():
 atexit.register(cleanup)
 
 
-def main():
-    logger.debug("Starting waybar.py")
-
-    logger.debug(f"Looking for state file at: {STATE_FILE}")
-
-    source_env_file(os.path.join(str(xdg_runtime_dir()), "hyde", "environment"))
-    source_env_file(os.path.join(str(xdg_state_home()), "hyde", "config"))
-
-    if STATE_FILE.exists():
-        logger.debug(f"State file found: {STATE_FILE}")
-        layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
-
-        if layout_path and os.path.exists(layout_path) and CONFIG_JSONC.exists():
-            config_hash = get_file_hash(CONFIG_JSONC)
-            layout_hash = get_file_hash(layout_path)
-
-            if config_hash != layout_hash:
-                logger.debug("Config hash differs from layout hash, creating backup")
-                layout_name = os.path.basename(layout_path).replace(".jsonc", "")
-                backup_layout(layout_name)
-
-            try:
-                shutil.copyfile(layout_path, CONFIG_JSONC)
-                logger.debug("Updated config.jsonc with layout from state file")
-            except Exception as e:
-                logger.error(f"Failed to update config.jsonc: {e}")
-
-        elif layout_path and not os.path.exists(layout_path) and CONFIG_JSONC.exists():
-            logger.warning(f"Layout path in state file doesn't exist: {layout_path}")
-            layout_name = get_state_value("WAYBAR_LAYOUT_NAME")
-            if layout_name:
-                logger.debug(f"Looking for layout by name: {layout_name}")
-                layouts = find_layout_files()
-                for layout in layouts:
-                    if os.path.basename(layout).replace(".jsonc", "") == layout_name:
-                        logger.debug(f"Found layout by name: {layout}")
-
-                        config_hash = get_file_hash(CONFIG_JSONC)
-                        layout_hash = get_file_hash(layout)
-
-                        if config_hash != layout_hash:
-                            backup_layout(layout_name)
-
-                        set_state_value("WAYBAR_LAYOUT_PATH", layout)
-
-                        try:
-                            shutil.copyfile(layout, CONFIG_JSONC)
-                            logger.debug("Updated config.jsonc with layout by name")
-                        except Exception as e:
-                            logger.error(f"Failed to update config.jsonc: {e}")
-                        break
-                else:
-                    logger.error(f"Could not find layout by name: {layout_name}")
-    else:
-        logger.debug("State file not found, creating it")
-        ensure_state_file()
-
-    parser = argparse.ArgumentParser(description="Waybar configuration script")
-    parser.add_argument("--set", type=str, help="Set a specific layout")
-    parser.add_argument(
-        "-n", "--next", action="store_true", help="Switch to the next layout"
-    )
-    parser.add_argument(
-        "-p", "--prev", action="store_true", help="Switch to the previous layout"
-    )
-    parser.add_argument(
-        "-u",
-        "--update",
-        action="store_true",
-        help="Update all (icon size, border radius, includes, config, style)",
-    )
-    parser.add_argument(
-        "-g",
-        "--update-global-css",
-        action="store_true",
-        help="Update global.css file",
-    )
-    parser.add_argument(
-        "-i",
-        "--update-icon-size",
-        action="store_true",
-        help="Update icon size in JSON files",
-    )
-    parser.add_argument(
-        "-b",
-        "--update-border-radius",
-        action="store_true",
-        help="Update border radius in CSS file",
-    )
-    parser.add_argument(
-        "-G",
-        "--generate-includes",
-        action="store_true",
-        help="Generate includes.json file",
-    )
-    parser.add_argument(
-        "-c", "--config", type=str, help="Path to the source config.jsonc file"
-    )
-    parser.add_argument(
-        "-s", "--style", type=str, help="Path to the source style.css file"
-    )
-    parser.add_argument(
-        "-w", "--watch", action="store_true", help="Watch and restart Waybar if it dies"
-    )
-    parser.add_argument(
-        "--json", "-j", action="store_true", help="List all layouts in JSON format"
-    )
-    parser.add_argument(
-        "--select", "-S", action="store_true", help="List all layout names"
-    )
-    parser.add_argument(
-        "--kill",
-        "-k",
-        action="store_true",
-        help="Kill all Waybar instances and watcher script",
-    )
-    parser.add_argument(
-        "--hide",
-        nargs="?",
-        const="toggle",
-        type=str,
-        choices=["0", "1", "toggle"],
-        help="Hide waybar (1), show waybar (0), or toggle hide state (no argument)",
-    )
-
-    if not STATE_FILE.exists() or STATE_FILE.stat().st_size == 0:
-        logger.debug("State file doesn't exist or is empty, creating it")
-        ensure_state_file()
-    else:
-        logger.debug(f"Using existing state file: {STATE_FILE}")
-
-    source_env_file(os.path.join(str(xdg_runtime_dir()), "hyde", "environment"))
-    source_env_file(os.path.join(str(xdg_state_home()), "hyde", "config"))
-
-    args = parser.parse_args()
-
-    ensure_state_file()
-
-    if args.update:
-        update_icon_size()
-        update_border_radius()
-        generate_includes()
-        update_global_css()
-        logger.debug("Updating config and style...")
-    if args.update_global_css:
-        update_global_css()
-    if args.update_icon_size:
-        update_icon_size()
-    if args.update_border_radius:
-        update_border_radius()
-    if args.generate_includes:
-        generate_includes()
-    if args.config:
-        update_config(args.config)
-    if args.style:
-        update_style(args.style)
-    if args.next or args.prev or args.set:
-        handle_layout_navigation(
-            "--next" if args.next else "--prev" if args.prev else "--set"
-        )
-    if args.json:
-        list_layouts_json()
-    if args.select:
-        rofi_selector()
-
-    if args.hide is not None:
-        if args.hide == "1":
-            if manage_waybar_lock("hide"):
-                kill_waybar()
-                sys.exit(0)
-        elif args.hide == "0":
-            manage_waybar_lock("show")
-            run_waybar_command("killall waybar; waybar & disown")
-            sys.exit(0)
-        else:  # args.hide == "toggle"
-            if manage_waybar_lock("toggle"):
-                kill_waybar()
-            else:
-                run_waybar_command("killall waybar; waybar & disown")
-            sys.exit(0)
-
-    if args.kill:
-        kill_waybar_and_watcher()
-        sys.exit(0)
-
-    if args.watch:
-        watch_waybar()
-    else:
-        # Check if waybar should be hidden before starting
-        lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
-        if os.path.exists(lock_file):
-            logger.debug("Waybar hide lock file exists, not starting waybar")
-            return
-            
-        update_icon_size()
-        update_border_radius()
-        generate_includes()
-        update_global_css()
-        update_style(args.style)
-        run_waybar_command("killall waybar; waybar & disown")
-        return
-
-    if not any(vars(args).values()):
-        parser.print_help()
-        sys.exit(0)
-
-
 def update_icon_size():
     includes_file = os.path.join(
         str(xdg_config_home()), "waybar", "includes", "includes.json"
@@ -1022,7 +815,6 @@ def update_global_css():
 
 
 def get_waybar_value_from_sources(value_name, default_value, sources):
-
     def _try_parse_value(raw_value, source_name):
         if type(default_value) is str:
             return _try_parse_str_value(raw_value, source_name)
@@ -1070,7 +862,9 @@ def get_waybar_font_family():
         (lambda: get_state_value("BAR_FONT"), "state file"),
     ]
 
-    return get_waybar_value_from_sources("font family", "JetBrainsMono Nerd Font", font_family_sources)
+    return get_waybar_value_from_sources(
+        "font family", "JetBrainsMono Nerd Font", font_family_sources
+    )
 
 
 def get_waybar_font_size():
@@ -1403,13 +1197,233 @@ def watch_waybar():
                 time.sleep(2)
                 continue
 
-            result = subprocess.run(["ps", "-C", "waybar,.waybar-wrapped"], capture_output=True)
+            result = subprocess.run(
+                ["ps", "-C", "waybar,.waybar-wrapped"], capture_output=True
+            )
             if result.returncode != 0:
                 run_waybar_command("killall waybar; waybar & disown")
                 logger.debug("Waybar restarted")
         except Exception as e:
             logger.error(f"Error monitoring Waybar: {e}")
         time.sleep(2)
+
+
+def main():
+    logger.debug("Starting waybar.py")
+
+    # Check for lock file early and inform user on any invocation
+    lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
+    if os.path.exists(lock_file):
+        print("Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar.")
+
+    logger.debug(f"Looking for state file at: {STATE_FILE}")
+
+    source_env_file(os.path.join(str(xdg_runtime_dir()), "hyde", "environment"))
+    source_env_file(os.path.join(str(xdg_state_home()), "hyde", "config"))
+
+    if STATE_FILE.exists():
+        logger.debug(f"State file found: {STATE_FILE}")
+        layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
+
+        if layout_path and os.path.exists(layout_path) and CONFIG_JSONC.exists():
+            config_hash = get_file_hash(CONFIG_JSONC)
+            layout_hash = get_file_hash(layout_path)
+
+            if config_hash != layout_hash:
+                logger.debug("Config hash differs from layout hash, creating backup")
+                layout_name = os.path.basename(layout_path).replace(".jsonc", "")
+                backup_layout(layout_name)
+
+            try:
+                shutil.copyfile(layout_path, CONFIG_JSONC)
+                logger.debug("Updated config.jsonc with layout from state file")
+            except Exception as e:
+                logger.error(f"Failed to update config.jsonc: {e}")
+
+        elif layout_path and not os.path.exists(layout_path) and CONFIG_JSONC.exists():
+            logger.warning(f"Layout path in state file doesn't exist: {layout_path}")
+            layout_name = get_state_value("WAYBAR_LAYOUT_NAME")
+            if layout_name:
+                logger.debug(f"Looking for layout by name: {layout_name}")
+                layouts = find_layout_files()
+                for layout in layouts:
+                    if os.path.basename(layout).replace(".jsonc", "") == layout_name:
+                        logger.debug(f"Found layout by name: {layout}")
+
+                        config_hash = get_file_hash(CONFIG_JSONC)
+                        layout_hash = get_file_hash(layout)
+
+                        if config_hash != layout_hash:
+                            backup_layout(layout_name)
+
+                        set_state_value("WAYBAR_LAYOUT_PATH", layout)
+
+                        try:
+                            shutil.copyfile(layout, CONFIG_JSONC)
+                            logger.debug("Updated config.jsonc with layout by name")
+                        except Exception as e:
+                            logger.error(f"Failed to update config.jsonc: {e}")
+                        break
+                else:
+                    logger.error(f"Could not find layout by name: {layout_name}")
+    else:
+        logger.debug("State file not found, creating it")
+        ensure_state_file()
+
+    parser = argparse.ArgumentParser(description="Waybar configuration management")
+    parser.add_argument("--set", type=str, help="Set a specific layout")
+    parser.add_argument(
+        "-n", "--next", action="store_true", help="Switch to the next layout"
+    )
+    parser.add_argument(
+        "-p", "--prev", action="store_true", help="Switch to the previous layout"
+    )
+    parser.add_argument(
+        "-u",
+        "--update",
+        action="store_true",
+        help="Update all (icon size, border radius, includes, config, style)",
+    )
+    parser.add_argument(
+        "-g",
+        "--update-global-css",
+        action="store_true",
+        help="Update global.css file",
+    )
+    parser.add_argument(
+        "-i",
+        "--update-icon-size",
+        action="store_true",
+        help="Update icon size in JSON files",
+    )
+    parser.add_argument(
+        "-b",
+        "--update-border-radius",
+        action="store_true",
+        help="Update border radius in CSS file",
+    )
+    parser.add_argument(
+        "-G",
+        "--generate-includes",
+        action="store_true",
+        help="Generate includes.json file",
+    )
+    parser.add_argument(
+        "-c", "--config", type=str, help="Path to the source config.jsonc file"
+    )
+    parser.add_argument(
+        "-s", "--style", type=str, help="Path to the source style.css file"
+    )
+    parser.add_argument(
+        "-w", "--watch", action="store_true", help="Watch and restart Waybar if it dies"
+    )
+    parser.add_argument(
+        "--json", "-j", action="store_true", help="List all layouts in JSON format"
+    )
+    parser.add_argument(
+        "--select", "-S", action="store_true", help="List all layout names"
+    )
+    parser.add_argument(
+        "--kill",
+        "-k",
+        action="store_true",
+        help="Kill all Waybar instances and watcher script",
+    )
+    parser.add_argument(
+        "--hide",
+        nargs="?",
+        const="toggle",
+        type=str,
+        choices=["0", "1", "toggle"],
+        help="Hide waybar (1), show waybar (0), or toggle hide state (no argument)",
+    )
+
+    if not STATE_FILE.exists() or STATE_FILE.stat().st_size == 0:
+        logger.debug("State file doesn't exist or is empty, creating it")
+        ensure_state_file()
+    else:
+        logger.debug(f"Using existing state file: {STATE_FILE}")
+
+    source_env_file(os.path.join(str(xdg_runtime_dir()), "hyde", "environment"))
+    source_env_file(os.path.join(str(xdg_state_home()), "hyde", "config"))
+
+    args = parser.parse_args()
+
+    ensure_state_file()
+
+    if args.update:
+        update_icon_size()
+        update_border_radius()
+        generate_includes()
+        update_global_css()
+        logger.debug("Updating config and style...")
+    if args.update_global_css:
+        update_global_css()
+    if args.update_icon_size:
+        update_icon_size()
+    if args.update_border_radius:
+        update_border_radius()
+    if args.generate_includes:
+        generate_includes()
+    if args.config:
+        update_config(args.config)
+    if args.style:
+        update_style(args.style)
+    if args.next or args.prev or args.set:
+        handle_layout_navigation(
+            "--next" if args.next else "--prev" if args.prev else "--set"
+        )
+    if args.json:
+        list_layouts_json()
+    if args.select:
+        rofi_selector()
+
+    if args.hide is not None:
+        if args.hide == "1":
+            if manage_waybar_lock("hide"):
+                kill_waybar()
+                sys.exit(0)
+        elif args.hide == "0":
+            manage_waybar_lock("show")
+            run_waybar_command("killall waybar; waybar & disown")
+            sys.exit(0)
+        else:  # args.hide == "toggle"
+            if manage_waybar_lock("toggle"):
+                kill_waybar()
+            else:
+                run_waybar_command("killall waybar; waybar & disown")
+            sys.exit(0)
+
+    if args.kill:
+        kill_waybar_and_watcher()
+        sys.exit(0)
+
+    if args.watch:
+        # Remove hide lock file when starting watch mode to avoid confusion
+        lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
+        if os.path.exists(lock_file):
+            logger.warning(f"Found waybar hide lock file at {lock_file}, removing it to start watch mode")
+            logger.info("Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar.")
+            os.remove(lock_file)
+        watch_waybar()
+    else:
+        # Check if waybar should be hidden before starting
+        lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
+        if os.path.exists(lock_file):
+            logger.warning(f"Waybar hide lock file exists at {lock_file}, not starting waybar. Use --hide 0 to show waybar or remove the lock file manually.")
+            return
+
+        update_icon_size()
+        update_border_radius()
+        generate_includes()
+        update_global_css()
+        update_style(args.style)
+        run_waybar_command("killall waybar; waybar & disown")
+        return
+
+    if not any(vars(args).values()):
+        parser.print_help()
+        sys.exit(0)
 
 
 if __name__ == "__main__":
