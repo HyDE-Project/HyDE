@@ -1,4 +1,4 @@
-name: Refresh Release
+name: Quarterly Release Refresh
 
 on:
   workflow_dispatch:
@@ -49,4 +49,4 @@ jobs:
           git push origin HEAD:master
 
       - name: Provide feedback
-        run: echo "Release refresh triggered successfully with a ${{ github.event.inputs.version_bump }} version bump!"
+        run: echo "Quarterly release refresh triggered successfully with a ${{ github.event.inputs.version_bump }} version bump!"

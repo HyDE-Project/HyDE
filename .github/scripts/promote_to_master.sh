@@ -13,7 +13,7 @@ if [ -z "$COMMIT_LIST" ]; then
     COMMIT_LIST="No new commits - branches may be identical"
 fi
 
-MERGE_DATE="Friday"
+MERGE_DATE="1st or 3rd Friday of the month"
 
 echo "$COMMIT_LIST" >commit_list.txt
 
