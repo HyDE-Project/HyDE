@@ -3,8 +3,6 @@
     // sourced from header module //
     "layer": "top",
     // "output": "eDP-1",
-    "position": "top",
-    "mode": "dock",
     "height": 10,
     "exclusive": true,
     "passthrough": false,

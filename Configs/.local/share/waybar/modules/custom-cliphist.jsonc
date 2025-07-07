@@ -1,8 +1,8 @@
 {
     "custom/cliphist": {
-        "format": "{0}",
+        "format": "{0} ",
         "rotate": 0,
-        "exec": "echo ; echo \udb80\udd47 clipboard history",
+        "tooltip-format": "\udb80\udd47 Clipboard history",
         "on-click": "sleep 0.1 && hyde-shell cliphist -c",
         "menu": "on-click-right",
         "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/clipboard.xml",

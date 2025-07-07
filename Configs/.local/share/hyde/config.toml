@@ -112,6 +112,7 @@ skip_template = [""]  # Templates to skip when using wallbash.
 font = "JetBrainsMono Nerd Font"  # Font for waybar.
 scale = 10  # Total scaling for waybar.
 icon_size = 10  # Icon size for waybar.
+position = "top"  # A fallback position of the waybar.  
 
 # Weather configuration.
 [weather]

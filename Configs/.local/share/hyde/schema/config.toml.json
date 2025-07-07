@@ -417,6 +417,17 @@
                     "default": 10,
                     "description": "Icon size for waybar.",
                     "type": "integer"
+                },
+                "position": {
+                    "default": "top",
+                    "description": "A fallback position of the waybar.  ",
+                    "options": [
+                        "top",
+                        "bottom",
+                        "left",
+                        "right"
+                    ],
+                    "type": "string"
                 }
             }
         },

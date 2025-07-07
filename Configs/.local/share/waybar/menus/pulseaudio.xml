@@ -3,17 +3,17 @@
     <object class="GtkMenu" id="menu">
         <child>
             <object class="GtkMenuItem" id="toggle-output">
-                <property name="label">Cycle Outputs</property>
+                <property name="label">  Cycle Outputs</property>
             </object>
         </child>
         <child>
             <object class="GtkMenuItem" id="toggle-mute">
-                <property name="label">Toggle Mute</property>
+                <property name="label">  Toggle Mute</property>
             </object>
         </child>
         <child>
             <object class="GtkMenuItem" id="select-output">
-                <property name="label">Select Output</property>
+                <property name="label">󰴸  Select Output</property>
                 <child>
                     <object class="GtkMenu" id="select-output-menu">
                         <child>

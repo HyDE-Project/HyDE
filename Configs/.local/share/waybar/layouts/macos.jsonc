@@ -2,6 +2,7 @@
   // General Waybar configuration
   "layer": "top",
   "margin": 0,
+  "position": "top",
   "spacing": 10,
   "border-size": 1,
   "padding": 1,
@@ -15,7 +16,7 @@
     "custom/text#two",
     "custom/text#three",
     "custom/text#four",
-    "custom/text#five"
+    "custom/help#macos"
   ],
   "modules-right": ["image#wallpaper", "clock#date", "clock"],
   // Module-specific configurations
@@ -64,26 +65,52 @@
     "on-click": "hyde-shell rofilaunch"
   },
   "custom/text#two": {
-    "exec": "echo 'File'",
+    "format": "File",
     "interval": 60,
     "return-type": "plain",
     "on-click": "hyde-shell hyde-launch --fall dolphin file-manager" //or you favorite Filer Explorer
   },
   "custom/text#three": {
-    "exec": "echo 'Edit'",
+    "format": "Edit",
     "interval": 60,
     "return-type": "plain",
     "on-click": "krita" // or you favorite Image editor
   },
   "custom/text#four": {
-    "exec": "echo 'View'",
+    "format": "View",
     "interval": 60,
     "return-type": "plain"
   },
-  "custom/text#five": {
-    "exec": "echo 'Help'",
+  "custom/help#macos": {
+    "format": "Help",
     "interval": 60,
+    "tooltip": true,
+    "tooltip-format": "Right-click for more HyDE options",
     "return-type": "plain",
-    "on-click": "yad --title='Help' --text-info --width=600 --height=400 --filename=<(man hyprland | col -bx)"
+    "on-click": "hyde-shell keybinds_hint",
+    "menu": "on-click-right",
+    "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/hyde-menu.xml",
+    "menu-actions": {
+      "animations-select": "hyde-shell animations --select",
+      "wallpaper-select": "hyde-shell wallpaper --select --global",
+      "wallpaper-next": "hyde-shell wallpaper --backend swww --next --global",
+      "wallpaper-previous": "hyde-shell wallpaper --backend swww --previous --global",
+      "wallpaper-random": "hyde-shell wallpaper --backend swww --random --global",
+      "theme-next": "hyde-shell themeswitch -n",
+      "theme-previous": "hyde-shell themeswitch -p",
+      "theme-select": "hyde-shell themeselect",
+      "theme-import": "gnome-terminal -- hyde-shell theme.import --select",
+      "waybar-restart": "hyde-shell waybar -ubg",
+      "waybar-reload-css": "sed -i '${/^$/d;}'  $XDG_CONFIG_HOME/waybar/style.css",
+      "waybar-layout-select": "hyde-shell waybar --select",
+      "waybar-layout-next": "hyde-shell waybar --update --next",
+      "waybar-layout-previous": "hyde-shell waybar --update --prev",
+      "workflows-select": "hyde-shell workflows --select;pkill -RTMIN+19 waybar",
+      "shaders-select": "hyde-shell shaders --select;pkill -RTMIN+19 waybar",
+      "keybinds-hint":"hyde-shell keybinds_hint",
+      "about-hyde": "xdg-open https://hydeproject.pages.dev"
+    }
   }
+  
+
 }

@@ -1,8 +1,6 @@
 {
   "layer": "top",
   "output": ["*"],
-  "position": "top",
-  "mode": "dock",
   "exclusive": true,
   "passthrough": false,
   "reload_style_on_change": true,

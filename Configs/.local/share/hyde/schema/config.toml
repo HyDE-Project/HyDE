@@ -374,6 +374,12 @@ type      = "object"
     description = "Icon size for waybar."
     type        = "integer"
 
+[properties.waybar.properties.position]
+    default     = "top"
+    description = "A fallback position of the waybar.  "
+    options     = [ "top", "bottom" , "left", "right" ]
+    type        = "string"
+
 [properties.weather]
     description = "Weather configuration."
     type        = "object"
@@ -515,7 +521,7 @@ type      = "object"
     type        = "array"
 
 [properties."hypr.config".properties.sanitize.items]
-    type = "string"
+    type        = "string"
 
 [properties.volume]
     description = "volumecontrol.sh configuration."
