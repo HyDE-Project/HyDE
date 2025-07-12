@@ -1,0 +1,10 @@
+{
+  "custom/mediaplayer": {
+    "exec": "hyde-shell mediaplayer.py",
+    "return-type": "json",
+    "format": "{}",
+    "on-click": "kill -RTMIN $(pgrep -f $HOME/.local/lib/hyde/mediaplayer.py | head -n 1)",
+    "on-click-middle": "kill -RTMIN+1 $(pgrep -f $HOME/.local/lib/hyde/mediaplayer.py | head -n 1)",
+    "on-click-right": "kill -RTMIN+2 $(pgrep -f $HOME/.local/lib/hyde/mediaplayer.py | head -n 1)",
+  },
+}
