@@ -39,6 +39,10 @@ drun_args = []  # Additional arguments for drun mode.
 run_args = []  # Additional arguments for run mode.
 window_args = []  # Additional arguments for window mode.
 filebrowser_args = []  # Additional arguments for filebrowser mode.
+drun_style = "style_1"  # Style for drun mode.
+window_style = "style_1"  # Style for window mode.
+run_style = "style_1"  # Style for run mode.
+filebrowser_style = "style_1"  # Style for filebrowser mode.
 
 # cliphist.sh configuration.
 [rofi.cliphist]
@@ -127,27 +131,33 @@ location = ""  # Location/coordinates string for the weather output.
 
 # 'cava.sh stdout' configuration.
 [cava.stdout]
-max_instances = 1  # Maximum number of cava instances.
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
 range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
+bar_array = ["░", "▒", "▓", "█"]  # Bar array for stdout preset.
 
 # 'cava.sh hyprlock' configuration.
 [cava.hyprlock]
-max_instances = 1  # Maximum number of cava instances.
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
 range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
+bar_array = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]  # Bar array for hyprlock preset.
 
 # 'cava.sh waybar' configuration.
 [cava.waybar]
-max_instances = 1  # Maximum number of cava instances.
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
 range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
+bar_array = ["◜", "◝", "◞", "◟", "◠", "◡", "◢", "◣"]  # Bar array for waybar preset.
+
+# Cava visualizer configuration.
+[cava]
+channels = "stereo"  # Audio channels: stereo or mono.
+reverse = 1  # Reverse spectrum movement (0 or 1).
+range = "8"  # Bar sensitivity
 
 # Hypr configuration.
 [hypr.config]

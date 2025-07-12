@@ -152,7 +152,7 @@ function _load_compinit() {
 
 function _load_prompt() {
     # Try to load prompts immediately
-    if ! source ${ZDOTDIR}/prompt.zsh > /dev/null 2>&1; then
+    if ! source ${ZDOTDIR}/prompt.zsh >/dev/null 2>&1; then
         [[ -f $ZDOTDIR/conf.d/hyde/prompt.zsh ]] && source $ZDOTDIR/conf.d/hyde/prompt.zsh
     fi
 }
@@ -173,8 +173,11 @@ if [[ -f $HOME/.zsh_history ]] && [[ ! -f $HISTFILE ]]; then
     echo "Please manually move $HOME/.zsh_history to $HISTFILE"
     echo "Or move it somewhere else to avoid conflicts"
 fi
+HISTSIZE=10000
+SAVEHIST=10000
 
-export HISTFILE ZSH_AUTOSUGGEST_STRATEGY
+
+export HISTFILE ZSH_AUTOSUGGEST_STRATEGY HISTSIZE SAVEHIST
 
 # HyDE Package Manager
 PM_COMMAND=(hyde-shell pm)
@@ -190,27 +193,37 @@ fi
 
 _load_compinit
 
-
 if [[ ${HYDE_ZSH_NO_PLUGINS} != "1" ]]; then
-    # Deduplicate omz plugins()
     _dedup_zsh_plugins
-
-    if [[ "$HYDE_ZSH_OMZ_DEFER" == "1" ]]; then
+    if [[ "$HYDE_ZSH_OMZ_DEFER" == "1" ]] && [[ -r $ZSH/oh-my-zsh.sh ]]; then
+        # Loads the buggy deferred oh-my-zsh plugin system by HyDE // This is only for oh-my-zsh and compatibility
         _load_deferred_plugin_system_by_hyde
         _load_prompt # This disables transient prompts sadly
-    else
-        [[ -r $ZSH/oh-my-zsh.sh ]] && source $ZSH/oh-my-zsh.sh
+    elif source $ZDOTDIR/plugin.zsh >/dev/null 2>&1; then
+        # Load plugins from the user's plugin.zsh file
+        # This is useful for users who want to use their own plugin system
+        source $ZDOTDIR/plugin.zsh
         _load_prompt
         _load_functions
         _load_completions
+    elif [[ -r $ZSH/oh-my-zsh.sh ]]; then
+        # Load oh-my-zsh if it exists in the ZSH directory
+        #  Default if the $ZDOTDIR/plugin.zsh file does not exist or returns an error
+        source $ZSH/oh-my-zsh.sh
+        _load_prompt
+        _load_functions
+        _load_completions
+    else
+        echo "No plugin system found. Please install a plugin system or create a $ZDOTDIR/plugin.zsh file."
+        echo "You can use $ZDOTDIR/plugin.zsh file to load your own plugins."
     fi
 else
+    # Load user plugins if they exist
+    # Assumes user has a plugin.zsh file in their $ZDOTDIR
+    [[ -r $ZDOTDIR/plugin.zsh ]] && source $ZDOTDIR/plugin.zsh
     _load_prompt
     _load_functions
     _load_completions
-
-    chmod +r $ZDOTDIR/.zshrc # Make sure .zshrc is readable
-    [[ -r $ZDOTDIR/.zshrc ]] && source $ZDOTDIR/.zshrc
 fi
 
 alias c='clear' \
@@ -227,3 +240,5 @@ alias c='clear' \
     .4='cd ../../../..' \
     .5='cd ../../../../..' \
     mkdir='mkdir -p'
+
+
