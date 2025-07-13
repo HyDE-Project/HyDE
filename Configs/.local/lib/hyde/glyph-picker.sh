@@ -21,7 +21,6 @@ save_recent_entry() {
 
 setup_rofi_config() {
     local font_scale="${ROFI_GLYPH_SCALE}"
-
     [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
 
     local font_name=${ROFI_GLYPH_FONT:-$ROFI_FONT}
@@ -41,7 +40,7 @@ setup_rofi_config() {
 }
 
 get_glyph_selection() {
-    awk '!seen[$0]++' "${recent_data}" "${glyph_data}" | rofi -dmenu -multi-select -i \
+    awk '!seen[$0]++' "${recent_data}" "${glyph_data}" | rofi -dmenu -i \
         -matching fuzzy \
         -no-custom \
         -theme-str "entry { placeholder: \"   Glyph\";} ${rofi_position}" \
@@ -62,16 +61,12 @@ main() {
 
     [[ -z "${data_glyph}" ]] && exit 0
 
-    local sel_glyphs=""
+    local sel_glyph=""
+    sel_glyph=$(printf "%s" "${data_glyph}" | cut -d$'\t' -f1)
 
-    echo "${data_glyph}" | while IFS= read -r line; do
-        glyph=$(echo "${line}" | cut -d' ' -f1)
-        sel_glyphs+="${glyph} "
-        save_recent_entry "${line}"
-    done
-
-    if [[ -n "${sel_glyphs}" ]]; then
-        wl-copy "${sel_glyphs% }"
+    if [[ -n "${sel_glyph}" ]]; then
+        wl-copy "${sel_glyph}"
+        save_recent_entry "${data_glyph}"
         paste_string "${@}"
     fi
 }
