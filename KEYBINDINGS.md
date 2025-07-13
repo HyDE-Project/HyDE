@@ -142,6 +142,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>TAB</kbd>                  | window switcher      |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>E</kbd> | file finder          |
 | <kbd>SUPER</kbd> + <kbd>slash</kbd>                | keybindings hint     |
+| <kbd>SUPER</kbd> + <kbd>N</kbd>                    |  web search shortcut |
 | <kbd>SUPER</kbd> + <kbd>comma</kbd>                | emoji picker         |
 | <kbd>SUPER</kbd> + <kbd>period</kbd>               | glyph picker         |
 | <kbd>SUPER</kbd> + <kbd>V</kbd>                    | clipboard            |
