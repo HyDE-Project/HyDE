@@ -88,7 +88,7 @@ hyde_reload() {
 list_script() {
     # Use HYDE_SCRIPTS_PATH to find scripts from all configured directories
     local HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}"
-    
+
     # Convert to array, deduplicate, and filter out empty entries
     IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
     declare -A seen_dirs
@@ -102,7 +102,7 @@ list_script() {
         # Only add existing directories
         [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
     done
-    
+
     # Find scripts in all configured directories
     for dir in "${SCRIPT_DIRS[@]}"; do
         find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
@@ -176,7 +176,7 @@ get_completion_data() {
 
     # Get wallbash scripts
     local dirs=("${wallbashDirs[@]}")
-    wallbash_scripts=("--help")  # Add --help as first option
+    wallbash_scripts=("--help") # Add --help as first option
     # Simplified - just --help for now since dynamic parsing is complex
 
     # Export arrays for use by completion generators
@@ -458,8 +458,5 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         run_command "$@"
         ;;
     esac
-
-else
-    echo "HyDE shell script sourced. Use 'hyde-shell --help' for usage information."
 
 fi

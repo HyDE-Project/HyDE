@@ -1140,10 +1140,17 @@ def generate_includes():
 
     includes_data["include"] = list(dict.fromkeys(includes))
 
+    position = get_config_value("WAYBAR_POSITION")
+    if position:
+        position = position.strip().strip('"').strip("'")
+    else:
+        position = "top"
+    includes_data["position"] = position
+
     with open(includes_file, "w") as file:
         json.dump(includes_data, file, indent=4)
     logger.debug(
-        f"Successfully updated '{includes_file}' with {len(includes)} entries."
+        f"Successfully updated '{includes_file}' with {len(includes)} entries and position '{position}'."
     )
 
 
