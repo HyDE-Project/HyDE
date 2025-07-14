@@ -102,6 +102,14 @@ type      = "object"
     description = "Scaling for glyph picker."
     type        = "integer"
 
+[properties.rofi.properties.glyph.properties.args]
+    default     = [ "-multi-select" ]
+    description = "Additional arguments for glyph picker."
+    type        = "array"
+[properties.rofi.properties.glyph.properties.args.items]
+    type = "string"
+
+
 [properties.rofi.properties.launch]
     description = "rofilaunch.sh configuration."
     type        = "object"
@@ -143,6 +151,26 @@ type      = "object"
 [properties.rofi.properties.launch.properties.filebrowser_args.items]
     type = "string"
 
+[properties.rofi.properties.launch.properties.drun_style]
+    default     = "style_1"
+    description = "Style for drun mode."
+    type        = "string"
+
+[properties.rofi.properties.launch.properties.window_style]
+    default     = "style_1"
+    description = "Style for window mode."
+    type        = "string"
+
+[properties.rofi.properties.launch.properties.run_style]
+    default     = "style_1"
+    description = "Style for run mode."
+    type        = "string"
+
+[properties.rofi.properties.launch.properties.filebrowser_style]
+    default     = "style_1"
+    description = "Style for filebrowser mode."
+    type        = "string"
+
 [properties.rofi.properties.cliphist]
     description = "cliphist.sh configuration."
     type        = "object"
@@ -176,6 +204,14 @@ type      = "object"
     description = "Scaling for emoji picker."
     type        = "integer"
 
+[properties.rofi.properties.emoji.properties.args]
+    default     = [ "-multi-select" ]
+    description = "Additional arguments for emoji picker."
+    type        = "array"
+[properties.rofi.properties.emoji.properties.args.items]
+    type = "string"
+
+
 [properties.rofi.properties.theme]
     description = "themeselect.sh configuration."
     type        = "object"
@@ -184,6 +220,61 @@ type      = "object"
     default     = 6
     description = "Scaling for theme selector."
     type        = "integer"
+
+[properties.rofi.properties.websearch]
+    description = "hyde-shell rofi.websearch.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.websearch.properties.style]
+    default     = ""
+    description = "Style for rofi websearch."
+    type        = "string"
+
+[properties.rofi.properties.websearch.properties.args]
+    default     = [  ]
+    description = "Additional arguments for websearch."
+    type        = "array"
+
+[properties.rofi.properties.websearch.properties.args.items]
+    type = "string"
+
+[properties.rofi.properties.websearch.properties.scale]
+    default     = 10
+    description = "Scaling for websearch."
+    type        = "integer"
+[properties.rofi.properties.websearch.properties.font]
+    default     = "JetBrainsMono Nerd Font"
+    description = "Font for websearch."
+    type        = "string"
+
+
+[properties.rofi.properties.bookmarks]
+    description = "hyde-shell rofi.bookmarks.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.bookmarks.properties.style]
+    default     = ""
+    description = "Style for rofi bookmarks."
+    type        = "string"
+
+[properties.rofi.properties.bookmarks.properties.args]
+    default     = [  ]
+    description = "Additional arguments for bookmarks."
+    type        = "array"
+
+[properties.rofi.properties.bookmarks.properties.args.items]
+    type = "string"
+
+[properties.rofi.properties.bookmarks.properties.scale]
+    default     = 10
+    description = "Scaling for bookmarks."
+    type        = "integer"
+
+[properties.rofi.properties.bookmarks.properties.font]
+    default     = "JetBrainsMono Nerd Font"
+    description = "Font for bookmarks."
+    type        = "string"
+
 
 [properties.wlogout]
     description = "wlogout configuration."
@@ -377,7 +468,7 @@ type      = "object"
 [properties.waybar.properties.position]
     default     = "top"
     description = "A fallback position of the waybar.  "
-    options     = [ "top", "bottom" , "left", "right" ]
+    options     = [ "top", "bottom", "left", "right" ]
     type        = "string"
 
 [properties.weather]
@@ -428,11 +519,6 @@ type      = "object"
     description = "'cava.sh stdout' configuration."
     type        = "object"
 
-[properties."cava.stdout".properties.max_instances]
-    default     = 1
-    description = "Maximum number of cava instances."
-    type        = "integer"
-
 [properties."cava.stdout".properties.bar]
     default     = "▁▂▃▄▅▆▇█"
     description = "Bar characters for cava."
@@ -453,14 +539,17 @@ type      = "object"
     description = "Standby character for cava."
     type        = "string"
 
+[properties."cava.stdout".properties.bar_array]
+    default     = [ "░", "▒", "▓", "█" ]
+    description = "Bar array for stdout preset."
+    type        = "array"
+
+[properties."cava.stdout".properties.bar_array.items]
+    type = "string"
+
 [properties."cava.hyprlock"]
     description = "'cava.sh hyprlock' configuration."
     type        = "object"
-
-[properties."cava.hyprlock".properties.max_instances]
-    default     = 1
-    description = "Maximum number of cava instances."
-    type        = "integer"
 
 [properties."cava.hyprlock".properties.bar]
     default     = "▁▂▃▄▅▆▇█"
@@ -482,14 +571,17 @@ type      = "object"
     description = "Standby character for cava."
     type        = "string"
 
+[properties."cava.hyprlock".properties.bar_array]
+    default     = [ "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ]
+    description = "Bar array for hyprlock preset."
+    type        = "array"
+
+[properties."cava.hyprlock".properties.bar_array.items]
+    type = "string"
+
 [properties."cava.waybar"]
     description = "'cava.sh waybar' configuration."
     type        = "object"
-
-[properties."cava.waybar".properties.max_instances]
-    default     = 1
-    description = "Maximum number of cava instances."
-    type        = "integer"
 
 [properties."cava.waybar".properties.bar]
     default     = "▁▂▃▄▅▆▇█"
@@ -511,6 +603,35 @@ type      = "object"
     description = "Standby character for cava."
     type        = "string"
 
+[properties."cava.waybar".properties.bar_array]
+    default     = [ "◜", "◝", "◞", "◟", "◠", "◡", "◢", "◣" ]
+    description = "Bar array for waybar preset."
+    type        = "array"
+
+[properties."cava.waybar".properties.bar_array.items]
+    type = "string"
+
+[properties."cava"]
+    description = "Cava visualizer configuration."
+    type        = "object"
+
+[properties.cava.properties.channels]
+    default     = "stereo"
+    description = "Audio channels: stereo or mono."
+    options     = [ "stereo", "mono" ]
+    type        = "string"
+
+[properties.cava.properties.reverse]
+    default     = 1
+    description = "Reverse spectrum movement (0 or 1)."
+    options     = [ 0, 1 ]
+    type        = "integer"
+
+[properties.cava.properties.range]
+    default     = "8"
+    description = "Bar sensitivity"
+    type        = "string"
+
 [properties."hypr.config"]
     description = "Hypr configuration."
     type        = "object"
@@ -521,7 +642,7 @@ type      = "object"
     type        = "array"
 
 [properties."hypr.config".properties.sanitize.items]
-    type        = "string"
+    type = "string"
 
 [properties.volume]
     description = "volumecontrol.sh configuration."
@@ -576,7 +697,7 @@ type      = "object"
     type        = "array"
 
 [properties.sysmonitor.properties.commands.items]
-    type        = "string"
+    type = "string"
 
 [properties.notification]
     description = "Notification script configuration."
@@ -703,7 +824,7 @@ type      = "object"
 
 [properties.hyprland.properties.background_path]
     default     = ""
-    description = "LockScreen's Background path." 
+    description = "LockScreen's Background path."
     type        = "string"
 
 [properties.hyprland_start]

@@ -21,6 +21,7 @@ export THEMES_DIR="${XDG_DATA_HOME}/themes"
 
 #legacy hyde envs // should be deprecated
 
+export scrDir="${LIB_DIR:-$HOME/.local/lib}/hyde"
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 export hydeConfDir="$HYDE_CONFIG_HOME"
 export cacheDir="$HYDE_CACHE_HOME"
@@ -522,3 +523,11 @@ accepted_mime_types() {
     done
 
 }
+
+export -f get_hyprConf get_rofi_pos \
+    is_hovered toml_write \
+    get_hashmap get_aurhlpr \
+    set_conf set_hash check_package \
+    get_themes print_log \
+    pkg_installed paste_string \
+    extract_thumbnail accepted_mime_types
