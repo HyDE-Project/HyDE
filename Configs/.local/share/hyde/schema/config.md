@@ -49,6 +49,16 @@ brightnesscontrol.sh configuration.
 | notify | Enable notifications for brightness control. | true |
 | steps | Number of steps to increase/decrease brightness. | 5 |
 
+### [cava]
+
+Cava visualizer configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| channels | Audio channels: stereo or mono. | stereo |
+| range | Bar sensitivity | 8 |
+| reverse | Reverse spectrum movement (0 or 1). | 1 |
+
 ### [cava.hyprlock]
 
 'cava.sh hyprlock' configuration.
@@ -56,7 +66,7 @@ brightnesscontrol.sh configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | bar | Bar characters for cava. | ▁▂▃▄▅▆▇█ |
-| max_instances | Maximum number of cava instances. | 1 |
+| bar_array | Bar array for hyprlock preset. | ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"] |
 | range | Number of bars minus one. | 7 |
 | standby | Standby character for cava. | 🎶 |
 | width | Width of the cava output. | 20 |
@@ -68,7 +78,7 @@ brightnesscontrol.sh configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | bar | Bar characters for cava. | ▁▂▃▄▅▆▇█ |
-| max_instances | Maximum number of cava instances. | 1 |
+| bar_array | Bar array for stdout preset. | ["░", "▒", "▓", "█"] |
 | range | Number of bars minus one. | 7 |
 | standby | Standby character for cava. | 🎶 |
 | width | Width of the cava output. | 20 |
@@ -80,7 +90,7 @@ brightnesscontrol.sh configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | bar | Bar characters for cava. | ▁▂▃▄▅▆▇█ |
-| max_instances | Maximum number of cava instances. | 1 |
+| bar_array | Bar array for waybar preset. | ["◜", "◝", "◞", "◟", "◠", "◡", "◢", "◣"] |
 | range | Number of bars minus one. | 7 |
 | standby | Standby character for cava. | 🎶 |
 | width | Width of the cava output. | 20 |
@@ -194,6 +204,7 @@ emoji-picker.sh configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+| args | Additional arguments for emoji picker. | ["-multi-select"] |
 | scale | Scaling for emoji picker. | 10 |
 | style | Style for emoji picker. | 1 |
 
@@ -203,6 +214,7 @@ glyph-picker.sh configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+| args | Additional arguments for glyph picker. | ["-multi-select"] |
 | scale | Scaling for glyph picker. | 10 |
 
 ### [rofi.hyprlock]
@@ -220,10 +232,14 @@ rofilaunch.sh configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | drun_args | Additional arguments for drun mode. | [] |
+| drun_style | Style for drun mode. | style_1 |
 | filebrowser_args | Additional arguments for filebrowser mode. | [] |
+| filebrowser_style | Style for filebrowser mode. | style_1 |
 | run_args | Additional arguments for run mode. | [] |
+| run_style | Style for run mode. | style_1 |
 | scale | Scaling for launch. | 5 |
 | window_args | Additional arguments for window mode. | [] |
+| window_style | Style for window mode. | style_1 |
 
 ### [rofi.theme]
 
@@ -319,6 +335,7 @@ waybar configuration.
 | --- | ----------- | ------- |
 | font | Font for waybar. | JetBrainsMono Nerd Font |
 | icon_size | Icon size for waybar. | 10 |
+| position | A fallback position of the waybar.   | top |
 | scale | Total scaling for waybar. | 10 |
 
 ### [weather]

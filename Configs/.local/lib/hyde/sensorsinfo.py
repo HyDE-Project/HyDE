@@ -1,8 +1,27 @@
 #!/usr/bin/env python
+"""
+sensorsinfo.py
+A script to gather and display sensor information from the system.
+It uses the `sensors` command to get sensor data and formats it for display.
+This script is designed to be used with Waybar or similar status bars.
+
+
+Use --interval
+If you want to run this script in a loop, you can use the --interval option.
+This will consume more RAM but lesser CPU calls.
+Do not use --interval if you want to run this script once.
+and let the bar poll it. Might cause more CPU calls. but frees up RAM.
+
+
+
+"""
 
 import json
 import subprocess
 import os
+import argparse
+import time
+import sys
 
 DEVICE_GLYPHS = {
     "iwlwifi": "",
@@ -152,7 +171,6 @@ def get_sensor_data(result_sensors, page=0):
 
     for device in devices:
         data = device_data[device]
-        device_glyph = get_device_glyph(device)
         device_parts = [f"  Device: {device}       "]
         has_data = False
         if data["temperatures"]:
@@ -200,27 +218,61 @@ def get_sensor_data(result_sensors, page=0):
     return {"text": text, "tooltip": tooltip}
 
 
-if __name__ == "__main__":
-    import sys
-
-    result_sensors = subprocess.run(
-        ["sensors", "-j"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
-        text=True,
-        check=True,
+def main():
+    parser = argparse.ArgumentParser(description="Sensor Info")
+    parser.add_argument(
+        "--interval",
+        type=float,
+        default=0,
+        help="Polling interval in seconds (default: 0, run once and exit; if >0, run in loop)",
     )
-    sensors_data = json.loads(result_sensors.stdout)
-    devices = list(sensors_data.keys())
-    total_pages = (len(devices) + PAGE_SIZE - 1) // PAGE_SIZE
+    parser.add_argument("--next", action="store_true", help="Go to next page")
+    parser.add_argument("--prev", action="store_true", help="Go to previous page")
+    args = parser.parse_args()
 
-    page = get_current_page(total_pages)
-    if "--next" in sys.argv:
-        page = (page + 1) % total_pages
-        subprocess.run(["pkill", "-RTMIN+19", "waybar"], check=False)
-    elif "--prev" in sys.argv:
-        page = (page - 1 + total_pages) % total_pages
-        subprocess.run(["pkill", "-RTMIN+19", "waybar"], check=False)
-    save_current_page(page)
-    sensor_info = get_sensor_data(result_sensors, page)
-    print(json.dumps(sensor_info, separators=(",", ":")))
+    while True:
+        # Use sensors library if available, else fallback to subprocess
+        try:
+            import sensors
+
+            sensors.init()
+            sensors_data = {}
+            for chip in sensors.iter_detected_chips():
+                chip_name = str(chip)
+                sensors_data[chip_name] = {}
+                for feature in chip:
+                    label = feature.label
+                    value = feature.get_value()
+                    sensors_data[chip_name][label] = value
+            result_sensors = type("Result", (), {"stdout": json.dumps(sensors_data)})()
+        except ImportError:
+            # Fallback to subprocess if python-sensors is not available
+            result_sensors = subprocess.run(
+                ["sensors", "-j"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                check=True,
+            )
+        sensors_data = json.loads(result_sensors.stdout)
+        devices = list(sensors_data.keys())
+        total_pages = (len(devices) + PAGE_SIZE - 1) // PAGE_SIZE
+
+        page = get_current_page(total_pages)
+        if args.next:
+            page = (page + 1) % total_pages
+            subprocess.run(["pkill", "-RTMIN+19", "waybar"], check=False)
+        elif args.prev:
+            page = (page - 1 + total_pages) % total_pages
+            subprocess.run(["pkill", "-RTMIN+19", "waybar"], check=False)
+        save_current_page(page)
+        sensor_info = get_sensor_data(result_sensors, page)
+        print(json.dumps(sensor_info, separators=(",", ":")))
+        sys.stdout.flush()
+        if args.interval <= 0:
+            break
+        time.sleep(args.interval)
+
+
+if __name__ == "__main__":
+    main()
