@@ -13,7 +13,8 @@
 #   In this case we used the method `extract_thumbnail`
 #   to generate a png from a video file as swww do not support video
 
-selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.set"}"
+cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
+selected_wall="${1:-"$cacheDir/wall.set"}"
 lockFile="$HYDE_RUNTIME_DIR/$(basename "${0}").lock"
 if [ -e "${lockFile}" ]; then
     cat <<EOF
@@ -27,9 +28,7 @@ fi
 touch "${lockFile}"
 trap 'rm -f ${lockFile}' EXIT
 
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # Handle transition
 case "${WALLPAPER_SET_FLAG}" in
@@ -57,8 +56,8 @@ fi
 is_video=$(file --mime-type -b "${selected_wall}" | grep -c '^video/')
 if [ "${is_video}" -eq 1 ]; then
     print_log -sec "wallpaper" -stat "converting video" "$selected_wall"
-    mkdir -p "${HYDE_CACHE_HOME}/wallpapers/thumbnails"
-    cached_thumb="$HYDE_CACHE_HOME/wallpapers/$(${hashMech:-sha1sum} "${selected_wall}" | cut -d' ' -f1).png"
+    mkdir -p "${cacheDir}/wallpapers/thumbnails"
+    cached_thumb="$cacheDir/wallpapers/$(${hashMech:-sha1sum} "${selected_wall}" | cut -d' ' -f1).png"
     extract_thumbnail "${selected_wall}" "${cached_thumb}"
     selected_wall="${cached_thumb}"
 fi

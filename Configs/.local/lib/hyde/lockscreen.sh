@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck source=$HOME/.local/lib/hyde/globalcontrol.sh
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 lockscreen="${LOCKSCREEN:-hyprlock}"
 

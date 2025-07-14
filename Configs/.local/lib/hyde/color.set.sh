@@ -145,10 +145,8 @@ fn_wallbash() {
     }
 }
 
-scrDir="$(dirname "$(realpath "$0")")"
-export scrDir
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
 wallbash_image="${1}"
 
@@ -202,7 +200,7 @@ fi
 dcol_file="${dcolDir}/$(set_hash "${wallbash_image}").dcol"
 
 if [ ! -f "${dcol_file}" ]; then
-    "${scrDir}/swwwallcache.sh" -w "${wallbash_image}" &>/dev/null
+    "${LIB_DIR}/hyde/swwwallcache.sh" -w "${wallbash_image}" &>/dev/null
 fi
 
 set -a
@@ -263,7 +261,7 @@ if [ -n "${single_template}" ]; then
 fi
 
 # Print to terminal the colors
-[ -t 1 ] && "${scrDir}/wallbash.print.colors.sh"
+[ -t 1 ] && "${LIB_DIR}/hyde/wallbash.print.colors.sh"
 
 #// switch theme <//> wall based colors
 

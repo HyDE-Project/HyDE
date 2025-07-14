@@ -5,10 +5,8 @@ if [ ! -f /etc/arch-release ]; then
     exit 0
 fi
 
-# source variables
-scrDir=$(dirname "$(realpath "$0")")
-# shellcheck disable=SC1091
-source "$scrDir/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 get_aurhlpr
 export -f pkg_installed
 fpk_exup="pkg_installed flatpak && flatpak update"

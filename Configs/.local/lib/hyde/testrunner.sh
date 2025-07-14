@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-scrDir=$(dirname "$(realpath "$0")")
-source $scrDir/globalcontrol.sh
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 rofDir="${confDir}/rofi"
 
 if [ "${1}" == "--verbose" ] || [ "${1}" == "-v" ]; then

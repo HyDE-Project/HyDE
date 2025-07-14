@@ -3,7 +3,7 @@
 # source variables
 confDir="${confDir:-$HOME/.config}"
 kittyConf="${confDir}/kitty/kitty.conf"
-hydeKitty="${HYDE_DATA_HOME}/kitty.conf"
+hydeKitty="${XDG_DATA_HOME:-$HOME/.local/share}/hyde/kitty.conf"
 
 INC_LINE="include hyde.conf"
 

@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 # detect hypr theme and initialize variables
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
-scrDir=$(dirname "$(realpath "$0")")
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+echo "Script is deprecated. Please use 'hyde-shell waybar' instead."
+exit 0
+# ----
+
 # shellcheck disable=SC2154
 waybar_dir="${confDir}/waybar"
 modules_dir="$waybar_dir/modules"

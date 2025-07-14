@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-scrDir="$(dirname "$(realpath "$0")")"
-source "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # Generate the unbind config
-"${scrDir}/keybinds.hint.py" --show-unbind >"$HYDE_STATE_HOME/unbind.conf"
+"${LIB_DIR}/hyde/keybinds.hint.py" --show-unbind >"$HYDE_STATE_HOME/unbind.conf"
 # hyprctl -q keyword source "$HYDE_STATE_HOME/unbind.conf"

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
 #// Set variables
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
-scrDir=$(dirname "$(realpath "$0")")
-source "${scrDir}/globalcontrol.sh"
 scrName="$(basename "$0")"
 kmenuPath="$HOME/.local/share/kio/servicemenus"
 kmenuDesk="${kmenuPath}/hydewallpaper.desktop"
@@ -56,7 +55,7 @@ if [ ! -z "${setTheme}" ] && [ ! -z "${setWall}" ]; then
     cp "${setWall}" "${tgtPath}/${setTheme}/wallpapers"
     ln -fs "${tgtPath}/${setTheme}/wallpapers/$(basename "${setWall}")" "${tgtPath}/${setTheme}/wall.set"
 
-    "${scrDir}/themeswitch.sh" -s "${setTheme}"
+    "${LIB_DIR}/hyde/themeswitch.sh" -s "${setTheme}"
     notify-send -a "HyDE Alert" -i "${thmbDir}/${inwallHash}.sqre" "Wallpaper set in ${setTheme}"
 
 else

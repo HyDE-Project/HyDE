@@ -1,8 +1,6 @@
 #! /bin/env bash
 
-scrDir=$(dirname "$(realpath "$0")")
-# shellcheck disable=SC1091
-source "$scrDir/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 PREVIEW=${1}
 MESSAGE=${2}

@@ -169,18 +169,14 @@ deploy_psv() {
 log_section="deploy"
 flg_DryRun=${flg_DryRun:-0}
 
-scrDir=$(dirname "$(realpath "$0")")
-if ! source "${scrDir}/globalcontrol.sh"; then
-    echo "Error: unable to source global_fn.sh..."
-    exit 1
-fi
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
-[ -f "${scrDir}/restore_cfg.lst" ] && defaultLst="restore_cfg.lst"
-[ -f "${scrDir}/restore_cfg.psv" ] && defaultLst="restore_cfg.psv"
-[ -f "${scrDir}/restore_cfg.json" ] && defaultLst="restore_cfg.json"
-[ -f "${scrDir}/${USER}-restore_cfg.psv" ] && defaultLst="$USER-restore_cfg.psv"
+[ -f "${LIB_DIR}/hyde/restore_cfg.lst" ] && defaultLst="restore_cfg.lst"
+[ -f "${LIB_DIR}/hyde/restore_cfg.psv" ] && defaultLst="restore_cfg.psv"
+[ -f "${LIB_DIR}/hyde/restore_cfg.json" ] && defaultLst="restore_cfg.json"
+[ -f "${LIB_DIR}/hyde/${USER}-restore_cfg.psv" ] && defaultLst="$USER-restore_cfg.psv"
 
-CfgLst="${1:-"${scrDir}/${defaultLst}"}"
+CfgLst="${1:-"${LIB_DIR}/hyde/${defaultLst}"}"
 CfgDir="${2:-${cloneDir}/Configs}"
 ThemeOverride="${3:-}"
 

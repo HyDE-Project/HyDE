@@ -9,9 +9,8 @@ fi
 
 #// set file variables
 
-scrDir=$(dirname "$(realpath "$0")")
-# shellcheck disable=SC1091
-source "$scrDir/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 [ -n "${1}" ] && wlogoutStyle="${1}"
 wlogoutStyle=${wlogoutStyle:-$WLOGOUT_STYLE}
 confDir="${confDir:-$HOME/.config}"
@@ -56,7 +55,7 @@ export fntSize=$((y_mon * 2 / 100))
 
 #// detect wallpaper brightness
 
-cacheDir="${HYDE_CACHE_HOME}"
+cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
 dcol_mode="${dcol_mode:-dark}"
 # shellcheck disable=SC1091
 [ -f "${cacheDir}/wall.dcol" ] && source "${cacheDir}/wall.dcol"

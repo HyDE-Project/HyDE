@@ -2,12 +2,11 @@
 
 # set variables
 
-scrDir=$(dirname "$(realpath "$0")")
-source $scrDir/globalcontrol.sh
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # sync qt5 and qt6 colors
 
-cp "${confDir}/qt5ct/colors.conf" "${confDir}/qt6ct/colors.conf"
+cp "${XDG_CONFIG_HOME}/qt5ct/colors.conf" "${XDG_CONFIG_HOME}/qt6ct/colors.conf"
 
 # restart dolphin
 

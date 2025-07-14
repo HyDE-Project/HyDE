@@ -2,10 +2,8 @@
 
 #// set variables
 
-scrDir="$(dirname "$(realpath "$0")")"
-confDir="${confDir}/config"
-# shellcheck source=/dev/null
-. "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 rofiStyle="${rofiStyle:-1}"
 
 if [[ "${rofiStyle}" =~ ^[0-9]+$ ]]; then
@@ -40,7 +38,7 @@ w | --window)
 f | --filebrowser)
     r_mode="filebrowser"
     rofi_config="${ROFI_LAUNCH_FILEBROWSER_STYLE:-$rofi_config}"
-    rofi_args+=( "${ROFI_LAUNCH_FILEBROWSER_ARGS[@]:-}" ) 
+    rofi_args+=("${ROFI_LAUNCH_FILEBROWSER_ARGS[@]:-}")
     ;;
 r | --run)
     r_mode="run"

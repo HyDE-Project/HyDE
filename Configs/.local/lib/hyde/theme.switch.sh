@@ -3,9 +3,8 @@
 
 #// set variables
 
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 [ -z "${HYDE_THEME}" ] && echo "ERROR: unable to detect theme" && exit 1
 get_themes
 confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
@@ -101,7 +100,7 @@ print_log -sec "theme" -stat "apply" "${themeSet}"
 
 export reload_flag=1
 # shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+source "${LIB_DIR}/hyde/globalcontrol.sh"
 
 #// hypr
 # shellcheck disable=SC2154
@@ -254,19 +253,19 @@ fi
 
 #// wallpaper
 export -f pkg_installed
-export scrDir
 
-[[ -d "$HYDE_CACHE_HOME/wallpapers/" ]] && find "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
+cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
+[[ -d "$cacheDir/wallpapers/" ]] && find "$cacheDir/wallpapers" -name "*.png" -exec sh -c '
     for file; do
         base=$(basename "$file" .png)
         if pkg_installed ${base}; then
-            "${scrDir}/wallpaper.sh" --link --backend "${base}"
+            "${LIB_DIR}/hyde/wallpaper.sh" --link --backend "${base}"
         fi
     done
 ' sh {} + &
 
 if [ "$quiet" = true ]; then
-  "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global >/dev/null 2>&1
+  "${LIB_DIR}/hyde/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global >/dev/null 2>&1
 else
-  "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global
+  "${LIB_DIR}/hyde/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global
 fi

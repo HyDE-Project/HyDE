@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 
-# shellcheck source=$HOME/.local/bin/hyde-shell
-# shellcheck disable=SC1091
-if ! source "$(which hyde-shell)"; then
-    echo "[$0] :: Error: hyde-shell not found."
-    echo "[$0] :: Is HyDE installed?"
-    exit 1
-fi
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # Set variables
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"

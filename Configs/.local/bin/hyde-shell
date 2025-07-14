@@ -17,6 +17,26 @@ HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/s
 
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
+initialized() {
+    cat <<EOF
+HYDE_SHELL_INIT=1
+BIN_DIR="${BIN_DIR}"
+LIB_DIR="${LIB_DIR}"
+SHARE_DIR="${SHARE_DIR}"
+PATH=${PATH}
+HYDE_SCRIPTS_PATH=${HYDE_SCRIPTS_PATH}
+export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH HYDE_SHELL_INIT
+EOF
+    cat "${LIB_DIR}/hyde/globalcontrol.sh"
+}
+
+# If args is init or --init, print initialization script
+if [[ "$1" == "init" || "$1" == "--init" ]]; then
+    initialized
+    exit 0
+else
+    export HYDE_SHELL_INIT=1
+fi
 # shellcheck disable=SC1091
 if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
     echo "Error: Could not load HyDE, broken installation?"

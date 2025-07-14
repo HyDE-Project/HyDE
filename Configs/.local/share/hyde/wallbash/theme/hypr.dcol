@@ -1,4 +1,4 @@
-${cacheDir}/wallbash/hypr.theme | ${scrDir}/wallbash.hypr.sh
+${cacheDir}/wallbash/hypr.theme | ${LIB_DIR}/hyde/wallbash.hypr.sh
 #//---Wallbash mode enabled---
 # Overriding values above
 

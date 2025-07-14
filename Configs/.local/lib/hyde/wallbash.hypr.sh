@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 
-scrDir="$(dirname "$(realpath "$0")")"
-export scrDir
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
-confDir="${confDir:-$XDG_CONFIG_HOME}"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
+
+confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
 HYDE_THEME="${HYDE_THEME:-}"
 HYDE_THEME_DIR="${HYDE_THEME_DIR:-$confDir/hyde/themes/$HYDE_THEME}"

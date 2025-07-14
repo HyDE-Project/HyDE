@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
+cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
 
 # // Help message
 show_help() {
@@ -48,8 +48,8 @@ Wall_Cache() {
     ln -fs "${wallList[setIndex]}" "${wallCur}"
     if [ "${set_as_global}" == "true" ]; then
         print_log -sec "wallpaper" "Setting Wallpaper as global"
-        "${scrDir}/swwwallcache.sh" -w "${wallList[setIndex]}" &>/dev/null
-        "${scrDir}/color.set.sh" "${wallList[setIndex]}" &
+        "${LIB_DIR}/hyde/swwwallcache.sh" -w "${wallList[setIndex]}" &>/dev/null
+        "${LIB_DIR}/hyde/color.set.sh" "${wallList[setIndex]}" &
         ln -fs "${thmbDir}/${wallHash[setIndex]}.sqre" "${wallSqr}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.thmb" "${wallTmb}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.blur" "${wallBlr}"
@@ -88,7 +88,7 @@ Wall_Json() {
     wallHashJson=$(printf '%s\n' "${wallHash[@]}" | jq -R . | jq -s .)
 
     # Create JSON using jq
-    jq -n --argjson wallList "$wallListJson" --argjson wallHash "$wallHashJson" --arg cacheHome "${HYDE_CACHE_HOME:-$HOME/.cache/hyde}" '
+    jq -n --argjson wallList "$wallListJson" --argjson wallHash "$wallHashJson" --arg cacheHome "${cacheDir:-$HOME/.cache/hyde}" '
         [range(0; $wallList | length) as $i | 
             {
                 path: $wallList[$i], 
@@ -192,15 +192,15 @@ main() {
     #  If wallpaper is used for thumbnails, set the following variables
     if [ "$set_as_global" == "true" ]; then
         wallSet="${HYDE_THEME_DIR}/wall.set"
-        wallCur="${HYDE_CACHE_HOME}/wall.set"
-        wallSqr="${HYDE_CACHE_HOME}/wall.sqre"
-        wallTmb="${HYDE_CACHE_HOME}/wall.thmb"
-        wallBlr="${HYDE_CACHE_HOME}/wall.blur"
-        wallQad="${HYDE_CACHE_HOME}/wall.quad"
-        wallDcl="${HYDE_CACHE_HOME}/wall.dcol"
+        wallCur="${cacheDir}/wall.set"
+        wallSqr="${cacheDir}/wall.sqre"
+        wallTmb="${cacheDir}/wall.thmb"
+        wallBlr="${cacheDir}/wall.blur"
+        wallQad="${cacheDir}/wall.quad"
+        wallDcl="${cacheDir}/wall.dcol"
     elif [ -n "${wallpaper_backend}" ]; then
-        mkdir -p "${HYDE_CACHE_HOME}/wallpapers"
-        wallCur="${HYDE_CACHE_HOME}/wallpapers/${wallpaper_backend}.png"
+        mkdir -p "${cacheDir}/wallpapers"
+        wallCur="${cacheDir}/wallpapers/${wallpaper_backend}.png"
         wallSet="${HYDE_THEME_DIR}/wall.${wallpaper_backend}.png"
     else
         wallSet="${HYDE_THEME_DIR}/wall.set"
@@ -258,15 +258,15 @@ main() {
     fi
 
     # Apply wallpaper to  backend
-    if [ -f "${scrDir}/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
+    if [ -f "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
         print_log -sec "wallpaper" "Using backend: ${wallpaper_backend}"
-        "${scrDir}/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+        "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
     else
         if command -v "wallpaper.${wallpaper_backend}.sh" >/dev/null; then
             "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
         else
             print_log -warn "wallpaper" "No backend script found for ${wallpaper_backend}"
-            print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/${wallpaper_backend}.png instead"
+            print_log -warn "wallpaper" "Created: $cacheDir/wallpapers/${wallpaper_backend}.png instead"
         fi
     fi
 
@@ -322,7 +322,7 @@ while true; do
         exit 0
         ;;
     -S | --select)
-        "${scrDir}/swwwallcache.sh" w &>/dev/null &
+        "${LIB_DIR}/hyde/swwwallcache.sh" w &>/dev/null &
         wallpaper_setter_flag=select
         shift
         ;;

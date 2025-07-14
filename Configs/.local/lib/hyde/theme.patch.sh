@@ -4,13 +4,7 @@
 #|-/ /--| kRHYME7                      |-/ /--|#
 #|/ /---+------------------------------+/ /---|#
 
-script_dir=$(dirname "$(realpath "$0")")
-# shellcheck disable=SC1091
-# if [ $? -ne 0 ]; then
-if ! source "${script_dir}/globalcontrol.sh"; then
-    echo "Error: unable to source globalcontrol.sh..."
-    exit 1
-fi
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 export VERBOSE="${4}"
 set +e
@@ -303,13 +297,13 @@ fi
 # restore configs with theme override
 echo -en "${restore_list}" >"${THEME_DIR}/restore_cfg.lst"
 print_log -g "\n[exec] " "restore.config.sh \"${THEME_DIR}/restore_cfg.lst\" \"${THEME_DIR}/Configs\" \"${THEME_NAME}\"\n"
-bash "${script_dir}/restore.config.sh" "${THEME_DIR}/restore_cfg.lst" "${THEME_DIR}/Configs" "${THEME_NAME}" &>/dev/null || {
+bash "${LIB_DIR}/hyde/restore.config.sh" "${THEME_DIR}/restore_cfg.lst" "${THEME_DIR}/Configs" "${THEME_NAME}" &>/dev/null || {
     print_log -r "[ERROR] " "restore.config.sh failed"
     exit 1
 }
 if [ "${3}" != "--skipcaching" ]; then
-    bash "${script_dir}/swwwallcache.sh" -t "${THEME_NAME}"
-    bash "${script_dir}/theme.switch.sh"
+    bash "${LIB_DIR}/hyde/swwwallcache.sh" -t "${THEME_NAME}"
+    bash "${LIB_DIR}/hyde/theme.switch.sh"
 fi
 
 print_log -y "\nNote: " "Warnings are not errors. Review the output to check if it concerns you."

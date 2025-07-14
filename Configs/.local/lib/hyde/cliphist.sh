@@ -1,14 +1,9 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC1090
-if ! source "$(command -v hyde-shell)"; then
-    echo "[wallbash] code :: Error: hyde-shell not found."
-    echo "[wallbash] code :: Is HyDE installed?"
-    exit 1
-fi
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # define paths and files
-cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
 favorites_file="${cache_dir}/landing/cliphist_favorites"
 [ -f "$HOME/.cliphist_favorites" ] && favorites_file="$HOME/.cliphist_favorites"
 cliphist_style="${ROFI_CLIPHIST_STYLE:-clipboard}"

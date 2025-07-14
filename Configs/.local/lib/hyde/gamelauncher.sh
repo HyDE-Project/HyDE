@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 # set variables
 MODE=${1}
-scrDir=$(dirname "$(realpath "$0")")
-source $scrDir/globalcontrol.sh
+
 # ThemeSet="${confDir}/hypr/themes/theme.conf"
 
 if [[ "$MODE" =~ ^[0-9]+$ ]]; then
@@ -21,16 +22,16 @@ r_override="element{border-radius:${elem_border}px;} element-icon{border-radius:
 [[ -z $MODE ]] && MODE=5
 case $MODE in
 5)
-monitor_info=()
-eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
+  monitor_info=()
+  eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
     "monitor_info=(\(.width) \(.height) \(.scale) \(.x) \(.y)) reserved_info=(\(.reserved | join(" ")))"')"
 
-# Remove decimal point from scale and convert to integer (e.g., 1.25 -> 125)
-monitor_scale="${monitor_info[2]//./}"
-# Calculate display width adjusted for scale (95% of actual width)
-monitor_width=$((monitor_info[0] * 95 / monitor_scale))
-# Calculate display height adjusted for scale (95% of actual height)
-monitor_height=$((monitor_info[1] * 95 / monitor_scale))
+  # Remove decimal point from scale and convert to integer (e.g., 1.25 -> 125)
+  monitor_scale="${monitor_info[2]//./}"
+  # Calculate display width adjusted for scale (95% of actual width)
+  monitor_width=$((monitor_info[0] * 95 / monitor_scale))
+  # Calculate display height adjusted for scale (95% of actual height)
+  monitor_height=$((monitor_info[1] * 95 / monitor_scale))
 
   BG=$HOME/.local/share/hyde/rofi/assets/steamdeck_holographic.png
   BGfx=$HOME/.cache/hyde/landing/steamdeck_holographic_${monitor_width}x${monitor_height}.png
@@ -61,8 +62,8 @@ fn_steam() {
   # SteamLib might contain more than one path
   ManifestList=$(grep '"path"' $SteamLib | awk -F '"' '{print $4}' | while read sp; do
 
-  #Manifests for current path
-  find "${sp}/steamapps" -type f -name "appmanifest_*.acf" 2>/dev/null 
+    #Manifests for current path
+    find "${sp}/steamapps" -type f -name "appmanifest_*.acf" 2>/dev/null
   done)
 
   if [ -z "${ManifestList}" ]; then
@@ -88,7 +89,7 @@ fn_steam() {
       appid=$(echo "${acf}" | cut -d '|' -f 2)
       game=$(echo "${acf}" | cut -d '|' -f 1)
       # find the lib image
-      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${libraryThumbName}" | head  -1)
+      libImage=$(find "${SteamThumb}/${appid}/" -type f -name "${libraryThumbName}" | head -1)
       printf "%s\x00icon\x1f${libImage}\n" "${game}" >&2
       printf "%s\x00icon\x1f${libImage}\n" "${game}"
     done | rofi -dmenu \
@@ -97,7 +98,7 @@ fn_steam() {
   )
 
   # launch game
-  if [ -n "$RofiSel" ]; then 
+  if [ -n "$RofiSel" ]; then
     launchid=$(echo "$GameList" | grep "$RofiSel" | cut -d '|' -f 2)
 
     headerImage=$(find "${SteamThumb}/${launchid}/" -type f -name "*${libraryHeaderName}")

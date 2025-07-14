@@ -2,9 +2,8 @@
 
 # set variables
 
-scrDir=$(dirname "$(realpath "$0")")
-scrDir="${scrDir:-$HOME/.local/lib/hyde}"
-source $scrDir/globalcontrol.sh
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 confDir=${confDir:-$XDG_CONFIG_HOME}
 rofi_config="$confDir/rofi/quickapps.rasi"
 

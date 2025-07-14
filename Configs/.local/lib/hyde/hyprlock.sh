@@ -1,15 +1,9 @@
 #! /bin/bash
 
-# shellcheck source=$HOME/.local/bin/hyde-shell
-# shellcheck disable=SC1091
-if ! source "$(which hyde-shell)"; then
-  echo "Error: hyde-shell not found."
-  echo "Is HyDE installed?"
-  exit 1
-fi
-scrDir=${scrDir:-$HOME/.local/lib/hyde}
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 confDir="${confDir:-$XDG_CONFIG_HOME}"
-cacheDir="${HYDE_CACHE_HOME:-"${XDG_CACHE_HOME}/hyde"}"
+cacheDir="${XDG_CACHE_HOME:-"${XDG_CACHE_HOME}/hyde"
 WALLPAPER="${cacheDir}/wall.set"
 
 USAGE() {
@@ -41,8 +35,8 @@ fn_background() {
   is_video=$(file --mime-type -b "${WP}" | grep -c '^video/')
   if [ "${is_video}" -eq 1 ]; then
     print_log -sec "wallpaper" -stat "converting video" "$WP"
-    mkdir -p "${HYDE_CACHE_HOME}/wallpapers/thumbnails"
-    cached_thumb="$HYDE_CACHE_HOME/wallpapers/$(${hashMech:-sha1sum} "${WP}" | cut -d' ' -f1).png"
+    mkdir -p "${cacheDir}/wallpapers/thumbnails"
+    cached_thumb="$cacheDir/wallpapers/$(${hashMech:-sha1sum} "${WP}" | cut -d' ' -f1).png"
     extract_thumbnail "${WP}" "${cached_thumb}"
     WP="${cached_thumb}"
   fi
@@ -125,7 +119,7 @@ fn_cava() {
   config_file="$HYDE_RUNTIME_DIR/cava.hyprlock"
   if [ "$(pgrep -c -f "cava -p ${config_file}")" -eq 0 ]; then
     trap 'rm -f ${tempFile}' EXIT
-    "$scrDir/cava.sh" hyprlock >${tempFile} 2>&1
+    "${LIB_DIR}/hyde/cava.sh" hyprlock >${tempFile} 2>&1
   fi
 }
 
@@ -183,7 +177,7 @@ $layout_items"
     selected_layout="theme"
   fi
   generate_conf "${layout_dir}/${selected_layout}.conf"
-  "${scrDir}/font.sh" resolve "${layout_dir}/${selected_layout}.conf"
+  "${LIB_DIR}/hyde/font.sh" resolve "${layout_dir}/${selected_layout}.conf"
   fn_profile
 
   # Notify the user
@@ -316,9 +310,9 @@ CONF
 }
 
 if [ -z "${*}" ]; then
-  if [ ! -f "$HYDE_CACHE_HOME/wallpapers/hyprlock.png" ]; then
-    print_log -sec "hyprlock" -stat "setting" " $HYDE_CACHE_HOME/wallpapers/hyprlock.png"
-    "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend hyprlock
+  if [ ! -f "$cacheDir/wallpapers/hyprlock.png" ]; then
+    print_log -sec "hyprlock" -stat "setting" " $cacheDir/wallpapers/hyprlock.png"
+    "${LIB_DIR}/hyde/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend hyprlock
   fi
   pidof hyprlock || hyprlock
   exit 0
