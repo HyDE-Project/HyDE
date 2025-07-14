@@ -150,7 +150,7 @@ Hyprland start configuration.
 | removable_media | Removable media manager. | udiskie --no-automount --smart-tray |
 | systemd_share_picker | Systemd share picker. | systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP |
 | text_clipboard | Text clipboard. | wl-paste --type text --watch cliphist store |
-| wallpaper | Wallpaper script. | $scrPath/wallpaper.sh --global |
+| wallpaper | Wallpaper script. | $HYDE_LIB_DIR/wallpaper.sh --global |
 | xdg_portal_reset | XDG portal reset script. | resetxdgportal.sh |
 
 ### [mediaplayer]

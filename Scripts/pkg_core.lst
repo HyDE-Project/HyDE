@@ -84,3 +84,4 @@ fastfetch                                              # system information fetc
 
 # --------------------------------------------------- // HyDE
 hypridle                                               # idle daemon
+uwsm                                                   # Session manager

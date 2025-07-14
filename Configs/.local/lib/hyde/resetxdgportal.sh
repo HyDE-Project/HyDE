@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+systemctl --user stop xdg-desktop-portal
+
 sleep 1
 killall -e xdg-desktop-portal-hyprland
 killall -e xdg-desktop-portal
@@ -11,6 +13,8 @@ else
     libDir=/usr/lib
 fi
 
-$libDir/xdg-desktop-portal-hyprland &
-sleep 2
-$libDir/xdg-desktop-portal &
+# $libDir/xdg-desktop-portal-hyprland &
+# sleep 2
+# $libDir/xdg-desktop-portal &
+
+systemctl --user restart xdg-desktop-portal

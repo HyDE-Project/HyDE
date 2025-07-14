@@ -240,7 +240,7 @@ notifications = "swaync"  # Notifications.
 removable_media = "udiskie --no-automount --smart-tray"  # Removable media manager.
 systemd_share_picker = "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"  # Systemd share picker.
 text_clipboard = "wl-paste --type text --watch cliphist store"  # Text clipboard.
-wallpaper = "$scrPath/wallpaper.sh --global"  # Wallpaper script.
+wallpaper = "$HYDE_LIB_DIR/wallpaper.sh --global"  # Wallpaper script.
 xdg_portal_reset = "resetxdgportal.sh"  # XDG portal reset script.
 
 # mediaplayer.py configuration.
