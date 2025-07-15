@@ -31,6 +31,7 @@ scale = 10  # Scaling for animation.
 # glyph-picker.sh configuration.
 [rofi.glyph]
 scale = 10  # Scaling for glyph picker.
+args = ["-multi-select"]  # Additional arguments for glyph picker.
 
 # rofilaunch.sh configuration.
 [rofi.launch]
@@ -39,6 +40,10 @@ drun_args = []  # Additional arguments for drun mode.
 run_args = []  # Additional arguments for run mode.
 window_args = []  # Additional arguments for window mode.
 filebrowser_args = []  # Additional arguments for filebrowser mode.
+drun_style = "style_1"  # Style for drun mode.
+window_style = "style_1"  # Style for window mode.
+run_style = "style_1"  # Style for run mode.
+filebrowser_style = "style_1"  # Style for filebrowser mode.
 
 # cliphist.sh configuration.
 [rofi.cliphist]
@@ -52,10 +57,25 @@ scale = 10  # Scaling for wallpaper.
 [rofi.emoji]
 style = 1  # Style for emoji picker.
 scale = 10  # Scaling for emoji picker.
+args = ["-multi-select"]  # Additional arguments for emoji picker.
 
 # themeselect.sh configuration.
 [rofi.theme]
 scale = 6  # Scaling for theme selector.
+
+# hyde-shell rofi.websearch.sh configuration.
+[rofi.websearch]
+style = ""  # Style for rofi websearch.
+args = []  # Additional arguments for websearch.
+scale = 10  # Scaling for websearch.
+font = "JetBrainsMono Nerd Font"  # Font for websearch.
+
+# hyde-shell rofi.bookmarks.sh configuration.
+[rofi.bookmarks]
+style = ""  # Style for rofi bookmarks.
+args = []  # Additional arguments for bookmarks.
+scale = 10  # Scaling for bookmarks.
+font = "JetBrainsMono Nerd Font"  # Font for bookmarks.
 
 
 # wlogout configuration.
@@ -112,6 +132,7 @@ skip_template = [""]  # Templates to skip when using wallbash.
 font = "JetBrainsMono Nerd Font"  # Font for waybar.
 scale = 10  # Total scaling for waybar.
 icon_size = 10  # Icon size for waybar.
+position = "top"  # A fallback position of the waybar.  
 
 # Weather configuration.
 [weather]
@@ -126,27 +147,33 @@ location = ""  # Location/coordinates string for the weather output.
 
 # 'cava.sh stdout' configuration.
 [cava.stdout]
-max_instances = 1  # Maximum number of cava instances.
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
 range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
+bar_array = ["░", "▒", "▓", "█"]  # Bar array for stdout preset.
 
 # 'cava.sh hyprlock' configuration.
 [cava.hyprlock]
-max_instances = 1  # Maximum number of cava instances.
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
 range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
+bar_array = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]  # Bar array for hyprlock preset.
 
 # 'cava.sh waybar' configuration.
 [cava.waybar]
-max_instances = 1  # Maximum number of cava instances.
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
 range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
+bar_array = ["◜", "◝", "◞", "◟", "◠", "◡", "◢", "◣"]  # Bar array for waybar preset.
+
+# Cava visualizer configuration.
+[cava]
+channels = "stereo"  # Audio channels: stereo or mono.
+reverse = 1  # Reverse spectrum movement (0 or 1).
+range = "8"  # Bar sensitivity
 
 # Hypr configuration.
 [hypr.config]

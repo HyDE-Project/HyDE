@@ -1,9 +1,12 @@
 {
   "custom/cava": {
     "format": "{0}",
-    "exec": "hyde-shell cava waybar",
+    "exec": "hyde-shell cava.py waybar --json",
     "restart-interval": 1,
-    "hide-empty": true
-  },
-  "_comments": []
+    "hide-empty": true,
+    "return-type": "json",
+    "tooltip": true,
+    "on-click": "pkill -f 'cava.py waybar"
+    // "signal": 15// did no work
+  }
 }

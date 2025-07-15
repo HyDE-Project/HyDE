@@ -2,7 +2,6 @@
     "output": [
         "*"
     ],
-    "position": "bottom",
     "layer": "top",
     // "passthrough": true, // if true I can click  the taskbar
     "passthrough": false, // if false I can't click through the taskbar

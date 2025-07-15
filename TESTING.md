@@ -2,7 +2,7 @@
 
 ## Getting the Latest Dev Version
 
-The `dev` branch has all the new cool stuff that needs testing before we merge it to `master`. Here's how you grab it:
+The `dev` branch has all the new cool stuff that needs testing before we merge it to `rc`. It's where we test new features, bug fixes, and stability before releasing.
 
 ### Setting Up Dev Branch
 
@@ -22,7 +22,7 @@ The `dev` branch has all the new cool stuff that needs testing before we merge i
 
 #### Already have the repo?
 
-1. Make sure main is current:
+1. Make sure master is current branch:
 
    ```bash
    git checkout master
@@ -65,6 +65,48 @@ Just follow the README.md or use the install script:
             t : [t]est run without executing (-irst to dry run all)
    ```
 
+## Testing the Release Candidate (RC) Branch
+
+The `rc` (release-candidate) branch is used for final testing and bug fixes before a new release. During Freeze Week, only bug fixes and stabilization are allowed in `rc`—no new features. Testing on `rc` helps ensure a stable release.
+
+### Checking Out the RC Branch
+
+#### First-timers:
+
+1. Clone the repo (if you haven't already):
+
+   ```bash
+   git clone https://github.com/HyDE-Project/HyDE.git
+   cd HyDE
+   ```
+
+2. Switch to the rc branch:
+   ```bash
+   git checkout rc
+   ```
+
+#### Already have the repo?
+
+1. Make sure your repo is up to date:
+
+   ```bash
+   git checkout master
+   git pull
+   ```
+
+2. Fetch and switch to the latest rc branch:
+   ```bash
+   git fetch origin rc
+   git checkout rc
+   git pull origin rc
+   ```
+
+### Running the RC Version
+
+Follow the same steps as for `dev` (see above) to install and test. Focus on finding bugs and verifying stability—no new features should be present in `rc`.
+
+> **Note:** If you find a bug in `rc`, report it right away so it can be fixed before release! See the reporting section below.
+
 ## What to Test
 
 Look out for:
@@ -103,9 +145,14 @@ Found something weird? Here's what to do:
 
 ### GitHub (Preferred)
 
-Report directly on the dev-to-master PR:
+Report directly on the rc to master MR:
 
-- Go here: https://github.com/HyDE-Project/HyDE/compare/master...automated-dev-to-master-branch
+- Go here: https://github.com/HyDE-Project/HyDE/compare/master...rc
+
+Report directly on the dev to rc MR:
+
+- Go here: https://github.com/HyDE-Project/HyDE/compare/dev...rc
+
 
 ### Discord
 

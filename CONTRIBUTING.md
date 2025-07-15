@@ -8,7 +8,8 @@ Thank you for your interest in contributing to Community Standards! We welcome a
 
    - For fork this repository, click the **Fork** button in the top right corner of this page or click [here](https://github.com/HyDE-Project/HyDE/fork).
 
-   > **Note for first-time contributors:** All new contributors should start by submitting pull requests. After demonstrating consistent high-quality contributions through PRs, you may be considered for a collaborator role as described in [TEAM_ROLES.md](https://github.com/HyDE-Project/HyDE/blob/master/TEAM_ROLES.md). Direct repository access is granted selectively based on contribution history.
+> [!NOTE]
+> For first-time contributors:** All new contributors should start by submitting pull requests. After demonstrating consistent high-quality contributions through PRs, you may be considered for a collaborator role as described in [TEAM_ROLES.md](https://github.com/HyDE-Project/HyDE/blob/master/TEAM_ROLES.md). Direct repository access is granted selectively based on contribution history.
 
 2. Clone your forked repository to your local machine.
 
@@ -34,7 +35,13 @@ Thank you for your interest in contributing to Community Standards! We welcome a
      git commit -m "feat: add a new feature"
      ```
 
-5. Push your changes to your forked repository.
+5. Code should be documented where appropriate.
+
+- Changes compared to the latest HyDE release which have a direct effect on the user (opposed to things like code refactorings or documentation/tests) additionally need to be documented in the `CHANGELOG.md`
+- The existing entries should be used as a style guideline.
+- The change log should be used to document changes from a user-perspective, instead of explaining the technical background (like commit messages) More information about HyDE's change log format can be found [here](https://keepachangelog.com/).
+
+6. Push your changes to your forked repository.
 
    - For example, to push your changes to your forked repository, use the following command.
 
@@ -42,7 +49,7 @@ Thank you for your interest in contributing to Community Standards! We welcome a
      git push origin your-branch-name
      ```
 
-6. Submit a **pull request** to the upstream repository.
+7. Submit a **pull request** to the upstream repository.
    - **Important**: Always submit your pull requests to the `dev` branch, **not** directly to `master`. Following the [RELEASE_POLICY.md](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md), changes go through the dev branch first for testing before being merged into master during the release window.
    - For example, to create a pull request, use the following steps.
      1. Go to your forked repository.

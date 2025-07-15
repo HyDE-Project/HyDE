@@ -4,8 +4,6 @@
     "output": [
         "*"
     ],
-    "position": "bottom",
-    "mode": "dock",
     "height": 10,
     "exclusive": true,
     "passthrough": false,
