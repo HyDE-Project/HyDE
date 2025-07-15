@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# TODO: Use namespaces
+# TODO:Refactor. This what happens when you just want it to work lol.
 import json
 import os
 import glob
@@ -502,20 +502,22 @@ def run_waybar_command(command):
 
 
 def kill_waybar():
-    """Kill only the Waybar process, not anything with 'waybar' in the name."""
-    subprocess.run(["pkill", "-x", "waybar"])
-    logger.debug("Killed Waybar processes.")
+    """Kill only the current user's Waybar process."""
+    user = os.getenv("USER")
+    subprocess.run(["pkill", "-u", user, "-x", "waybar"])
+    logger.debug("Killed Waybar processes for current user.")
 
 
 def kill_waybar_and_watcher():
-    """Kill all Waybar instances and watcher scripts."""
-    subprocess.run(["pkill", "-x", "waybar"])
-    logger.debug("Killed Waybar processes.")
+    """Kill all Waybar instances and watcher scripts for the current user."""
+    user = os.getenv("USER")
+    subprocess.run(["pkill", "-u", user, "-x", "waybar"])
+    logger.debug("Killed Waybar processes for current user.")
 
     try:
         current_pid = os.getpid()
         result = subprocess.run(
-            ["pgrep", "-f", "waybar.py"], capture_output=True, text=True
+            ["pgrep", "-u", user, "-f", "waybar.py"], capture_output=True, text=True
         )
 
         if result.returncode == 0:
@@ -525,12 +527,12 @@ def kill_waybar_and_watcher():
                     try:
                         subprocess.run(["kill", pid.strip()])
                         logger.debug(
-                            f"Killed waybar.py process with PID: {pid.strip()}"
+                            f"Killed waybar.py process with PID: {pid.strip()} for user {user}"
                         )
                     except Exception as e:
                         logger.debug(f"Failed to kill PID {pid.strip()}: {e}")
 
-        logger.debug("Killed all waybar.py watcher scripts.")
+        logger.debug("Killed all waybar.py watcher scripts for current user.")
     except Exception as e:
         logger.error(f"Error killing waybar.py processes: {e}")
 
@@ -1192,6 +1194,15 @@ def update_style(style_path):
     write_style_file(style_filepath, style_path)
 
 
+def is_waybar_running_for_current_user():
+    """Check if Waybar or Waybar-wrapped is running for the current user only."""
+    user = os.getenv("USER")
+    for proc_name in ["waybar", "waybar-wrapped"]:
+        result = subprocess.run(["pgrep", "-u", user, "-x", proc_name], capture_output=True)
+        if result.returncode == 0:
+            return True
+    return False
+
 def watch_waybar():
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
@@ -1204,12 +1215,10 @@ def watch_waybar():
                 time.sleep(2)
                 continue
 
-            result = subprocess.run(
-                ["ps", "-C", "waybar,.waybar-wrapped"], capture_output=True
-            )
-            if result.returncode != 0:
+            # Only check for current user's Waybar
+            if not is_waybar_running_for_current_user():
                 run_waybar_command("killall waybar; waybar & disown")
-                logger.debug("Waybar restarted")
+                logger.debug("Waybar restarted for current user")
         except Exception as e:
             logger.error(f"Error monitoring Waybar: {e}")
         time.sleep(2)
