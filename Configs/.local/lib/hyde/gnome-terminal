@@ -8,7 +8,7 @@ scrDir="$(dirname "$(realpath "$0")")"
 source "${scrDir}/globalcontrol.sh"
 
 term=${TERMINAL}
-term=${term:-$(gsettings get org.gnome.desktop.default-applications.terminal exec | tr -d "'")}
+term=${term:-$(gsettings get org.gnome.desktop.default-applications.terminal exec | xargs)}
 term=${term:-kitty}
 
 $term "$@"
