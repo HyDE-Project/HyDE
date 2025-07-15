@@ -18,6 +18,7 @@ import argparse
 import signal
 import atexit
 import json
+import shlex
 from pathlib import Path
 
 
@@ -44,9 +45,13 @@ class HydeConfig:
                         line = line[7:]
                         if "=" in line:
                             key, value = line.split("=", 1)
-                            value = value.strip("\"'")
+                            value = value.strip()
                             if value.startswith("(") and value.endswith(")"):
-                                value = value[1:-1].strip("\"'")
+                                # Remove parentheses and split using shlex to respect quotes
+                                value = value[1:-1].strip()
+                                value = shlex.split(value)
+                            else:
+                                value = value.strip("\"'")
                             config[key] = value
         except Exception as e:
             print(f"Warning: Could not load Hyde config: {e}", file=sys.stderr)
@@ -63,7 +68,7 @@ class CavaDataParser:
 
     @staticmethod
     def format_data(line, bar_chars="▁▂▃▄▅▆▇█", width=None, standby_mode=""):
-        """Format cava data with custom bar characters"""
+        """Format cava data with custom bar characters (list or string)"""
         line = line.strip()
         if not line:
             return CavaDataParser._handle_standby_mode(standby_mode, bar_chars, width)
@@ -107,6 +112,7 @@ class CavaDataParser:
                 char_index = bar_length - 1
             else:
                 char_index = value
+            # bar_chars can be a list or string
             result += bar_chars[char_index]
 
         return result
@@ -257,7 +263,7 @@ class CavaServer:
         while not self.should_shutdown:
             time.sleep(1)
             with self.clients_lock:
-                if not self.clients and time.time() - self.last_client_time > 5:
+                if not self.clients and time.time() - self.last_client_time > 1:
                     print("No clients connected for 5 seconds, shutting down...")
                     self.should_shutdown = True
                     break
@@ -285,19 +291,88 @@ class CavaServer:
                 self.last_client_time = time.time()
 
     def _handle_client_connections(self):
-        """Handle incoming client connections"""
+        """Handle incoming client connections and listen for reload command"""
         while True:
             try:
                 conn, addr = self.server_socket.accept()
                 print("New client connected")
+                threading.Thread(target=self._client_command_listener, args=(conn,), daemon=True).start()
                 with self.clients_lock:
                     self.clients.append(conn)
                     self.last_client_time = time.time()
             except OSError:
                 break
 
-    def _create_cava_config(self, bars=16, range_val=15):
-        """Create cava configuration file"""
+    def _client_command_listener(self, conn):
+        """Listen for special commands from a client (e.g., reload)"""
+        try:
+            conn.settimeout(0.1)
+            data = b""
+            while True:
+                try:
+                    chunk = conn.recv(1024)
+                    if not chunk:
+                        break
+                    data += chunk
+                    if b"\n" in data:
+                        line, data = data.split(b"\n", 1)
+                        if line.strip() == b"CMD:RELOAD":
+                            print("Received reload command from client.")
+                            self._reload_cava_process()
+                except socket.timeout:
+                    break
+        except Exception:
+            pass
+
+    def _reload_cava_process(self):
+        """Restart cava process and reload config with latest values"""
+        print("Reloading cava process...")
+        if self.cava_process and self.cava_process.poll() is None:
+            self.cava_process.terminate()
+            try:
+                self.cava_process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.cava_process.kill()
+        # Always use latest config values
+        hyde_config = HydeConfig()
+        bars = int(hyde_config.get_value("CAVA_BARS", 16))
+        range_val = int(hyde_config.get_value("CAVA_RANGE", 15))
+        channels = hyde_config.get_value("CAVA_CHANNELS", "stereo")
+        reverse = hyde_config.get_value("CAVA_REVERSE", 0)
+        try:
+            reverse = int(reverse)
+        except Exception:
+            reverse = 1 if str(reverse).lower() in ("true", "yes", "on") else 0
+        self._create_cava_config(bars, range_val, channels, reverse)
+        try:
+            self.cava_process = subprocess.Popen(
+                ["cava", "-p", str(self.config_file)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            print("Cava process restarted.")
+        except FileNotFoundError:
+            print("Error: cava not found. Please install cava.")
+
+    def _create_cava_config(self, bars=16, range_val=15, channels="stereo", reverse=0, prefix=""): 
+        """Create cava configuration file with channels and reverse support, using HydeConfig with or without prefix as appropriate"""
+        hyde_config = HydeConfig()
+
+        if prefix:
+            config_channels = hyde_config.get_value(f"CAVA_{prefix}_CHANNELS")
+            config_reverse = hyde_config.get_value(f"CAVA_{prefix}_REVERSE")
+        else:
+            config_channels = hyde_config.get_value("CAVA_CHANNELS")
+            config_reverse = hyde_config.get_value("CAVA_REVERSE")
+        if config_channels in ("mono", "stereo"):
+            channels = config_channels
+        if config_reverse is not None:
+            try:
+                reverse = int(config_reverse)
+            except ValueError:
+                reverse = 1 if str(config_reverse).lower() in ("true", "yes", "on") else 0
+
         self.temp_dir.mkdir(parents=True, exist_ok=True)
 
         config_content = f"""[general]
@@ -313,12 +388,14 @@ method = raw
 raw_target = /dev/stdout
 data_format = ascii
 ascii_max_range = {range_val}
+channels = {channels}
+reverse = {reverse}
 """
 
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-    def start(self, bars=16, range_val=15):
+    def start(self, bars=16, range_val=15, channels="stereo", reverse=0):
         """Start the cava server"""
         try:
             self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -366,7 +443,7 @@ ascii_max_range = {range_val}
 
             self._write_pid_file()
 
-            self._create_cava_config(bars, range_val)
+            self._create_cava_config(bars, range_val, channels, reverse)
 
             print(f"Starting cava with config: {self.config_file}")
             try:
@@ -566,13 +643,24 @@ class CavaClient:
         """Parse configuration for a specific command type"""
         prefix = f"CAVA_{command.upper()}"
 
-        bar_chars = args.bar or hyde_config.get_value(f"{prefix}_BAR", "▁▂▃▄▅▆▇█")
+        # Prefer --bar-array if present
+        if hasattr(args, "bar_array") and args.bar_array:
+            bar_chars = args.bar_array
+        else:
+            # Prefer BAR_ARRAY from config if present and is a list
+            bar_array = hyde_config.get_value(f"{prefix}_BAR_ARRAY")
+            if bar_array and isinstance(bar_array, list):
+                bar_chars = bar_array
+            else:
+                bar_chars = args.bar or hyde_config.get_value(f"{prefix}_BAR", "▁▂▃▄▅▆▇█")
+                if isinstance(bar_chars, str):
+                    bar_chars = list(bar_chars)
+
         width = (
             args.width
             if args.width is not None
             else int(hyde_config.get_value(f"{prefix}_WIDTH", "0") or 0)
         )
-
         if not width:
             width = len(bar_chars) if bar_chars else 8
 
@@ -584,26 +672,46 @@ class CavaClient:
             standby_mode = hyde_config.get_value(f"{prefix}_STANDBY", "0")
             if standby_mode is None or standby_mode == "":
                 standby_mode = "\n"
-            elif standby_mode.isdigit():
+            elif isinstance(standby_mode, str) and standby_mode.isdigit():
                 standby_mode = int(standby_mode)
 
         return bar_chars, width, standby_mode
+
+
+class CavaReloadClient:
+    """Minimal client to send reload command to the server"""
+    def __init__(self):
+        self.runtime_dir = os.getenv("XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid())))
+        self.socket_file = os.path.join(self.runtime_dir, "hyde", "cava.sock")
+
+    def reload(self):
+        if not os.path.exists(self.socket_file):
+            print("Cava manager is not running.")
+            sys.exit(1)
+        try:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.connect(self.socket_file)
+            s.sendall(b"CMD:RELOAD\n")
+            s.close()
+            print("Reload command sent.")
+        except Exception as e:
+            print(f"Failed to send reload command: {e}")
+            sys.exit(1)
 
 
 def create_client_parser(subparsers, name, help_text):
     """Create a client parser with common arguments"""
     parser = subparsers.add_parser(name, help=help_text)
     parser.add_argument("--bar", default=None, help="Bar characters")
+    parser.add_argument("--bar-array", nargs="+", help="Bar characters as an array (e.g. --bar-array '<span color=red>#</span>' '<span color=green>#</span>')")
     parser.add_argument("--width", type=int, help="Bar width")
     parser.add_argument(
         "--stb",
         default=None,
         help='Standby mode (0-3 or string): 0=clean (totally hides the module), 1=blank (makes module expand as spaces), 2=full (occupies the module with full bar), 3=low (makes the module display the lowest set bar), ""=displays nothing and compresses the module, string=displays the custom string',
     )
-    
     if name == "waybar":
         parser.add_argument("--json", action="store_true", help="Output JSON format for waybar tooltips")
-    
     return parser
 
 
@@ -615,12 +723,15 @@ def main():
     manager_parser = subparsers.add_parser("manager", help="Start cava manager")
     manager_parser.add_argument("--bars", type=int, default=16, help="Number of bars")
     manager_parser.add_argument("--range", type=int, default=15, help="ASCII range")
+    manager_parser.add_argument("--channels", choices=["mono", "stereo"], default="stereo", help="Audio channels: mono or stereo")
+    manager_parser.add_argument("--reverse", type=int, choices=[0, 1], default=0, help="Reverse frequency order: 0=normal, 1=reverse")
 
     create_client_parser(subparsers, "waybar", "Waybar client")
     create_client_parser(subparsers, "stdout", "Stdout client")
     create_client_parser(subparsers, "hyprlock", "Hyprlock client")
 
     subparsers.add_parser("status", help="Check manager status")
+    subparsers.add_parser("reload", help="Reload cava manager (restart cava process)")
 
     args = parser.parse_args()
 
@@ -630,7 +741,7 @@ def main():
             print("Cava manager is already running")
             sys.exit(0)
 
-        server.start(args.bars, args.range)
+        server.start(args.bars, args.range, args.channels, args.reverse)
 
     elif args.command in ["waybar", "stdout", "hyprlock"]:
         hyde_config = HydeConfig()
@@ -655,6 +766,9 @@ def main():
         else:
             print("Cava manager is not running")
             sys.exit(1)
+
+    elif args.command == "reload":
+        CavaReloadClient().reload()
 
     else:
         parser.print_help()
