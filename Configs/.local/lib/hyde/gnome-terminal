@@ -7,8 +7,9 @@ scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
 source "${scrDir}/globalcontrol.sh"
 
-term=${TERMINAL}
-term=${term:-$(gsettings get org.gnome.desktop.default-applications.terminal exec | xargs)}
+
+term=${TERMINAL:-${_TERMINAL:-kitty}}
+term=${term:-$(gsettings get org.gnome.desktop.default-applications.terminal exec | xargs )}
 term=${term:-kitty}
 
 $term "$@"
