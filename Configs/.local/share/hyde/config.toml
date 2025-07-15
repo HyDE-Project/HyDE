@@ -63,6 +63,20 @@ args = ["-multi-select"]  # Additional arguments for emoji picker.
 [rofi.theme]
 scale = 6  # Scaling for theme selector.
 
+# hyde-shell rofi.websearch.sh configuration.
+[rofi.websearch]
+style = ""  # Style for rofi websearch.
+args = []  # Additional arguments for websearch.
+scale = 10  # Scaling for websearch.
+font = "JetBrainsMono Nerd Font"  # Font for websearch.
+
+# hyde-shell rofi.bookmarks.sh configuration.
+[rofi.bookmarks]
+style = ""  # Style for rofi bookmarks.
+args = []  # Additional arguments for bookmarks.
+scale = 10  # Scaling for bookmarks.
+font = "JetBrainsMono Nerd Font"  # Font for bookmarks.
+
 
 # wlogout configuration.
 [wlogout]

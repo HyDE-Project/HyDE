@@ -235,6 +235,64 @@
                             "type": "integer"
                         }
                     }
+                },
+                "websearch": {
+                    "description": "hyde-shell rofi.websearch.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "style": {
+                            "default": "",
+                            "description": "Style for rofi websearch.",
+                            "type": "string"
+                        },
+                        "args": {
+                            "default": [],
+                            "description": "Additional arguments for websearch.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for websearch.",
+                            "type": "integer"
+                        },
+                        "font": {
+                            "default": "JetBrainsMono Nerd Font",
+                            "description": "Font for websearch.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "bookmarks": {
+                    "description": "hyde-shell rofi.bookmarks.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "style": {
+                            "default": "",
+                            "description": "Style for rofi bookmarks.",
+                            "type": "string"
+                        },
+                        "args": {
+                            "default": [],
+                            "description": "Additional arguments for bookmarks.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for bookmarks.",
+                            "type": "integer"
+                        },
+                        "font": {
+                            "default": "JetBrainsMono Nerd Font",
+                            "description": "Font for bookmarks.",
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },

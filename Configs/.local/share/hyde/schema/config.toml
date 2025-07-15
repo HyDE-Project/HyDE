@@ -221,6 +221,61 @@ type      = "object"
     description = "Scaling for theme selector."
     type        = "integer"
 
+[properties.rofi.properties.websearch]
+    description = "hyde-shell rofi.websearch.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.websearch.properties.style]
+    default     = ""
+    description = "Style for rofi websearch."
+    type        = "string"
+
+[properties.rofi.properties.websearch.properties.args]
+    default     = [  ]
+    description = "Additional arguments for websearch."
+    type        = "array"
+
+[properties.rofi.properties.websearch.properties.args.items]
+    type = "string"
+
+[properties.rofi.properties.websearch.properties.scale]
+    default     = 10
+    description = "Scaling for websearch."
+    type        = "integer"
+[properties.rofi.properties.websearch.properties.font]
+    default     = "JetBrainsMono Nerd Font"
+    description = "Font for websearch."
+    type        = "string"
+
+
+[properties.rofi.properties.bookmarks]
+    description = "hyde-shell rofi.bookmarks.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.bookmarks.properties.style]
+    default     = ""
+    description = "Style for rofi bookmarks."
+    type        = "string"
+
+[properties.rofi.properties.bookmarks.properties.args]
+    default     = [  ]
+    description = "Additional arguments for bookmarks."
+    type        = "array"
+
+[properties.rofi.properties.bookmarks.properties.args.items]
+    type = "string"
+
+[properties.rofi.properties.bookmarks.properties.scale]
+    default     = 10
+    description = "Scaling for bookmarks."
+    type        = "integer"
+
+[properties.rofi.properties.bookmarks.properties.font]
+    default     = "JetBrainsMono Nerd Font"
+    description = "Font for bookmarks."
+    type        = "string"
+
+
 [properties.wlogout]
     description = "wlogout configuration."
     type        = "object"

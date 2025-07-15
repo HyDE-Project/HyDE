@@ -190,6 +190,17 @@ Global rofi configuration.
 | --- | ----------- | ------- |
 | scale | Scaling for animation. | 10 |
 
+### [rofi.bookmarks]
+
+hyde-shell rofi.bookmarks.sh configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| args | Additional arguments for bookmarks. | [] |
+| font | Font for bookmarks. | JetBrainsMono Nerd Font |
+| scale | Scaling for bookmarks. | 10 |
+| style | Style for rofi bookmarks. |  |
+
 ### [rofi.cliphist]
 
 cliphist.sh configuration.
@@ -256,6 +267,17 @@ swwwallselect.sh configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | scale | Scaling for wallpaper. | 10 |
+
+### [rofi.websearch]
+
+hyde-shell rofi.websearch.sh configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| args | Additional arguments for websearch. | [] |
+| font | Font for websearch. | JetBrainsMono Nerd Font |
+| scale | Scaling for websearch. | 10 |
+| style | Style for rofi websearch. |  |
 
 ### [rofi.keybind.hint]
 
