@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+
+- Features and fixes for mediaplayer. #865
 - CHANGELOG.md to track notable changes
 
 ### Changed
