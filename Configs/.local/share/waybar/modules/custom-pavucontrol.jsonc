@@ -1,0 +1,6 @@
+{
+  "custom/pavucontrol": {
+    "format": "蓼",
+    "on-click": "pavucontrol"
+  }
+}
