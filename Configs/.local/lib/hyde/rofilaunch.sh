@@ -2,12 +2,12 @@
 
 #// set variables
 
-scrDir="$(dirname "$(realpath "$0")")"
-confDir="${confDir}/config"
-# shellcheck source=/dev/null
-. "${scrDir}/globalcontrol.sh"
-rofiStyle="${rofiStyle:-1}"
+pkill rofi && exit 0
 
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
+# This block is some legacy sh*t. So if someone agrees to remove it, please do so via a PR.
+rofiStyle="${rofiStyle:-1}" 
 if [[ "${rofiStyle}" =~ ^[0-9]+$ ]]; then
     rofi_config="style_${rofiStyle:-1}"
 else

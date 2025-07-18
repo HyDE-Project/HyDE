@@ -31,7 +31,7 @@ generate_release_notes() {
   echo "$commits"
 }
 
-HYDE_RELEASE_NOTES=$(generate_release_notes)
+# HYDE_RELEASE_NOTES=$(generate_release_notes)
 
 echo "HyDE $HYDE_VERSION built from branch $HYDE_BRANCH at commit ${HYDE_COMMIT_HASH:0:12} ($HYDE_VERSION_COMMIT_MSG)"
 echo "Date: $HYDE_VERSION_LAST_CHECKED"
@@ -52,8 +52,8 @@ HYDE_VERSION='$HYDE_VERSION'
 HYDE_VERSION_LAST_CHECKED='$HYDE_VERSION_LAST_CHECKED'
 HYDE_VERSION_COMMIT_MSG='$HYDE_VERSION_COMMIT_MSG'
 HYDE_COMMIT_HASH='$HYDE_COMMIT_HASH'
-HYDE_RELEASE_NOTES='$HYDE_RELEASE_NOTES'
 EOL
+# HYDE_RELEASE_NOTES='$HYDE_RELEASE_NOTES'
 
   echo -e "Version cache output to $version_file\n"
 

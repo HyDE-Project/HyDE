@@ -1,0 +1,38 @@
+// Simple implementation of drawers in group modules
+// This module is used to control the backlight and hyprsunset settings
+// It includes a drawer that is hovered over to reveal additional options
+{
+  "group/eyecare": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": "0.5",
+      "children-class": "eyecare-drawer",
+      "transition-left-to-right": false,
+      "click-to-reveal": false
+    },
+    "modules": [
+      "backlight#eyecare-preview",
+      "backlight#eyecare",
+      "custom/hyprsunset"
+    ]
+  },
+  "backlight#eyecare": {
+    "rotate": 0,
+    "format": "<span size='large'>{icon}</span>",
+    "format-icons": ["", "", "", "", "", "", "", "", ""],
+    "on-scroll-up": "hyde-shell brightnesscontrol i 1",
+    "on-scroll-down": "hyde-shell brightnesscontrol d 1",
+    "min-length": 6,
+    "tooltip": true,
+    "tooltip-format": "Backlight level: {icon} {percent}%"
+  },
+  "backlight#eyecare-preview": {
+    "format": "<sup><span size='medium' rise='1000'>{icon}</span> <span size='large' weight='bold'>{percent}<span size='x-small' rise='1000'>%</span></span></sup>",
+    "format-icons": ["", "", "", "", "", "", "", "", ""],
+    "on-scroll-up": "hyde-shell brightnesscontrol i 1",
+    "on-scroll-down": "hyde-shell brightnesscontrol d 1",
+    "min-length": 6,
+    "tooltip": true,
+    "tooltip-format": "Backlight: {icon} {percent}%\n\n󰺤 Scroll to change brightness\n󰳾 Click to toggle hyprsunset"
+  }
+}

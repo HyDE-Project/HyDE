@@ -1,5 +1,6 @@
 {
   "custom/swaync": {
+    "exec-if": "swaync-client --count --skip-wait 1>2 /dev/null", // This is to check if swaync daemon is running
     "format": "{icon} {0}",
     "tooltip": true,
     "format-icons": {

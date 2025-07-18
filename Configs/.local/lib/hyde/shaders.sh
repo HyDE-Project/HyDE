@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 
-# shellcheck source=$HOME/.local/bin/hyde-shell
-# shellcheck disable=SC1091
-if ! source "$(which hyde-shell)"; then
-    echo "[$0] :: Error: hyde-shell not found."
-    echo "[$0] :: Is HyDE installed?"
-    exit 1
-fi
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # Set variables
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -25,6 +19,7 @@ Usage: $0 [OPTIONS]
 
 Options:
     --select | -S       Select a shader from the available options
+    --reload | -r       Reload the current shader
     --help   | -h       Show this help message
 HELP
 }
@@ -35,8 +30,8 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONG_OPTS="select,help"
-SHORT_OPTS="Sh"
+LONG_OPTS="select,help,reload"
+SHORT_OPTS="Shr"
 # Parse options
 PARSED=$(getopt --options ${SHORT_OPTS} --longoptions "${LONG_OPTS}" --name "$0" -- "$@")
 if [ $? -ne 0 ]; then
@@ -104,11 +99,20 @@ fn_select() {
     notify-send -i "preferences-desktop-display" "Shader:" "$selected_shader"
 }
 
+fn_reload() {
+    if [ -z "$HYPR_SHADER" ]; then
+        HYPR_SHADER="disable"
+    fi
+    set_conf "HYPR_SHADER" "$HYPR_SHADER"
+    fn_update "$HYPR_SHADER"
+    notify-send -i "preferences-desktop-display" "Shader reloaded:" "$HYPR_SHADER"
+}
+
 concat_shader_files() {
     local files=("$@")
     local version_directive=""
     local compiled_file="$shaders_dir/.compiled.cache.glsl"
-    
+
     # Extract version directive from the main .frag file (last file in array)
     local main_frag_file="${files[-1]}"
     if [ -f "$main_frag_file" ]; then
@@ -117,21 +121,21 @@ concat_shader_files() {
             print_log -g "Found version directive" " $version_directive"
         else
             print_log -y "Warning" " No #version directive found in $main_frag_file"
-            version_directive="#version 300 es"  # Default fallback
+            version_directive="#version 300 es" # Default fallback
         fi
     fi
-    
+
     # Start with version directive
-    echo "$version_directive" > "$compiled_file"
-    echo "" >> "$compiled_file"
-    
+    echo "$version_directive" >"$compiled_file"
+    echo "" >>"$compiled_file"
+
     # Process each file and remove #version directives
     for f in "${files[@]}"; do
         if [ -f "$f" ]; then
             print_log -g "Processing shader" " file: $f"
             # Remove #version lines and append to compiled file
-            sed '/^\s*#version\s/d' "$f" >> "$compiled_file"
-            echo "" >> "$compiled_file"  # Add blank line between files
+            sed '/^\s*#version\s/d' "$f" >>"$compiled_file"
+            echo "" >>"$compiled_file" # Add blank line between files
         fi
     done
 }
@@ -139,7 +143,7 @@ concat_shader_files() {
 parse_includes_and_update() {
     local selected_shader="$1"
     local files=()
-    
+
     # Look for a comment line with !source = ... (whitespace-insensitive)
     local source_var
     source_var=$(grep -iE '^\s*//\s*!source\s*=\s*.*' "$shaders_dir/${selected_shader}.frag" 2>/dev/null | head -n1 | sed -E 's/^\s*\/\/\s*!source\s*=\s*//I' | xargs)
@@ -160,10 +164,10 @@ parse_includes_and_update() {
         files+=("$inc_file")
         print_log -g "Found inc file" " $inc_file"
     fi
-    
+
     # Add main .frag file last (to extract version from it)
     files+=("$shaders_dir/${selected_shader}.frag")
-    
+
     # Compile the shader files
     if concat_shader_files "${files[@]}"; then
         print_log -g "Shader" " $selected_shader compiled successfully."
@@ -208,6 +212,10 @@ while true; do
     case "$1" in
     -S | --select)
         fn_select
+        exit 0
+        ;;
+    -r | --reload)
+        fn_reload
         exit 0
         ;;
     --help | -h)
