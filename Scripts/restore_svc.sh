@@ -28,6 +28,15 @@ handle_legacy_service() {
     fi
 }
 
+# Ask if user wants to disable HyDE configuration auto-reload
+prompt_timer 120 "Disable HyDE configuration auto-reload? [y/n] | q to quit "
+if [ "${PROMPT_INPUT}" == "y" ]; then
+    sed -i 's/^hyde-config|user|start|/# hyde-config|user|start|/' "${scrDir}/restore_svc.lst"
+    print_log -sec "HyDE" -stat "disabled" "HyDE configuration auto-reload"
+else
+    print_log -sec "HyDE" -stat "keeping" "HyDE configuration auto-reload enabled"
+fi
+
 # Main processing
 print_log -sec "services" -stat "restore" "system services..."
 

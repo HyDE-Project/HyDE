@@ -39,6 +39,7 @@ cliphist                                               # clipboard manager
 wl-clip-persist                                        # Keep Wayland clipboard even after programs close (avoids crashes)
 hyprsunset                                             # blue light filter
 
+
 # --------------------------------------------------- // Dependencies
 polkit-gnome                                           # authentication agent
 xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland
@@ -76,7 +77,6 @@ fzf                                                    # Command-line fuzzy find
 
 # --------------------------------------------------- // Shell
 starship|zsh                                           # customizable shell prompt written in Rust
-# starship-git                                         # The cross-shell prompt for astronauts  
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt
 duf|fish                                               # prettier version of df for fish
