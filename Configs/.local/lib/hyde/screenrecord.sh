@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -eo pipefail
 
-# shellcheck source=$HOME/.local/bin/hyde-shell
-# shellcheck disable=SC1091
-if ! source "$(command -v hyde-shell)"; then
-    echo "[wf-recorder] code :: Error: hyde-shell not found."
-    echo "[wf-recorder] code :: Is HyDE installed?"
-    exit 1
-fi
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 RECORDER="wl-screenrec"
 command -v "$RECORDER" &>/dev/null || RECORDER="wf-recorder"

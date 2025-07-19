@@ -21,6 +21,7 @@ export THEMES_DIR="${XDG_DATA_HOME}/themes"
 
 #legacy hyde envs // should be deprecated
 
+export scrDir="${LIB_DIR:-$HOME/.local/lib}/hyde"
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 export hydeConfDir="$HYDE_CONFIG_HOME"
 export cacheDir="$HYDE_CACHE_HOME"
@@ -272,10 +273,9 @@ export HYDE_THEME \
 if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
     hypr_border="$(hyprctl -j getoption decoration:rounding | jq '.int')"
     hypr_width="$(hyprctl -j getoption general:border_size | jq '.int')"
-
-    export hypr_border=${hypr_border:-0}
-    export hypr_width=${hypr_width:-0}
 fi
+    export hypr_border=${hypr_border:-${HYDE_BORDER_RADIUS:-5}}
+    export hypr_width=${hypr_width:-${HYDE_BORDER_WIDTH:-5}}
 
 #// extra fns
 
@@ -522,3 +522,12 @@ accepted_mime_types() {
     done
 
 }
+
+
+export -f get_hyprConf get_rofi_pos \
+    is_hovered toml_write \
+    get_hashmap get_aurhlpr \
+    set_conf set_hash check_package \
+    get_themes print_log \
+    pkg_installed paste_string \
+    extract_thumbnail accepted_mime_types

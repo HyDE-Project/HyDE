@@ -14,7 +14,7 @@
       "theme-next": "hyde-shell themeswitch -n",
       "theme-previous": "hyde-shell themeswitch -p",
       "theme-select": "hyde-shell themeselect",
-      "theme-import": "gnome-terminal -- hyde-shell theme.import --select",
+      "theme-import": "gnome-terminal -- hydectl theme import",
       "waybar-restart": "hyde-shell waybar -ubg",
       "waybar-reload-css": "sed -i '${/^$/d;}'  $XDG_CONFIG_HOME/waybar/style.css",
       "waybar-layout-select": "hyde-shell waybar --select",

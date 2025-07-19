@@ -20,7 +20,7 @@
       "repeat": "playerctl loop Track --player spotify",
       "loop": "playerctl loop Playlist --player spotify",
       "disable-loop": "playerctl loop None --player spotify",
-      "volume": "hyde-shell volumecontrol -p spotify",
+      // "volume": "hyde-shell volumecontrol -p spotify",
       "open": "gtk-launch spotify || gtk-launch spotify-launcher"
     }
   }

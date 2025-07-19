@@ -1,0 +1,73 @@
+// Some POC implementation of drawers in group modules
+// This module is used to control volume
+// Drawers are good for compact bar.
+
+{
+  "group/volumecontrol": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": "0.5",
+      "children-class": "volumecontrol-drawer",
+      "transition-left-to-right": false,
+      "click-to-reveal": false
+    },
+    "modules": ["pulseaudio#preview", "pulseaudio#output", "pulseaudio#input"]
+  },
+  "pulseaudio#input": {
+    "format": " <span size='large'>{format_source}</span> ",
+    "rotate": 0,
+    "format-source": "\uf86b",
+    "format-source-muted": "\uf131",
+    "on-click": "pavucontrol -t 4",
+    "on-click-middle": "hyde-shell volumecontrol -i m",
+    "on-scroll-up": "hyde-shell volumecontrol -i i",
+    "on-scroll-down": "hyde-shell volumecontrol -i d",
+    "tooltip-format": "{format_source} {source_desc} // {source_volume}%",
+    "scroll-step": 5
+  },
+  "pulseaudio#preview": {
+    // Shows status preview for both input and output devices
+    "format": "<sup><span size='small' rise='1000'>{icon}</span> <span size='large' weight='bold'>{volume}<span size='x-small' rise='1000'>%</span></span></sup>\n<sub><span size='small' rise='1000'>{format_source}</span> <span size='large' weight='bold'>{source_volume}<span size='x-small' rise='3000'>%</span></span></sub>",
+    "format-muted": "婢",
+    "tooltip": true,
+    "format-source": "",
+    "format-source-muted": "",
+    "tooltip-format": "{icon} {desc} // {volume}%\n{format_source} {source_desc} // {source_volume}%",
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", "", ""]
+    },
+    "on-click": "pavucontrol -t 3",
+    "on-click-right": "hyde-shell volumecontrol -s ''",
+    "on-click-middle": "hyde-shell volumecontrol -o m",
+    "on-scroll-up": "hyde-shell volumecontrol -o i",
+    "on-scroll-down": "hyde-shell volumecontrol -o d"
+  },
+
+  "pulseaudio#output": {
+    "format": " <span size='large'>{icon}</span> ",
+    "rotate": 0,
+    "format-muted": "婢",
+    "on-click": "pavucontrol -t 3",
+    "on-click-right": "hyde-shell volumecontrol -s ''",
+    "on-click-middle": "hyde-shell volumecontrol -o m",
+    "on-scroll-up": "hyde-shell volumecontrol -o i",
+    "on-scroll-down": "hyde-shell volumecontrol -o d",
+    "tooltip-format": "{icon} {desc} // {volume}%",
+    "scroll-step": 5,
+    "format-icons": {
+      "headphone": "",
+      "hands-free": "",
+      "headset": "",
+      "phone": "",
+      "portable": "",
+      "car": "",
+      "default": ["", "", ""]
+    }
+  }
+}

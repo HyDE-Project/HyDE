@@ -22,7 +22,7 @@ def get_venv_path():
     """Set up the virtual environment path and modify sys.path."""
     venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
     if not os.path.exists(venv_path):
-        venv_path = os.path.expanduser("~/.local/state/hyde/pip_env")
+        venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
     site_packages_path = os.path.join(
         venv_path,
         "lib",
@@ -104,6 +104,28 @@ def uninstall_package(venv_path, package):
         text=True,
     )
     result.check_returncode()
+
+
+def rebuild_venv(venv_path=None, requirements_file=None):
+    """Rebuild the virtual environment: reinstall if missing, install/upgrade requirements, and update all packages."""
+    # Use XDG_STATE_HOME for venv_path if not provided
+    if venv_path is None:
+        venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
+        if not os.path.exists(venv_path):
+            venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
+    pip_executable = os.path.join(venv_path, "bin", "pip")
+    # Recreate venv if missing
+    if not os.path.exists(pip_executable):
+        create_venv(venv_path, requirements_file)
+    # Install/upgrade requirements
+    if requirements_file and os.path.exists(requirements_file):
+        subprocess.run([pip_executable, "install", "--upgrade", "-r", requirements_file], check=True)
+    # Upgrade all installed packages
+    result = subprocess.run([pip_executable, "list", "--outdated", "--format=freeze"], capture_output=True, text=True)
+    outdated = [line.split("==")[0] for line in result.stdout.splitlines() if line]
+    if outdated:
+        subprocess.run([pip_executable, "install", "--upgrade", "-q"] + outdated, check=True)
+    notify.send("HyDE PIP", "✅ Virtual environment rebuilt and packages updated.")
 
 
 def v_import(module_name):
@@ -207,6 +229,11 @@ def main(args):
     )
     destroy_parser.set_defaults(func=destroy_venv)
 
+    rebuild_parser = subparsers.add_parser(
+        "rebuild", help="Rebuild the virtual environment and update packages"
+    )
+    rebuild_parser.set_defaults(func=rebuild_venv)
+
     args = parser.parse_args(args)
 
     venv_path = get_venv_path()
@@ -226,6 +253,8 @@ def main(args):
         args.func(venv_path, args.package)
     elif args.command == "destroy":
         args.func(venv_path)
+    elif args.command == "rebuild":
+        args.func(venv_path, requirements_file)
     else:
         parser.print_help()
 

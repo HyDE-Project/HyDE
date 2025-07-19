@@ -1,16 +1,34 @@
+// https://man.archlinux.org/man/extra/waybar/waybar-mpris.5.en
+// This module do not have any format if there is no player running! Might be an upstream bug
+// For now use "custom/mediaplayer" module instead
 {
   "mpris": {
+    "justify": "center",
+    "dynamic-importance-order" : ["title", "artist", "album"],
+    "dynamic-order:" : ["title", "artist", "album"],
     "format": "{player_icon} {dynamic}",
-    "rotate": 0,
     "format-paused": "{status_icon} <i>{dynamic}</i>",
+    "format-stopped": "{status_icon}",
+    "rotate": 0,
+    "dynamic-separator": "",
     "player-icons": {
       "default": "\u25b6",
-      "mpv": "\ud83c\udfb5"
+      "mpv": "\ud83c\udfb5",
+      "spotify": "\uf1bc",
+      "vlc": "\uf8e0"
     },
     "status-icons": {
-      "paused": "\uf04c"
+      "paused": "\uf04c",
+      "playing": "\uf04b",
+      "stopped": "\uf04d"
     },
-    "max-length": 1000,
-    "interval": 1
+    "max-length": 20,
+    "on-click": "playerctl play-pause",
+    "on-click-middle": "playerctl previous",
+    "on-scroll-up": "playerctl position 1-",
+    "on-scroll-down": "playerctl position 1+",
+    "tooltip": true,
+    "tooltip-format": "{title}\nby: {artist}\n{position} / {length}\nPlayer: {player}\n\n󰐎 Click to play/pause\n󰺤 Scroll to seek\n󰙤 Middle click previous\n󰙢 Right click next",  
+    "tooltip-format-stopped": "Player: {player}\n\n󰐎 Click to play/pause\n󰺤 Scroll to seek\n󰙤 Middle click previous\n󰙢 Right click next"
   }
 }
