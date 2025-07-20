@@ -13,10 +13,10 @@
     /* Modified by Hyde */
 
     /* Modify/add style in ~/.config/waybar/styles/ */
-    @import "/home/khing/.local/share/waybar/styles/defaults.css";
+    @import "~/.local/share/waybar/styles/defaults.css";
 
     /* Imports wallbash colors */
-    @import "/home/khing/.cache/hyde/wallbash/gtk.css";
+    @import "~/.cache/hyde/wallbash/gtk.css";
 
     /* Colors and theme configuration is generated through the `theme.css` file */
     @import "theme.css";
