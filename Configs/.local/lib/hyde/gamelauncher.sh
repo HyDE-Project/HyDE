@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-# set variables
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 MODE=${1}
-scrDir=$(dirname "$(realpath "$0")")
-source $scrDir/globalcontrol.sh
-# ThemeSet="${confDir}/hypr/themes/theme.conf"
 
 if [[ "$MODE" =~ ^[0-9]+$ ]]; then
   RofiConf="gamelauncher_${MODE}"
