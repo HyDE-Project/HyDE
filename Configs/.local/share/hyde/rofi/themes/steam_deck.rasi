@@ -14,6 +14,11 @@ configuration {
     show-icons:                  true;
     drun-display-format:         "{name}";
     font:                        "JetBrainsMono Nerd Font 8";
+    kb-row-up:                   "k,Up";
+    kb-row-down:                 "j,Down";
+    kb-move-char-forward:        "l,Right";
+    kb-move-char-back:           "h,Left";
+    kb-cancel:                   "q,Escape";
 }
 
 @theme "~/.config/rofi/theme.rasi"
@@ -23,16 +28,9 @@ configuration {
 window {
     enabled:                     true;
     fullscreen:                  false;
-    width:                       2155px;
-    height:                      850px;
     transparency:                "real";
     cursor:                      "default";
-    spacing:                     0em;
-    padding:                     0em;
-    border:                      0em;
-    border-radius:               0em;
-    border-color:                transparent;
-//background-image: this is dynamically set
+    //background-image: this is dynamically set
     background-image:            url("~/.local/share/hyde/rofi/steamdeck_holographic.png", width);
     background-color:            transparent;
 }
@@ -41,29 +39,24 @@ mainbox {
     children:                    [ "listview" ];
     background-color:            transparent;
     orientation:                 horizontal;
-    spacing:                     0em;
-    padding:                     4.2em 44.2em 5em 45em;
 }
 
 
 // Lists //
 listview {
     enabled:                     true;
-    columns:                     5;
+    columns:                     3;
     rows:                        2;
     flow:                        horizontal;
     spacing:                     2.5em;
-    padding:                     3em 5em 2em 5em;
+    padding:                     4em 5em 2em 5em;
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
     reverse:                     false;
-    fixed-height:                true;
-    fixed-columns:               false;
-    cursor:                      "default";
     background-color:            @main-bg;
     text-color:                  @main-fg;
-    border-radius:               1em;
+    border-radius:               0.4em;
 }
 
 
@@ -72,25 +65,24 @@ element {
     enabled:                     true;
     orientation:                 vertical;
     spacing:                     0em;
-    padding:                     0.1em;
-    border-radius:               0em;
+    border-radius:               0.4em;
     cursor:                      pointer;
     background-color:            transparent;
     text-color:                  @main-fg;
 }
+
 element selected.normal {
     background-color:            @select-bg;
     text-color:                  @select-fg;
 }
+
 element-icon {
-    size:                        8em;
-    spacing:                     0em;
-    padding:                     0em;
+    size:                        24em;
     cursor:                      inherit;
-    border-radius:               0em;
     background-color:            transparent;
     text-color:                  inherit;
 }
+
 element-text {
     vertical-align:              0.5;
     horizontal-align:            0.5;
@@ -100,3 +92,4 @@ element-text {
     background-color:            transparent;
     text-color:                  inherit;
 }
+
