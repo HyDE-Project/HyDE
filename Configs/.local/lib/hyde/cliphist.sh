@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-pkill rofi && exit 0
+pkill -u "$USER" rofi && exit 0
+
 [[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # define paths and files

@@ -274,8 +274,8 @@ if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
     hypr_border="$(hyprctl -j getoption decoration:rounding | jq '.int')"
     hypr_width="$(hyprctl -j getoption general:border_size | jq '.int')"
 fi
-    export hypr_border=${hypr_border:-${HYDE_BORDER_RADIUS:-5}}
-    export hypr_width=${hypr_width:-${HYDE_BORDER_WIDTH:-5}}
+    export hypr_border=${hypr_border:-${HYDE_BORDER_RADIUS:-2}}
+    export hypr_width=${hypr_width:-${HYDE_BORDER_WIDTH:-2}}
 
 #// extra fns
 
@@ -523,6 +523,15 @@ accepted_mime_types() {
 
 }
 
+dconf_write() {
+    local key="$1"
+    local value="$2"
+    if dconf write "${key}" "'${value}'"; then
+        print_log -sec "dconf" -stat "set" "${key} to ${value}"
+    else
+        print_log -sec "dconf" -warn "failed to set" "${key}"
+    fi
+}
 
 export -f get_hyprConf get_rofi_pos \
     is_hovered toml_write \
@@ -530,4 +539,5 @@ export -f get_hyprConf get_rofi_pos \
     set_conf set_hash check_package \
     get_themes print_log \
     pkg_installed paste_string \
-    extract_thumbnail accepted_mime_types
+    extract_thumbnail accepted_mime_types \
+    dconf_write

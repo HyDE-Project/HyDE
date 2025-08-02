@@ -545,7 +545,13 @@ def ensure_directory_exists(filepath):
 
 
 def rofi_file_selector(
-    dirs, extension, prompt, current_selection=None, extra_flags=None, display_func=None, recursive=True
+    dirs,
+    extension,
+    prompt,
+    current_selection=None,
+    extra_flags=None,
+    display_func=None,
+    recursive=True,
 ):
     """
     Generic rofi file selector for files in given dirs with given extension.
@@ -557,11 +563,17 @@ def rofi_file_selector(
     file_roots = []
     for d in dirs:
         if recursive:
-            found = [f for f in glob.glob(os.path.join(d, f"**/*{extension}"), recursive=True)
-                     if "/backup/" not in f and "\\backup\\" not in f]
+            found = [
+                f
+                for f in glob.glob(os.path.join(d, f"**/*{extension}"), recursive=True)
+                if "/backup/" not in f and "\\backup\\" not in f
+            ]
         else:
-            found = [f for f in glob.glob(os.path.join(d, f"*{extension}"), recursive=False)
-                     if "/backup/" not in f and "\\backup\\" not in f]
+            found = [
+                f
+                for f in glob.glob(os.path.join(d, f"*{extension}"), recursive=False)
+                if "/backup/" not in f and "\\backup\\" not in f
+            ]
         files.extend(found)
         file_roots.extend([d] * len(found))
     # Remove duplicates
@@ -581,8 +593,10 @@ def rofi_file_selector(
     if display_func:
         names = [display_func(f, r) for f, r in zip(files, file_roots)]
     else:
+
         def strip_prefix(s):
             return os.path.splitext(os.path.basename(s))[0]
+
         names = [strip_prefix(f) for f in files]
     if current_selection:
         if display_func:
@@ -595,21 +609,38 @@ def rofi_file_selector(
             if not current_name:
                 current_name = names[0]
         else:
+
             def strip_prefix(s):
                 return os.path.splitext(os.path.basename(s))[0]
+
             current_name = strip_prefix(current_selection)
     else:
         current_name = names[0]
     hyprland = HYPRLAND.HyprctlWrapper()
-    override_string = hyprland.get_rofi_override_string()
-    rofi_pos_string = hyprland.get_rofi_pos()
-    rofi_flags = [
-        "-p", prompt,
-        "-select", current_name,
-        "-theme", "clipboard",
-        "-theme-str", override_string,
-        "-theme-str", rofi_pos_string,
-    ]
+    try:
+        override_string = hyprland.get_rofi_override_string()
+        rofi_pos_string = hyprland.get_rofi_pos()
+        rofi_flags = [
+            "-p",
+            prompt,
+            "-select",
+            current_name,
+            "-theme",
+            "clipboard",
+            "-theme-str",
+            override_string,
+            "-theme-str",
+            rofi_pos_string,
+        ]
+    except (OSError, EnvironmentError):
+        rofi_flags = [
+            "-p",
+            prompt,
+            "-select",
+            current_name,
+            "-theme",
+            "clipboard",
+        ]
     if extra_flags:
         rofi_flags.extend(extra_flags)
     selected = rofi_dmenu(names, rofi_flags)
@@ -635,7 +666,11 @@ def rofi_style_selector(current_layout=None):
         update_border_radius()
         generate_includes()
         update_global_css()
-        notify.send("Waybar", f"Style changed to {os.path.basename(selected_style)}", replace_id=9)
+        notify.send(
+            "Waybar",
+            f"Style changed to {os.path.basename(selected_style)}",
+            replace_id=9,
+        )
         run_waybar_command("killall waybar; waybar & disown")
     sys.exit(0)
 
@@ -653,11 +688,17 @@ def rofi_selector():
         else:
             layout_roots.append("")
     current_layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
+
     def display_func(f, root):
         rel = os.path.relpath(f, root) if root else os.path.basename(f)
         return rel.replace(".jsonc", "")
+
     selected_layout = rofi_file_selector(
-        LAYOUT_DIRS, ".jsonc", "Select layout:", current_layout_path, display_func=display_func
+        LAYOUT_DIRS,
+        ".jsonc",
+        "Select layout:",
+        current_layout_path,
+        display_func=display_func,
     )
     if selected_layout:
         # Find the layout pair
@@ -672,7 +713,10 @@ def rofi_selector():
             style_path = resolve_style_path(selected_layout)
         shutil.copyfile(selected_layout, CONFIG_JSONC)
         set_state_value("WAYBAR_LAYOUT_PATH", selected_layout)
-        set_state_value("WAYBAR_LAYOUT_NAME", os.path.basename(selected_layout).replace(".jsonc", ""))
+        set_state_value(
+            "WAYBAR_LAYOUT_NAME",
+            os.path.basename(selected_layout).replace(".jsonc", ""),
+        )
         set_state_value("WAYBAR_STYLE_PATH", style_path)
         style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
         write_style_file(style_filepath, style_path)
@@ -680,7 +724,11 @@ def rofi_selector():
         update_border_radius()
         generate_includes()
         update_global_css()
-        notify.send("Waybar", f"Layout changed to {display_func(selected_layout, os.path.dirname(selected_layout))}", replace_id=9)
+        notify.send(
+            "Waybar",
+            f"Layout changed to {display_func(selected_layout, os.path.dirname(selected_layout))}",
+            replace_id=9,
+        )
         run_waybar_command("killall waybar; waybar & disown")
     ensure_state_file()
     sys.exit(0)
@@ -699,8 +747,12 @@ def rofi_selector_no_exit():
             )
     logger.debug(f"Current layout from state: {current_layout_name}")
     hyprland = HYPRLAND.HyprctlWrapper()
-    override_string = hyprland.get_rofi_override_string()
-    rofi_pos_string = hyprland.get_rofi_pos()
+    try:
+        override_string = hyprland.get_rofi_override_string()
+        rofi_pos_string = hyprland.get_rofi_pos()
+    except (OSError, EnvironmentError):
+        override_string = ""
+        rofi_pos_string = ""
     rofi_flags = [
         "-p",
         "Select layout:",
@@ -708,11 +760,11 @@ def rofi_selector_no_exit():
         current_layout_name,
         "-theme",
         "clipboard",
-        "-theme-str",
-        override_string,
-        "-theme-str",
-        rofi_pos_string,
     ]
+    if override_string:
+        rofi_flags += ["-theme-str", override_string]
+    if rofi_pos_string:
+        rofi_flags += ["-theme-str", rofi_pos_string]
     selected_layout = rofi_dmenu(
         layout_names,
         rofi_flags,
@@ -1343,10 +1395,13 @@ def is_waybar_running_for_current_user():
     """Check if Waybar or Waybar-wrapped is running for the current user only."""
     user = os.getenv("USER")
     for proc_name in ["waybar", "waybar-wrapped"]:
-        result = subprocess.run(["pgrep", "-u", user, "-x", proc_name], capture_output=True)
+        result = subprocess.run(
+            ["pgrep", "-u", user, "-x", proc_name], capture_output=True
+        )
         if result.returncode == 0:
             return True
     return False
+
 
 def watch_waybar():
     signal.signal(signal.SIGTERM, signal_handler)
@@ -1375,7 +1430,9 @@ def main():
     # Check for lock file early and inform user on any invocation
     lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
     if os.path.exists(lock_file):
-        print("Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar.")
+        print(
+            "Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar."
+        )
 
     logger.debug(f"Looking for state file at: {STATE_FILE}")
 
@@ -1573,15 +1630,21 @@ def main():
         # Remove hide lock file when starting watch mode to avoid confusion
         lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
         if os.path.exists(lock_file):
-            logger.warning(f"Found waybar hide lock file at {lock_file}, removing it to start watch mode")
-            logger.info("Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar.")
+            logger.warning(
+                f"Found waybar hide lock file at {lock_file}, removing it to start watch mode"
+            )
+            logger.info(
+                "Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar."
+            )
             os.remove(lock_file)
         watch_waybar()
     else:
         # Check if waybar should be hidden before starting
         lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
         if os.path.exists(lock_file):
-            logger.warning(f"Waybar hide lock file exists at {lock_file}, not starting waybar. Use --hide 0 to show waybar or remove the lock file manually.")
+            logger.warning(
+                f"Waybar hide lock file exists at {lock_file}, not starting waybar. Use --hide 0 to show waybar or remove the lock file manually."
+            )
             return
 
         update_icon_size()

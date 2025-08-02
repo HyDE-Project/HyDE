@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-#// set variables
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
 [ -z "${HYDE_THEME}" ] && echo "ERROR: unable to detect theme" && exit 1
 get_themes
 confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
@@ -101,26 +98,26 @@ print_log -sec "theme" -stat "apply" "${themeSet}"
 
 export reload_flag=1
 # shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+source "${LIB_DIR}/hyde/globalcontrol.sh"
 
 #// hypr
 # shellcheck disable=SC2154
 # Updates the compositor theme data in advance
 [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && hyprctl keyword misc:disable_autoreload 1 -q
-sanitize_hypr_theme "${HYDE_THEME_DIR}/hypr.theme" "${XDG_CONFIG_HOME}/hypr/themes/theme.conf"
+[[ -r "${HYDE_THEME_DIR}/hypr.theme" ]] && sanitize_hypr_theme "${HYDE_THEME_DIR}/hypr.theme" "${XDG_CONFIG_HOME}/hypr/themes/theme.conf"
 
-# shellcheck disable=SC2154
-if [ "${enableWallDcol}" -eq 0 ]; then
-  GTK_THEME="$(get_hyprConf "GTK_THEME")"
-else
-  GTK_THEME="Wallbash-Gtk"
-fi
-GTK_ICON="$(get_hyprConf "ICON_THEME")"
-CURSOR_THEME="$(get_hyprConf "CURSOR_THEME")"
-CURSOR_SIZE=${_CURSOR_SIZE:-"$(get_hyprConf "CURSOR_SIZE")"}
-font_name="$(get_hyprConf "FONT")"
-font_size="$(get_hyprConf "FONT_SIZE")"
-monospace_font_name="$(get_hyprConf "MONOSPACE_FONT")"
+# ? We only query 
+
+HYPRLAND_CONFIG=${HYPRLAND_CONFIG:-"${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}/hypr/hyprland.conf"}
+HYDE_THEME="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:theme')"
+GTK_THEME="Wallbash-Gtk"
+[[ "${enableWallDcol}" -eq 0 ]] && GTK_THEME="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:gtk-theme')"
+GTK_ICON="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:icon-theme')"
+CURSOR_THEME="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:cursor-theme')"
+CURSOR_SIZE="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:cursor-size')"
+TERMINAL="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:terminal')"
+font_name="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:font')"
+font_size="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:font-size')"
 
 # Early load the icon theme so that it is available for the rest of the script
 if ! dconf write /org/gnome/desktop/interface/icon-theme "'${GTK_ICON}'"; then
@@ -254,19 +251,18 @@ fi
 
 #// wallpaper
 export -f pkg_installed
-export scrDir
 
 [[ -d "$HYDE_CACHE_HOME/wallpapers/" ]] && find "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
     for file; do
         base=$(basename "$file" .png)
         if pkg_installed ${base}; then
-            "${scrDir}/wallpaper.sh" --link --backend "${base}"
+            "${LIB_DIR}/hyde/wallpaper.sh" --link --backend "${base}"
         fi
     done
 ' sh {} + &
 
 if [ "$quiet" = true ]; then
-  "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global >/dev/null 2>&1
+  "${LIB_DIR}/hyde/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global >/dev/null 2>&1
 else
-  "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global
+  "${LIB_DIR}/hyde/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global
 fi

@@ -102,7 +102,7 @@ s) # drag to manually snip an area / click on a window to print it
 	take_screenshot "area"
 	;;
 sf) # frozen screen, drag to manually snip an area / click on a window to print it
-	take_screenshot "area" "--freeze" "--cursor"
+	take_screenshot "area" "--freeze"
 	;;
 m) # print focused monitor
 	take_screenshot "output"

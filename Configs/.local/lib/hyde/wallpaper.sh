@@ -42,6 +42,13 @@ EOF
 #// Set and Cache Wallpaper
 
 Wall_Cache() {
+
+    # Experimental, set to 1 if stable
+    if [[ "${WALLPAPER_RELOAD_ALL:-1}" -eq 1 ]] && [[ ${wallpaper_setter_flag} != "link" ]]; then
+        print_log -sec "wallpaper" "Reloading themes and wallpapers"
+        export reload_flag=1
+    fi
+
     ln -fs "${wallList[setIndex]}" "${wallSet}"
     ln -fs "${wallList[setIndex]}" "${wallCur}"
     if [ "${set_as_global}" == "true" ]; then
@@ -127,6 +134,11 @@ Wall_Select() {
     mon_data=$(hyprctl -j monitors)
     mon_x_res=$(jq '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width else .height end' <<<"${mon_data}")
     mon_scale=$(jq '.[] | select(.focused==true) | .scale' <<<"${mon_data}" | sed "s/\.//")
+
+    # Add fallback size
+    mon_x_res=${mon_x_res:-1920}
+    mon_scale=${mon_scale:-1}
+
     mon_x_res=$((mon_x_res * 100 / mon_scale))
 
     #// generate config
