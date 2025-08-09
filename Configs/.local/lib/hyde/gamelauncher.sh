@@ -11,7 +11,7 @@ if [[ "$MODE" =~ ^[0-9]+$ ]]; then
 else
   RofiConf="${MODE:-$ROFI_GAMELAUNCHER_STYLE}"
 fi
-RofiConf=${RofiConf:-"gamelauncher_5"}
+RofiConf=${RofiConf:-"steam_deck"}
 
 # set rofi override
 elem_border=$((hypr_border * 2))
@@ -24,13 +24,14 @@ case ${MODE:-5} in
   monitor_info=()
   eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
     "monitor_info=(\(.width) \(.height) \(.scale) \(.x) \(.y)) reserved_info=(\(.reserved | join(" ")))"')"
+  percent=80
 
   # Remove decimal point from scale and convert to integer (e.g., 1.25 -> 125)
   monitor_scale="${monitor_info[2]//./}"
   # Calculate display width adjusted for scale (95% of actual width)
-  monitor_width=$((monitor_info[0] * 95 / monitor_scale))
+  monitor_width=$((monitor_info[0] * $percent / monitor_scale))
   # Calculate display height adjusted for scale (95% of actual height)
-  monitor_height=$((monitor_info[1] * 95 / monitor_scale))
+  monitor_height=$((monitor_info[1] * $percent / monitor_scale))
 
   BG=$HOME/.local/share/hyde/rofi/assets/steamdeck_holographic.png
   BGfx=$HOME/.cache/hyde/landing/steamdeck_holographic_${monitor_width}x${monitor_height}.png
@@ -41,11 +42,9 @@ case ${MODE:-5} in
   fi
 
   r_override="window {width: ${monitor_width}px; height: ${monitor_height}; background-image: url('${BGfx}',width);}  
-                element {border-radius:${elem_border}px;} 
-                element-icon {border-radius:${icon_border}px;}
-                mainbox { padding: 25% 21% 25% 21%;}
+                element-icon {border-radius:0px;}
+                mainbox { padding: 17% 18%; }
                 "
-  # top right bottom left
   ;;
 
 *) ;;
@@ -93,7 +92,7 @@ fn_steam() {
       printf "%s\x00icon\x1f${libImage}\n" "${game}"
     done | rofi -dmenu \
       -theme-str "${r_override}" \
-      -config $RofiConf
+      -config "$RofiConf"
   )
 
   # launch game
@@ -141,7 +140,8 @@ EOF
 # Handle if flatpak or pkgmgr
 run_lutris=""
 echo "$*"
-(flatpak list --columns=application | grep -q "net.lutris.Lutris") && run_lutris="flatpak run net.lutris.Lutris"
+(pkg_installed 'flatpak') &&
+  (flatpak list --columns=application | grep -q "net.lutris.Lutris") && run_lutris="flatpak run net.lutris.Lutris"
 icon_path="${HOME}/.var/app/net.lutris.Lutris/data/lutris/coverart/"
 [ -z "${run_lutris}" ] && (pkg_installed 'lutris') && run_lutris="lutris"
 

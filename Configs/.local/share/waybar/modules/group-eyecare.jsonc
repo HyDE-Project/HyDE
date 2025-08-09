@@ -18,7 +18,7 @@
   },
   "backlight#eyecare": {
     "rotate": 0,
-    "format": "<span size='large'>{icon}</span>",
+    "format": "<span size='large'>{icon}</span> ",
     "format-icons": ["", "", "", "", "", "", "", "", ""],
     "on-scroll-up": "hyde-shell brightnesscontrol i 1",
     "on-scroll-down": "hyde-shell brightnesscontrol d 1",

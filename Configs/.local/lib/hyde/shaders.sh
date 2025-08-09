@@ -197,7 +197,7 @@ parse_includes_and_update() {
 # path to the shader
 \$SCREEN_SHADER_PATH = "$shaders_dir/${selected_shader}.frag"
 # path to the compiled shader // override this in '../hyde/config.toml'
-\$SCREEN_SHADER_COMPILED = ./shaders/.compiled.cache.glsl
+\$SCREEN_SHADER_COMPILED = ${XDG_CONFIG_HOME}/hypr/shaders/.compiled.cache.glsl
 
 
 EOF

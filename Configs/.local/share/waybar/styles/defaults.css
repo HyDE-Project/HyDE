@@ -26,6 +26,10 @@ window#waybar {
     background: @bar-bg;
 }
 
+.module {
+    color: @main-fg;
+}
+
 /*
  These are groups/islands configs
 

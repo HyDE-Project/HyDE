@@ -1,11 +1,32 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from subprocess import run, CalledProcessError
+import os
+import threading
+from subprocess import run, CalledProcessError, TimeoutExpired
 from typing import Optional
 
 DEFAULT_APP_NAME = "HyDE"
 DEFAULT_URGENCY = "normal"
+
+
+def _is_gui_available():
+    """Check if a GUI environment is available."""
+    return (
+        os.environ.get("DISPLAY") is not None
+        or os.environ.get("WAYLAND_DISPLAY") is not None
+        or os.environ.get("XDG_SESSION_TYPE") == "wayland"
+        or os.environ.get("XDG_SESSION_TYPE") == "x11"
+    )
+
+
+def _has_notify_send():
+    """Check if notify-send command is available."""
+    try:
+        run(["which", "notify-send"], capture_output=True, check=True, timeout=2)
+        return True
+    except (CalledProcessError, TimeoutExpired, FileNotFoundError):
+        return False
 
 
 def send(
@@ -39,6 +60,15 @@ def send(
     replace_id : Optional[int]
         The ID of the notification to replace.
     """
+    # Fallback to console output if GUI is not available or notify-send is missing
+    if not _is_gui_available() or not _has_notify_send():
+        prefix = f"[{app_name or DEFAULT_APP_NAME}]"
+        message = f"{summary}"
+        if body:
+            message += f": {body}"
+        print(f"{prefix} {message}")
+        return
+
     command = ["notify-send"]
 
     if urgency:
@@ -58,10 +88,21 @@ def send(
     if body:
         command.append(body)
 
-    try:
-        run(command, check=True)
-    except CalledProcessError as e:
-        print(f"Failed to send notification: {e}")
+    def _send_in_background():
+        """Send notification in background thread."""
+        try:
+            run(command, check=True, timeout=3, capture_output=True)
+        except (CalledProcessError, TimeoutExpired, FileNotFoundError):
+            # Fallback to console output if notification fails
+            prefix = f"[{app_name or DEFAULT_APP_NAME}]"
+            message = f"{summary}"
+            if body:
+                message += f": {body}"
+            print(f"{prefix} {message}")
+
+    # Run in daemon thread so it doesn't block main thread
+    thread = threading.Thread(target=_send_in_background, daemon=True)
+    thread.start()
 
 
 # Example usage

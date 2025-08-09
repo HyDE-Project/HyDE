@@ -119,12 +119,21 @@ def rebuild_venv(venv_path=None, requirements_file=None):
         create_venv(venv_path, requirements_file)
     # Install/upgrade requirements
     if requirements_file and os.path.exists(requirements_file):
-        subprocess.run([pip_executable, "install", "--upgrade", "-r", requirements_file], check=True)
+        subprocess.run(
+            [pip_executable, "install", "--upgrade", "-r", requirements_file],
+            check=True,
+        )
     # Upgrade all installed packages
-    result = subprocess.run([pip_executable, "list", "--outdated", "--format=freeze"], capture_output=True, text=True)
+    result = subprocess.run(
+        [pip_executable, "list", "--outdated", "--format=freeze"],
+        capture_output=True,
+        text=True,
+    )
     outdated = [line.split("==")[0] for line in result.stdout.splitlines() if line]
     if outdated:
-        subprocess.run([pip_executable, "install", "--upgrade", "-q"] + outdated, check=True)
+        subprocess.run(
+            [pip_executable, "install", "--upgrade", "-q"] + outdated, check=True
+        )
     notify.send("HyDE PIP", "✅ Virtual environment rebuilt and packages updated.")
 
 

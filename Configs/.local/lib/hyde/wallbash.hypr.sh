@@ -1,15 +1,37 @@
 #!/usr/bin/env bash
 
-scrDir="$(dirname "$(realpath "$0")")"
-export scrDir
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+# ? This Script sets the hypr meta data for the current theme
+# ? This way users have a way to look up the current theme
+# ? See theme.switch.sh and dconf.set.sh for the actual theme settings
+
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
+if [[ "${WALLBASH_STARTUP:-0}" -eq 1 ]]; then
+    exit 0
+fi
+
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
 HYDE_THEME="${HYDE_THEME:-}"
 HYDE_THEME_DIR="${HYDE_THEME_DIR:-$confDir/hyde/themes/$HYDE_THEME}"
 enableWallDcol="${enableWallDcol:-0}"
-hyprWallTheme=${cacheDir}/wallbash/hypr.theme
+
+eval "$(
+    hyq "${HYDE_THEME_DIR}/hypr.theme" \
+        --export env \
+        -Q "\$GTK_THEME[string]" \
+        -Q "\$COLOR_SCHEME[string]" \
+        -Q "\$ICON_THEME[string]" \
+        -Q "\$CURSOR_THEME[string]" \
+        -Q "\$CURSOR_SIZE[int]" \
+        -Q "\$FONT[string]" \
+        -Q "\$FONT_SIZE[int]" \
+        -Q "\$DOCUMENT_FONT[string]" \
+        -Q "\$DOCUMENT_FONT_SIZE[int]" \
+        -Q "\$MONOSPACE_FONT[string]" \
+        -Q "\$MONOSPACE_FONT_SIZE[int]" \
+        -Q "\$CODE_THEME[string]"
+)"
 
 # Validate the theme configuration file
 cat <<WALLBASH >"${confDir}/hypr/themes/wallbash.conf"
@@ -21,23 +43,22 @@ cat <<WALLBASH >"${confDir}/hypr/themes/wallbash.conf"
 # // ----------------------------
 
 \$HYDE_THEME=${HYDE_THEME}
-\$GTK_THEME=$(get_hyprConf 'GTK_THEME')
-\$COLOR-SCHEME=$(get_hyprConf 'COLOR_SCHEME')
-\$ICON_THEME=$(get_hyprConf 'ICON_THEME')
+\$GTK_THEME=${__GTK_THEME:-\$GTK_THEME}
+\$COLOR_SCHEME=${__COLOR_SCHEME:-\$COLOR_SCHEME}
+\$ICON_THEME=${__ICON_THEME}
 
-\$CURSOR_THEME=$(get_hyprConf 'CURSOR_THEME')
-\$CURSOR_SIZE=$(get_hyprConf 'CURSOR_SIZE')
+\$CURSOR_THEME=${__CURSOR_THEME:-\$CURSOR_THEME}
+\$CURSOR_SIZE=${__CURSOR_SIZE:-\$CURSOR_SIZE}
 
-\$FONT=$(get_hyprConf 'FONT')
-\$FONT_SIZE=$(get_hyprConf 'FONT_SIZE')
-\$DOCUMENT_FONT=$(get_hyprConf 'DOCUMENT_FONT')
-\$DOCUMENT_FONT_SIZE=$(get_hyprConf 'DOCUMENT_FONT_SIZE')
-\$MONOSPACE_FONT=$(get_hyprConf 'MONOSPACE_FONT')
-\$MONOSPACE_FONT_SIZE=$(get_hyprConf 'MONOSPACE_FONT_SIZE')
+\$FONT=${__FONT:-\$FONT}
+\$FONT_SIZE=${__FONT_SIZE:-\$FONT_SIZE}
+\$DOCUMENT_FONT=${__DOCUMENT_FONT:-\$DOCUMENT_FONT}
+\$DOCUMENT_FONT_SIZE=${__DOCUMENT_FONT_SIZE:-\$DOCUMENT_FONT_SIZE}
+\$MONOSPACE_FONT=${__MONOSPACE_FONT:-\$MONOSPACE_FONT}
+\$MONOSPACE_FONT_SIZE=${__MONOSPACE_FONT_SIZE:-\$MONOSPACE_FONT_SIZE}
 
-
-\$CODE_THEME=$(get_hyprConf 'CODE_THEME')
-\$SDDM_THEME=$(get_hyprConf 'SDDM_THEME')
+\$CODE_THEME=${__CODE_THEME:-\$CODE_THEME}  
+\$SDDM_THEME=${__SDDM_THEME:-\$CODE_THEME}
 
 # // ----------------------------
 # README:
@@ -69,6 +90,28 @@ if grep -q "#//---Wallbash mode enabled---" "${confDir}/hypr/themes/wallbash.con
     # Remove lines below the detected line
     sed -i '/#\/\/---Wallbash mode enabled---/,$d' "${confDir}/hypr/themes/wallbash.conf"
 fi
+
 if [[ "${enableWallDcol}" -gt 0 ]]; then
-    cat "${hyprWallTheme}" >>"${confDir}/hypr/themes/wallbash.conf"
+    cat <<ON_WALLBASH >>"${confDir}/hypr/themes/wallbash.conf"
+
+#//---Wallbash mode enabled---
+# Overriding values above
+
+\$GTK_THEME = Wallbash-Gtk
+\$COLOR_SCHEME = ${COLOR_SCHEME}
+
+general {
+    col.active_border = rgba(\$wallbash_pry4ff) rgba(\$wallbash_4xa1ff) 45deg
+    col.inactive_border = rgba(\$wallbash_pry1ff) rgba(\$wallbash_pry2ff) 45deg
+}
+
+group {
+    col.border_active = rgba(\$wallbash_pry4ff) rgba(\$wallbash_4xa1ff) 45deg
+    col.border_inactive = rgba(\$wallbash_pry1cc) rgba(\$wallbash_pry2cc) 45deg
+    col.border_locked_active = rgba(\$wallbash_txt3ff) rgba(\$wallbash_txt4ff) 45deg
+    col.border_locked_inactive = rgba(\$wallbash_txt1cc) rgba(\$wallbash_txt2cc) 45deg
+}
+
+ON_WALLBASH
+
 fi

@@ -1,7 +1,5 @@
 {
     "hyprland/workspaces": {
-        "rotate": 0,
-        "class": "no-margin-padding",
         "all-outputs": true,
         "active-only": false,
         "on-click": "activate",

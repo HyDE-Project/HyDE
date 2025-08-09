@@ -14,7 +14,7 @@
 #   to generate a png from a video file as swww do not support video
 
 selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.set"}"
-lockFile="$HYDE_RUNTIME_DIR/$(basename "${0}").lock"
+lockFile="$XDG_RUNTIME_DIR/hyde/$(basename "${0}").lock"
 if [ -e "${lockFile}" ]; then
     cat <<EOF
 

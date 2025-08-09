@@ -1,0 +1,16 @@
+
+export APP2UNIT_SLICES='a=app-graphical.slice b=background-graphical.slice s=session-graphical.slice'
+
+# Source the script to apply environment variables from xdg_config/uwsm/env/*.sh files
+for f in ${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.d/*.sh; do
+  if [[ -r "$f" ]]; then
+    source "$f"
+  fi
+done
+
+# To add  or modify global environment variables please modify in '~/.config/uwsm/env.d/*.sh' files.
+# Create a new file: ~/.config/uwsm/env.d/my_env.sh
+# This is used to set environment variables that should be available globally in your user land.
+
+# For users who still want the environment variables but DON'T want to use uwsm, please manually source the files yourself.
+# take note uwsm accepts POSIX shell syntax, so you can use it in your own shell that are POSIX compliant.

@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # Declare an associative array for special cases
 declare -A dict
@@ -103,20 +105,20 @@ main() {
 
     [ -z "$mime_type" ] && {
         echo -e "Error: No matching MIME type found for $input\n"
-        gtk-launch "${fallbackCmd}" || exit 1
+        app2unit.sh "${fallbackCmd}" || exit 1
     }
 
     local default_app
     default_app=$(xdg-mime query default "$mime_type")
     [ -z "$default_app" ] && {
         echo -e "Error: No default application found for $mime_type\n"
-        gtk-launch "${fallbackCmd}" || exit 1
+        app2unit.sh "${fallbackCmd}" || exit 1
     }
 
     if [ "${std_only}" = true ]; then
         echo "${default_app}"
     else
-        gtk-launch "${default_app}" || gtk-launch "${fallbackCmd}"
+        app2unit.sh "${default_app}" || app2unit.sh "${fallbackCmd}"
     fi
 }
 main "$@"

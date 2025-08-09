@@ -1,6 +1,6 @@
 {
   "custom/gpuinfo#intel": {
-    "exec-if": "hyde-shell  gpuinfo --stat intel",
+    "exec-if": "hyde-shell  gpuinfo --stat intel >/dev/null 2>&1",
     "exec": "hyde-shell  gpuinfo --use intel ",
     "return-type": "json",
     "format": "{0}",

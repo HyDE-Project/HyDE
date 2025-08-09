@@ -7,10 +7,10 @@
     "dynamic-importance-order" : ["title", "artist", "album"],
     "dynamic-order:" : ["title", "artist", "album"],
     "format": "{player_icon} {dynamic}",
-    "format-paused": "{status_icon} <i>{dynamic}</i>",
+    "format-paused": "{status_icon} <i> {dynamic} </i>",
     "format-stopped": "{status_icon}",
-    "rotate": 0,
-    "dynamic-separator": "",
+    "interval": 1,
+    "dynamic-separator": "  ",
     "player-icons": {
       "default": "\u25b6",
       "mpv": "\ud83c\udfb5",

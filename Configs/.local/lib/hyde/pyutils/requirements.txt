@@ -4,3 +4,4 @@ requests==2.32.4
 inotify_simple
 pywayland
 PyGObject
+PyQt6
