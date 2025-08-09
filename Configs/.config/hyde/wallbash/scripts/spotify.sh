@@ -31,8 +31,11 @@ configure_spicetify() {
            -e "/^spotify_path/ s+=.*$+= $spotify_path+g" \
            -e "/^spotify_launch_flags/ s+=.*$+= $spotify_flags+g" "$spotify_conf"
 
-    curl -L -o "${cache_dir}/landing/Spotify_Sleek.tar.gz" "https://github.com/prasanthrangan/hyprdots/raw/main/Source/arcs/Spotify_Sleek.tar.gz"
-    tar -xzf "${cache_dir}/landing/Spotify_Sleek.tar.gz" -C ~/.config/spicetify/Themes/
+    spicetify_themes_dir="$HOME/.config/spicetify/Themes"
+    if [ ! -d "${spicetify_themes_dir}/Sleek" ]; then
+        curl -L -o "${cache_dir}/landing/Spotify_Sleek.tar.gz" "https://github.com/HyDE-Project/HyDE/raw/main/Source/arcs/Spotify_Sleek.tar.gz"
+        tar -xzf "${cache_dir}/landing/Spotify_Sleek.tar.gz" -C "$spicetify_themes_dir"
+    fi
     spicetify backup apply
     spicetify config current_theme Sleek
     spicetify config color_scheme Wallbash
@@ -59,9 +62,11 @@ EOF
         spotify_path="${shareDir}/spotify-launcher/install/usr/bin/spotify"
     elif [ -d /opt/spotify ]; then
         spotify_path='/opt/spotify'
-        if [ ! -w "${spotify_path}" ] || [ ! -w "${spotify_path}/Apps" ]; then
-            notify_and_set_permissions "${spotify_path}"
-        fi
+    elif [ -d /var/lib/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify/ ]; then
+        spotify_path='/var/lib/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify/'
+    fi
+    if [ ! -w "${spotify_path}" ] || [ ! -w "${spotify_path}/Apps" ]; then
+        notify_and_set_permissions "${spotify_path}"
     fi
 
 if (pkg_installed spotify && pkg_installed spicetify-cli) || [ -n "$spotify_path" ]; then
