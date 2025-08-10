@@ -2,6 +2,8 @@
 brightnessctl                                          # Screen brightness control
 playerctl                                              # Media controls
 udiskie                                                # Manage removable media
+less                                                   # For `git show\log` commands
+man-db                                                 # An interface to the system reference manuals
 
 
 # --------------------------------------------------- // Media Server
