@@ -10,6 +10,13 @@ ddcui                                                  # GUI to control brightne
 # power-profiles-daemon                                # For managing power profiles from waybar
 
 
+# --------------------------------------------------- // Network Manager VPN protocols
+wiregurad-tools                                        # WireGuard protocol
+networkmanager-openconnect                             # Openconnect protocol set
+networkmanager-vpnc                                    # Cisco's EasyVPN protocol set
+webkit2gtk                                             # For applet Openconnect auth GUI
+gcr                                                    # For applet Openconnect auth GUI
+
 # --------------------------------------------------- // Misc
 xdg-desktop-portal-gtk                                 # XDG desktop portal using GTK
 wf-recorder                                            # Screen recorder for wlroots-based compositors such as sway
