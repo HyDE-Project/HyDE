@@ -19,6 +19,11 @@ pamixer                                                # PulseAudio CLI mixer
 # --------------------------------------------------- // Network Manager                                                
 networkmanager                                         # Network Manager
 network-manager-applet                                 # Network Manager system tray utility
+wiregurad-tools                                        # WireGuard protocol
+networkmanager-openconnect                             # Openconnect protocol set
+networkmanager-vpnc                                    # Cisco's EasyVPN protocol set
+webkit2gtk                                             # For applet Openconnect auth GUIa
+gcr                                                    # For applet Openconnect auth GUI
 
 
 # --------------------------------------------------- // Bluetooth  
