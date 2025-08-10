@@ -1,60 +1,64 @@
 # --------------------------------------------------- // System
-# downgrade                                            # downgrade packages
-# trash-cli-git                                        # cli to manage trash files
-# libinput-gestures                                    # actions touchpad gestures using libinput
-# gestures                                             # gui for libinput-gestures
-wttrbar                                                # for weather
-python-requests|wttrbar                                # script dependency
+# downgrade                                            # Downgrade packages
+# trash-cli-git                                        # CLI to manage trash files
+# libinput-gestures                                    # Actions touchpad gestures using libinput
+# gestures                                             # GUI for libinput-gestures
+wttrbar                                                # For weather
+python-requests|wttrbar                                # Script dependency
 ddcui                                                  # GUI to control brightness for external monitors
 # hyprgui-bin                                          # GUI for hyprland configuration // might mess your userprefs but convenient // Just disappeared
-# power-profiles-daemon                                # for managing power profiles from waybar
-
-# --------------------------------------------------- // Shell
+# power-profiles-daemon                                # For managing power profiles from waybar
 
 
 # --------------------------------------------------- // Misc
-xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
-wf-recorder                                          # Screen recorder for wlroots-based compositors such as sway
-# emote                                                # emoji picker gtk3
+xdg-desktop-portal-gtk                                 # XDG desktop portal using GTK
+wf-recorder                                            # Screen recorder for wlroots-based compositors such as sway
+# emote                                                # Emoji picker GTK3
 # wl-screenrec                                         # High performance hardware accelerated wlroots screen recorder // NO support for NVIDIA
 
+
 # --------------------------------------------------- // Gaming
-steam                                                  # gaming platform
-gamemode                                               # daemon and library for game optimizations
-mangohud                                               # system performance overlay
-# gamescope                                            # micro-compositor for gaming
+steam                                                  # Gaming platform
+gamemode                                               # Daemon and library for game optimizations
+mangohud                                               # System performance overlay
+# gamescope                                            # Micro-compositor for gaming
 # lutris                                               # Lutris is an open source gaming platform for Linux
 
+
 # --------------------------------------------------- // Music
-cava                                                   # audio visualizer
-spotify                                                # proprietary music streaming service
-spicetify-cli                                          # cli to customize spotify client
+cava                                                   # Audio visualizer
+spotify                                                # Proprietary music streaming service
+spicetify-cli                                          # CLI to customize spotify client
+
 
 # --------------------------------------------------- // Apps
-# neovim                                               # vim based text editor
+# neovim                                               # VIM based text editor
 
-# --------------------------------------------------- // Shell
-# --------------------------------------------------- // zsh
-# oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh
-# pokemon-colorscripts-git|zsh                           # display pokemon sprites (optional)
-# pokego-bin|zsh                                         # display pokemon sprites in terminal (written GO)
-# zsh-theme-powerlevel10k-git|zsh                        # Powerlevel10k is a theme for Zsh. It emphasizes speed, flexibility and out-of-the-box experience.
-bat|zsh                                                  # enhanced version of cat
-eza|zsh                                                  # file lister for zsh
-duf|zsh                                                  # prettier version of df for zsh
+
+# --------------------------------------------------- // ZSH
+# oh-my-zsh-git|zsh                                    # Optional plugin manager for zsh
+# pokemon-colorscripts-git|zsh                         # Display pokemon sprites (optional)
+# pokego-bin|zsh                                       # Display pokemon sprites in terminal (written GO)
+# zsh-theme-powerlevel10k-git|zsh                      # Powerlevel10k is a theme for ZSH. It emphasizes speed, flexibility and out-of-the-box experience.
+bat|zsh                                                # Enhanced version of cat
+eza|zsh                                                # File lister for ZSH
+duf|zsh                                                # Prettier version of df for ZSH
 
 
 # --------------------------------------------------- // Editor
-# vscodium                                              # Full oss text editor
-# vscodium-marketplace|vscodium                         # VSCodium marketplace
-# code-marketplace|code                                 # Code-Oss marketplace
-# visual-studio-code-bin                                # MS  text editor
+# vscodium                                             # Full OSS text editor
+# vscodium-marketplace|vscodium                        # VSCodium marketplace
+# code-marketplace|code                                # Code-OSS marketplace
+# visual-studio-code-bin                               # MS  text editor
+
 
 # --------------------------------------------------- // Backends
-#electron                                              # electron backend
+# electron                                             # Electron backend
+
 
 # --------------------------------------------------- // Lockscreen
-#swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen
+# swaylock-effects-git                                 # Swaylock with effects // very minimal lockscreen
+
 
 # --------------------------------------------------- // OSD
-swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
+swayosd-git                                            # A GTK based on screen display for keyboard shortcuts like caps-lock and volume
