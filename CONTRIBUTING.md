@@ -41,6 +41,8 @@ Thank you for your interest in contributing to Community Standards! We welcome a
 - The existing entries should be used as a style guideline.
 - The change log should be used to document changes from a user-perspective, instead of explaining the technical background (like commit messages) More information about HyDE's change log format can be found [here](https://keepachangelog.com/).
 
+5.1. **Optional But Recommended: Test with HydeVM** - You can test your changes in a VM using [HydeVM](Scripts/hydevm/README.md) before submitting.
+
 6. Push your changes to your forked repository.
 
    - For example, to push your changes to your forked repository, use the following command.

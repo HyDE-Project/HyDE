@@ -1,4 +1,5 @@
 # --------------------------------------------------- // System
+uwsm                                                   # A standalone Wayland session manager
 brightnessctl                                          # Screen brightness control
 playerctl                                              # Media controls
 udiskie                                                # Manage removable media

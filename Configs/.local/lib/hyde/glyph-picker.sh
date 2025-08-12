@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+pkill -u "$USER" rofi && exit 0
+
 [[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 glyph_dir=${HYDE_DATA_HOME:-$HOME/.local/share/hyde}

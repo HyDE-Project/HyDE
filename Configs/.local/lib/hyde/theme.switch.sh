@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
-
-#// set variables
-
-scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 [ -z "${HYDE_THEME}" ] && echo "ERROR: unable to detect theme" && exit 1
 get_themes
-confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
+confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 #// define functions
 
 Theme_Change() {
@@ -26,6 +24,66 @@ Theme_Change() {
       break
     fi
   done
+}
+
+show_theme_status() {
+  cat <<EOF
+Current theme: ${HYDE_THEME}
+Gtk theme: ${GTK_THEME}
+Icon theme: ${ICON_THEME}
+Cursor theme: ${CURSOR_THEME}
+Cursor size: ${CURSOR_SIZE}
+Terminal: ${TERMINAL}
+Font: ${FONT}
+Font style: ${FONT_STYLE}
+Font size: ${FONT_SIZE}
+Document font: ${DOCUMENT_FONT}
+Document font size: ${DOCUMENT_FONT_SIZE}
+Monospace font: ${MONOSPACE_FONT}
+Monospace font size: ${MONOSPACE_FONT_SIZE}
+Bar font: ${BAR_FONT}
+Menu font: ${MENU_FONT}
+Notification font: ${NOTIFICATION_FONT}
+
+EOF
+}
+
+load_hypr_variables() {
+  local hypr_file="${1}"
+
+  #? Load theme specific variables
+  eval "$(
+    hyq "${hypr_file}" \
+      --export env \
+      -Q "\$GTK_THEME[string]" \
+      -Q "\$ICON_THEME[string]" \
+      -Q "\$CURSOR_THEME[string]" \
+      -Q "\$CURSOR_SIZE[int]" \
+      -Q "\$FONT[string]" \
+      -Q "\$FONT_SIZE[int]" \
+      -Q "\$FONT_STYLE[string]" \
+      -Q "\$DOCUMENT_FONT[string]" \
+      -Q "\$DOCUMENT_FONT_SIZE[int]" \
+      -Q "\$MONOSPACE_FONT[string]" \
+      -Q "\$MONOSPACE_FONT_SIZE[int]"
+  )"
+
+  GTK_THEME=${__GTK_THEME:-$GTK_THEME}
+  ICON_THEME=${__ICON_THEME:-$ICON_THEME}
+  CURSOR_THEME=${__CURSOR_THEME:-$CURSOR_THEME}
+  CURSOR_SIZE=${__CURSOR_SIZE:-$CURSOR_SIZE}
+  TERMINAL=${__TERMINAL:-$TERMINAL}
+  FONT=${__FONT:-$FONT}
+  FONT_STYLE=${__FONT_STYLE:-''} # using hyprland this should be empty by default
+  FONT_SIZE=${__FONT_SIZE:-$FONT_SIZE}
+  DOCUMENT_FONT=${__DOCUMENT_FONT:-$DOCUMENT_FONT}
+  DOCUMENT_FONT_SIZE=${__DOCUMENT_FONT_SIZE:-$DOCUMENT_FONT_SIZE}
+  MONOSPACE_FONT=${__MONOSPACE_FONT:-$MONOSPACE_FONT}
+  MONOSPACE_FONT_SIZE=${__MONOSPACE_FONT_SIZE:-$MONOSPACE_FONT_SIZE}
+  BAR_FONT=${__BAR_FONT:-$BAR_FONT}
+  MENU_FONT=${__MENU_FONT:-$MENU_FONT}
+  NOTIFICATION_FONT=${__NOTIFICATION_FONT:-$NOTIFICATION_FONT}
+
 }
 
 sanitize_hypr_theme() {
@@ -100,30 +158,29 @@ set_conf "HYDE_THEME" "${themeSet}"
 print_log -sec "theme" -stat "apply" "${themeSet}"
 
 export reload_flag=1
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+source "${LIB_DIR}/hyde/globalcontrol.sh"
+source "${SHARE_DIR}/hyde/env-theme"
 
 #// hypr
-# shellcheck disable=SC2154
-# Updates the compositor theme data in advance
-[[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && hyprctl keyword misc:disable_autoreload 1 -q
-sanitize_hypr_theme "${HYDE_THEME_DIR}/hypr.theme" "${XDG_CONFIG_HOME}/hypr/themes/theme.conf"
+if [[ -r "${HYPRLAND_CONFIG}" ]]; then
 
-# shellcheck disable=SC2154
-if [ "${enableWallDcol}" -eq 0 ]; then
-  GTK_THEME="$(get_hyprConf "GTK_THEME")"
-else
-  GTK_THEME="Wallbash-Gtk"
+  # shellcheck disable=SC2154
+  # Updates the compositor theme data in advance
+  [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && hyprctl keyword misc:disable_autoreload 1 -q
+  [[ -r "${HYDE_THEME_DIR}/hypr.theme" ]] && sanitize_hypr_theme "${HYDE_THEME_DIR}/hypr.theme" "${XDG_CONFIG_HOME}/hypr/themes/theme.conf"
+
+  #? Load theme specific variables
+  load_hypr_variables "${HYDE_THEME_DIR}/hypr.theme"
+
+  #? Load User's hyprland overrides
+  load_hypr_variables "${XDG_STATE_DIR:-$HOME/.local/state}/hyde/hyprland.conf"
+
 fi
-GTK_ICON="$(get_hyprConf "ICON_THEME")"
-CURSOR_THEME="$(get_hyprConf "CURSOR_THEME")"
-CURSOR_SIZE=${_CURSOR_SIZE:-"$(get_hyprConf "CURSOR_SIZE")"}
-font_name="$(get_hyprConf "FONT")"
-font_size="$(get_hyprConf "FONT_SIZE")"
-monospace_font_name="$(get_hyprConf "MONOSPACE_FONT")"
+
+show_theme_status
 
 # Early load the icon theme so that it is available for the rest of the script
-if ! dconf write /org/gnome/desktop/interface/icon-theme "'${GTK_ICON}'"; then
+if ! dconf write /org/gnome/desktop/interface/icon-theme "'${ICON_THEME}'"; then
   print_log -sec "theme" -warn "dconf" "failed to set icon theme"
 fi
 
@@ -138,29 +195,28 @@ fi
 
 #// qt5ct
 
-toml_write "${confDir}/qt5ct/qt5ct.conf" "Appearance" "icon_theme" "${GTK_ICON}"
-toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "general" "\"${font_name},10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,\""
-toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "fixed" "\"${monospace_font_name},9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,\""
+toml_write "${confDir}/qt5ct/qt5ct.conf" "Appearance" "icon_theme" "${ICON_THEME}"
+toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "general" "\"${FONT},${FONT_SIZE},-1,5,400,0,0,0,0,0,0,0,0,0,0,1,${FONT_STYLE}\""
+toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "fixed" "\"${MONOSPACE_FONT},9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\""
+
 # toml_write "${confDir}/qt5ct/qt5ct.conf" "Appearance" "color_scheme_path" "${confDir}/qt5ct/colors/colors.conf"
 # toml_write "${confDir}/qt5ct/qt5ct.conf" "Appearance" "custom_palette" "true"
 
 # // qt6ct
 
-toml_write "${confDir}/qt6ct/qt6ct.conf" "Appearance" "icon_theme" "${GTK_ICON}"
-toml_write "${confDir}/qt6ct/qt6ct.conf" "Fonts" "general" "\"${font_name},10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,\""
-toml_write "${confDir}/qt6ct/qt6ct.conf" "Fonts" "fixed" "\"${monospace_font_name},9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1,\""
+toml_write "${confDir}/qt6ct/qt6ct.conf" "Appearance" "icon_theme" "${ICON_THEME}"
+toml_write "${confDir}/qt6ct/qt6ct.conf" "Fonts" "general" "\"${FONT},${FONT_SIZE},-1,5,400,0,0,0,0,0,0,0,0,0,0,1,${FONT_STYLE}\""
+toml_write "${confDir}/qt6ct/qt6ct.conf" "Fonts" "fixed" "\"${MONOSPACE_FONT},9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\""
 # toml_write "${confDir}/qt6ct/qt6ct.conf" "Appearance" "color_scheme_path" "${confDir}/qt6ct/colors/colors.conf"
 # toml_write "${confDir}/qt6ct/qt6ct.conf" "Appearance" "custom_palette" "true"
 
 # // kde plasma
 
-toml_write "${confDir}/kdeglobals" "Icons" "Theme" "${GTK_ICON}"
+toml_write "${confDir}/kdeglobals" "Icons" "Theme" "${ICON_THEME}"
 toml_write "${confDir}/kdeglobals" "General" "TerminalApplication" "${TERMINAL}"
 toml_write "${confDir}/kdeglobals" "UiSettings" "ColorScheme" "colors"
-
-# For KDE stuff
-
 toml_write "${confDir}/kdeglobals" "KDE" "widgetStyle" "kvantum"
+
 # toml_write "${confDir}/kdeglobals" "Colors:View" "BackgroundNormal" "#00000000" #! This is set on wallbash
 
 # // The default cursor theme // fallback
@@ -173,15 +229,15 @@ toml_write "${HOME}/.icons/default/index.theme" "Icon Theme" "Inherits" "${CURSO
 sed -i -e "/^gtk-theme-name=/c\gtk-theme-name=\"${GTK_THEME}\"" \
   -e "/^include /c\include \"$HOME/.gtkrc-2.0.mime\"" \
   -e "/^gtk-cursor-theme-name=/c\gtk-cursor-theme-name=\"${CURSOR_THEME}\"" \
-  -e "/^gtk-icon-theme-name=/c\gtk-icon-theme-name=\"${GTK_ICON}\"" "$HOME/.gtkrc-2.0"
+  -e "/^gtk-icon-theme-name=/c\gtk-icon-theme-name=\"${ICON_THEME}\"" "$HOME/.gtkrc-2.0"
 
 #// gtk3
 
 toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-theme-name" "${GTK_THEME}"
-toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-icon-theme-name" "${GTK_ICON}"
+toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-icon-theme-name" "${ICON_THEME}"
 toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-cursor-theme-name" "${CURSOR_THEME}"
 toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-cursor-theme-size" "${CURSOR_SIZE}"
-toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-font-name" "${font_name} ${font_size}"
+toml_write "${confDir}/gtk-3.0/settings.ini" "Settings" "gtk-font-name" "${FONT} ${FONT_SIZE}"
 
 #// gtk4
 if [ -d "${themesDir}/${GTK_THEME}/gtk-4.0" ]; then
@@ -191,7 +247,11 @@ else
   print_log -sec "theme" -stat "use" "'Wallbash-Gtk' as gtk4 theme"
 fi
 rm -rf "${confDir}/gtk-4.0"
-ln -s "${themesDir}/${gtk4Theme}/gtk-4.0" "${confDir}/gtk-4.0"
+if [ -d "${themesDir}/${gtk4Theme}/gtk-4.0" ]; then
+  ln -s "${themesDir}/${gtk4Theme}/gtk-4.0" "${confDir}/gtk-4.0"
+else
+  print_log -sec "theme" -warn "gtk4" "theme directory '${themesDir}/${gtk4Theme}/gtk-4.0' does not exist"
+fi
 
 #// flatpak GTK
 
@@ -203,7 +263,7 @@ if pkg_installed flatpak; then
     --filesystem="$HOME/.icons":ro \
     --filesystem="$HOME/.local/share/icons":ro \
     --env=GTK_THEME="${gtk4Theme}" \
-    --env=ICON_THEME="${GTK_ICON}"
+    --env=ICON_THEME="${ICON_THEME}"
 
   flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo &
 
@@ -211,7 +271,7 @@ fi
 # // xsettingsd
 
 sed -i -e "/^Net\/ThemeName /c\Net\/ThemeName \"${GTK_THEME}\"" \
-  -e "/^Net\/IconThemeName /c\Net\/IconThemeName \"${GTK_ICON}\"" \
+  -e "/^Net\/IconThemeName /c\Net\/IconThemeName \"${ICON_THEME}\"" \
   -e "/^Gtk\/CursorThemeName /c\Gtk\/CursorThemeName \"${CURSOR_THEME}\"" \
   -e "/^Gtk\/CursorThemeSize /c\Gtk\/CursorThemeSize ${CURSOR_SIZE}" \
   "$confDir/xsettingsd/xsettingsd.conf"
@@ -252,21 +312,25 @@ if [ -f "$HOME/.Xdefaults" ]; then
   grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: 30" >>"$HOME/.Xdefaults"
 fi
 
+#? Workaround for gtk-4 having settings.ini!
+if [ -f "${confDir}/gtk-4.0/settings.ini" ]; then
+  rm "${confDir}/gtk-4.0/settings.ini"
+fi
+
 #// wallpaper
 export -f pkg_installed
-export scrDir
 
 [[ -d "$HYDE_CACHE_HOME/wallpapers/" ]] && find "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
     for file; do
         base=$(basename "$file" .png)
         if pkg_installed ${base}; then
-            "${scrDir}/wallpaper.sh" --link --backend "${base}"
+            "${LIB_DIR}/hyde/wallpaper.sh" --link --backend "${base}"
         fi
     done
 ' sh {} + &
 
 if [ "$quiet" = true ]; then
-  "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global >/dev/null 2>&1
+  "${LIB_DIR}/hyde/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global >/dev/null 2>&1
 else
-  "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global
+  "${LIB_DIR}/hyde/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --global
 fi

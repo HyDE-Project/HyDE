@@ -24,8 +24,8 @@ fi
 # add zsh plugins
 if pkg_installed zsh; then
     prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
-
-    if [ "${PROMPT_INPUT}" == "y" ]; then
+    PROMPT_INPUT="${PROMPT_INPUT:-y}"
+    if [[ "${PROMPT_INPUT}" == "y" || "${PROMPT_INPUT}" == "yes" ]]; then
         if ! pkg_installed oh-my-zsh-git; then
             if [[ ! -e "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
                 print_log -sec "SHELL" -stat "cloning" "oh-my-zsh"
@@ -34,7 +34,6 @@ if pkg_installed zsh; then
                     print_log -warn "Continuing" "with existing oh-my-zsh..."
                     exit 0
                 fi
-
             else
                 print_log -sec "SHELL" -stat "updating" "oh-my-zsh"
                 zsh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/upgrade.sh)"
@@ -43,7 +42,7 @@ if pkg_installed zsh; then
     fi
 
     #? Optional: oh-my-zsh
-    if (pkg_installed oh-my-zsh-git || [[ -f "${HOME}/.oh-my-zsh/oh-my-zsh.sh" ]]) && [ ${flg_DryRun} -ne 1 ]; then
+    if (pkg_installed oh-my-zsh-git || [[ -f "${HOME}/.oh-my-zsh/oh-my-zsh.sh" ]]) && [ "${flg_DryRun}" -ne 1 ]; then
         zsh_paths=(
             "$HOME/.oh-my-zsh"
             "/usr/local/share/oh-my-zsh"

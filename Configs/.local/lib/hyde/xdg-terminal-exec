@@ -1,0 +1,1475 @@
+#!/bin/sh
+
+# Default Terminal Execution Utility
+# Reference implementation of proposed Default Terminal Execution Specification
+# https://gitlab.freedesktop.org/terminal-wg/specifications/-/merge_requests/3
+#
+# by Vladimir Kudrya
+# https://github.com/Vladimir-csp/
+# https://gitlab.freedesktop.org/Vladimir-csp/
+#
+# This script is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version. See <http://www.gnu.org/licenses/>.
+#
+# Contributors:
+# Roman Chistokhodov    https://github.com/FreeSlave/
+# fluvf                 https://github.com/fluvf
+
+# Treat non-zero exit status from simple commands as an error
+# Treat unset variables as errors when performing parameter expansion
+# Disable pathname expansion
+set -euf
+
+# Store original IFS value, assumed to contain the default: <space><tab><newline>
+OIFS="$IFS"
+# Newline, utility variable used throughout the script
+N='
+'
+
+# name of executable
+SELF_NAME=${0##*/}
+
+# ASCII Record Separator for cache saving
+RSEP=$(printf '%b' '\036')
+
+# ASCII Unit Separator for Exec parsing
+USEP=$(printf '%b' '\037')
+
+error() {
+	# Print messages to stderr
+	printf '%s\n' "$@" >&2
+}
+
+check_bool() {
+	case "$1" in
+	true | True | TRUE | yes | Yes | YES | 1) return 0 ;;
+	false | False | FALSE | no | No | NO | 0) return 1 ;;
+	*)
+		error "Assuming '$1' means no"
+		return 1
+		;;
+	esac
+}
+
+# Utility function to print debug messages to stderr (or not)
+if check_bool "${DEBUG-0}"; then
+	debug() {
+		# print each arg at new line, prefix each printed line with 'D: '
+		while IFS='' read -r debug_line; do
+			printf 'D: %s\n' "$debug_line"
+		done <<-EOF >&2
+			$(printf '%s\n' "$@")
+		EOF
+	}
+else
+	debug() { :; }
+fi
+
+# builtin stdin cat
+shcat() {
+	while IFS='' read -r line; do
+		printf '%s\n' "$line"
+	done
+}
+
+usage() {
+	shcat <<-EOF
+		Usage:
+		  $SELF_NAME [options] [--] [command [arguments ...]]
+	EOF
+}
+
+help() {
+	shcat <<-EOF
+		$SELF_NAME - Shell-based default terminal launcher.
+
+		Implementation of the proposed Default Terminal Specification.
+
+		$(usage)
+
+		Launches given command in default terminal, or launches default terminal.
+
+		Options for modifying terminal behavior (if supported by terminals's
+		entry):
+
+		  --app-id=app-id set app-id (Wayland) or window class (X11)
+		  --title=title    set tile of terminal.
+		  --dir=workdir    set workdir of terminal.
+		  --hold           instruct terminal to hold after command ends.
+
+		Options for printing data instead of executing terminal:
+
+		  --print-id
+		   print selected Desktop Entry ID. Action is appended delimited
+		   by ":".
+
+		  --print-path
+		   print path to selected Desktop Entry. Action is appended
+		   delimited by ":".
+
+		  --print-content
+		   print content of selected Desktop Entry. Conflicts with --print-cmd.
+
+		  --print-cmd[=printf_sequence]
+		   print resulting command line, delimited by given printf sequence,
+		   "\\n" by default. If sequence is "\\n", output is also terminated with
+		   a newline.
+
+		  --print-delimiter=printf_sequence
+		   printf sequence to be used as the delimiter between multiple requested
+		   print statements, "\\n" by default. If sequence is "\\n", output is
+		   also terminated with a newline.
+
+		Configuration:
+
+		Preferred terminals are configured by listing their Desktop Entry IDs
+		in config files named "[\${desktop}-]xdg-terminals.list" placed in XDG Config
+		hierarchy. Where "\${desktop}" is a lowercased string that is matched
+		(case-insensitively) against items of "\${XDG_CURRENT_DESKTOP}".
+
+		See "man $SELF_NAME" for more details.
+	EOF
+}
+
+# Populates global constants and lists for later use and iteration
+make_paths() {
+	IFS=':'
+
+	# Populate list of config files to read, in descending order of preference
+	for dir in ${XDG_CONFIG_HOME:-"${HOME}/.config"}${IFS}${XDG_CONFIG_DIRS:-/etc/xdg}; do
+		# Normalise base path and append the data subdirectory with a trailing '/'
+		for desktop in ${LOWERCASE_XDG_CURRENT_DESKTOP}; do
+			CONFIGS=${CONFIGS:+${CONFIGS}${IFS}}${dir%/}/${desktop}-xdg-terminals.list
+		done
+		CONFIGS=${CONFIGS:+${CONFIGS}${IFS}}${dir%/}/xdg-terminals.list
+	done
+
+	# append xdg-terminal-exec dirs in XDG_DATA_DIRS to config hierarchy for distro/upstream level defaults
+	for dir in ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
+		# Normalise base path and append the data subdirectory with a trailing '/'
+		for desktop in ${LOWERCASE_XDG_CURRENT_DESKTOP}; do
+			CONFIGS=${CONFIGS:+${CONFIGS}${IFS}}${dir%/}/xdg-terminal-exec/${desktop}-xdg-terminals.list
+		done
+		CONFIGS=${CONFIGS:+${CONFIGS}${IFS}}${dir%/}/xdg-terminal-exec/xdg-terminals.list
+	done
+
+	# Populate list of directories to search for entries in, in ascending order of preference
+	for dir in ${XDG_DATA_HOME:-${HOME}/.local/share}${IFS}${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
+		# Normalise base path and append the data subdirectory with a trailing '/'
+		APPLICATIONS_DIRS=${dir%/}/applications/${APPLICATIONS_DIRS:+${IFS}${APPLICATIONS_DIRS}}
+	done
+
+	# cache
+	XDG_CACHE_HOME=${XDG_CACHE_HOME:-"${HOME}/.cache"}
+	CACHE_FILE="${XDG_CACHE_HOME}/xdg-terminal-exec"
+
+	debug "paths:" "  CONFIGS=${CONFIGS}" "  APPLICATIONS_DIRS=${APPLICATIONS_DIRS}"
+}
+# Mask IFS withing function to allow temporary changes
+alias make_paths='IFS= make_paths'
+
+gen_hash() {
+	# return md5 of custom string, XDG_CURRENT_DESKTOP and ls -LRl output for config and data paths
+	# md5 is 4x faster than sha*, and there is no need for cryptography here
+	# shellcheck disable=SC2034
+	read -r hash _drop <<-EOH
+		$(
+			hash_paths="${CONFIGS}:${APPLICATIONS_DIRS}"
+			{
+				# cache 'version', change to invalidate when format changes
+				echo 4
+				echo "${XDG_CURRENT_DESKTOP-}"
+				IFS=':'
+				# shellcheck disable=SC2086
+				debug ">     hashing '${XDG_CURRENT_DESKTOP-}' and listing of:" $hash_paths "^     end of hash listing"
+				# shellcheck disable=SC2012,SC2086
+				LANG=C ls -LRl ${hash_paths} 2>/dev/null
+			} | md5sum 2>/dev/null
+		)
+	EOH
+	case "$hash" in
+	[0-9a-f]??????????????????????????????[0-9a-f])
+		debug "got fresh hash '$hash'"
+		echo "$hash"
+		return 0
+		;;
+	*)
+		debug "failed to get fresh hash, got '$hash'"
+		return 1
+		;;
+	esac
+}
+
+read_cache() {
+	# reads $cached_hash, $cached_cmd, $cached_exec_usep, $cached_execarg, and others from cache file,
+	# checks if cache is actual and applies it, otherwise returns 1
+	# tries to bail out as soon as possible if something does not fit
+	if [ -f "${CACHE_FILE}" ]; then
+		line_num=0
+		line_limit=50
+		cached_exec_usep=
+		finished=0
+		while IFS='' read -r line; do
+			line_num=$((line_num + 1))
+			case "${line_num}" in
+			1) cached_hash=$line ;;
+			2) cached_cmd=$line ;;
+			3) cached_entry_path=$line ;;
+			4) cached_entry_id=$line ;;
+			5) cached_entry_action=$line ;;
+			6) cached_execarg=$line ;;
+			7) cached_appidarg=$line ;;
+			8) cached_titlearg=$line ;;
+			9) cached_dirarg=$line ;;
+			10) cached_holdarg=$line ;;
+			"$line_limit")
+				debug "reached cache line limit ($line_limit)"
+				return 1
+				;;
+			# Line 11 starts command
+			*)
+				# Command is stored as raw expanded and tokenized $USEP-separated command,
+				# technically it can contain newline characters.
+				# Reconstruct newlines, use ${RSEP}END_OF_EXEC_USEP string as terminator.
+				cached_exec_usep=${cached_exec_usep}${cached_exec_usep:+$N}${line}
+				case "${line}" in
+				*"${RSEP}END_OF_EXEC_USEP")
+					cached_exec_usep=${cached_exec_usep%"${RSEP}END_OF_EXEC_USEP"}
+					finished=1
+					break
+					;;
+				esac
+				;;
+			esac
+		done <"${CACHE_FILE}"
+		if [ "$finished" = "1" ]; then
+			debug "got cache:" \
+				"hash=${cached_hash}" \
+				"cmd=${cached_cmd}" \
+				"entry_path=${cached_entry_path}" \
+				"entry_id=${cached_entry_id}" \
+				"entry_action=${cached_entry_action}" \
+				"execarg=${cached_execarg}" \
+				"appidarg=${cached_appidarg}" \
+				"titlearg=${cached_titlearg}" \
+				"dirarg=${cached_dirarg}" \
+				"holdarg=${cached_holdarg}" \
+				"exec_usep=${cached_exec_usep}"
+			HASH=$(gen_hash) || return 1
+			if [ "$HASH" = "$cached_hash" ] && command -v "$cached_cmd" >/dev/null; then
+				debug "cache is actual"
+				EXEC_USEP=${cached_exec_usep}
+				ENTRY_PATH=${cached_entry_path}
+				ENTRY_ID=${cached_entry_id}
+				ENTRY_ACTION=${cached_entry_action}
+				EXECARG=${cached_execarg}
+				APPIDARG=${cached_appidarg}
+				TITLEARG=${cached_titlearg}
+				DIRARG=${cached_dirarg}
+				HOLDARG=${cached_holdarg}
+				return 0
+			else
+				debug "cache is out-of-date"
+				return 1
+			fi
+		else
+			debug "invalid cache data"
+			return 1
+		fi
+	else
+		debug "no cache data"
+		return 1
+	fi
+}
+
+save_cache() {
+	# saves $HASH, $1 (executable), $EXEC_USEP, $EXECARG, other supported args to cache file or removes it if CACHE_ENABLED is false
+	if check_bool "$CACHE_ENABLED"; then
+		[ ! -d "${XDG_CACHE_HOME}" ] && mkdir -p "${XDG_CACHE_HOME}"
+		if [ -z "${HASH-}" ]; then
+			HASH=$(gen_hash) || {
+				error "could not hash listing of files, removing '${CACHE_FILE}'"
+				rm -f "${CACHE_FILE}"
+				return 0
+			}
+		fi
+		case "${HASH}${1}${EXECARG}${APPIDARG}${TITLEARG}${DIRARG}${HOLDARG}" in
+		"$N")
+			error "One or more of terminal's arguments contains a newline, removing '${CACHE_FILE}'"
+			rm -f "${CACHE_FILE}"
+			return 0
+			;;
+		esac
+		UM=$(umask)
+		umask 0077
+		printf '%s\n' \
+			"${HASH}" \
+			"${1}" \
+			"${ENTRY_PATH}" \
+			"${ENTRY_ID}" \
+			"${ENTRY_ACTION}" \
+			"${EXECARG}" \
+			"${APPIDARG}" \
+			"${TITLEARG}" \
+			"${DIRARG}" \
+			"${HOLDARG}" \
+			"${EXEC_USEP}${RSEP}END_OF_EXEC_USEP" >"${CACHE_FILE}"
+		umask "$UM"
+		debug ">     saved cache:" "${HASH}" "${EXEC_USEP}" "${EXECARG}" "${1}" "^     end of saved cache"
+	else
+		debug "cache is disabled, removing '${CACHE_FILE}'"
+		rm -f "${CACHE_FILE}"
+		return 0
+	fi
+}
+
+list_contains() {
+	# checks if list $1 contains item $2 delimited by $3 (default $N)
+	delimiter=${3:-$N}
+	case "${delimiter}${1}${delimiter}" in
+	*"${delimiter}${2}${delimiter}"*) return 0 ;;
+	*) return 1 ;;
+	esac
+}
+
+# Parse all config files and populate $ENTRY_IDS with read desktop entry IDs
+read_config_paths() {
+	# All config files are read immediatelly, rather than on demand, even if it's more IO intensive
+	# This way all IDs are already known, and in order of preference, before iterating over them
+	IFS=':'
+	for config_path in ${CONFIGS}; do
+		debug "reading config '$config_path'"
+		# Nonexistant file is not an error
+		[ -f "$config_path" ] || continue
+		# Let `read` trim leading/trailing whitespace from the line
+		while IFS="$OIFS" read -r line; do
+			#debug "read line '$line'"
+			case $line in
+
+			# Catch directives first
+
+			# cache control
+			/enable_cache)
+				debug "found '$line' directive${CACHE_CONFIGURED:+ (ignored)}"
+				[ -z "$CACHE_CONFIGURED" ] || continue
+				CACHE_ENABLED=true
+				CACHE_CONFIGURED=1
+				;;
+			/disable_cache)
+				debug "found '$line' directive${CACHE_CONFIGURED:+ (ignored)}"
+				[ -z "$CACHE_CONFIGURED" ] || continue
+				CACHE_ENABLED=false
+				CACHE_CONFIGURED=1
+				;;
+
+			# compat mode
+			/execarg_compat)
+				debug "found '$line' directive${EXECARG_COMPAT_CONFIGURED:+ (ignored)}"
+				[ -z "$EXECARG_COMPAT_CONFIGURED" ] || continue
+				EXECARG_COMPAT=true
+				EXECARG_COMPAT_CONFIGURED=1
+				;;
+			/execarg_strict)
+				debug "found '$line' directive${EXECARG_COMPAT_CONFIGURED:+ (ignored)}"
+				[ -z "$EXECARG_COMPAT_CONFIGURED" ] || continue
+				EXECARG_COMPAT=false
+				EXECARG_COMPAT_CONFIGURED=1
+				;;
+
+			# default TerminalArgExec overrides
+			/execarg_default:*:*)
+				if ! check_bool "$EXECARG_COMPAT"; then
+					debug "ignored directive '$line' (strict mode)"
+					continue
+				fi
+				IFS=':' read -r _directive entry_id execarg_default <<-EOF
+					$line
+				EOF
+				if validate_entry_id "${entry_id}"; then
+					debug "added TerminalArgExec default '${execarg_default}' for '${entry_id}'"
+					# do not bother with deduplication, first entry ID will win
+					EXECARG_DEFAULTS=${EXECARG_DEFAULTS}${EXECARG_DEFAULTS:+$N}${entry_id}:${execarg_default}
+				fi
+				;;
+
+			# `[The extensionless entry filename] should be a valid D-Bus well-known name.`
+			# `a sequence of non-empty elements separated by dots (U+002E FULL STOP),
+			# none of which starts with a digit, and each of which contains only characters from the set [a-zA-Z0-9-_]`
+			# Stricter parts seem to be related only to reversed DNS notation but not common naming
+			# i.e. there is `2048-qt.desktop`.
+			# I do not know of any terminal that starts with a number, but it's valid.
+
+			# Catch and validate potential entry ID with action ID (be graceful about an empty one)
+			[a-zA-Z0-9_]* | [+-][a-zA-Z0-9_]*)
+				case "$line" in
+				[+-]*)
+					# save and cut exclusion marker
+					_line=${line#[+-]}
+					exclusion=${line%"$_line"}
+					line=$_line
+					;;
+				*) exclusion='' ;;
+				esac
+				# consider only the first ':' as a delimiter
+				IFS=':' read -r entry_id action_id <<-EOL
+					$line
+				EOL
+				if validate_entry_id "${entry_id}" && validate_action_id "${action_id}"; then
+					case "$exclusion" in
+					'')
+						ENTRY_IDS=${ENTRY_IDS:+${ENTRY_IDS}${N}}$line
+						debug "added entry ID with action ID '$line'"
+						;;
+					'+')
+						if list_contains "${EXCLUDED_ENTRY_IDS}" "${entry_id}"; then
+							debug "entry '${entry_id}' was already excluded from fallback"
+						elif list_contains "${INCLUDED_ENTRY_IDS}" "${entry_id}"; then
+							debug "entry '${entry_id}' fallback exclusion was already prevented"
+						else
+							debug "preventing fallback exclusion for entry '${entry_id}'"
+							INCLUDED_ENTRY_IDS=${INCLUDED_ENTRY_IDS:+${INCLUDED_ENTRY_IDS}${N}}${entry_id}
+						fi
+						;;
+					'-')
+						if list_contains "${INCLUDED_ENTRY_IDS}" "${entry_id}"; then
+							debug "entry '${entry_id}' fallback exclusion was already prevented"
+						elif list_contains "${EXCLUDED_ENTRY_IDS}" "${entry_id}"; then
+							debug "entry '${entry_id}' was already excluded from fallback"
+						else
+							debug "excluding entry '${entry_id}' from fallback"
+							EXCLUDED_ENTRY_IDS=${EXCLUDED_ENTRY_IDS:+${EXCLUDED_ENTRY_IDS}${N}}${entry_id}
+						fi
+						;;
+					esac
+				else
+					error "Discarded possibly misspelled entry '$line'"
+				fi
+				;;
+
+			esac
+			# By default empty lines and comments get ignored
+		done <"$config_path"
+	done
+}
+# Mask IFS withing function to allow temporary changes
+alias read_config_paths='IFS= read_config_paths'
+
+replace() {
+	# takes $1, replaces $2 with $3
+	# does it in large chunks
+	# writes result to global REPLACED_STR to avoid $() newline issues
+
+	# right part of string
+	r_remainder=${1}
+	REPLACED_STR=
+	while [ -n "$r_remainder" ]; do
+		# left part before first encounter of $2
+		r_left=${r_remainder%%"$2"*}
+		# append
+		REPLACED_STR=${REPLACED_STR}$r_left
+		if [ "$r_left" = "$r_remainder" ]; then
+			# nothing left to cut
+			break
+		fi
+		# append replace substring
+		REPLACED_STR=${REPLACED_STR}$3
+		# cut remainder
+		r_remainder=${r_remainder#*"$2"}
+	done
+}
+
+de_expand_str() {
+	# expands \s, \n, \t, \r, \\
+	# https://specifications.freedesktop.org/desktop-entry-spec/latest/value-types.html
+	# writes result to global $EXPANDED_STR in place to avoid $() expansion newline issues
+	debug "expander received: $1"
+	EXPANDED_STR=
+	exp_remainder=$1
+	while [ -n "$exp_remainder" ]; do
+		# left is substring of remainder before the first encountered backslash
+		exp_left=${exp_remainder%%\\*}
+
+		# append left to EXPANDED_STR
+		EXPANDED_STR=${EXPANDED_STR}${exp_left}
+		debug "expander appended: $exp_left"
+
+		if [ "$exp_left" = "$exp_remainder" ]; then
+			debug "expander ended: $EXPANDED_STR"
+			# no more backslashes left
+			break
+		fi
+
+		# remove left substring and backslash from remainder
+		exp_remainder=${exp_remainder#"$exp_left"\\}
+
+		case "$exp_remainder" in
+		# expand and append to EXPANDED_STR
+		s*)
+			EXPANDED_STR=${EXPANDED_STR}' '
+			exp_remainder=${exp_remainder#?}
+			debug "expander substituted space"
+			;;
+		n*)
+			EXPANDED_STR=${EXPANDED_STR}$N
+			exp_remainder=${exp_remainder#?}
+			debug "expander substituted newline"
+			;;
+		t*)
+			EXPANDED_STR=${EXPANDED_STR}'	'
+			exp_remainder=${exp_remainder#?}
+			debug "expander substituted tab"
+			;;
+		r*)
+			EXPANDED_STR=${EXPANDED_STR}$(printf '%b' '\r')
+			exp_remainder=${exp_remainder#?}
+			debug "expander substituted caret return"
+			;;
+		\\*)
+			EXPANDED_STR=${EXPANDED_STR}\\
+			exp_remainder=${exp_remainder#?}
+			debug "expander substituted backslash"
+			;;
+		# unsupported sequence, reappend backslash
+		#*)
+		#	EXPANDED_STR=${EXPANDED_STR}\\
+		#	debug 'expander reappended backslash'
+		#	;;
+		esac
+	done
+}
+
+de_tokenize_exec() {
+	# Shell-based DE Exec string tokenizer.
+	# https://specifications.freedesktop.org/desktop-entry-spec/latest/exec-variables.html
+	# How hard can it be?
+	# Fills global EXEC_USEP var with $USEP-separated command array in place to avoid $() expansion newline issues
+	debug "tokenizer received: $1"
+	EXEC_USEP=
+	tok_remainder=$1
+	tok_quoted=0
+	tok_in_space=0
+	while [ -n "$tok_remainder" ]; do
+		# left is substring of remainder before the first encountered special char
+		tok_left=${tok_remainder%%[[:space:]\"\`\$\\\'\>\<\~\|\&\;\*\?\#\(\)]*}
+
+		# left should be safe to append right away
+		EXEC_USEP=${EXEC_USEP}${tok_left}
+		debug "tokenizer appended: >$tok_left<"
+
+		# end of the line
+		case "$tok_remainder" in
+		"$tok_left")
+			debug "tokenizer is out of special chars"
+			break
+			;;
+		esac
+
+		# isolate special char
+		tok_remainder=${tok_remainder#"$tok_left"}
+		cut=${tok_remainder#?}
+		tok_char=${tok_remainder%"$cut"}
+		unset cut
+		# cut it from remainder
+		tok_remainder=${tok_remainder#"$tok_char"}
+
+		# check if still in space
+		case "${tok_in_space}${tok_left}${tok_char}" in
+		1[[:space:]])
+			debug "tokenizer still in space :) skipping space character"
+			continue
+			;;
+		1*)
+			debug "tokenizer no longer in space :("
+			tok_in_space=0
+			;;
+		esac
+
+		## decide what to do with the character
+		# doublequote while quoted
+		case "${tok_quoted}${tok_char}" in
+		'1"')
+			tok_quoted=0
+			debug "tokenizer closed double quotes"
+			continue
+			;;
+		# doublequote while unquoted
+		'0"')
+			tok_quoted=1
+			debug "tokenizer opened double quotes"
+			continue
+			;;
+		# error out on unquoted special chars
+		0[\`\$\\\'\>\<\~\|\&\;\*\?\#\(\)])
+			debug "${entry_id}: Encountered unquoted character: '$tok_char'"
+			return 1
+			;;
+		# error out on quoted but unescaped chars
+		1[\`\$])
+			debug "${entry_id}: Encountered unescaped quoted character: '$tok_char'"
+			return 1
+			;;
+		# process quoted escapes
+		1\\)
+			case "$tok_remainder" in
+			# if there is no next char, fail
+			'')
+				debug "${entry_id}: Dangling backslash encountered!"
+				return 1
+				;;
+			# cut and append the next char right away
+			# or a half of multibyte char, the other half should go into the next
+			# 'tok_left' hopefully...
+			*)
+				cut=${tok_remainder#?}
+				tok_char=${tok_remainder%"$cut"}
+				tok_remainder=${cut}
+				unset cut
+				EXEC_USEP=${EXEC_USEP}${tok_char}
+				debug "tokenizer appended escaped: >$tok_char<"
+				;;
+			esac
+			;;
+		# Consider Cosmos
+		0[[:space:]])
+			case "${tok_remainder}" in
+			# there is non-space to follow
+			*[![:space:]]*)
+				# append separator
+				EXEC_USEP=${EXEC_USEP}${USEP}
+				tok_in_space=1
+				debug "tokenizer entered spaaaaaace!!!! separator appended"
+				;;
+			# ignore unquoted space at the end of string
+			*)
+				debug "tokenizer entered outer spaaaaaace!!!! separator skipped, this is the end"
+				break
+				;;
+			esac
+			;;
+		# append quoted chars
+		1[[:space:]\'\>\<\~\|\&\;\*\?\#\(\)])
+			EXEC_USEP=${EXEC_USEP}${tok_char}
+			debug "tokenizer appended quoted char: >$tok_char<"
+			;;
+		# this should not happen
+		*)
+			debug "${entry_id}: parsing error at char '$tok_char', (quoted: $tok_quoted)"
+			return 1
+			;;
+		esac
+	done
+	case "$tok_quoted" in
+	1)
+		debug "${entry_id}: Double quote was not closed!"
+		return 1
+		;;
+	esac
+	# shellcheck disable=SC2086
+	debug "tokenizer ended:" "$(
+		IFS=$USEP
+		printf '  >%s<\n' $EXEC_USEP
+	)"
+}
+
+de_strip_fields() {
+	# Operates on $EXEC_USEP
+	# modifies according to args/fields
+	# no arguments, erase fields from $EXEC_USEP
+	exec_usep=''
+	fu_found=false
+	IFS=$USEP
+	for arg in $EXEC_USEP; do
+		case "$arg" in
+		# remove deprecated fields
+		*[!%]'%'[dDnNvm]* | '%'[dDnNvm]*) debug "injector removed deprecated '$arg'" ;;
+		# treat file fields
+		*[!%]'%'[fFuU]* | '%'[fFuU]*)
+			if [ "$fu_found" = "true" ]; then
+				debug "${entry_id}: Encountered more than one %[fFuU] field!"
+				return 1
+			fi
+			fu_found=true
+			debug "injector removed '$arg'"
+			continue
+			;;
+		# other fields
+		*[!%]'%i'* | '%i'* | *[!%]'%c'* | '%c'*)
+			debug "injector removed '$arg'"
+			continue
+			;;
+		# literal %
+		*[!%]%%* | %%*)
+			replace "$arg" "%%" "%"
+			rarg=$REPLACED_STR
+			debug "injector replacing '%%': '$arg' -> '$rarg'"
+			exec_usep=${exec_usep}${exec_usep:+$USEP}${rarg}
+			;;
+		# invalid field
+		*%?* | *[!%]%)
+			debug "${entry_id}: unknown % field in argument '${arg}'"
+			return 1
+			;;
+		*)
+			debug "injector keeped: '$arg'"
+			exec_usep=${exec_usep}${exec_usep:+$USEP}${arg}
+			;;
+		esac
+	done
+	EXEC_USEP=$exec_usep
+	IFS=$OIFS
+}
+# Mask IFS withing function to allow temporary changes
+alias de_strip_fields='IFS= de_strip_fields'
+
+reset_keys() {
+	# init vars used in entry checks
+	IS_TERMINAL=''
+	EXEC_USEP=''
+	EXECARG='-e'
+	EXECARG_DEFINED=false
+	APPIDARG=''
+	TITLEARG=''
+	DIRARG=''
+	HOLDARG=''
+}
+
+# Find and map all desktop entry files from standardised paths into aliases
+find_entry_paths() {
+	debug "registering entries"
+
+	# Append application directory paths to be searched
+	IFS=':'
+	for directory in $APPLICATIONS_DIRS; do
+		# Append '.' to delimit start of entry ID
+		set -- "$@" "$directory".
+	done
+
+	# Find all files
+	set -- "$@" -type f
+
+	# Append path conditions per directory
+	or_arg=''
+	for directory in $APPLICATIONS_DIRS; do
+		# Match full path with proper first character of entry ID and .desktop extension
+		# Reject paths with invalid characters in entry ID
+		set -- "$@" ${or_arg} '(' -path "$directory"'./[a-zA-Z0-9_]*.desktop' ! -path "$directory"'./*[^a-zA-Z0-9_./-]*' ')'
+		or_arg='-o'
+	done
+
+	# Loop through found entry paths and IDs
+	IFS=$N
+	while read -r entry_path && read -r entry_id; do
+		# exclude entries based on EXCLUDED_ENTRY_IDS
+		if list_contains "$EXCLUDED_ENTRY_IDS" "$entry_id"; then
+			debug "entry '${entry_id}' was excluded from fallback"
+			continue
+		fi
+		# Entries are checked in ascending order of preference, so use last found if duplicate
+		# shellcheck disable=SC2139
+		alias "$entry_id"="entry_path='$entry_path'"
+		debug "registered '$entry_path' as entry '$entry_id'"
+		# Add as a fallback ID regardles if it's a duplicate
+		FALLBACK_ENTRY_IDS=${entry_id}${FALLBACK_ENTRY_IDS:+${N}${FALLBACK_ENTRY_IDS}}
+		debug "added fallback ID '$entry_id'"
+	done <<-EOE
+		$(
+			# Don't complain about nonexistent directories
+			find -L "$@" 2>/dev/null |
+				# Print entry path and convert it into an ID and print that too
+				awk '{ print; sub(".*/[.]/", ""); gsub("/", "-"); print }'
+		)
+	EOE
+}
+# Mask IFS withing function to allow temporary changes
+alias find_entry_paths='IFS= find_entry_paths'
+
+# Check validity of a given entry key - value pair
+# Modifies following global variables:
+# EXEC_USEP : Program to execute, possibly with arguments, delimited by ASCII Unit Separator.
+# EXECARG : Execution argument for the terminal emulator.
+# IS_TERMINAL : Set if application has been categorized as a terminal emulator
+check_entry_key() {
+	key="$1"
+	value="$2"
+	action="$3"
+	read_exec="$4"
+	de_checks="$5"
+
+	# Order of checks is important
+	case $key in
+	'Categories'*=*)
+		debug "checking for 'TerminalEmulator' in Categories '$value'"
+		IFS=';'
+		for category in $value; do
+			[ "$category" = "TerminalEmulator" ] && {
+				IS_TERMINAL=true
+				return 0
+			}
+		done
+		# Default in this case is to fail
+		return 1
+		;;
+	'Actions'*=*)
+		# `It is not valid to have an action group for an action identifier not mentioned in the Actions key.
+		# Such an action group must be ignored by implementors.`
+		# ignore if no action requested
+		[ -z "$action" ] && return 0
+		debug "checking for '$action' in Actions '$value'"
+		IFS=';'
+		for check_action in $value; do
+			if [ "$check_action" = "$action" ]; then
+				action_listed=true
+				return 0
+			fi
+		done
+		# Default in this case is to fail
+		return 1
+		;;
+	'OnlyShowIn'*=*)
+		case "$de_checks" in
+		true) debug "checking for intersecion between '${XDG_CURRENT_DESKTOP-}' and OnlyShowIn '$value'" ;;
+		false)
+			debug "skipping OnlyShowIn check"
+			return 0
+			;;
+		esac
+		IFS=';'
+		for target in $value; do
+			IFS=':'
+			for desktop in ${XDG_CURRENT_DESKTOP-}; do
+				[ "$desktop" = "$target" ] && return 0
+			done
+		done
+		# Default in this case is to fail
+		return 1
+		;;
+	'NotShowIn'*=*)
+		case "$de_checks" in
+		true) debug "checking for intersecion between '${XDG_CURRENT_DESKTOP-}' and NotShowIn '$value'" ;;
+		false)
+			debug "skipping NotShowIn check"
+			return 0
+			;;
+		esac
+		IFS=';'
+		for target in $value; do
+			IFS=':'
+			for desktop in ${XDG_CURRENT_DESKTOP-}; do
+				debug "checking NotShowIn match '$desktop'='$target'"
+				[ "$desktop" = "$target" ] && return 1
+			done
+		done
+		# Default in this case is to succeed
+		return 0
+		;;
+	'X-TerminalArgExec'*=* | 'TerminalArgExec'*=*)
+		# Set global variable
+		# values of type string should support escape sequences
+		de_expand_str "$value"
+		EXECARG=$EXPANDED_STR
+		EXECARG_DEFINED=true
+		debug "read TerminalArgExec '$EXECARG'"
+		;;
+	'X-ExecArg'*=* | 'ExecArg'*=*)
+		# ignore old ExecArg in strict mode
+		case "${EXECARG_COMPAT}" in
+		false) return 0 ;;
+		esac
+		# Set global variable
+		# values of type string should support escape sequences
+		de_expand_str "$value"
+		EXECARG=$EXPANDED_STR
+		EXECARG_DEFINED=true
+		debug "read TerminalArgExec '$EXECARG'"
+		;;
+	'X-TerminalArgAppId'*=* | 'TerminalArgAppId'*=*)
+		# Set global variable
+		# values of type string should support escape sequences
+		de_expand_str "$value"
+		APPIDARG=$EXPANDED_STR
+		debug "read TerminalArgAppId '$APPIDARG'"
+		;;
+	'X-TerminalArgTitle'*=* | 'TerminalArgTitle'*=*)
+		# Set global variable
+		# values of type string should support escape sequences
+		de_expand_str "$value"
+		TITLEARG=$EXPANDED_STR
+		debug "read TerminalArgTitle '$TITLEARG'"
+		;;
+	'X-TerminalArgDir'*=* | 'TerminalArgDir'*=*)
+		# Set global variable
+		# values of type string should support escape sequences
+		de_expand_str "$value"
+		DIRARG=$EXPANDED_STR
+		debug "read TerminalArgDir '$DIRARG'"
+		;;
+	'X-TerminalArgHold'*=* | 'TerminalArgHold'*=*)
+		# Set global variable
+		# values of type string should support escape sequences
+		de_expand_str "$value"
+		HOLDARG=$EXPANDED_STR
+		debug "read TerminalArgHold '$HOLDARG'"
+		;;
+	'TryExec'*=*)
+		de_expand_str "$value"
+		debug "checking TryExec executable '$EXPANDED_STR'"
+		command -v "$(printf '%b' "$EXPANDED_STR")" >/dev/null || return 1
+		;;
+	'Hidden'*=*)
+		debug "checking boolean Hidden '$value'"
+		case "$value" in
+		true)
+			debug "ignored Hidden entry"
+			return 1
+			;;
+		esac
+		;;
+	'Exec'*=*)
+		case "$read_exec" in
+		false)
+			debug "ignored Exec from wrong section"
+			return 0
+			;;
+		esac
+		debug "read Exec '$value'"
+		# Escape sequences of DE string value (sets $EXPANDED_STR)
+		de_expand_str "$value"
+		# Tokenize resulting string (sets $EXEC_USEP)
+		de_tokenize_exec "$EXPANDED_STR"
+		# Expand % fields
+		de_strip_fields
+		# Get first word from read Exec value
+		EXEC0=${EXEC_USEP%%"$USEP"*}
+		debug "checking Exec[0] executable '$EXEC0'"
+		command -v "$EXEC0" >/dev/null || return 1
+		;;
+	esac
+	# By default unrecognised keys, empty lines and comments get ignored
+}
+# Mask IFS withing function to allow temporary changes
+alias check_entry_key='IFS= check_entry_key'
+
+# Read entry from given path
+read_entry_path() {
+	entry_path="$1"
+	entry_action="$2"
+	de_checks="$3"
+	read_exec=false
+	action_listed=false
+	# shellcheck disable=SC2016
+	debug "reading desktop entry '$entry_path'${entry_action:+ action '}$entry_action${entry_action:+'}"
+	# Let `read` trim leading/trailing whitespace from the line
+	while IFS="$OIFS" read -r line; do
+		case $line in
+		# `There should be nothing preceding [the Desktop Entry group] in the desktop entry file but [comments]`
+		# if entry_action is not requested, allow reading Exec right away from the main group
+		'[Desktop Entry]'*) [ -z "$entry_action" ] && read_exec=true ;;
+		# A `Key=Value` pair
+		[a-zA-Z0-9-]*)
+			# Split value from pair
+			value=${line#*=}
+			# Remove all but leading spaces, and trim that from the value
+			value=${value#"${value%%[! ]*}"}
+			# Check the key, continue to next line on success
+			check_entry_key "$line" "$value" "$entry_action" "$read_exec" "$de_checks" && continue
+			# Reset values that might have been set
+			reset_keys
+			# shellcheck disable=SC2016
+			debug "entry discarded"
+			return 1
+			;;
+		# found requested action, allow reading Exec
+		"[Desktop Action ${entry_action}]"*)
+			if [ "$action_listed" = "true" ]; then
+				read_exec=true
+			else
+				debug "action '$entry_action' was not listed in Actions"
+				return 1
+			fi
+			;;
+		# Start of the next group header, stop if already read exec
+		'['*) [ "$read_exec" = "true" ] && break ;;
+		esac
+		# By default empty lines and comments get ignored
+	done <"$entry_path"
+}
+
+validate_entry_id() {
+	# validates entry ID ($1)
+
+	case "$1" in
+	# invalid characters or degrees of emptiness
+	*[!a-zA-Z0-9_.-]* | *[!a-zA-Z0-9_.-] | [!a-zA-Z0-9_.-]* | [!a-zA-Z0-9_.-] | '' | .desktop)
+		debug "string not valid as Entry ID: '$1'"
+		return 1
+		;;
+	# all that left with .desktop
+	*.desktop) return 0 ;;
+	# and without
+	*)
+		debug "string not valid as Entry ID '$1'"
+		return 1
+		;;
+	esac
+}
+
+validate_action_id() {
+	# validates action ID ($1)
+
+	case "$1" in
+	# empty is ok
+	'') return 0 ;;
+	# invalid characters
+	*[!a-zA-Z0-9-]* | *[!a-zA-Z0-9-] | [!a-zA-Z0-9-]* | [!a-zA-Z0-9-])
+		debug "string not valid as Action ID: '$1'"
+		return 1
+		;;
+	# all that left
+	*) return 0 ;;
+	esac
+}
+
+# Loop through IDs and try to find a valid entry
+find_entry() {
+	# for explicitly listed entries do not apply DE *ShowIn limits
+	de_checks=false
+	IFS="$N"
+	for entry_id in ${ENTRY_IDS}${N}//fallback_start//${N}$FALLBACK_ENTRY_IDS; do
+		case "$entry_id" in
+		# entry has an action appended
+		*:*)
+			entry_action=${entry_id#*:}
+			entry_id=${entry_id%:*}
+			;;
+		# skip empty line
+		'') continue ;;
+		# fallback entries ahead, enable *ShowIn checks
+		'//fallback_start//')
+			de_checks=true
+			continue
+			;;
+		# nullify action
+		*) entry_action='' ;;
+		esac
+
+		debug "matching path for entry ID '$entry_id'"
+		# Check if a matching path was found for ID
+		alias "$entry_id" >/dev/null 2>&1 || continue
+		# Evaluates the alias, it sets $entry_path
+		eval "$entry_id"
+		# Unset the alias, so duplicate entries are skipped
+		unalias "$entry_id"
+		read_entry_path "$entry_path" "$entry_action" "$de_checks" || continue
+		# Check that the entry is actually executable
+		[ -z "${EXEC_USEP}" ] && continue
+		# ensure entry is a Terminal Emulator
+		[ -z "${IS_TERMINAL}" ] && continue
+		# if entry lacks TerminalArgExec
+		if [ "$EXECARG_DEFINED" != "true" ]; then
+			# get (custom) default in compat mode
+			if check_bool "$EXECARG_COMPAT"; then
+				EXECARG=$(get_default_execarg "$entry_id")
+			# discard entry in strict mode
+			else
+				continue
+			fi
+		fi
+		# Entry is valid, set ENTRY_PATH, ENTRY_ID, ENTRY_ACTION and stop
+		ENTRY_PATH=$entry_path
+		ENTRY_ID=$entry_id
+		ENTRY_ACTION=$entry_action
+		return 0
+	done
+	# shellcheck disable=SC2086
+	IFS=':' error "No valid terminal entry was found in:" ${APPLICATIONS_DIRS}
+	return 1
+}
+# Mask IFS withing function to allow temporary changes
+alias find_entry='IFS= find_entry'
+
+get_default_execarg() {
+	# based on entry_id ($1) return TerminalArgExec from EXECARG_DEFAULTS
+	check_entry=$1
+	while IFS=':' read -r entry_id execarg_default; do
+		case "$entry_id" in
+		"$check_entry")
+			printf '%s' "$execarg_default"
+			debug "custom default TerminalArgExec '$execarg_default' for '$check_entry'"
+			return 0
+			;;
+		esac
+	done <<-EOF
+		$EXECARG_DEFAULTS
+	EOF
+	printf '%s' '-e'
+	debug "using default TerminalArgExec '-e' for '$check_entry'"
+}
+
+# print help and exit if there's -h|--help before --
+args=";;$(printf '%s;;' "$@")"
+case "${args%%';;--;;'*};;" in
+*';;-h;;'* | *';;--help;;'*)
+	help
+	exit 0
+	;;
+esac
+
+## globals
+LOWERCASE_XDG_CURRENT_DESKTOP=$(printf '%s' "${XDG_CURRENT_DESKTOP-}" | tr '[:upper:]' '[:lower:]')
+
+# compat mode
+EXECARG_COMPAT=${XTE_EXECARG_COMPAT-true}
+# flag reused in directive encounter
+EXECARG_COMPAT_CONFIGURED=${XTE_EXECARG_COMPAT-}
+
+EXEC_USEP=''
+EXPANDED_STR=''
+ENTRY_PATH=''
+ENTRY_ID=''
+ENTRY_ACTION=''
+
+# this will receive proper value later
+APPLICATIONS_DIRS=''
+
+# this will be filled with values from /execarg_default:*:* directives
+EXECARG_DEFAULTS=''
+
+# this (re)sets vars to be filled from desktop entry
+reset_keys
+
+# path iterators
+make_paths
+
+# At this point we have no way of telling if cache is enabled or not, unless
+# XTE_CACHE_ENABLED is set, so just try reading it by default, otherwise do the
+# usual thing. Editing config to disable cache should invalidate the cache.
+CACHE_ENABLED=${XTE_CACHE_ENABLED-true}
+# flag reused for directive encounter
+CACHE_CONFIGURED=${XTE_CACHE_ENABLED-}
+
+# HASH can be reused
+HASH=''
+
+if check_bool "${CACHE_ENABLED}" && read_cache; then
+	CACHE_USED=true
+else
+	# continue with globals
+	CACHE_USED=false
+
+	# All desktop entry ids in descending order of preference from *xdg-terminals.list configs,
+	# with duplicates removed
+	ENTRY_IDS=''
+	# All desktop entry ids found in data dirs in descending order of preference,
+	# with duplicates (including those in $ENTRY_IDS) removed
+	FALLBACK_ENTRY_IDS=''
+
+	# Entry IDs excluded from fallback by '-entry.desktop' directives
+	EXCLUDED_ENTRY_IDS=''
+	# Entry IDS included (exclusion prevented) by '+entry.desktop' directives
+	INCLUDED_ENTRY_IDS=''
+
+	# Modifies $ENTRY_IDS
+	read_config_paths
+	# Modifies $ENTRY_IDS and sets global aliases
+	find_entry_paths
+
+	# shellcheck disable=SC2086
+	IFS="$N" debug ">     final entry ID list:" ${ENTRY_IDS} "^     end of final entry ID list"
+	# shellcheck disable=SC2086
+	IFS="$N" debug ">     final fallback entry ID list:" ${FALLBACK_ENTRY_IDS} "^     end of final fallback entry ID list"
+
+	# walk ID lists and find first applicable
+	find_entry || exit 1
+fi
+
+# Store original argument list, before it's modified
+debug ">     original args:" "$@" "^     end of original args" "EXEC_USEP=$EXEC_USEP" "EXECARG=$EXECARG"
+
+# process/discard options
+debug "option processing"
+APPIDVAL=''
+TITLEVAL=''
+DIRVAL=''
+HOLD=false
+TEST_MODE=false
+PRINT_DATA=
+PRINT_DELIMITER='\n'
+PRINT_CMD_DELIMITER='\n'
+while [ "$#" -gt "0" ]; do
+	case "$1" in
+	--)
+		debug "found explicit end of options $1"
+		shift
+		break
+		;;
+	-e | "$EXECARG")
+		debug "found exec arg $1"
+		shift
+		break
+		;;
+	--app-id=*)
+		debug "found option $1"
+		IFS='=' read -r _opt APPIDVAL <<-EOF
+			$1
+		EOF
+		debug "set app-id option to $APPIDVAL"
+		shift
+		;;
+	--title=*)
+		debug "found option $1"
+		IFS='=' read -r _opt TITLEVAL <<-EOF
+			$1
+		EOF
+		debug "set title option to $TITLEVAL"
+		shift
+		;;
+	--dir=*)
+		debug "found option $1"
+		IFS='=' read -r _opt DIRVAL <<-EOF
+			$1
+		EOF
+		debug "set dir option to $DIRVAL"
+		shift
+		;;
+	--hold)
+		debug "found option $1"
+		HOLD=true
+		debug "set HOLD=true"
+		shift
+		;;
+	--test)
+		debug "found option $1"
+		TEST_MODE=true
+		debug "set TEST_MODE=true"
+		shift
+		;;
+	--print-path)
+		debug "found option $1"
+		PRINT_DATA="$PRINT_DATA path"
+		debug "set PRINT_DATA='$PRINT_DATA'"
+		shift
+		;;
+	--print-id)
+		debug "found option $1"
+		PRINT_DATA="$PRINT_DATA id"
+		debug "set PRINT_DATA=$PRINT_DATA"
+		shift
+		;;
+	--print-content)
+		debug "found option $1"
+		PRINT_DATA="$PRINT_DATA content"
+		debug "set PRINT_DATA=$PRINT_DATA"
+		shift
+		;;
+	--print-cmd)
+		debug "found option $1"
+		PRINT_DATA="$PRINT_DATA cmd"
+		debug "set PRINT_DATA=$PRINT_DATA"
+		shift
+		;;
+	--print-cmd=*)
+		debug "found option $1"
+		PRINT_DATA="$PRINT_DATA cmd"
+		IFS='=' read -r _arg PRINT_CMD_DELIMITER <<-EOF
+			$1
+		EOF
+		debug "set PRINT_DATA=$PRINT_DATA" "set PRINT_CMD_DELIMITER=$PRINT_CMD_DELIMITER"
+		shift
+		;;
+	--print-delimiter=*)
+		debug "found option $1"
+		IFS='=' read -r _arg PRINT_DELIMITER <<-EOF
+			$1
+		EOF
+		debug "set PRINT_DELIMITER=$PRINT_DELIMITER"
+		shift
+		;;
+	[!-]*)
+		debug "found non-option $1"
+		break
+		;;
+	-*)
+		debug "discarding unknown option $1"
+		shift
+		;;
+	esac
+done
+debug "end of option processing, prependig options"
+
+# print some data
+PRINT_FIRST=true
+case " $PRINT_DATA " in
+*' id '*)
+	debug "acting on --print-id"
+
+	printf '%s' "${ENTRY_ID}${ENTRY_ACTION:+:}${ENTRY_ACTION}"
+
+	PRINT_FIRST=false
+	;;
+esac
+case " $PRINT_DATA " in
+*' path '*)
+	debug "acting on --print-path"
+
+	# remove /./ delimiter
+	case "${ENTRY_PATH}" in
+	*'/./'*) ENTRY_PATH=${ENTRY_PATH%%/./*}/${ENTRY_PATH##*/./} ;;
+	esac
+
+	case "$PRINT_FIRST" in
+	false) printf '%b' "$PRINT_DELIMITER" ;;
+	esac
+
+	printf '%s' "${ENTRY_PATH}${ENTRY_ACTION:+:}${ENTRY_ACTION}"
+
+	PRINT_FIRST=false
+	;;
+esac
+case " $PRINT_DATA " in
+*' content '*)
+	debug "acting on --print-content"
+
+	case "$PRINT_FIRST" in
+	false) printf '%b' "$PRINT_DELIMITER" ;;
+	esac
+
+	shcat <"${ENTRY_PATH}"
+
+	PRINT_FIRST=false
+	;;
+esac
+
+# early bail out in some print modes
+case " $PRINT_DATA " in
+'  ' | *' cmd '*)
+	# more stuff to do, continue
+	true
+	;;
+*' content '*)
+	# content already has newline at the end, just exit
+	exit 0
+	;;
+*)
+	# terminate with newline if delimiter is newline
+	case "$PRINT_DELIMITER" in
+	'\n') printf '%b' '\n' ;;
+	esac
+	exit 0
+	;;
+esac
+
+# option prepend
+if [ "$#" -gt 0 ] && [ -n "$EXECARG" ]; then
+	set -- "$EXECARG" "$@"
+	debug "prepended $1"
+fi
+
+if [ -n "$HOLDARG" ] && check_bool "$HOLD"; then
+	set -- "${HOLDARG}" "$@"
+	debug "prepended $1"
+elif [ -z "$HOLDARG" ] && check_bool "$HOLD"; then
+	debug "terminal entry has no TerminalArgHold="
+fi
+
+if [ -n "$DIRARG" ] && [ -n "$DIRVAL" ]; then
+	case "$DIRARG" in
+	*=)
+		set -- "${DIRARG}${DIRVAL}" "$@"
+		debug "prepended $1"
+		;;
+	*)
+		set -- "${DIRARG}" "${DIRVAL}" "$@"
+		debug "prepended $1 $2"
+		;;
+	esac
+elif [ -z "$DIRARG" ] && [ -n "$DIRVAL" ]; then
+	debug "terminal entry has no TerminalArgDir="
+fi
+
+if [ -n "$TITLEARG" ] && [ -n "$TITLEVAL" ]; then
+	case "$TITLEARG" in
+	*=)
+		set -- "${TITLEARG}${TITLEVAL}" "$@"
+		debug "prepended $1"
+		;;
+	*)
+		set -- "${TITLEARG}" "${TITLEVAL}" "$@"
+		debug "prepended $1 $2"
+		;;
+	esac
+elif [ -z "$TITLEARG" ] && [ -n "$TITLEVAL" ]; then
+	debug "terminal entry has no TerminalArgTitle="
+fi
+
+if [ -n "$APPIDARG" ] && [ -n "$APPIDVAL" ]; then
+	case "$APPIDARG" in
+	*=)
+		set -- "${APPIDARG}${APPIDVAL}" "$@"
+		debug "prepended $1"
+		;;
+	*)
+		set -- "${APPIDARG}" "${APPIDVAL}" "$@"
+		debug "prepended $1 $2"
+		;;
+	esac
+elif [ -z "$APPIDARG" ] && [ -n "$APPIDVAL" ]; then
+	debug "terminal entry has no TerminalArgAppId="
+fi
+
+debug "end of option prepending"
+
+# prepend Exec
+IFS=$USEP
+# shellcheck disable=SC2086
+set -- $EXEC_USEP "$@"
+IFS=$OIFS
+
+debug ">     final args:" "$@" "^     end of final args"
+
+if [ "$CACHE_USED" = "false" ]; then
+	# saves or removes cache, forked out of the way
+	save_cache "$1" &
+fi
+
+case "$TEST_MODE" in
+true)
+	printf '%s\n' 'Command and arguments:'
+	printf '  >%s<\n' "$@"
+	exit 0
+	;;
+esac
+
+case " $PRINT_DATA " in
+*' cmd '*)
+	debug "acting on --print-cmd"
+
+	case "$PRINT_FIRST" in
+	false) printf '%b' "$PRINT_DELIMITER" ;;
+	esac
+
+	first=true
+	for arg in "$@"; do
+		case "$first" in
+		true) first=false ;;
+		false) printf '%b' "${PRINT_CMD_DELIMITER:-\n}" ;;
+		esac
+		printf '%s' "$arg"
+	done
+
+	# if either delimiter is a newline, terminate with another one
+	if [ "${PRINT_CMD_DELIMITER}" = '\n' ] || { [ "$PRINT_FIRST" = "false" ] && [ "$PRINT_DELIMITER" = '\n' ]; }; then
+		printf '%b' '\n'
+	fi
+
+	exit 0
+	;;
+esac
+
+if [ -z "$DIRARG" ] && [ -n "$DIRVAL" ]; then
+	debug "no X-TerminalArgDir in entry, changing dir to '$DIRVAL'"
+	cd "$DIRVAL"
+fi
+
+exec "$@"

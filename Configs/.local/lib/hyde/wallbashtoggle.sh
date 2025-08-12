@@ -9,6 +9,7 @@ wallbashModes=("theme" "auto" "dark" "light")
 #// rofi select mode
 
 rofi_wallbash() {
+    pkill -u "$USER" rofi && exit 0
     font_scale=$ROFI_WALLBASH_MODE_SCALE
     [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
     r_scale="configuration {font: \"JetBrainsMono Nerd Font ${font_scale}\";}"

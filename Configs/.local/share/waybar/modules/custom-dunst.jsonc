@@ -24,7 +24,7 @@
     },
     "return-type": "json",
     // "exec-if": "which dunstctl",
-    "exec-if": "dunstctl action 2> /dev/null", // This is to check if dunst is running
+    "exec-if": "dunstctl  is-paused &> /dev/null", // This is to check if dunst is running
     "exec": "hyde-shell notifications",
     "on-scroll-down": "sleep 0.1 && dunstctl history-pop",
     "on-click": "dunstctl set-paused toggle",

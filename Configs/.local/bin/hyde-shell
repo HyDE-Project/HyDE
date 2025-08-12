@@ -1,22 +1,6 @@
 #!/usr/bin/env bash
 # This script will soon be used to resolve $PATHS and LIB_DIR specific to hyde
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
-
-if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    EXECUTABLE="${0}"
-else
-    EXECUTABLE="${BASH_SOURCE[0]}"
-fi
-
-BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
-LIB_DIR=$(realpath "${BIN_DIR}/../lib")
-SHARE_DIR=$(realpath "${BIN_DIR}/../share")
-PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
-# Define hyde scripts search paths (colon-separated, user configurable)
-HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME}/waybar/scripts:${XDG_CONFIG_HOME}/waybar/scripts"
-
-export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
-
 python_initialized() {
 
     python "${LIB_DIR}/hyde/pyutils/pip_env.py" rebuild
@@ -49,19 +33,6 @@ EOF
     #? Use sed to remove any shebang hints to avoid conflicts with "eval"
     command cat "${LIB_DIR}/hyde/globalcontrol.sh"
 }
-
-# If args is init or --init, print initialization script
-if [[ "$1" == "init" || "$1" == "--init" ]]; then
-    initialized
-    exit 0
-else
-    export HYDE_SHELL_INIT=1
-fi
-# shellcheck disable=SC1091
-if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
-    echo "Error: Could not load HyDE, broken installation?"
-    exit 1
-fi
 
 USAGE() {
 
@@ -181,10 +152,10 @@ Restore Date: $HYDE_VERSION_LAST_CHECKED
 Last Commit Message: $HYDE_VERSION_COMMIT_MSG
 
 Tools:
-hydectl: $(hydectl version || echo "hydectl not found")
-$(hyprland -v | head -n1 || echo "hyprland not found")
+hydectl: $(hydectl version 2>/dev/null || echo "hydectl not found")
+$(hyprland -v 2>/dev/null | head -n1 || echo "hyprland not found")
 $(if hyprctl_output=$(hyprctl version 2>/dev/null | head -n1); then echo "$hyprctl_output (Running Instance)"; else echo "hyprctl not found or not running"; fi)
-$(hyde-ipc --version || echo "hyde-ipc not found")
+$(hyde-ipc --version 2>/dev/null || echo "hyde-ipc not found")
 
 
 HyDE updates every friday, so please check for updates regularly.
@@ -422,7 +393,6 @@ generate_completions() {
 }
 
 run_command() {
-
     # Convert to array, deduplicate, and filter out empty entries
     IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
     declare -A seen_dirs
@@ -466,6 +436,47 @@ run_command() {
         done
     fi
 }
+
+#*--------------------------------------------------------------------------------
+
+if [[ -z "${BASH_SOURCE[0]}" ]]; then
+    EXECUTABLE="${0}"
+else
+    EXECUTABLE="${BASH_SOURCE[0]}"
+fi
+
+BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
+LIB_DIR=$(realpath "${BIN_DIR}/../lib")
+SHARE_DIR=$(realpath "${BIN_DIR}/../share")
+PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
+# Define hyde scripts search paths (colon-separated, user configurable)
+HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME}/waybar/scripts:${XDG_CONFIG_HOME}/waybar/scripts"
+
+export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
+
+#*--------------------------------------------------------------------------------
+if [[ "${1}" == "app" ]]; then
+    export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
+    [[ "${HYDEPY}" -eq 1 ]] && python_activate
+    shift
+    exec app2unit.sh "$@"
+fi
+#*--------------------------------------------------------------------------------
+
+# If args is init or --init, print initialization script
+if [[ "$1" == "init" || "$1" == "--init" ]]; then
+    initialized
+    exit 0
+else
+    export HYDE_SHELL_INIT=1
+fi
+# shellcheck disable=SC1091
+if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
+    echo "Error: Could not load HyDE, broken installation?"
+    exit 1
+fi
+
+#*--------------------------------------------------------------------------------
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
