@@ -10,7 +10,7 @@ ddcui                                                  # GUI to control brightne
 # power-profiles-daemon                                # For managing power profiles from waybar
 
 
-# --------------------------------------------------- // Network Manager VPN protocols
+# --------------------------------------------------- // VPN
 wiregurad-tools                                        # WireGuard protocol
 networkmanager-openconnect                             # Openconnect protocol set
 networkmanager-vpnc                                    # Cisco's EasyVPN protocol set
