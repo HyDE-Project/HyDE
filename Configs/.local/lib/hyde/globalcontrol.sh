@@ -473,7 +473,7 @@ EOF
 #? Checks if the cursor is hovered on a window
 is_hovered() {
     data=$(hyprctl --batch -j "cursorpos;activewindow" | jq -s '.[0] * .[1]')
-    # evaulate the output of the JSON data into shell variables
+    # evaluate the output of the JSON data into shell variables
     eval "$(echo "$data" | jq -r '@sh "cursor_x=\(.x) cursor_y=\(.y) window_x=\(.at[0]) window_y=\(.at[1]) window_size_x=\(.size[0]) window_size_y=\(.size[1])"')"
 
     # Handle variables in case they are null
