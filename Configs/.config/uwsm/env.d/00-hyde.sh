@@ -23,12 +23,6 @@ PARALLEL_HOME="$XDG_CONFIG_HOME/parallel"
 SCREENRC="$XDG_CONFIG_HOME/screen/screenrc"
 
 
-# Export all variables
-export PATH \
-  XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR \
-  XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR \
-  LESSHISTFILE PARALLEL_HOME SCREENRC
-
 # Toolkit Backend Variables - https://wiki.hyprland.org/Configuring/Environment-variables/#toolkit-backend-variables
 # GDK_BACKEND="${GDK_BACKEND:-wayland,x11,*}"       # GTK: Use wayland if available. If not: try x11, then any other GDK backend.
 # SDL_VIDEODRIVER="${SDL_VIDEODRIVER:-wayland}" # Run SDL2 applications on Wayland. Remove or set to x11 if games that provide older versions of SDL cause compatibility issues
@@ -47,5 +41,9 @@ MOZ_ENABLE_WAYLAND="${MOZ_ENABLE_WAYLAND:-1}"                        # Enable Wa
 GDK_SCALE="${GDK_SCALE:-1}"                                          # Set GDK scale to 1, for Xwayland on HiDPI displays
 ELECTRON_OZONE_PLATFORM_HINT="${ELECTRON_OZONE_PLATFORM_HINT:-auto}" # Set Electron Ozone Platform Hint to auto, for Electron apps on Wayland
 
-export ELECTRON_OZONE_PLATFORM_HINT GDK_SCALE MOZ_ENABLE_WAYLAND QT_QPA_PLATFORMTHEME \
-    QT_WAYLAND_DISABLE_WINDOWDECORATION QT_QPA_PLATFORM QT_AUTO_SCREEN_SCALE_FACTOR
+export PATH \
+  XDG_DESKTOP_DIR XDG_DOWNLOAD_DIR XDG_TEMPLATES_DIR XDG_PUBLICSHARE_DIR \
+  XDG_DOCUMENTS_DIR XDG_MUSIC_DIR XDG_PICTURES_DIR XDG_VIDEOS_DIR \
+  LESSHISTFILE PARALLEL_HOME SCREENRC \
+  ELECTRON_OZONE_PLATFORM_HINT GDK_SCALE MOZ_ENABLE_WAYLAND QT_QPA_PLATFORMTHEME \
+  QT_WAYLAND_DISABLE_WINDOWDECORATION QT_QPA_PLATFORM QT_AUTO_SCREEN_SCALE_FACTOR
