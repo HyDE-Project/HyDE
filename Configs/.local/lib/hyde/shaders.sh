@@ -49,7 +49,7 @@ fi
 # Functions
 fn_select() {
     # List all .frag shaders except user-defines, disable, and .cache
-    shader_items=$(find "$shaders_dir" -maxdepth 1 -name "*.frag" ! -name "disable.frag" ! -name ".compiled.cache.glsl" -print0 2>/dev/null | xargs -0 -n1 basename | sed 's/\.frag$//')
+    shader_items=$(find -L "$shaders_dir" -maxdepth 1 -name "*.frag" ! -name "disable.frag" ! -name ".compiled.cache.glsl" -print0 2>/dev/null | xargs -0 -n1 basename | sed 's/\.frag$//')
     # Add 'disable' on top if it exists
     if [ -f "$shaders_dir/disable.frag" ]; then
         shader_items="disable\n$shader_items"

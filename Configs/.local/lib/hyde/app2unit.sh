@@ -173,7 +173,7 @@ help() {
 			  Use Desktop Entry ID, optionally suffixed with Action ID:
 			    entry-id.desktop
 			    entry-id.desktop:action-id
-			  Arguments should be supproted by Desktop Entry.
+			  Arguments should be supported by Desktop Entry.
 
 			  Or use a custom command, arguments will be passed as is.
 		EOF
@@ -707,7 +707,7 @@ parse_entry_key() {
 		true) action_exec=true ;;
 		esac
 		debug "read Exec '$value'"
-		# skip acutal reading if array is already filled
+		# skip actual reading if array is already filled
 		if [ -n "$EXEC_RSEP_USEP" ]; then
 			debug "skipping re-filling exec array"
 			return 0
@@ -825,7 +825,7 @@ parse_entry_key() {
 	esac
 	# By default unrecognised keys, empty lines and comments get ignored
 }
-# Mask IFS withing function to allow temporary changes
+# Mask IFS within function to allow temporary changes
 alias parse_entry_key='IFS= parse_entry_key'
 
 read_entry_path() {

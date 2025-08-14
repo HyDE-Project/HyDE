@@ -4,6 +4,17 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
+## v25.8.3 (Unreleased)
+
+### Fixed
+
+- Typos,spelling and and cleanup
+- Dunst: Fix dunst crashing when the font cannot handle unsupported characters -- Thanks to [#1131](https://github.com/HyDE-Project/HyDE/issues/1131)
+
+### Changed
+
+- Core: Move wallbash to ~/.local/share/wallbash
+
 ## v25.8.2
 
 Big CHANGE in HyDE! We are now using `uwsm` for session management and app2unit for application management.

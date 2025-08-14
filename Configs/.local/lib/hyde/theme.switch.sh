@@ -320,7 +320,7 @@ fi
 #// wallpaper
 export -f pkg_installed
 
-[[ -d "$HYDE_CACHE_HOME/wallpapers/" ]] && find "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
+[[ -d "$HYDE_CACHE_HOME/wallpapers/" ]] && find -H "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
     for file; do
         base=$(basename "$file" .png)
         if pkg_installed ${base}; then

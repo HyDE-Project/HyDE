@@ -82,7 +82,7 @@ cat <<MANDATORY >>"${dunstDir}/dunstrc"
 # [notification]
 # font = "mononoki Nerd Font"
 # font_size = 10
-font = ${font_name:-mononoki Nerd Font} ${font_size:-8}
+font = ${font_name:-mononoki Nerd Font} ${font_size:-8},JetBrainsMono Nerd Font ${font_size:-8}
 
 dmenu = $(which rofi) -config notification -dmenu -p dunst:
 

@@ -69,7 +69,7 @@ call_wallbashScript() {
         fi
     done
     dirs=("${sanitized_dirs[@]}")
-    script_path=$(find "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
 
     for func in $(compgen -A function); do
         export -f "${func?}"
@@ -86,7 +86,7 @@ call_wallbashScript() {
             for dir in "${dirs[@]}"; do
                 if [[ -d "$dir" ]]; then
                     echo -e "\n[ $dir ]"
-                    find "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
+                    find -L "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
                 fi
             done
             ;;
@@ -123,12 +123,12 @@ list_script() {
 
     # Find scripts in all configured directories
     for dir in "${SCRIPT_DIRS[@]}"; do
-        find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
+        find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
     done | sort -u
 }
 
 list_script_path() {
-    find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
+    find -L "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
 }
 
 get_version() {
@@ -432,7 +432,7 @@ run_command() {
         # Show user scripts from all configured directories
         for dir in "${SCRIPT_DIRS[@]}"; do
             echo "Scripts in $dir:"
-            find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
+            find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
         done
     fi
 }
@@ -455,21 +455,27 @@ HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/s
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 #*--------------------------------------------------------------------------------
-if [[ "${1}" == "app" ]]; then
-    export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
-    [[ "${HYDEPY}" -eq 1 ]] && python_activate
-    shift
-    exec app2unit.sh "$@"
-fi
-#*--------------------------------------------------------------------------------
 
-# If args is init or --init, print initialization script
-if [[ "$1" == "init" || "$1" == "--init" ]]; then
-    initialized
-    exit 0
-else
-    export HYDE_SHELL_INIT=1
-fi
+# Priority commands
+case "$1" in
+    app)
+        export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
+        [[ "${HYDEPY}" -eq 1 ]] && python_activate
+        shift
+        exec app2unit.sh "$@"
+        ;;
+    init | --init)
+        initialized
+        exit 0
+        ;;
+        
+    *)
+        export HYDE_SHELL_INIT=1
+        ;;
+esac
+
+
+
 # shellcheck disable=SC1091
 if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
     echo "Error: Could not load HyDE, broken installation?"
