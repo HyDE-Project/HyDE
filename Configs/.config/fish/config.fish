@@ -22,12 +22,12 @@ if type -q duf
     end
 end
 
-# fzf 
+# fzf
 if type -q fzf
-    fzf --fish | source 
+    fzf --fish | source
     for file in ~/.config/fish/functions/fzf/*.fish
         source $file
-        # NOTE: these funtions are built on top of fzf builtin widgets
+        # NOTE: these functions are built on top of fzf builtin widgets
         # they help you navigate through directories and files "Blazingly" fast
         # to get help on each one, just type `ff` in terminal and press `TAB`
         # keep in mind all of them require an argument to be passed after the alias
@@ -43,26 +43,26 @@ bind_M_n_history
 
 
 # example integration with bat : <cltr+f>
-# bind -M insert \ce '$EDITOR $(fzf --preview="bat --color=always --plain {}")' 
+# bind -M insert \ce '$EDITOR $(fzf --preview="bat --color=always --plain {}")'
 
 
 set fish_pager_color_prefix cyan
-set fish_color_autosuggestion brblack 
+set fish_color_autosuggestion brblack
 
 # List Directory
-alias c='clear'                                                        
-alias l='eza -lh --icons=auto'                                         
-alias ls='eza -1 --icons=auto'                                         
-alias ll='eza -lha --icons=auto --sort=name --group-directories-first' 
-alias ld='eza -lhD --icons=auto'                                       
-alias lt='eza --icons=auto --tree'                                     
-alias un='$aurhelper -Rns'                                             
-alias up='$aurhelper -Syu'                                             
-alias pl='$aurhelper -Qs'                                              
-alias pa='$aurhelper -Ss'                                              
-alias pc='$aurhelper -Sc'                                              
-alias po='$aurhelper -Qtdq | $aurhelper -Rns -'                        
-alias vc='code'                                                        
+alias c='clear'
+alias l='eza -lh --icons=auto'
+alias ls='eza -1 --icons=auto'
+alias ll='eza -lha --icons=auto --sort=name --group-directories-first'
+alias ld='eza -lhD --icons=auto'
+alias lt='eza --icons=auto --tree'
+alias un='$aurhelper -Rns'
+alias up='$aurhelper -Syu'
+alias pl='$aurhelper -Qs'
+alias pa='$aurhelper -Ss'
+alias pc='$aurhelper -Sc'
+alias po='$aurhelper -Qtdq | $aurhelper -Rns -'
+alias vc='code'
 alias fastfetch='fastfetch --logo-type kitty'
 
 # Directory navigation shortcuts

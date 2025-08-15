@@ -156,7 +156,7 @@ fn_select() {
 
   # List available .conf files in hyprlock directory
   layout_dir="$confDir/hypr/hyprlock"
-  layout_items=$(find "${layout_dir}" -name "*.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
+  layout_items=$(find -L "${layout_dir}" -name "*.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
 
   if [ -z "$layout_items" ]; then
     notify-send -i "preferences-desktop-display" "Error" "No .conf files found in ${layout_dir}"

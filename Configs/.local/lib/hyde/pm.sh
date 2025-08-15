@@ -816,7 +816,7 @@ scoop_remove() {
 }
 
 scoop_fetch() {
-    # Scoop search is very slow (especialy with multiple buckets) so we do create our own cache
+    # Scoop search is very slow (especially with multiple buckets) so we do create our own cache
     echo >&2 "Fetching packages..."
     scoop search | skip_table_header | grep . | awk '{ print $1 " " $3 " " $2 }' | sort >"$PM_CACHE_DIR/packages"
 }

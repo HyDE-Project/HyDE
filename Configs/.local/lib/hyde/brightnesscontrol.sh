@@ -33,7 +33,7 @@ send_notification() {
     # shellcheck disable=SC2154
     ico="${iconsDir}/Wallbash-Icon/media/knob-${angle}.svg"
     bar=$(seq -s "." $((brightness / 15)) | sed 's/[0-9]//g')
-    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 7 -t 800 -i "${ico}" "${brightness}${bar}" "${brightinfo}"
+    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 7 -t 2000 -i "${ico}" "${brightness}${bar}" "${brightinfo}"
 }
 
 get_brightness() {

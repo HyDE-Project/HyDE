@@ -45,7 +45,7 @@ r_override="window{width:100%;}
 
 RofiSel=$(
     # shellcheck disable=SC2154
-    find "${rofiStyleDir}" -type f -exec grep -l "Attr.*launcher.*" {} \; |
+    find -L "${rofiStyleDir}" -type f -exec grep -l "Attr.*launcher.*" {} \; |
         while read -r file; do
             baseName=$(basename "${file}" .rasi)
             assetFile="${file/rofi\/themes/rofi\/assets}"

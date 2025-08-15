@@ -1,6 +1,6 @@
 # ? Setting this only on UWSM + hyprland
 # ? This is to prevent hyprland from setting the environment variables that are set by uwsm.
-for f in ${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env-hyprland.d/*.sh; do
+for f in "${XDG_CONFIG_HOME:-$HOME/.config}"/uwsm/env-hyprland.d/*.sh; do
   if [[ -r "$f" ]]; then
     source "$f"
   fi

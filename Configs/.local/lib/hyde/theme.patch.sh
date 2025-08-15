@@ -116,7 +116,7 @@ FAV_THEME_DIR="${THEME_DIR}/Configs/.config/hyde/themes/${THEME_NAME}"
 [ ! -d "${FAV_THEME_DIR}" ] && print_log -r "[ERROR] " "'${FAV_THEME_DIR}'" -y " Do not Exist" && exit 1
 
 # config=$(find "${dcolDir}" -type f -name "*.dcol" | awk -v favTheme="${THEME_NAME}" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
-config=$(find "${WALLBASH_DIRS[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | awk -v favTheme="${THEME_NAME}" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
+config=$(find -L "${WALLBASH_DIRS[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | awk -v favTheme="${THEME_NAME}" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
 restore_list=""
 
 while IFS= read -r fileCheck; do
@@ -137,7 +137,7 @@ readonly restore_list
 
 # Get Wallpapers
 wallpapers=$(
-    find "${FAV_THEME_DIR}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*"
+    find -L "${FAV_THEME_DIR}" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*"
 )
 wpCount="$(wc -l <<<"${wallpapers}")"
 { [ -z "${wallpapers}" ] && print_log -r "[ERROR] " "No wallpapers found" && exit_flag=true; } || { readonly wallpapers && print_log -g "\n[pass]  " "wallpapers :: [count] ${wpCount} (.gif+.jpg+.jpeg+.png)"; }
@@ -145,7 +145,7 @@ wpCount="$(wc -l <<<"${wallpapers}")"
 # Get logos
 if [ -d "${FAV_THEME_DIR}/logo" ]; then
     logos=$(
-        find "${FAV_THEME_DIR}/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \)
+        find -L "${FAV_THEME_DIR}/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \)
     )
     logosCount="$(wc -l <<<"${logos}")"
     { [ -z "${logos}" ] && print_log -y "[note] " "No logos found"; } || { readonly logos && print_log -g "[pass]  " "logos :: [count] ${logosCount}\n"; }
@@ -208,7 +208,7 @@ check_tars() {
             print_log -warn "Variable ${gsVal} detected! " "be sure ${gsVal} is set as a different name or on a different file, skipping check"
         else
             print_log -g "[pass]  " "hypr.theme :: [${gsLow}]" -b " ${gsVal}"
-            trArc="$(find "${THEME_DIR}" -type f -name "${inVal}_*.tar.*")"
+            trArc="$(find -L "${THEME_DIR}" -type f -name "${inVal}_*.tar.*")"
             [ -f "${trArc}" ] && [ "$(echo "${trArc}" | wc -l)" -eq 1 ] && trVal="$(basename "$(tar -tf "${trArc}" | cut -d '/' -f1 | sort -u)")" && trVal="$(echo "${trVal}" | grep -w "${gsVal}")"
             print_log -g "[pass]  " "../*.tar.* :: [${gsLow}]" -b " ${trVal}"
             [ "${trVal}" != "${gsVal}" ] && print_log -r "[ERROR] " "${gsLow} set in hypr.theme does not exist in ${inVal}_*.tar.*" && exit_flag=true
@@ -246,7 +246,7 @@ declare -A archive_map=(
 )
 
 for prefix in "${!archive_map[@]}"; do
-    tarFile="$(find "${THEME_DIR}" -type f -name "${prefix}_*.tar.*")"
+    tarFile="$(find -L "${THEME_DIR}" -type f -name "${prefix}_*.tar.*")"
     [ -f "${tarFile}" ] || continue
     tgtDir="${archive_map[$prefix]}"
 
