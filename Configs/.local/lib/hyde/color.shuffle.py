@@ -26,7 +26,7 @@ class ColorRow:
 
 
 def hex_from_rgba(rgba_str):
-    # Expects rgba_str like 'rgba(26,26,26,1)' or 'rgba(26,26,26,1)'
+    
     m = re.match(r"rgba\((\d+),(\d+),(\d+),", rgba_str)
     if m:
         r, g, b = map(int, m.groups())
@@ -38,7 +38,7 @@ def extract_colors(lines):
     mode = None
     primaries = []
     texts = []
-    accents = []  # List of lists, one per primary color
+    accents = []  
     other = []
     for line in lines:
         if line.startswith("dcol_mode="):
@@ -46,11 +46,11 @@ def extract_colors(lines):
         elif re.match(r"dcol_pry[1-4]=", line):
             primaries.append(line)
         elif re.match(r"dcol_pry[1-4]_rgba=", line):
-            pass  # skip, not needed for preview
+            pass  
         elif re.match(r"dcol_txt[1-4]=", line):
             texts.append(line)
         elif re.match(r"dcol_txt[1-4]_rgba=", line):
-            pass  # skip, not needed for preview
+            pass  
         elif re.match(r"dcol_([1-9])xa([1-9])=", line):
             m = re.match(r"dcol_([1-9])xa([1-9])=\"?([0-9A-Fa-f]{6}|[a-zA-Z])\"?", line)
             if m:
@@ -59,7 +59,7 @@ def extract_colors(lines):
                 val = m.group(3)
                 while len(accents) <= x:
                     accents.append([])
-                # Find corresponding rgba if val is not valid hex
+                
                 if not re.match(r"^[0-9A-Fa-f]{6}$", val):
                     key = f"dcol_{x + 1}xa{y + 1}_rgba"
                     rgba_val = None
@@ -74,14 +74,14 @@ def extract_colors(lines):
                 accents[x].append(val)
         else:
             other.append(line)
-    # Ensure accents has 4 lists for downstream logic
+    
     while len(accents) < 4:
         accents.append([])
-    # Pad each accent row to 9
+    
     for row in accents:
         while len(row) < 9:
             row.append("FFFFFF")
-    # Parse primaries and texts
+    
     pry = [
         re.search(r'"([0-9A-Fa-f]{6})"', line).group(1)
         if re.search(r'"([0-9A-Fa-f]{6})"', line)
@@ -98,7 +98,7 @@ def extract_colors(lines):
     ]
     while len(txt) < 4:
         txt.append("FFFFFF")
-    # Build ColorRow objects
+    
     color_rows = []
     for i in range(4):
         color_rows.append(
@@ -137,57 +137,57 @@ class CurveEditor(QtWidgets.QWidget):
         else:
             self.points = points
         self.setMouseTracking(True)
-        # Remove anim_timer for drag, keep for future effects
-        # self.anim_timer = QtCore.QTimer(self)
-        # self.anim_timer.timeout.connect(self._animate)
-        # self.animating = False
+        
+        
+        
+        
 
     def paintEvent(self, event):
         qp = QtGui.QPainter(self)
         qp.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
         w, h = self.width(), self.height()
-        # Draw curve
-        pen = QtGui.QPen(QtGui.QColor("#2196F3"), 2)
+        
+        pen = QtGui.QPen(QtGui.QColor("
         qp.setPen(pen)
         for i in range(8):
             p1 = self._to_screen(self.points[i], w, h)
             p2 = self._to_screen(self.points[i + 1], w, h)
             qp.drawLine(*p1, *p2)
-        # Draw points
+        
         for idx, pt in enumerate(self.points):
             x, y = self._to_screen(pt, w, h)
             is_hover = idx == self.hover_idx
             is_drag = idx == self.drag_idx
             scale = 1.0
             if is_drag:
-                scale = 1.6  # Make dragged point larger
+                scale = 1.6  
             elif is_hover:
                 scale = 1.15
             r = self.radius * scale
-            # Draw drop shadow
+            
             shadow_color = QtGui.QColor(0, 0, 0, 60)
             qp.setBrush(shadow_color)
             qp.setPen(QtCore.Qt.PenStyle.NoPen)
             qp.drawEllipse(QtCore.QPointF(x + 2, y + 3), r, r)
-            # Draw main point
+            
             if is_drag:
-                color = QtGui.QColor("#FF4081")
-                # Draw ghost at mouse position
+                color = QtGui.QColor("
+                
                 if hasattr(self, "_drag_pos") and self._drag_pos:
                     ghost_x, ghost_y = self._drag_pos
                     qp.setBrush(QtGui.QColor(255, 64, 129, 120))
-                    qp.setPen(QtGui.QPen(QtGui.QColor("#FF4081"), 2))
+                    qp.setPen(QtGui.QPen(QtGui.QColor("
                     qp.drawEllipse(QtCore.QPointF(ghost_x, ghost_y), r, r)
             elif is_hover:
-                color = QtGui.QColor("#FFC107")
+                color = QtGui.QColor("
             else:
-                color = QtGui.QColor("#FFFFFF")
+                color = QtGui.QColor("
             qp.setBrush(color)
-            qp.setPen(QtGui.QPen(QtGui.QColor("#2196F3"), 2))
+            qp.setPen(QtGui.QPen(QtGui.QColor("
             qp.drawEllipse(QtCore.QPointF(x, y), r, r)
 
     def _to_screen(self, pt, w, h):
-        # pt: (bri, sat) in 0-100
+        
         x = pt[0] / 100 * (w - 2 * self.radius) + self.radius
         y = (100 - pt[1]) / 100 * (h - 2 * self.radius) + self.radius
         return int(x), int(y)
@@ -247,7 +247,7 @@ class CurveEditor(QtWidgets.QWidget):
         self.update()
 
     def _animate(self):
-        # For future: smooth animation if needed
+        
         self.update()
 
     def get_curve_str(self):
@@ -270,7 +270,7 @@ class CurveEditor(QtWidgets.QWidget):
         self.update()
 
 
-# ---- Qt GUI ----
+
 
 
 class ColorShuffleQt(QtWidgets.QWidget):
@@ -313,14 +313,14 @@ class ColorShuffleQt(QtWidgets.QWidget):
 
     def _setup_ui(self):
         layout = QtWidgets.QVBoxLayout(self)
-        layout.setSpacing(2)
+        layout.setSpacing(1)  
         layout.setContentsMargins(2, 2, 2, 2)
 
-        # Color grid as QListWidget for drag-and-drop
+        
         self.row_list = QtWidgets.QListWidget()
         self.row_list.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
         self.row_list.setDefaultDropAction(QtCore.Qt.DropAction.MoveAction)
-        self.row_list.setSpacing(0)  # No spacing between rows
+        self.row_list.setSpacing(1)  
         self.row_list.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
         self.row_list.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.row_list.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -330,44 +330,46 @@ class ColorShuffleQt(QtWidgets.QWidget):
         for i in range(4):
             w = QtWidgets.QWidget()
             hbox = QtWidgets.QHBoxLayout(w)
-            hbox.setSpacing(0)
-            hbox.setContentsMargins(0, 0, 0, 0)
+            hbox.setSpacing(1)  
+            hbox.setContentsMargins(1, 1, 1, 1)  
             pry_btn = QtWidgets.QPushButton()
-            pry_btn.setFixedSize(20, 20)
-            pry_btn.setStyleSheet("QPushButton { background-color: #%s; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }" % self.color_rows[i].primary)
+            pry_btn.setFixedSize(40, 30)  
+            pry_btn.setStyleSheet("QPushButton { background-color: 
             pry_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
             pry_btn.clicked.connect(lambda _, idx=i: self.pick_color(idx, "primary"))
-            hbox.addWidget(pry_btn, 0)
+            hbox.addWidget(pry_btn)
             txt_btn = QtWidgets.QPushButton()
-            txt_btn.setFixedSize(20, 20)
-            txt_btn.setStyleSheet("QPushButton { background-color: #%s; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }" % self.color_rows[i].text)
+            txt_btn.setFixedSize(40, 30)  
+            txt_btn.setStyleSheet("QPushButton { background-color: 
             txt_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
             txt_btn.clicked.connect(lambda _, idx=i: self.pick_color(idx, "text"))
-            hbox.addWidget(txt_btn, 0)
+            hbox.addWidget(txt_btn)
             acc_btns = []
             for j in range(9):
                 color = getattr(self.color_rows[i], f"accent{j + 1}")
                 acc_btn = QtWidgets.QPushButton()
-                acc_btn.setFixedSize(20, 20)
-                acc_btn.setStyleSheet("QPushButton { background-color: #%s; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }" % color)
+                acc_btn.setFixedSize(40, 30)  
+                acc_btn.setStyleSheet("QPushButton { background-color: 
                 acc_btn.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
                 acc_btn.clicked.connect(lambda _, ii=i, jj=j: self.pick_color((ii, jj), "accent"))
-                hbox.addWidget(acc_btn, 0)
+                hbox.addWidget(acc_btn)
                 acc_btns.append(acc_btn)
+            
+            hbox.addStretch()
             w.setLayout(hbox)
-            w.setMinimumHeight(20)
-            w.setMaximumHeight(20)
+            w.setMinimumHeight(30)  
+            w.setMaximumHeight(30)  
             item = QtWidgets.QListWidgetItem()
-            item.setSizeHint(QtCore.QSize(w.sizeHint().width(), 20))
+            item.setSizeHint(QtCore.QSize(w.sizeHint().width(), 30))  
             self.row_list.addItem(item)
             self.row_list.setItemWidget(item, w)
             self.row_widgets.append((pry_btn, txt_btn, acc_btns))
-        self.row_list.setMinimumHeight(80)
-        self.row_list.setMaximumHeight(80)
+        self.row_list.setMinimumHeight(120)  
+        self.row_list.setMaximumHeight(120)  
         self.row_list.setStyleSheet("QListWidget { padding: 0; margin: 0; border: none; } QListWidget::item { margin: 0; padding: 0; } QPushButton { min-width: 0; min-height: 0; padding: 0; margin: 0; }")
         layout.addWidget(self.row_list)
 
-        # Curve preset dropdown and editor
+        
         curve_box = QtWidgets.QHBoxLayout()
         self.curve_combo = QtWidgets.QComboBox()
         for name in self.curve_presets:
@@ -384,13 +386,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
         curve_box.addWidget(apply_curve_btn)
         layout.addLayout(curve_box)
 
-        # Curve editor
+        
         self.curve_editor = CurveEditor()
         self.curve_editor.set_curve_str(self.curve_str)
         self.curve_editor.curveChanged.connect(self.on_curve_changed)
         layout.addWidget(self.curve_editor)
 
-        # Mode, Rotate, Save
+        
         ctrl_box = QtWidgets.QHBoxLayout()
         self.mode_switch = QtWidgets.QCheckBox("Dark Mode")
         self.mode_switch.setChecked(self.mode == "dark")
@@ -403,7 +405,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
         ctrl_box.addWidget(save_btn)
         layout.addLayout(ctrl_box)
 
-        # File selectors (moved to bottom)
+        
         file_box = QtWidgets.QHBoxLayout()
         self.input_entry = QtWidgets.QLineEdit(self.input_path)
         self.output_entry = QtWidgets.QLineEdit(self.output_path)
@@ -431,10 +433,10 @@ class ColorShuffleQt(QtWidgets.QWidget):
         ]
         for i, (pry_btn, txt_btn, acc_btns) in enumerate(self.row_widgets):
             pry_btn.setStyleSheet(
-                f"QPushButton {{ background-color: #{self.colors[i]}; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }}"
+                f"QPushButton {{ background-color: 
             )
             txt_btn.setStyleSheet(
-                f"QPushButton {{ background-color: #{self.texts[i]}; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }}"
+                f"QPushButton {{ background-color: 
             )
             for j, btn in enumerate(acc_btns):
                 color = (
@@ -442,12 +444,12 @@ class ColorShuffleQt(QtWidgets.QWidget):
                     if j < len(self.accent_colors[i])
                     else "FFFFFF"
                 )
-                btn.setStyleSheet(f"QPushButton {{ background-color: #{color}; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }}")
-        # If rows reordered, update color_rows from QListWidget order
+                btn.setStyleSheet(f"QPushButton {{ background-color: 
+        
         new_rows = []
         for idx in range(self.row_list.count()):
             w = self.row_list.itemWidget(self.row_list.item(idx))
-            # Find which color_row this widget matches (by primary color)
+            
             for row in self.color_rows:
                 if (
                     getattr(row, "primary")
@@ -473,7 +475,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
         else:
             i, j = idx
             color = getattr(self.color_rows[i], f"accent{j + 1}")
-        dlg = QtWidgets.QColorDialog(QtGui.QColor(f"#{color}"), self)
+        dlg = QtWidgets.QColorDialog(QtGui.QColor(f"
         if dlg.exec():
             new_color = dlg.selectedColor().name()[1:].upper()
             if kind == "primary":
@@ -518,7 +520,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
         self.apply_curve_to_accents_and_text(curve_str)
 
     def apply_curve_to_accents_and_text(self, curve_str):
-        self.update_from_color_rows()  # Ensure colors/texts/accent_colors are up to date
+        self.update_from_color_rows()  
         import colorsys
 
         curve = []
@@ -547,11 +549,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
                 hexcol = f"{int(r2 * 255):02X}{int(g2 * 255):02X}{int(b2 * 255):02X}"
                 self.accent_colors[i][j] = (self.accent_colors[i][j][0], hexcol)
                 self.row_widgets[i][2][j].setStyleSheet(
-                    f"QPushButton {{ background-color: #{hexcol}; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }}"
+                    f"QPushButton {{ background-color: 
                 )
             self.texts[i] = self.accent_colors[i][8][1]
             self.row_widgets[i][1].setStyleSheet(
-                f"QPushButton {{ background-color: #{self.texts[i]}; border: 0px; margin: 0px; padding: 0px; border-radius: 2px; float: left; }}"
+                f"QPushButton {{ background-color: 
             )
 
     def on_rotate(self):
@@ -643,7 +645,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
         mode, color_rows, other = extract_colors(lines)
         self.color_rows = color_rows
         self.update_from_color_rows()
-        # Optionally set curve string
+        
         for line in lines:
             if line.startswith("wallbashCurve="):
                 curve_str = line.split("=", 1)[1].strip().strip('"')
@@ -652,7 +654,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
                 break
 
     def eventFilter(self, obj, event):
-        # Drag-and-drop for row reordering
+        
         if event.type() == QtCore.QEvent.Type.MouseButtonPress:
             for i, btn in enumerate(self.pry_buttons):
                 if obj is btn:
@@ -666,17 +668,17 @@ class ColorShuffleQt(QtWidgets.QWidget):
             if (
                 event.globalPosition().toPoint() - self.drag_start_pos
             ).manhattanLength() > 10:
-                # Start drag
+                
                 drag = QtGui.QDrag(self)
                 mime = QtCore.QMimeData()
                 mime.setText(str(self.drag_row_idx))
                 drag.setMimeData(mime)
                 drag.exec()
         elif event.type() == QtCore.QEvent.Type.Drop and self.drag_row_idx is not None:
-            # Find which row we dropped on
+            
             for i, btn in enumerate(self.pry_buttons):
                 if obj is btn and i != self.drag_row_idx:
-                    # Swap rows
+                    
                     self.color_rows[self.drag_row_idx], self.color_rows[i] = (
                         self.color_rows[i],
                         self.color_rows[self.drag_row_idx],
@@ -720,12 +722,19 @@ def main():
     )
     args = parser.parse_args()
 
-    # Set default input/output if --gui and not provided
+    
     if args.gui and not args.input:
         xdg_cache = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
         args.input = os.path.join(xdg_cache, "hyde", "wall.dcol")
         if not args.output:
             args.output = args.input
+
+    
+    if not args.input:
+        parser.error("Input file is required. Please provide an input .dcol file.")
+    
+    if not os.path.exists(args.input):
+        parser.error(f"Input file does not exist: {args.input}")
 
     with open(args.input) as f:
         lines = f.readlines()
@@ -734,9 +743,9 @@ def main():
         print("[DEBUG] --gui flag detected, launching PyQt6 GUI...")
         app = QtWidgets.QApplication(sys.argv)
         print("[DEBUG] QApplication created, building main window...")
-        # Read actual color data from .dcol file
+        
         mode, color_rows, other = extract_colors(lines)
-        # Parse colors from color_rows
+        
         initial_colors = [row.primary for row in color_rows]
         initial_texts = [row.text for row in color_rows]
         accent_colors = [
@@ -746,7 +755,7 @@ def main():
             ]
             for i, row in enumerate(color_rows)
         ]
-        # Try to get curve string from wallbashCurve= if present
+        
         curve_str = ""
         for line in lines:
             if line.startswith("wallbashCurve="):
@@ -772,12 +781,12 @@ def main():
         sys.exit(app.exec())
     mode, color_rows, other = extract_colors(lines)
 
-    # Optionally override primaries
+    
     if args.set_colors:
         for i, c in enumerate(args.set_colors):
             color_rows[i].primary = c.upper()
 
-    # Shuffle or rotate
+    
     if args.shuffle:
         idx = list(range(4))
         random.shuffle(idx)
@@ -787,20 +796,20 @@ def main():
         idx = list(range(4))
     color_rows = [color_rows[i] for i in idx]
 
-    # Write output
+    
     out_lines = []
     if mode:
         if args.mode:
             out_lines.append(f'dcol_mode="{args.mode}")\n')
         else:
             out_lines.append(mode)
-    # Write primaries
+    
     for i, row in enumerate(color_rows):
         out_lines.append(f'dcol_pry{i + 1}="{row.primary}"\n')
-    # Write texts
+    
     for i, row in enumerate(color_rows):
         out_lines.append(f'dcol_txt{i + 1}="{row.text}"\n')
-    # Write accents
+    
     for i, row in enumerate(color_rows):
         for j in range(9):
             out_lines.append(

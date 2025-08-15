@@ -392,6 +392,14 @@ generate_completions() {
     esac
 }
 
+hyde-logout() {
+    if uwsm check is-active; then
+        uwsm stop
+    elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE}" ]]; then
+        hyprctl dispatch exit 0
+    fi
+}
+
 run_command() {
     # Convert to array, deduplicate, and filter out empty entries
     IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
@@ -458,23 +466,21 @@ export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 # Priority commands
 case "$1" in
-    app)
-        export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
-        [[ "${HYDEPY}" -eq 1 ]] && python_activate
-        shift
-        exec app2unit.sh "$@"
-        ;;
-    init | --init)
-        initialized
-        exit 0
-        ;;
-        
-    *)
-        export HYDE_SHELL_INIT=1
-        ;;
+app)
+    export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
+    [[ "${HYDEPY}" -eq 1 ]] && python_activate
+    shift
+    exec app2unit.sh "$@"
+    ;;
+init | --init)
+    initialized
+    exit 0
+    ;;
+
+*)
+    export HYDE_SHELL_INIT=1
+    ;;
 esac
-
-
 
 # shellcheck disable=SC1091
 if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
@@ -487,6 +493,9 @@ fi
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
     case $1 in
+    logout)
+        hyde-logout
+        ;;
     -r | reload)
         hyde_reload
         ;;

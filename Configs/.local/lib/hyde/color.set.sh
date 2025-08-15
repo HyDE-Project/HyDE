@@ -104,7 +104,8 @@ preprocess_substitutions() {
 fn_wallbash() {
     local template="${1}"
     local temp_target_file exec_command
-    WALLBASH_SCRIPTS="${template%%hyde/wallbash*}hyde/wallbash/scripts"
+    WALLBASH_SCRIPTS="${template%%/wallbash/*}/wallbash/scripts"
+    
     if [[ "${template}" == *.theme ]]; then
         # This is approach is to handle the theme files
         # We don't want themes to launch the exec_command or any arbitrary codes
@@ -117,10 +118,11 @@ fn_wallbash() {
         if [[ -n "${dcolTemplate}" ]]; then
             eval target_file="$(head -1 "${dcolTemplate}" | awk -F '|' '{print $1}')"
             exec_command="$(head -1 "${dcolTemplate}" | awk -F '|' '{print $2}')"
-            WALLBASH_SCRIPTS="${dcolTemplate%%hyde/wallbash*}hyde/wallbash/scripts"
-
+            WALLBASH_SCRIPTS="${dcolTemplate%%/wallbash/*}/wallbash/scripts"
         fi
     fi
+
+    [[ "${LOG_LEVEL}" == "debug" ]] && print_log -sec "wallbash" -stat "Template:" " ${template}"
 
     # shellcheck disable=SC1091
     # shellcheck disable=SC2154
@@ -160,9 +162,12 @@ fn_wallbash() {
         mv "${temp_target_file}" "${target_file}"
     fi
     [ -z "${exec_command}" ] || {
+        [[ "${LOG_LEVEL}" == "debug" ]] && print_log -sec "wallbash" -stat "Exec command:" " ${exec_command} from ${WALLBASH_SCRIPTS}"
         bash -c "${exec_command}" &
         disown
     }
+
+    unset WALLBASH_SCRIPTS
 }
 
 scrDir="$(dirname "$(realpath "$0")")"

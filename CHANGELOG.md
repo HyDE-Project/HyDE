@@ -14,8 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Core: Move wallbash to ~/.local/share/wallbash
+- wlogout: Add support for for uwsm
 
-## v25.8.2
+### Added
+
+- hyde-shell: Add `logout` command to handle with/out uwsm
+
+
+## v25.8.1
 
 Big CHANGE in HyDE! We are now using `uwsm` for session management and app2unit for application management.
 
