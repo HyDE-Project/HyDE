@@ -1,36 +1,53 @@
 #!/usr/bin/env bash
 # This script will soon be used to resolve $PATHS and LIB_DIR specific to hyde
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
+python_initialized() {
 
-if [[ -z "${BASH_SOURCE[0]}" ]]; then
-    EXECUTABLE="${0}"
-else
-    EXECUTABLE="${BASH_SOURCE[0]}"
-fi
+    python "${LIB_DIR}/hyde/pyutils/pip_env.py" rebuild
+}
 
-BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
-LIB_DIR=$(realpath "${BIN_DIR}/../lib")
-SHARE_DIR=$(realpath "${BIN_DIR}/../share")
-PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
-# Define hyde scripts search paths (colon-separated, user configurable)
-HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}"
+python_activate() {
 
-export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
+    local python_env="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/pip_env/bin/activate"
+    if [[ -r "${python_env}" ]]; then
+        # shellcheck disable=SC1090
+        source "${python_env}"
+    else
+        printf "Warning: Python virtual environment not found at %s\n" "${python_env}"
+        printf "You may need to run 'hyde-shell pyinit' to set it up.\n"
+        python_initialized
+    fi
 
-# shellcheck disable=SC1091
-if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
-    echo "Error: Could not load HyDE, broken installation?"
-    exit 1
-fi
+}
+
+initialized() {
+    cat <<EOF
+HYDE_SHELL_INIT=1
+BIN_DIR="${BIN_DIR}"
+LIB_DIR="${LIB_DIR}"
+SHARE_DIR="${SHARE_DIR}"
+PATH=${PATH}
+HYDE_SCRIPTS_PATH=${HYDE_SCRIPTS_PATH}
+export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH HYDE_SHELL_INIT
+EOF
+    #? Use sed to remove any shebang hints to avoid conflicts with "eval"
+    command cat "${LIB_DIR}/hyde/globalcontrol.sh"
+}
 
 USAGE() {
 
     cat <<USAGE
 Usage: $(basename "$0") [command]
 Commands:
-  --help, help, -h : Display this help message
-  -r, reload       : Reload HyDE
-  wallbash         : Execute a wallbash script
+  --help, help, -h              : Display this help message
+  -r, reload                    : Reload HyDE
+  wallbash                      : Execute a wallbash script
+  release-notes                 : Show release notes
+  completions [bash|zsh|fish]   : Generate shell completions
+  validate [args]               : Validate HyDE configuration
+  pyinit                        : Initialize python virtual environment
+  version                       : Show version information
+  init                          : Source initialization script
 
 Available HyDE commands:
 
@@ -52,7 +69,7 @@ call_wallbashScript() {
         fi
     done
     dirs=("${sanitized_dirs[@]}")
-    script_path=$(find "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
 
     for func in $(compgen -A function); do
         export -f "${func?}"
@@ -69,7 +86,7 @@ call_wallbashScript() {
             for dir in "${dirs[@]}"; do
                 if [[ -d "$dir" ]]; then
                     echo -e "\n[ $dir ]"
-                    find "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
+                    find -L "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
                 fi
             done
             ;;
@@ -81,6 +98,7 @@ call_wallbashScript() {
 hyde_reload() {
 
     print_log -sec "hyde" "Reloading HyDE"
+    python_initialized
     "$LIB_DIR/hyde/swwwallcache.sh" -t ""
     "$LIB_DIR/hyde/theme.switch.sh"
 }
@@ -88,7 +106,7 @@ hyde_reload() {
 list_script() {
     # Use HYDE_SCRIPTS_PATH to find scripts from all configured directories
     local HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}"
-    
+
     # Convert to array, deduplicate, and filter out empty entries
     IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
     declare -A seen_dirs
@@ -102,15 +120,15 @@ list_script() {
         # Only add existing directories
         [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
     done
-    
+
     # Find scripts in all configured directories
     for dir in "${SCRIPT_DIRS[@]}"; do
-        find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
+        find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
     done | sort -u
 }
 
 list_script_path() {
-    find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
+    find -L "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
 }
 
 get_version() {
@@ -134,10 +152,10 @@ Restore Date: $HYDE_VERSION_LAST_CHECKED
 Last Commit Message: $HYDE_VERSION_COMMIT_MSG
 
 Tools:
-hydectl: $(hydectl version || echo "hydectl not found")
-$(hyprland -v | head -n1 || echo "hyprland not found")
+hydectl: $(hydectl version 2>/dev/null || echo "hydectl not found")
+$(hyprland -v 2>/dev/null | head -n1 || echo "hyprland not found")
 $(if hyprctl_output=$(hyprctl version 2>/dev/null | head -n1); then echo "$hyprctl_output (Running Instance)"; else echo "hyprctl not found or not running"; fi)
-$(hyde-ipc --version || echo "hyde-ipc not found")
+$(hyde-ipc --version 2>/dev/null || echo "hyde-ipc not found")
 
 
 HyDE updates every friday, so please check for updates regularly.
@@ -176,7 +194,7 @@ get_completion_data() {
 
     # Get wallbash scripts
     local dirs=("${wallbashDirs[@]}")
-    wallbash_scripts=("--help")  # Add --help as first option
+    wallbash_scripts=("--help") # Add --help as first option
     # Simplified - just --help for now since dynamic parsing is complex
 
     # Export arrays for use by completion generators
@@ -374,8 +392,15 @@ generate_completions() {
     esac
 }
 
-run_command() {
+hyde-logout() {
+    if uwsm check is-active; then
+        uwsm stop
+    elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE}" ]]; then
+        hyprctl dispatch exit 0
+    fi
+}
 
+run_command() {
     # Convert to array, deduplicate, and filter out empty entries
     IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
     declare -A seen_dirs
@@ -397,6 +422,7 @@ run_command() {
             exec bash "$dir/${1}.sh" "${@:2}"
         # Try .py extension
         elif [[ -f "$dir/${1}.py" ]]; then
+            python_activate
             exec python "$dir/${1}.py" "${@:2}"
         # Try exact name (executable)
         elif [[ -f "$dir/${1}" && -x "$dir/${1}" ]]; then
@@ -414,14 +440,62 @@ run_command() {
         # Show user scripts from all configured directories
         for dir in "${SCRIPT_DIRS[@]}"; do
             echo "Scripts in $dir:"
-            find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
+            find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
         done
     fi
 }
 
+#*--------------------------------------------------------------------------------
+
+if [[ -z "${BASH_SOURCE[0]}" ]]; then
+    EXECUTABLE="${0}"
+else
+    EXECUTABLE="${BASH_SOURCE[0]}"
+fi
+
+BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
+LIB_DIR=$(realpath "${BIN_DIR}/../lib")
+SHARE_DIR=$(realpath "${BIN_DIR}/../share")
+PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
+# Define hyde scripts search paths (colon-separated, user configurable)
+HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME}/waybar/scripts:${XDG_CONFIG_HOME}/waybar/scripts"
+
+export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
+
+#*--------------------------------------------------------------------------------
+
+# Priority commands
+case "$1" in
+app)
+    export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
+    [[ "${HYDEPY}" -eq 1 ]] && python_activate
+    shift
+    exec app2unit.sh "$@"
+    ;;
+init | --init)
+    initialized
+    exit 0
+    ;;
+
+*)
+    export HYDE_SHELL_INIT=1
+    ;;
+esac
+
+# shellcheck disable=SC1091
+if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
+    echo "Error: Could not load HyDE, broken installation?"
+    exit 1
+fi
+
+#*--------------------------------------------------------------------------------
+
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
     case $1 in
+    logout)
+        hyde-logout
+        ;;
     -r | reload)
         hyde_reload
         ;;
@@ -449,6 +523,18 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         shift
         generate_completions "$1"
         ;;
+    validate)
+        shift
+        if command -v hyde-shell >/dev/null 2>&1; then
+            hyde-config -no-daemon "${@}"
+        else
+            echo "hyde-config not found. Please make sure it is in \$PATH."
+        fi
+        exit 0
+        ;;
+    pyinit)
+        python_initialized
+        ;;
     "")
         for func in $(compgen -A function); do
             export -f "${func?}"
@@ -458,8 +544,5 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         run_command "$@"
         ;;
     esac
-
-else
-    echo "HyDE shell script sourced. Use 'hyde-shell --help' for usage information."
 
 fi

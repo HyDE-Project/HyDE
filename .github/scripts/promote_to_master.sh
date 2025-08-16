@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMMIT_LIST=$(git log --pretty=format:"* %s (%h) by %an" origin/master..dev |
+COMMIT_LIST=$(git log --pretty=format:"* %s (%h) by %an" origin/master..rc |
     while IFS= read -r line; do
         if [[ ! $line =~ ^"* feat"* && ! $line =~ ^"* fix"* && ! $line =~ ^"* docs"* ]]; then
             echo "* chore${line:1}"
@@ -19,12 +19,10 @@ echo "$COMMIT_LIST" >commit_list.txt
 
 cat <<EOF >>$GITHUB_ENV
 PR_BODY<<EOT
-This is an automated PR to promote changes from \`dev\` to \`master\`.
+This is an automated PR to promote changes from \`rc\` to \`master\`.
 Please review and test before merging.
 
-
 See [TESTING.md](./TESTING.md) for complete testing instructions.
-
 
 According to our release policy, this PR is expected to be merged on: **$MERGE_DATE**
 Testers are encouraged to test the changes before merging.

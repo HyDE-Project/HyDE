@@ -7,7 +7,7 @@ source "${scrDir}/globalcontrol.sh"
 
 lockscreen="${LOCKSCREEN:-hyprlock}"
 
-if ! hyde-shell "${lockscreen}.sh" "${@}" ; then
+if ! hyde-shell "${lockscreen}.sh" "${@}"; then
     printf "Executing raw command: %s\n" "${lockscreen}"
-    "${lockscreen}" "${@}"
+    app2unit.sh "${lockscreen}" "${@}"
 fi

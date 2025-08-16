@@ -1,7 +1,7 @@
 {
   "custom/hyprsunset": {
     "return-type": "json",
-    "format": "{0}",
+    "format": "{0} ",
     "exec": "hyde-shell hyprsunset -rq",
     "rotate": 0,
     "on-click": "hyde-shell hyprsunset -t -P waybar:19",

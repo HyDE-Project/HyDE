@@ -41,7 +41,7 @@ case $1 in
   ;;
 esac
 
-pidFile="$HYDE_RUNTIME_DIR/sysmonlaunch.pid"
+pidFile="$XDG_RUNTIME_DIR/hyde/sysmonlaunch.pid"
 
 # TODO: As there is no proper protocol at terminals, we need to find a way to kill the processes
 # * This enables toggling the sysmonitor on and off

@@ -1,5 +1,6 @@
 {
   "custom/swaync": {
+    "exec-if": "swaync-client --count --skip-wait 1>2 /dev/null", // This is to check if swaync daemon is running
     "format": "{icon} {0}",
     "tooltip": true,
     "format-icons": {
@@ -22,10 +23,8 @@
       "dnd": "",
       "none": ""
     },
-    // "interval": "once",
     "return-type": "json",
-    "exec-if": "sleep 5 && swaync-client --count --skip-wait 1>2 /dev/null", // This is to check if swaync daemon is running
-    "exec": "swaync-client -swb",
+    "exec": "pgrep -x swaync && swaync-client -swb",
     "on-click": "swaync-client -t -sw",
     // "on-click-right": "swaync-client -d -sw",
     "escape": true,

@@ -165,8 +165,8 @@ fn_status_change() { # Handle when status changes
 
 # resume_processes() { for pid in $pids ; do  if [ "$pid" -ne "$current_pid" ] ; then kill -CONT $pid ; notify-send -a "Battery Notify" -t 2000 -r 9889 -u "CRITICAL" "Debugging ENDED, Resuming Regular Process" ; fi ; done }
 
-main() {                                       # Main function
-    rm -fr "$HYDE_RUNTIME_DIR/battery.notify"* # Cleaning the lock file
+main() {                                           # Main function
+    rm -fr "$XDG_RUNTIME_DIR/hyde/battery.notify"* # Cleaning the lock file
     battery_full_threshold=${BATTERY_NOTIFY_THRESHOLD_FULL:-100}
     battery_critical_threshold=${BATTERY_NOTIFY_THRESHOLD_CRITICAL:-5}
     unplug_charger_threshold=${BATTERY_NOTIFY_THRESHOLD_UNPLUG:-80}

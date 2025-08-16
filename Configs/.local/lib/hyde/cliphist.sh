@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC1090
-if ! source "$(command -v hyde-shell)"; then
-    echo "[wallbash] code :: Error: hyde-shell not found."
-    echo "[wallbash] code :: Is HyDE installed?"
-    exit 1
-fi
+pkill -u "$USER" rofi && exit 0
+
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 # define paths and files
 cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
@@ -80,7 +77,7 @@ check_content() {
         cliphist decode <<<"$line" | wl-copy
         local img_idx
         img_idx=$(awk -F '\t' '{print $1}' <<<"$line")
-        local temp_preview="${HYDE_RUNTIME_DIR}/pastebin-preview_${img_idx}"
+        local temp_preview="${XDG_RUNTIME_DIR}/hyde/pastebin-preview_${img_idx}"
         wl-paste >"${temp_preview}"
         notify-send -a "Pastebin:" "Preview: ${img_idx}" -i "${temp_preview}" -t 2000
         return 1

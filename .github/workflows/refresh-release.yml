@@ -2,16 +2,6 @@ name: Quarterly Release Refresh
 
 on:
   workflow_dispatch:
-    inputs:
-      version_bump:
-        description: "Type of version bump (patch, minor, major)"
-        required: true
-        default: "patch"
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
 
 jobs:
   refresh-release:
@@ -34,19 +24,23 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
-      - name: Create conventional commit to trigger release
+      - name: Create date-based commit to trigger release
         run: |
-          # Create empty commit with appropriate conventional commit message
-          if [[ "${{ github.event.inputs.version_bump }}" == "minor" ]]; then
-            git commit --allow-empty -m "feat: trigger new release refresh"
-          elif [[ "${{ github.event.inputs.version_bump }}" == "major" ]]; then
-            git commit --allow-empty -m "feat!: trigger major release refresh"
-          else
-            git commit --allow-empty -m "fix: trigger patch release refresh"
-          fi
-
-          # Push to master branch
+          # Use current date for versioning in YY.M.Q format (e.g., 25.7.1 for July 2025, 1st Quarter)
+          YEAR=$(date +'%y')
+          MONTH=$(date +'%-m')
+          # Calculate quarter: 1 for Jan-Mar, 2 for Apr-Jun, 3 for Jul-Sep, 4 for Oct-Dec
+          case $MONTH in
+            1|2|3) Q=1 ;;
+            4|5|6) Q=2 ;;
+            7|8|9) Q=3 ;;
+            10|11|12) Q=4 ;;
+          esac
+          VERSION_TAG="$YEAR.$MONTH.$Q"
+          git commit --allow-empty -m "release: trigger quarterly refresh $VERSION_TAG"
+          git tag -a "$VERSION_TAG" -m "Quarterly release $VERSION_TAG"
           git push origin HEAD:master
+          git push origin "$VERSION_TAG"
 
       - name: Provide feedback
-        run: echo "Quarterly release refresh triggered successfully with a ${{ github.event.inputs.version_bump }} version bump!"
+        run: echo "Quarterly release refresh triggered successfully with tag $VERSION_TAG!"

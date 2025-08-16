@@ -2,12 +2,12 @@
 
 #// set variables
 
-scrDir="$(dirname "$(realpath "$0")")"
-confDir="${confDir}/config"
-# shellcheck source=/dev/null
-. "${scrDir}/globalcontrol.sh"
-rofiStyle="${rofiStyle:-1}"
+pkill rofi && exit 0
 
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
+# This block is some legacy sh*t. So if someone agrees to remove it, please do so via a PR.
+rofiStyle="${rofiStyle:-1}"
 if [[ "${rofiStyle}" =~ ^[0-9]+$ ]]; then
     rofi_config="style_${rofiStyle:-1}"
 else
@@ -30,7 +30,7 @@ d | --drun)
     r_mode="drun"
     rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
     rofi_args+=("${ROFI_LAUNCH_DRUN_ARGS[@]:-}")
-    rofi_args+=("-run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
+    rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
     ;;
 w | --window)
     r_mode="window"
@@ -40,12 +40,12 @@ w | --window)
 f | --filebrowser)
     r_mode="filebrowser"
     rofi_config="${ROFI_LAUNCH_FILEBROWSER_STYLE:-$rofi_config}"
-    rofi_args+=( "${ROFI_LAUNCH_FILEBROWSER_ARGS[@]:-}" ) 
+    rofi_args+=("${ROFI_LAUNCH_FILEBROWSER_ARGS[@]:-}")
     ;;
 r | --run)
     r_mode="run"
     rofi_config="${ROFI_LAUNCH_RUN_STYLE:-$rofi_config}"
-    rofi_args+=("-run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
+    rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
     rofi_args+=("${ROFI_LAUNCH_RUN_ARGS[@]:-}")
     ;;
 h | --help)
@@ -60,7 +60,7 @@ h | --help)
     r_mode="drun"
     ROFI_LAUNCH_DRUN_STYLE="${ROFI_LAUNCH_DRUN_STYLE:-$ROFI_LAUNCH_STYLE}"
     rofi_args+=("${ROFI_LAUNCH_DRUN_ARGS[@]:-}")
-    rofi_args+=("-run-command" "sh -c 'uwsm app -- {cmd} || {cmd}'")
+    rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
     rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
     ;;
 esac

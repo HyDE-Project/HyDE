@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# TODO: Use namespaces
+# TODO:Refactor. This what happens when you just want it to work lol.
 import json
 import os
 import glob
@@ -170,14 +170,28 @@ def get_current_layout_from_config():
 
     logger.debug("Fallback to legacy hash comparison method")
     logger.debug(f"Checking config: {CONFIG_JSONC}")
-    if not CONFIG_JSONC.exists():
-        logger.error("Config file not found")
-        CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
-        with open(CONFIG_JSONC, "w") as f:
-            json.dump({}, f)
-
-    config_hash = get_file_hash(CONFIG_JSONC)
+    
     layouts = find_layout_files()
+    if not layouts:
+        logger.error("No layout files found")
+        return None
+    
+    # If config.jsonc doesn't exist, just use the first available layout
+    if not CONFIG_JSONC.exists():
+        logger.debug("Config file not found, using first available layout")
+        CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
+        
+        layout = layouts[0]
+        layout_name = os.path.basename(layout).replace(".jsonc", "")
+        set_state_value("WAYBAR_LAYOUT_PATH", layout)
+        set_state_value("WAYBAR_LAYOUT_NAME", layout_name)
+        
+        shutil.copyfile(layout, CONFIG_JSONC)
+        logger.debug(f"Created config.jsonc with first layout: {layout}")
+        return layout
+
+    # Try hash comparison for existing config
+    config_hash = get_file_hash(CONFIG_JSONC)
     layout = None
 
     for layout_file in layouts:
@@ -189,8 +203,9 @@ def get_current_layout_from_config():
             layout = layout_file
             return layout
 
-    if not layout and layouts:
-        logger.debug("No current layout found by hash comparison")
+    # If no hash match found, use first layout as fallback
+    if not layout:
+        logger.debug("No current layout found by hash comparison, using first layout")
         current_layout_name = "unknown"
         backup_layout(current_layout_name)
         layout = layouts[0]
@@ -502,20 +517,22 @@ def run_waybar_command(command):
 
 
 def kill_waybar():
-    """Kill only the Waybar process, not anything with 'waybar' in the name."""
-    subprocess.run(["pkill", "-x", "waybar"])
-    logger.debug("Killed Waybar processes.")
+    """Kill only the current user's Waybar process."""
+    user = os.getenv("USER")
+    subprocess.run(["pkill", "-u", user, "-x", "waybar"])
+    logger.debug("Killed Waybar processes for current user.")
 
 
 def kill_waybar_and_watcher():
-    """Kill all Waybar instances and watcher scripts."""
-    subprocess.run(["pkill", "-x", "waybar"])
-    logger.debug("Killed Waybar processes.")
+    """Kill all Waybar instances and watcher scripts for the current user."""
+    user = os.getenv("USER")
+    subprocess.run(["pkill", "-u", user, "-x", "waybar"])
+    logger.debug("Killed Waybar processes for current user.")
 
     try:
         current_pid = os.getpid()
         result = subprocess.run(
-            ["pgrep", "-f", "waybar.py"], capture_output=True, text=True
+            ["pgrep", "-u", user, "-f", "waybar.py"], capture_output=True, text=True
         )
 
         if result.returncode == 0:
@@ -525,12 +542,12 @@ def kill_waybar_and_watcher():
                     try:
                         subprocess.run(["kill", pid.strip()])
                         logger.debug(
-                            f"Killed waybar.py process with PID: {pid.strip()}"
+                            f"Killed waybar.py process with PID: {pid.strip()} for user {user}"
                         )
                     except Exception as e:
                         logger.debug(f"Failed to kill PID {pid.strip()}: {e}")
 
-        logger.debug("Killed all waybar.py watcher scripts.")
+        logger.debug("Killed all waybar.py watcher scripts for current user.")
     except Exception as e:
         logger.error(f"Error killing waybar.py processes: {e}")
 
@@ -542,11 +559,200 @@ def ensure_directory_exists(filepath):
         os.makedirs(directory)
 
 
+def rofi_file_selector(
+    dirs,
+    extension,
+    prompt,
+    current_selection=None,
+    extra_flags=None,
+    display_func=None,
+    recursive=True,
+):
+    """
+    Generic rofi file selector for files in given dirs with given extension.
+    Returns the selected file's path, or None if cancelled.
+    display_func: function(path, root_dir) -> str, for custom display names
+    recursive: if True, search recursively; if False, only depth 1
+    """
+    files = []
+    file_roots = []
+    for d in dirs:
+        if recursive:
+            found = [
+                f
+                for f in glob.glob(os.path.join(d, f"**/*{extension}"), recursive=True)
+                if "/backup/" not in f and "\\backup\\" not in f
+            ]
+        else:
+            found = [
+                f
+                for f in glob.glob(os.path.join(d, f"*{extension}"), recursive=False)
+                if "/backup/" not in f and "\\backup\\" not in f
+            ]
+        files.extend(found)
+        file_roots.extend([d] * len(found))
+    # Remove duplicates
+    seen = set()
+    unique = []
+    unique_roots = []
+    for f, r in zip(files, file_roots):
+        if f not in seen:
+            unique.append(f)
+            unique_roots.append(r)
+            seen.add(f)
+    files = unique
+    file_roots = unique_roots
+    if not files:
+        logger.error(f"No files found for extension {extension} in {dirs}")
+        return None
+    if display_func:
+        names = [display_func(f, r) for f, r in zip(files, file_roots)]
+    else:
+
+        def strip_prefix(s):
+            return os.path.splitext(os.path.basename(s))[0]
+
+        names = [strip_prefix(f) for f in files]
+    if current_selection:
+        if display_func:
+            # Try to match current_selection to display_func output
+            current_name = None
+            for f, r in zip(files, file_roots):
+                if os.path.abspath(f) == os.path.abspath(current_selection):
+                    current_name = display_func(f, r)
+                    break
+            if not current_name:
+                current_name = names[0]
+        else:
+
+            def strip_prefix(s):
+                return os.path.splitext(os.path.basename(s))[0]
+
+            current_name = strip_prefix(current_selection)
+    else:
+        current_name = names[0]
+    hyprland = HYPRLAND.HyprctlWrapper()
+    try:
+        override_string = hyprland.get_rofi_override_string()
+        rofi_pos_string = hyprland.get_rofi_pos()
+        rofi_flags = [
+            "-p",
+            prompt,
+            "-select",
+            current_name,
+            "-theme",
+            "clipboard",
+            "-theme-str",
+            override_string,
+            "-theme-str",
+            rofi_pos_string,
+        ]
+    except (OSError, EnvironmentError):
+        rofi_flags = [
+            "-p",
+            prompt,
+            "-select",
+            current_name,
+            "-theme",
+            "clipboard",
+        ]
+    if extra_flags:
+        rofi_flags.extend(extra_flags)
+    selected = rofi_dmenu(names, rofi_flags)
+    logger.debug(f"Selected {prompt}: {selected}")
+    if selected:
+        for f, n in zip(files, names):
+            if n == selected:
+                return f
+    return None
+
+
+def rofi_style_selector(current_layout=None):
+    """Show all styles in rofi and apply the selected one."""
+    current_style_path = get_state_value("WAYBAR_STYLE_PATH")
+    selected_style = rofi_file_selector(
+        STYLE_DIRS, ".css", "Select style:", current_style_path, recursive=False
+    )
+    if selected_style:
+        style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
+        write_style_file(style_filepath, selected_style)
+        set_state_value("WAYBAR_STYLE_PATH", selected_style)
+        update_icon_size()
+        update_border_radius()
+        generate_includes()
+        update_global_css()
+        notify.send(
+            "Waybar",
+            f"Style changed to {os.path.basename(selected_style)}",
+            replace_id=9,
+        )
+        run_waybar_command("killall waybar; waybar & disown")
+    sys.exit(0)
+
+
 def rofi_selector():
-    """List all layout names in a rofi selector."""
+    """Show all layouts in rofi and apply the selected one."""
+    layouts_data = list_layouts()
+    layout_files = [pair["layout"] for pair in layouts_data["layouts"]]
+    layout_roots = []
+    for f in layout_files:
+        for layout_dir in LAYOUT_DIRS:
+            if f.startswith(layout_dir):
+                layout_roots.append(layout_dir)
+                break
+        else:
+            layout_roots.append("")
+    current_layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
+
+    def display_func(f, root):
+        rel = os.path.relpath(f, root) if root else os.path.basename(f)
+        return rel.replace(".jsonc", "")
+
+    selected_layout = rofi_file_selector(
+        LAYOUT_DIRS,
+        ".jsonc",
+        "Select layout:",
+        current_layout_path,
+        display_func=display_func,
+    )
+    if selected_layout:
+        # Find the layout pair
+        for pair in layouts_data["layouts"]:
+            if pair["layout"] == selected_layout:
+                if pair.get("is_backup_entry", False):
+                    handle_backup_display()
+                    return
+                style_path = pair["style"]
+                break
+        else:
+            style_path = resolve_style_path(selected_layout)
+        shutil.copyfile(selected_layout, CONFIG_JSONC)
+        set_state_value("WAYBAR_LAYOUT_PATH", selected_layout)
+        set_state_value(
+            "WAYBAR_LAYOUT_NAME",
+            os.path.basename(selected_layout).replace(".jsonc", ""),
+        )
+        set_state_value("WAYBAR_STYLE_PATH", style_path)
+        style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
+        write_style_file(style_filepath, style_path)
+        update_icon_size()
+        update_border_radius()
+        generate_includes()
+        update_global_css()
+        notify.send(
+            "Waybar",
+            f"Layout changed to {display_func(selected_layout, os.path.dirname(selected_layout))}",
+            replace_id=9,
+        )
+        run_waybar_command("killall waybar; waybar & disown")
+    ensure_state_file()
+    sys.exit(0)
+
+
+def rofi_selector_no_exit():
+    """List all layout names in a rofi selector, but do not exit after selection."""
     layouts_data = list_layouts()
     layout_names = [pair["name"] for pair in layouts_data["layouts"]]
-
     current_layout_name = get_state_value("WAYBAR_LAYOUT_NAME")
     if not current_layout_name:
         current_layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
@@ -554,14 +760,14 @@ def rofi_selector():
             current_layout_name = os.path.basename(current_layout_path).replace(
                 ".jsonc", ""
             )
-
     logger.debug(f"Current layout from state: {current_layout_name}")
-
     hyprland = HYPRLAND.HyprctlWrapper()
-
-    override_string = hyprland.get_rofi_override_string()
-    rofi_pos_string = hyprland.get_rofi_pos()
-
+    try:
+        override_string = hyprland.get_rofi_override_string()
+        rofi_pos_string = hyprland.get_rofi_pos()
+    except (OSError, EnvironmentError):
+        override_string = ""
+        rofi_pos_string = ""
     rofi_flags = [
         "-p",
         "Select layout:",
@@ -569,11 +775,11 @@ def rofi_selector():
         current_layout_name,
         "-theme",
         "clipboard",
-        "-theme-str",
-        override_string,
-        "-theme-str",
-        rofi_pos_string,
     ]
+    if override_string:
+        rofi_flags += ["-theme-str", override_string]
+    if rofi_pos_string:
+        rofi_flags += ["-theme-str", rofi_pos_string]
     selected_layout = rofi_dmenu(
         layout_names,
         rofi_flags,
@@ -581,23 +787,21 @@ def rofi_selector():
     logger.debug(f"Selected layout: {selected_layout}")
     if selected_layout:
         selected_layout_path = None
+        style_path = None
         for pair in layouts_data["layouts"]:
             if pair["name"] == selected_layout:
                 if pair.get("is_backup_entry", False):
                     handle_backup_display()
-                    return
+                    return None
                 selected_layout_path = pair["layout"]
                 style_path = pair["style"]
                 break
-
         if selected_layout_path:
             logger.debug(f"Updating config with layout: {selected_layout_path}")
             shutil.copyfile(selected_layout_path, CONFIG_JSONC)
-
             set_state_value("WAYBAR_LAYOUT_PATH", selected_layout_path)
             set_state_value("WAYBAR_LAYOUT_NAME", selected_layout)
             set_state_value("WAYBAR_STYLE_PATH", style_path)
-
             style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
             write_style_file(style_filepath, style_path)
             update_icon_size()
@@ -606,11 +810,21 @@ def rofi_selector():
             update_global_css()
             notify.send("Waybar", f"Layout changed to {selected_layout}", replace_id=9)
             run_waybar_command("killall waybar; waybar & disown")
+            ensure_state_file()
+            return selected_layout_path
         else:
             logger.error(f"Could not find layout path for {selected_layout}")
-
     ensure_state_file()
-    sys.exit(0)
+    return None
+
+
+def select_layout_and_style():
+    """Select layout, then style."""
+    selected_layout = rofi_selector_no_exit()
+    if selected_layout:
+        rofi_style_selector(selected_layout)
+    else:
+        sys.exit(0)
 
 
 def backup_layout(layout_name):
@@ -1140,10 +1354,17 @@ def generate_includes():
 
     includes_data["include"] = list(dict.fromkeys(includes))
 
+    position = get_config_value("WAYBAR_POSITION")
+    if position:
+        position = position.strip().strip('"').strip("'")
+    else:
+        position = "top"
+    includes_data["position"] = position
+
     with open(includes_file, "w") as file:
         json.dump(includes_data, file, indent=4)
     logger.debug(
-        f"Successfully updated '{includes_file}' with {len(includes)} entries."
+        f"Successfully updated '{includes_file}' with {len(includes)} entries and position '{position}'."
     )
 
 
@@ -1185,6 +1406,18 @@ def update_style(style_path):
     write_style_file(style_filepath, style_path)
 
 
+def is_waybar_running_for_current_user():
+    """Check if Waybar or Waybar-wrapped is running for the current user only."""
+    user = os.getenv("USER")
+    for proc_name in ["waybar", "waybar-wrapped"]:
+        result = subprocess.run(
+            ["pgrep", "-u", user, "-x", proc_name], capture_output=True
+        )
+        if result.returncode == 0:
+            return True
+    return False
+
+
 def watch_waybar():
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
@@ -1197,12 +1430,10 @@ def watch_waybar():
                 time.sleep(2)
                 continue
 
-            result = subprocess.run(
-                ["ps", "-C", "waybar,.waybar-wrapped"], capture_output=True
-            )
-            if result.returncode != 0:
+            # Only check for current user's Waybar
+            if not is_waybar_running_for_current_user():
                 run_waybar_command("killall waybar; waybar & disown")
-                logger.debug("Waybar restarted")
+                logger.debug("Waybar restarted for current user")
         except Exception as e:
             logger.error(f"Error monitoring Waybar: {e}")
         time.sleep(2)
@@ -1214,7 +1445,9 @@ def main():
     # Check for lock file early and inform user on any invocation
     lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
     if os.path.exists(lock_file):
-        print("Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar.")
+        print(
+            "Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar."
+        )
 
     logger.debug(f"Looking for state file at: {STATE_FILE}")
 
@@ -1225,47 +1458,74 @@ def main():
         logger.debug(f"State file found: {STATE_FILE}")
         layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
 
-        if layout_path and os.path.exists(layout_path) and CONFIG_JSONC.exists():
-            config_hash = get_file_hash(CONFIG_JSONC)
-            layout_hash = get_file_hash(layout_path)
-
-            if config_hash != layout_hash:
-                logger.debug("Config hash differs from layout hash, creating backup")
-                layout_name = os.path.basename(layout_path).replace(".jsonc", "")
-                backup_layout(layout_name)
-
-            try:
+        if layout_path and os.path.exists(layout_path):
+            # If config.jsonc doesn't exist, create it from the layout
+            if not CONFIG_JSONC.exists():
+                logger.debug("Config file missing, creating from layout path")
+                CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(layout_path, CONFIG_JSONC)
-                logger.debug("Updated config.jsonc with layout from state file")
-            except Exception as e:
-                logger.error(f"Failed to update config.jsonc: {e}")
+                logger.debug("Created config.jsonc from state file layout")
+            else:
+                config_hash = get_file_hash(CONFIG_JSONC)
+                layout_hash = get_file_hash(layout_path)
 
-        elif layout_path and not os.path.exists(layout_path) and CONFIG_JSONC.exists():
+                if config_hash != layout_hash:
+                    logger.debug("Config hash differs from layout hash, creating backup")
+                    layout_name = os.path.basename(layout_path).replace(".jsonc", "")
+                    backup_layout(layout_name)
+
+                try:
+                    shutil.copyfile(layout_path, CONFIG_JSONC)
+                    logger.debug("Updated config.jsonc with layout from state file")
+                except Exception as e:
+                    logger.error(f"Failed to update config.jsonc: {e}")
+
+        elif layout_path and not os.path.exists(layout_path):
             logger.warning(f"Layout path in state file doesn't exist: {layout_path}")
             layout_name = get_state_value("WAYBAR_LAYOUT_NAME")
             if layout_name:
                 logger.debug(f"Looking for layout by name: {layout_name}")
                 layouts = find_layout_files()
+                found_layout = None
                 for layout in layouts:
                     if os.path.basename(layout).replace(".jsonc", "") == layout_name:
                         logger.debug(f"Found layout by name: {layout}")
-
+                        found_layout = layout
+                        break
+                
+                if found_layout:
+                    # Update state and create/update config
+                    set_state_value("WAYBAR_LAYOUT_PATH", found_layout)
+                    CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    if CONFIG_JSONC.exists():
                         config_hash = get_file_hash(CONFIG_JSONC)
-                        layout_hash = get_file_hash(layout)
-
+                        layout_hash = get_file_hash(found_layout)
                         if config_hash != layout_hash:
                             backup_layout(layout_name)
-
-                        set_state_value("WAYBAR_LAYOUT_PATH", layout)
-
-                        try:
-                            shutil.copyfile(layout, CONFIG_JSONC)
-                            logger.debug("Updated config.jsonc with layout by name")
-                        except Exception as e:
-                            logger.error(f"Failed to update config.jsonc: {e}")
-                        break
+                    
+                    shutil.copyfile(found_layout, CONFIG_JSONC)
+                    logger.debug("Updated config.jsonc with layout by name")
                 else:
                     logger.error(f"Could not find layout by name: {layout_name}")
+                    # Fall back to first available layout
+                    layouts = find_layout_files()
+                    if layouts:
+                        first_layout = layouts[0]
+                        first_layout_name = os.path.basename(first_layout).replace(".jsonc", "")
+                        set_state_value("WAYBAR_LAYOUT_PATH", first_layout)
+                        set_state_value("WAYBAR_LAYOUT_NAME", first_layout_name)
+                        CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copyfile(first_layout, CONFIG_JSONC)
+                        logger.debug(f"Used first available layout: {first_layout}")
+        else:
+            # No layout path in state file or layout path is empty
+            logger.debug("No valid layout path in state file, determining current layout")
+            current_layout = get_current_layout_from_config()
+            if current_layout:
+                CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(current_layout, CONFIG_JSONC)
+                logger.debug(f"Created config.jsonc from determined layout: {current_layout}")
     else:
         logger.debug("State file not found, creating it")
         ensure_state_file()
@@ -1321,7 +1581,13 @@ def main():
         "--json", "-j", action="store_true", help="List all layouts in JSON format"
     )
     parser.add_argument(
-        "--select", "-S", action="store_true", help="List all layout names"
+        "--select-layout", "-L", action="store_true", help="Select a layout using rofi"
+    )
+    parser.add_argument(
+        "--select-style", "-Y", action="store_true", help="Select a style using rofi"
+    )
+    parser.add_argument(
+        "--select", "-S", action="store_true", help="Select layout and then style"
     )
     parser.add_argument(
         "--kill",
@@ -1375,8 +1641,12 @@ def main():
         )
     if args.json:
         list_layouts_json()
-    if args.select:
+    if args.select_layout:
         rofi_selector()
+    if args.select_style:
+        rofi_style_selector()
+    if args.select:
+        select_layout_and_style()
 
     if args.hide is not None:
         if args.hide == "1":
@@ -1402,15 +1672,21 @@ def main():
         # Remove hide lock file when starting watch mode to avoid confusion
         lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
         if os.path.exists(lock_file):
-            logger.warning(f"Found waybar hide lock file at {lock_file}, removing it to start watch mode")
-            logger.info("Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar.")
+            logger.warning(
+                f"Found waybar hide lock file at {lock_file}, removing it to start watch mode"
+            )
+            logger.info(
+                "Waybar is currently hidden due to lock file. Use 'waybar.py --hide 0' to show waybar."
+            )
             os.remove(lock_file)
         watch_waybar()
     else:
         # Check if waybar should be hidden before starting
         lock_file = os.path.join(str(xdg_runtime_dir()), "hyde", "waybar_hide.lock")
         if os.path.exists(lock_file):
-            logger.warning(f"Waybar hide lock file exists at {lock_file}, not starting waybar. Use --hide 0 to show waybar or remove the lock file manually.")
+            logger.warning(
+                f"Waybar hide lock file exists at {lock_file}, not starting waybar. Use --hide 0 to show waybar or remove the lock file manually."
+            )
             return
 
         update_icon_size()

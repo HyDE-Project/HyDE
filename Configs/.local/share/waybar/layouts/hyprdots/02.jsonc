@@ -4,11 +4,8 @@
     "output": [
         "*"
     ],
-    "position": "top",
-    "mode": "dock",
     "height": 10,
     "exclusive": true,
-    "passthrough": false,
     "reload_style_on_change": true,
     "include": [
         "$XDG_CONFIG_HOME/waybar/modules/*json*", 

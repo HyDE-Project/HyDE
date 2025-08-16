@@ -161,6 +161,41 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
+<a id="hydevm"></a>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=HYDEVM" width="450"/>
+
+---
+
+HyDEVM is a script that allows you to run HyDE in a virtual machine for testing and development.
+
+## Quick Start
+
+### Arch Linux
+
+```bash
+# Download and run (will auto-detect missing packages)
+curl -L https://raw.githubusercontent.com/HyDE-Project/HyDE/main/Scripts/hydevm/hydevm.sh -o hydevm
+chmod +x hydevm
+./hydevm
+```
+
+### NixOS (or Nix)
+
+```bash
+# Using flakes from HyDE repository
+nix run github:HyDE-Project/HyDE
+
+# Or if you have the repository cloned locally
+nix run .
+```
+
+For more details, please refer to the [HyDEVM README](Scripts/hydevm/README.md).
+
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
 <a id="themes"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THEMES" width="450"/>
 
@@ -242,25 +277,7 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_4.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_5.png"/></td></tr></table></div>
 
-<!--
-<div align="right">
-  <br>
-  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
-</div>
 
-<div align="center">
-
-</div>
--->
-
-<div align="right">
-  <br>
-  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
-</div>
-
-<div align="right">
-  <sub>Last edited on: 27/02/2025<span id="last-edited"></span></sub>
-</div>
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STARS" width="450"/>
@@ -274,3 +291,16 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
  </picture>
 </a>
+
+
+---
+
+<div align="right">
+  <br>
+  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
+</div>
+
+<div align="right">
+  <sub>Last edited on: 27/02/2025<span id="last-edited"></span></sub>
+</div>
+

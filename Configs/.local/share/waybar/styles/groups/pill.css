@@ -5,7 +5,7 @@ window#waybar.bottom #pill button,
 window#waybar.top #pill,
 window#waybar.top #pill button {
     border-radius: 10pt 10pt 10pt 10pt;
-    border-width: 0 0.411em;
+    /* border-width: 0 0.411em; */ /*Causes black on edge*/
 }
 
 window#waybar.left #pill,
@@ -13,7 +13,7 @@ window#waybar.left #pill button,
 window#waybar.right #pill,
 window#waybar.right #pill button {
     border-radius: 10pt 10pt 10pt 10pt;
-    border-width: 0;
+    /* border-width: 0; */ /*Causes black on edge*/
 }
 
 window#waybar.top #pill,

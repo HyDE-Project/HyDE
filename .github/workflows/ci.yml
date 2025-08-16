@@ -4,12 +4,145 @@ on:
     branches:
       - dev
       - master
+      - rc
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  dev-to-master-pr:
-    name: Create Quarterly Release PR from Dev to Master
+  dev-to-rc-pr:
+    name: Create PR from Dev to RC
     if: github.ref == 'refs/heads/dev' && github.repository == 'HyDE-Project/HyDE'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Generate commit history and calculate suggested merge date
+      - name: Generate commit history and schedule
+        id: generate-commits
+        run: |
+          chmod +x .github/scripts/promote_to_rc.sh
+          bash .github/scripts/promote_to_rc.sh
+
+      # Check if there are any commits between rc and dev
+      - name: Check for commits between branches
+        id: check-commits
+        run: |
+          # Fetch rc branch to make sure it exists locally
+          git fetch origin rc:rc || true
+
+          # We're already on dev branch since the job runs when dev is pushed
+          # Compare dev to rc to see if there are any differences
+          if git rev-parse --verify rc >/dev/null 2>&1; then
+            COMMIT_COUNT=$(git rev-list --count rc..dev)
+            echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+            if [ "$COMMIT_COUNT" -gt 0 ]; then
+              echo "Detected $COMMIT_COUNT commit(s) between rc and dev"
+              echo "has_commits=true" >> $GITHUB_OUTPUT
+            else
+              echo "No commits detected between rc and dev"
+              echo "has_commits=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "RC branch doesn't exist yet. Assuming changes need to be propagated."
+            echo "commit_count=999" >> $GITHUB_OUTPUT  # Use a high number to indicate there are changes
+            echo "has_commits=true" >> $GITHUB_OUTPUT
+          fi
+
+      # Set up git for potential operations
+      - name: Setup git
+        if: steps.check-commits.outputs.has_commits == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+
+      # Create or update PR using GitHub API with retry logic
+      - name: Create or Update Pull Request
+        if: steps.check-commits.outputs.has_commits == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { repo, owner } = context.repo;
+            const prBranch = "dev";
+            const prTitle = "chore: Release - dev → rc";
+            const prBody = process.env.PR_BODY;
+
+            // Retry helper function
+            async function retryOperation(operation, maxRetries = 3, delay = 5000) {
+              let lastError;
+              for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                  return await operation();
+                } catch (error) {
+                  lastError = error;
+                  console.log(`Attempt ${attempt}/${maxRetries} failed: ${error.message}`);
+                  if (attempt < maxRetries) {
+                    console.log(`Waiting ${delay/1000} seconds before retry...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                  }
+                }
+              }
+              throw lastError;
+            }
+
+            // Check if PR already exists
+            const prs = await retryOperation(async () => {
+              return github.rest.pulls.list({
+                owner,
+                repo,
+                head: `${owner}:${prBranch}`,
+                base: 'rc',
+                state: 'open'
+              });
+            });
+
+            if (prs.data.length > 0) {
+              // Update existing PR
+              console.log(`Updating existing PR #${prs.data[0].number}`);
+              await retryOperation(async () => {
+                return github.rest.pulls.update({
+                  owner,
+                  repo,
+                  pull_number: prs.data[0].number,
+                  title: prTitle,
+                  body: prBody
+                });
+              });
+              console.log(`PR #${prs.data[0].number} updated successfully.`);
+            } else {
+              // Create new PR
+              try {
+                const result = await retryOperation(async () => {
+                  return github.rest.pulls.create({
+                    owner,
+                    repo,
+                    title: prTitle,
+                    body: prBody,
+                    head: prBranch,
+                    base: 'rc'
+                  });
+                });
+                console.log(`PR created: ${result.data.html_url}`);
+              } catch (error) {
+                console.log(`All attempts to create PR failed: ${error.message}`);
+                // As a fallback, output command for manual PR creation
+                console.log(`To create the PR manually, visit: https://github.com/${owner}/${repo}/compare/rc...${prBranch}`);
+                throw error;
+              }
+            }
+
+      # Output message when no commits are found
+      - name: No Commits Message
+        if: steps.check-commits.outputs.has_commits == 'false'
+        run: |
+          echo "::notice::No new commits detected between rc and dev branches. Skipping PR creation."
+          echo "The branches rc and dev are already in sync."
+
+  rc-to-master-pr:
+    name: Create PR from RC to Master
+    if: github.ref == 'refs/heads/rc' && github.repository == 'HyDE-Project/HyDE'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,23 +156,23 @@ jobs:
           chmod +x .github/scripts/promote_to_master.sh
           bash .github/scripts/promote_to_master.sh
 
-      # Check if there are any commits between master and dev
+      # Check if there are any commits between master and rc
       - name: Check for commits between branches
         id: check-commits
         run: |
           # Fetch master branch to make sure it exists locally
           git fetch origin master:master || true
 
-          # We're already on dev branch since the job runs when dev is pushed
-          # Compare dev to master to see if there are any differences
+          # We're already on rc branch since the job runs when rc is pushed
+          # Compare rc to master to see if there are any differences
           if git rev-parse --verify master >/dev/null 2>&1; then
-            COMMIT_COUNT=$(git rev-list --count master..dev)
+            COMMIT_COUNT=$(git rev-list --count master..rc)
             echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
             if [ "$COMMIT_COUNT" -gt 0 ]; then
-              echo "Detected $COMMIT_COUNT commit(s) between master and dev"
+              echo "Detected $COMMIT_COUNT commit(s) between master and rc"
               echo "has_commits=true" >> $GITHUB_OUTPUT
             else
-              echo "No commits detected between master and dev"
+              echo "No commits detected between master and rc"
               echo "has_commits=false" >> $GITHUB_OUTPUT
             fi
           else
@@ -63,8 +196,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { repo, owner } = context.repo;
-            const prBranch = "dev";
-            const prTitle = "chore: quarterly release - dev → master";
+            const prBranch = "rc";
+            const prTitle = "chore: Release - rc → master";
             const prBody = process.env.PR_BODY;
 
             // Retry helper function
@@ -125,7 +258,6 @@ jobs:
                 console.log(`PR created: ${result.data.html_url}`);
               } catch (error) {
                 console.log(`All attempts to create PR failed: ${error.message}`);
-                
                 // As a fallback, output command for manual PR creation
                 console.log(`To create the PR manually, visit: https://github.com/${owner}/${repo}/compare/master...${prBranch}`);
                 throw error;
@@ -136,8 +268,8 @@ jobs:
       - name: No Commits Message
         if: steps.check-commits.outputs.has_commits == 'false'
         run: |
-          echo "::notice::No new commits detected between master and dev branches. Skipping PR creation."
-          echo "The branches master and dev are already in sync."
+          echo "::notice::No new commits detected between master and rc branches. Skipping PR creation."
+          echo "The branches master and rc are already in sync."
 
   release:
     name: Quarterly Snapshot Release

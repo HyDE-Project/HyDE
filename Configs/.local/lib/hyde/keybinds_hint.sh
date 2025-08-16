@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 
 pkill -x rofi && exit
-scrDir=$(dirname "$(realpath "$0")")
-scrDir="${scrDir:-$HOME/.local/lib/hyde}"
-# shellcheck disable=SC1091
-source "$scrDir/globalcontrol.sh"
+
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 keyconfDir="$confDir/hypr"
 kb_hint_conf=("$keyconfDir/hyprland.conf" "$keyconfDir/keybindings.conf" "$keyconfDir/userprefs.conf")
 kb_hint_conf+=("${ROFI_KEYBIND_HINT_CONFIG[@]}")
 
-kb_cache="${HYDE_RUNTIME_DIR:-$XDG_RUNTIME_DIR/hyde}/keybinds_hint.rofi"
+kb_cache="${XDG_RUNTIME_DIR}/hyde/keybinds_hint.rofi"
 [ -f "$kb_cache" ] && { trap 'keybinds.hint.py --format rofi > "$kb_cache" && echo "Keybind cache updated" ' EXIT; }
 
 output="$(

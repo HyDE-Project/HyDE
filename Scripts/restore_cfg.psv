@@ -30,13 +30,20 @@ B = Backup - Backup the target
 
  Hyde core files 
 P|${HOME}/.config/hyde|config.toml|hyprland
-P|${HOME}/.config/hypr|hyde.conf shaders.conf workflows.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
+P|${HOME}/.config/hypr|shaders.conf workflows.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
 P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
 P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
 S|${HOME}/.config/systemd|user|systemd
 P|${HOME}/.local/state/hyde|hyprland.conf|hyprland
 
-S|${HOME}/.config/hypr|hyprland.conf|hyprland
+ Hyde core files -- uwsm 
+S|${HOME}/.config/uwsm|env env-hyprland env.d env-hyprland.d|systemd hyprland uwsm
+
+ Hyde core files -- xdg-terminal-exec 
+P|${HOME}/.config|xdg-terminals.list|xdg-utils
+
+P|${HOME}/.config/hypr|hyprland.conf|hyprland
+S|${HOME}/.local/share|hypr|hyprland
 O|${HOME}/.local/bin|hyde-shell hydectl|hyprland
 S|${HOME}/.config|gtk-3.0|nwg-look
 S|${HOME}/.config|nwg-look|nwg-look
@@ -52,6 +59,8 @@ S|${HOME}/.config/hypr|shaders|hyprland
 
 O|${HOME}/.local/share|hyde|hyprland
 O|${HOME}/.local/lib|hyde|hyprland
+O|${HOME}/.local/share|wallbash|bash imagemagick
+
 
  Editor 
 P|${HOME}/.config/Code - OSS/User|settings.json|code
@@ -75,6 +84,7 @@ P|${HOME}/.config/kitty|kitty.conf|kitty
 P|${HOME}/.config|fish|fish
 P|${HOME}/.config/starship|starship.toml|starship
 
+
 S|${HOME}|.zshenv|zsh
 S|${HOME}/.config/zsh|.zshenv|zsh
 S|${HOME}/.config/zsh/conf.d|hyde 00-hyde.zsh|zsh
@@ -86,8 +96,7 @@ S|${HOME}/.config/zsh/functions|bat.zsh|zsh bat
 S|${HOME}/.config/zsh/completions|fzf.zsh|zsh fzf
 S|${HOME}/.config/zsh/completions|hydectl.zsh|zsh
 
-
-P|${HOME}/.config/zsh|.zshrc user.zsh prompt.zsh|zsh
+P|${HOME}/.config/zsh|.zshrc user.zsh prompt.zsh plugin.zsh|zsh
 P|${HOME}/.config/zsh|.p10k.zsh|zsh zsh-theme-powerlevel10k
 
 

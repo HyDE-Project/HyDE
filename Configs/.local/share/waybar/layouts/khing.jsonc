@@ -1,15 +1,13 @@
 {
   "layer": "top",
   "output": ["*"],
-  "position": "top",
-  "mode": "dock",
   "exclusive": true,
   "passthrough": false,
   "reload_style_on_change": true,
   "include": [
-    "$XDG_CONFIG_HOME/waybar/modules/*json*", 
-    "$XDG_DATA_HOME/waybar/modules/*json*" 
-    // "$XDG_CONFIG_HOME/waybar/includes/includes.json" 
+    // "$XDG_CONFIG_HOME/waybar/modules/*json*", 
+    // "$XDG_DATA_HOME/waybar/modules/*json*" 
+    "$XDG_CONFIG_HOME/waybar/includes/includes.json" 
   ],
   // ? Groups per side
   "modules-left": ["group/leaf-inverse"],
