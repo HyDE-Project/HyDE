@@ -304,3 +304,5 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
   <sub>Last edited on: 27/02/2025<span id="last-edited"></span></sub>
 </div>
 
+## Test Edit
+This is my first contribution attempt!
