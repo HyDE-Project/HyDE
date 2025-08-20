@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-# shellcheck source=$HOME/.local/bin/hyde-shell
-# shellcheck disable=SC1091
-if ! source "$(command -v hyde-shell)"; then
-	echo "[wallbash] code :: Error: hyde-shell not found."
-	echo "[wallbash] code :: Is HyDE installed?"
-	exit 1
+if [[ "${HYDE_SHELL_INIT}" -ne 1 ]]; then
+    eval "$(hyde-shell init)"
+else
+    export_hyde_config
 fi
 
 USAGE() {

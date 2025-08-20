@@ -4,7 +4,29 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
-## v25.8.2
+## v25.8.3 (Unreleased)
+
+### Fixed
+
+- Typos,spelling and and cleanup
+- Dunst: Fix dunst crashing when the font cannot handle unsupported characters -- Thanks to [#1131](https://github.com/HyDE-Project/HyDE/issues/1131)
+- UWSM: Clean up the xdg freedesktop.org spec as uwsm handles it
+- Wallpaper: fix #1136 as exporting arrays are not supported in bash
+
+### Changed
+
+- Core: Move wallbash to ~/.local/share/wallbash
+- wlogout: Add support for for uwsm
+- Flatpak: make themes,icons as rw for flatpak --user
+- Added multi-gpu message to nvidia.conf
+
+### Added
+
+- hyde-shell: Add `logout` command to handle with/out uwsm
+- waybar: Add lighter temperature module (Needs manual setup)
+- Add credits page
+
+## v25.8.1
 
 Big CHANGE in HyDE! We are now using `uwsm` for session management and app2unit for application management.
 

@@ -7,7 +7,7 @@
 
 {
     "label": "logout",
-    "action": "hyprctl dispatch exit 0",
+    "action": "hyde-shell logout",
     "text": "Logout",
     "keybind": "e"
 }

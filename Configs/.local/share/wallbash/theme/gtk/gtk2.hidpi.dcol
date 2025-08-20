@@ -27,7 +27,7 @@ style "murrine-default" {
 
 	GtkCheckButton::indicator-size = 30
 
-	# The following line hints to gecko (and possibly other appliations)
+	# The following line hints to gecko (and possibly other applications)
 	# that the entry should be drawn transparently on the canvas.
 	# Without this, gecko will fill in the background of the entry.
 	GtkEntry::honors-transparent-bg-hint = 1
@@ -137,7 +137,7 @@ style "murrine-default" {
 		border_colors = { mix(0.2, @fg_color, @bg_color), mix(0.2, @fg_color, @bg_color) }
 		colorize_scrollbar = FALSE
 		comboboxstyle = 0 # 0 = normal combobox, 1 = colorized combobox below arrow
-		contrast = 0.8 # overal contrast with borders
+		contrast = 0.8 # overall contrast with borders
 		focusstyle = 3 # 0 = none, 1 = grey dotted, 2 = colored with fill, 3 = colored glow
 		glazestyle = 0 # 0 = flat highlight, 1 = curved highlight, 2 = concave, 3 = top curved highlight, 4 = beryl highlight
 		glowstyle = 0 # 0 = glow on top, 1 = glow on bottom, 2 = glow on top and bottom, 3 = glow on middle vertically, 4 = glow on middle horizontally, 5 = glow on all sides

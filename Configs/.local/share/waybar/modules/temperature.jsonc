@@ -1,0 +1,171 @@
+{
+  // ===============================================================================
+  // WAYBAR TEMPERATURE MODULES CONFIGURATION // Best for laptops
+  // ===============================================================================
+  //
+  // IMPORTANT: This module configuration is DEVICE SPECIFIC but worth the manual setup!
+  //
+  // WHY USE thermal-zone INSTEAD OF custom/cpuinfo and custom/gpuinfo:
+  // - FASTER: Direct kernel thermal zone access (no subprocess overhead)
+  // - LOWER CPU USAGE: No script execution or command parsing
+  // - MORE RELIABLE: Direct hardware sensor access via sysfs
+  // - CLEANER: No dependency on external tools (sensors, nvidia-smi, etc.)
+  //
+  // REPLACES these custom modules with better performance:
+  // - custom/cpuinfo    -> temperature#27 (thermal-zone method)
+  // - custom/gpuinfo    -> temperature#2  (thermal-zone method)
+  // - custom/sensorsinfo -> temperature#0  (thermal-zone method)
+  //
+  // SETUP REQUIRED: Follow the instructions below to identify YOUR thermal zones!
+  // ===============================================================================
+  //
+  // HOW TO IDENTIFY YOUR THERMAL ZONES:
+  //
+  // 1. List all thermal zones:
+  //    ls /sys/class/thermal/thermal_zone*/type
+  //
+  // 2. Check thermal zone types (fish shell):
+  //    for i in (seq 0 10); echo "Zone $i: "(cat /sys/class/thermal/thermal_zone$i/type 2>/dev/null; or echo "N/A"); end
+  //
+  // 3. Get current temperatures:
+  //    sensors
+  //
+  // 4. Match thermal zone with actual sensor:
+  //    cat /sys/class/thermal/thermal_zone2/temp  (Returns millicelsius: 44050 = 44.05°C)
+  //    nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits  (Compare)
+  //
+  // 5. Common thermal zones:
+  //    - acpitz: ACPI thermal zone (general system)
+  //    - x86_pkg_temp: CPU package temperature
+  //    - coretemp: Individual CPU cores
+  //    - SEN1/SEN2/etc: OEM-specific sensors (could be GPU, chipset, etc.)
+  //    - iwlwifi_*: WiFi adapter temperature
+  //    - pch_*: Platform Controller Hub
+  //
+  // IF NO THERMAL ZONES ARE PRESENT (FOR AMD CPU & GPU):
+  //
+  // AMD hardware does not provide thermal zones and `hwmon-path` should be used instead
+  //
+  // 1. Execute script to detect AMD hardware and hwmon paths
+  //   for hwmon in /sys/class/hwmon/hwmon*; do
+  //     name=$(cat "$hwmon/name" 2>/dev/null)
+  //     case "$name" in
+  //         "k10temp"|"zenpower"|"coretemp")
+  //             echo "\n\e[31m=== $hwmon ===\e[0m"
+  //             echo "$(lscpu | grep "Model name")"
+  //             ;;
+  //         "amdgpu")
+  //             device_link="$hwmon/device"
+  //             if [[ -L "$device_link" ]]; then
+  //                 target=$(readlink -f "$device_link")
+  //                 echo "\n\e[31m=== $hwmon ===\e[0m"
+  //                 pci_id=$(basename $(dirname "$target") | grep -o "0000:[0-9a-f]\+:[0-9a-f]\+\.[0-9a-f]")
+  //                 if [[ -n "$pci_id" ]]; then
+  //                     lspci -s "$pci_id" | cut -d ' ' -f 2-
+  //                 fi
+  //             fi
+  //             ;;
+  //         *)
+  //             ;;
+  //     esac
+  // done
+  //
+  // 2. Output will be similar to:
+  //
+  // === /sys/class/hwmon/hwmon0 ===
+  // PCI bridge: Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 XL Downstream Port of PCI Express Switch (rev 11)
+  // 
+  // === /sys/class/hwmon/hwmon1 ===
+  // PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Internal GPP Bridge to Bus [C:A]
+  // 
+  // === /sys/class/hwmon/hwmon4 ===
+  // Model name:                              AMD Ryzen 7 9700X 8-Core Processor
+  // 
+  // 3. Take desired `hwmon-path` from the output of the script, replace `thermal-zone` with `hwmon-path` in waybar module config
+  //    i.e. "thermal-zone": 2 -> "hwmon-path": "/sys/class/hwmon/hwmon0/temp1_input"
+  //    p.s. do not forget to add temperature source (`temp1_input` in example above)
+  //
+  // PERFORMANCE NOTES:
+  // - thermal-zone method is FASTER than custom scripts (no subprocess overhead)
+  // - hwmon-path method is also fast but less portable
+  // - Custom scripts have higher CPU usage but more flexibility
+  //
+  // DOCUMENTATION: https://man.archlinux.org/man/waybar-temperature.5.en
+  // ===============================================================================
+
+  // ? Below are the configurations for my laptop // only use as a reference!
+
+  // GPU Temperature Monitor (NVIDIA via thermal zone)
+  "temperature#2": {
+    "thermal-zone": 2, // SEN1 - NVIDIA GPU on this system
+
+    // Temperature thresholds for GPU
+    "critical-threshold": 65, // NVIDIA typical max temp
+    "warning-threshold": 55, // Start warning at 75°C
+
+    // Update frequency
+    "interval": 2,
+
+    // Display formats with GPU-specific styling
+    "format": " {temperatureC}°C",
+    "format-warning": "<span color='#fab387'></span> {temperatureC}°C",
+    "format-critical": "<span color='#f38ba8'></span> {temperatureC}°C",
+
+    // Tooltip
+    "tooltip": true,
+    "tooltip-format": "GPU Temperature: {temperatureC}°C\nNVIDIA GeForce MX250",
+
+    // Appearance
+    "max-length": 12,
+    "min-length": 2
+  },
+
+  // CPU Temperature Monitor
+  "temperature#27": {
+    "thermal-zone": 27, // x86_pkg_temp - CPU package temperature
+
+    // Temperature thresholds for CPU
+    "critical-threshold": 85, // CPU critical temp
+    "warning-threshold": 70, // CPU warning temp
+
+    // Update frequency
+    "interval": 2,
+
+    // Display formats with CPU-specific styling
+    "format": " {temperatureC}°C",
+    "format-warning": "<span color='#fab387'></span> {temperatureC}°C",
+    "format-critical": "<span color='#f38ba8'></span> {temperatureC}°C",
+
+    // Tooltip
+    "tooltip": true,
+    "tooltip-format": "CPU Temperature: {temperatureC}°C\nIntel(R) Core(TM) i7-10510U",
+
+    // Appearance
+    "max-length": 12,
+    "min-length": 2
+  },
+
+  // System/ACPI Temperature Monitor
+  "temperature#0": {
+    "thermal-zone": 0, // acpitz - ACPI thermal zone
+
+    // Temperature thresholds
+    "critical-threshold": 50,
+    "warning-threshold": 40,
+
+    // Update frequency
+    "interval": 5,
+
+    // Display formats with system-specific styling
+    "format-warning": "<span color='#fab387'>󰔏</span> {temperatureC}°C",
+    "format-critical": "<span color='#f38ba8'>󰔏</span> {temperatureC}°C",
+
+    // Tooltip
+    "tooltip": true,
+    "tooltip-format": "System Temperature: {temperatureC}°C\nACPI Thermal Zone",
+
+    // Appearance
+    "max-length": 12,
+    "min-length": 2
+  }
+}

@@ -11,28 +11,18 @@
       "click-to-reveal": false
     },
     "modules": [
-      "backlight#eyecare-preview",
       "backlight#eyecare",
       "custom/hyprsunset"
     ]
   },
   "backlight#eyecare": {
-    "rotate": 0,
-    "format": "<span size='large'>{icon}</span> ",
+    "format": "<span size='large'>{icon}</span>",
     "format-icons": ["", "", "", "", "", "", "", "", ""],
+    "on-click": "hyde-shell hyprsunset -t -P waybar:19",
     "on-scroll-up": "hyde-shell brightnesscontrol i 1",
     "on-scroll-down": "hyde-shell brightnesscontrol d 1",
-    "min-length": 6,
     "tooltip": true,
-    "tooltip-format": "Backlight level: {icon} {percent}%"
-  },
-  "backlight#eyecare-preview": {
-    "format": "<sup><span size='medium' rise='1000'>{icon}</span> <span size='large' weight='bold'>{percent}<span size='x-small' rise='1000'>%</span></span></sup>",
-    "format-icons": ["", "", "", "", "", "", "", "", ""],
-    "on-scroll-up": "hyde-shell brightnesscontrol i 1",
-    "on-scroll-down": "hyde-shell brightnesscontrol d 1",
-    "min-length": 6,
-    "tooltip": true,
+    "min-length": 2,
     "tooltip-format": "Backlight: {icon} {percent}%\n\n󰺤 Scroll to change brightness\n󰳾 Click to toggle hyprsunset"
   }
 }

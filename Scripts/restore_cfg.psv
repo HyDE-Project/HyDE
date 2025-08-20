@@ -59,6 +59,8 @@ S|${HOME}/.config/hypr|shaders|hyprland
 
 O|${HOME}/.local/share|hyde|hyprland
 O|${HOME}/.local/lib|hyde|hyprland
+O|${HOME}/.local/share|wallbash|bash imagemagick
+
 
  Editor 
 P|${HOME}/.config/Code - OSS/User|settings.json|code

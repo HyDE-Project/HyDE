@@ -104,7 +104,8 @@ preprocess_substitutions() {
 fn_wallbash() {
     local template="${1}"
     local temp_target_file exec_command
-    WALLBASH_SCRIPTS="${template%%hyde/wallbash*}hyde/wallbash/scripts"
+    WALLBASH_SCRIPTS="${template%%/wallbash/*}/wallbash/scripts"
+    
     if [[ "${template}" == *.theme ]]; then
         # This is approach is to handle the theme files
         # We don't want themes to launch the exec_command or any arbitrary codes
@@ -113,14 +114,15 @@ fn_wallbash() {
         template_name="${template##*/}"
         template_name="${template_name%.*}"
         # echo "${wallbashDirs[@]}"
-        dcolTemplate=$(find "${wallbashDirs[@]}" -type f -path "*/theme*" -name "${template_name}.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
+        dcolTemplate=$(find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "${template_name}.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
         if [[ -n "${dcolTemplate}" ]]; then
             eval target_file="$(head -1 "${dcolTemplate}" | awk -F '|' '{print $1}')"
             exec_command="$(head -1 "${dcolTemplate}" | awk -F '|' '{print $2}')"
-            WALLBASH_SCRIPTS="${dcolTemplate%%hyde/wallbash*}hyde/wallbash/scripts"
-
+            WALLBASH_SCRIPTS="${dcolTemplate%%/wallbash/*}/wallbash/scripts"
         fi
     fi
+
+    [[ "${LOG_LEVEL}" == "debug" ]] && print_log -sec "wallbash" -stat "Template:" " ${template}"
 
     # shellcheck disable=SC1091
     # shellcheck disable=SC2154
@@ -160,9 +162,12 @@ fn_wallbash() {
         mv "${temp_target_file}" "${target_file}"
     fi
     [ -z "${exec_command}" ] || {
+        [[ "${LOG_LEVEL}" == "debug" ]] && print_log -sec "wallbash" -stat "Exec command:" " ${exec_command} from ${WALLBASH_SCRIPTS}"
         bash -c "${exec_command}" &
         disown
     }
+
+    unset WALLBASH_SCRIPTS
 }
 
 scrDir="$(dirname "$(realpath "$0")")"
@@ -184,7 +189,7 @@ while [[ $# -gt 0 ]]; do
             source "${dcol_colors}"
             shift 2
         else
-            dcol_colors="$(find "${dcolDir}" -type f -name "*.dcol" | shuf -n 1)"
+            dcol_colors="$(find -H "${dcolDir}" -type f -name "*.dcol" | shuf -n 1)"
             printf "[Dcol Colors] %s\n" "${dcol_colors}"
             shift
         fi
@@ -290,12 +295,12 @@ fi
 if [ "${enableWallDcol}" -eq 0 ] && [[ "${reload_flag}" -eq 1 ]]; then
 
     print_log -sec "wallbash" -stat "apply ${dcol_mode} colors" "${HYDE_THEME} theme"
-    mapfile -d '' -t deployList < <(find "${HYDE_THEME_DIR}" -type f -name "*.theme" -print0)
+    mapfile -d '' -t deployList < <(find -H "${HYDE_THEME_DIR}" -type f -name "*.theme" -print0)
 
     while read -r pKey; do
-        fKey="$(find "${HYDE_THEME_DIR}" -type f -name "$(basename "${pKey%.dcol}.theme")")"
+        fKey="$(find -H "${HYDE_THEME_DIR}" -type f -name "$(basename "${pKey%.dcol}.theme")")"
         [ -z "${fKey}" ] && deployList+=("${pKey}")
-    done < <(find "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
+    done < <(find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
 
     # Process templates in parallel
     parallel fn_wallbash ::: "${deployList[@]}" || true
@@ -303,8 +308,8 @@ if [ "${enableWallDcol}" -eq 0 ] && [[ "${reload_flag}" -eq 1 ]]; then
 elif [ "${enableWallDcol}" -gt 0 ]; then
     print_log -sec "wallbash" -stat "apply ${dcol_mode} colors" "Wallbash theme"
     # This is the reason we avoid SPACES for the wallbash template names
-    find "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true
+    find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true
 fi
 
 # Process "always" templates in parallel
-find "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true
+find -H "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} || true

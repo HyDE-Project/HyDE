@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091
+# shellcheck disable=SC1090
 
 # xdg resolution
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -32,9 +33,8 @@ export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
-
 #? avoid notify-send to stall the script
-send_notifs () {
+send_notifs() {
     local args=("$@")
     notify-send "${args[@]}" &
 }
@@ -109,8 +109,6 @@ print_log() {
     echo "" >&2
 }
 
-
-
 get_hashmap() {
     unset wallHash
     unset wallList
@@ -134,6 +132,14 @@ get_hashmap() {
 
     }
 
+    list_skipped_path() {
+        local skip_path=(
+            "*/logo/*"
+        )
+        # output a list of paths to be skipped in find snippet
+        printf -- "! -path \"%s\" " "${skip_path[@]}" | sed 's/ $//'
+    }
+
     find_wallpapers() {
         local wallSource="$1"
 
@@ -143,7 +149,7 @@ get_hashmap() {
         fi
 
         local find_command
-        find_command="find \"${wallSource}\" -type f \\( $(list_extensions) \\) ! -path \"*/logo/*\" -exec \"${hashMech}\" {} +"
+        find_command="find -H \"${wallSource}\" -type f \\( $(list_extensions) \\) $(list_skipped_path) -exec \"${hashMech}\" {} +"
 
         [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "Running command:" "${find_command}"
 
@@ -156,7 +162,7 @@ get_hashmap() {
 
     for wallSource in "$@"; do
 
-        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "arg:" "${wallSource}"
+        [ "${LOG_LEVEL}" == "debug" ] && print_log -g "DEBUG:" -b "wallpaper source path:" "${wallSource}"
 
         [ -z "${wallSource}" ] && continue
         [ "${wallSource}" == "--no-notify" ] && no_notify=1 && continue
@@ -234,7 +240,7 @@ get_themes() {
         [ -f "${thmDir}/.sort" ] && thmSortS+=("$(head -1 "${thmDir}/.sort")") || thmSortS+=("0")
         thmWallS+=("${realWallPath}")
         thmListS+=("${thmDir##*/}") # Use this instead of basename
-    done < <(find "${HYDE_CONFIG_HOME}/themes" -follow -mindepth 1 -maxdepth 1 -type d)
+    done < <(find -H "${HYDE_CONFIG_HOME}/themes" -mindepth 1 -maxdepth 1 -type d)
 
     while IFS='|' read -r sort theme wall; do
         thmSort+=("${sort}")
@@ -250,9 +256,20 @@ get_themes() {
     fi
 }
 
-[ -f "${XDG_RUNTIME_DIR}/hyde/environment" ] && source "${XDG_RUNTIME_DIR}/hyde/environment"
-[ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
-[ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
+export_hyde_config() {
+    #? This function is used to re-source config files if
+    #? 1. they change since the script was started
+    #? 2. the script is run in a new shell instance
+    #? 3. When you needed the arrays to be available in the current shell session // bash does not export arrays
+
+    local user_conf_state="${XDG_STATE_HOME}/hyde/staterc"
+    local user_conf="${XDG_STATE_HOME}/hyde/config"
+
+    [ -f "${user_conf_state}" ] && source "${user_conf_state}"
+    [ -f "${user_conf}" ] && source "${user_conf}"
+}
+
+export_hyde_config
 
 case "${enableWallDcol}" in
 0 | 1 | 2 | 3) ;;
@@ -265,15 +282,20 @@ if [ -z "${HYDE_THEME}" ] || [ ! -d "${HYDE_CONFIG_HOME}/themes/${HYDE_THEME}" ]
 fi
 
 HYDE_THEME_DIR="${HYDE_CONFIG_HOME}/themes/${HYDE_THEME}"
-wallbashDirs=(
-    "${HYDE_CONFIG_HOME}/wallbash"
+WALLBASH_DIRS=(
+    "${XDG_CONFIG_HOME}/wallbash"
+    "${XDG_CONFIG_HOME}/hyde/wallbash"
+    "${XDG_DATA_HOME}/wallbash"
     "${XDG_DATA_HOME}/hyde/wallbash"
     "/usr/local/share/hyde/wallbash"
     "/usr/share/hyde/wallbash"
 )
 
+wallbashDirs=("${WALLBASH_DIRS[@]}")
+
 export HYDE_THEME \
     HYDE_THEME_DIR \
+    WALLBASH_DIRS \
     wallbashDirs \
     enableWallDcol
 
@@ -473,7 +495,7 @@ EOF
 #? Checks if the cursor is hovered on a window
 is_hovered() {
     data=$(hyprctl --batch -j "cursorpos;activewindow" | jq -s '.[0] * .[1]')
-    # evaulate the output of the JSON data into shell variables
+    # evaluate the output of the JSON data into shell variables
     eval "$(echo "$data" | jq -r '@sh "cursor_x=\(.x) cursor_y=\(.y) window_x=\(.at[0]) window_y=\(.at[1]) window_size_x=\(.size[0]) window_size_y=\(.size[1])"')"
 
     # Handle variables in case they are null
@@ -549,4 +571,5 @@ export -f get_hyprConf get_rofi_pos \
     get_themes print_log \
     pkg_installed paste_string \
     extract_thumbnail accepted_mime_types \
-    dconf_write send_notifs
+    dconf_write send_notifs \
+    export_hyde_config

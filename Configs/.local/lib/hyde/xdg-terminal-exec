@@ -167,7 +167,7 @@ make_paths() {
 
 	debug "paths:" "  CONFIGS=${CONFIGS}" "  APPLICATIONS_DIRS=${APPLICATIONS_DIRS}"
 }
-# Mask IFS withing function to allow temporary changes
+# Mask IFS within function to allow temporary changes
 alias make_paths='IFS= make_paths'
 
 gen_hash() {
@@ -336,12 +336,12 @@ list_contains() {
 
 # Parse all config files and populate $ENTRY_IDS with read desktop entry IDs
 read_config_paths() {
-	# All config files are read immediatelly, rather than on demand, even if it's more IO intensive
+	# All config files are read immediately, rather than on demand, even if it's more IO intensive
 	# This way all IDs are already known, and in order of preference, before iterating over them
 	IFS=':'
 	for config_path in ${CONFIGS}; do
 		debug "reading config '$config_path'"
-		# Nonexistant file is not an error
+		# Nonexistent file is not an error
 		[ -f "$config_path" ] || continue
 		# Let `read` trim leading/trailing whitespace from the line
 		while IFS="$OIFS" read -r line; do
@@ -453,7 +453,7 @@ read_config_paths() {
 		done <"$config_path"
 	done
 }
-# Mask IFS withing function to allow temporary changes
+# Mask IFS within function to allow temporary changes
 alias read_config_paths='IFS= read_config_paths'
 
 replace() {
@@ -720,7 +720,7 @@ de_strip_fields() {
 	EXEC_USEP=$exec_usep
 	IFS=$OIFS
 }
-# Mask IFS withing function to allow temporary changes
+# Mask IFS within function to allow temporary changes
 alias de_strip_fields='IFS= de_strip_fields'
 
 reset_keys() {
@@ -770,7 +770,7 @@ find_entry_paths() {
 		# shellcheck disable=SC2139
 		alias "$entry_id"="entry_path='$entry_path'"
 		debug "registered '$entry_path' as entry '$entry_id'"
-		# Add as a fallback ID regardles if it's a duplicate
+		# Add as a fallback ID regardless if it's a duplicate
 		FALLBACK_ENTRY_IDS=${entry_id}${FALLBACK_ENTRY_IDS:+${N}${FALLBACK_ENTRY_IDS}}
 		debug "added fallback ID '$entry_id'"
 	done <<-EOE
@@ -782,7 +782,7 @@ find_entry_paths() {
 		)
 	EOE
 }
-# Mask IFS withing function to allow temporary changes
+# Mask IFS within function to allow temporary changes
 alias find_entry_paths='IFS= find_entry_paths'
 
 # Check validity of a given entry key - value pair
@@ -948,7 +948,7 @@ check_entry_key() {
 	esac
 	# By default unrecognised keys, empty lines and comments get ignored
 }
-# Mask IFS withing function to allow temporary changes
+# Mask IFS within function to allow temporary changes
 alias check_entry_key='IFS= check_entry_key'
 
 # Read entry from given path
@@ -1086,7 +1086,7 @@ find_entry() {
 	IFS=':' error "No valid terminal entry was found in:" ${APPLICATIONS_DIRS}
 	return 1
 }
-# Mask IFS withing function to allow temporary changes
+# Mask IFS within function to allow temporary changes
 alias find_entry='IFS= find_entry'
 
 get_default_execarg() {
