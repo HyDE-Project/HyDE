@@ -4,6 +4,15 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
+## v25.9.1 (Unreleased)
+
+### Changed
+
+- Waybar: Make temperature background transparent
+- hyde-shell: silent pyinit command
+- Binds: Use `hyde-shell logout` for cleaner session logout
+
+
 ## v25.8.3
 
 ### Fixed
