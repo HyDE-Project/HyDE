@@ -1,30 +1,28 @@
 #!/usr/bin/env python3
 # TODO:Refactor. This what happens when you just want it to work lol.
+import argparse
+import glob
+import hashlib
 import json
 import os
-import glob
-import subprocess
 import re
-import argparse
 import shutil
-import time
-import sys
-import hashlib
 import signal
-
+import subprocess
+import sys
+import time
 from pathlib import Path
 
-import pyutils.wrapper.libnotify as notify
 import pyutils.compositor as HYPRLAND
 import pyutils.logger as logger
-
+import pyutils.wrapper.libnotify as notify
 from pyutils.wrapper.rofi import rofi_dmenu
 from pyutils.xdg_base_dirs import (
+    xdg_cache_home,
     xdg_config_home,
     xdg_data_home,
-    xdg_state_home,
-    xdg_cache_home,
     xdg_runtime_dir,
+    xdg_state_home,
 )
 
 logger = logger.get_logger()
@@ -903,7 +901,7 @@ def update_global_css():
  Dynamic Style Configuration *
  This is handled by HyDE
 
- To generate a dynamic configuration 
+ To generate a dynamic configuration
  base on theme and user settings
 
 */
@@ -1247,10 +1245,7 @@ def generate_includes():
     includes_data["include"] = list(dict.fromkeys(includes))
 
     position = get_config_value("WAYBAR_POSITION")
-    if position:
-        position = position.strip().strip('"').strip("'")
-    else:
-        position = "top"
+    position = position.strip().strip('"').strip("'") if position else "top"
     includes_data["position"] = position
 
     with open(includes_file, "w") as file:
@@ -1325,6 +1320,9 @@ def watch_waybar():
 
 def main():
     logger.debug("Starting waybar.py")
+
+    if not shutil.which("waybar"):
+        exit()
 
     logger.debug(f"Looking for state file at: {STATE_FILE}")
 
@@ -1417,22 +1415,71 @@ def main():
 
     parser = argparse.ArgumentParser(description="Waybar configuration management")
     parser.add_argument("--set", type=str, help="Set a specific layout")
-    parser.add_argument("-n", "--next", action="store_true", help="Switch to the next layout")
-    parser.add_argument("-p", "--prev", action="store_true", help="Switch to the previous layout")
-    parser.add_argument("-u", "--update", action="store_true", help="Update all (icon size, border radius, includes, config, style)")
-    parser.add_argument("-g", "--update-global-css", action="store_true", help="Update global.css file")
-    parser.add_argument("-i", "--update-icon-size", action="store_true", help="Update icon size in JSON files")
-    parser.add_argument("-b", "--update-border-radius", action="store_true", help="Update border radius in CSS file")
-    parser.add_argument("-G", "--generate-includes", action="store_true", help="Generate includes.json file")
-    parser.add_argument("-c", "--config", type=str, help="Path to the source config.jsonc file")
-    parser.add_argument("-s", "--style", type=str, help="Path to the source style.css file")
-    parser.add_argument("-w", "--watch", action="store_true", help="Watch and restart Waybar if it dies")
-    parser.add_argument("--json", "-j", action="store_true", help="List all layouts in JSON format")
-    parser.add_argument("--select-layout", "-L", action="store_true", help="Select a layout using rofi")
-    parser.add_argument("--select-style", "-Y", action="store_true", help="Select a style using rofi")
-    parser.add_argument("--select", "-S", action="store_true", help="Select layout and then style")
-    parser.add_argument("--kill", "-k", action="store_true", help="Kill all Waybar instances and watcher script")
-    parser.add_argument("--hide", action="store_true", help="Send SIGUSR1 to Waybar systemd unit to toggle hide")
+    parser.add_argument(
+        "-n", "--next", action="store_true", help="Switch to the next layout"
+    )
+    parser.add_argument(
+        "-p", "--prev", action="store_true", help="Switch to the previous layout"
+    )
+    parser.add_argument(
+        "-u",
+        "--update",
+        action="store_true",
+        help="Update all (icon size, border radius, includes, config, style)",
+    )
+    parser.add_argument(
+        "-g", "--update-global-css", action="store_true", help="Update global.css file"
+    )
+    parser.add_argument(
+        "-i",
+        "--update-icon-size",
+        action="store_true",
+        help="Update icon size in JSON files",
+    )
+    parser.add_argument(
+        "-b",
+        "--update-border-radius",
+        action="store_true",
+        help="Update border radius in CSS file",
+    )
+    parser.add_argument(
+        "-G",
+        "--generate-includes",
+        action="store_true",
+        help="Generate includes.json file",
+    )
+    parser.add_argument(
+        "-c", "--config", type=str, help="Path to the source config.jsonc file"
+    )
+    parser.add_argument(
+        "-s", "--style", type=str, help="Path to the source style.css file"
+    )
+    parser.add_argument(
+        "-w", "--watch", action="store_true", help="Watch and restart Waybar if it dies"
+    )
+    parser.add_argument(
+        "--json", "-j", action="store_true", help="List all layouts in JSON format"
+    )
+    parser.add_argument(
+        "--select-layout", "-L", action="store_true", help="Select a layout using rofi"
+    )
+    parser.add_argument(
+        "--select-style", "-Y", action="store_true", help="Select a style using rofi"
+    )
+    parser.add_argument(
+        "--select", "-S", action="store_true", help="Select layout and then style"
+    )
+    parser.add_argument(
+        "--kill",
+        "-k",
+        action="store_true",
+        help="Kill all Waybar instances and watcher script",
+    )
+    parser.add_argument(
+        "--hide",
+        action="store_true",
+        help="Send SIGUSR1 to Waybar systemd unit to toggle hide",
+    )
 
     if not STATE_FILE.exists() or STATE_FILE.stat().st_size == 0:
         logger.debug("State file doesn't exist or is empty, creating it")
