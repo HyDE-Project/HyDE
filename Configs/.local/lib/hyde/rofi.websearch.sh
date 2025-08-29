@@ -2,7 +2,11 @@
 
 set -e
 
-[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+if [[ "${HYDE_SHELL_INIT}" -ne 1 ]]; then
+    eval "$(hyde-shell init)"
+else
+    export_hyde_config
+fi
 
 cached_search_dir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde/landing/websearch"
 

@@ -2,7 +2,11 @@
 
 pkill -u "$USER" rofi && exit 0
 
-[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+if [[ "${HYDE_SHELL_INIT}" -ne 1 ]]; then
+    eval "$(hyde-shell init)"
+else
+    export_hyde_config
+fi
 
 emoji_dir=${HYDE_DATA_HOME:-$HOME/.local/share/hyde}
 emoji_data="${emoji_dir}/emoji.db"

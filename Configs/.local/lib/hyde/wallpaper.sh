@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+if [[ "${HYDE_SHELL_INIT}" -ne 1 ]]; then
+    eval "$(hyde-shell init)"
+else
+    export_hyde_config
+fi
 
 # // Help message
 show_help() {
@@ -84,7 +88,11 @@ Wall_Change() {
 Wall_Json() {
     setIndex=0
     [ ! -d "${HYDE_THEME_DIR}" ] && echo "ERROR: \"${HYDE_THEME_DIR}\" does not exist" && exit 0
-    wallPathArray=("${HYDE_THEME_DIR}")
+    if [ -d "${HYDE_THEME_DIR}/wallpapers" ]; then
+        wallPathArray=("${HYDE_THEME_DIR}/wallpapers")
+    else
+        wallPathArray=("${HYDE_THEME_DIR}")
+    fi
     wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
 
     get_hashmap "${wallPathArray[@]}" # get the hashmap provides wallList and wallHash
@@ -181,7 +189,7 @@ Wall_Hash() {
     # * Method to load wallpapers in hashmaps and fix broken links per theme
     setIndex=0
     [ ! -d "${HYDE_THEME_DIR}" ] && echo "ERROR: \"${HYDE_THEME_DIR}\" does not exist" && exit 0
-    wallPathArray=("${HYDE_THEME_DIR}")
+    wallPathArray=("${HYDE_THEME_DIR}/wallpapers")
     wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
     get_hashmap "${wallPathArray[@]}"
     [ ! -e "$(readlink -f "${wallSet}")" ] && echo "fixing link :: ${wallSet}" && ln -fs "${wallList[setIndex]}" "${wallSet}"
@@ -217,6 +225,12 @@ main() {
     else
         wallSet="${HYDE_THEME_DIR}/wall.set"
     fi
+
+    # Ensure wallSet exists before applying
+    if [ ! -e "${wallSet}" ]; then
+        Wall_Hash
+    fi
+
 
     if [ -n "${wallpaper_setter_flag}" ]; then
         export WALLPAPER_SET_FLAG="${wallpaper_setter_flag}"

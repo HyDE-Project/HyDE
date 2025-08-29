@@ -103,7 +103,7 @@ prompt_timer() {
 }
 print_log() {
     local executable="${0##*/}"
-    local logFile="${cacheDir}/logs/${HYDE_LOG}/${executable}"
+    local logFile="${cacheDir}/logs/${HYDE_LOG}/${executable}.log"
     mkdir -p "$(dirname "${logFile}")"
     local section=${log_section:-}
     {

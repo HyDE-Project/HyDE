@@ -4,7 +4,47 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
-## v25.8.2
+## v25.9.1 (Unreleased)
+
+### Changed
+
+- Waybar: Make temperature background transparent
+- hyde-shell: silent pyinit command
+- Binds: Use `hyde-shell logout` for cleaner session logout
+
+
+## v25.8.3
+
+### Fixed
+
+- Typos,spelling and and cleanup
+- Dunst: Fix dunst crashing when the font cannot handle unsupported characters -- Thanks to [#1131](https://github.com/HyDE-Project/HyDE/issues/1131)
+- UWSM: Clean up the xdg freedesktop.org spec as uwsm handles it
+- Wallpaper: fix #1136 as exporting arrays are not supported in bash
+- Lockscreen: Fix zombie hyprlock
+
+### Changed
+
+- Core: Move wallbash to ~/.local/share/wallbash
+- Wlogout: Add support for for uwsm
+- Flatpak: make themes,icons as rw for flatpak --user
+- Added multi-gpu message to nvidia.conf
+- Logs now will have '\*.log' as extension
+- Waybar: run as a systemd scope unit on startup
+- Wallpaper: run as a systemd scope unit on startup
+
+### Added
+
+- hyde-shell: Add 'logout' command to handle with/out uwsm
+- waybar: Add lighter temperature module (Needs manual setup)
+- Add credits page
+- waybar: Try to force initialization on restore (redundancy) might fix [#1160](https://github.com/HyDE-Project/HyDE/issues/1160)
+- Added pyprland boilerplate, no configs for now
+- Hyprland: Graciously handle some of the issues hyprland config issues for unknown SHELL
+- Pyprland: Use nc or socat to communicate with pyprland instead of pure python
+- Pyprland: Add boilerplate config for pyprland
+
+## v25.8.1
 
 Big CHANGE in HyDE! We are now using `uwsm` for session management and app2unit for application management.
 
@@ -28,6 +68,7 @@ In SDDM, please choose `Hyprland (UWSM Managed)` as your session. Or else you wi
 - Core: app2unit.sh and xdg-terminal-exec as as static dependencies. These tools are not widely available and are not part of the core dependencies.
 - The ~/.config/xdg-terminals.list file is now used to determine which terminal to use.
 - Wallbash: Added spotify flatpak support
+- Migration script implementation
 
 ### Fixed
 

@@ -61,7 +61,7 @@ call_wallbashScript() {
     local scriptName=$1
     shift
     local args=("${@}")
-    local dirs=("${wallbashDirs[@]}")
+    local dirs=("${WALLBASH_DIRS[@]}")
     sanitized_dirs=()
     for dir in "${dirs[@]}"; do
         if [[ -d "$dir" ]]; then
@@ -69,7 +69,7 @@ call_wallbashScript() {
         fi
     done
     dirs=("${sanitized_dirs[@]}")
-    script_path=$(find "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
 
     for func in $(compgen -A function); do
         export -f "${func?}"
@@ -86,7 +86,7 @@ call_wallbashScript() {
             for dir in "${dirs[@]}"; do
                 if [[ -d "$dir" ]]; then
                     echo -e "\n[ $dir ]"
-                    find "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
+                    find -L "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
                 fi
             done
             ;;
@@ -123,12 +123,12 @@ list_script() {
 
     # Find scripts in all configured directories
     for dir in "${SCRIPT_DIRS[@]}"; do
-        find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
+        find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
     done | sort -u
 }
 
 list_script_path() {
-    find "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
+    find -L "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
 }
 
 get_version() {
@@ -193,7 +193,7 @@ get_completion_data() {
     done < <(list_script 2>/dev/null | sort -u)
 
     # Get wallbash scripts
-    local dirs=("${wallbashDirs[@]}")
+    local dirs=("${WALLBASH_DIRS[@]}")
     wallbash_scripts=("--help") # Add --help as first option
     # Simplified - just --help for now since dynamic parsing is complex
 
@@ -392,6 +392,14 @@ generate_completions() {
     esac
 }
 
+hyde-logout() {
+    if uwsm check is-active; then
+        uwsm stop
+    elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE}" ]]; then
+        hyprctl dispatch exit 0
+    fi
+}
+
 run_command() {
     # Convert to array, deduplicate, and filter out empty entries
     IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
@@ -432,9 +440,72 @@ run_command() {
         # Show user scripts from all configured directories
         for dir in "${SCRIPT_DIRS[@]}"; do
             echo "Scripts in $dir:"
-            find "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
+            find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
         done
     fi
+}
+
+run_pip() {
+    python_activate
+    shift
+    pip "$@"
+}
+
+run_pypr() {
+
+    python_activate
+    shift
+
+    if command -v pypr >/dev/null 2>&1; then
+
+        socket_path="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.pyprland.sock"
+        if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/pyprland.toml " ]]; then
+            send_notifs "Missing pyprland.toml" "Please create a pyprland.toml file in ${XDG_CONFIG_HOME:-$HOME/.config}/hypr/ to configure PyPR."
+            exit 1
+        fi
+
+        if [[ -S "$socket_path" ]] && pgrep -u "$USER" pypr >/dev/null 2>&1; then
+            message="${*:-"help"}"
+            # Send the message to the socket and print the response
+            if ! printf "%s" "${message[@]}" | nc -N -U "$socket_path" 2>/dev/null; then #! openbsd netcat only
+                if ! printf "%s" "${message[@]}" | socat - UNIX-CONNECT:"$socket_path" 2>/dev/null; then 
+                    if ! printf "%s" "${message[@]}" | ncat -U "$socket_path" 2>/dev/null; then
+                        if ! pypr "${message[@]}"; then
+                            print_log -sec "pypr" "Error communicating with socket: $socket_path"
+                            exit 1
+                        fi
+                    fi
+                fi
+            fi
+
+        else
+            print_log -sec "pypr" "PyPR is not running properly, starting fresh"
+            [[ -S "$socket_path" ]] && print_log -y "Removing stale socket: $socket_path"
+            pgrep -u "$USER" pypr >/dev/null && print_log -y "Killing existing pypr process"
+            rm -f "$socket_path"
+
+            exec app2unit.sh -t service pypr
+        fi
+
+    else
+        pip install --no-input pyprland==2.4.7
+    fi
+
+}
+
+lock_session() {
+    #? hyde-shell lock-session wraps around the lockscreen.sh script
+    #? lockscreen.sh activates the set lockscreen blindly
+    #? however, lock-session will check if the lockscreen is set FD's ScreenSaver
+    #? if it is, it will use loginctl lock-session
+    #? otherwise, it will use lockscreen.sh
+    if busctl --user list | grep -q "org.freedesktop.ScreenSaver"; then
+        echo "Using org.freedesktop.ScreenSaver for locking"
+        loginctl lock-session
+    else
+        lockscreen.sh
+    fi
+
 }
 
 #*--------------------------------------------------------------------------------
@@ -455,21 +526,28 @@ HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/s
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 #*--------------------------------------------------------------------------------
-if [[ "${1}" == "app" ]]; then
+
+# Priority commands
+case "$1" in
+app)
     export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
     [[ "${HYDEPY}" -eq 1 ]] && python_activate
     shift
     exec app2unit.sh "$@"
-fi
-#*--------------------------------------------------------------------------------
-
-# If args is init or --init, print initialization script
-if [[ "$1" == "init" || "$1" == "--init" ]]; then
+    ;;
+init | --init)
     initialized
     exit 0
-else
+    ;;
+lock-session)
+    lock_session
+    exit 0
+    ;;
+*)
     export HYDE_SHELL_INIT=1
-fi
+    ;;
+esac
+
 # shellcheck disable=SC1091
 if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
     echo "Error: Could not load HyDE, broken installation?"
@@ -481,6 +559,19 @@ fi
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 
     case $1 in
+    logout)
+        hyde-logout
+        ;;
+
+    pypr)
+        run_pypr "${@}"
+        exit 0
+        ;;
+
+    pip)
+        run_pip "${@}"
+        exit 0
+        ;;
     -r | reload)
         hyde_reload
         ;;

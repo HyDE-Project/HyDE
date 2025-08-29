@@ -8,7 +8,7 @@ shaders_dir="$confDir/hypr/shaders"
 
 # Ensure the shaders directory exists
 if [ ! -d "$shaders_dir" ]; then
-    notify-send -i "preferences-desktop-display" "Error" "Shaders directory does not exist at $shaders_dir"
+    send_notifs -i "preferences-desktop-display" "Error" "Shaders directory does not exist at $shaders_dir"
     exit 1
 fi
 
@@ -49,14 +49,14 @@ fi
 # Functions
 fn_select() {
     # List all .frag shaders except user-defines, disable, and .cache
-    shader_items=$(find "$shaders_dir" -maxdepth 1 -name "*.frag" ! -name "disable.frag" ! -name ".compiled.cache.glsl" -print0 2>/dev/null | xargs -0 -n1 basename | sed 's/\.frag$//')
+    shader_items=$(find -L "$shaders_dir" -maxdepth 1 -name "*.frag" ! -name "disable.frag" ! -name ".compiled.cache.glsl" -print0 2>/dev/null | xargs -0 -n1 basename | sed 's/\.frag$//')
     # Add 'disable' on top if it exists
     if [ -f "$shaders_dir/disable.frag" ]; then
         shader_items="disable\n$shader_items"
     fi
 
     if [ -z "$shader_items" ]; then
-        notify-send -i "preferences-desktop-display" "Error" "No .frag files found in $shaders_dir"
+        send_notifs -i "preferences-desktop-display" "Error" "No .frag files found in $shaders_dir"
         exit 1
     fi
 
@@ -96,7 +96,7 @@ fn_select() {
 
     set_conf "HYPR_SHADER" "$selected_shader"
     fn_update "$selected_shader"
-    notify-send -i "preferences-desktop-display" "Shader:" "$selected_shader"
+    send_notifs -i "preferences-desktop-display" "Shader:" "$selected_shader"
 }
 
 fn_reload() {
@@ -105,7 +105,7 @@ fn_reload() {
     fi
     set_conf "HYPR_SHADER" "$HYPR_SHADER"
     fn_update "$HYPR_SHADER"
-    notify-send -i "preferences-desktop-display" "Shader reloaded:" "$HYPR_SHADER"
+    send_notifs -i "preferences-desktop-display" "Shader reloaded:" "$HYPR_SHADER"
 }
 
 concat_shader_files() {

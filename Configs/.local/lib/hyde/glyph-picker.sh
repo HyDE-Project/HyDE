@@ -2,7 +2,11 @@
 
 pkill -u "$USER" rofi && exit 0
 
-[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+if [[ "${HYDE_SHELL_INIT}" -ne 1 ]]; then
+    eval "$(hyde-shell init)"
+else
+    export_hyde_config
+fi
 
 glyph_dir=${HYDE_DATA_HOME:-$HOME/.local/share/hyde}
 glyph_data="${glyph_dir}/glyph.db"
@@ -37,7 +41,7 @@ setup_rofi_config() {
     r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;}listview{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
 
     rofi_args+=(
-        "${ROFI_GLYPH_ARGS[@]}" 
+        "${ROFI_GLYPH_ARGS[@]}"
         -i
         -matching fuzzy
         -no-custom

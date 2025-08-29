@@ -21,16 +21,16 @@ configure_spicetify() {
     local cache_dir=$2
     local spotify_flags='--ozone-platform=wayland'
     local spotify_conf
-
+    
     spicetify &>/dev/null
     mkdir -p ~/.config/spotify
     touch ~/.config/spotify/prefs
     spotify_conf=$(spicetify -c)
-
+    
     sed -i -e "/^prefs_path/ s+=.*$+= $HOME/.config/spotify/prefs+g" \
-        -e "/^spotify_path/ s+=.*$+= $spotify_path+g" \
-        -e "/^spotify_launch_flags/ s+=.*$+= $spotify_flags+g" "$spotify_conf"
-
+    -e "/^spotify_path/ s+=.*$+= $spotify_path+g" \
+    -e "/^spotify_launch_flags/ s+=.*$+= $spotify_flags+g" "$spotify_conf"
+    
     spicetify_themes_dir="$HOME/.config/spicetify/Themes"
     if [ ! -d "${spicetify_themes_dir}/Sleek" ]; then
         curl -L -o "${cache_dir}/landing/Spotify_Sleek.tar.gz" "https://github.com/HyDE-Project/HyDE/raw/master/Source/arcs/Spotify_Sleek.tar.gz"
@@ -59,31 +59,34 @@ if [ -n "${SPOTIFY_PATH}" ]; then
 
             note: run with 'sudo' if only needed.
 EOF
-
-elif [ -d "${XDG_DATA_HOME}/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify" ]; then
+    
+    elif [ -d "${XDG_DATA_HOME}/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify" ]; then
     spotify_path="${XDG_DATA_HOME}/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify"
-elif [ -d /var/lib/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify ]; then
+    print_log -sec "Spotify" " User Flatpak"
+    elif [ -d /var/lib/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify ]; then
     spotify_path='/var/lib/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify'
-elif [ -f "${shareDir}/spotify-launcher/install/usr/bin/spotify" ]; then
+    print_log -sec "Spotify" " System Flatpak"
+    elif [ -f "${shareDir}/spotify-launcher/install/usr/bin/spotify" ]; then
     spotify_path="${shareDir}/spotify-launcher/install/usr/share/spotify"
-elif [ -d /opt/spotify ]; then
+    print_log -sec "Spotify" " Spotify-launcher"
+    elif [ -d /opt/spotify ]; then
     spotify_path='/opt/spotify'
+    print_log -sec "Spotify" " System Package Manager"
 fi
 
 if [ ! -w "${spotify_path}" ] || [ ! -w "${spotify_path}/Apps" ]; then
     notify_and_set_permissions "${spotify_path}"
-else
-    printf "[info]     using spotify path: %s\n" "${spotify_path}"
 fi
 
-if (pkg_installed spotify && pkg_installed spicetify-cli) || [ -n "$spotify_path" ]; then
-
+if (pkg_installed spotify && pkg_installed spicetify-cli) || [ -e "${spotify_path}" ]; then
+    print_log -sec "Spotify" -stat "path" " ${spotify_path}"
     if [ "$(spicetify config | awk '{if ($1=="color_scheme") print $2}')" != "Wallbash" ] || [[ "${*}" == *"--reset"* ]]; then
         configure_spicetify "$spotify_path" "$cacheDir"
     fi
-
+    
     if pgrep -x spotify >/dev/null; then
         pkill -x spicetify
         spicetify -q watch -s &
+        disown
     fi
 fi

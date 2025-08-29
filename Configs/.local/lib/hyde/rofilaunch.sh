@@ -4,7 +4,11 @@
 
 pkill rofi && exit 0
 
-[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+if [[ "${HYDE_SHELL_INIT}" -ne 1 ]]; then
+    eval "$(hyde-shell init)"
+else
+    export_hyde_config
+fi
 
 # This block is some legacy sh*t. So if someone agrees to remove it, please do so via a PR.
 rofiStyle="${rofiStyle:-1}"

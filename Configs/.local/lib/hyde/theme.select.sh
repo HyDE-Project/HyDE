@@ -48,7 +48,7 @@ selector_menu() {
 
     #// launch rofi menu
     RofiSel=$(
-        find "${rofiAssetDir}" -name "theme_style_*" |
+        find -L "${rofiAssetDir}" -name "theme_style_*" |
             awk -F '[_.]' '{print $((NF - 1))}' |
             while read -r styleNum; do
                 echo -en "${styleNum}\x00icon\x1f${rofiAssetDir}/theme_style_${styleNum}.png\n"

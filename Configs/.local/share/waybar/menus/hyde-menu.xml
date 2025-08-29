@@ -109,6 +109,14 @@
 
 
                         <child>
+                            <object class="GtkMenuItem" id="waybar-style-select">
+                                <property name="label">  Select Sytle</property>
+                            </object>
+                        </child>
+
+
+
+                        <child>
                             <object class="GtkMenuItem" id="waybar-layout-next">
                                 <property name="label">  Next Layout</property>
                             </object>
@@ -163,6 +171,27 @@
                 </child>
             </object>
         </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="lockscreen_menu">
+                <property name="label">  Lockscreen</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="lockscreen-select">
+                                <property name="label">  Select ockscreen</property>
+                            </object>
+                        </child>
+
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
 
 
         <child>
