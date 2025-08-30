@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 # Simple calculator using rofi's calc module
 
 # setup rofi configuration
@@ -33,10 +35,7 @@ setup_rofi_config() {
 }
 
 main() {
-    # Source hyde-shell if available to get common functions
-    if command -v hyde-shell >/dev/null 2>&1; then
-        source "$(command -v hyde-shell)" || true
-    fi
+
 
     setup_rofi_config
 

@@ -252,3 +252,9 @@ tooltip {
 #language {
     min-width: 1.11em;
 }
+
+#temperature,
+#temperature.warning,
+#temperature.critical {
+    background-color: transparent;
+}

@@ -117,23 +117,75 @@ def rebuild_venv(venv_path=None, requirements_file=None):
     # Recreate venv if missing
     if not os.path.exists(pip_executable):
         create_venv(venv_path, requirements_file)
-    # Install/upgrade requirements
+    # Helper to produce a short summary for informational pip output
+    def _short_summary(stdout: str, stderr: str) -> str:
+        if stderr:
+            for sline in stderr.splitlines():
+                if sline.strip():
+                    return sline.strip()
+        req_lines = [line for line in stdout.splitlines() if line.startswith("Requirement already satisfied")]
+        if req_lines:
+            return f"{len(req_lines)} requirements already satisfied"
+        for sline in stdout.splitlines():
+            if sline.startswith("Successfully installed"):
+                return sline.strip()
+        return ""
+
+    # Install/upgrade requirements (capture output)
     if requirements_file and os.path.exists(requirements_file):
-        subprocess.run(
+        result = subprocess.run(
             [pip_executable, "install", "--upgrade", "-r", requirements_file],
-            check=True,
+            capture_output=True,
+            text=True,
         )
-    # Upgrade all installed packages
+        if result.returncode != 0:
+            notify.send(
+                "HyDE PIP",
+                f"Failed to install requirements:\n{result.stderr or result.stdout}",
+                urgency="critical",
+            )
+            # Don't re-raise; stop rebuild early after notifying the user
+            return
+        else:
+            short = _short_summary(result.stdout, result.stderr)
+            if short:
+                notify.send("HyDE PIP", short)
+
+    # Upgrade all installed packages (list outdated and upgrade)
     result = subprocess.run(
         [pip_executable, "list", "--outdated", "--format=freeze"],
         capture_output=True,
         text=True,
     )
+    if result.returncode != 0:
+        notify.send(
+            "HyDE PIP",
+            f"Failed to list outdated packages:\n{result.stderr or result.stdout}",
+            urgency="critical",
+        )
+    # Don't re-raise here; just stop after notifying so caller can continue
+    return
+
     outdated = [line.split("==")[0] for line in result.stdout.splitlines() if line]
     if outdated:
-        subprocess.run(
-            [pip_executable, "install", "--upgrade", "-q"] + outdated, check=True
+        res2 = subprocess.run(
+            [pip_executable, "install", "--upgrade", "-q"] + outdated,
+            capture_output=True,
+            text=True,
         )
+        if res2.returncode != 0:
+            notify.send(
+                "HyDE PIP",
+                f"Failed to upgrade packages:\n{res2.stderr or res2.stdout}",
+                urgency="critical",
+            )
+            # Don't re-raise; notify and exit rebuild
+            return
+        else:
+            short2 = _short_summary(res2.stdout, res2.stderr)
+            if short2:
+                notify.send("HyDE PIP", short2)
+
     notify.send("HyDE PIP", "✅ Virtual environment rebuilt and packages updated.")
 
 

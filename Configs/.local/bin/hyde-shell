@@ -467,12 +467,15 @@ run_pypr() {
         if [[ -S "$socket_path" ]] && pgrep -u "$USER" pypr >/dev/null 2>&1; then
             message="${*:-"help"}"
             # Send the message to the socket and print the response
-            if ! printf "%s" "${message[@]}" | nc -N -U "$socket_path"; then
-                if ! printf "%s" "${message[@]}" | socat - UNIX-CONNECT:"$socket_path"; then
-                    print_log -sec "pypr" "Error communicating with socket: $socket_path"
-                    exit 1
+            if ! printf "%s" "${message[@]}" | nc -N -U "$socket_path" 2>/dev/null; then #! openbsd netcat only
+                if ! printf "%s" "${message[@]}" | socat - UNIX-CONNECT:"$socket_path" 2>/dev/null; then 
+                    if ! printf "%s" "${message[@]}" | ncat -U "$socket_path" 2>/dev/null; then
+                        if ! pypr "${message[@]}"; then
+                            print_log -sec "pypr" "Error communicating with socket: $socket_path"
+                            exit 1
+                        fi
+                    fi
                 fi
-
             fi
 
         else

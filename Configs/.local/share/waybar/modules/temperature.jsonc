@@ -92,78 +92,60 @@
   //
   // DOCUMENTATION: https://man.archlinux.org/man/waybar-temperature.5.en
   // ===============================================================================
-
   // ? Below are the configurations for my laptop // only use as a reference!
-
   // GPU Temperature Monitor (NVIDIA via thermal zone)
   "temperature#2": {
     "thermal-zone": 2, // SEN1 - NVIDIA GPU on this system
-
     // Temperature thresholds for GPU
     "critical-threshold": 65, // NVIDIA typical max temp
     "warning-threshold": 55, // Start warning at 75°C
-
     // Update frequency
     "interval": 2,
-
     // Display formats with GPU-specific styling
-    "format": " {temperatureC}°C",
-    "format-warning": "<span color='#fab387'></span> {temperatureC}°C",
-    "format-critical": "<span color='#f38ba8'></span> {temperatureC}°C",
-
+    "format": " {temperatureC}°C",
+    "format-warning": "<span foreground='#fab387'></span> <span foreground='#fab387'>{temperatureC}°C</span>",
+    "format-critical": "<span foreground='#f38ba8'></span> <span foreground='#f38ba8'>{temperatureC}°C</span>",
     // Tooltip
     "tooltip": true,
     "tooltip-format": "GPU Temperature: {temperatureC}°C\nNVIDIA GeForce MX250",
-
     // Appearance
     "max-length": 12,
     "min-length": 2
   },
-
   // CPU Temperature Monitor
   "temperature#27": {
     "thermal-zone": 27, // x86_pkg_temp - CPU package temperature
-
     // Temperature thresholds for CPU
     "critical-threshold": 85, // CPU critical temp
     "warning-threshold": 70, // CPU warning temp
-
     // Update frequency
     "interval": 2,
-
     // Display formats with CPU-specific styling
-    "format": " {temperatureC}°C",
-    "format-warning": "<span color='#fab387'></span> {temperatureC}°C",
-    "format-critical": "<span color='#f38ba8'></span> {temperatureC}°C",
-
+    "format": " {temperatureC}°C",
+    "format-warning": "<span foreground='#fab387'></span> <span foreground='#fab387'>{temperatureC}°C</span>",
+    "format-critical": "<span foreground='#f38ba8'></span> <span foreground='#f38ba8'>{temperatureC}°C</span>",
     // Tooltip
     "tooltip": true,
     "tooltip-format": "CPU Temperature: {temperatureC}°C\nIntel(R) Core(TM) i7-10510U",
-
     // Appearance
     "max-length": 12,
     "min-length": 2
   },
-
   // System/ACPI Temperature Monitor
   "temperature#0": {
     "thermal-zone": 0, // acpitz - ACPI thermal zone
-
     // Temperature thresholds
     "critical-threshold": 50,
     "warning-threshold": 40,
-
     // Update frequency
     "interval": 5,
-
     // Display formats with system-specific styling
-    "format-warning": "<span color='#fab387'>󰔏</span> {temperatureC}°C",
-    "format-critical": "<span color='#f38ba8'>󰔏</span> {temperatureC}°C",
-
+    "format": "󰔏 {temperatureC}°C",
+    "format-warning": "<span foreground='#fab387'>󰔏</span> <span foreground='#fab387'>{temperatureC}°C</span>",
+    "format-critical": "<span foreground='#f38ba8'>󰔏</span> <span foreground='#f38ba8'>{temperatureC}°C</span>",
     // Tooltip
     "tooltip": true,
     "tooltip-format": "System Temperature: {temperatureC}°C\nACPI Thermal Zone",
-
     // Appearance
     "max-length": 12,
     "min-length": 2
