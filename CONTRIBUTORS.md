@@ -28,6 +28,8 @@ _These contributors help with quality assurance and testing._
 - [@Prof-Shiba](https://github.com/Prof-Shiba)
 - [@UnaTried](https://github.com/UnaTried)
 
+- [@Vu4ll](https://github.com/Vu4ll)
+
 ---
 
 ## How to add yourself to this list
