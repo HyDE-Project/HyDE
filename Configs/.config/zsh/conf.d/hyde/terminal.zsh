@@ -182,15 +182,6 @@ export HISTFILE ZSH_AUTOSUGGEST_STRATEGY HISTSIZE SAVEHIST
 # HyDE Package Manager
 PM_COMMAND=(hyde-shell pm)
 
-# Optionally load user configuration // useful for customizing the shell without modifying the main file
-if [[ -f $HOME/.hyde.zshrc ]]; then
-    source $HOME/.hyde.zshrc # for backward compatibility
-elif [[ -f $HOME/.user.zsh ]]; then
-    source $HOME/.user.zsh # renamed to .user.zsh for intuitiveness that it is a user config
-elif [[ -f $ZDOTDIR/user.zsh ]]; then
-    source $ZDOTDIR/user.zsh
-fi
-
 _load_compinit
 
 if [[ ${HYDE_ZSH_NO_PLUGINS} != "1" ]]; then
@@ -245,4 +236,11 @@ alias c='clear' \
     .5='cd ../../../../..' \
     mkdir='mkdir -p'
 
-
+# Optionally load user configuration // useful for customizing the shell without modifying the main file
+if [[ -f $HOME/.hyde.zshrc ]]; then
+    source $HOME/.hyde.zshrc # for backward compatibility
+elif [[ -f $HOME/.user.zsh ]]; then
+    source $HOME/.user.zsh # renamed to .user.zsh for intuitiveness that it is a user config
+elif [[ -f $ZDOTDIR/user.zsh ]]; then
+    source $ZDOTDIR/user.zsh
+fi
