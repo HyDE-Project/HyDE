@@ -12,7 +12,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - hyde-shell: silent pyinit command
 - Binds: Use `hyde-shell logout` for cleaner session logout
 
-
 ## v25.8.3
 
 ### Fixed
@@ -22,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - UWSM: Clean up the xdg freedesktop.org spec as uwsm handles it
 - Wallpaper: fix #1136 as exporting arrays are not supported in bash
 - Lockscreen: Fix zombie hyprlock
+- File chooser dialogs in Hyprland now open centered and floating instead of off-screen
 
 ### Changed
 
