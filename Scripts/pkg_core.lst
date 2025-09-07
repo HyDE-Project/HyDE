@@ -27,7 +27,7 @@ qt5-graphicaleffects                                   # for sddm theme effects
 # --------------------------------------------------- // Window Manager
 hyprland                                               # wlroots-based wayland compositor
 dunst                                                  # notification daemon
-rofi-wayland                                           # application launcher
+rofi                                                   # application launcher
 waybar                                                 # system bar
 swww                                                   # wallpaper
 hyprlock                                               # lock screen
