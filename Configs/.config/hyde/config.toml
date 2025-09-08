@@ -16,6 +16,9 @@ scale = 10
 [screenshot]
 annotation_tool = "swappy"
 
+[screenshot.ocr]
+tesseract_languages = ["eng", "rus"]
+
 [mediaplayer]
 prefix_playing = " "
 prefix_paused = " "
