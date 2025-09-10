@@ -13,7 +13,7 @@
 Multi-language README support
 -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/README.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/README.de.md)
@@ -330,6 +330,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://rubiin.is-a.dev"><img src="https://avatars.githubusercontent.com/u/8222059?v=4?s=100" width="100px;" alt="Rubin Bhandari"/><br /><sub><b>Rubin Bhandari</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=rubiin" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kRHYME7"><img src="https://avatars.githubusercontent.com/u/53417443?v=4?s=100" width="100px;" alt="Khing"/><br /><sub><b>Khing</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=kRHYME7" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=kRHYME7" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/prasanthrangan"><img src="https://avatars.githubusercontent.com/u/106020512?v=4?s=100" width="100px;" alt="Tittu"/><br /><sub><b>Tittu</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=prasanthrangan" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=prasanthrangan" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/heeeeeeeeeeh"><img src="https://avatars.githubusercontent.com/u/90989842?v=4?s=100" width="100px;" alt="Silvestre Espinoza"/><br /><sub><b>Silvestre Espinoza</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=heeeeeeeeeeh" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=heeeeeeeeeeh" title="Tests">⚠️</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=heeeeeeeeeeh" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
