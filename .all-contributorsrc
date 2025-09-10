@@ -35,6 +35,17 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "Guillaumecoi",
+      "name": "Guillaume Coigniez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/120651399?v=4",
+      "profile": "https://github.com/Guillaumecoi",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
