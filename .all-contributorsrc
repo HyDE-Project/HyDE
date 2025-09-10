@@ -35,6 +35,17 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "T-Crypt",
+      "name": "Trevin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/132922589?v=4",
+      "profile": "https://github.com/T-Crypt",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
