@@ -35,6 +35,17 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "heeeeeeeeeeh",
+      "name": "Silvestre Espinoza",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90989842?v=4",
+      "profile": "https://github.com/heeeeeeeeeeh",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
