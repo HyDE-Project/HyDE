@@ -35,6 +35,17 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "richen604",
+      "name": "Richard Henninger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56615615?v=4",
+      "profile": "https://github.com/richen604",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
