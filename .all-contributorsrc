@@ -35,6 +35,17 @@
         "code",
         "doc"
       ]
+    },
+    {
+      "login": "Metalhearf",
+      "name": "Metalhearf",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6446231?v=4",
+      "profile": "https://metalhearf.fr",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
