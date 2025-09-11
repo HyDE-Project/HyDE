@@ -1,0 +1,18 @@
+{
+  "group/hide-tray": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": "0.5",
+      "children-class": "hide-tray-drawer",
+      "transition-left-to-right": false,
+      "click-to-reveal": true
+    },
+    "modules": ["custom/dropdown#arrow", "tray"]
+  },
+  "custom/dropdown#arrow": {
+    "format": "<span size='large'></span> ",
+    "tooltip": true,
+    "tooltip-format": "Reveal tray"
+    
+  }
+}

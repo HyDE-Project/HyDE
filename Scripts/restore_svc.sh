@@ -52,8 +52,12 @@ while IFS='|' read -r service context command || [ -n "$service" ]; do
         print_log -y "[exec] " "Service ${service} (${context}): $command"
         
         if [ "$flg_DryRun" -ne 1 ]; then
-            if [ "$context" = "user" ]; then
+            if [ "$context" = "user" ] ; then
+            if [[ -n "${DBUS_SESSION_BUS_ADDRESS}" ]] && [[ -n $XDG_RUNTIME_DIR ]];then
                 systemctl --user "${cmd_array[@]}" "${service}.service"
+            else 
+             print_log -sec "services" -stat "error" "DBUS_SESSION_BUS_ADDRESS or XDG_RUNTIME_DIR not set for user service" -y " skipping"
+            fi
             else
                 sudo systemctl "${cmd_array[@]}" "${service}.service"
             fi
@@ -68,4 +72,4 @@ while IFS='|' read -r service context command || [ -n "$service" ]; do
     
 done < "${scrDir}/restore_svc.lst"
 
-print_log -sec "services" -stat "completed" "service updates"
+print_log -sec "services" -stat "completed" "service updated successfully"

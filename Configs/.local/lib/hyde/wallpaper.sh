@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2154
 
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+if [[ "${HYDE_SHELL_INIT}" -ne 1 ]]; then
+    eval "$(hyde-shell init)"
+else
+    export_hyde_config
+fi
 
 # // Help message
 show_help() {
@@ -16,6 +18,7 @@ options:
     -p, --previous            Set previous wallpaper
     -r, --random              Set random wallpaper
     -s, --set <file>          Set specified wallpaper
+        --start               Start/apply current wallpaper to backend
     -g, --get                 Get current wallpaper of specified backend
     -o, --output <file>       Copy current wallpaper to specified file
         --link                Resolved the linked wallpaper according to the theme
@@ -44,12 +47,19 @@ EOF
 #// Set and Cache Wallpaper
 
 Wall_Cache() {
+
+    # Experimental, set to 1 if stable
+    if [[ "${WALLPAPER_RELOAD_ALL:-1}" -eq 1 ]] && [[ ${wallpaper_setter_flag} != "link" ]]; then
+        print_log -sec "wallpaper" "Reloading themes and wallpapers"
+        export reload_flag=1
+    fi
+
     ln -fs "${wallList[setIndex]}" "${wallSet}"
     ln -fs "${wallList[setIndex]}" "${wallCur}"
     if [ "${set_as_global}" == "true" ]; then
         print_log -sec "wallpaper" "Setting Wallpaper as global"
-        "${scrDir}/swwwallcache.sh" -w "${wallList[setIndex]}" &>/dev/null
-        "${scrDir}/color.set.sh" "${wallList[setIndex]}" &
+        "${LIB_DIR}/hyde/swwwallcache.sh" -w "${wallList[setIndex]}" &>/dev/null
+        "${LIB_DIR}/hyde/color.set.sh" "${wallList[setIndex]}" &
         ln -fs "${thmbDir}/${wallHash[setIndex]}.sqre" "${wallSqr}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.thmb" "${wallTmb}"
         ln -fs "${thmbDir}/${wallHash[setIndex]}.blur" "${wallBlr}"
@@ -78,7 +88,11 @@ Wall_Change() {
 Wall_Json() {
     setIndex=0
     [ ! -d "${HYDE_THEME_DIR}" ] && echo "ERROR: \"${HYDE_THEME_DIR}\" does not exist" && exit 0
-    wallPathArray=("${HYDE_THEME_DIR}")
+    if [ -d "${HYDE_THEME_DIR}/wallpapers" ]; then
+        wallPathArray=("${HYDE_THEME_DIR}/wallpapers")
+    else
+        wallPathArray=("${HYDE_THEME_DIR}")
+    fi
     wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
 
     get_hashmap "${wallPathArray[@]}" # get the hashmap provides wallList and wallHash
@@ -129,6 +143,11 @@ Wall_Select() {
     mon_data=$(hyprctl -j monitors)
     mon_x_res=$(jq '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width else .height end' <<<"${mon_data}")
     mon_scale=$(jq '.[] | select(.focused==true) | .scale' <<<"${mon_data}" | sed "s/\.//")
+
+    # Add fallback size
+    mon_x_res=${mon_x_res:-1920}
+    mon_scale=${mon_scale:-1}
+
     mon_x_res=$((mon_x_res * 100 / mon_scale))
 
     #// generate config
@@ -170,7 +189,7 @@ Wall_Hash() {
     # * Method to load wallpapers in hashmaps and fix broken links per theme
     setIndex=0
     [ ! -d "${HYDE_THEME_DIR}" ] && echo "ERROR: \"${HYDE_THEME_DIR}\" does not exist" && exit 0
-    wallPathArray=("${HYDE_THEME_DIR}")
+    wallPathArray=("${HYDE_THEME_DIR}/wallpapers")
     wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
     get_hashmap "${wallPathArray[@]}"
     [ ! -e "$(readlink -f "${wallSet}")" ] && echo "fixing link :: ${wallSet}" && ln -fs "${wallList[setIndex]}" "${wallSet}"
@@ -181,7 +200,8 @@ main() {
     if [ -z "$wallpaper_backend" ] &&
         [ "$wallpaper_setter_flag" != "o" ] &&
         [ "$wallpaper_setter_flag" != "g" ] &&
-        [ "$wallpaper_setter_flag" != "select" ]; then
+        [ "$wallpaper_setter_flag" != "select" ] &&
+        [ "$wallpaper_setter_flag" != "start" ]; then
         print_log -sec "wallpaper" -err "No backend specified"
         print_log -sec "wallpaper" " Please specify a backend, try '--backend swww'"
         print_log -sec "wallpaper" " See available commands: '--help | -h'"
@@ -206,6 +226,12 @@ main() {
         wallSet="${HYDE_THEME_DIR}/wall.set"
     fi
 
+    # Ensure wallSet exists before applying
+    if [ ! -e "${wallSet}" ]; then
+        Wall_Hash
+    fi
+
+
     if [ -n "${wallpaper_setter_flag}" ]; then
         export WALLPAPER_SET_FLAG="${wallpaper_setter_flag}"
         case "${wallpaper_setter_flag}" in
@@ -228,6 +254,17 @@ main() {
                 exit 1
             fi
             get_hashmap "${wallpaper_path}"
+            Wall_Cache
+            ;;
+        start)
+            # Start/apply current wallpaper to backend
+            if [ ! -e "${wallSet}" ]; then
+                print_log -err "wallpaper" "No current wallpaper found: ${wallSet}"
+                exit 1
+            fi
+            export WALLPAPER_RELOAD_ALL=0 WALLBASH_STARTUP=1
+            current_wallpaper="$(realpath "${wallSet}")"
+            get_hashmap "${current_wallpaper}"
             Wall_Cache
             ;;
         g)
@@ -258,9 +295,9 @@ main() {
     fi
 
     # Apply wallpaper to  backend
-    if [ -f "${scrDir}/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
+    if [ -f "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
         print_log -sec "wallpaper" "Using backend: ${wallpaper_backend}"
-        "${scrDir}/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+        "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
     else
         if command -v "wallpaper.${wallpaper_backend}.sh" >/dev/null; then
             "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
@@ -291,7 +328,7 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONGOPTS="link,global,select,json,next,previous,random,set:,backend:,get,output:,help,filetypes:"
+LONGOPTS="link,global,select,json,next,previous,random,set:,start,backend:,get,output:,help,filetypes:"
 
 # Parse options
 PARSED=$(
@@ -322,7 +359,7 @@ while true; do
         exit 0
         ;;
     -S | --select)
-        "${scrDir}/swwwallcache.sh" w &>/dev/null &
+        "${LIB_DIR}/hyde/swwwallcache.sh" w &>/dev/null &
         wallpaper_setter_flag=select
         shift
         ;;
@@ -342,6 +379,10 @@ while true; do
         wallpaper_setter_flag=s
         wallpaper_path="${2}"
         shift 2
+        ;;
+    --start)
+        wallpaper_setter_flag=start
+        shift
         ;;
     -g | --get)
         wallpaper_setter_flag=g

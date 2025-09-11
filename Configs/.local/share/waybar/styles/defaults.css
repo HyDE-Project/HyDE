@@ -26,6 +26,10 @@ window#waybar {
     background: @bar-bg;
 }
 
+.module {
+    color: @main-fg;
+}
+
 /*
  These are groups/islands configs
 
@@ -247,4 +251,10 @@ tooltip {
 
 #language {
     min-width: 1.11em;
+}
+
+#temperature,
+#temperature.warning,
+#temperature.critical {
+    background-color: transparent;
 }

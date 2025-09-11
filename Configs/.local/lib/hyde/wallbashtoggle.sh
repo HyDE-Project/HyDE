@@ -2,14 +2,14 @@
 
 #// set variables
 
-scrDir="$(dirname "$(realpath "$0")")"
-# shellcheck disable=SC1091
-source "${scrDir}/globalcontrol.sh"
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
+
 wallbashModes=("theme" "auto" "dark" "light")
 
 #// rofi select mode
 
 rofi_wallbash() {
+    pkill -u "$USER" rofi && exit 0
     font_scale=$ROFI_WALLBASH_MODE_SCALE
     [[ "${font_scale}" =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
     r_scale="configuration {font: \"JetBrainsMono Nerd Font ${font_scale}\";}"
@@ -54,5 +54,5 @@ esac
 export reload_flag=1
 [[ "${setMode}" -lt 0 ]] && setMode=$((${#wallbashModes[@]} - 1))
 set_conf "enableWallDcol" "${setMode}"
-"${scrDir}/theme.switch.sh"
+"${LIB_DIR}/hyde/theme.switch.sh"
 notify-send -a "HyDE Alert" -i "${ICONS_DIR}/Wallbash-Icon/hyde.png" " ${wallbashModes[setMode]} mode"

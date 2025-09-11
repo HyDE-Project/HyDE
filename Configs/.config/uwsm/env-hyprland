@@ -1,0 +1,12 @@
+# ? Setting this only on UWSM + hyprland
+# ? This is to prevent hyprland from setting the environment variables that are set by uwsm.
+for f in "${XDG_CONFIG_HOME:-$HOME/.config}"/uwsm/env-hyprland.d/*.sh; do
+  if [[ -r "$f" ]]; then
+    source "$f"
+  fi
+done
+
+# This file is sourced by uwsm to set environment variables specific to Hyprland.
+# You can add or modify Hyprland-specific environment variables in the files located in ~/.config/uwsm/env-hyprland.d/*.sh.
+# Create a new file: ~/.config/uwsm/env-hyprland.d/my_hyprland_env.sh
+# This is used to set environment variables that should be available globally in your Hyprland session.

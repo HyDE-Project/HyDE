@@ -22,7 +22,7 @@ def get_venv_path():
     """Set up the virtual environment path and modify sys.path."""
     venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
     if not os.path.exists(venv_path):
-        venv_path = os.path.expanduser("~/.local/state/hyde/pip_env")
+        venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
     site_packages_path = os.path.join(
         venv_path,
         "lib",
@@ -104,6 +104,89 @@ def uninstall_package(venv_path, package):
         text=True,
     )
     result.check_returncode()
+
+
+def rebuild_venv(venv_path=None, requirements_file=None):
+    """Rebuild the virtual environment: reinstall if missing, install/upgrade requirements, and update all packages."""
+    # Use XDG_STATE_HOME for venv_path if not provided
+    if venv_path is None:
+        venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
+        if not os.path.exists(venv_path):
+            venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
+    pip_executable = os.path.join(venv_path, "bin", "pip")
+    # Recreate venv if missing
+    if not os.path.exists(pip_executable):
+        create_venv(venv_path, requirements_file)
+    # Helper to produce a short summary for informational pip output
+    def _short_summary(stdout: str, stderr: str) -> str:
+        if stderr:
+            for sline in stderr.splitlines():
+                if sline.strip():
+                    return sline.strip()
+        req_lines = [line for line in stdout.splitlines() if line.startswith("Requirement already satisfied")]
+        if req_lines:
+            return f"{len(req_lines)} requirements already satisfied"
+        for sline in stdout.splitlines():
+            if sline.startswith("Successfully installed"):
+                return sline.strip()
+        return ""
+
+    # Install/upgrade requirements (capture output)
+    if requirements_file and os.path.exists(requirements_file):
+        result = subprocess.run(
+            [pip_executable, "install", "--upgrade", "-r", requirements_file],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            notify.send(
+                "HyDE PIP",
+                f"Failed to install requirements:\n{result.stderr or result.stdout}",
+                urgency="critical",
+            )
+            # Don't re-raise; stop rebuild early after notifying the user
+            return
+        else:
+            short = _short_summary(result.stdout, result.stderr)
+            if short:
+                notify.send("HyDE PIP", short)
+
+    # Upgrade all installed packages (list outdated and upgrade)
+    result = subprocess.run(
+        [pip_executable, "list", "--outdated", "--format=freeze"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        notify.send(
+            "HyDE PIP",
+            f"Failed to list outdated packages:\n{result.stderr or result.stdout}",
+            urgency="critical",
+        )
+    # Don't re-raise here; just stop after notifying so caller can continue
+    return
+
+    outdated = [line.split("==")[0] for line in result.stdout.splitlines() if line]
+    if outdated:
+        res2 = subprocess.run(
+            [pip_executable, "install", "--upgrade", "-q"] + outdated,
+            capture_output=True,
+            text=True,
+        )
+        if res2.returncode != 0:
+            notify.send(
+                "HyDE PIP",
+                f"Failed to upgrade packages:\n{res2.stderr or res2.stdout}",
+                urgency="critical",
+            )
+            # Don't re-raise; notify and exit rebuild
+            return
+        else:
+            short2 = _short_summary(res2.stdout, res2.stderr)
+            if short2:
+                notify.send("HyDE PIP", short2)
+
+    notify.send("HyDE PIP", "✅ Virtual environment rebuilt and packages updated.")
 
 
 def v_import(module_name):
@@ -207,6 +290,11 @@ def main(args):
     )
     destroy_parser.set_defaults(func=destroy_venv)
 
+    rebuild_parser = subparsers.add_parser(
+        "rebuild", help="Rebuild the virtual environment and update packages"
+    )
+    rebuild_parser.set_defaults(func=rebuild_venv)
+
     args = parser.parse_args(args)
 
     venv_path = get_venv_path()
@@ -226,6 +314,8 @@ def main(args):
         args.func(venv_path, args.package)
     elif args.command == "destroy":
         args.func(venv_path)
+    elif args.command == "rebuild":
+        args.func(venv_path, requirements_file)
     else:
         parser.print_help()
 

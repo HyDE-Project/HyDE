@@ -1,0 +1,160 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "rubiin",
+      "name": "Rubin Bhandari",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8222059?v=4",
+      "profile": "https://rubiin.is-a.dev",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kRHYME7",
+      "name": "Khing",
+      "avatar_url": "https://avatars.githubusercontent.com/u/53417443?v=4",
+      "profile": "https://github.com/kRHYME7",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "prasanthrangan",
+      "name": "Tittu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/106020512?v=4",
+      "profile": "https://github.com/prasanthrangan",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "dieBakterie",
+      "name": "dieBakterie",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50206827?v=4",
+      "profile": "https://github.com/dieBakterie",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "richen604",
+      "name": "Richard Henninger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56615615?v=4",
+      "profile": "https://github.com/richen604",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "Guillaumecoi",
+      "name": "Guillaume Coigniez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/120651399?v=4",
+      "profile": "https://github.com/Guillaumecoi",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "heeeeeeeeeeh",
+      "name": "Silvestre Espinoza",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90989842?v=4",
+      "profile": "https://github.com/heeeeeeeeeeh",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "prime-run",
+      "name": "prime-run",
+      "avatar_url": "https://avatars.githubusercontent.com/u/158470661?v=4",
+      "profile": "https://github.com/prime-run",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "T-Crypt",
+      "name": "Trevin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/132922589?v=4",
+      "profile": "https://github.com/T-Crypt",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "Prof-Shiba",
+      "name": "ProfShiba",
+      "avatar_url": "https://avatars.githubusercontent.com/u/166961473?v=4",
+      "profile": "https://github.com/Prof-Shiba",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "amit-0i",
+      "name": "amit",
+      "avatar_url": "https://avatars.githubusercontent.com/u/208910917?v=4",
+      "profile": "https://github.com/amit-0i",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "UnaTried",
+      "name": "UnaTried",
+      "avatar_url": "https://avatars.githubusercontent.com/u/103455203?v=4",
+      "profile": "http://unatried.com",
+      "contributions": [
+        "test"
+      ]
+    },
+    {
+      "login": "Metalhearf",
+      "name": "Metalhearf",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6446231?v=4",
+      "profile": "https://metalhearf.fr",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
+    },
+    {
+      "login": "zeerayne",
+      "name": "Ilya Bogdanov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13994839?v=4",
+      "profile": "https://github.com/zeerayne",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "HyDE",
+  "projectOwner": "HyDE-Project"
+}

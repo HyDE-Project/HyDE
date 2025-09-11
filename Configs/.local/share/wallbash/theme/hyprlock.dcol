@@ -1,0 +1,2 @@
+${XDG_CONFIG_HOME}/hypr/hyprlock/theme.conf
+source = ./HyDE.conf

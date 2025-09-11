@@ -18,15 +18,16 @@ _These contributors help with code review, triaging, and development._
 - [@rubiin](https://github.com/rubiin)
 - [@Metalhearf](https://github.com/Metalhearf)
 - [@prime-run](https://github.com/prime-run)
+- [@heeeeeeeeeeh](https://github.com/heeeeeeeeeeh/)
 
 ## Testers
 
 _These contributors help with quality assurance and testing._
 
-
 - [@amit-0i](https://github.com/amit-0i)
 - [@Prof-Shiba](https://github.com/Prof-Shiba)
 - [@UnaTried](https://github.com/UnaTried)
+
 ---
 
 ## How to add yourself to this list

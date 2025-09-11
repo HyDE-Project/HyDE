@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-#TODO: I am trying to learn a good way to use sockets. 
+#TODO: I am trying to learn a good way to use sockets.
 #? This implementation is a POC for other rewrites to avoid multiple IO and System calls.
 Cava Manager and Client using Unix Sockets
 This script can act as both a manager (server) and client (reader)
@@ -18,6 +18,7 @@ import argparse
 import signal
 import atexit
 import json
+import shlex
 from pathlib import Path
 
 
@@ -44,9 +45,13 @@ class HydeConfig:
                         line = line[7:]
                         if "=" in line:
                             key, value = line.split("=", 1)
-                            value = value.strip("\"'")
+                            value = value.strip()
                             if value.startswith("(") and value.endswith(")"):
-                                value = value[1:-1].strip("\"'")
+                                # Remove parentheses and split using shlex to respect quotes
+                                value = value[1:-1].strip()
+                                value = shlex.split(value)
+                            else:
+                                value = value.strip("\"'")
                             config[key] = value
         except Exception as e:
             print(f"Warning: Could not load Hyde config: {e}", file=sys.stderr)
@@ -63,7 +68,7 @@ class CavaDataParser:
 
     @staticmethod
     def format_data(line, bar_chars="▁▂▃▄▅▆▇█", width=None, standby_mode=""):
-        """Format cava data with custom bar characters"""
+        """Format cava data with custom bar characters (list or string)"""
         line = line.strip()
         if not line:
             return CavaDataParser._handle_standby_mode(standby_mode, bar_chars, width)
@@ -107,6 +112,7 @@ class CavaDataParser:
                 char_index = bar_length - 1
             else:
                 char_index = value
+            # bar_chars can be a list or string
             result += bar_chars[char_index]
 
         return result
@@ -257,11 +263,10 @@ class CavaServer:
         while not self.should_shutdown:
             time.sleep(1)
             with self.clients_lock:
-                if not self.clients and time.time() - self.last_client_time > 5:
+                if not self.clients and time.time() - self.last_client_time > 1:
                     print("No clients connected for 5 seconds, shutting down...")
                     self.should_shutdown = True
                     break
-
 
     def _broadcast_data(self, data):
         """Broadcast data to all connected clients"""
@@ -280,24 +285,107 @@ class CavaServer:
                     pass
                 if client in self.clients:
                     self.clients.remove(client)
-            
-            if not self.clients and disconnected_clients:
-                self.last_client_time = time.time()
+
+            # If no clients remain, trigger shutdown immediately
+            if not self.clients and not self.should_shutdown:
+                print("All clients disconnected, shutting down cava manager.")
+                self.should_shutdown = True
+                # Terminate cava process to unblock main loop
+                if self.cava_process and self.cava_process.poll() is None:
+                    try:
+                        self.cava_process.terminate()
+                    except Exception:
+                        pass
 
     def _handle_client_connections(self):
-        """Handle incoming client connections"""
-        while True:
+        """Handle incoming client connections and listen for reload command"""
+        while not self.should_shutdown:
             try:
                 conn, addr = self.server_socket.accept()
                 print("New client connected")
+                threading.Thread(
+                    target=self._client_command_listener, args=(conn,), daemon=True
+                ).start()
                 with self.clients_lock:
                     self.clients.append(conn)
                     self.last_client_time = time.time()
             except OSError:
                 break
 
-    def _create_cava_config(self, bars=16, range_val=15):
-        """Create cava configuration file"""
+    def _client_command_listener(self, conn):
+        """Listen for special commands from a client (e.g., reload)"""
+        try:
+            conn.settimeout(0.1)
+            data = b""
+            while True:
+                try:
+                    chunk = conn.recv(1024)
+                    if not chunk:
+                        break
+                    data += chunk
+                    if b"\n" in data:
+                        line, data = data.split(b"\n", 1)
+                        if line.strip() == b"CMD:RELOAD":
+                            print("Received reload command from client.")
+                            self._reload_cava_process()
+                except socket.timeout:
+                    break
+        except Exception:
+            pass
+
+    def _reload_cava_process(self):
+        """Restart cava process and reload config with latest values"""
+        print("Reloading cava process...")
+        if self.cava_process and self.cava_process.poll() is None:
+            self.cava_process.terminate()
+            try:
+                self.cava_process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.cava_process.kill()
+        # Always use latest config values
+        hyde_config = HydeConfig()
+        bars = int(hyde_config.get_value("CAVA_BARS", 16))
+        range_val = int(hyde_config.get_value("CAVA_RANGE", 15))
+        channels = hyde_config.get_value("CAVA_CHANNELS", "stereo")
+        reverse = hyde_config.get_value("CAVA_REVERSE", 0)
+        try:
+            reverse = int(reverse)
+        except Exception:
+            reverse = 1 if str(reverse).lower() in ("true", "yes", "on") else 0
+        self._create_cava_config(bars, range_val, channels, reverse)
+        try:
+            self.cava_process = subprocess.Popen(
+                ["cava", "-p", str(self.config_file)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            print("Cava process restarted.")
+        except FileNotFoundError:
+            print("Error: cava not found. Please install cava.")
+
+    def _create_cava_config(
+        self, bars=16, range_val=15, channels="stereo", reverse=0, prefix=""
+    ):
+        """Create cava configuration file with channels and reverse support, using HydeConfig with or without prefix as appropriate"""
+        hyde_config = HydeConfig()
+
+        if prefix:
+            config_channels = hyde_config.get_value(f"CAVA_{prefix}_CHANNELS")
+            config_reverse = hyde_config.get_value(f"CAVA_{prefix}_REVERSE")
+        else:
+            config_channels = hyde_config.get_value("CAVA_CHANNELS")
+            config_reverse = hyde_config.get_value("CAVA_REVERSE")
+        if config_channels in ("mono", "stereo"):
+            channels = config_channels
+        if config_reverse is not None:
+            try:
+                reverse = int(config_reverse)
+            except ValueError:
+                reverse = (
+                    1 if str(config_reverse).lower() in ("true", "yes", "on") else 0
+                )
+
         self.temp_dir.mkdir(parents=True, exist_ok=True)
 
         config_content = f"""[general]
@@ -313,18 +401,20 @@ method = raw
 raw_target = /dev/stdout
 data_format = ascii
 ascii_max_range = {range_val}
+channels = {channels}
+reverse = {reverse}
 """
 
         with open(self.config_file, "w") as f:
             f.write(config_content)
 
-    def start(self, bars=16, range_val=15):
+    def start(self, bars=16, range_val=15, channels="stereo", reverse=0):
         """Start the cava server"""
+        self.shutdown_event = threading.Event()
+        threads = []
         try:
             self.temp_dir.mkdir(parents=True, exist_ok=True)
-
             self.server_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-
             try:
                 self.server_socket.bind(self.socket_file)
                 self.server_socket.listen(10)
@@ -359,14 +449,11 @@ ascii_max_range = {range_val}
 
             if not self.cleanup_registered:
                 atexit.register(self.cleanup)
-                signal.signal(signal.SIGTERM, self._signal_handler)
-                signal.signal(signal.SIGINT, self._signal_handler)
                 self.cleanup_registered = True
                 self.successfully_started = True
 
             self._write_pid_file()
-
-            self._create_cava_config(bars, range_val)
+            self._create_cava_config(bars, range_val, channels, reverse)
 
             print(f"Starting cava with config: {self.config_file}")
             try:
@@ -380,46 +467,107 @@ ascii_max_range = {range_val}
                 print("Error: cava not found. Please install cava.")
                 sys.exit(1)
 
-            client_thread = threading.Thread(
-                target=self._handle_client_connections, daemon=True
-            )
-            client_thread.start()
+            def read_cava_output():
+                import select
 
-            auto_shutdown_thread = threading.Thread(
-                target=self._check_auto_shutdown, daemon=True
-            )
-            auto_shutdown_thread.start()
-
-            try:
-                while not self.should_shutdown:
-                    line = self.cava_process.stdout.readline()
-                    if not line:
-                        print("Cava process ended unexpectedly")
+                while not self.shutdown_event.is_set():
+                    if self.cava_process.stdout:
+                        rlist, _, _ = select.select(
+                            [self.cava_process.stdout], [], [], 0.2
+                        )
+                        if rlist:
+                            line = self.cava_process.stdout.readline()
+                            if not line or self.shutdown_event.is_set():
+                                break
+                            line_stripped = line.strip()
+                            if line_stripped:
+                                values = [
+                                    x for x in line_stripped.split(";") if x.isdigit()
+                                ]
+                                if values and all(int(v) == 0 for v in values):
+                                    self.consecutive_zero_count += 1
+                                    if (
+                                        self.consecutive_zero_count
+                                        <= self.zero_threshold
+                                    ):
+                                        self._broadcast_data(line.encode("utf-8"))
+                                else:
+                                    self.consecutive_zero_count = 0
+                                    if values:
+                                        self._broadcast_data(line.encode("utf-8"))
+                        else:
+                            continue
+                    else:
                         break
 
-                    line_stripped = line.strip()
-                    if line_stripped:
-                        values = [x for x in line_stripped.split(";") if x.isdigit()]
-                        
-                        if values and all(int(v) == 0 for v in values):
-                            self.consecutive_zero_count += 1
-                            if self.consecutive_zero_count <= self.zero_threshold:
-                                self._broadcast_data(line.encode("utf-8"))
-                        else:
-                            self.consecutive_zero_count = 0
-                            if values:
-                                self._broadcast_data(line.encode("utf-8"))
+            def handle_client_connections():
+                while not self.shutdown_event.is_set():
+                    try:
+                        self.server_socket.settimeout(0.2)
+                        conn, addr = self.server_socket.accept()
+                        print("New client connected")
+                        threading.Thread(
+                            target=self._client_command_listener,
+                            args=(conn,),
+                            daemon=True,
+                        ).start()
+                        with self.clients_lock:
+                            self.clients.append(conn)
+                            self.last_client_time = time.time()
+                    except socket.timeout:
+                        continue
+                    except OSError:
+                        break
 
+            def check_auto_shutdown():
+                while not self.shutdown_event.is_set():
+                    time.sleep(1)
+                    with self.clients_lock:
+                        if not self.clients and time.time() - self.last_client_time > 1:
+                            print(
+                                "No clients connected for 5 seconds, shutting down..."
+                            )
+                            self.shutdown_event.set()
+                            break
+
+            threads.append(
+                threading.Thread(target=handle_client_connections, daemon=True)
+            )
+            threads.append(threading.Thread(target=check_auto_shutdown, daemon=True))
+            threads.append(threading.Thread(target=read_cava_output, daemon=True))
+            for t in threads:
+                t.start()
+
+            def shutdown_handler(signum=None, frame=None):
+                self.shutdown_event.set()
+                for t in threads:
+                    t.join(timeout=2)
+                if self.cava_process and self.cava_process.poll() is None:
+                    try:
+                        self.cava_process.terminate()
+                        self.cava_process.wait(timeout=2)
+                    except Exception:
+                        try:
+                            self.cava_process.kill()
+                        except Exception:
+                            pass
+                self.cleanup()
+                os._exit(0)
+
+            signal.signal(signal.SIGTERM, shutdown_handler)
+            signal.signal(signal.SIGINT, shutdown_handler)
+            try:
+                while not self.shutdown_event.is_set():
+                    time.sleep(0.2)
             except KeyboardInterrupt:
-                print("Received interrupt signal")
-                self.should_shutdown = True
-                
+                shutdown_handler()
+
         except Exception as e:
             print(f"Error starting manager: {e}")
             sys.exit(1)
         finally:
             self.cleanup()
-            sys.exit(0)
+            os._exit(0)
 
     def is_running(self):
         """Check if the server is running"""
@@ -516,10 +664,18 @@ class CavaClient:
             client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             client_socket.connect(self.socket_file)
 
-            standby_output = self.parser._handle_standby_mode(standby_mode, bar_chars, width)
-            if not ((standby_mode == 0 and standby_output == "") or (standby_mode == "" and standby_output == "")):
+            standby_output = self.parser._handle_standby_mode(
+                standby_mode, bar_chars, width
+            )
+            if not (
+                (standby_mode == 0 and standby_output == "")
+                or (standby_mode == "" and standby_output == "")
+            ):
                 if json_output:
-                    output = {"text": standby_output, "tooltip": "Cava audio visualizer - standby mode"}
+                    output = {
+                        "text": standby_output,
+                        "tooltip": "Cava audio visualizer - standby mode",
+                    }
                     print(json.dumps(output), flush=True)
                 else:
                     print(standby_output, flush=True)
@@ -545,7 +701,10 @@ class CavaClient:
                             ) or (standby_mode == "" and formatted == "")
                             if not should_suppress:
                                 if json_output:
-                                    output = {"text": formatted, "tooltip": "Cava audio visualizer - active"}
+                                    output = {
+                                        "text": formatted,
+                                        "tooltip": "Cava audio visualizer - active",
+                                    }
                                     print(json.dumps(output), flush=True)
                                 else:
                                     print(formatted, flush=True)
@@ -566,13 +725,26 @@ class CavaClient:
         """Parse configuration for a specific command type"""
         prefix = f"CAVA_{command.upper()}"
 
-        bar_chars = args.bar or hyde_config.get_value(f"{prefix}_BAR", "▁▂▃▄▅▆▇█")
+        # Prefer --bar-array if present
+        if hasattr(args, "bar_array") and args.bar_array:
+            bar_chars = args.bar_array
+        else:
+            # Prefer BAR_ARRAY from config if present and is a list
+            bar_array = hyde_config.get_value(f"{prefix}_BAR_ARRAY")
+            if bar_array and isinstance(bar_array, list):
+                bar_chars = bar_array
+            else:
+                bar_chars = args.bar or hyde_config.get_value(
+                    f"{prefix}_BAR", "▁▂▃▄▅▆▇█"
+                )
+                if isinstance(bar_chars, str):
+                    bar_chars = list(bar_chars)
+
         width = (
             args.width
             if args.width is not None
             else int(hyde_config.get_value(f"{prefix}_WIDTH", "0") or 0)
         )
-
         if not width:
             width = len(bar_chars) if bar_chars else 8
 
@@ -584,26 +756,55 @@ class CavaClient:
             standby_mode = hyde_config.get_value(f"{prefix}_STANDBY", "0")
             if standby_mode is None or standby_mode == "":
                 standby_mode = "\n"
-            elif standby_mode.isdigit():
+            elif isinstance(standby_mode, str) and standby_mode.isdigit():
                 standby_mode = int(standby_mode)
 
         return bar_chars, width, standby_mode
+
+
+class CavaReloadClient:
+    """Minimal client to send reload command to the server"""
+
+    def __init__(self):
+        self.runtime_dir = os.getenv(
+            "XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid()))
+        )
+        self.socket_file = os.path.join(self.runtime_dir, "hyde", "cava.sock")
+
+    def reload(self):
+        if not os.path.exists(self.socket_file):
+            print("Cava manager is not running.")
+            sys.exit(1)
+        try:
+            s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            s.connect(self.socket_file)
+            s.sendall(b"CMD:RELOAD\n")
+            s.close()
+            print("Reload command sent.")
+        except Exception as e:
+            print(f"Failed to send reload command: {e}")
+            sys.exit(1)
 
 
 def create_client_parser(subparsers, name, help_text):
     """Create a client parser with common arguments"""
     parser = subparsers.add_parser(name, help=help_text)
     parser.add_argument("--bar", default=None, help="Bar characters")
+    parser.add_argument(
+        "--bar-array",
+        nargs="+",
+        help="Bar characters as an array (e.g. --bar-array '<span color=red>#</span>' '<span color=green>#</span>')",
+    )
     parser.add_argument("--width", type=int, help="Bar width")
     parser.add_argument(
         "--stb",
         default=None,
         help='Standby mode (0-3 or string): 0=clean (totally hides the module), 1=blank (makes module expand as spaces), 2=full (occupies the module with full bar), 3=low (makes the module display the lowest set bar), ""=displays nothing and compresses the module, string=displays the custom string',
     )
-    
     if name == "waybar":
-        parser.add_argument("--json", action="store_true", help="Output JSON format for waybar tooltips")
-    
+        parser.add_argument(
+            "--json", action="store_true", help="Output JSON format for waybar tooltips"
+        )
     return parser
 
 
@@ -615,12 +816,26 @@ def main():
     manager_parser = subparsers.add_parser("manager", help="Start cava manager")
     manager_parser.add_argument("--bars", type=int, default=16, help="Number of bars")
     manager_parser.add_argument("--range", type=int, default=15, help="ASCII range")
+    manager_parser.add_argument(
+        "--channels",
+        choices=["mono", "stereo"],
+        default="stereo",
+        help="Audio channels: mono or stereo",
+    )
+    manager_parser.add_argument(
+        "--reverse",
+        type=int,
+        choices=[0, 1],
+        default=0,
+        help="Reverse frequency order: 0=normal, 1=reverse",
+    )
 
     create_client_parser(subparsers, "waybar", "Waybar client")
     create_client_parser(subparsers, "stdout", "Stdout client")
     create_client_parser(subparsers, "hyprlock", "Hyprlock client")
 
     subparsers.add_parser("status", help="Check manager status")
+    subparsers.add_parser("reload", help="Reload cava manager (restart cava process)")
 
     args = parser.parse_args()
 
@@ -630,7 +845,7 @@ def main():
             print("Cava manager is already running")
             sys.exit(0)
 
-        server.start(args.bars, args.range)
+        server.start(args.bars, args.range, args.channels, args.reverse)
 
     elif args.command in ["waybar", "stdout", "hyprlock"]:
         hyde_config = HydeConfig()
@@ -642,10 +857,17 @@ def main():
         bars = width
         range_val = int(hyde_config.get_value("CAVA_RANGE", "15"))
 
-        json_output = args.command == "waybar" and hasattr(args, 'json') and args.json
+        json_output = args.command == "waybar" and hasattr(args, "json") and args.json
 
         client = CavaClient()
-        client.start(bar_chars, width, standby_mode, bars=bars, range_val=range_val, json_output=json_output)
+        client.start(
+            bar_chars,
+            width,
+            standby_mode,
+            bars=bars,
+            range_val=range_val,
+            json_output=json_output,
+        )
 
     elif args.command == "status":
         server = CavaServer()
@@ -655,6 +877,9 @@ def main():
         else:
             print("Cava manager is not running")
             sys.exit(1)
+
+    elif args.command == "reload":
+        CavaReloadClient().reload()
 
     else:
         parser.print_help()

@@ -73,7 +73,7 @@ Usage: $0 [options]
             m : no the[m]e reinstallations
             t : [t]est run without executing (-irst to dry run all)
 
-NOTE: 
+NOTE:
         running without args is equivalent to -irs
         to ignore nvidia, run -irsn
 
@@ -254,9 +254,10 @@ EOF
     "${scrDir}/restore_thm.sh"
     print_log -g "[generate] " "cache ::" "Wallpapers..."
     if [ "${flg_DryRun}" -ne 1 ]; then
-        export PATH="$HOME/.local/lib/hyde:${PATH}"
+        export PATH="$HOME/.local/lib/hyde:$HOME/.local/bin:${PATH}"
         "$HOME/.local/lib/hyde/swwwallcache.sh" -t ""
         "$HOME/.local/lib/hyde/theme.switch.sh" -q || true
+        "$HOME/.local/lib/hyde/waybar.py" --update || true
         echo "[install] reload :: Hyprland"
     fi
 
@@ -277,6 +278,34 @@ if [ ${flg_Install} -eq 1 ] && [ ${flg_Restore} -eq 1 ]; then
 EOF
 
     "${scrDir}/install_pst.sh"
+fi
+
+
+#---------------------------#
+# run migrations            #
+#---------------------------#
+if [ ${flg_Restore} -eq 1 ]; then
+
+# migrationDir="$(realpath "$(dirname "$(realpath "$0")")/../migrations")"
+migrationDir="${scrDir}/migrations"
+
+if [ ! -d "${migrationDir}" ]; then
+    print_log -warn "Migrations" "Directory not found: ${migrationDir}"
+fi
+
+echo "Running migrations from: ${migrationDir}"
+
+if [ -d "${migrationDir}" ] && find "${migrationDir}" -type f | grep -q .; then
+    migrationFile=$(find "${migrationDir}" -maxdepth 1 -type f -printf '%f\n' | sort -r | head -n 1)
+
+    if [[ -n "${migrationFile}" && -f "${migrationDir}/${migrationFile}" ]]; then
+        echo "Found migration file: ${migrationFile}"
+        sh "${migrationDir}/${migrationFile}"
+    else
+        echo "No migration file found in ${migrationDir}. Skipping migrations."
+    fi
+fi
+
 fi
 
 #------------------------#
@@ -304,6 +333,12 @@ if [ $flg_Install -eq 1 ] ||
     [ $flg_Restore -eq 1 ] ||
     [ $flg_Service -eq 1 ] &&
     [ $flg_DryRun -ne 1 ]; then
+
+    if [[ -z "${HYPRLAND_CONFIG:-}" ]] || [[ ! -f "${HYPRLAND_CONFIG}" ]]; then
+        print_log -warn "Hyprland config not found! Might be a new install or upgrade."
+        print_log -warn "Please reboot the system to apply new changes."
+    fi
+
     print_log -stat "HyDE" "It is not recommended to use newly installed or upgraded HyDE without rebooting the system. Do you want to reboot the system? (y/N)"
     read -r answer
 

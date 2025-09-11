@@ -10,14 +10,14 @@ fi
 
 cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
 # confDir="${confDir:-$XDG_CONFIG_HOME}"
-readarray -t codeConf < <(find "$confDir" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" -o -name "Cursor*" | sort)
-readarray -t codeVsix < <(find "$HOME" -mindepth 1 -maxdepth 1 -type d -name ".vscode*" -o -name ".cursor" | sort)
+readarray -t codeConf < <(find -L "$confDir" -mindepth 1 -maxdepth 1 -type d -name "Code*" -o -name "VSCodium*" -o -name "Cursor*" | sort)
+readarray -t codeVsix < <(find -L "$HOME" -mindepth 1 -maxdepth 1 -type d -name ".vscode*" -o -name ".cursor" | sort)
 # tmpFile="/tmp/$(id -u)$(basename ${0}).tmp"
 
 #// install  ext
 for i in "${!codeVsix[@]}"; do
     [[ -z "${codeVsix[i]}" ]] && continue
-    file=$(find "${codeVsix[i]}" -type f -path "*extensions/thehydeproject*" -name "wallbash.json")
+    file=$(find -L "${codeVsix[i]}" -type f -path "*extensions/thehydeproject*" -name "wallbash.json")
     if [ -z "${file}" ]; then
         [ -f "${cacheDir}/landing/Code_Wallbash.vsix" ] || curl -L -o "${cacheDir}/landing/Code_Wallbash.vsix" https://github.com/HyDE-Project/code-wallbash/raw/refs/heads/master/release/Code_Wallbash.vsix
         case ${codeVsix[i]} in

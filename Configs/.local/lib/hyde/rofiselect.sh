@@ -2,13 +2,7 @@
 
 #// set variables
 
-# shellcheck source=$HOME/.local/bin/hyde-shell
-# shellcheck disable=SC1091
-if ! source "$(which hyde-shell)"; then
-    echo "[wallbash] code :: Error: hyde-shell not found."
-    echo "[wallbash] code :: Is HyDE installed?"
-    exit 1
-fi
+[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
 rofiStyleDir="${SHARE_DIR}/hyde/rofi/themes"
 rofiAssetDir="${SHARE_DIR}/hyde/rofi/assets"
@@ -51,7 +45,7 @@ r_override="window{width:100%;}
 
 RofiSel=$(
     # shellcheck disable=SC2154
-    find "${rofiStyleDir}" -type f -exec grep -l "Attr.*launcher.*" {} \; |
+    find -L "${rofiStyleDir}" -type f -exec grep -l "Attr.*launcher.*" {} \; |
         while read -r file; do
             baseName=$(basename "${file}" .rasi)
             assetFile="${file/rofi\/themes/rofi\/assets}"
