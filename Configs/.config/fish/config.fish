@@ -34,28 +34,31 @@ if type -q fzf
     end
 end
 
-
 # NOTE: binds Alt+n to inserting the nth command from history in edit buffer
 # e.g. Alt+4 is same as pressing Up arrow key 4 times
 # really helpful if you get used to it
 bind_M_n_history
 
-
-
-# example integration with bat : <cltr+f>
-# bind -M insert \ce '$EDITOR $(fzf --preview="bat --color=always --plain {}")'
-
-
 set fish_pager_color_prefix cyan
 set fish_color_autosuggestion brblack
 
-# List Directory
+if type -q eza
+    # List Directory
+    alias l='eza -lh  --icons=auto' # long list
+    alias ls='eza -1   --icons=auto' # short list
+    alias ll='eza -lha --icons=auto --sort=name --group-directories-first' # long list all
+    alias ld='eza -lhD --icons=auto' # long list dirs
+    alias lt='eza --icons=auto --tree' # list folder as tree
+    alias vc='code'
+end
+
+if type -q bat
+    abbr -a --position anywhere -- --help '--help | bat --language=help --style=plain --paging=never --color always'
+    abbr -a --position anywhere -- -h '-h | bat --language=help --style=plain --paging=never --color always'
+    abbr cat 'bat --style=plain --paging=never --color auto'
+end
+
 alias c='clear'
-alias l='eza -lh --icons=auto'
-alias ls='eza -1 --icons=auto'
-alias ll='eza -lha --icons=auto --sort=name --group-directories-first'
-alias ld='eza -lhD --icons=auto'
-alias lt='eza --icons=auto --tree'
 alias un='$aurhelper -Rns'
 alias up='$aurhelper -Syu'
 alias pl='$aurhelper -Qs'
