@@ -95,14 +95,6 @@ Cava visualizer configuration.
 | standby | Standby character for cava. | 🎶 |
 | width | Width of the cava output. | 20 |
 
-### [hypr.config]
-
-Hypr configuration.
-
-| Key | Description | Default |
-| --- | ----------- | ------- |
-| sanitize | List of regex to sanitize in the theme.config. | [".*rgba\(.*,.*,.*,.*\)"] |
-
 ### [hyprland]
 
 Hyprland configuration.
@@ -132,7 +124,7 @@ Hyprland configuration.
 | quickapps | Quick apps. | kitty |
 | terminal | Terminal. | kitty |
 
-### [hyprland_start]
+### [hyprland-start]
 
 Hyprland start configuration.
 
@@ -299,6 +291,14 @@ screenshot.sh configuration.
 | annotation_post_command | Post command for annotation tool. | [""] |
 | annotation_pre_command | Pre command for annotation tool. | [] |
 | annotation_tool | Annotation tool for screenshots. | satty |
+
+### [screenshot.ocr]
+
+OCR configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| tesseract_languages | Place desired languages to use for text recognition. To see installed languages run `tesseract --list-langs`. | ["eng"] |
 
 ### [sysmonitor]
 

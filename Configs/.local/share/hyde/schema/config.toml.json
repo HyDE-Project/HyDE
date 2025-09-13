@@ -457,6 +457,19 @@
                 }
             }
         },
+        "screenshot.ocr": {
+            "description": "OCR configuration.",
+            "type": "object",
+            "properties": {
+                "tesseract_languages": {
+                    "default": [
+                        "eng"
+                    ],
+                    "description": "Place desired languages to use for text recognition. To see installed languages run `tesseract --list-langs`.",
+                    "type": "array"
+                }
+            }
+        },
         "rofi.bookmark": {
             "description": "Bookmark configuration.",
             "type": "object",
@@ -734,9 +747,6 @@
             "type": "object",
             "properties": {
                 "sanitize": {
-                    "default": [
-                        ".*rgba\\(.*,.*,.*,.*\\)"
-                    ],
                     "description": "List of regex to sanitize in the theme.config.",
                     "type": "array",
                     "items": {
@@ -940,7 +950,7 @@
                 }
             }
         },
-        "hyprland_start": {
+        "hyprland-start": {
             "description": "Hyprland start configuration.",
             "type": "object",
             "properties": {

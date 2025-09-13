@@ -58,14 +58,14 @@ load_hypr_variables() {
       -Q "\$GTK_THEME[string]" \
       -Q "\$ICON_THEME[string]" \
       -Q "\$CURSOR_THEME[string]" \
-      -Q "\$CURSOR_SIZE[int]" \
+      -Q "\$CURSOR_SIZE" \
       -Q "\$FONT[string]" \
-      -Q "\$FONT_SIZE[int]" \
+      -Q "\$FONT_SIZE" \
       -Q "\$FONT_STYLE[string]" \
       -Q "\$DOCUMENT_FONT[string]" \
-      -Q "\$DOCUMENT_FONT_SIZE[int]" \
+      -Q "\$DOCUMENT_FONT_SIZE" \
       -Q "\$MONOSPACE_FONT[string]" \
-      -Q "\$MONOSPACE_FONT_SIZE[int]"
+      -Q "\$MONOSPACE_FONT_SIZE"
   )"
 
   GTK_THEME=${__GTK_THEME:-$GTK_THEME}
@@ -197,7 +197,7 @@ fi
 
 toml_write "${confDir}/qt5ct/qt5ct.conf" "Appearance" "icon_theme" "${ICON_THEME}"
 toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "general" "\"${FONT},${FONT_SIZE},-1,5,400,0,0,0,0,0,0,0,0,0,0,1,${FONT_STYLE}\""
-toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "fixed" "\"${MONOSPACE_FONT},9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\""
+toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "fixed" "\"${MONOSPACE_FONT},${MONOSPACE_FONT_SIZE:-9},-1,5,400,0,0,0,0,0,0,0,0,0,0,1\""
 
 # toml_write "${confDir}/qt5ct/qt5ct.conf" "Appearance" "color_scheme_path" "${confDir}/qt5ct/colors/colors.conf"
 # toml_write "${confDir}/qt5ct/qt5ct.conf" "Appearance" "custom_palette" "true"
@@ -206,7 +206,7 @@ toml_write "${confDir}/qt5ct/qt5ct.conf" "Fonts" "fixed" "\"${MONOSPACE_FONT},9,
 
 toml_write "${confDir}/qt6ct/qt6ct.conf" "Appearance" "icon_theme" "${ICON_THEME}"
 toml_write "${confDir}/qt6ct/qt6ct.conf" "Fonts" "general" "\"${FONT},${FONT_SIZE},-1,5,400,0,0,0,0,0,0,0,0,0,0,1,${FONT_STYLE}\""
-toml_write "${confDir}/qt6ct/qt6ct.conf" "Fonts" "fixed" "\"${MONOSPACE_FONT},9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1\""
+toml_write "${confDir}/qt6ct/qt6ct.conf" "Fonts" "fixed" "\"${MONOSPACE_FONT},${MONOSPACE_FONT_SIZE:-9},-1,5,400,0,0,0,0,0,0,0,0,0,0,1\""
 # toml_write "${confDir}/qt6ct/qt6ct.conf" "Appearance" "color_scheme_path" "${confDir}/qt6ct/colors/colors.conf"
 # toml_write "${confDir}/qt6ct/qt6ct.conf" "Appearance" "custom_palette" "true"
 
