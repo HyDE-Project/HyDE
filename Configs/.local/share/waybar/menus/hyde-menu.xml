@@ -110,7 +110,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-style-select">
-                                <property name="label">  Select Sytle</property>
+                                <property name="label">  Select Style</property>
                             </object>
                         </child>
 
