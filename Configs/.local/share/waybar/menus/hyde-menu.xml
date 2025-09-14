@@ -181,7 +181,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="lockscreen-select">
-                                <property name="label">  Select ockscreen</property>
+                                <property name="label">  Select lockscreen</property>
                             </object>
                         </child>
 
