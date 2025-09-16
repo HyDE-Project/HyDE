@@ -1,0 +1,79 @@
+${confDir}/btop/themes/hyde.theme|${WALLBASH_SCRIPTS}/btop.sh
+# Main background, empty for terminal default, need to be empty if you want transparent background
+theme[main_bg]=""
+
+# Main text color
+theme[main_fg]="#<wallbash_txt1>"
+
+# Title color for boxes
+theme[title]="#<wallbash_3xa4>"
+
+# Higlight color for keyboard shortcuts
+theme[hi_fg]="#<wallbash_2xa2>"
+
+# Background color of selected item in processes box
+theme[selected_bg]="#<wallbash_pry4>"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="#<wallbash_txt4>"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#<wallbash_3xa6>"
+
+# Misc colors for processes box including mini cpu graphs, details memory graph and details status text
+theme[proc_misc]="#<wallbash_2xa3>"
+
+# Cpu box outline color
+theme[cpu_box]="#<wallbash_3xa6>"
+
+# Memory/disks box outline color
+theme[mem_box]="#<wallbash_3xa6>"
+
+# Net up/down box outline color
+theme[net_box]="#<wallbash_3xa6>"
+
+# Processes box outline color
+theme[proc_box]="#<wallbash_3xa6>"
+
+# Box divider line and small boxes line color
+theme[div_line]="#<wallbash_3xa6>"
+
+# Temperature graph colors
+theme[temp_start]="#<wallbash_1xa3>"
+theme[temp_mid]="#<wallbash_1xa4>"
+theme[temp_end]="#<wallbash_1xa5>"
+
+# CPU graph colors
+theme[cpu_start]="#<wallbash_2xa3>"
+theme[cpu_mid]="#<wallbash_2xa4>"
+theme[cpu_end]="#<wallbash_2xa5>"
+
+# Mem/Disk free meter
+theme[free_start]="#<wallbash_1xa3>"
+theme[free_mid]="#<wallbash_1xa4>"
+theme[free_end]="#<wallbash_1xa5>"
+
+# Mem/Disk cached meter
+theme[cached_start]="#<wallbash_2xa3>"
+theme[cached_mid]="#<wallbash_2xa4>"
+theme[cached_end]="#<wallbash_2xa5>"
+
+# Mem/Disk available meter
+theme[available_start]="#<wallbash_3xa3>"
+theme[available_mid]="#<wallbash_3xa4>"
+theme[available_end]="#<wallbash_3xa5>"
+
+# Mem/Disk used meter
+theme[used_start]="#<wallbash_4xa3>"
+theme[used_mid]="#<wallbash_4xa4>"
+theme[used_end]="#<wallbash_4xa5>"
+
+# Download graph colors
+theme[download_start]="#<wallbash_3xa3>"
+theme[download_mid]="#<wallbash_3xa4>"
+theme[download_end]="#<wallbash_3xa5>"
+
+# Upload graph colors
+theme[upload_start]="#<wallbash_4xa3>"
+theme[upload_mid]="#<wallbash_4xa4>"
+theme[upload_end]="#<wallbash_4xa5>"

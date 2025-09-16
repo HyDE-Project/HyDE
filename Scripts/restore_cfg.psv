@@ -142,3 +142,7 @@ S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 
 P|${HOME}/.config/hypr|hypridle.conf|hypridle
+
+ Task manager 
+P|${HOME}/.config/btop|btop.conf|btop
+
