@@ -1,4 +1,4 @@
-${confDir}/btop/themes/hyde.theme|${WALLBASH_SCRIPTS}/btop.sh
+${XDG_CONFIG_HOME}/btop/themes/hyde.theme|${WALLBASH_SCRIPTS}/btop.sh
 # Main background, empty for terminal default, need to be empty if you want transparent background
 theme[main_bg]=""
 
