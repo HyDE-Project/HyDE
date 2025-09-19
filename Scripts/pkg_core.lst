@@ -77,10 +77,9 @@ fzf                                                    # Command-line fuzzy find
 
 # --------------------------------------------------- // Shell
 starship|zsh                                           # customizable shell prompt written in Rust
-# starship-git                                         # The cross-shell prompt for astronauts
-eza|fish                                               # file lister for fish
+# starship-git                                         # The cross-shell prompt for astronauts  
 starship|fish                                          # customizable shell prompt
-duf|fish                                               # prettier version of df for fish
+
 fastfetch                                              # system information fetch tool
 
 # --------------------------------------------------- // HyDE

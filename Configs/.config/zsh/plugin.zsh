@@ -1,6 +1,6 @@
 # Use your plugin system here
 
-return 1 # <--- Comment this line to disable HyDE's plugin loader // same as HYDE_ZSH_NO_PLUGINS
+return 1 # <--- Comment this line to disable HyDE's oh-my-zsh plugins and use the zinit examples below
 
 #! This file will not load, remove the return 1 line above to enable this file.
 #? Below is an example of how to set up Zsh plugins using Zinit

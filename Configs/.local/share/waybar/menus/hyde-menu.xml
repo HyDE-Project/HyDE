@@ -11,7 +11,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="animations-select">
-                                <property name="label">  Select animation</property>
+                                <property name="label">  Select Animation</property>
                             </object>
                         </child>
 
@@ -110,7 +110,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-style-select">
-                                <property name="label">  Select Sytle</property>
+                                <property name="label">  Select Style</property>
                             </object>
                         </child>
 
@@ -162,7 +162,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="workflows-select">
-                                <property name="label">  Select workflows</property>
+                                <property name="label">  Select Workflow</property>
                             </object>
                         </child>
 
@@ -181,7 +181,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="lockscreen-select">
-                                <property name="label">  Select ockscreen</property>
+                                <property name="label">  Select Lockscreen</property>
                             </object>
                         </child>
 
@@ -202,7 +202,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="shaders-select">
-                                <property name="label">  Select shaders</property>
+                                <property name="label">  Select Shader</property>
                             </object>
                         </child>
 

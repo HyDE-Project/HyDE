@@ -4,6 +4,30 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
+## v25.9.3
+
+### Changed
+
+- OCR: `imagemagick` screenshot preprocessing tuned for better recognition results
+- Docs: Improves release policy documentation by #1265
+
+### Added
+
+- Turkish documentation.
+- No changes have been made to other codes.
+- OCR: `tesseract` now supports explicit language settings via `hyde/config.toml`:
+    ```toml
+    [screenshot.ocr]
+    tesseract_languages = ["eng"]
+    ```
+    To use text recognition bind `hyde-shell screenshot sc` to any hotkey.
+- Hyprlock: Added hyprlock preview
+- File chooser dialogs in Hyprland now open centered and floating instead of off-screen
+
+### Fixed
+
+- Hyprlock: fix hyprlock crashing by handling it as a systemd scope unit
+
 ## v25.9.1
 
 This release delivers a new gesture syntax for hyprland v0.51.0. This is a breaking change for users of the previous gesture syntax. Please update HyDE before opening an issue.
@@ -24,7 +48,6 @@ gesture = 3, vertical, workspace
 - Gestures: Chase hyprland v0.51.0 gesture syntax
 
 ### Added
-
 - pinch gesture to toggle tile and floating
 
 ## v25.8.3

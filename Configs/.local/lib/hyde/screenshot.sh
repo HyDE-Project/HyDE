@@ -51,6 +51,9 @@ save_dir="${2:-$XDG_PICTURES_DIR/Screenshots}"
 save_file=$(date +'%y%m%d_%Hh%Mm%Ss_screenshot.png')
 annotation_tool=${SCREENSHOT_ANNOTATION_TOOL}
 annotation_args=("-o" "${save_dir}/${save_file}" "-f" "${temp_screenshot}")
+tesseract_default_language=("eng")
+tesseract_languages=("${SCREENSHOT_OCR_TESSERACT_LANGUAGES[@]:-${tesseract_default_language[@]}}")
+tesseract_languages+=("osd")
 
 if [[ -z "$annotation_tool" ]]; then
 	pkg_installed "swappy" && annotation_tool="swappy"
@@ -90,6 +93,54 @@ take_screenshot() {
 	fi
 }
 
+ocr_screenshot() {
+	local mode=$1
+	shift
+	local extra_args=("$@")
+
+	# execute grimblast with given args
+	if "$LIB_DIR/hyde/grimblast" "${extra_args[@]}" copysave "$mode" "$temp_screenshot"; then
+		if pkg_installed imagemagick; then
+			magick "${temp_screenshot}" \
+				-colorspace gray \
+				-contrast-stretch 0 \
+				-level 15%,85% \
+				-resize 400% \
+				-sharpen 0x1 \
+				-auto-threshold triangle \
+				-morphology close diamond:1 \
+				-deskew 40% \
+				"${temp_screenshot}"
+		else
+			notify-send -a "HyDE Alert" "OCR: imagemagick is not installed, recognition accuracy is reduced" -e -i "dialog-warning"
+		fi
+		tesseract_package_prefix="tesseract-data-"
+		tesseract_packages=("${tesseract_languages[@]/#/$tesseract_package_prefix}")
+		tesseract_packages+=("tesseract")
+		for pkg in "${tesseract_packages[@]}"; do
+			if ! pkg_installed "${pkg}"; then
+				notify-send -a "HyDE Alert" "$(echo -e "OCR: required package is not installed\n ${pkg}")" -e -i "dialog-error"
+				return 1
+			fi
+		done
+		tesseract_languages_prepared=$(IFS=+; echo "${tesseract_languages[*]}")
+		tesseract_output=$(tesseract \
+			--psm 6 \
+			--oem 3 \
+			-l ${tesseract_languages_prepared} \
+			"${temp_screenshot}" \
+			stdout
+			2>/dev/null
+		)
+		printf "%s" "$tesseract_output" | wl-copy
+		notify-send -a "HyDE Alert" "$(echo -e "OCR: ${#tesseract_output} symbols recognized\n\nLanguages used ${tesseract_languages[@]/#/'\n '}")" -i "${temp_screenshot}" -e
+		rm -f "${temp_screenshot}"
+	else
+		notify-send -a "HyDE Alert" "OCR: screenshot error" -e -i "dialog-error"
+		return 1
+	fi
+}
+
 pre_cmd
 
 case $1 in
@@ -106,23 +157,14 @@ m) # print focused monitor
 	take_screenshot "output"
 	;;
 sc) #? 󱉶 Use 'tesseract' to scan image then add to clipboard
-	check_package tesseract-data-eng tesseract
-	if ! GEOM=$(slurp); then
-		notify-send -a "HyDE Alert" "OCR preview: Invalid geometry" -e -i "dialog-error"
-		exit 1
-	fi
-	grim -g "${GEOM}" "${temp_screenshot}"
-	pkg_installed imagemagick && magick "${temp_screenshot}" -sigmoidal-contrast 10,50% "${temp_screenshot}"
-	tesseract "${temp_screenshot}" - | wl-copy
-	notify-send -a "HyDE Alert" "OCR preview" -i "${temp_screenshot}" -e
-	rm -f "${temp_screenshot}"
+	ocr_screenshot "area" "--freeze"
 	;;
 *) # invalid option
 	USAGE
 	;;
 esac
 
-[ -f "$temp_screenshot" ] && rm "$temp_screenshot"
+[ -f "${temp_screenshot}" ] && rm "${temp_screenshot}"
 
 if [ -f "${save_dir}/${save_file}" ]; then
 	notify-send -a "HyDE Alert" -i "${save_dir}/${save_file}" "saved in ${save_dir}"

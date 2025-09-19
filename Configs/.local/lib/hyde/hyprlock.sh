@@ -11,6 +11,8 @@ scrDir=${scrDir:-$HOME/.local/lib/hyde}
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 cacheDir="${HYDE_CACHE_HOME:-"${XDG_CACHE_HOME}/hyde"}"
 WALLPAPER="${cacheDir}/wall.set"
+HYPRLOCK_SCOPE_NAME="hyde-${XDG_SESSION_DESKTOP:-unknown}-lockscreen.scope"
+
 
 USAGE() {
   cat <<EOF
@@ -74,12 +76,12 @@ fn_mpris() {
     if [ -f "$HOME/.face.icon" ]; then
       if ! cmp -s "$HOME/.face.icon" "${THUMB}.png"; then
         cp -f "$HOME/.face.icon" "${THUMB}.png"
-        pkill -USR2 hyprlock >/dev/null 2>&1 # updates the mpris thumbnail
+        reload_hyprlock
       fi
     else
       if ! cmp -s "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${THUMB}.png"; then
         cp "$XDG_DATA_HOME/icons/Wallbash-Icon/hyde.png" "${THUMB}.png"
-        pkill -USR2 hyprlock >/dev/null 2>&1 # updates the mpris thumbnail
+        reload_hyprlock
       fi
     fi
     exit 1
@@ -116,7 +118,7 @@ mpris_thumb() { # Generate thumbnail for mpris
   echo "${artUrl}" >"${THUMB}".lnk
   curl -Lso "${THUMB}".art "$artUrl"
   magick "${THUMB}.art" -quality 50 "${THUMB}.png"
-  pkill -USR2 hyprlock >/dev/null 2>&1 # updates the mpris thumbnail
+  reload_hyprlock
 }
 
 fn_cava() {
@@ -131,6 +133,17 @@ fn_cava() {
 
 fn_art() {
   echo "${cacheDir}/landing/mpris.art"
+}
+
+find_filepath() {
+  local filename="${*:-$1}"
+  local search_dirs=(
+    "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprlock"
+    "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/hyprlock"
+    "${HYPRLOCK_CONF_DIR}"
+  )
+  print_log -sec "hyprlock" -stat "Searching for layout" "$filename"
+  find "${search_dirs[@]}" -type f -name "${filename}*" 2>/dev/null | head -n 1
 }
 
 # hyprlock selector
@@ -164,7 +177,7 @@ fn_select() {
   fi
 
   layout_items="Theme Preference
-$layout_items"
+${layout_items}"
 
   selected_layout=$(awk -F/ '{print $NF}' <<<"$layout_items" |
     rofi -dmenu -i -select "${HYPRLOCK_LAYOUT}" \
@@ -173,17 +186,22 @@ $layout_items"
       -theme-str "${font_override}" \
       -theme-str "${r_override}" \
       -theme-str "$(get_rofi_pos)" \
-      -theme "${ROFI_HYPRLOCK_STYLE:-clipboard}")
+      -on-selection-changed "hyde-shell hyprlock.sh --test-preview  \"{entry}\"" \
+      -theme "${ROFI_HYPRLOCK_STYLE:-clipboard}" )
+  
   if [ -z "$selected_layout" ]; then
     echo "No selection made"
     exit 0
   fi
-  set_conf "HYPRLOCK_LAYOUT" "${selected_layout}"
+
+    set_conf "HYPRLOCK_LAYOUT" "${selected_layout}"
   if [ "$selected_layout" == "Theme Preference" ]; then
     selected_layout="theme"
   fi
-  generate_conf "${layout_dir}/${selected_layout}.conf"
-  "${scrDir}/font.sh" resolve "${layout_dir}/${selected_layout}.conf"
+  local hyprlock_conf_path
+  hyprlock_conf_path=$(find_filepath "${selected_layout}")
+  generate_conf "$hyprlock_conf_path"
+  "${scrDir}/font.sh" resolve "$hyprlock_conf_path"
   fn_profile
 
   # Notify the user
@@ -191,11 +209,105 @@ $layout_items"
 
 }
 
+check_and_sanitize_process() {
+  local unit_name="${1:-${HYPRLOCK_SCOPE_NAME}}"
+  if systemctl --user is-active "${unit_name}" > /dev/null 2>&1; then
+    systemctl --user stop "${unit_name}" > /dev/null 2>&1
+  fi
+}
+
+reload_hyprlock() {
+  local unit_name="${2:-${HYPRLOCK_SCOPE_NAME}}"
+
+  if systemctl --user is-active "${unit_name}" > /dev/null 2>&1; then
+    systemctl --user kill -s USR2 "${HYPRLOCK_SCOPE_NAME}" >/dev/null 2>&1
+  else
+    pkill -USR2 hyprlock >/dev/null 2>&1
+  fi
+
+}
+
+append_label_to_file() {
+  local file="${1}"
+
+cat <<EOF >>"${file}"
+label {
+  text = PREVIEW! Press a key or swipe to exit.
+  color = rgba(\$wallbash_txt122)
+  font_size = 50
+  position = 0, 0
+  halign = center
+  valign = top
+  zindex = 6
+}
+
+label {
+  text = PREVIEW! Press a key or swipe to exit.
+  color = rgba(\$wallbash_txt122)
+  font_size = 50
+  position = 0, 0
+  halign = center
+  valign = bottom
+  zindex = 6
+}
+
+label {
+  text = PREVIEW! Press a key or swipe to exit.
+  color = rgba(\$wallbash_txt122)
+  font_size = 50
+  position = 0, 0
+  halign = center
+  valign = center
+  zindex = 6
+}
+
+EOF
+
+}
+
+
+layout_test() {
+  print_log -sec "hyprlock" -stat "Test"  "Please swipe,press a key or click to exit."
+  local hyprlock_conf_name="${*:-${1}}"
+  if [[ "${hyprlock_conf_name}" == "Theme Preference" ]]; then
+    hyprlock_conf_name="theme"
+  fi
+  check_and_sanitize_process
+  hyprlock_conf_path=$(find_filepath "${hyprlock_conf_name}")
+  if [ -z "${hyprlock_conf_path}" ]; then
+    print_log -sec "hyprlock" -stat "Error" "Layout ${hyprlock_conf_name} not found."
+    exit 1
+  fi
+  sleep 2
+  local temp_path="${XDG_RUNTIME_DIR}/hyde/hyprlock-test.conf"
+  generate_conf "${hyprlock_conf_path}" "${temp_path}" 
+  append_label_to_file "${temp_path}"
+  app2unit.sh -S both -u "${HYPRLOCK_SCOPE_NAME}" -t scope -- hyprlock --no-fade-in --immediate-render --grace 99999999 -c "${temp_path}"
+  rm -f "${temp_path}"
+}
+
+rofi_test_preview() {
+#? this function provides an anti spam mechanism for the rofi preview 
+local hyprlock_conf_name="${*:-${1}}"
+if [[ "${hyprlock_conf_name}" == "Theme Preference" ]]; then
+  hyprlock_conf_name="theme"
+fi
+local unit_name="hyde-${XDG_SESSION_DESKTOP:-unknown}-lockscreen-preview.scope"
+check_and_sanitize_process "${unit_name}"
+  send_notifs "Hyprlock layout: ${hyprlock_conf_name}" "Please swipe, press a key or click to exit." \
+    -i "system-lock-screen" -t 3000 \
+    -r 9
+app2unit.sh -S both -u "${unit_name}" -t scope -- hyprlock.sh --test "${hyprlock_conf_name}"
+  
+
+}
+
 generate_conf() {
   local path="${1:-$confDir/hypr/hyprlock/theme.conf}"
+  local target_file="${2:-$confDir/hypr/hyprlock.conf}"
   local hyde_hyprlock_conf=${SHARE_DIR:-$XDG_DATA_HOME}/hyde/hyprlock.conf
 
-  cat <<CONF >"$confDir/hypr/hyprlock.conf"
+  cat <<CONF >"${target_file}"
 #! █░█ █▄█ █▀█ █▀█ █░░ █▀█ █▀▀ █▄▀
 #! █▀█ ░█░ █▀▀ █▀▄ █▄▄ █▄█ █▄▄ █░█
 
@@ -316,12 +428,13 @@ if [ -z "${*}" ]; then
     print_log -sec "hyprlock" -stat "setting" " $HYDE_CACHE_HOME/wallpapers/hyprlock.png"
     "${scrDir}/wallpaper.sh" -s "$(readlink "${HYDE_THEME_DIR}/wall.set")" --backend hyprlock
   fi
-  pidof hyprlock || hyprlock
+  check_and_sanitize_process
+  app2unit.sh -u "${HYPRLOCK_SCOPE_NAME}" -t scope -- hyprlock
   exit 0
 fi
 
 # Define long options
-LONGOPTS="select,background,profile,mpris:,cava,art,help"
+LONGOPTS="select,background,profile,mpris:,cava,art,help,test:,test-preview:"
 
 # Parse options
 PARSED=$(
@@ -335,6 +448,14 @@ eval set -- "$PARSED"
 
 while true; do
   case "$1" in
+  --test)
+    layout_test "${2}"
+    exit 0
+    ;;
+    --test-preview)
+    rofi_test_preview "${2}"
+    exit 0
+    ;;
   select | -S | --select)
     fn_select
     exit 0

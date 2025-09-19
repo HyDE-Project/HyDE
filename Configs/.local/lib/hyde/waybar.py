@@ -533,12 +533,11 @@ def restart_waybar():
 
 def kill_waybar_and_watcher():
     """Kill all Waybar instances and watcher scripts for the current user."""
-    user = os.getenv("USER")
     kill_waybar()
     logger.debug("Killed Waybar processes for current user.")
 
     try:
-        watcher_unit = f"hyde-{user}-waybar-watcher.service"
+        watcher_unit = f"hyde-{os.getenv("XDG_SESSION_DESKTOP")}-waybar-watcher.service"
         result = subprocess.run(
             ["systemctl", "--user", "is-active", watcher_unit],
             capture_output=True,
@@ -546,8 +545,9 @@ def kill_waybar_and_watcher():
         )
 
         if result.returncode == 0:
-            kill_waybar()
-        logger.debug("Killed all waybar.py watcher scripts for current user.")
+            subprocess.run(["systemctl", "--user", "stop", watcher_unit])
+            # kill_waybar()
+            logger.debug("Killed all waybar.py watcher scripts for current user.")
     except Exception as e:
         logger.error(f"Error killing waybar.py processes: {e}")
 

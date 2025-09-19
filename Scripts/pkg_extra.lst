@@ -42,7 +42,10 @@ spicetify-cli                                          # cli to customize spotif
 bat|zsh                                                  # enhanced version of cat
 eza|zsh                                                  # file lister for zsh
 duf|zsh                                                  # prettier version of df for zsh
-
+# --------------------------------------------------- // fish
+bat|fish                                                 # enhanced version of cat
+eza|fish                                                 # file lister
+duf|fish                                                 # prettier version of df
 
 # --------------------------------------------------- // Editor
 # vscodium                                              # Full oss text editor
