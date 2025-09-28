@@ -721,6 +721,11 @@ type      = "object"
     description = "Font size for notifications."
     type        = "integer"
 
+[properties.notification.properties.default_icon]
+    default     = "${iconsDir}/Wallbash-Icon/hyprdots.svg"
+    description = "Default icon path to use for notifications."
+    type        = "string"
+
 [properties.hyprland]
     description = "Hyprland configuration."
     type        = "object"
