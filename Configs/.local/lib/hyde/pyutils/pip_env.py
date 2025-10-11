@@ -117,13 +117,18 @@ def rebuild_venv(venv_path=None, requirements_file=None):
     # Recreate venv if missing
     if not os.path.exists(pip_executable):
         create_venv(venv_path, requirements_file)
+
     # Helper to produce a short summary for informational pip output
     def _short_summary(stdout: str, stderr: str) -> str:
         if stderr:
             for sline in stderr.splitlines():
                 if sline.strip():
                     return sline.strip()
-        req_lines = [line for line in stdout.splitlines() if line.startswith("Requirement already satisfied")]
+        req_lines = [
+            line
+            for line in stdout.splitlines()
+            if line.startswith("Requirement already satisfied")
+        ]
         if req_lines:
             return f"{len(req_lines)} requirements already satisfied"
         for sline in stdout.splitlines():
@@ -144,7 +149,6 @@ def rebuild_venv(venv_path=None, requirements_file=None):
                 f"Failed to install requirements:\n{result.stderr or result.stdout}",
                 urgency="critical",
             )
-            # Don't re-raise; stop rebuild early after notifying the user
             return
         else:
             short = _short_summary(result.stdout, result.stderr)
@@ -153,7 +157,7 @@ def rebuild_venv(venv_path=None, requirements_file=None):
 
     # Upgrade all installed packages (list outdated and upgrade)
     result = subprocess.run(
-        [pip_executable, "list", "--outdated", "--format=freeze"],
+        [pip_executable, "list", "--outdated", "--format=json"],
         capture_output=True,
         text=True,
     )
@@ -163,10 +167,20 @@ def rebuild_venv(venv_path=None, requirements_file=None):
             f"Failed to list outdated packages:\n{result.stderr or result.stdout}",
             urgency="critical",
         )
-    # Don't re-raise here; just stop after notifying so caller can continue
-    return
+        return
 
-    outdated = [line.split("==")[0] for line in result.stdout.splitlines() if line]
+    import json
+
+    try:
+        outdated_packages = json.loads(result.stdout) if result.stdout.strip() else []
+        outdated = [pkg["name"] for pkg in outdated_packages]
+    except (json.JSONDecodeError, KeyError) as e:
+        notify.send(
+            "HyDE PIP",
+            f"Failed to parse outdated packages: {e}",
+            urgency="critical",
+        )
+        return
     if outdated:
         res2 = subprocess.run(
             [pip_executable, "install", "--upgrade", "-q"] + outdated,
@@ -179,7 +193,6 @@ def rebuild_venv(venv_path=None, requirements_file=None):
                 f"Failed to upgrade packages:\n{res2.stderr or res2.stdout}",
                 urgency="critical",
             )
-            # Don't re-raise; notify and exit rebuild
             return
         else:
             short2 = _short_summary(res2.stdout, res2.stderr)
@@ -200,7 +213,6 @@ def v_import(module_name):
         notify.send("HyDE PIP", f"Installing {module_name} module...")
         install_package(venv_path, module_name)
 
-        # Reload sys.path to include the new module
         importlib.invalidate_caches()
         sys.path.insert(0, venv_path)
         sys.path.insert(
