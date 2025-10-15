@@ -69,7 +69,7 @@ if [[ "$annotation_tool" == "swappy" ]]; then
 fi
 
 if [[ "$annotation_tool" == "satty" ]]; then
-	annotation_args+=("--copy-command" "wl-copy")
+	annotation_args+=("--copy-command" "wl-copy -t image/png")
 fi
 
 # Add any additional annotation arguments
