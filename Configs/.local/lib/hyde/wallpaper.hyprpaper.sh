@@ -13,7 +13,7 @@ if ! source "$(which hyde-shell)"; then
 fi
 
 # ? Be sure the wallpaper daemon is running
-if [[ ! -f "${XDG_RUNTIME_FIR}/hypr/$HYPRLAND_INSTANCE_SIGNATURE/hyprpaper.lock" ]]; then
+if [[ ! -f "${XDG_RUNTIME_DIR}/hypr/$HYPRLAND_INSTANCE_SIGNATURE/hyprpaper.lock" ]]; then
     systemctl --user start hyprpaper.service || setsid hyprpaper &
     sleep 1
 fi

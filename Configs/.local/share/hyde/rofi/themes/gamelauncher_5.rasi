@@ -33,7 +33,7 @@ window {
     border-radius:               0em;
     border-color:                transparent;
 //background-image: this is dynamically set
-    background-image:            url("~/.local/share/hyde/rofi/steamdeck_holographic.png", width);
+    background-image:            url("~/.local/share/hyde/rofi/assets/steamdeck_holographic.png", width);
     background-color:            transparent;
 }
 mainbox {

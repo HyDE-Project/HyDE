@@ -4,12 +4,22 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
+## v25.10.3
+
+### Fixed
+
+- Gamelauncher: steamdeck holograph
+
+### Added
+
+- Cliphist: image-history #1360
+- Cliphist: Rofi binds #1360
+
 ## v25.10.1
 
 ### Fixed
 - Hyprland: Fix errors when `HYPRLAND_CONFIG` is not set yet
 - Fish: Please Move you configs to `~/.config/fish/conf.d`
-
 
 ### Added
 
