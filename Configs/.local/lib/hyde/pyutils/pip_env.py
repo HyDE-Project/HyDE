@@ -51,7 +51,7 @@ def create_venv(venv_path, requirements_file=None):
 
             notify.send(
                 "HyDE PIP",
-                f"⏳ Installing virtual environment Dependencies:\n {list_requirements}",
+                f"⏳ Installing virtual environment Dependencies:\n{list_requirements}",
             )
             result = subprocess.run(
                 [pip_executable, "install", "-r", requirements_file],
@@ -108,6 +108,8 @@ def uninstall_package(venv_path, package):
 
 def rebuild_venv(venv_path=None, requirements_file=None):
     """Rebuild the virtual environment: reinstall if missing, install/upgrade requirements, and update all packages."""
+    import json
+
     # Use XDG_STATE_HOME for venv_path if not provided
     if venv_path is None:
         venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
@@ -153,7 +155,7 @@ def rebuild_venv(venv_path=None, requirements_file=None):
 
     # Upgrade all installed packages (list outdated and upgrade)
     result = subprocess.run(
-        [pip_executable, "list", "--outdated", "--format=freeze"],
+        [pip_executable, "list", "--outdated", "--format=json"],
         capture_output=True,
         text=True,
     )
@@ -163,13 +165,23 @@ def rebuild_venv(venv_path=None, requirements_file=None):
             f"Failed to list outdated packages:\n{result.stderr or result.stdout}",
             urgency="critical",
         )
-    # Don't re-raise here; just stop after notifying so caller can continue
-    return
+        # Don't re-raise here; just stop after notifying so caller can continue
+        return
 
-    outdated = [line.split("==")[0] for line in result.stdout.splitlines() if line]
-    if outdated:
+    try:
+        outdated_pkgs = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        notify.send("HyDE PIP", "Failed to parse pip list output.", urgency="critical")
+        return
+
+    # 5️⃣ Upgrade all outdated packages
+    if outdated_pkgs:
+        pkg_names = [pkg["name"] for pkg in outdated_pkgs]
+        freeze_list = [f'{pkg["name"]}=={pkg["latest_version"]}' for pkg in outdated_pkgs]
+        notify.send("HyDE PIP", "Outdated packages:\n" + "\n".join(freeze_list))
+
         res2 = subprocess.run(
-            [pip_executable, "install", "--upgrade", "-q"] + outdated,
+            [pip_executable, "install", "--upgrade"] + pkg_names,
             capture_output=True,
             text=True,
         )
