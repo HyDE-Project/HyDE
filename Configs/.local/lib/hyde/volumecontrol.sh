@@ -59,6 +59,7 @@ notify_vol() {
 }
 
 notify_mute() {
+    [ "${srce}" == "@DEFAULT_AUDIO_SOURCE@" ] && srce="--default-source" || srce=""
     mute=$(pamixer "${srce}" --get-mute | cat)
     [ "${srce}" == "--default-source" ] && dvce="microphone" || dvce="speaker"
     if [ "${mute}" == "true" ]; then
