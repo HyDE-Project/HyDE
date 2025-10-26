@@ -28,6 +28,7 @@ options:
 flags:
     -b, --backend <backend>   Set wallpaper backend to use (swww, hyprpaper, etc.)
     -G, --global              Set wallpaper as global
+    -SG, --superglobal              Set wallpaper as global
 
 
 notes: 
@@ -207,117 +208,126 @@ main() {
         print_log -sec "wallpaper" " See available commands: '--help | -h'"
         exit 1
     fi
-
-    # * --global flag is used to set the wallpaper as global, this means caching the wallpaper to thumbnails
-    #  If wallpaper is used for thumbnails, set the following variables
-    if [ "$set_as_global" == "true" ]; then
-        wallSet="${HYDE_THEME_DIR}/wall.set"
-        wallCur="${HYDE_CACHE_HOME}/wall.set"
-        wallSqr="${HYDE_CACHE_HOME}/wall.sqre"
-        wallTmb="${HYDE_CACHE_HOME}/wall.thmb"
-        wallBlr="${HYDE_CACHE_HOME}/wall.blur"
-        wallQad="${HYDE_CACHE_HOME}/wall.quad"
-        wallDcl="${HYDE_CACHE_HOME}/wall.dcol"
-    elif [ -n "${wallpaper_backend}" ]; then
-        mkdir -p "${HYDE_CACHE_HOME}/wallpapers"
-        wallCur="${HYDE_CACHE_HOME}/wallpapers/${wallpaper_backend}.png"
-        wallSet="${HYDE_THEME_DIR}/wall.${wallpaper_backend}.png"
-    else
-        wallSet="${HYDE_THEME_DIR}/wall.set"
+    displays=($(hyprctl monitors -j | jq -r '.[] | select(.focused).name'))
+    if [ "${set_as_super_global}" == true ]; then
+        displays=$(xrandr --listmonitors | awk 'NR>1 {print $4}')
     fi
-
-    # Ensure wallSet exists before applying
-    if [ ! -e "${wallSet}" ]; then
-        Wall_Hash
-    fi
-
-
-    if [ -n "${wallpaper_setter_flag}" ]; then
-        export WALLPAPER_SET_FLAG="${wallpaper_setter_flag}"
-        case "${wallpaper_setter_flag}" in
-        n)
-            Wall_Hash
-            Wall_Change n
-            ;;
-        p)
-            Wall_Hash
-            Wall_Change p
-            ;;
-        r)
-            Wall_Hash
-            setIndex=$((RANDOM % ${#wallList[@]}))
-            Wall_Cache "${wallList[setIndex]}"
-            ;;
-        s)
-            if [ -z "${wallpaper_path}" ] && [ ! -f "${wallpaper_path}" ]; then
-                print_log -err "wallpaper" "Wallpaper not found: ${wallpaper_path}"
-                exit 1
-            fi
-            get_hashmap "${wallpaper_path}"
-            Wall_Cache
-            ;;
-        start)
-            # Start/apply current wallpaper to backend
-            if [ ! -e "${wallSet}" ]; then
-                print_log -err "wallpaper" "No current wallpaper found: ${wallSet}"
-                exit 1
-            fi
-            export WALLPAPER_RELOAD_ALL=0 WALLBASH_STARTUP=1
-            current_wallpaper="$(realpath "${wallSet}")"
-            get_hashmap "${current_wallpaper}"
-            Wall_Cache
-            ;;
-        g)
-            if [ ! -e "${wallSet}" ]; then
-                print_log -err "wallpaper" "Wallpaper not found: ${wallSet}"
-                exit 1
-            fi
-            realpath "${wallSet}"
-            exit 0
-            ;;
-        o)
-            if [ -n "${wallpaper_output}" ]; then
-                print_log -sec "wallpaper" "Current wallpaper copied to: ${wallpaper_output}"
-                cp -f "${wallSet}" "${wallpaper_output}"
-            fi
-            ;;
-        select)
-            Wall_Select
-            get_hashmap "${selected_wallpaper_path}"
-            Wall_Cache
-            ;;
-        link)
-            Wall_Hash
-            Wall_Cache
-            exit 0
-            ;;
-        esac
-    fi
-
-    # Apply wallpaper to  backend
-    if [ -f "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
-        print_log -sec "wallpaper" "Using backend: ${wallpaper_backend}"
-        "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
-    else
-        if command -v "wallpaper.${wallpaper_backend}.sh" >/dev/null; then
-            "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+    for display in $displays
+    do 
+        # * --global flag is used to set the wallpaper as global, this means caching the wallpaper to thumbnails
+        #  If wallpaper is used for thumbnails, set the following variables
+        if [ "$set_as_global" == "true" ]; then
+            wallSet="${HYDE_THEME_DIR}/wall.$display.set"
+            wallCur="${HYDE_CACHE_HOME}/wall.$display.set"
+            wallSqr="${HYDE_CACHE_HOME}/wall.sqre"
+            wallTmb="${HYDE_CACHE_HOME}/wall.thmb"
+            wallBlr="${HYDE_CACHE_HOME}/wall.blur"
+            wallQad="${HYDE_CACHE_HOME}/wall.quad"
+            wallDcl="${HYDE_CACHE_HOME}/wall.dcol"
+        elif [ -n "${wallpaper_backend}" ]; then
+            mkdir -p "${HYDE_CACHE_HOME}/wallpapers"
+            wallCur="${HYDE_CACHE_HOME}/wallpapers/${wallpaper_backend}.png"
+            wallSet="${HYDE_THEME_DIR}/wall.${wallpaper_backend}.png"
         else
-            print_log -warn "wallpaper" "No backend script found for ${wallpaper_backend}"
-            print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/${wallpaper_backend}.png instead"
+            wallSet="${HYDE_THEME_DIR}/wall.$display.set"
         fi
-    fi
 
-    if [ "${wallpaper_setter_flag}" == "select" ]; then
-        if [ -e "$(readlink -f "${wallSet}")" ]; then
-            if [ "${set_as_global}" == "true" ]; then
-                notify-send -a "HyDE Alert" -i "${selected_thumbnail}" "${selected_wallpaper}"
+        # Ensure wallSet exists before applying
+        if [ ! -e "${wallSet}" ]; then
+            Wall_Hash
+        fi
+        if [ -n "${wallpaper_setter_flag}" ]; then
+            export WALLPAPER_SET_FLAG="${wallpaper_setter_flag}"
+            case "${wallpaper_setter_flag}" in
+            n)
+                Wall_Hash
+                Wall_Change n
+                ;;
+            p)
+                Wall_Hash
+                Wall_Change p
+                ;;
+            r)
+                Wall_Hash
+                setIndex=$((RANDOM % ${#wallList[@]}))
+                Wall_Cache "${wallList[setIndex]}"
+                ;;
+            s)
+                if [ -z "${wallpaper_path}" ] && [ ! -f "${wallpaper_path}" ]; then
+                    print_log -err "wallpaper" "Wallpaper not found: ${wallpaper_path}"
+                    exit 1
+                fi
+                get_hashmap "${wallpaper_path}"
+                Wall_Cache
+                ;;
+            start)
+                # Start/apply current wallpaper to backend
+                if [ ! -e "${wallSet}" ]; then
+                    print_log -err "wallpaper" "No current wallpaper found: ${wallSet}"
+                    exit 1
+                fi
+                export WALLPAPER_RELOAD_ALL=0 WALLBASH_STARTUP=1
+                current_wallpaper="$(realpath "${wallSet}")"
+                get_hashmap "${current_wallpaper}"
+                Wall_Cache
+                ;;
+            g)
+                if [ ! -e "${wallSet}" ]; then
+                    print_log -err "wallpaper" "Wallpaper not found: ${wallSet}"
+                    exit 1
+                fi
+                realpath "${wallSet}"
+                exit 0
+                ;;
+            o)
+                if [ -n "${wallpaper_output}" ]; then
+                    print_log -sec "wallpaper" "Current wallpaper copied to: ${wallpaper_output}"
+                    cp -f "${wallSet}" "${wallpaper_output}"
+                fi
+                ;;
+            select)
+                Wall_Select
+                get_hashmap "${selected_wallpaper_path}"
+                Wall_Cache
+                ;;
+            link)
+                Wall_Hash
+                Wall_Cache
+                exit 0
+                ;;
+            esac
+        fi
+
+        # Apply wallpaper to  backend
+        if [ -f "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
+            print_log -sec "wallpaper" "Using backend: ${wallpaper_backend}"
+
+            if [ "${set_as_super_global}" == true ]; then
+                "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" "${wallSet}" -G
             else
-                notify-send -a "HyDE Alert" -i "${selected_thumbnail}" "${selected_wallpaper} set for ${wallpaper_backend}"
+                "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
             fi
         else
-            notify-send -a "HyDE Alert" "Wallpaper not found"
+            if command -v "wallpaper.${wallpaper_backend}.sh" >/dev/null; then
+                "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+            else
+                print_log -warn "wallpaper" "No backend script found for ${wallpaper_backend}"
+                print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/${wallpaper_backend}.png instead"
+            fi
         fi
-    fi
+
+        if [ "${wallpaper_setter_flag}" == "select" ]; then
+            if [ -e "$(readlink -f "${wallSet}")" ]; then
+                if [ "${set_as_global}" == "true" ]; then
+                    notify-send -a "HyDE Alert" -i "${selected_thumbnail}" "${selected_wallpaper}"
+                else
+                    notify-send -a "HyDE Alert" -i "${selected_thumbnail}" "${selected_wallpaper} set for ${wallpaper_backend}"
+                fi
+            else
+                notify-send -a "HyDE Alert" "Wallpaper not found"
+            fi
+        fi
+    done
 }
 
 #// evaluate options
@@ -328,7 +338,7 @@ if [ -z "${*}" ]; then
 fi
 
 # Define long options
-LONGOPTS="link,global,select,json,next,previous,random,set:,start,backend:,get,output:,help,filetypes:"
+LONGOPTS="link,global,superglobal,select,json,next,previous,random,set:,start,backend:,get,output:,help,filetypes:"
 
 # Parse options
 PARSED=$(
@@ -348,6 +358,11 @@ while true; do
     case "$1" in
     -G | --global)
         set_as_global=true
+        shift
+        ;;
+    --superglobal)
+        set_as_global=true
+        set_as_super_global=true
         shift
         ;;
     --link)
