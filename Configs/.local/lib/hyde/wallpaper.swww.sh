@@ -12,8 +12,9 @@
 # This script should handle unsupported files.
 #   In this case we used the method `extract_thumbnail`
 #   to generate a png from a video file as swww do not support video
+selected_monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused).name')
+selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.$selected_monitor.set"}"
 
-selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.set"}"
 lockFile="$XDG_RUNTIME_DIR/hyde/$(basename "${0}").lock"
 if [ -e "${lockFile}" ]; then
     cat <<EOF
@@ -72,4 +73,8 @@ xtrans=${WALLPAPER_SWWW_TRANSITION_DEFAULT}
 #// apply wallpaper
 # TODO: add support for other backends
 print_log -sec "wallpaper" -stat "apply" "$selected_wall"
-swww img "$(readlink -f "$selected_wall")" --transition-bezier .43,1.19,1,.4 --transition-type "${xtrans}" --transition-duration "${wallTransDuration}" --transition-fps "${wallFramerate}" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
+if [[ " $@ " =~ " -G " ]]; then
+    swww img "$(readlink -f "$selected_wall")" --transition-bezier .43,1.19,1,.4 --transition-type "${xtrans}" --transition-duration "${wallTransDuration}" --transition-fps "${wallFramerate}" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
+else 
+    swww img -o $selected_monitor "$(readlink -f "$selected_wall")" --transition-bezier .43,1.19,1,.4 --transition-type "${xtrans}" --transition-duration "${wallTransDuration}" --transition-fps "${wallFramerate}" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
+fi
