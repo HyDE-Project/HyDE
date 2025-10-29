@@ -267,7 +267,7 @@ export_hyde_config() {
     #?    Example: You start a new shell session and want to ensure the latest config is loaded; call export_hyde_config at the start.
     #? 3. If you need arrays from the config to be available in the current shell session (since bash does not export arrays).
     #?    Example: You want to use theme or wall arrays in your shell; call export_hyde_config to populate them.
-    #? 
+    #?
     #? Usage: Call export_hyde_config whenever you need to ensure the current shell has up-to-date config and arrays.
     #? Typically called after config changes, at shell startup, or before using config-dependent arrays.
 

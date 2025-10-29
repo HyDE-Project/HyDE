@@ -5,7 +5,7 @@ scrDir="$(dirname "$(realpath "$0")")"
 source "${scrDir}/globalcontrol.sh"
 
 show_help() {
-  cat <<HELP
+    cat <<HELP
 Usage: $(basename "$0") --[option] 
     -h, --help  Display this help and exit
     -e, --execute   Explicit command to execute
@@ -28,17 +28,17 @@ HELP
 
 case $1 in
 -h | --help)
-  show_help
-  exit 0
-  ;;
+    show_help
+    exit 0
+    ;;
 -e | --execute)
-  shift
-  SYSMONITOR_EXECUTE=$1
-  ;;
+    shift
+    SYSMONITOR_EXECUTE=$1
+    ;;
 -*)
-  echo "Unknown option: $1" >&2
-  exit 1
-  ;;
+    echo "Unknown option: $1" >&2
+    exit 1
+    ;;
 esac
 
 pidFile="$XDG_RUNTIME_DIR/hyde/sysmonlaunch.pid"
@@ -46,17 +46,17 @@ pidFile="$XDG_RUNTIME_DIR/hyde/sysmonlaunch.pid"
 # TODO: As there is no proper protocol at terminals, we need to find a way to kill the processes
 # * This enables toggling the sysmonitor on and off
 if [ -f "$pidFile" ]; then
-  while IFS= read -r line; do
-    pid=$(awk -F ':::' '{print $1}' <<<"$line")
-    if [ -d "/proc/${pid}" ]; then
-      cmd=$(awk -F ':::' '{print $2}' <<<"$line")
-      pkill -P "$pid"
-      pkg_installed flatpak && flatpak kill "$cmd" 2>/dev/null
-      rm "$pidFile"
-      exit 0
-    fi
-  done <"$pidFile"
-  rm "$pidFile"
+    while IFS= read -r line; do
+        pid=$(awk -F ':::' '{print $1}' <<<"$line")
+        if [ -d "/proc/${pid}" ]; then
+            cmd=$(awk -F ':::' '{print $2}' <<<"$line")
+            pkill -P "$pid"
+            pkg_installed flatpak && flatpak kill "$cmd" 2>/dev/null
+            rm "$pidFile"
+            exit 0
+        fi
+    done <"$pidFile"
+    rm "$pidFile"
 fi
 
 pkgChk=("io.missioncenter.MissionCenter" "htop" "btop" "top")                     # Array of commands to check
@@ -64,20 +64,20 @@ pkgChk+=("${SYSMONITOR_COMMANDS[@]}")                                           
 [ -n "${SYSMONITOR_EXECUTE}" ] && pkgChk=("${SYSMONITOR_EXECUTE}" "${pkgChk[@]}") # Add the user defined executable
 
 for sysMon in "${!pkgChk[@]}"; do
-  if gtk-launch "${pkgChk[sysMon]}"; then
-    pid=$(pgrep -n -f "${pkgChk[sysMon]}")
-    echo "${pid}:::${pkgChk[sysMon]}" >"$pidFile" # Save the PID to the file
-    break
-  fi
-  if pkg_installed "${pkgChk[sysMon]}"; then
-    term=$(grep -E '^\s*'"$term" "$HOME/.config/hypr/keybindings.conf" | cut -d '=' -f2 | xargs) # dumb search the config
-    term=${TERMINAL:-$term}                                                                      # Use env var
-    term=${SYSMONITOR_TERMINAL:-$term}
-    if ${term} "${pkgChk[sysMon]}"; then
-      pid="${!}"
-      echo "${pid}:::${pkgChk[sysMon]}" >"$pidFile" # Save the PID to the file
-      disown
-      break
+    if gtk-launch "${pkgChk[sysMon]}"; then
+        pid=$(pgrep -n -f "${pkgChk[sysMon]}")
+        echo "${pid}:::${pkgChk[sysMon]}" >"$pidFile" # Save the PID to the file
+        break
     fi
-  fi
+    if pkg_installed "${pkgChk[sysMon]}"; then
+        term=$(grep -E '^\s*'"$term" "$HOME/.config/hypr/keybindings.conf" | cut -d '=' -f2 | xargs) # dumb search the config
+        term=${TERMINAL:-$term}                                                                      # Use env var
+        term=${SYSMONITOR_TERMINAL:-$term}
+        if ${term} "${pkgChk[sysMon]}"; then
+            pid="${!}"
+            echo "${pid}:::${pkgChk[sysMon]}" >"$pidFile" # Save the PID to the file
+            disown
+            break
+        fi
+    fi
 done

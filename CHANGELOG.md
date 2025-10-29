@@ -4,16 +4,30 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
-## v25.10.3
+## v25.11.1
 
 ### Fixed
 
 - Gamelauncher: steamdeck holograph
+- Formatting using 
 
 ### Added
 
 - Cliphist: image-history #1360
 - Cliphist: Rofi binds #1360
+- Gamelauncher: lutris inspector py script now uses the lutris DB to get meta dat making it faster than using lutris CLI
+- Gamelauncher: steam inspector py script is translated from fn_steam shell script. 
+- Gamelancher: catalog backend will merge both lutris and steam with hints for duplicates
+- Gamelauncher: "hyde-shell gamelauncher" now has --style and --backend args
+- Python: added pyproject.toml for ruff formatter
+- Shell: Added ".editorconfig" for shell scripts.
+
+### Changed
+
+- Core: Moved core "color" switch inside directory in lib path. Prepare to make `~/.local/lib/hyde` external only scripts and corresponding directories will be sourced or executed internally. 
+- Wallbash: Remove wallbash.qt as it is a simple cp command now in the qtct.dcol template
+
+
 
 ## v25.10.1
 

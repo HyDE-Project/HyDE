@@ -36,7 +36,6 @@ setup_rofi_config() {
 
 main() {
 
-
     setup_rofi_config
 
     if [[ -v customRoFile ]]; then

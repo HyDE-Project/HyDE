@@ -7,21 +7,22 @@ lockscreen="${LOCKSCREEN:-hyprlock}"
 lockscreen="${HYDE_LOCKSCREEN:-$lockscreen}"
 
 case ${1} in
-    --get)
-        echo "${lockscreen}"
-        exit 0
-        ;;    
+--get)
+    echo "${lockscreen}"
+    exit 0
+    ;;
 esac
 
 #? To cleanly exit hyprlock we should use a systemd scope unit.
 #? This allows us to manage the lockscreen process more effectively.
 #? This fix the zombie process issue when hyprlock is unlocked but still running.
-unit_id=(-u "hyde-lockscreen.scope")
+unit_name="hyde-lockscreen.service"
+args=(-u "${unit_name}" -t service)
 
 if which "${lockscreen}.sh" 2>/dev/null 1>&2; then
     printf "Executing ${lockscreen} wrapper script : %s\n" "${lockscreen}.sh"
-    app2unit.sh  "${unit_id[@]}"  -- "${lockscreen}.sh" "${@}"
+    app2unit.sh "${args[@]}" -- "${lockscreen}.sh" "${@}"
 else
     printf "Executing raw command: %s\n" "${lockscreen}"
-    app2unit.sh "${unit_id[@]}" -- "${lockscreen}" "${@}"
+    app2unit.sh "${args[@]}" -- "${lockscreen}" "${@}"
 fi

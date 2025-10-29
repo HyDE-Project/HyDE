@@ -51,9 +51,7 @@ WEATHER_CODES = {
         "🌧️ ",
     ),
     **dict.fromkeys(["200"], "⛈️ "),
-    **dict.fromkeys(
-        ["227", "230", "320", "323", "326", "374", "377", "386", "389"], "🌨️ "
-    ),
+    **dict.fromkeys(["227", "230", "320", "323", "326", "374", "377", "386", "389"], "🌨️ "),
     **dict.fromkeys(["329", "332", "335", "338", "371", "395"], "❄️ "),
 }
 
@@ -168,25 +166,17 @@ def format_chances(hour):
     }
 
     conditions = [
-        f"{chances[event]} {hour[event]}%"
-        for event in chances
-        if int(hour.get(event, 0)) > 0
+        f"{chances[event]} {hour[event]}%" for event in chances if int(hour.get(event, 0)) > 0
     ]
     return ", ".join(conditions)
 
 
 ### Variables ###
-load_env_file(
-    os.path.join(os.environ.get("HOME"), ".rlocal", "state", "hyde", "staterc")
-)
+load_env_file(os.path.join(os.environ.get("HOME"), ".rlocal", "state", "hyde", "staterc"))
 load_env_file(os.path.join(os.environ.get("HOME"), ".local", "state", "hyde", "config"))
 
-temp_unit = os.getenv(
-    "WEATHER_TEMPERATURE_UNIT", "c"
-).lower()  # c or f            (default: c)
-time_format = os.getenv(
-    "WEATHER_TIME_FORMAT", "12h"
-).lower()  # 12h or 24h        (default: 12h)
+temp_unit = os.getenv("WEATHER_TEMPERATURE_UNIT", "c").lower()  # c or f            (default: c)
+time_format = os.getenv("WEATHER_TIME_FORMAT", "12h").lower()  # 12h or 24h        (default: 12h)
 windspeed_unit = os.getenv(
     "WEATHER_WINDSPEED_UNIT", "km/h"
 ).lower()  # km/h or mph       (default: Km/h)
@@ -260,9 +250,7 @@ if show_today_details:
         f"<b>{get_description(current_weather)} {get_temperature(current_weather)}</b>\n"
     )
     data["tooltip"] += f"Feels like: {get_feels_like(current_weather)}\n"
-    data["tooltip"] += (
-        f"Location: {get_city_name(weather)}, {get_country_name(weather)}\n"
-    )
+    data["tooltip"] += f"Location: {get_city_name(weather)}, {get_country_name(weather)}\n"
     data["tooltip"] += f"Wind: {get_wind_speed(current_weather)}\n"
     data["tooltip"] += f"Humidity: {current_weather['humidity']}%\n"
 # Get the weather forecast for the next 2 days

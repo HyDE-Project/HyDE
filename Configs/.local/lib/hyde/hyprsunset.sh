@@ -58,7 +58,7 @@ send_notification() {
     if [ -n "$message" ]; then
         notify-send -a "HyDE Notify" -r 19 -t 800 -i redshift "$message" "$title"
     else
-        notify-send -a "HyDE Notify" -r 19 -t 800 -i redshift  "$title"
+        notify-send -a "HyDE Notify" -r 19 -t 800 -i redshift "$title"
     fi
 }
 # Signal process function
@@ -346,13 +346,13 @@ esac
 send_signal_to_process
 
 # Ensure that hyprsunset process is running (only when we need to apply changes)
-    if ! pgrep -x "hyprsunset" >/dev/null; then
-        # If socket exists but process is not running, remove the stale socket
-        if [ -f "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprsunset.sock" ]; then
-            rm "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprsunset.sock"
-        fi
-        hyprctl --quiet dispatch exec -- hyprsunset
+if ! pgrep -x "hyprsunset" >/dev/null; then
+    # If socket exists but process is not running, remove the stale socket
+    if [ -f "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprsunset.sock" ]; then
+        rm "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprsunset.sock"
     fi
+    hyprctl --quiet dispatch exec -- hyprsunset
+fi
 
 if [ "$action" = "read" ]; then
     if [ "$toggle_mode" -eq 1 ]; then

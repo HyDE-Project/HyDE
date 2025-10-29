@@ -2,7 +2,7 @@
 
 # ? This Script sets the hypr meta data for the current theme
 # ? This way users have a way to look up the current theme
-# ? See theme.switch.sh and dconf.set.sh for the actual theme settings
+# ? See theme.switch.sh and dconf-set.sh for the actual theme settings
 
 [[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 

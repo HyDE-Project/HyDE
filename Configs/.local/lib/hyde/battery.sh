@@ -52,7 +52,7 @@ index=$((average_capacity / 10))
 
 # Define icons for charging, discharging, and status
 # Charging icons from 0% to 100% (last icons repeated to fill 11 levels)
-charging_icons=(" " " " " " " " " " " " " " " " " " " " " ") 
+charging_icons=(" " " " " " " " " " " " " " " " " " " " " ")
 discharging_icons=("󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹")
 status_icons=("" "X" "󰂇") # Add appropriate icons for different statuses
 

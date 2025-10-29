@@ -82,7 +82,7 @@ change_volume() {
     "pamixer")
         if [[ "${use_pipewire}" == true ]]; then
             [ "${srce}" = "--default-source" ] && srce="@DEFAULT_AUDIO_SOURCE@"
-            [ "${srce}" = "" ]                 && srce="@DEFAULT_AUDIO_SINK@"
+            [ "${srce}" = "" ] && srce="@DEFAULT_AUDIO_SINK@"
             if [ "${isVolumeBoost}" = true ]; then
                 $use_swayosd && swayosd-client ${mode} "${delta}${step}" --max-volume "${VOLUME_BOOST_LIMIT:-150}" && exit 0
                 # Convert percentage limit to decimal (150% -> 1.5)
@@ -122,7 +122,7 @@ toggle_mute() {
         $use_swayosd && swayosd-client "${mode}" mute-toggle && exit 0
         if [[ "${use_pipewire}" == true ]]; then
             [ "${srce}" = "--default-source" ] && srce="@DEFAULT_AUDIO_SOURCE@"
-            [ "${srce}" = "" ]                 && srce="@DEFAULT_AUDIO_SINK@"
+            [ "${srce}" = "" ] && srce="@DEFAULT_AUDIO_SINK@"
             wpctl set-mute "${srce}" toggle
         else
             pamixer "$srce" -t
@@ -222,7 +222,7 @@ icodir="${iconsDir}/Wallbash-Icon/media"
 step=${VOLUME_STEPS:-5}
 
 # Detect pipewire
-if pactl info | grep -q "PipeWire" || ${VOLUME_PIPEWIRE_ENABLE} == true ; then
+if pactl info | grep -q "PipeWire" || ${VOLUME_PIPEWIRE_ENABLE} == true; then
     use_pipewire=true
 else
     use_pipewire=false

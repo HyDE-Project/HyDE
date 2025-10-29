@@ -12,77 +12,76 @@ cliphist_style="${ROFI_CLIPHIST_STYLE:-clipboard}"
 
 process_deletion() {
 
-        # handle delete mode
-        while IFS= read -r line; do
-            echo "${line}"
-            if [[ "${line}" = ":w:i:p:e:"* ]]; then
-                "${0}" --wipe
-                break
-            elif [[ "${line}" = ":b:a:r:"* ]]; then
-                "${0}" --delete
-                break
-            elif [ -n "$line" ]; then
-                cliphist delete <<<"${line}"
-                notify-send "Deleted" "${line}"
-            fi
-        done
-        exit 0
+    # handle delete mode
+    while IFS= read -r line; do
+        echo "${line}"
+        if [[ "${line}" = ":w:i:p:e:"* ]]; then
+            "${0}" --wipe
+            break
+        elif [[ "${line}" = ":b:a:r:"* ]]; then
+            "${0}" --delete
+            break
+        elif [ -n "$line" ]; then
+            cliphist delete <<<"${line}"
+            notify-send "Deleted" "${line}"
+        fi
+    done
+    exit 0
 }
-
 
 # process clipboard selections for multi-select mode
 process_selections() {
-        # Read the entire input into an array
-        mapfile -t lines #! Not POSIX compliant
-        # Get the total number of lines
-        total_lines=${#lines[@]}
+    # Read the entire input into an array
+    mapfile -t lines #! Not POSIX compliant
+    # Get the total number of lines
+    total_lines=${#lines[@]}
 
-        handle_special_commands "${lines[@]}"
+    handle_special_commands "${lines[@]}"
 
-        # process regular clipboard items
-        local output=""
-        # Iterate over each line in the array
-        for ((i = 0; i < total_lines; i++)); do
-            local line="${lines[$i]}"
-            local decoded_line
-            decoded_line="$(echo -e "$line\t" | cliphist decode)"
-            if [ $i -lt $((total_lines - 1)) ]; then
-                printf -v output '%s%s\n' "$output" "$decoded_line"
-            else
-                printf -v output '%s%s' "$output" "$decoded_line"
-            fi
-        done
-        echo -n "$output"
+    # process regular clipboard items
+    local output=""
+    # Iterate over each line in the array
+    for ((i = 0; i < total_lines; i++)); do
+        local line="${lines[$i]}"
+        local decoded_line
+        decoded_line="$(echo -e "$line\t" | cliphist decode)"
+        if [ $i -lt $((total_lines - 1)) ]; then
+            printf -v output '%s%s\n' "$output" "$decoded_line"
+        else
+            printf -v output '%s%s' "$output" "$decoded_line"
+        fi
+    done
+    echo -n "$output"
 }
 
 handle_special_commands() {
 
-        local lines=("$@")
+    local lines=("$@")
 
     case "${lines[0]}" in
-        ":d:e:l:e:t:e:"*)
-            exec "${0}" --delete
-            exit 0
-            ;;
-        ":w:i:p:e:"*)
-            exec "${0}" --wipe
-            exit 0
-            ;;
-        ":b:a:r:"* | *":c:o:p:y:"*)
-            exec "${0}" --copy
-            exit 0
-            ;;
-        ":f:a:v:"*)
-            exec "${0}" --favorites
-            exit 0
-            ;;
-        ":i:m:g:")
-            exec "${0}" --image-history
-            ;;
-        ":o:p:t:"*)
-            exec "${0}"
-            exit 0
-            ;;
+    ":d:e:l:e:t:e:"*)
+        exec "${0}" --delete
+        exit 0
+        ;;
+    ":w:i:p:e:"*)
+        exec "${0}" --wipe
+        exit 0
+        ;;
+    ":b:a:r:"* | *":c:o:p:y:"*)
+        exec "${0}" --copy
+        exit 0
+        ;;
+    ":f:a:v:"*)
+        exec "${0}" --favorites
+        exit 0
+        ;;
+    ":i:m:g:")
+        exec "${0}" --image-history
+        ;;
+    ":o:p:t:"*)
+        exec "${0}"
+        exit 0
+        ;;
     esac
 
 }
@@ -124,11 +123,11 @@ run_rofi() {
     if [ $exit_code -ne 0 ]; then
         case "${exit_code}" in
         10) printf ":c:o:p:y:" ;;
-        11) printf ":d:e:l:e:t:e:";;
-        12) printf ":f:a:v:";;
-        13) printf ":w:i:p:e:";;
-        14) printf ":o:p:t:";;
-        15) printf ":i:m:g:";;
+        11) printf ":d:e:l:e:t:e:" ;;
+        12) printf ":f:a:v:" ;;
+        13) printf ":w:i:p:e:" ;;
+        14) printf ":o:p:t:" ;;
+        15) printf ":i:m:g:" ;;
         esac
 
     fi
@@ -198,35 +197,32 @@ cliphist_cmd() {
         echo -e ":o:p:t:\t⚙️ Options"
         cliphist list
     else
-        HYDE_CLIPHIST_IMAGE_ONLY=true cliphist.image.py 
+        HYDE_CLIPHIST_IMAGE_ONLY=true cliphist.image.py
     fi
 }
-
 
 # display clipboard history and copy selected item
 show_history() {
     local selected_item
     rofi_args=(" 📜 History..." -multi-select -i -display-columns 2 -selected-row 2)
-    if [[ "${CLIPHIST_IMAGE_HISTORY}" == true ]] ;then
-    rofi_args=(" 🏞️ Image..." -display-columns 2
-        -show-icons -eh 3
-        -theme-str 'listview { lines: 4; columns: 2; }'
-        -theme-str 'element { enabled: true; orientation: vertical; spacing: 0%; padding: 0%; cursor: pointer; background-color: transparent; text-color: @main-fg; horizontal-align: 0.5; }'
-        -theme-str 'element-text { enabled: false;}'
-        -theme-str 'element-icon {size: 8%; spacing: 0%; padding: 0%; cursor: inherit; background-color: transparent; }'
-        -theme-str 'element selected.normal { background-color: @select-bg; text-color: @select-fg; }'
+    if [[ "${CLIPHIST_IMAGE_HISTORY}" == true ]]; then
+        rofi_args=(" 🏞️ Image..." -display-columns 2
+            -show-icons -eh 3
+            -theme-str 'listview { lines: 4; columns: 2; }'
+            -theme-str 'element { enabled: true; orientation: vertical; spacing: 0%; padding: 0%; cursor: pointer; background-color: transparent; text-color: @main-fg; horizontal-align: 0.5; }'
+            -theme-str 'element-text { enabled: false;}'
+            -theme-str 'element-icon {size: 8%; spacing: 0%; padding: 0%; cursor: inherit; background-color: transparent; }'
+            -theme-str 'element selected.normal { background-color: @select-bg; text-color: @select-fg; }'
         )
     fi
-    selected_item=$( 
+    selected_item=$(
         cliphist_cmd | run_rofi "${rofi_args[@]}"
     ) || exit 0
 
     [ -n "${selected_item}" ] || exit 0
-    
-    
+
     handle_special_commands "${selected_item##*$'\n'}"
     # handle_special_commands "${selected_item##*$'\n'}"
-
 
     if echo -e "${selected_item}" | check_content; then
         process_selections <<<"${selected_item}" | wl-copy
@@ -242,9 +238,9 @@ show_history() {
 # delete items from clipboard history
 delete_items() {
     local selected_item
-    selected_item="$(cliphist list | run_rofi " 🗑️ Delete" -multi-select -i -display-columns 2 )"
+    selected_item="$(cliphist list | run_rofi " 🗑️ Delete" -multi-select -i -display-columns 2)"
     handle_special_commands "${selected_item##*$'\n'}"
-    process_deletion <<< "${selected_item}"
+    process_deletion <<<"${selected_item}"
 }
 
 # favorite clipboard items
@@ -258,7 +254,7 @@ view_favorites() {
     selected_item=$(printf "%s\n" "${decoded_lines[@]}" | run_rofi "📌 View Favorites") || exit 0
 
     if [ -n "$selected_item" ]; then
-     handle_special_commands "${selected_item##*$'\n'}"
+        handle_special_commands "${selected_item##*$'\n'}"
 
         # Find the index of the selected favorite
         local index
@@ -402,11 +398,12 @@ main() {
     setup_rofi_config
 
     local main_action="$1"
-    if [ $# -eq 0 ];  then
-        main_action=$(run_rofi "🔎 Options (Alt O)"  \
-        -display-column-separator ":::" \
-        -display-columns 1,2 \
-        -markup-rows <<EOF
+    if [ $# -eq 0 ]; then
+        main_action=$(
+            run_rofi "🔎 Options (Alt O)" \
+                -display-column-separator ":::" \
+                -display-columns 1,2 \
+                -markup-rows <<EOF
 History:::<i>(Alt+C)</i>
 Image History:::<i>(Alt+V)</i>
 Delete Item:::<i>(Alt+D)</i>
@@ -414,9 +411,9 @@ Clear History:::<i>(Alt+W)</i>
 View Favorites:::<i>(Alt+N)</i>
 Manage Favorites:::
 EOF
-)        
-handle_special_commands "${main_action##*$'\n'}"    
-main_action="${main_action%%:::*}"
+        )
+        handle_special_commands "${main_action##*$'\n'}"
+        main_action="${main_action%%:::*}"
 
     fi
 
@@ -425,7 +422,7 @@ main_action="${main_action%%:::*}"
     case "${main_action}" in
     -i | --image-history | "Image History")
         CLIPHIST_IMAGE_HISTORY=true show_history "$@"
-    ;;
+        ;;
     -c | --copy | "History")
         show_history "$@"
         ;;
@@ -442,8 +439,8 @@ main_action="${main_action%%:::*}"
         clear_history
         ;;
     -b | --binds)
-    show_binds
-    ;;
+        show_binds
+        ;;
     -h | --help | *)
         [ -z "$main_action" ] && exit 0
         show_help

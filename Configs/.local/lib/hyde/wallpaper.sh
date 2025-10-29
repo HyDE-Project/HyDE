@@ -298,18 +298,61 @@ main() {
             esac
         fi
 
-        # Apply wallpaper to  backend
-        if [ -f "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" ] && [ -n "${wallpaper_backend}" ]; then
-            print_log -sec "wallpaper" "Using backend: ${wallpaper_backend}"
-
-            if [ "${set_as_super_global}" == true ]; then
-                "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" "${wallSet}" -G
-            else
-                "${LIB_DIR}/hyde/wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+    if [ -n "${wallpaper_setter_flag}" ]; then
+        export WALLPAPER_SET_FLAG="${wallpaper_setter_flag}"
+        case "${wallpaper_setter_flag}" in
+        n)
+            Wall_Hash
+            Wall_Change n
+            ;;
+        p)
+            Wall_Hash
+            Wall_Change p
+            ;;
+        r)
+            Wall_Hash
+            setIndex=$((RANDOM % ${#wallList[@]}))
+            Wall_Cache "${wallList[setIndex]}"
+            ;;
+        s)
+            if [ -z "${wallpaper_path}" ] && [ ! -f "${wallpaper_path}" ]; then
+                print_log -err "wallpaper" "Wallpaper not found: ${wallpaper_path}"
+                exit 1
+            fi
+            get_hashmap "${wallpaper_path}"
+            Wall_Cache
+            ;;
+        start)
+            # Start/apply current wallpaper to backend
+            if [ ! -e "${wallSet}" ]; then
+                print_log -err "wallpaper" "No current wallpaper found: ${wallSet}"
+                exit 1
+            fi
+            export WALLPAPER_RELOAD_ALL=0 WALLBASH_STARTUP=1
+            current_wallpaper="$(realpath "${wallSet}")"
+            get_hashmap "${current_wallpaper}"
+            Wall_Cache
+            ;;
+        g)
+            if [ ! -e "${wallSet}" ]; then
+                print_log -err "wallpaper" "Wallpaper not found: ${wallSet}"
+                exit 1
+            fi
+            realpath "${wallSet}"
+            exit 0
+            ;;
+        o)
+            if [ -n "${wallpaper_output}" ]; then
+                print_log -sec "wallpaper" "Current wallpaper copied to: ${wallpaper_output}"
+                cp -f "${wallSet}" "${wallpaper_output}"
             fi
         else
             if command -v "wallpaper.${wallpaper_backend}.sh" >/dev/null; then
-                "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+                if [ "${set_as_super_global}" == true ]; then
+                    "wallpaper.${wallpaper_backend}.sh" "${wallSet}" -G
+                else
+                    "wallpaper.${wallpaper_backend}.sh" "${wallSet}"
+                fi
             else
                 print_log -warn "wallpaper" "No backend script found for ${wallpaper_backend}"
                 print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/${wallpaper_backend}.png instead"

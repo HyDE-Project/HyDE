@@ -142,13 +142,9 @@ def get_sensor_data(result_sensors, page=0):
                 for key, value in values.items():
                     if "temp" in key and "input" in key:
                         temp_color = get_temp_color(value)
-                        device_data[device]["temperatures"].append(
-                            f"{sensor}: {temp_color}"
-                        )
+                        device_data[device]["temperatures"].append(f"{sensor}: {temp_color}")
                     elif "fan" in key and "input" in key:
-                        device_data[device]["fan_speeds"].append(
-                            f"{sensor}: {value} RPM"
-                        )
+                        device_data[device]["fan_speeds"].append(f"{sensor}: {value} RPM")
                     elif "in" in key and "input" in key:
                         device_data[device]["voltages"].append(f"{sensor}: {value} V")
                     elif "curr" in key and "input" in key:
@@ -182,27 +178,19 @@ def get_sensor_data(result_sensors, page=0):
         if data["fan_speeds"]:
             has_data = True
             fan_columns = format_columns(data["fan_speeds"])
-            device_parts.append(
-                "        Fan Speeds:\n        " + "\n        ".join(fan_columns)
-            )
+            device_parts.append("        Fan Speeds:\n        " + "\n        ".join(fan_columns))
         if data["voltages"]:
             has_data = True
             volt_columns = format_columns(data["voltages"])
-            device_parts.append(
-                "        Voltages:\n        " + "\n        ".join(volt_columns)
-            )
+            device_parts.append("        Voltages:\n        " + "\n        ".join(volt_columns))
         if data["currents"]:
             has_data = True
             curr_columns = format_columns(data["currents"])
-            device_parts.append(
-                "        Currents:\n        " + "\n        ".join(curr_columns)
-            )
+            device_parts.append("        Currents:\n        " + "\n        ".join(curr_columns))
         if data["powers"]:
             has_data = True
             power_columns = format_columns(data["powers"])
-            device_parts.append(
-                "       臘 Powers:\n        " + "\n        ".join(power_columns)
-            )
+            device_parts.append("       臘 Powers:\n        " + "\n        ".join(power_columns))
         if has_data:
             tooltip_parts.append("\n".join(device_parts))
             tooltip_parts.append("\n")  # Add a newline after each device's information

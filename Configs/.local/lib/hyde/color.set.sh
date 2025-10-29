@@ -12,8 +12,8 @@
 # Hook commands to always run for theming and colors
 load_dconf_kdeglobals() {
 
-    source "${LIB_DIR}/hyde/wallbash.hypr.sh" #<--- hyprland hook
-    source "${LIB_DIR}/hyde/dconf.set.sh"
+    source "${LIB_DIR}/hyde/color/hypr.sh" #<--- hyprland hook
+    source "${LIB_DIR}/hyde/color/dconf.sh"
 
     # QT and KDE settings
     toml_write "${XDG_CONFIG_HOME}/kdeglobals" "Colors:View" "BackgroundNormal" "#${dcol_pry1:-000000}FF"
