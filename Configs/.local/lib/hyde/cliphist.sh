@@ -93,7 +93,6 @@ run_rofi() {
         -theme-str "entry { placeholder: \"${placeholder}\";}" \
         -theme-str "${font_override}" \
         -theme-str "${r_override}" \
-        -theme-str "${rofi_position}" \
         -theme "${cliphist_style}" \
         "$@"
 }
@@ -162,7 +161,7 @@ show_history() {
         echo -e ":f:a:v:\t📌 Favorites"
         echo -e ":o:p:t:\t⚙️ Options"
         cliphist list
-    ) | run_rofi " 📜 History..." -multi-select -i -display-columns 2 -selected-row 2)
+    ) | run_rofi " 📜 History..." -i -display-columns 2 -selected-row 2)
 
     [ -n "${selected_item}" ] || exit 0
 
