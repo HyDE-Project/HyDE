@@ -17,6 +17,7 @@ blueman                                                # bluetooth manager gui
 brightnessctl                                          # screen brightness control
 playerctl                                              # media controls
 udiskie                                                # manage removable media
+dex                                                    # autostart manager following XDG_AUTOSTART spec
 
 # --------------------------------------------------- // Display Manager
 sddm                                                   # display manager for KDE plasma
