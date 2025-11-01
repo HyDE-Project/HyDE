@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
-# TODO: Add persistent mode
 HYPRGAMEMODE=$(hyprctl getoption animations:enabled | sed -n '1p' | awk '{print $2}')
-
-# Hyprland performance
 if [ "$HYPRGAMEMODE" = 1 ]; then
     hyprctl -q --batch "\
         keyword animations:enabled 0;\
@@ -21,7 +18,7 @@ if [ "$HYPRGAMEMODE" = 1 ]; then
         keyword layerrule noanim,swww-daemon ;\
         keyword layerrule noanim,rofi
         "
-    hyprctl 'keyword windowrule opaque,class:(.*)' # ensure all windows are opaque
+    hyprctl 'keyword windowrule opaque,class:(.*)'
     exit
 else
     hyprctl reload config-only -q

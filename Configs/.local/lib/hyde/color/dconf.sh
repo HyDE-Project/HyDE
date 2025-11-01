@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
-
-# shellcheck disable=SC2154
-# shellcheck disable=SC1091
-
-[[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
-
-# Stores default values for the theme to avoid breakages.
-source "${SHARE_DIR}/hyde/env-theme"
-
+[[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+source "$SHARE_DIR/hyde/env-theme"
 dconf_populate() {
-    # Build the dconf content
     cat <<EOF
 [org/gnome/desktop/interface]
 icon-theme='$ICON_THEME'
@@ -24,40 +16,31 @@ font-antialiasing='$FONT_ANTIALIASING'
 font-hinting='$FONT_HINTING'
 
 [org/gnome/desktop/default-applications/terminal]
-exec='$(command -v "${TERMINAL}")'
+exec='$(command -v "$TERMINAL")'
 
 [org/gnome/desktop/wm/preferences]
 button-layout='$BUTTON_LAYOUT'
 EOF
 }
-
-# HYDE_THEME="$(hyq "${HYPRLAND_CONFIG}" --source --query 'hyde:theme')"
-COLOR_SCHEME="prefer-${dcol_mode}"
+COLOR_SCHEME="prefer-$dcol_mode"
 GTK_THEME="Wallbash-Gtk"
-
-# Populate variables from hyprland config if exists
-if [[ -r "${HYPRLAND_CONFIG}" ]] &&
-    command -v "hyq" &>/dev/null; then
-
-    eval "$(
-        hyq "${HYPRLAND_CONFIG}" --source --export env \
-            -Q 'hyde:gtk-theme' \
-            -Q 'hyde:color-scheme' \
-            -Q 'hyde:icon-theme' \
-            -Q 'hyde:cursor-theme' \
-            -Q 'hyde:cursor-size' \
-            -Q 'hyde:terminal' \
-            -Q 'hyde:font' \
-            -Q 'hyde:font-size' \
-            -Q 'hyde:document-font' \
-            -Q 'hyde:document-font-size' \
-            -Q 'hyde:monospace-font' \
-            -Q 'hyde:monospace-font-size' \
-            -Q 'hyde:button-layout' \
-            -Q 'hyde:font-antialiasing' \
-            -Q 'hyde:font-hinting'
-
-    )"
+if [[ -r $HYPRLAND_CONFIG ]] && command -v "hyq" &>/dev/null; then
+    eval "$(hyq "$HYPRLAND_CONFIG" --source --export env \
+        -Q 'hyde:gtk-theme' \
+        -Q 'hyde:color-scheme' \
+        -Q 'hyde:icon-theme' \
+        -Q 'hyde:cursor-theme' \
+        -Q 'hyde:cursor-size' \
+        -Q 'hyde:terminal' \
+        -Q 'hyde:font' \
+        -Q 'hyde:font-size' \
+        -Q 'hyde:document-font' \
+        -Q 'hyde:document-font-size' \
+        -Q 'hyde:monospace-font' \
+        -Q 'hyde:monospace-font-size' \
+        -Q 'hyde:button-layout' \
+        -Q 'hyde:font-antialiasing' \
+        -Q 'hyde:font-hinting')"
     GTK_THEME=${_hyde_gtk_theme:-$GTK_THEME}
     COLOR_SCHEME=${_hyde_color_scheme:-$COLOR_SCHEME}
     ICON_THEME=${_hyde_icon_theme:-$ICON_THEME}
@@ -74,35 +57,21 @@ if [[ -r "${HYPRLAND_CONFIG}" ]] &&
     FONT_ANTIALIASING=${_hyde_font_antialiasing:-$FONT_ANTIALIASING}
     FONT_HINTING=${_hyde_font_hinting:-$FONT_HINTING}
 fi
-
-# Check if we need inverted colors
-if [[ "${revert_colors:-0}" -eq 1 ]] ||
-    [[ "${enableWallDcol:-0}" -eq 2 && "${dcol_mode:-}" == "light" ]] ||
-    [[ "${enableWallDcol:-0}" -eq 3 && "${dcol_mode:-}" == "dark" ]]; then
-    if [[ "${dcol_mode}" == "dark" ]]; then
+if [[ ${revert_colors:-0} -eq 1 ]] || [[ ${enableWallDcol:-0} -eq 2 && ${dcol_mode:-} == "light" ]] || [[ ${enableWallDcol:-0} -eq 3 && ${dcol_mode:-} == "dark" ]]; then
+    if [[ $dcol_mode == "dark" ]]; then
         COLOR_SCHEME="prefer-light"
     else
         COLOR_SCHEME="prefer-dark"
     fi
 fi
-
 DCONF_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/hyde/dconf"
-
-# Finalize the env variables
-
-{ dconf load -f / <"${DCONF_FILE}" && print_log -sec "dconf" -stat "preserve" "${DCONF_FILE}"; } || print_log -sec "dconf" -warn "failed to preserve" "${DCONF_FILE}"
-{ dconf_populate >"${DCONF_FILE}" && print_log -sec "dconf" -stat "populated" "${DCONF_FILE}"; } || print_log -sec "dconf" -warn "failed to populate" "${DCONF_FILE}"
-{ dconf reset -f / <"${DCONF_FILE}" && print_log -sec "dconf" -stat "reset" "${DCONF_FILE}"; } || print_log -sec "dconf" -warn "failed to reset" "${DCONF_FILE}"
-{ dconf load -f / <"${DCONF_FILE}" && print_log -sec "dconf" -stat "loaded" "${DCONF_FILE}"; } || print_log -sec "dconf" -warn "failed to load" "${DCONF_FILE}"
-
-[[ -n "${HYPRLAND_INSTANCE_SIGNATURE}" ]] && hyprctl setcursor "${CURSOR_THEME}" "${CURSOR_SIZE}"
-
+{ dconf load -f / <"$DCONF_FILE" && print_log -sec "dconf" -stat "preserve" "$DCONF_FILE"; } || print_log -sec "dconf" -warn "failed to preserve" "$DCONF_FILE"
+{ dconf_populate >"$DCONF_FILE" && print_log -sec "dconf" -stat "populated" "$DCONF_FILE"; } || print_log -sec "dconf" -warn "failed to populate" "$DCONF_FILE"
+{ dconf reset -f / <"$DCONF_FILE" && print_log -sec "dconf" -stat "reset" "$DCONF_FILE"; } || print_log -sec "dconf" -warn "failed to reset" "$DCONF_FILE"
+{ dconf load -f / <"$DCONF_FILE" && print_log -sec "dconf" -stat "loaded" "$DCONF_FILE"; } || print_log -sec "dconf" -warn "failed to load" "$DCONF_FILE"
+[[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && hyprctl setcursor "$CURSOR_THEME" "$CURSOR_SIZE"
 print_log -sec "dconf" -stat "Loaded dconf settings"
 print_log -y "#-----------------------------------------------#"
 dconf_populate
 print_log -y "#-----------------------------------------------#"
-
-# Finalize the env variables
-export GTK_THEME ICON_THEME COLOR_SCHEME CURSOR_THEME CURSOR_SIZE TERMINAL \
-    FONT FONT_SIZE DOCUMENT_FONT DOCUMENT_FONT_SIZE MONOSPACE_FONT MONOSPACE_FONT_SIZE \
-    BAR_FONT MENU_FONT NOTIFICATION_FONT BUTTON_LAYOUT
+export GTK_THEME ICON_THEME COLOR_SCHEME CURSOR_THEME CURSOR_SIZE TERMINAL FONT FONT_SIZE DOCUMENT_FONT DOCUMENT_FONT_SIZE MONOSPACE_FONT MONOSPACE_FONT_SIZE BAR_FONT MENU_FONT NOTIFICATION_FONT BUTTON_LAYOUT
