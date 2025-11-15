@@ -1,22 +1,15 @@
 #!/usr/bin/env bash
-
-# Source global control script
 scrDir=$(dirname "$(realpath "$0")")
-# shellcheck disable=SC1091
 source "$scrDir/globalcontrol.sh"
 confDir=${confDir:-$XDG_CONFIG_HOME}
-
-# Check if SwayOSD is installed
 use_swayosd=false
 isNotify=${VOLUME_NOTIFY:-true}
-if command -v swayosd-client >/dev/null 2>&1 && pgrep -x swayosd-server >/dev/null; then
+if command -v swayosd-client > /dev/null 2>&1 && pgrep -x swayosd-server > /dev/null; then
     use_swayosd=true
 fi
 isVolumeBoost="${VOLUME_BOOST:-false}"
-# Define functions
-
 print_usage() {
-    cat <<EOF
+    cat << EOF
 Usage: $(basename "$0") -[device] <action> [step]
 
 Devices/Actions:
@@ -46,114 +39,108 @@ Examples:
 EOF
     exit 1
 }
-
 notify_vol() {
     local vol=$1
     angle=$((((vol + 2) / 5) * 5))
     iconStyle="knob"
-    # cap the icon at 100 if vol > 100
     [ "$angle" -gt 100 ] && angle=100
-    ico="${icodir}/${iconStyle}-${angle}.svg"
+    ico="$icodir/$iconStyle-$angle.svg"
     bar=$(seq -s "." $((vol / 15)) | sed 's/[0-9]//g')
-    [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "${ico}" "${vol}${bar}" "${nsink}"
+    [[ $isNotify == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "$ico" "$vol$bar" "$nsink"
 }
-
 notify_mute() {
-    mute=$(pamixer "${srce}" --get-mute | cat)
-    [ "${srce}" == "--default-source" ] && dvce="microphone" || dvce="speaker"
-    if [ "${mute}" == "true" ]; then
-        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "${icodir}/muted-${dvce}.svg" "muted" "${nsink}"
+    [ "$srce" == "@DEFAULT_AUDIO_SOURCE@" ] && srce="--default-source" || srce=""
+    mute=$(pamixer "$srce" --get-mute | cat)
+    [ "$srce" == "--default-source" ] && dvce="microphone" || dvce="speaker"
+    if [ "$mute" == "true" ]; then
+        [[ $isNotify == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "$icodir/muted-$dvce.svg" "muted" "$nsink"
     else
-        [[ "${isNotify}" == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "${icodir}/unmuted-${dvce}.svg" "unmuted" "${nsink}"
+        [[ $isNotify == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "$icodir/unmuted-$dvce.svg" "unmuted" "$nsink"
     fi
 }
-
 change_volume() {
     local action=$1
     local step=$2
     local device=$3
     local delta="-"
     local mode="--output-volume"
-
-    [ "${action}" = "i" ] && delta="+"
-    [ "${srce}" = "--default-source" ] && mode="--input-volume"
+    [ "$action" = "i" ] && delta="+"
+    [ "$srce" = "--default-source" ] && mode="--input-volume"
     case $device in
-    "pamixer")
-        if [[ "${use_pipewire}" == true ]]; then
-            [ "${srce}" = "--default-source" ] && srce="@DEFAULT_AUDIO_SOURCE@"
-            [ "${srce}" = "" ]                 && srce="@DEFAULT_AUDIO_SINK@"
-            if [ "${isVolumeBoost}" = true ]; then
-                $use_swayosd && swayosd-client ${mode} "${delta}${step}" --max-volume "${VOLUME_BOOST_LIMIT:-150}" && exit 0
-                # Convert percentage limit to decimal (150% -> 1.5)
-                boost_limit_decimal=$(awk -v limit="${VOLUME_BOOST_LIMIT:-150}" 'BEGIN {print limit/100}')
-                wpctl set-volume -l "${boost_limit_decimal}" "${srce}" "${step}%${delta}"
+        "pamixer")
+            if
+                [[ $use_pipewire == true ]]
+            then
+                [ "$srce" = "--default-source" ] && srce="@DEFAULT_AUDIO_SOURCE@"
+                [ "$srce" = "" ] && srce="@DEFAULT_AUDIO_SINK@"
+                if [ "$isVolumeBoost" = true ]; then
+                    $use_swayosd && swayosd-client $mode "$delta$step" --max-volume "${VOLUME_BOOST_LIMIT:-150}" && exit 0
+                    boost_limit_decimal=$(awk -v limit="${VOLUME_BOOST_LIMIT:-150}" 'BEGIN {print limit/100}')
+                    wpctl set-volume -l "$boost_limit_decimal" "$srce" "$step%$delta"
+                else
+                    $use_swayosd && swayosd-client $mode "$delta$step" && exit 0
+                    wpctl set-volume -l 1.0 "$srce" "$step%$delta"
+                fi
+                vol=$(wpctl get-volume "$srce" | awk '{print $2 * 100}')
             else
-                $use_swayosd && swayosd-client ${mode} "${delta}${step}" && exit 0
-                wpctl set-volume -l 1.0 "${srce}" "${step}%${delta}"
+                if [ "$isVolumeBoost" = true ]; then
+                    $use_swayosd && swayosd-client $mode "$delta$step" --max-volume "${VOLUME_BOOST_LIMIT:-150}" && exit 0
+                    pamixer "$srce" "${allow_boost:-}" --allow-boost --set-limit "${VOLUME_BOOST_LIMIT:-150}" -"$action" "$step"
+                else
+                    $use_swayosd && swayosd-client $mode "$delta$step" && exit 0
+                    pamixer "$srce" -"$action" "$step"
+                fi
+                vol=$(pamixer "$srce" --get-volume)
             fi
-            vol=$(wpctl get-volume "${srce}" | awk '{print $2 * 100}')
-        else
-            if [ "${isVolumeBoost}" = true ]; then
-                $use_swayosd && swayosd-client ${mode} "${delta}${step}" --max-volume "${VOLUME_BOOST_LIMIT:-150}" && exit 0
-                pamixer "$srce" "${allow_boost:-}" --allow-boost --set-limit "${VOLUME_BOOST_LIMIT:-150}" -"${action}" "$step"
-            else
-                $use_swayosd && swayosd-client ${mode} "${delta}${step}" && exit 0
-                pamixer "$srce" -"${action}" "$step"
-            fi
-            vol=$(pamixer "$srce" --get-volume)
-        fi
-        ;;
-    "playerctl")
-        playerctl --player="$srce" volume "$(awk -v step="$step" 'BEGIN {print step/100}')${delta}"
-        vol=$(playerctl --player="$srce" volume | awk '{ printf "%.0f\n", $0 * 100 }')
-        ;;
+            ;;
+        "playerctl")
+            playerctl --player="$srce" volume "$(awk -v step="$step" 'BEGIN {print step/100}')$delta"
+            vol=$(playerctl --player="$srce" volume | awk '{ printf "%.0f\n", $0 * 100 }')
+            ;;
     esac
-
     notify_vol "$vol"
 }
-
 toggle_mute() {
     local device=$1
     local mode="--output-volume"
-    [ "${srce}" = "--default-source" ] && mode="--input-volume"
+    [ "$srce" = "--default-source" ] && mode="--input-volume"
     case $device in
-    "pamixer")
-        $use_swayosd && swayosd-client "${mode}" mute-toggle && exit 0
-        if [[ "${use_pipewire}" == true ]]; then
-            [ "${srce}" = "--default-source" ] && srce="@DEFAULT_AUDIO_SOURCE@"
-            [ "${srce}" = "" ]                 && srce="@DEFAULT_AUDIO_SINK@"
-            wpctl set-mute "${srce}" toggle
-        else
-            pamixer "$srce" -t
-        fi
-        notify_mute
-        ;;
-    "playerctl")
-        local volume_file
-        volume_file="/tmp/$(basename "$0")_last_volume_${srce:-all}"
-        if [ "$(playerctl --player="$srce" volume | awk '{ printf "%.2f", $0 }')" != "0.00" ]; then
-            playerctl --player="$srce" volume | awk '{ printf "%.2f", $0 }' >"$volume_file"
-            playerctl --player="$srce" volume 0
-        else
-            if [ -f "$volume_file" ]; then
-                last_volume=$(cat "$volume_file")
-                playerctl --player="$srce" volume "$last_volume"
+        "pamixer")
+            $use_swayosd && swayosd-client "$mode" mute-toggle && exit 0
+            if [[ $use_pipewire == true ]]; then
+                [ "$srce" = "--default-source" ] && srce="@DEFAULT_AUDIO_SOURCE@"
+                [ "$srce" = "" ] && srce="@DEFAULT_AUDIO_SINK@"
+                wpctl set-mute "$srce" toggle
             else
-                playerctl --player="$srce" volume 0.5 # Default to 50% if no saved volume
+                pamixer "$srce" -t
             fi
-        fi
-        notify_mute
-        ;;
+            notify_mute
+            ;;
+        "playerctl")
+            local volume_file
+            volume_file="/tmp/$(basename "$0")_last_volume_${srce:-all}"
+            if [ "$(playerctl --player="$srce" volume | awk '{ printf "%.2f", $0 }')" != "0.00" ]; then
+                playerctl --player="$srce" volume | awk '{ printf "%.2f", $0 }' > "$volume_file"
+                playerctl --player="$srce" volume 0
+            else
+                if [ -f "$volume_file" ]; then
+                    last_volume=$(cat "$volume_file")
+                    playerctl --player="$srce" volume "$last_volume"
+                else
+                    playerctl --player="$srce" volume 0.5
+                fi
+            fi
+            notify_mute
+            ;;
     esac
 }
-
 select_output() {
     local selection=$1
-    if [[ "${use_pipewire}" == true ]]; then
+    if [[ $use_pipewire == true ]]; then
         if [ -n "$selection" ]; then
-            device=$(pw-dump | sel=${selection} jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink" and .info?.props?."node.description" == env.sel) | .info?.props?."object.id"' | xargs)
+            device=$(pw-dump | sel=$selection jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink" and .info?.props?."node.description" == env.sel) | .info?.props?."object.id"' | xargs)
             if wpctl set-default "$device"; then
-                notify-send -t 2000 -i "${icodir}/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
+                notify-send -t 2000 -i "$icodir/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
             else
                 notify-send -t 2000 -r 8 -u critical "Error activating $selection"
             fi
@@ -164,7 +151,7 @@ select_output() {
         if [ -n "$selection" ]; then
             device=$(pactl list sinks | grep -C2 -F "Description: $selection" | grep Name | cut -d: -f2 | xargs)
             if pactl set-default-sink "$device"; then
-                notify-send -t 2000 -i "${icodir}/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
+                notify-send -t 2000 -i "$icodir/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
             else
                 notify-send -t 2000 -r 8 -u critical "Error activating $selection"
             fi
@@ -173,25 +160,21 @@ select_output() {
         fi
     fi
 }
-
 get_default_sink() {
     local default_sink
-    if [[ "${use_pipewire}" == true ]]; then
-        # More reliable method to get the actual default sink
+    if [[ $use_pipewire == true ]]; then
         default_sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ | grep -oP 'node.description = "\K[^"]+' | head -1)
-        # Fallback method if above fails
         if [ -z "$default_sink" ]; then
             default_sink=$(pw-dump | jq -r '[.[] | select(.info?.props?."media.class" == "Audio/Sink")] | min_by(.info.props."priority.session" // 9999) | .info.props."node.description"')
         fi
     else
         default_sink=$(pamixer --get-default-sink | awk -F '"' 'END{print $(NF - 1)}')
     fi
-    echo "${default_sink}"
+    echo "$default_sink"
 }
-
 get_default_source() {
     local default_source
-    if [[ "${use_pipewire}" == true ]]; then
+    if [[ $use_pipewire == true ]]; then
         default_source=$(wpctl inspect @DEFAULT_AUDIO_SOURCE@ | grep -oP 'node.description = "\K[^"]+' | head -1)
         if [ -z "$default_source" ]; then
             default_source=$(pw-dump | jq -r '[.[] | select(.info?.props?."media.class" == "Audio/Source")] | min_by(.info.props."priority.session" // 9999) | .info.props."node.description"')
@@ -199,9 +182,8 @@ get_default_source() {
     else
         default_source=$(pamixer --list-sources | awk -F '"' 'END {print $(NF - 1)}')
     fi
-    echo "${default_source}"
+    echo "$default_source"
 }
-
 toggle_output() {
     local default_sink
     local current_index
@@ -212,69 +194,59 @@ toggle_output() {
     local next_sink="${sink_array[next_index - 1]}"
     select_output "$next_sink"
 }
-
-# Main script logic
-
-# Set default variables
 iconsDir="${iconsDir:-$XDG_DATA_HOME/icons}"
-icodir="${iconsDir}/Wallbash-Icon/media"
+icodir="$iconsDir/Wallbash-Icon/media"
 step=${VOLUME_STEPS:-5}
-
-# Detect pipewire
-if pactl info | grep -q "PipeWire" || ${VOLUME_PIPEWIRE_ENABLE} == true ; then
+if pactl info | grep -q "PipeWire" || $VOLUME_PIPEWIRE_ENABLE == true; then
     use_pipewire=true
 else
     use_pipewire=false
 fi
-
 while getopts "iop:stq" opt; do
     case $opt in
-    i)
-        device="pamixer"
-        srce="--default-source"
-        nsink=$(get_default_source)
-        ;;
-    o)
-        device="pamixer"
-        srce=""
-        nsink=$(get_default_sink)
-        ;;
-    p)
-        device="playerctl"
-        srce="${OPTARG}"
-        nsink=$(playerctl --list-all | grep -w "$srce")
-        ;;
-    s)
-        if ! selected_output=$(hyprland-dialog --text "$(
-            echo -e "Devices:"
-            select_output | sed 's/^/           🔈 /'
-        )" \
-            --title "Choose an output device" \
-            --buttons "$(select_output | sed 's/$/;/')"); then
-            selected_output=$(select_output | rofi -dmenu -theme "notification")
-        fi
-        select_output "${selected_output}"
-        exit
-        ;;
-    t)
-        toggle_output
-        exit
-        ;;
-    q)
-        isNotify=false
-        ;;
-    *) print_usage ;;
+        i)
+            device="pamixer"
+            srce="--default-source"
+            nsink=$(get_default_source)
+            ;;
+        o)
+            device="pamixer"
+            srce=""
+            nsink=$(get_default_sink)
+            ;;
+        p)
+            device="playerctl"
+            srce="$OPTARG"
+            nsink=$(playerctl --list-all | grep -w "$srce")
+            ;;
+        s)
+            if
+                ! selected_output=$(hyprland-dialog --text "$(
+                    echo -e "Devices:"
+                    select_output | sed 's/^/           🔈 /'
+                )" \
+                    --title "Choose an output device" \
+                    --buttons "$(select_output | sed 's/$/;/')")
+            then
+                selected_output=$(select_output | rofi -dmenu -theme "notification")
+            fi
+            select_output "$selected_output"
+            exit
+            ;;
+        t)
+            toggle_output
+            exit
+            ;;
+        q)
+            isNotify=false
+            ;;
+        *) print_usage ;;
     esac
 done
-
 shift $((OPTIND - 1))
-
-# Check if device is set
 [ -z "$device" ] && print_usage
-
-# Execute action
 case $1 in
-i | d) change_volume "$1" "${2:-$step}" "$device" ;;
-m) toggle_mute "$device" ;;
-*) print_usage ;;
+    i | d) change_volume "$1" "${2:-$step}" "$device" ;;
+    m) toggle_mute "$device" ;;
+    *) print_usage ;;
 esac

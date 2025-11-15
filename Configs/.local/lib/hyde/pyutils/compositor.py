@@ -86,16 +86,10 @@ class HyprctlWrapper:
         Returns:
             The formatted rofi position string.
         """
-        cursor_pos = json.loads(
-            HyprctlWrapper._execute_command(["hyprctl", "cursorpos", "-j"])
-        )
-        monitors = json.loads(
-            HyprctlWrapper._execute_command(["hyprctl", "monitors", "-j"])
-        )
+        cursor_pos = json.loads(HyprctlWrapper._execute_command(["hyprctl", "cursorpos", "-j"]))
+        monitors = json.loads(HyprctlWrapper._execute_command(["hyprctl", "monitors", "-j"]))
 
-        focused_monitor = next(
-            (monitor for monitor in monitors if monitor["focused"]), None
-        )
+        focused_monitor = next((monitor for monitor in monitors if monitor["focused"]), None)
         if not focused_monitor:
             raise RuntimeError("No focused monitor found.")
 
@@ -143,9 +137,7 @@ class HyprctlWrapper:
             True if the cursor is hovered on a window, False otherwise.
         """
         data = json.loads(
-            HyprctlWrapper._execute_command(
-                ["hyprctl", "--batch", "-j", "cursorpos;activewindow"]
-            )
+            HyprctlWrapper._execute_command(["hyprctl", "--batch", "-j", "cursorpos;activewindow"])
         )
 
         cursor_x = data.get("x", 0)

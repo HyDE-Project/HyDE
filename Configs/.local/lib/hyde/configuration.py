@@ -73,9 +73,7 @@ def get_var(theme_var: str, file: Optional[str] = None) -> Optional[str]:
 
     for config in default_configs:
         if config.exists():
-            if value := extract_value_from_file(
-                rf"^[\s]*\$default.{theme_var}\s*=", str(config)
-            ):
+            if value := extract_value_from_file(rf"^[\s]*\$default.{theme_var}\s*=", str(config)):
                 return value
 
     return None

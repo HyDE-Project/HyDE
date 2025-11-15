@@ -55,7 +55,13 @@ def format_time(seconds) -> str:
 
 
 def create_tooltip_text(
-    artist, track, current_position_seconds, duration_seconds, p_name, loop_status=None, shuffle_status=None
+    artist,
+    track,
+    current_position_seconds,
+    duration_seconds,
+    p_name,
+    loop_status=None,
+    shuffle_status=None,
 ) -> str:
     """
     Build the tooltip text showing artist, track, current position vs duration, loop status, and shuffle status.
@@ -75,7 +81,7 @@ def create_tooltip_text(
                 loop_glyphs = {
                     "None": "󰑓 No Loop",
                     "Track": "󰑖 Loop Once",
-                    "Playlist": "󰑘 Loop Playlist"
+                    "Playlist": "󰑘 Loop Playlist",
                 }
                 loop_display = loop_glyphs.get(loop_status, str(loop_status))
                 tooltip += f"\n<span foreground='{track_color}'>{loop_display}</span>"
@@ -83,13 +89,13 @@ def create_tooltip_text(
             if shuffle_status is not None:
                 shuffle_glyph = "󰒟 Shuffle On" if shuffle_status else "󰒞 Shuffle Off"
                 tooltip += f"\n<span foreground='{track_color}'>{shuffle_glyph}</span>"
-        tooltip += f'\n<span>{p_name}</span>'
+        tooltip += f"\n<span>{p_name}</span>"
     # Always add usage tips at the bottom
     tooltip += (
         f"\n<span size='x-small' foreground='{track_color}'>"
         f"\n󰐎 click to play/pause"  # play/pause glyph
-        f"\n scroll to seek"         # seek glyph
-        f"\n󱥣 rightclick for options" # right-click/options glyph
+        f"\n scroll to seek"  # seek glyph
+        f"\n󱥣 rightclick for options"  # right-click/options glyph
         f"</span>"
     )
     return tooltip
@@ -128,10 +134,16 @@ def format_artist_track(artist, track, playing, max_length):
             if len(track) != len(track[:track_limit]):
                 track = track[:track_limit].rstrip() + "…"
 
-        output_text = f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
+        output_text = (
+            f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
+        )
     else:
         # If there is a player but no track/artist, show player name instead of 'Nothing playing'
-        if current_player and hasattr(current_player, 'props') and hasattr(current_player.props, 'player_name'):
+        if (
+            current_player
+            and hasattr(current_player, "props")
+            and hasattr(current_player.props, "player_name")
+        ):
             output_text = f"<b>{standby_text} {current_player.props.player_name}</b>"
         else:
             output_text = "<b>{standby_text}</b>"
@@ -194,13 +206,11 @@ def on_metadata(player, metadata, manager):
 
 
 def on_player_appeared(manager, player, selected_players=None):
-    if player is not None and (
-        selected_players is None or player.name in selected_players
-    ):
+    if player is not None and (selected_players is None or player.name in selected_players):
         p = init_player(manager, player)
         set_player(manager, p)
         # Start polling if it is not already running
-        if not hasattr(manager, '_polling') or not manager._polling:
+        if not hasattr(manager, "_polling") or not manager._polling:
             manager._polling = True
             GLib.timeout_add_seconds(1, poll_if_players, manager)
         update_positions(manager)  # Force immediate update when a new player appears
@@ -281,10 +291,14 @@ def update_positions(manager):
             except Exception as e:
                 logger.warning(f"Could not get position for {p_name}: {e}")
                 continue
-            tooltip_text += (
-                create_tooltip_text(
-                    artist, track, position, duration_seconds, p_name, loop_status, shuffle_status
-                )
+            tooltip_text += create_tooltip_text(
+                artist,
+                track,
+                position,
+                duration_seconds,
+                p_name,
+                loop_status,
+                shuffle_status,
             )
         player = manager.props.players[0]
         p_name = player.props.player_name
@@ -347,19 +361,8 @@ def parse_arguments():
 
 
 def main():
-    global \
-        prefix_playing, \
-        prefix_paused, \
-        max_length_module, \
-        standby_text, \
-        artist_track_separator
-    global \
-        artist_color, \
-        artist_weight, \
-        track_color, \
-        progress_color, \
-        empty_color, \
-        time_color
+    global prefix_playing, prefix_paused, max_length_module, standby_text, artist_track_separator
+    global artist_color, artist_weight, track_color, progress_color, empty_color, time_color
 
     # Load environment variables from your config file:
     config_file = os.path.join(xdg_state_home(), "hyde", "config")
@@ -390,9 +393,7 @@ def main():
     empty_color = os.getenv(
         "MEDIAPLAYER_TOOLTIP_EMPTY_COLOR", "#" + os.getenv("dcol_1xa3", "FFFFFF")
     )
-    time_color = os.getenv(
-        "MEDIAPLAYER_TOOLTIP_TIME_COLOR", "#" + os.getenv("dcol_txt1", "FFFFFF")
-    )
+    time_color = os.getenv("MEDIAPLAYER_TOOLTIP_TIME_COLOR", "#" + os.getenv("dcol_txt1", "FFFFFF"))
     artist_weight = os.getenv("MEDIAPLAYER_ARTIST_WEIGHT", 0.65)
     players = os.getenv("MEDIAPLAYER_PLAYERS", None)
     if players:
@@ -441,9 +442,7 @@ def main():
             players is not None and player.name not in players
         ) or player.name == "plasma-browser-integration":
             logger.debug(
-                "{player} is not the filtered player, skipping it".format(
-                    player=player.name
-                )
+                "{player} is not the filtered player, skipping it".format(player=player.name)
             )
             continue
         p = init_player(manager, player)

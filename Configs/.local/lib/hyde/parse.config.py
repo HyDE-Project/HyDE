@@ -104,9 +104,7 @@ def parse_toml_to_hypr(toml_file, hypr_file=None):
         for k, v in d.items():
             logger.debug(f"Current key=val: {k}={v}")
             # Track if we're inside a hyprland section
-            is_hyprland_section = k.startswith("hyprland") or parent_key.startswith(
-                "hyprland"
-            )
+            is_hyprland_section = k.startswith("hyprland") or parent_key.startswith("hyprland")
 
             if is_hyprland_section:
                 logger.debug(f"Found hyprland key: {k}")
