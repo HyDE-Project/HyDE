@@ -4,12 +4,22 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
-## v25.11.1
+## Unreleased
+
+### Migration 
+
+- Before updating HyDE, Please make sure your hyprland version is 0.53.0!
+- After Updating HyDE please make sure to fix any syntax error in ~/.config/hypr/*
+
+We are trying our best to fix any issues. So please try to your best to search for any duplicate issues and potential fixes! 
+
+Keep HyDErated!🫧
 
 ### Fixed
 
 - Gamelauncher: steamdeck holograph
 - Formatting using 
+- Hyprland 0.53 Syntax Revamp
 
 ### Added
 
