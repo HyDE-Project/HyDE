@@ -122,9 +122,7 @@ def rebuild_venv(venv_path=None, requirements_file=None):
                 if sline.strip():
                     return sline.strip()
         req_lines = [
-            line
-            for line in stdout.splitlines()
-            if line.startswith("Requirement already satisfied")
+            line for line in stdout.splitlines() if line.startswith("Requirement already satisfied")
         ]
         if req_lines:
             return f"{len(req_lines)} requirements already satisfied"
@@ -269,9 +267,7 @@ def main(args):
     parser = argparse.ArgumentParser(description="Python environment manager for HyDE")
     subparsers = parser.add_subparsers(dest="command")
 
-    create_parser = subparsers.add_parser(
-        "create", help="Create the virtual environment"
-    )
+    create_parser = subparsers.add_parser("create", help="Create the virtual environment")
     create_parser.set_defaults(func=create_venv)
 
     install_parser = subparsers.add_parser(
@@ -286,15 +282,11 @@ def main(args):
     )
     install_parser.set_defaults(func=install_dependencies)
 
-    uninstall_parser = subparsers.add_parser(
-        "uninstall", help="Uninstall a single package"
-    )
+    uninstall_parser = subparsers.add_parser("uninstall", help="Uninstall a single package")
     uninstall_parser.add_argument("package", help="Package to uninstall")
     uninstall_parser.set_defaults(func=uninstall_package)
 
-    destroy_parser = subparsers.add_parser(
-        "destroy", help="Destroy the virtual environment"
-    )
+    destroy_parser = subparsers.add_parser("destroy", help="Destroy the virtual environment")
     destroy_parser.set_defaults(func=destroy_venv)
 
     rebuild_parser = subparsers.add_parser(

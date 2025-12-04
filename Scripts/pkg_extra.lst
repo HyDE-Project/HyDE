@@ -17,6 +17,7 @@ xdg-desktop-portal-gtk                                 # xdg desktop portal usin
 wf-recorder                                          # Screen recorder for wlroots-based compositors such as sway
 # emote                                                # emoji picker gtk3
 # wl-screenrec                                         # High performance hardware accelerated wlroots screen recorder // NO support for NVIDIA
+# zbar                                                 # Bar/QR code scanner
 
 # --------------------------------------------------- // Gaming
 steam                                                  # gaming platform

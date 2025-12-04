@@ -132,9 +132,7 @@ def tabulate_binds(binds):
     # Create the header row
     header_row = (
         "|"
-        + "|".join(
-            f" {header.ljust(width)} " for header, width in zip(headers, col_widths)
-        )
+        + "|".join(f" {header.ljust(width)} " for header, width in zip(headers, col_widths))
         + "|"
     )
 
@@ -167,9 +165,7 @@ def generate_md(binds):
     separator_row = "| :--- | :--- |"
 
     # Group binds by headers
-    header_groups = defaultdict(
-        lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    )
+    header_groups = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: defaultdict(list))))
     for bind in binds:
         header1 = bind.get("header1", "Default")
         header2 = bind.get("header2", "")
@@ -194,9 +190,7 @@ def generate_md(binds):
                     rows.append(separator_row)
                     for bind in binds:
                         keys = bind["mod_display"].split() + [bind["key_display"]]
-                        formatted_keys = (
-                            "<kbd>" + "</kbd> + <kbd>".join(keys) + "</kbd>"
-                        )
+                        formatted_keys = "<kbd>" + "</kbd> + <kbd>".join(keys) + "</kbd>"
                         action = bind["description"]
                         row = f"| {formatted_keys} | {action} |"
                         rows.append(row)
@@ -287,9 +281,7 @@ def generate_rofi(binds):
             for header, subgroups in headers.items():
                 current_meta_data = f"{header}{suffix}".strip(" <")
                 if header:
-                    rofi_str += (
-                        f"{prefix} {header}  {suffix:>20} ::: ::: {current_meta_data}\n"
-                    )
+                    rofi_str += f"{prefix} {header}  {suffix:>20} ::: ::: {current_meta_data}\n"
                 if isinstance(subgroups, dict):
                     format_group(subgroups, level + 1, current_meta_data)
                 else:
@@ -311,9 +303,7 @@ def expand_meta_data(binds_data):
             bind.update(parsed_description)
         else:
             bind["description"] = f"{map_dispatcher(bind['dispatcher'])} {bind['arg']}"
-            bind.update(
-                {"header1": "Misc", "header2": "", "header3": "", "header4": ""}
-            )
+            bind.update({"header1": "Misc", "header2": "", "header3": "", "header4": ""})
         bind["key"] = map_codeDisplay(bind["keycode"], bind["key"])
         bind["key_display"] = map_keyDisplay(bind["key"])
         bind["mod_display"] = map_modDisplay(bind["modmask"])
@@ -348,9 +338,7 @@ def expand_meta_data(binds_data):
             bind["submap_mod"] = submap_mod_display
             bind["submap_key"] = submap_key_display
             bind["displayed_keys"] = (
-                f"{submap_mod_display} + {submap_key_display} + "
-                if submap_mod_display
-                else ""
+                f"{submap_mod_display} + {submap_key_display} + " if submap_mod_display else ""
             ) + f"{formatted_keys}"
             bind["description"] = f"[{submap}] {bind['description']}"
         else:
@@ -361,9 +349,7 @@ def expand_meta_data(binds_data):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Hyprland keybinds hint script")
-    parser.add_argument(
-        "--show-unbind", action="store_true", help="Show duplicated keybinds"
-    )
+    parser.add_argument("--show-unbind", action="store_true", help="Show duplicated keybinds")
     parser.add_argument(
         "--format",
         choices=["json", "md", "dmenu", "rofi"],

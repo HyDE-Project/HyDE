@@ -68,9 +68,7 @@ def prompt(choices: List[str], fzf_options: List[str] = []) -> List[str]:
     if not all([isinstance(x, str) for x in fzf_options]):
         raise ValueError("Argument 'fzf_options' has to contains only str!")
     if not __check_fzf_in_path():
-        raise AttributeError(
-            f"Unable to find 'fzf' in PATH!\nInstall fzf from {FZF_URL}"
-        )
+        raise AttributeError(f"Unable to find 'fzf' in PATH!\nInstall fzf from {FZF_URL}")
 
     command = [FZF_CMD]
     command.extend(fzf_options)

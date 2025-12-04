@@ -1,4 +1,4 @@
-$HOME/.config/qt5ct/colors.conf|${scrDir}/wallbash.qt.sh
+${XDG_CONFIG_HOME:-$HOME/.config}/qt5ct/colors.conf|cp ${XDG_CONFIG_HOME:-$HOME/.config}/qt5ct/colors.conf ${XDG_CONFIG_HOME:-$HOME/.config}/qt6ct/colors.conf 
 [ColorScheme]
 active_colors=  #<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, #<wallbash_txt1>, ##<wallbash_txt1>, #<wallbash_1xa5>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, #<wallbash_1xa7>, #<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>
 disabled_colors=#<wallbash_1xa8>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, #<wallbash_txt1>, ##<wallbash_txt1>, #<wallbash_1xa5>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, #<wallbash_1xa7>, #<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>, ##<wallbash_txt1>
