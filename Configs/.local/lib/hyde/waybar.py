@@ -537,7 +537,7 @@ def kill_waybar_and_watcher():
     logger.debug("Killed Waybar processes for current user.")
 
     try:
-        watcher_unit = f"hyde-{os.getenv("XDG_SESSION_DESKTOP")}-waybar-watcher.service"
+        watcher_unit = f"hyde-{os.getenv('XDG_SESSION_DESKTOP')}-waybar-watcher.service"
         result = subprocess.run(
             ["systemctl", "--user", "is-active", watcher_unit],
             capture_output=True,
