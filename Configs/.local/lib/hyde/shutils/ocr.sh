@@ -3,7 +3,6 @@
 [[ ${HYDE_SHELL_INIT} -ne 1   ]] && eval "$(hyde-shell init)"
 
 ocr_extract() {
-
     image_path="$1"
     tesseract_default_language=("eng")
     tesseract_languages=("${SCREENSHOT_OCR_TESSERACT_LANGUAGES[@]:-${tesseract_default_language[@]}}")
@@ -11,6 +10,8 @@ ocr_extract() {
     tesseract_package_prefix="tesseract-data-"
     tesseract_packages=("${tesseract_languages[@]/#/$tesseract_package_prefix}")
     tesseract_packages+=("tesseract")
+
+    echo $tesseract_languages $SCREENSHOT_OCR_TESSERACT_LANGUAGES
 
     for pkg in "${tesseract_packages[@]}"; do
         if ! pkg_installed "$pkg"; then

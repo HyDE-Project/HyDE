@@ -113,6 +113,7 @@ line = 16  # Number of lines for keybind hints.
 
 # screenshot.sh configuration.
 [screenshot]
+annotation_enabled = true  # Enable or disable annotation feature.
 annotation_tool = "satty"  # Annotation tool for screenshots.
 annotation_pre_command = []  # Pre command for annotation tool.
 annotation_post_command = [""]  # Post command for annotation tool.

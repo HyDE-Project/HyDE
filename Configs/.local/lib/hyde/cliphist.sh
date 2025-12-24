@@ -288,6 +288,7 @@ ocr_scan() {
 
     # shellcheck disable=SC1091
     source "${LIB_DIR}/hyde/shutils/ocr.sh"
+    source ${XDG_STATE_HOME}/hyde/config
     local runtime_dir="${XDG_RUNTIME_DIR:-/run/user/${EUID}}/hyde"
     local image_path="${runtime_dir}/cliphist_ocr.png"
     local index

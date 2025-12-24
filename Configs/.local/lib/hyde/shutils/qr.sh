@@ -7,7 +7,7 @@ qr_extract() {
     image_path="$1"
 
     if ! pkg_installed "zbar"; then
-        notify-send -a "QR Scan" "zbar package is not installed" -e -i "dialog-error"
+        notify-send -r 9 -a "QR Scan" "zbar package is not installed" -e -i "dialog-error"
         return 1
     fi
 
@@ -21,5 +21,5 @@ qr_extract() {
     )
 
     printf "%s" "$qr_output" | wl-copy
-    notify-send -a "QR Scan" "QR: successfully recognized" -i "$image_path" -e -r 9
+    notify-send -r 9 -a "QR Scan" "QR: successfully recognized" -i "$image_path" -e -r 9
 }

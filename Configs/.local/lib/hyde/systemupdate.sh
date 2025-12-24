@@ -20,7 +20,7 @@ if [ "$1" == "up" ]; then
             esac
         done < "$temp_file"
         command="
-        fastfetch
+        hyde-shell fastfetch
         printf '[Official] %-10s\n[AUR]      %-10s\n[Flatpak]  %-10s\n' '$official' '$aur' '$flatpak'
         "$aurhlpr" -Syu
         $fpk_exup
