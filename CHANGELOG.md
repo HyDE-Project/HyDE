@@ -4,12 +4,38 @@ All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
 
+## v25.11.1
+
+### Fixed
+
+- Gamelauncher: steamdeck holograph
+- Formatting using 
+
+### Added
+
+- Cliphist: image-history #1360
+- Cliphist: Rofi binds #1360
+- Gamelauncher: lutris inspector py script now uses the lutris DB to get meta dat making it faster than using lutris CLI
+- Gamelauncher: steam inspector py script is translated from fn_steam shell script. 
+- Gamelancher: catalog backend will merge both lutris and steam with hints for duplicates
+- Gamelauncher: "hyde-shell gamelauncher" now has --style and --backend args
+- Python: added pyproject.toml for ruff formatter
+- Shell: Added ".editorconfig" for shell scripts.
+- Cliphist: Added OCR backend. Invoking "hyde-shell cliphist -scan-image" or `Alt+V` on clipboard will extract the text of the latest image that exist in cliphist. 
+- Screenshot: Added QR code reading feature using `zbar` package. No default hotkey is provided. Call it via `hyde-shell screenshot sq`
+
+### Changed
+
+- Core: Moved core "color" switch inside directory in lib path. Prepare to make `~/.local/lib/hyde` external only scripts and corresponding directories will be sourced or executed internally. 
+- Wallbash: Remove wallbash.qt as it is a simple cp command now in the qtct.dcol template
+
+
+
 ## v25.10.1
 
 ### Fixed
 - Hyprland: Fix errors when `HYPRLAND_CONFIG` is not set yet
 - Fish: Please Move you configs to `~/.config/fish/conf.d`
-
 
 ### Added
 

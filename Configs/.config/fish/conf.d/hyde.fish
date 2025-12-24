@@ -77,7 +77,7 @@ if test -z "$HYPRLAND_CONFIG"
 set -gx HYPRLAND_CONFIG "$XDG_DATA_HOME/hypr/hyprland.conf"
 end
 
-set -gx PATH $HOME/.local/bin:$PATH
+fish_add_path $HOME/.local/bin:$PATH
 
 
 if type -q starship
@@ -131,7 +131,7 @@ alias ls='eza -1 --icons=auto'
 alias ll='eza -lha --icons=auto --sort=name --group-directories-first'
 alias ld='eza -lhD --icons=auto'
 alias lt='eza --icons=auto --tree'
-alias in='hyde-shell pm remove'
+alias in='hyde-shell pm install'
 alias un='hyde-shell pm remove'
 alias up='hyde-shell pm upgrade'
 alias pl='hyde-shell pm search installed'

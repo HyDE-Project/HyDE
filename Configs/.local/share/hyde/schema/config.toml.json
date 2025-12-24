@@ -428,6 +428,11 @@
             "description": "screenshot.sh configuration.",
             "type": "object",
             "properties": {
+                "annotation_enabled": {
+                    "default": true,
+                    "description": "Enable or disable annotation feature.",
+                    "type": "boolean"
+                },
                 "annotation_tool": {
                     "default": "satty",
                     "description": "Annotation tool for screenshots.",

@@ -401,6 +401,11 @@ type      = "object"
     description = "screenshot.sh configuration."
     type        = "object"
 
+[properties.screenshot.properties.annotation_enabled]
+    default     = true
+    description = "Enable or disable annotation feature."
+    type        = "boolean"
+
 [properties.screenshot.properties.annotation_tool]
     default     = "satty"
     description = "Annotation tool for screenshots."
