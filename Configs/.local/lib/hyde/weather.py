@@ -4,7 +4,7 @@ import os
 import sys
 import json
 from datetime import datetime
-
+import locale
 
 import pyutils.pip_env as pip_env
 
@@ -75,6 +75,10 @@ def get_weather_icon(weatherinstance):
 
 
 def get_description(weatherinstance):
+    lang_key = f"lang_{weather_lang}"
+    if lang_key in weatherinstance:
+        return weatherinstance[lang_key][0]["value"]
+    
     return weatherinstance["weatherDesc"][0]["value"]
 
 
@@ -170,16 +174,33 @@ def format_chances(hour):
     ]
     return ", ".join(conditions)
 
+def get_default_locale():
+    lang, temp, time, wind = 'en', 'c', '24h', 'km/h'
+    try:
+        locale.setlocale(locale.LC_ALL, '')
+        loc_info = locale.getlocale(locale.LC_CTYPE)
+        if loc_info and loc_info[0]:
+            # extract lang from user locale
+            parts = loc_info[0].split('_')
+            lang = parts[0].lower()
+            # check country for other defaults
+            country_code = loc_info[0].split('_')[-1].upper()
+            if country_code in ['US', 'LR', 'MM']:
+                temp, time, wind = 'f', '12h', 'mph'
+    except Exception:
+        pass
+    return lang, temp, time, wind
 
 ### Variables ###
-load_env_file(os.path.join(os.environ.get("HOME"), ".rlocal", "state", "hyde", "staterc"))
+def_lang, def_temp, def_time, def_wind = get_default_locale() # default vals based on locale
+load_env_file(os.path.join(os.environ.get("HOME"), ".local", "state", "hyde", "staterc"))
 load_env_file(os.path.join(os.environ.get("HOME"), ".local", "state", "hyde", "config"))
 
-temp_unit = os.getenv("WEATHER_TEMPERATURE_UNIT", "c").lower()  # c or f            (default: c)
-time_format = os.getenv("WEATHER_TIME_FORMAT", "12h").lower()  # 12h or 24h        (default: 12h)
-windspeed_unit = os.getenv(
-    "WEATHER_WINDSPEED_UNIT", "km/h"
-).lower()  # km/h or mph       (default: Km/h)
+
+weather_lang = os.getenv("WEATHER_LANG", def_lang).lower()  # default to 'en', based on user's locale
+temp_unit = os.getenv("WEATHER_TEMPERATURE_UNIT", def_temp).lower()  # c or f
+time_format = os.getenv("WEATHER_TIME_FORMAT", def_time).lower()  # 12h or 24h
+windspeed_unit = os.getenv("WEATHER_WINDSPEED_UNIT", def_wind).lower()  # km/h or mph
 show_icon = os.getenv("WEATHER_SHOW_ICON", "True").lower() in (
     "true",
     "1",
@@ -224,10 +245,13 @@ if FORECAST_DAYS not in range(4):
 
 ### Main Logic ###
 data = {}
-URL = f"https://wttr.in/{get_location}?format=j1"
+URL = f"https://wttr.in/{get_location}?format=j1&lang={weather_lang}"
 
 # Get the weather data
-headers = {"User-Agent": "Mozilla/5.0"}
+headers = {
+    "User-Agent": "Mozilla/5.0",
+    "Accept-Language": weather_lang
+    }
 response = requests.get(URL, timeout=10, headers=headers)
 try:
     weather = response.json()

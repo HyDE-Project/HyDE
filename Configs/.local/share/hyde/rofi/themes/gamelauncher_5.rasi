@@ -38,13 +38,36 @@ window {
 }
 mainbox {
     enabled:                     true;
-    children:                    [ "listview" ];
+    children:                    [ "inputbar", "listview" ];
     background-color:            transparent;
-    orientation:                 horizontal;
-    spacing:                     0em;
+    orientation:                 vertical;
+    spacing:                     1em;
     padding:                     4.2em 44.2em 5em 45em;
 }
 
+
+// Input Bar //
+inputbar {
+    enabled:                     true;
+    children:                    [ "entry" ];
+    spacing:                     0.5em;
+    padding:                     0.5em 1em;
+    border-radius:               0.5em;
+    background-color:            @main-bg;
+    text-color:                  @main-fg;
+}
+
+entry {
+    enabled:                     true;
+    expand:                      true;
+    background-color:            transparent;
+    text-color:                  @main-fg;
+    cursor:                      "none";
+    blink:                       true;
+    padding:                     0.3em 0.5em;
+    placeholder:                 "Start typing to search...";
+    placeholder-color:           rgba(255, 255, 255, 0.5);
+}
 
 // Lists //
 listview {
@@ -53,7 +76,7 @@ listview {
     rows:                        2;
     flow:                        horizontal;
     spacing:                     2.5em;
-    padding:                     3em 5em 2em 5em;
+    padding:                     1em 5em 2em 5em;
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
@@ -100,4 +123,3 @@ element-text {
     background-color:            transparent;
     text-color:                  inherit;
 }
-

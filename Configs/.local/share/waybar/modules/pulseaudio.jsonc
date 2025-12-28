@@ -3,7 +3,7 @@
     "format": "{icon} {volume}",
     "rotate": 0,
     "format-muted": "婢",
-    "on-click": "pavucontrol -t 3",
+    "on-click": "pavucontrol-qt -t 3 || pavucontrol -t 3",
     "on-click-right": "hyde-shell volumecontrol -s ''",
     "on-click-middle": "hyde-shell volumecontrol -o m",
     "on-scroll-up": "hyde-shell volumecontrol -o i",

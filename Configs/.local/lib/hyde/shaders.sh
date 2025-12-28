@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+[ -f "$HYDE_STATE_HOME/staterc" ] && source "$HYDE_STATE_HOME/staterc"
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 shaders_dir="$confDir/hypr/shaders"
 if [ ! -d "$shaders_dir" ]; then

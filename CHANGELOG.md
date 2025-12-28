@@ -1,18 +1,24 @@
 # Changelog
 
+<!--  
 All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
+ -->
 
-## v25.11.1
+## Upcoming Release
 
 ### Fixed
 
 - Gamelauncher: steamdeck holograph
 - Formatting using 
+- Some old hyprdots theme parsing. 
 
 ### Added
 
+- Restore: Added option to trash the config to avoid conflicts
+- Waybar: Added pavucontrol-qt in the module
+- Rofi: Added search functionality to the game launcher menu.
 - Cliphist: image-history #1360
 - Cliphist: Rofi binds #1360
 - Gamelauncher: lutris inspector py script now uses the lutris DB to get meta dat making it faster than using lutris CLI
@@ -23,12 +29,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Shell: Added ".editorconfig" for shell scripts.
 - Cliphist: Added OCR backend. Invoking "hyde-shell cliphist -scan-image" or `Alt+V` on clipboard will extract the text of the latest image that exist in cliphist. 
 - Screenshot: Added QR code reading feature using `zbar` package. No default hotkey is provided. Call it via `hyde-shell screenshot sq`
+- Weather Applet: Added automatic locale detection for temperature units (°C/°F), time formats (12h/24h), and wind speed (km/h/mph).
+- Weather Applet: Implemented multi-language support based on system locale and added `WEATHER_LANG` for manual overrides.
+- Weather Applet: Added support for a user-defined configuration file at `~/.config/weather.env`.
 
 ### Changed
 
+- QT: Move qtXct/colors.conf into qtXct/colors/wallbash.conf. This is how qtXct Settings parses color schemes the proper way.
 - Core: Moved core "color" switch inside directory in lib path. Prepare to make `~/.local/lib/hyde` external only scripts and corresponding directories will be sourced or executed internally. 
 - Wallbash: Remove wallbash.qt as it is a simple cp command now in the qtct.dcol template
-
+- UWSM: Start processes launched with app2unit.sh,rofi,`hyde-shell app` as services
 
 
 ## v25.10.1

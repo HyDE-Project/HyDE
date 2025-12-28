@@ -1,0 +1,132 @@
+${confDir}/swaync/theme.css | hyprctl dispatch -q exec -- "swaync-client -R && swaync-client -rs"
+/* Import wallbash */
+@import "<<HOME>>/.cache/hyde/wallbash/gtk.css";
+
+
+/*
+ *
+ * Global
+ *
+ * */
+@define-color text-color #FFFFFF;
+@define-color text-color-disabled #070707;
+
+/*
+ *
+ * control center
+ *
+ * */
+/* background */
+@define-color sw-cc-bg #<wallbash_pry1>;
+/* border */
+@define-color sw-cc-border-color #<wallbash_pry4>;
+/*
+*
+* notification title 'the notification word on control center'
+*
+* */
+/* foreground */
+/* @define-color sw-noti-titl-fg #<wallbash_pry3>; */
+/* shadow */
+/* @define-color sw-noti-titl-shad #<wallbash_pry4>; */
+
+
+.control-center {
+  /* The Control Center which contains the old notifications + widgets */
+  background: @sw-cc-bg;
+  color: @text-color;
+  border-radius: 12px;
+  border: 2px solid @sw-cc-border-color;
+  opacity: 0.9;
+}
+
+
+/*
+*
+* notification window
+*
+* */
+/* background */
+@define-color sw-noti-window-bg #<wallbash_pry1>;
+/* border */
+@define-color sw-noti-window-br #<wallbash_pry4>;
+/* color */
+@define-color sw-noti-window-txt #<wallbash_txt2>;
+/* hover */
+@define-color sw-noti-bg-hover #<wallbash_pry2>;
+
+/* @define-color noti-bg-opaque #5A8FB2; */
+/* @define-color noti-bg-hover-opaque #4B697D; */
+
+@define-color noti-bg-hover @sw-noti-bg-hover;
+.notification-row .notification-background .notification {
+  /* The actual notification */
+  color: @sw-noti-window-txt;
+  border-radius: 12px;
+  border: 2px solid @sw-noti-window-br;
+  padding: 5;
+  transition: background 0.15s ease-in-out;
+  background: @sw-noti-window-bg;
+  opacity: 0.8;
+}
+
+
+/*
+*
+* summary message
+*
+* */
+/* foreground */
+@define-color sw-msg-sum-fg #<wallbash_pry3>;
+/* shadow */
+/* @define-color sw-msg-sum-shad #<wallbash_pry4>; */
+/* time */
+/* @define-color sw-msg-time #<wallbash_pry4>; */
+/* body */
+@define-color sw-msg-body #<wallbash_pry4>;
+
+
+.notification-row .notification-background .notification .notification-default-action .notification-content .text-box .summary {
+  /* Notification summary/title */
+  font-size: 16px;
+  font-weight: bold;
+  background: transparent;
+  /* background: @sw-msg-body; */
+  color: @text-color;
+  text-shadow: none;
+}
+
+/*
+*
+* notification group
+*
+* */
+/* icon */
+@define-color sw-noti-gr-icon #<wallbash_pry4>;
+/* button */
+@define-color sw-noti-gr-collapse-but-hvr #<wallbash_pry4>;
+/* icon */
+@define-color sw-noti-gr-collapse-but-icon #<wallbash_pry4>;
+/* button */
+/* @define-color sw-noti-gr-close-btn-hvr #<wallbash_pry4>; */
+/* icon */
+/* @define-color sw-noti-gr-close-btn-icon #<wallbash_pry4>; */
+
+.notification-group .notification-group-headers .notification-group-icon {
+  /* color: @text-color; */
+  color: @sw-noti-gr-icon;
+}
+
+.notification-group.collapsed .notification-group-headers .notification-group-icon {
+  /* color: @text-color; */
+  color: @sw-noti-gr-collapse-but-icon;
+}
+.notification-group.collapsed .notification-row .notification {
+  /* background-color: @noti-bg-opaque; */
+  background-color: @noti-bg-opaque;
+}
+.notification-group.collapsed:hover .notification-row:not(:only-child) .notification {
+  /* background-color: @noti-bg-hover-opaque; */
+  background-color: @sw-noti-gr-collapse-but-hvr;
+}
+

@@ -1,5 +1,6 @@
 
 export APP2UNIT_SLICES='a=app-graphical.slice b=background-graphical.slice s=session-graphical.slice'
+export APP2UNIT_TYPE="service"
 
 # Source the script to apply environment variables from xdg_config/uwsm/env/*.sh files
 for f in ${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.d/*.sh; do

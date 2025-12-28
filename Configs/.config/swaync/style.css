@@ -1,0 +1,8 @@
+/* HyDE
+ * This is the default css file load into swaync,
+ * HyDE css config will be placed in theme.css.
+ * theme.css is managed by script so DON'T modify it.
+ * You personal config can be 
+ * */
+@import "theme.css";
+@import "user-style.css"
