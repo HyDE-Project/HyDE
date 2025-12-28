@@ -53,8 +53,8 @@ S|${HOME}/.config|Kvantum|kvantum
 S|${HOME}/.config|qt5ct|qt5ct
 S|${HOME}/.config|qt6ct|qt6ct
 
-T|${HOME}/.config/qt5ct/colors.conf|qt5ct
-T|${HOME}/.config/qt6ct/colors.conf|qt6ct
+T|${HOME}/.config/qt5ct|colors.conf|qt5ct
+T|${HOME}/.config/qt6ct|colors.conf|qt6ct
 
 S|${HOME}/.config/hyde|wallbash|hyprland bash imagemagick
 S|${HOME}/.config/hypr|animations|hyprland  

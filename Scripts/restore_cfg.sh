@@ -120,6 +120,29 @@ deploy_psv() {
             tgt="${pth//${HOME}/}"
             crnt_cfg="${pth}/${cfg_chk}"
 
+            # Handle Trash Cleanup
+            if [ "${ctlFlag}" = "T" ]; then
+                # For Trash flag, act solely on the target's existence
+                [[ ! -d "${BkpDir}${tgt}" ]] && [[ ${flg_DryRun} -ne 1 ]] && mkdir -p "${BkpDir}${tgt}"
+                if [ -e "${crnt_cfg}" ]; then
+                    if [ "${flg_DryRun}" -ne 1 ]; then
+                        if mv "${crnt_cfg}" "${BkpDir}${tgt}"; then
+                            print_log -r "[trash]" -b " :: " "${crnt_cfg} --> ${BkpDir}${tgt}"
+                        else
+                            print_log -r "[error]" -b " :: " "Failed to move ${crnt_cfg} to ${BkpDir}${tgt}"
+                        fi
+                    else
+                        print_log -y "[dry-run]" -b " :: " "Would trash ${crnt_cfg} --> ${BkpDir}${tgt}"
+                    fi
+                else
+                    print_log -y "[trash]" -b " :: " "Target missing, nothing to move: ${crnt_cfg}"
+                fi
+                # Skip further processing for Trash
+                continue
+            fi
+            
+
+
             if [ ! -e "${CfgDir}${tgt}/${cfg_chk}" ] && [ "${ctlFlag}" != "B" ]; then
                 echo "Source: ${CfgDir}${tgt}/${cfg_chk} does not exist, skipping..."
                 print_log -y "[skip]" -b "no source" "${CfgDir}${tgt}/${cfg_chk} does not exist"
@@ -155,10 +178,6 @@ deploy_psv() {
                     else
                         print_log -g "[copy to backup]" " > " -y "[preserved]" -b " :: " "${pth}" + 208 " <--  " "${CfgDir}${tgt}/${cfg_chk}"
                     fi
-                    ;;
-                "T") # Trash
-                    [ "${flg_DryRun}" -ne 1 ] && mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-                    print_log -o "[move to backup]" -b " :: " "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
                     ;;
                 esac
             else
