@@ -69,7 +69,7 @@ El script de instalación está diseñado para un mínimo [Arch Linux](https://w
 Para apoyar a NixOS se mantiene un proyecto separado @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
-> El script de instalación detectará automáticamente una tarjeta NVIDIA e instalará los controladores nvidia-dkms para su kernel.
+> El script de instalación detectará automáticamente una tarjeta NVIDIA e instalará los controladores nvidia-open-dkms para su kernel.
 > Asegúrese de que su tarjeta NVIDIA admita los controladores dkms en la lista proporcionada [aquí](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]

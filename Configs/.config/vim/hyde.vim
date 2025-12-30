@@ -9,7 +9,6 @@ syntax on "parser
 filetype plugin indent on
 
 set number
-set relativenumber
 
 " nvim defaults
 set tabstop=4        

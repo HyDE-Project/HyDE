@@ -527,6 +527,9 @@ export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 #*--------------------------------------------------------------------------------
 
+# Prepare runtime directory for hyde
+[[ -d "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde" ]] || mkdir -p "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
+
 # Priority commands
 case "$1" in
 app)

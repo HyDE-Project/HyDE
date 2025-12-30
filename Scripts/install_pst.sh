@@ -22,12 +22,13 @@ if pkg_installed sddm; then
     fi
     if [ ! -f /etc/sddm.conf.d/backup_the_hyde_project.conf ] || [ "${HYDE_INSTALL_SDDM}" = true ]; then
         print_log -g "[DISPLAYMANAGER] " -b " :: " "configuring sddm..."
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Corners"
+        print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Corners" -r "\n[3]" -b " obscure"
         read -p " :: Enter option number : " -r sddmopt
 
         case $sddmopt in
         1) sddmtheme="Candy" ;;
-        *) sddmtheme="Corners" ;;
+        2) sddmtheme="Corners" ;;
+        *) sddmtheme="obscure" ;;
         esac
 
         if [[ ${flg_DryRun} -ne 1 ]]; then

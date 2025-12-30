@@ -25,7 +25,7 @@ fn_select() {
         workflow_icon=$(get_hyprConf "WORKFLOW_ICON" "$workflow_path")
         workflow_icon=${workflow_icon:0:1}
         workflow_list="$workflow_list\n$workflow_icon\t $workflow_name"
-    done < <(find -L "$workflows_dir" -type f -name "*.conf" 2> /dev/null)
+    done < <(find -L "$workflows_dir" -type f -name "*.conf" 2>/dev/null)
     font_scale="$ROFI_WORKFLOW_SCALE"
     [[ $font_scale =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
     font_name=${ROFI_WORKFLOW_FONT:-$ROFI_FONT}
@@ -48,7 +48,7 @@ fn_select() {
     if [ -z "$selected_workflow" ]; then
         exit 0
     fi
-    selected_workflow=$(awk -F'\t' '{print $2}' <<< "$selected_workflow" | xargs)
+    selected_workflow=$(awk -F'\t' '{print $2}' <<<"$selected_workflow" | xargs)
     set_conf "HYPR_WORKFLOW" "$selected_workflow"
     fn_update
 }
@@ -64,7 +64,7 @@ get_info() {
 }
 fn_update() {
     get_info
-    cat << EOF > "$confDir/hypr/workflows.conf"
+    cat <<EOF >"$confDir/hypr/workflows.conf"
 #! █░█░█ █▀█ █▀█ █▄▀ █▀▀ █░░ █▀█ █░█░█ █▀
 #! ▀▄▀▄▀ █▄█ █▀▄ █░█ █▀░ █▄▄ █▄█ ▀▄▀▄▀ ▄█
 
@@ -73,7 +73,7 @@ fn_update() {
 #*│ # HyDE Controlled content // DO NOT EDIT                                   │
 #*│ # This file sets the current workflow for Hyprland                         │
 #*│ # Edit or add workflows in the ./workflows/ directory                      │
-#*│ # and run the 'workflows.sh --select' command to update this file          │
+#*│ # and run the 'hyde-shell workflows --select' command to update this file          │
 #*│                                                                            │
 #*│ #  Workflows are a set of configurations that can be applied to Hyprland   │
 #*│ #   that suits the actual workflow you are doing.                          │
@@ -104,7 +104,7 @@ handle_waybar() {
 argparse_init "$@"
 
 # Set program name and header
-argparse_program "hyde-sehll workflows"
+argparse_program "hyde-shell workflows"
 argparse_header "HyDE Workflow Selector"
 
 # Define arguments
@@ -120,24 +120,24 @@ argparse_finalize
 [[ -z $ARGPARSE_ACTION ]] && ARGPARSE_ACTION=help
 
 case "$ARGPARSE_ACTION" in
-    select)
-        fn_select
-        if pgrep -x waybar > /dev/null; then
-            pkill -RTMIN+7 waybar
-        fi
-        ;;
-    set)
-        if [ -z "$WORKFLOW_NAME" ]; then
-            echo "Error: --set requires a workflow name"
-            exit 1
-        fi
-        set_conf "HYPR_WORKFLOW" "$WORKFLOW_NAME"
-        fn_update
-        if pgrep -x waybar > /dev/null; then
-            pkill -RTMIN+7 waybar
-        fi
-        ;;
-    waybar) handle_waybar ;;
-    help) argparse_help ;;
-    *) argparse_help ;;
+select)
+    fn_select
+    if pgrep -x waybar >/dev/null; then
+        pkill -RTMIN+7 waybar
+    fi
+    ;;
+set)
+    if [ -z "$WORKFLOW_NAME" ]; then
+        echo "Error: --set requires a workflow name"
+        exit 1
+    fi
+    set_conf "HYPR_WORKFLOW" "$WORKFLOW_NAME"
+    fn_update
+    if pgrep -x waybar >/dev/null; then
+        pkill -RTMIN+7 waybar
+    fi
+    ;;
+waybar) handle_waybar ;;
+help) argparse_help ;;
+*) argparse_help ;;
 esac

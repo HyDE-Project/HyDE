@@ -66,7 +66,7 @@ Während die Installation von HyDE neben einem anderen [DE](https://wiki.archlin
 Für die Unterstützung von NixOS gibt es ein eigenes Projekt, das unter [Hydenix](https://github.com/richen604/hydenix/tree/main) gepflegt wird.
 
 > [!IMPORTANT]
-> Das Installationsskript erkennt automatisch eine NVIDIA-Karte und installiert nvidia-dkms Treiber für Ihren Kernel.
+> Das Installationsskript erkennt automatisch eine NVIDIA-Karte und installiert nvidia-open-dkms Treiber für Ihren Kernel.
 > Vergewissern Sie sich, dass Ihre NVIDIA-Karte die dkms Treiber aus der [hier](https://wiki.archlinux.org/title/NVIDIA) bereitgestellten Liste unterstützt.
 
 > [!CAUTION]

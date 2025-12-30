@@ -69,8 +69,8 @@ Embora instalar o HyDE com outro [ambiente desktop (DE)](https://wiki.archlinux.
 Para o suporte a NixOS, existe um projeto separado sendo mantido em @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
-> O script de instalação detectará automaticamente uma placa NVIDIA e instalará os drivers nvidia-dkms para o seu kernel.
-> Por favor, verifique se sua placa NVIDIA é compatível com os drivers nvidia-dkms listados [aqui](https://wiki.archlinux.org/title/NVIDIA).
+> O script de instalação detectará automaticamente uma placa NVIDIA e instalará os drivers nvidia-open-dkms para o seu kernel.
+> Por favor, verifique se sua placa NVIDIA é compatível com os drivers nvidia-open-dkms listados [aqui](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]
 > O script de instalação modifica as configurações do seu `grub` ou `systemd-boot` para habilitar o DRM da NVIDIA.

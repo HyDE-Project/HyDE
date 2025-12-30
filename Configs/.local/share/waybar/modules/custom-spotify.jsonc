@@ -5,11 +5,11 @@
     "rotate": 0,
     "return-type": "json",
     "on-click": "playerctl play-pause --player spotify",
-    "on-click-middle": "playerctl stop --player spotify",
+    "on-click-right": "playerctl next --player spotify",
     "on-scroll-up": "hyde-shell volumecontrol -p spotify i",
     "on-scroll-down": "hyde-shell volumecontrol -p spotify d",
     "tooltip": true,
-    "menu": "on-click-right",
+    "menu": "on-click-middle",
     "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/spotify.xml",
     "menu-actions": {
       "play-pause": "playerctl play-pause --player spotify",
