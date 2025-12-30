@@ -94,8 +94,8 @@ def create_tooltip_text(
     tooltip += (
         f"\n<span size='x-small' foreground='{track_color}'>"
         f"\n󰐎 click to play/pause"  # play/pause glyph
-        f"\n scroll to seek"  # seek glyph
-        f"\n󱥣 rightclick for options"  # right-click/options glyph
+        f"\n scroll to seek"         # seek glyph
+        f"\n󰒭 rightclick for next track" # right-click/next glyph
         f"</span>"
     )
     return tooltip
@@ -110,7 +110,7 @@ def format_artist_track(artist, track, playing, max_length):
     if track and not artist:
         if len(track) != len(track[:max_length]):
             track = track[:max_length].rstrip() + "…"
-        output_text = f"{prefix}{prefix_separator}<b>{track}</b>"
+        output_text = f"{prefix}{prefix_separator}{track}"
     elif track and artist:
         artist = artist.split(",")[0].split("&")[0].strip()
         if full_length > max_length:
@@ -135,7 +135,7 @@ def format_artist_track(artist, track, playing, max_length):
                 track = track[:track_limit].rstrip() + "…"
 
         output_text = (
-            f"{prefix}{prefix_separator}<i>{artist}</i>{artist_track_separator}<b>{track}</b>"
+            f"{prefix}{prefix_separator}{artist}{artist_track_separator}{track}"
         )
     else:
         # If there is a player but no track/artist, show player name instead of 'Nothing playing'

@@ -66,7 +66,7 @@ Multi-language README support
 لدعم نظام NixOS، يتم صيانة مشروع منفصل @ [Hydenix](https://github.com/richen604/hydenix/tree/main).
 
 > [!IMPORTANT]
-> سيقوم البرنامج النصي للتثبيت باكتشاف بطاقة NVIDIA تلقائيًا وتثبيت برامج تشغيل nvidia-dkms الخاصة بنواة النظام.
+> سيقوم البرنامج النصي للتثبيت باكتشاف بطاقة NVIDIA تلقائيًا وتثبيت برامج تشغيل nvidia-open-dkms الخاصة بنواة النظام.
 > تأكد من أن بطاقة NVIDIA الخاصة بك تدعم برامج التشغيل dkms في القائمة المتوفرة [هنا](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]

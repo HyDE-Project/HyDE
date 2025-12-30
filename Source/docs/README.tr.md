@@ -69,7 +69,7 @@ Kurulum betiği (script), minimal [Arch Linux](https://wiki.archlinux.org/title/
 NixOS desteği için ayrı bir proje yürütülmektedir @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
-> Kurulum komut dosyası NVIDIA kartını otomatik olarak algılar ve çekirdeğiniz için nvidia-dkms sürücülerini yükler.
+> Kurulum komut dosyası NVIDIA kartını otomatik olarak algılar ve çekirdeğiniz için nvidia-open-dkms sürücülerini yükler.
 > Lütfen NVIDIA kartınızın sağlanan listede yer alan dkms sürücülerini desteklediğinden emin olun. [here](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]

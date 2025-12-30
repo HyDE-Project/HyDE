@@ -74,7 +74,8 @@ While installing HyDE alongside another [DE](https://wiki.archlinux.org/title/De
 For NixOS support there is a separate project being maintained @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
-> The install script will auto-detect an NVIDIA card and install nvidia-dkms drivers for your kernel.
+> The install script will auto-detect an NVIDIA card and install nvidia-open-dkms drivers for your kernel.
+> For legacy cards [check this first](./Scripts/nvidia-db/)
 > Please ensure that your NVIDIA card supports dkms drivers in the list provided [here](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]

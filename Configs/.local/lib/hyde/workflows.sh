@@ -104,7 +104,7 @@ handle_waybar() {
 argparse_init "$@"
 
 # Set program name and header
-argparse_program "hyde-sehll workflows"
+argparse_program "hyde-shell workflows"
 argparse_header "HyDE Workflow Selector"
 
 # Define arguments

@@ -71,7 +71,7 @@ HyDE 是一个高度自定义的预设，在其他[桌面环境](https://wiki.ar
 我们支持 NixOS， 但作为一个单独的仓库在 [Hydenix](https://github.com/richen604/hydenix/tree/main) 提供。
 
 > [!IMPORTANT]
-> 安装脚本会自动检测英伟达显卡并安装 nvidia-dkms 内核驱动。
+> 安装脚本会自动检测英伟达显卡并安装 nvidia-open-dkms 内核驱动。
 > 请确保您的英伟达显卡支持 dkms 驱动，支持的具体型号可以查看[这个列表](https://wiki.archlinux.org/title/NVIDIA)。
 
 > [!CAUTION]
