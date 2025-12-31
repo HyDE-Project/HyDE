@@ -29,66 +29,66 @@ send_notifs() {
 print_log() {
     while (("$#")); do
         case "$1" in
-            -r | +r)
-                echo -ne "\e[31m$2\e[0m" >&2
-                shift 2
-                ;;
-            -g | +g)
-                echo -ne "\e[32m$2\e[0m" >&2
-                shift 2
-                ;;
-            -y | +y)
-                echo -ne "\e[33m$2\e[0m" >&2
-                shift 2
-                ;;
-            -b | +b)
-                echo -ne "\e[34m$2\e[0m" >&2
-                shift 2
-                ;;
-            -m | +m)
-                echo -ne "\e[35m$2\e[0m" >&2
-                shift 2
-                ;;
-            -c | +c)
-                echo -ne "\e[36m$2\e[0m" >&2
-                shift 2
-                ;;
-            -wt | +w)
-                echo -ne "\e[37m$2\e[0m" >&2
-                shift 2
-                ;;
-            -n | +n)
-                echo -ne "\e[96m$2\e[0m" >&2
-                shift 2
-                ;;
-            -stat)
-                echo -ne "\e[4;30;46m $2 \e[0m :: " >&2
-                shift 2
-                ;;
-            -crit)
-                echo -ne "\e[30;41m $2 \e[0m :: " >&2
-                shift 2
-                ;;
-            -warn)
-                echo -ne "WARNING :: \e[30;43m $2 \e[0m :: " >&2
-                shift 2
-                ;;
-            +)
-                echo -ne "\e[38;5;$2m$3\e[0m" >&2
-                shift 3
-                ;;
-            -sec)
-                echo -ne "\e[32m[$2] \e[0m" >&2
-                shift 2
-                ;;
-            -err)
-                echo -ne "ERROR :: \e[4;31m$2 \e[0m" >&2
-                shift 2
-                ;;
-            *)
-                echo -ne "$1" >&2
-                shift
-                ;;
+        -r | +r)
+            echo -ne "\e[31m$2\e[0m" >&2
+            shift 2
+            ;;
+        -g | +g)
+            echo -ne "\e[32m$2\e[0m" >&2
+            shift 2
+            ;;
+        -y | +y)
+            echo -ne "\e[33m$2\e[0m" >&2
+            shift 2
+            ;;
+        -b | +b)
+            echo -ne "\e[34m$2\e[0m" >&2
+            shift 2
+            ;;
+        -m | +m)
+            echo -ne "\e[35m$2\e[0m" >&2
+            shift 2
+            ;;
+        -c | +c)
+            echo -ne "\e[36m$2\e[0m" >&2
+            shift 2
+            ;;
+        -wt | +w)
+            echo -ne "\e[37m$2\e[0m" >&2
+            shift 2
+            ;;
+        -n | +n)
+            echo -ne "\e[96m$2\e[0m" >&2
+            shift 2
+            ;;
+        -stat)
+            echo -ne "\e[4;30;46m $2 \e[0m :: " >&2
+            shift 2
+            ;;
+        -crit)
+            echo -ne "\e[30;41m $2 \e[0m :: " >&2
+            shift 2
+            ;;
+        -warn)
+            echo -ne "WARNING :: \e[30;43m $2 \e[0m :: " >&2
+            shift 2
+            ;;
+        +)
+            echo -ne "\e[38;5;$2m$3\e[0m" >&2
+            shift 3
+            ;;
+        -sec)
+            echo -ne "\e[32m[$2] \e[0m" >&2
+            shift 2
+            ;;
+        -err)
+            echo -ne "ERROR :: \e[4;31m$2 \e[0m" >&2
+            shift 2
+            ;;
+        *)
+            echo -ne "$1" >&2
+            shift
+            ;;
         esac
     done
     echo "" >&2
@@ -125,8 +125,8 @@ get_hashmap() {
         find_command="find -H \"$wallSource\" -type f \\( $(list_extensions) \\) $(list_skipped_path) -exec \"$hashMech\" {} +"
         [ "$LOG_LEVEL" == "debug" ] && print_log -g "DEBUG:" -b "Running command:" "$find_command"
         tmpfile=$(mktemp)
-        eval "$find_command" 2> "$tmpfile" | sort -k2
-        error_output=$(< "$tmpfile") && rm -f "$tmpfile"
+        eval "$find_command" 2>"$tmpfile" | sort -k2
+        error_output=$(<"$tmpfile") && rm -f "$tmpfile"
         [ -n "$error_output" ] && print_log -err "ERROR:" -b "found an error: " -r "$error_output" -y " skipping..."
     }
     for wallSource in "$@"; do
@@ -150,7 +150,7 @@ get_hashmap() {
         while read -r hash image; do
             wallHash+=("$hash")
             wallList+=("$image")
-        done <<< "$hashMap"
+        done <<<"$hashMap"
     done
     if [ "${#no_wallpapers[@]}" -gt 0 ]; then
         print_log -warn "No compatible wallpapers found in:" "${no_wallpapers[*]}"
@@ -210,8 +210,8 @@ export_hyde_config() {
 }
 export_hyde_config
 case "$enableWallDcol" in
-    0 | 1 | 2 | 3) ;;
-    *) enableWallDcol=0 ;;
+0 | 1 | 2 | 3) ;;
+*) enableWallDcol=0 ;;
 esac
 if [ -z "$HYDE_THEME" ] || [ ! -d "$HYDE_CONFIG_HOME/themes/$HYDE_THEME" ]; then
     get_themes
@@ -235,11 +235,11 @@ export hypr_border=${hypr_border:-${HYDE_BORDER_RADIUS:-2}}
 export hypr_width=${hypr_width:-${HYDE_BORDER_WIDTH:-2}}
 pkg_installed() {
     local pkgIn=$1
-    if command -v "$pkgIn" &> /dev/null; then
+    if command -v "$pkgIn" &>/dev/null; then
         return 0
-    elif command -v "flatpak" &> /dev/null && flatpak info "$pkgIn" &> /dev/null; then
+    elif command -v "flatpak" &>/dev/null && flatpak info "$pkgIn" &>/dev/null; then
         return 0
-    elif hyde-shell pm.sh pq "$pkgIn" &> /dev/null; then
+    elif hyde-shell pm.sh pq "$pkgIn" &>/dev/null; then
         return 0
     else
         return 1
@@ -259,7 +259,7 @@ set_conf() {
     if [ "$(grep -c "^$varName=" "$XDG_STATE_HOME/hyde/staterc")" -eq 1 ]; then
         sed -i "/^$varName=/c$varName=\"$varData\"" "$XDG_STATE_HOME/hyde/staterc"
     else
-        echo "$varName=\"$varData\"" >> "$XDG_STATE_HOME/hyde/staterc"
+        echo "$varName=\"$varData\"" >>"$XDG_STATE_HOME/hyde/staterc"
     fi
 }
 set_hash() {
@@ -282,45 +282,59 @@ check_package() {
     touch "$lock_file"
 }
 get_hyprConf() {
-    local hyVar="$1"
+    local hyArg="$1"
     local file="${2:-"$HYDE_THEME_DIR/hypr.theme"}"
-    if command -v hyq &> /dev/null; then
+    local hyVar="$hyArg"
+    local hyType=""
+
+    #? Allow optional type hint: e.g., FONT_SIZE[int]
+    if [[ "$hyArg" =~ ^([^[]+)\[([a-zA-Z0-9_]+)\]$ ]]; then
+        hyVar="${BASH_REMATCH[1]}"
+        hyType="${BASH_REMATCH[2]}"
+    fi
+
+    #? hyq first (sanitized, then raw), with optional type
+    #? hyq cannot handle $FOO and $FOO_BAR so we will impose hints to make it work
+    if command -v hyq &>/dev/null; then
+        local query="\$$hyVar"
+        [ -n "$hyType" ] && query="${query}[${hyType}]"
         local hyq_result
-        hyq_result=$(hyq -s --query "\$$hyVar" "$file" 2> /dev/null)
+        hyq_result=$(hyq -s --query "$query" "$file" 2>/dev/null)
         if [ -z "$hyq_result" ]; then
-            hyq_result=$(hyq --query "\$$hyVar" "$file" 2> /dev/null)
+            hyq_result=$(hyq --query "$query" "$file" 2>/dev/null)
         fi
         [ -n "$hyq_result" ] && echo "$hyq_result" && return 0
     fi
+
     local gsVal
     gsVal="$(grep "^[[:space:]]*\$$hyVar\s*=" "$file" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     [ -n "$gsVal" ] && [[ $gsVal != \$* ]] && echo "$gsVal" && return 0
     declare -A gsMap=(
-             [GTK_THEME]="gtk-theme"
-             [ICON_THEME]="icon-theme"
-             [COLOR_SCHEME]="color-scheme"
-             [CURSOR_THEME]="cursor-theme"
-             [CURSOR_SIZE]="cursor-size"
-             [FONT]="font-name"
-             [DOCUMENT_FONT]="document-font-name"
-             [MONOSPACE_FONT]="monospace-font-name"
-             [FONT_SIZE]="font-size"
-             [DOCUMENT_FONT_SIZE]="document-font-size"
-             [MONOSPACE_FONT_SIZE]="monospace-font-size")
+        [GTK_THEME]="gtk-theme"
+        [ICON_THEME]="icon-theme"
+        [COLOR_SCHEME]="color-scheme"
+        [CURSOR_THEME]="cursor-theme"
+        [CURSOR_SIZE]="cursor-size"
+        [FONT]="font-name"
+        [DOCUMENT_FONT]="document-font-name"
+        [MONOSPACE_FONT]="monospace-font-name"
+        [FONT_SIZE]="font-size"
+        [DOCUMENT_FONT_SIZE]="document-font-size"
+        [MONOSPACE_FONT_SIZE]="monospace-font-size")
     if [[ -n ${gsMap[$hyVar]} ]]; then
         gsVal="$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"${gsMap[$hyVar]}"'[[:space:]]*/ {last=$2} END {print last}' "$file")"
     fi
     if [ -z "$gsVal" ] || [[ $gsVal == \$* ]]; then
         case "$hyVar" in
-            "CODE_THEME") echo "Wallbash" ;;
-            "SDDM_THEME") echo "" ;;
-            *) grep "^[[:space:]]*\$default.$hyVar\s*=" \
-                "XDG_DATA_HOME/hyde/hyde.conf" \
-                "$XDG_DATA_HOME/hyde/hyprland.conf" \
-                "/usr/local/share/hyde/hyde.conf" \
-                "/usr/local/share/hyde/hyprland.conf" \
-                "/usr/share/hyde/hyde.conf" \
-                "/usr/share/hyde/hyprland.conf" 2> /dev/null | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | head -n 1 ;;
+        "CODE_THEME") echo "Wallbash" ;;
+        "SDDM_THEME") echo "" ;;
+        *) grep "^[[:space:]]*\$default.$hyVar\s*=" \
+            "XDG_DATA_HOME/hyde/hyde.conf" \
+            "$XDG_DATA_HOME/hyde/hyprland.conf" \
+            "/usr/local/share/hyde/hyde.conf" \
+            "/usr/local/share/hyde/hyprland.conf" \
+            "/usr/share/hyde/hyde.conf" \
+            "/usr/share/hyde/hyprland.conf" 2>/dev/null | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | head -n 1 ;;
         esac
     else
         echo "$gsVal"
@@ -356,11 +370,11 @@ get_rofi_pos() {
 
 }
 paste_string() {
-    if ! command -v wtype > /dev/null; then exit 0; fi
+    if ! command -v wtype >/dev/null; then exit 0; fi
     if [ -t 1 ]; then return 0; fi
     ignore_paste_file="$HYDE_STATE_HOME/ignore.paste"
     if [[ ! -e $ignore_paste_file ]]; then
-        cat << EOF > "$ignore_paste_file"
+        cat <<EOF >"$ignore_paste_file"
 kitty
 org.kde.konsole
 terminator
@@ -370,7 +384,7 @@ xterm-256color
 EOF
     fi
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
-    [ -n "$ignore_class" ] && echo "$ignore_class" >> "$ignore_paste_file" && print_log -y "[ignore]" "'$ignore_class'" && exit 0
+    [ -n "$ignore_class" ] && echo "$ignore_class" >>"$ignore_paste_file" && print_log -y "[ignore]" "'$ignore_class'" && exit 0
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
     if ! grep -q "$class" "$ignore_paste_file"; then
         hyprctl -q dispatch exec 'wtype -M ctrl V -m ctrl'
@@ -379,12 +393,12 @@ EOF
 is_hovered() {
     data=$(hyprctl --batch -j "cursorpos;activewindow" | jq -s '.[0] * .[1]')
     eval "$(echo "$data" | jq -r '@sh "cursor_x=\(.x) cursor_y=\(.y) window_x=\(.at[0]) window_y=\(.at[1]) window_size_x=\(.size[0]) window_size_y=\(.size[1])"')"
-    cursor_x=${cursor_x:-$(jq -r '.x // 0' <<< "$data")}
-    cursor_y=${cursor_y:-$(jq -r '.y // 0' <<< "$data")}
-    window_x=${window_x:-$(jq -r '.at[0] // 0' <<< "$data")}
-    window_y=${window_y:-$(jq -r '.at[1] // 0' <<< "$data")}
-    window_size_x=${window_size_x:-$(jq -r '.size[0] // 0' <<< "$data")}
-    window_size_y=${window_size_y:-$(jq -r '.size[1] // 0' <<< "$data")}
+    cursor_x=${cursor_x:-$(jq -r '.x // 0' <<<"$data")}
+    cursor_y=${cursor_y:-$(jq -r '.y // 0' <<<"$data")}
+    window_x=${window_x:-$(jq -r '.at[0] // 0' <<<"$data")}
+    window_y=${window_y:-$(jq -r '.at[1] // 0' <<<"$data")}
+    window_size_x=${window_size_x:-$(jq -r '.size[0] // 0' <<<"$data")}
+    window_size_y=${window_size_y:-$(jq -r '.size[1] // 0' <<<"$data")}
     if ((cursor_x >= window_x && cursor_x <= window_x + window_size_x && cursor_y >= window_y && cursor_y <= window_y + window_size_y)); then
         return 0
     fi
@@ -395,9 +409,9 @@ toml_write() {
     local group=$2
     local key=$3
     local value=$4
-    if ! kwriteconfig6 --file "$config_file" --group "$group" --key "$key" "$value" 2> /dev/null; then
+    if ! kwriteconfig6 --file "$config_file" --group "$group" --key "$key" "$value" 2>/dev/null; then
         if ! grep -q "^\[$group\]" "$config_file"; then
-            echo -e "\n[$group]\n$key=$value" >> "$config_file"
+            echo -e "\n[$group]\n$key=$value" >>"$config_file"
         elif ! grep -q "^$key=" "$config_file"; then
             sed -i "/^\[$group\]/a $key=$value" "$config_file"
         fi
@@ -407,7 +421,7 @@ extract_thumbnail() {
     local x_wall="$1"
     x_wall=$(realpath "$x_wall")
     local temp_image="$2"
-    ffmpeg -y -i "$x_wall" -vf "thumbnail,scale=1000:-1" -frames:v 1 -update 1 "$temp_image" &> /dev/null
+    ffmpeg -y -i "$x_wall" -vf "thumbnail,scale=1000:-1" -frames:v 1 -update 1 "$temp_image" &>/dev/null
 }
 accepted_mime_types() {
     local mime_types_array=$1

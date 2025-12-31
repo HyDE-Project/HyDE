@@ -18,7 +18,7 @@ Theme_Change() {
     done
 }
 show_theme_status() {
-    cat << EOF
+    cat <<EOF
 Current theme: $HYDE_THEME
 Gtk theme: $GTK_THEME
 Icon theme: $ICON_THEME
@@ -45,14 +45,14 @@ load_hypr_variables() {
         -Q '$GTK_THEME[string]' \
         -Q '$ICON_THEME[string]' \
         -Q '$CURSOR_THEME[string]' \
-        -Q '$CURSOR_SIZE' \
+        -Q '$CURSOR_SIZE[int]' \
         -Q '$FONT[string]' \
-        -Q '$FONT_SIZE' \
+        -Q '$FONT_SIZE[int]' \
         -Q '$FONT_STYLE[string]' \
         -Q '$DOCUMENT_FONT[string]' \
-        -Q '$DOCUMENT_FONT_SIZE' \
+        -Q '$DOCUMENT_FONT_SIZE[int]' \
         -Q '$MONOSPACE_FONT[string]' \
-        -Q '$MONOSPACE_FONT_SIZE')"
+        -Q '$MONOSPACE_FONT_SIZE[int]')"
     GTK_THEME=${__GTK_THEME:-$GTK_THEME}
     ICON_THEME=${__ICON_THEME:-$ICON_THEME}
     CURSOR_THEME=${__CURSOR_THEME:-$CURSOR_THEME}
@@ -73,7 +73,7 @@ sanitize_hypr_theme() {
     input_file="$1"
     output_file="$2"
     buffer_file="$(mktemp)"
-    sed '1d' "$input_file" > "$buffer_file"
+    sed '1d' "$input_file" >"$buffer_file"
     dirty_regex=(
         "^ *exec"
         "^ *decoration[^:]*: *drop_shadow"
@@ -89,32 +89,32 @@ sanitize_hypr_theme() {
             print_log -sec "theme" -warn "sanitize" "$line"
         done
     done
-    cat "$buffer_file" > "$output_file"
+    cat "$buffer_file" >"$output_file"
     rm -f "$buffer_file"
 }
 quiet=false
 while getopts "qnps:" option; do
     case $option in
-        n)
-            Theme_Change n
-            export xtrans="grow"
-            ;;
-        p)
-            Theme_Change p
-            export xtrans="outer"
-            ;;
-        s) themeSet="$OPTARG" ;;
-        q)
-            quiet=true
-            ;;
-        *)
-            echo "... invalid option ..."
-            echo "$(basename "$0") -[option]"
-            echo "n : set next theme"
-            echo "p : set previous theme"
-            echo "s : set input theme"
-            exit 1
-            ;;
+    n)
+        Theme_Change n
+        export xtrans="grow"
+        ;;
+    p)
+        Theme_Change p
+        export xtrans="outer"
+        ;;
+    s) themeSet="$OPTARG" ;;
+    q)
+        quiet=true
+        ;;
+    *)
+        echo "... invalid option ..."
+        echo "$(basename "$0") -[option]"
+        echo "n : set next theme"
+        echo "p : set previous theme"
+        echo "s : set input theme"
+        exit 1
+        ;;
     esac
 done
 [[ ! " ${thmList[*]} " =~ " $themeSet " ]] && themeSet="$HYDE_THEME"
@@ -207,10 +207,10 @@ fi
 if [ -f "$HOME/.Xresources" ]; then
     sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
         -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xresources"
-    grep -q "^Xcursor\.theme:" "$HOME/.Xresources" || echo "Xcursor.theme: $CURSOR_THEME" >> "$HOME/.Xresources"
-    grep -q "^Xcursor\.size:" "$HOME/.Xresources" || echo "Xcursor.size: 30" >> "$HOME/.Xresources"
+    grep -q "^Xcursor\.theme:" "$HOME/.Xresources" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xresources"
+    grep -q "^Xcursor\.size:" "$HOME/.Xresources" || echo "Xcursor.size: 30" >>"$HOME/.Xresources"
 else
-    cat > "$HOME/.Xresources" << EOF
+    cat >"$HOME/.Xresources" <<EOF
 Xcursor.theme: $CURSOR_THEME
 Xcursor.size: $CURSOR_SIZE
 EOF
@@ -218,8 +218,8 @@ fi
 if [ -f "$HOME/.Xdefaults" ]; then
     sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
         -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xdefaults"
-    grep -q "^Xcursor\.theme:" "$HOME/.Xdefaults" || echo "Xcursor.theme: $CURSOR_THEME" >> "$HOME/.Xdefaults"
-    grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: 30" >> "$HOME/.Xdefaults"
+    grep -q "^Xcursor\.theme:" "$HOME/.Xdefaults" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xdefaults"
+    grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: 30" >>"$HOME/.Xdefaults"
 fi
 if [ -f "$confDir/gtk-4.0/settings.ini" ]; then
     rm "$confDir/gtk-4.0/settings.ini"
@@ -234,7 +234,7 @@ export -f pkg_installed
     done
 ' sh {} + &
 if [ "$quiet" = true ]; then
-    "$LIB_DIR/hyde/wallpaper.sh" -s "$(readlink "$HYDE_THEME_DIR/wall.set")" --global > /dev/null 2>&1
+    "$LIB_DIR/hyde/wallpaper.sh" -s "$(readlink "$HYDE_THEME_DIR/wall.set")" --global >/dev/null 2>&1
 else
     "$LIB_DIR/hyde/wallpaper.sh" -s "$(readlink "$HYDE_THEME_DIR/wall.set")" --global
 fi
