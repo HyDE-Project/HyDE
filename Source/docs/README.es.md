@@ -17,13 +17,13 @@ Soporte para README multilingüe.
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![en](https://img.shields.io/badge/lang-en-red.svg)](../../README.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/README.de.md)
-[![nl](https://img.shields.io/badge/lang-nl-green.svg)](Source/docs/README.nl.md)
-[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/docs/README.zh.md)
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/docs/README.fr.md)
-[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](Source/docs/README.ar.md)
-[![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](Source/docs/README.pt-br.md)
-[![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](Source/docs/README.tr.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](README.de.md)
+[![nl](https://img.shields.io/badge/lang-nl-green.svg)](README.nl.md)
+[![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
+[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](README.pt-br.md)
+[![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](README.tr.md)
 
 <div align="center">
 
@@ -109,11 +109,6 @@ Consulte las instrucciones de instalación de HyDE en [Hyde-cli - Usage](https:/
 
 Por favor, reinicie el sistema una vez que el script de instalación haya finalizado y lo lleve por primera vez a la pantalla de inicio de sesión de SDDM (o a una pantalla negra).
 Para más detalles, consulte la [wiki de instalación](https://github.com/HyDE-Project/HyDE/wiki/installation).
-
-<div align="right">
-  <br>
-  <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
-</div>
 
 <div align="right">
   <br>
