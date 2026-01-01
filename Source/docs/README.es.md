@@ -5,7 +5,7 @@
   </a>
 </div>
 
-###### _ <div align="right"><a id=-design-by-t2></a><sub>// diseño por t2</sub></div>_
+###### _<div align="right"><a id=-design-by-t2></a><sub>// diseño por t2</sub></div>_
 
 ![hyde_banner](../assets/hyde_banner.png)
 
@@ -30,7 +30,7 @@ Soporte para README multilingüe.
 <br>
 
 <a href="#instalación"><kbd> <br> Instalación <br> </kbd></a>&ensp;&ensp;
-<a href="#actualizar"><kbd> <br>Actualizar<br> </kbd></a>&ensp;&ensp;
+<a href="#actualizar"><kbd> <br> Actualizar <br> </kbd></a>&ensp;&ensp;
 <a href="#contribuir"><kbd> <br> Contribuir <br> </kbd></a>&ensp;&ensp;
 <a href="#temas"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
 <a href="#estilos"><kbd> <br> Estilos <br> </kbd></a>&ensp;&ensp;
@@ -288,10 +288,10 @@ Para más información, visite [HyDE-Project/hyde-themes](https://github.com/HyD
 ---
 
 <a id="creditos"></a>
-<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=THANK YOU!" width="450"/>
+<img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=¡GRACIAS!" width="450"/>
 
 
-- [Consulte todos los Créditos aquí.](./CREDITS.md).
+- [Consulte todos los Créditos aquí](./CREDITS.md).
 
 ---
 
@@ -304,7 +304,7 @@ Para más información, visite [HyDE-Project/hyde-themes](https://github.com/HyD
   <sub>Última edición el: 01/01/2026<span id="last-edited"></span></sub>
 </div>
 
-
+<a id="contributors-"></a>
 ## Contribuidores ✨
 
 Muchas gracias a estas maravillosas personas  ([clave de emojis](https://allcontributors.org/docs/en/emoji-key)):
