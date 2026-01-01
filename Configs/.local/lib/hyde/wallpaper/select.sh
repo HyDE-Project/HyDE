@@ -11,8 +11,8 @@ Wall_Select() {
 
     if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
         mon_data=$(hyprctl -j monitors)
-        mon_x_res=$(jq '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width else .height end' <<< "$mon_data")
-        mon_scale=$(jq '.[] | select(.focused==true) | .scale' <<< "$mon_data" | sed "s/\.//")
+        mon_x_res=$(jq '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width else .height end' <<<"$mon_data")
+        mon_scale=$(jq '.[] | select(.focused==true) | .scale' <<<"$mon_data" | sed "s/\.//")
     fi
     mon_x_res=${mon_x_res:-1920}
     mon_scale=${mon_scale:-1}
@@ -35,9 +35,9 @@ Wall_Select() {
         -theme-str "$r_override" \
         -theme "${ROFI_WALLPAPER_STYLE:-selector}" \
         -select "$(basename "$(readlink "$wallSet")")")
-    selected_thumbnail="$(awk -F ':::' '{print $3}' <<< "$entry")"
-    selected_wallpaper_path="$(awk -F ':::' '{print $2}' <<< "$entry")"
-    selected_wallpaper="$(awk -F ':::' '{print $1}' <<< "$entry")"
+    selected_thumbnail="$(awk -F ':::' '{print $3}' <<<"$entry")"
+    selected_wallpaper_path="$(awk -F ':::' '{print $2}' <<<"$entry")"
+    selected_wallpaper="$(awk -F ':::' '{print $1}' <<<"$entry")"
     export selected_wallpaper selected_wallpaper_path selected_thumbnail
     if [ -z "$selected_wallpaper" ]; then
         print_log -err "wallpaper" " No wallpaper selected"
