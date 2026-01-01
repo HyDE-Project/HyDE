@@ -34,7 +34,7 @@ Soporte para README multilingüe.
 <a href="#contribuir"><kbd> <br> Contribuir <br> </kbd></a>&ensp;&ensp;
 <a href="#temas"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
 <a href="#estilos"><kbd> <br> Estilos <br> </kbd></a>&ensp;&ensp;
-<a href="KEYBINDINGS.es.md"><kbd> <br> Atajos <br> </kbd></a>&ensp;&ensp;
+<a href="../assets/keybindings/KEYBINDINGS.es.md"><kbd> <br> Atajos <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
 <a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
@@ -306,7 +306,7 @@ Para más información, visite [HyDE-Project/hyde-themes](https://github.com/HyD
 </div>
 
 <div align="right">
-  <sub>Última edición el: <span id="last-edited"></span></sub>
+  <sub>Última edición el: 01/01/2026<span id="last-edited"></span></sub>
 </div>
 
 
