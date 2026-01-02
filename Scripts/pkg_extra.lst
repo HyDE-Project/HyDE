@@ -15,6 +15,7 @@ ddcui                                                  # GUI to control brightne
 # --------------------------------------------------- // Misc
 xdg-desktop-portal-gtk                                 # xdg desktop portal using gtk
 wf-recorder                                          # Screen recorder for wlroots-based compositors such as sway
+kimageformats                                          # plugin for heif/heic and other image formats' support(thumbnail,etc) in qt-based apps
 # emote                                                # emoji picker gtk3
 # wl-screenrec                                         # High performance hardware accelerated wlroots screen recorder // NO support for NVIDIA
 # zbar                                                 # Bar/QR code scanner
