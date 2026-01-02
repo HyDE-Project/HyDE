@@ -151,7 +151,7 @@ To update HyDE, you will need to pull the latest changes from GitHub and restore
 
 ```shell
 cd ~/HyDE/Scripts
-git fetch --depth 1 origin master
+git fetch --update-shallow --depth 1 origin master
 git reset --hard origin/master
 ./install.sh -r
 ```
