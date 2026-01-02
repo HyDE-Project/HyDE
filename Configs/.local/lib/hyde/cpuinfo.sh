@@ -18,7 +18,7 @@ map_floor() {
       return
     fi
   done
-  [ -n "$def_val" ] && echo $def_val || echo " "
+  [ -n "$def_val" ] && echo "$def_val" || echo " "
 }
 init_query() {
   cpu_info_file="/tmp/hyde-$UID-processors"
