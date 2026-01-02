@@ -6,7 +6,7 @@ map_floor() {
     IFS=', ' read -r -a pairs <<<"$1"
     if [[ ${pairs[-1]} != *":"* ]]; then
         def_val="${pairs[-1]}"
-        unset "pairs[${#pairs[@]}-1]"
+        unset 'pairs[-1]'
     fi
     for pair in "${pairs[@]}"; do
         IFS=':' read -r key value <<<"$pair"
