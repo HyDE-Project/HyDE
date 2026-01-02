@@ -14,8 +14,22 @@ if [ "$is_video" -eq 1 ]; then
     mkdir -p "$HYDE_CACHE_HOME/wallpapers/thumbnails"
     cached_thumb="$HYDE_CACHE_HOME/wallpapers/$(${hashMech:-sha1sum} "$selected_wall" | cut -d' ' -f1).png"
     extract_thumbnail "$selected_wall" "$cached_thumb"
-    selected_wall="$cached_thumb"
+    selected_wall="${cached_thumb}"
 fi
 
-hyprctl hyprpaper wallpaper ",$selected_wall" ||
-    hyprctl hyprpaper reload ,~/.cache/hyde/wall.set #TODO: I do not know when did they change this command but yeah will remove this line after some time
+if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
+    hyprctl hyprpaper wallpaper ",${selected_wall}" ||
+        hyprctl hyprpaper reload ,"${selected_wall}" #TODO: I do not know when did they change this command but yeah will remove this line after some time
+else
+    cat <<EOF >"$XDG_STATE_HOME/hyde/hyprpaper.conf"
+splash = false
+wallpaper:path = ${selected_wall}
+EOF
+
+    if systemctl --user is-active --quiet hyprpaper.service; then
+        systemctl --user restart hyprpaper.service
+    else
+        app2unit.sh -- hyprpaper --config "$XDG_STATE_HOME/hyde/hyprpaper.conf"
+    fi
+
+fi

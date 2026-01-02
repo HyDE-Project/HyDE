@@ -44,35 +44,6 @@ init_query() {
     fi
 }
 
-get_temp_color() {
-    local temp=$1
-    declare -A temp_colors=(
-        [90]="#8b0000"
-        [85]="#ad1f2f"
-        [80]="#d22f2f"
-        [75]="#ff471a"
-        [70]="#ff6347"
-        [65]="#ff8c00"
-        [60]="#ffa500"
-        [45]=""
-        [40]="#add8e6"
-        [35]="#87ceeb"
-        [30]="#4682b4"
-        [25]="#4169e1"
-        [20]="#0000ff"
-        [0]="#00008b")
-    for threshold in $(echo "${!temp_colors[@]}" | tr ' ' '\n' | sort -nr); do
-        if ((temp >= threshold)); then
-            color=${temp_colors[$threshold]}
-            if [[ -n $color ]]; then
-                echo "<span color='$color'><b>$temp°C</b></span>"
-            else
-                echo "$temp°C"
-            fi
-            return
-        fi
-    done
-}
 get_utilization() {
     local statFile currStat currIdle diffStat diffIdle utilization
     statFile=$(head -1 /proc/stat)
@@ -90,29 +61,37 @@ get_utilization() {
 }
 [[ -f $cpuinfo_file ]] && source "$cpuinfo_file"
 init_query
-if [[ $CPUINFO_EMOJI -ne 1 ]]; then
-    temp_lv="85:, 65:, 45:☁, ❄"
-else
-    temp_lv="85:🌋, 65:🔥, 45:☁️, ❄️"
-fi
-util_lv="90:, 60:󰓅, 30:󰾅, 󰾆"
 sensors_json=$(sensors -j 2>/dev/null)
-cpu_temps="$(jq -r '[
-.["coretemp-isa-0000"],
-.["k10temp-pci-00c3"],
-.["zenpower-pci-00c3"]
-] |
-map(select(. != null)) |
-map(to_entries) |
-add |
-map(select(.value |
-objects) |
-"\(.key): \((.value |
-to_entries[] |
-select(.key |
-test("temp[0-9]+_input")) |
-.value | floor))°C") |
-join("\\n\t")' <<<"$sensors_json")"
+cpu_temps="$(perl -e '
+use strict;
+use warnings;
+my $parser;
+BEGIN {
+    eval { require Cpanel::JSON::XS; $parser = Cpanel::JSON::XS->new->utf8; 1 }
+      or eval { require JSON::XS; $parser = JSON::XS->new->utf8; 1 }
+      or do { require JSON::PP; $parser = JSON::PP->new->utf8; };
+}
+my $json = do { local $/; <> };
+my $data = eval { $parser->decode($json) } || {};
+my @chips = ("coretemp-isa-0000","k10temp-pci-00c3","zenpower-pci-00c3");
+my @lines;
+for my $chip (@chips) {
+    next unless exists $data->{$chip} && ref $data->{$chip} eq "HASH";
+    my $entries = $data->{$chip};
+    for my $label (keys %$entries) {
+        my $obj = $entries->{$label};
+        next unless ref $obj eq "HASH";
+        my $temp;
+        for my $k (keys %$obj) {
+            next unless $k =~ /^temp\d+_input$/;
+            $temp = int($obj->{$k});
+            last;
+        }
+        push @lines, "$label: ${temp}°C" if defined $temp;
+    }
+}
+print join("\\n\\t", @lines);
+' <<<"$sensors_json")"
 
 if [ -n "$CPUINFO_TEMPERATURE_ID" ]; then
     temperature=$(perl -ne 'BEGIN{$id=shift} if (/^\Q$id\E:\s*([0-9]+)/){print $1; exit}' "$CPUINFO_TEMPERATURE_ID" <<<"$cpu_temps")
@@ -123,14 +102,26 @@ if [[ -z $temperature ]]; then
 fi
 utilization=$(get_utilization)
 frequency=$(perl -ne 'BEGIN { $sum = 0; $count = 0 } if (/cpu MHz\s+:\s+([\d.]+)/) { $sum += $1; $count++ } END { if ($count > 0) { printf "%.2f\n", $sum / $count } else { print "NaN\n" } }' /proc/cpuinfo)
-icons="$(map_floor "$util_lv" "$utilization")$(map_floor "$temp_lv" "$temperature")"
-speedo="${icons:0:1}"
-thermo="${icons:1:1}"
-emoji="${icons:2}"
-tooltip_str="$emoji $CPUINFO_MODEL\n"
-[[ -n $thermo ]] && tooltip_str+="$thermo Temperature: \n\t$cpu_temps \n"
-[[ -n $speedo ]] && tooltip_str+="$speedo Utilization: $utilization%\n"
-tooltip_str+=" Clock Speed: $frequency/$CPUINFO_MAX_FREQ MHz"
+
+# Numeric classes and percentage for Waybar formatting
+temp_val=${temperature%%.*}
+((temp_val < 0)) && temp_val=0
+((temp_val > 999)) && temp_val=999
+temp_bucket=$(((temp_val / 5) * 5))
+temp_class="temp-$temp_bucket"
+
+util_val=${utilization%.*}
+((${util_val:-0} < 0)) && util_val=0
+((${util_val:-0} > 100)) && util_val=100
+util_bucket=$(((util_val / 10) * 10))
+util_class="util-$util_bucket"
+
+temp_pct=$temp_val
+((temp_pct > 100)) && temp_pct=100
+tooltip_str="$CPUINFO_MODEL\n"
+tooltip_str+="Temperature: \n\t$cpu_temps \n"
+tooltip_str+="Utilization: $utilization%\n"
+tooltip_str+="Clock Speed: $frequency/$CPUINFO_MAX_FREQ MHz"
 cat <<JSON
-{"text":"$thermo $(get_temp_color "$temperature")", "tooltip":"$tooltip_str"}
+{"text":"$temperature°C", "tooltip":"$tooltip_str", "class":["$temp_class","$util_class"], "percentage":$temp_pct, "alt":"$temp_bucket"}
 JSON
