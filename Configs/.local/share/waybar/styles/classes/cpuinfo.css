@@ -1,0 +1,78 @@
+/* Temperature buckets (5°C increments from cpuinfo.sh: temp-0, temp-5, …) */
+#custom-cpuinfo.temp-0,
+#custom-cpuinfo.temp-5,
+#custom-cpuinfo.temp-10 {
+    color: #4169e1;
+}
+
+#custom-cpuinfo.temp-15,
+#custom-cpuinfo.temp-20 {
+    color: #4682b4;
+}
+
+#custom-cpuinfo.temp-25,
+#custom-cpuinfo.temp-35,
+#custom-cpuinfo.temp-30 {
+    color: #87ceeb;
+}
+
+#custom-cpuinfo.temp-40,
+#custom-cpuinfo.temp-45,
+#custom-cpuinfo.temp-50,
+#custom-cpuinfo.temp-55 {
+    color: unset;
+}
+
+#custom-cpuinfo.temp-60 {
+    color: #ffa500;
+}
+
+#custom-cpuinfo.temp-65 {
+    color: #ff8c00;
+}
+
+#custom-cpuinfo.temp-70 {
+    color: #ff6347;
+}
+
+#custom-cpuinfo.temp-75 {
+    color: #ff471a;
+}
+
+#custom-cpuinfo.temp-80 {
+    color: #d22f2f;
+}
+
+#custom-cpuinfo.temp-85 {
+    color: #ad1f2f;
+}
+
+#custom-cpuinfo.temp-90,
+#custom-cpuinfo.temp-95,
+#custom-cpuinfo.temp-100 {
+    color: #8b0000;
+}
+
+/* Utilization buckets (font weight by load) */
+#custom-cpuinfo.util-0,
+#custom-cpuinfo.util-10,
+#custom-cpuinfo.util-20 {
+    font-weight: 400;
+}
+
+#custom-cpuinfo.util-30,
+#custom-cpuinfo.util-40,
+#custom-cpuinfo.util-50 {
+    font-weight: 500;
+}
+
+#custom-cpuinfo.util-60,
+#custom-cpuinfo.util-70,
+#custom-cpuinfo.util-80 {
+    font-weight: 600;
+}
+
+#custom-cpuinfo.util-90,
+#custom-cpuinfo.util-100 {
+    font-weight: 700;
+}

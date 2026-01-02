@@ -12,6 +12,10 @@
 @import "groups/leaf.css";
 @import "groups/leaf-inverse.css";
 
+/* classes */
+@import "classes/cpuinfo.css";
+@import "classes/gpuinfo.css";
+
 
 /* Dynamic Stuff */
 /*
