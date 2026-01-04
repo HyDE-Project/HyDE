@@ -146,9 +146,13 @@ Whether you're helping with code, testing, or documentation, we appreciate your 
 
 To update HyDE, you will need to pull the latest changes from GitHub and restore the configs by running the following commands:
 
+> [!WARNING]
+> The following commands will discard any uncommitted local changes in the repository.
+
 ```shell
 cd ~/HyDE/Scripts
-git pull origin master
+git fetch --update-shallow --depth 1 origin master
+git reset --hard origin/master
 ./install.sh -r
 ```
 

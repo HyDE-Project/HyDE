@@ -6,7 +6,7 @@
 
 ###### _<div align="right"><a id=-design-by-t2></a><sub>// design by t2</sub></div>_
 
-![hyde_banner](../assets/hyde_banner.png)
+![hyde_banner](../hyde_banner.png)
 
 <!--
 Soporte multilingüe de KEYBINDINGS
@@ -37,11 +37,11 @@ Soporte multilingüe de KEYBINDINGS
 
 <div align="center">
   <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
-    <img src="../assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
-    <img src="../assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
-    <img src="../assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
-    <img src="../assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
-    <img src="../assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+    <img src="../archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    <img src="../cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    <img src="../endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    <img src="../garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    <img src="../nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
   </div>
 </div>
 
@@ -321,5 +321,5 @@ El script `gamelauncher.sh` viene incluido por defecto y se encuentra en:
 </div>
 
 <div align="right">
-  <sub>Última edición el: 02/01/2025<span id="last-edited"></span></sub>
+  <sub>Última edición el: 01/01/2026<span id="last-edited"></span></sub>
 </div>
