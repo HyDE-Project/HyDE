@@ -18,7 +18,7 @@ if [ "$HYPRGAMEMODE" = 1 ]; then
         keyword layerrule noanim,swww-daemon ;\
         keyword layerrule noanim,rofi
         "
-    hyprctl 'keyword windowrule opaque,class:(.*)'
+    hyprctl "keyword windowrule opaque on, match:class .*"
     exit
 else
     hyprctl reload config-only -q
