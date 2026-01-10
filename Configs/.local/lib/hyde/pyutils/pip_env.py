@@ -29,8 +29,8 @@ def is_venv_valid(venv_path):
 
     # To determine whether a venv is valid, the following three checks are performed:
 
-    # 1.- Must have its own python
-    if not os.path.exists(python_exe):
+    # 1.- Must have its own python file and it must be executable
+    if not (os.path.isfile(python_exe) and os.access(python_exe, os.X_OK)):
         return False
     
     # 2.- Python inside venv must be able to import pip 
@@ -51,11 +51,12 @@ def is_venv_valid(venv_path):
         try:
             with open(pyvenv_cfg, "r") as f:
                 for line in f:
-                    if line.startswith("version"):
-                        venv_version = line.split("=", 1)[1].strip()
+                    key, sep, value = line.partition("=")
+                    if sep and key.strip == "version":
+                        venv_version = value.strip()
                         cur_version = f"{sys.version_info.major}.{sys.version_info.minor}"
                         if not venv_version.startswith(cur_version):
-                             return False
+                            return False
         except Exception:
             return False
 
