@@ -870,6 +870,10 @@ type      = "object"
     description = "Qt5 font."
     type        = "string"
 
+[properties.qt5.properties.font_style]
+    description = "Qt5 font style."
+    type        = "string"
+
 [properties.qt5.properties.font_size]
     default     = 10
     description = "Qt5 font size."
@@ -892,6 +896,10 @@ type      = "object"
 [properties.qt6.properties.font]
     default     = "Canterell"
     description = "Qt6 font."
+    type        = "string"
+
+[properties.qt6.properties.font_style]
+    description = "Qt6 font style."
     type        = "string"
 
 [properties.qt6.properties.font_size]

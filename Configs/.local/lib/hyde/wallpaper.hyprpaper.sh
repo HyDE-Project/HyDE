@@ -23,7 +23,7 @@ if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
 else
     cat <<EOF >"$XDG_STATE_HOME/hyde/hyprpaper.conf"
 splash = false
-wallpaper:path = ${selected_wall}
+wallpaper:path = "${selected_wall}"
 EOF
 
     if systemctl --user is-active --quiet hyprpaper.service; then

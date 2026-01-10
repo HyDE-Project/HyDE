@@ -154,6 +154,7 @@ generate_json() {
     ((temp_val < 0)) && temp_val=0
     ((temp_val > 999)) && temp_val=999
     local temp_bucket=$(((temp_val / 5) * 5))
+    ((temp_bucket > 100)) && temp_bucket=100
     local temp_class="temp-$temp_bucket"
 
     local util_val=${utilization%.*}
