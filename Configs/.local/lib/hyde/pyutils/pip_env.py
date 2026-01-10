@@ -18,6 +18,48 @@ if lib_dir is None:
     sys.exit(1)
 
 
+def is_venv_valid():
+    """Returns whether the venv is valid or not"""
+
+    venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
+
+    python_exe = os.path.join(venv_path, "bin", "python")
+    pyvenv_cfg = os.path.join(venv_path, "pyvenv.cfg")
+
+    # To determine whether a venv is valid, the following three checks are performed:
+
+    # 1.- Must have its own python
+    if not os.path.exists(python_exe):
+        return False
+    
+    # 2.- Python inside venv must be able to import pip 
+    try:
+        res = subprocess.run(
+            [python_exe, "-c", "import pip"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if res.returncode != 0:
+            return False
+    except Exception:
+        return False
+    
+    # 3.- Python version used to create the venv must match current one
+    if os.path.exists(pyvenv_cfg):
+        try:
+            with open(pyvenv_cfg, "r") as f:
+                for line in f:
+                    if line.startswith("version"):
+                        venv_version = line.split("=", 1)[1].strip()
+                        cur_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+                        if not venv_version.startswith(cur_version):
+                             return False
+        except Exception:
+            return False
+
+    return True
+
+
 def get_venv_path():
     """Set up the virtual environment path and modify sys.path."""
     venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
@@ -83,6 +125,9 @@ def install_dependencies(venv_path, requirements_file):
 
 def install_package(venv_path, package):
     """Install a single package in the virtual environment."""
+    if os.path.exists(venv_path) and not is_venv_valid():
+        notify.send("HyDE PIP", "⚠️ Python version changed or virtualenv is broken, rebuilding…")
+        destroy_venv(venv_path)
     if not os.path.exists(venv_path):
         create_venv(venv_path)
     pip_executable = os.path.join(venv_path, "bin", "pip")
