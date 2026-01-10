@@ -52,7 +52,7 @@ def is_venv_valid(venv_path):
             with open(pyvenv_cfg, "r") as f:
                 for line in f:
                     key, sep, value = line.partition("=")
-                    if sep and key.strip == "version":
+                    if sep and key.strip() == "version":
                         venv_version = value.strip()
                         cur_version = f"{sys.version_info.major}.{sys.version_info.minor}"
                         if not venv_version.startswith(cur_version):
