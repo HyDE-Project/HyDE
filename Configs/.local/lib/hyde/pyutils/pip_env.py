@@ -18,11 +18,12 @@ if lib_dir is None:
     sys.exit(1)
 
 
-def is_venv_valid():
-    """Returns whether the venv is valid or not"""
-
-    venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
-
+def is_venv_valid(venv_path):
+    """Returns whether the venv is valid or not
+    
+    Args:
+        venv_path: Path to the virtual environment to validate
+    """
     python_exe = os.path.join(venv_path, "bin", "python")
     pyvenv_cfg = os.path.join(venv_path, "pyvenv.cfg")
 
@@ -38,6 +39,7 @@ def is_venv_valid():
             [python_exe, "-c", "import pip"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
+            timeout=5,
         )
         if res.returncode != 0:
             return False
@@ -125,7 +127,7 @@ def install_dependencies(venv_path, requirements_file):
 
 def install_package(venv_path, package):
     """Install a single package in the virtual environment."""
-    if os.path.exists(venv_path) and not is_venv_valid():
+    if os.path.exists(venv_path) and not is_venv_valid(venv_path):
         notify.send("HyDE PIP", "⚠️ Python version changed or virtualenv is broken, rebuilding…")
         destroy_venv(venv_path)
     if not os.path.exists(venv_path):
