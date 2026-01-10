@@ -5,7 +5,7 @@ else
     export_hyde_config
 fi
 USAGE() {
-    cat << "USAGE"
+    cat <<"USAGE"
 
 	Usage: $(basename "$0") [option]
 	Options:
@@ -52,7 +52,7 @@ mkdir -p "$save_dir"
 if [[ $annotation_tool == "swappy" ]]; then
     swpy_dir="$confDir/swappy"
     mkdir -p "$swpy_dir"
-    echo -e "[Default]\nsave_dir=$save_dir\nsave_filename_format=$save_file" > "$swpy_dir"/config
+    echo -e "[Default]\nsave_dir=$save_dir\nsave_filename_format=$save_file" >"$swpy_dir"/config
 fi
 if [[ $annotation_tool == "satty" ]]; then
     annotation_args+=("--copy-command" "wl-copy")
@@ -114,13 +114,13 @@ qr_screenshot() {
 pre_cmd
 
 case $1 in
-    p) take_screenshot "screen" ;;
-    s) take_screenshot "area" ;;
-    sf) take_screenshot "area" "--freeze" ;;
-    m) take_screenshot "output" ;;
-    sc) ocr_screenshot "area" "--freeze" ;;
-    sq) qr_screenshot "area" "--freeze" ;;
-    *) USAGE ;;
+p) take_screenshot "screen" ;;
+s) take_screenshot "area" ;;
+sf) take_screenshot "area" "--freeze" ;;
+m) take_screenshot "output" ;;
+sc) ocr_screenshot "area" "--freeze" ;;
+sq) qr_screenshot "area" "--freeze" ;;
+*) USAGE ;;
 esac
 
 [ -f "$temp_screenshot" ] && rm "$temp_screenshot"
