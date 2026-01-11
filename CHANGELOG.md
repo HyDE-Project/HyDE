@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## Upcoming Release
 
 
+### Fixed
+
+- Broken venvs are now auto-rebuild when installing a dependency
+
 ### Changed
 
 - Cpuinfo: colors are now available as css class instead hardcoding in scripts.
