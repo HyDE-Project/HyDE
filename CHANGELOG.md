@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
-- Broken venvs are now auto-rebuild when installing a dependency
+- Broken venvs are now auto-rebuilt when installing a dependency
 
 ### Changed
 
