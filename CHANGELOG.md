@@ -6,8 +6,12 @@ All notable changes to `HyDE` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
-## Upcoming Release
+## v26.1.2
 
+
+### Fixed
+
+- Broken venvs are now auto-rebuilt when installing a dependency
 
 ### Changed
 
