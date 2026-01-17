@@ -66,7 +66,7 @@ Who are the $USER?
 
 ---
 
-Here's how we can update HyDE-specific Hyprland settings without changing user preferences. We don't need the "userprefs" file. Instead, we can source HyDE's `hyprland.conf` and make $USER preferred changes directly in the config. With this approach, won't potentially break hyde and hyde won't break your own dots.
+Here's how we can update HyDE-specific Hyprland settings without changing user preferences. We don't need the "userprefs" file. Instead, we can source HyDE's `hyprland.conf` and make $USER preferred changes directly in the config. With this approach, you won't potentially break hyde and hyde won't break your own dots.
 
 ![Hyprland structure](https://github.com/user-attachments/assets/91b35c2e-0003-458f-ab58-18fc29541268)
 
