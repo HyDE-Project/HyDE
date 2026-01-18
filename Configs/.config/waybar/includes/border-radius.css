@@ -298,7 +298,7 @@ menu {
     border-radius: 10pt;
 }
 
-menu menuitem:hover {
+menu menuitem {
     border-radius: 10pt;
 }
 
