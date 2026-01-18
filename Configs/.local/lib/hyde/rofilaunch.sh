@@ -23,22 +23,26 @@ case "$1" in
         rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
         rofi_args+=("${ROFI_LAUNCH_DRUN_ARGS[@]:-}")
         rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
+        shift
         ;;
     w | --window)
         r_mode="window"
         rofi_config="${ROFI_LAUNCH_WINDOW_STYLE:-$rofi_config}"
         rofi_args+=("${ROFI_LAUNCH_WINDOW_ARGS[@]:-}")
+        shift
         ;;
     f | --filebrowser)
         r_mode="filebrowser"
         rofi_config="${ROFI_LAUNCH_FILEBROWSER_STYLE:-$rofi_config}"
         rofi_args+=("${ROFI_LAUNCH_FILEBROWSER_ARGS[@]:-}")
+        shift
         ;;
     r | --run)
         r_mode="run"
         rofi_config="${ROFI_LAUNCH_RUN_STYLE:-$rofi_config}"
         rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
         rofi_args+=("${ROFI_LAUNCH_RUN_ARGS[@]:-}")
+        shift
         ;;
     h | --help)
         echo -e "$(basename "$0") [action]"
@@ -56,6 +60,8 @@ case "$1" in
         rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
         ;;
 esac
+
+rofi_args+=("$@")
 
 hypr_border="${hypr_border:-10}"
 hypr_width="${hypr_width:-2}"
