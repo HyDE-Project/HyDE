@@ -21,7 +21,9 @@ All packages installed via the package manager were referenced in the following 
 ## Inspirations
 
 - The HyDE Project is a superset of hyprdots. This is a continued effort to make hyprdots customizable and extensible. Thanks @prasanthrangan / @Tittu - [hyprdots](https://github.com/prasanthrangan/hyprdots)
-- Derived hyprlock Ideas - [MrVivekRajan/Hypr-Dots](https://github.com/MrVivekRajan/Hypr-Dots)
+- Derived hyprlock Ideas -
+    - [MrVivekRajan/Hypr-Dots](https://github.com/MrVivekRajan/Hypr-Dots)
+    - [FireDrop6000/hyprland-mydots](https://github.com/FireDrop6000/hyprland-mydots)
 
 ## Ko-fi
 
