@@ -289,3 +289,19 @@ window#waybar.right #pill-up menuitem,
 window#waybar.right #pill-up tooltip {
     border-radius: 10pt 10pt 0 0;
 }
+
+tooltip {
+    border-radius: 10pt;
+}
+
+menu {
+    border-radius: 10pt;
+}
+
+menu menuitem {
+    border-radius: 10pt;
+}
+
+window.popup decoration {
+    border-radius: 10pt;
+}

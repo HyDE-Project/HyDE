@@ -108,6 +108,7 @@ temp_val=${temperature%%.*}
 ((temp_val < 0)) && temp_val=0
 ((temp_val > 999)) && temp_val=999
 temp_bucket=$(((temp_val / 5) * 5))
+((temp_bucket > 100)) && temp_bucket=100
 temp_class="temp-$temp_bucket"
 
 util_val=${utilization%.*}

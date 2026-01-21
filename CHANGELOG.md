@@ -6,11 +6,20 @@ All notable changes to `HyDE` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
-## Upcoming Release
+## v26.1.2
 
+
+### Fixed
+
+- Waybar: visual fixes for menus, tooltips and tray (borders, radii, checkbox/radio shapes)
+- Broken venvs are now auto-rebuilt when installing a dependency
 
 ### Changed
 
+- Waybar: improved menus and popups; added fade animation and theme color support (#1542, #1549)
+- Font: avoid forcing font hinting to "full"; prefer system default (commits 7ceff6a, bf7cee2)
+- Misc: removed stray "hyprquery" binary (af551c6) and branch sync/merges (dev → rc, docs-ptbr)
+- Docs: Portuguese translations for documentation and keybinds (#1543)
 - Cpuinfo: colors are now available as css class instead hardcoding in scripts.
 - Gpuinfo: colors are now available as css class instead hardcoding in scripts.
 
@@ -58,7 +67,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Migration 
 
-##### Hyprland
+##### Hyprland v0.53.0
 
 - Before updating HyDE, Please make sure your hyprland version is 0.53.0!
 - After Updating HyDE please make sure to fix any syntax error in ~/.config/hypr/*
@@ -67,9 +76,7 @@ We are trying our best to fix any issues. So please try to your best to search f
 
 Stay HyDErated!
 
-## Migration
-
-##### NVIDIA
+##### NVIDIA Legacy Support
 
 The driver selection/installation logic has been updated to align with Arch Linux recommendations.
 

@@ -983,6 +983,10 @@
                     "description": "Qt5 font.",
                     "type": "string"
                 },
+                "font_style": {
+                    "description": "Qt5 font style.",
+                    "type": "string"
+                },
                 "font_size": {
                     "default": 10,
                     "description": "Qt5 font size.",
@@ -1007,6 +1011,10 @@
                 "font": {
                     "default": "Canterell",
                     "description": "Qt6 font.",
+                    "type": "string"
+                },
+                "font_style": {
+                    "description": "Qt6 font style.",
                     "type": "string"
                 },
                 "font_size": {
