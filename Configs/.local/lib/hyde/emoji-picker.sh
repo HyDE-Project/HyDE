@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-pkill -u "$USER" rofi && exit 0
+killall -u "$USER" rofi && exit 0
 if [[ $HYDE_SHELL_INIT -ne 1 ]]; then
     eval "$(hyde-shell init)"
 else

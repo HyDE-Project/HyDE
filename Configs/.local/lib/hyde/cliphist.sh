@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-pkill -u "$USER" rofi && exit 0
+killall -u "$USER" rofi && exit 0
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
 cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
 favorites_file="$cache_dir/landing/cliphist_favorites"
