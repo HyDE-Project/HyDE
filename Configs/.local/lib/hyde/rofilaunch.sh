@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-killall  rofi && exit 0
+killall rofi && exit 0
 if [[ $HYDE_SHELL_INIT -ne 1 ]]; then
     eval "$(hyde-shell init)"
 else

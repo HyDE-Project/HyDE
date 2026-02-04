@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-killall -x rofi && exit
+killall rofi && exit
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 keyconfDir="$confDir/hypr"
