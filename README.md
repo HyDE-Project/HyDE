@@ -287,16 +287,7 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_5.png"/></td></tr></table></div>
 ## Quick Tips
 
-### Enabling App Bar at the Bottom
 
-To enable the app bar at the bottom of the HyDE interface:
-
-1. Open the app settings.
-2. Navigate to `Appearance` or `Layout`.
-3. Toggle the option **Enable Bottom App Bar**.
-4. Restart the app to see the changes.
-
-> Note: If the icons do not appear, make sure you are using the latest version of the app.
 ### Changing Themes Quickly
 
 1. Press `Mod + T` to open the theme switcher.
