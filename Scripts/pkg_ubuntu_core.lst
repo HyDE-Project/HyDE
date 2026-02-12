@@ -1,0 +1,81 @@
+# --------------------------------------------------- // Ubuntu 24.04 Essential Packages
+# This file lists Ubuntu package equivalents for essential Hyprland functionality
+# Based on pkg_core.lst but adapted for Ubuntu 24.04 (apt packages only)
+# Packages requiring compilation are marked with [COMPILE] and documented in UBUNTU_PACKAGE_MAPPING.md
+
+# --------------------------------------------------- // System - Audio
+pipewire                                               # audio/video server
+pipewire-alsa                                          # pipewire alsa client
+pipewire-audio-client-libraries                        # pipewire audio client (was pipewire-audio in Arch)
+pipewire-jack                                          # pipewire jack client
+pipewire-pulse                                         # pipewire pulseaudio client
+gstreamer1.0-pipewire                                  # pipewire gstreamer client (was gst-plugin-pipewire)
+wireplumber                                            # pipewire session manager
+pavucontrol                                            # pulseaudio volume control
+pamixer                                                # pulseaudio cli mixer
+
+# --------------------------------------------------- // System - Network & Bluetooth
+network-manager                                        # network manager (was networkmanager)
+network-manager-gnome                                  # network manager system tray utility (was network-manager-applet)
+bluez                                                  # bluetooth protocol stack
+bluez-tools                                            # bluetooth utility cli (was bluez-utils)
+blueman                                                # bluetooth manager gui
+
+# --------------------------------------------------- // System - Utilities
+brightnessctl                                          # screen brightness control
+playerctl                                              # media controls
+udiskie                                                # manage removable media
+
+# --------------------------------------------------- // Display Manager
+sddm                                                   # display manager for KDE plasma
+qml-module-qtquick-controls                            # for sddm theme ui elements (was qt5-quickcontrols)
+qml-module-qtquick-controls2                           # for sddm theme ui elements (was qt5-quickcontrols2)
+qml-module-qtgraphicaleffects                          # for sddm theme effects (was qt5-graphicaleffects)
+
+# --------------------------------------------------- // Window Manager Components
+# [COMPILE] hyprland                                   # wlroots-based wayland compositor - MUST COMPILE
+dunst                                                  # notification daemon
+rofi                                                   # application launcher
+waybar                                                 # system bar
+# [COMPILE] swww                                       # wallpaper daemon - MUST COMPILE
+# [COMPILE] hyprlock                                   # lock screen - MUST COMPILE
+# [COMPILE] wlogout                                    # logout menu - MUST COMPILE
+grim                                                   # screenshot tool
+# [COMPILE] hyprpicker                                 # color picker - MUST COMPILE
+slurp                                                  # region select for screenshot/screenshare
+# [COMPILE] satty                                      # Modern Screenshot Annotation - MUST COMPILE
+# [COMPILE] cliphist                                   # clipboard manager - MUST COMPILE
+# [COMPILE] wl-clip-persist                            # Keep Wayland clipboard - MUST COMPILE
+# [COMPILE] hyprsunset                                 # blue light filter - MUST COMPILE
+
+# --------------------------------------------------- // Dependencies & Integration
+polkit-gnome                                           # authentication agent
+# [COMPILE] xdg-desktop-portal-hyprland                # xdg desktop portal for hyprland - MUST COMPILE
+xdg-desktop-portal-gtk                                 # file picker and dbus integration
+xdg-user-dirs                                          # Manage user directories like ~/Desktop and ~/Music
+# [UBUNTU] apt update checking instead of pacman-contrib
+parallel                                               # for parallel processing
+jq                                                     # for json processing
+imagemagick                                            # for image processing
+libnotify-bin                                          # for notifications (was libnotify)
+fonts-noto-color-emoji                                 # emoji font (was noto-fonts-emoji)
+
+# --------------------------------------------------- // Theming
+# [COMPILE] nwg-look                                   # gtk configuration tool - COMPILE (Go)
+qt5ct                                                  # qt5 configuration tool
+qt6ct                                                  # qt6 configuration tool
+qt6-style-kvantum                                      # svg based qt6 theme engine (was kvantum)
+qt5-style-kvantum                                      # svg based qt5 theme engine (was kvantum-qt5)
+qt5-wayland                                            # wayland support in qt5
+qt6-wayland                                            # wayland support in qt6
+
+# --------------------------------------------------- // Session Manager (Critical)
+# [COMPILE] uwsm                                       # Wayland session manager - MUST COMPILE (required since v25.8.2)
+
+# --------------------------------------------------- // HyDE
+# [COMPILE] hypridle                                   # idle daemon - MUST COMPILE
+
+# --------------------------------------------------- // NOTES
+# [COMPILE] items must be built from source - see UBUNTU_PACKAGE_MAPPING.md
+# Use Scripts/ubuntu/install_ubuntu_essentials.sh for apt packages
+# Use Scripts/ubuntu/compile_hyprland_ecosystem.sh for compilation
