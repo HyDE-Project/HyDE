@@ -199,7 +199,7 @@ def set_default_weather_location(weather_lang="en"):
                 "User-Agent": "Mozilla/5.0",
                 "Accept-Language": weather_lang
             }
-            response = requests.get(URL, timeout=12, headers=headers)
+            response = requests.get(URL, timeout=10, headers=headers)
             response.raise_for_status()  # raise for HTTP errors
             data = response.json()
             location = data.get("city")
@@ -270,7 +270,7 @@ headers = {
     "User-Agent": "Mozilla/5.0",
     "Accept-Language": weather_lang
     }
-response = requests.get(URL, timeout=12, headers=headers)
+response = requests.get(URL, timeout=10, headers=headers)
 try:
     weather = response.json()
 except json.decoder.JSONDecodeError:
