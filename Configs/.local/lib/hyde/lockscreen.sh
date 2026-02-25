@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
-lockscreen="${HYPRLAND_LOCKSCREEN:-$lockscreen}"
-lockscreen="${LOCKSCREEN:-hyprlock}"
+lockscreen="${HYPRLAND_LOCKSCREEN:-hyprlock}"
+lockscreen="${LOCKSCREEN:-$lockscreen}"
 lockscreen="${HYDE_LOCKSCREEN:-$lockscreen}"
 source "${LIB_DIR}/hyde/shutils/argparse.sh"
 argparse_init "$@"

@@ -276,6 +276,10 @@ menu {
     background-color: @main-bg;
 }
 
+menu menuitem {
+    transition: 0.25s;
+}
+
 menu menuitem:hover {
     background-color: @wb-act-bg;
     color: @wb-act-fg;
