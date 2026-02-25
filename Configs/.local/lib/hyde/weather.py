@@ -200,9 +200,6 @@ def set_default_weather_location():
     it in the process environment. The detected value is also appended
     to HyDE's staterc file for persistence across sessions.
 
-    Args:
-        weather_lang (str): Language preference used in the HTTP request headers.
-
     Notes:
         - Silently ignores network and file I/O errors.
         - Mutates process environment state.
