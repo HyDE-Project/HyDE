@@ -191,36 +191,61 @@ def get_default_locale():
         pass
     return lang, temp, time, wind
 
-def set_default_weather_location():
+def set_default_weather_location() -> None:
     """
     Set WEATHER_LOCATION using IP-based geolocation if not already defined.
 
-    If the WEATHER_LOCATION environment variable is unset or empty,
-    the function queries ipinfo.io to detect the user's city and stores
-    it in the process environment. The detected value is also appended
-    to HyDE's staterc file for persistence across sessions.
+    If the WEATHER_LOCATION environment variable is unset, this function
+    queries ipinfo.io to detect the user's city and stores it in the process
+    environment. A successfully detected value is persisted to HyDE's
+    staterc file to avoid repeated network calls.
+
+    If detection fails, a sentinel value is stored to prevent repeated
+    API calls on subsequent runs.
 
     Notes:
-        - Silently ignores network and file I/O errors.
+        - Network and file I/O errors are handled gracefully.
         - Mutates process environment state.
+        - Avoids unbounded staterc growth.
     """
-    if not os.getenv("WEATHER_LOCATION"):
-        try:
-            URL = "https://ipinfo.io/json"
-            response = requests.get(URL, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-            response.raise_for_status()  # raise for HTTP errors
-            data = response.json()
-            location = data.get("city", "").replace(" ", "_")
+    # Do nothing if already configured
+    current = os.getenv("WEATHER_LOCATION")
+    if current:
+        return
+    # Prevent infinite retry loop
+    if current == "__DETECTION_FAILED__":
+        return
+    url = "https://ipinfo.io/json"
+    staterc = os.path.join(
+        os.environ.get("HOME", ""),
+        ".local",
+        "state",
+        "hyde",
+        "staterc",
+    )
+    try:
+        response = requests.get(
+            url,
+            timeout=10,
+            headers={"User-Agent": "Mozilla/5.0"},
+        )
+        response.raise_for_status()
+
+        data = response.json()
+        location = data.get("city")
+        if location:
+            location = location.replace(" ", "_")
             os.environ["WEATHER_LOCATION"] = location
-            # Persist so the next invocation skips the HTTP call entirely
-            staterc = os.path.join(os.environ.get("HOME", ""), ".local", "state", "hyde", "staterc")
             try:
                 with open(staterc, "a", encoding="utf-8") as f:
                     f.write(f'\nWEATHER_LOCATION="{location}"\n')
             except OSError:
+                # File persistence failure should not crash execution
                 pass
-        except Exception:
-            os.environ.setdefault("WEATHER_LOCATION", "")
+        else:
+            os.environ["WEATHER_LOCATION"] = "__DETECTION_FAILED__"
+    except requests.RequestException:
+        os.environ["WEATHER_LOCATION"] = "__DETECTION_FAILED__"
 
 ### Variables ###
 def_lang, def_temp, def_time, def_wind = get_default_locale() # default vals based on locale
