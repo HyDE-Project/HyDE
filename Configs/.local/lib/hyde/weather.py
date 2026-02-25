@@ -191,6 +191,23 @@ def get_default_locale():
         pass
     return lang, temp, time, wind
 
+def set_default_weather_location(weather_lang="en"):
+    if not os.getenv("WEATHER_LOCATION"):
+        try:
+            URL = "https://ipinfo.io/json"
+            headers = {
+                "User-Agent": "Mozilla/5.0",
+                "Accept-Language": weather_lang
+            }
+            response = requests.get(URL, timeout=12, headers=headers)
+            response.raise_for_status()  # raise for HTTP errors
+            data = response.json()
+            location = data.get("city")
+            if location:
+                os.environ["WEATHER_LOCATION"] = location.replace(" ", "_")
+        except Exception:
+            os.environ["WEATHER_LOCATION"] = "" 
+
 ### Variables ###
 def_lang, def_temp, def_time, def_wind = get_default_locale() # default vals based on locale
 load_env_file(os.path.join(os.environ.get("HOME"), ".local", "state", "hyde", "staterc"))
@@ -228,6 +245,7 @@ try:
     )  # Number of days to show the forecast for (default: 3)
 except ValueError:
     FORECAST_DAYS = 3
+set_default_weather_location(weather_lang)
 get_location = os.getenv("WEATHER_LOCATION", "").replace(
     " ", "_"
 )  # Name of the location to get the weather from (default: '')
@@ -252,7 +270,7 @@ headers = {
     "User-Agent": "Mozilla/5.0",
     "Accept-Language": weather_lang
     }
-response = requests.get(URL, timeout=10, headers=headers)
+response = requests.get(URL, timeout=12, headers=headers)
 try:
     weather = response.json()
 except json.decoder.JSONDecodeError:
