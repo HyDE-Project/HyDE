@@ -191,7 +191,22 @@ def get_default_locale():
         pass
     return lang, temp, time, wind
 
-def set_default_weather_location(weather_lang="en"):
+def set_default_weather_location():
+    """
+    Set WEATHER_LOCATION using IP-based geolocation if not already defined.
+
+    If the WEATHER_LOCATION environment variable is unset or empty,
+    the function queries ipinfo.io to detect the user's city and stores
+    it in the process environment. The detected value is also appended
+    to HyDE's staterc file for persistence across sessions.
+
+    Args:
+        weather_lang (str): Language preference used in the HTTP request headers.
+
+    Notes:
+        - Silently ignores network and file I/O errors.
+        - Mutates process environment state.
+    """
     if not os.getenv("WEATHER_LOCATION"):
         try:
             URL = "https://ipinfo.io/json"
@@ -247,7 +262,7 @@ try:
     )  # Number of days to show the forecast for (default: 3)
 except ValueError:
     FORECAST_DAYS = 3
-set_default_weather_location(weather_lang)
+set_default_weather_location()
 get_location = os.getenv("WEATHER_LOCATION", "").replace(
     " ", "_"
 )  # Name of the location to get the weather from (default: '')
