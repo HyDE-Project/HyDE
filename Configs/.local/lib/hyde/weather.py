@@ -195,18 +195,20 @@ def set_default_weather_location(weather_lang="en"):
     if not os.getenv("WEATHER_LOCATION"):
         try:
             URL = "https://ipinfo.io/json"
-            headers = {
-                "User-Agent": "Mozilla/5.0",
-                "Accept-Language": weather_lang
-            }
-            response = requests.get(URL, timeout=10, headers=headers)
+            response = requests.get(URL, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
             response.raise_for_status()  # raise for HTTP errors
             data = response.json()
-            location = data.get("city")
-            if location:
-                os.environ["WEATHER_LOCATION"] = location.replace(" ", "_")
+            location = data.get("city", "").replace(" ", "_")
+            os.environ["WEATHER_LOCATION"] = location
+            # Persist so the next invocation skips the HTTP call entirely
+            staterc = os.path.join(os.environ.get("HOME", ""), ".local", "state", "hyde", "staterc")
+            try:
+                with open(staterc, "a", encoding="utf-8") as f:
+                    f.write(f'\nWEATHER_LOCATION="{location}"\n')
+            except OSError:
+                pass
         except Exception:
-            os.environ["WEATHER_LOCATION"] = "" 
+            os.environ.setdefault("WEATHER_LOCATION", "")
 
 ### Variables ###
 def_lang, def_temp, def_time, def_wind = get_default_locale() # default vals based on locale
