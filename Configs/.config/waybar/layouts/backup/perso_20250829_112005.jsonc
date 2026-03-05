@@ -1,0 +1,45 @@
+{
+    "layer": "top",
+    "output": [
+        "*"
+    ],
+    "reload_style_on_change": true,
+    "height": 10,
+    "exclusive": true,
+    "passthrough": false,
+    "include": [
+        // "$XDG_CONFIG_HOME/waybar/modules/*json*",
+        "$CDG_CONFIG_HOME/waybar/style.css",
+        "$XDG_CONFIG_HOME/waybar/includes/includes.json"
+    ],
+    "modules-left": [
+        
+    ],
+
+
+
+    "modules-center": [
+      "group/pill-in#center"  
+    ],
+    "group/pill-in#center": {
+        "orientation": "inherit",
+        "modules": [
+            "clock",
+        ]
+    },
+
+    "modules-right": [
+        "group/leaf-inverse#right1"
+    ],
+    "group/leaf-inverse#right1": {
+        "modules": [
+            "custom/wallchange",
+            "custom/theme",
+            "custom/wbar",
+            "custom/cliphist",
+            "custom/hyde-menu",
+            "custom/power"
+        ],
+        "orientation": "inherit"
+    },
+}

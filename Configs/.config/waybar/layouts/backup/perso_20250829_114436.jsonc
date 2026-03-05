@@ -1,0 +1,55 @@
+{
+    "layer": "top",
+    "output": [
+        "*"
+    ],
+    "reload_style_on_change": true,
+    "height": 15,
+    "exclusive": true,
+    "passthrough": false,
+    "include": [
+        // "$XDG_CONFIG_HOME/waybar/modules/*json*",
+        "$CDG_CONFIG_HOME/waybar/style.css",
+        "$XDG_CONFIG_HOME/waybar/includes/includes.json"
+    ],
+    "modules-left": [
+        
+    ],
+
+
+
+    "modules-center": [
+      "group/pill-in#center"  
+    ],
+    "group/pill-in#center": {
+        "orientation": "inherit",
+        "modules": [
+            "clock",
+        ],
+    },
+
+    "modules-right": [
+        "group/leaf-inverse#right1",
+        "group/leaf-inverse#right2"
+    ],
+    "group/leaf-inverse#right1": {
+        "orientation": "inherit",
+        "modules": [
+            "custom/cava",
+            
+           
+        ],
+    },
+    "group/leaf-inverse#right2": {
+        "modules": [
+            "custom/bluetooth",
+            "custom/backlight",
+            "custom/updates",
+            "custom/keybindhint",
+            "custom/cliphist",
+            "custom/hyde-menu",
+            "custom/power",
+        ],
+        "orientation": "inherit"
+    },
+}

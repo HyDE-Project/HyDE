@@ -6,17 +6,17 @@
     *  ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
     *  ░░▒▒░░░░░▓▓▓▓▓ | | | | |  | |  __/
     *   ░▒▒░░░░▓▓   ▓▓ | |_| | |_/ /| |___
-    *    ░▒▒░░▓▓   ▓▓   |__  |____/ |____/
+    *    ░▒▒░▓▓   ▓▓   |__  |____/ |____/
     *      ░▒▓▓   ▓▓  //____/
     */
 
     /* Modified by Hyde */
 
     /* Modify/add style in ~/.config/waybar/styles/ */
-    @import "/home/khing/.local/share/waybar/styles/defaults.css";
+    @import "/home/laclavere/.local/share/waybar/styles/defaults.css";
 
     /* Imports wallbash colors */
-    @import "/home/khing/.cache/hyde/wallbash/gtk.css";
+    @import "/home/laclavere/.cache/hyde/wallbash/gtk.css";
 
     /* Colors and theme configuration is generated through the `theme.css` file */
     @import "theme.css";
