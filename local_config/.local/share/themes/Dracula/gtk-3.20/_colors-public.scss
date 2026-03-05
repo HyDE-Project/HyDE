@@ -1,0 +1,184 @@
+//apps rely on some named colors to be exported
+/* GTK NAMED COLORS
+   ----------------
+   use responsibly! */
+
+// Sass thinks we're using the colors in the variables as strings and may shoot
+// warning, it's innocuous and can be defeated by using "" + $var
+
+/* widget text/foreground color */
+@define-color theme_fg_color #{"" +$fg_color};
+
+/* text color for entries, views and content in general */
+@define-color theme_text_color #{"" +$text_color};
+
+/* widget base background color */
+@define-color theme_bg_color #{"" +$bg_color};
+
+/* text widgets and the like base background color */
+@define-color theme_base_color #{"" +$base_color};
+
+/* base background color of selections */
+@define-color theme_selected_bg_color #{"" +$selected_bg_color};
+
+/* text/foreground color of selections */
+@define-color theme_selected_fg_color #{"" +$selected_fg_color};
+
+/* base background color of disabled widgets */
+@define-color insensitive_bg_color #{"" +$insensitive_bg_color};
+
+/* text foreground color of disabled widgets */
+@define-color insensitive_fg_color #{"" +$insensitive_fg_color};
+
+/* disabled text widgets and the like base background color */
+@define-color insensitive_base_color #{"" +$base_color};
+
+/* widget text/foreground color on backdrop windows */
+@define-color theme_unfocused_fg_color #{"" +$backdrop_fg_color};
+
+/* text color for entries, views and content in general on backdrop windows */
+@define-color theme_unfocused_text_color #{"" +$text_color};
+
+/* widget base background color on backdrop windows */
+@define-color theme_unfocused_bg_color #{"" +$backdrop_bg_color};
+
+/* text widgets and the like base background color on backdrop windows */
+@define-color theme_unfocused_base_color #{"" +$backdrop_base_color};
+
+/* base background color of selections on backdrop windows */
+@define-color theme_unfocused_selected_bg_color #{"" +$selected_bg_color};
+
+/* text/foreground color of selections on backdrop windows */
+@define-color theme_unfocused_selected_fg_color #{"" + $selected_fg_color};
+
+/* widgets main borders color */
+@define-color borders #{"" +$borders_color};
+
+/* widgets main borders color on backdrop windows */
+@define-color unfocused_borders #{"" +$backdrop_borders_color};
+
+/* these are pretty self explicative */
+@define-color warning_color #{"" +$warning_color};
+@define-color error_color #{"" +$error_color};
+@define-color success_color #{"" +$success_color};
+//@define-color destructive_color #{$destructive_color}
+
+@define-color fg_color #{"" +$fg_color};
+@define-color text_color #{"" +$text_color};
+@define-color bg_color #{"" +$bg_color};
+@define-color base_color #{"" +$base_color};
+@define-color selected_bg_color #{"" +$selected_bg_color};
+@define-color selected_fg_color #{"" +$selected_fg_color};
+@define-color unfocused_fg_color #{"" +$backdrop_fg_color};
+@define-color unfocused_text_color #{"" +$text_color};
+@define-color unfocused_bg_color #{"" +$backdrop_bg_color};
+@define-color unfocused_base_color #{"" +$backdrop_base_color};
+@define-color unfocused_selected_bg_color #{"" +$selected_bg_color};
+@define-color unfocused_selected_fg_color #{"" + $selected_fg_color};
+
+//WM
+
+$_wm_highlight: if($variant=='light', $top_highlight,  // Sass gets mad if this is
+                  transparentize(black,1));          // done directly in the
+                                                     // color definition
+
+/* these colors are exported for the window manager and shouldn't be used in applications,
+read if you used those and something break with a version upgrade you're on your own... */
+@define-color wm_title shade(#{$fg_color}, 1.8);
+@define-color wm_unfocused_title #{$backdrop_fg_color};
+@define-color wm_highlight #{"" + $_wm_highlight};
+@define-color wm_borders_edge #{"" + $borders_edge};
+
+@define-color wm_bg_a shade(#{$bg_color}, 1.2);
+@define-color wm_bg_b #{$bg_color};
+
+@define-color wm_shadow alpha(black, 0.35);
+@define-color wm_border alpha(black, 0.18);
+
+@define-color wm_button_hover_color_a shade(#{$bg_color}, 1.3);
+@define-color wm_button_hover_color_b #{$bg_color};
+@define-color wm_button_active_color_a shade(#{$bg_color}, 0.85);
+@define-color wm_button_active_color_b shade(#{$bg_color}, 0.89);
+@define-color wm_button_active_color_c shade(#{$bg_color}, 0.9);
+
+//FIXME this is really an API
+
+@define-color content_view_bg #{"" + $base_color};
+
+@define-color budgie_tasklist_indicator_color #{"" +$selected_bg_color};
+@define-color budgie_tasklist_indicator_color_active #{"" +$selected_bg_color};
+@define-color placeholder_text_color #{"" +$backdrop_text_color};
+
+
+// Elementary OS colors
+@define-color STRAWBERRY_100 #{$STRAWBERRY_100};
+@define-color STRAWBERRY_300 #{$STRAWBERRY_300};
+@define-color STRAWBERRY_500 #{$STRAWBERRY_500};
+@define-color STRAWBERRY_700 #{$STRAWBERRY_700};
+@define-color STRAWBERRY_900 #{$STRAWBERRY_900};
+
+@define-color ORANGE_100 #{$ORANGE_100};
+@define-color ORANGE_300 #{$ORANGE_300};
+@define-color ORANGE_500 #{$ORANGE_500};
+@define-color ORANGE_700 #{$ORANGE_700};
+@define-color ORANGE_900 #{$ORANGE_900};
+
+@define-color BANANA_100 #{$BANANA_100};
+@define-color BANANA_300 #{$BANANA_300};
+@define-color BANANA_500 #{$BANANA_500};
+@define-color BANANA_700 #{$BANANA_700};
+@define-color BANANA_900 #{$BANANA_900};
+
+@define-color LIME_100 #{$LIME_100};
+@define-color LIME_300 #{$LIME_300};
+@define-color LIME_500 #{$LIME_500};
+@define-color LIME_700 #{$LIME_700};
+@define-color LIME_900 #{$LIME_900};
+
+@define-color MINT_100 #{$MINT_100};
+@define-color MINT_300 #{$MINT_300};
+@define-color MINT_500 #{$MINT_500};
+@define-color MINT_700 #{$MINT_700};
+@define-color MINT_900 #{$MINT_900};
+
+@define-color BLUEBERRY_100 #{$BLUEBERRY_100};
+@define-color BLUEBERRY_300 #{$BLUEBERRY_300};
+@define-color BLUEBERRY_500 #{$BLUEBERRY_500};
+@define-color BLUEBERRY_700 #{$BLUEBERRY_700};
+@define-color BLUEBERRY_900 #{$BLUEBERRY_900};
+
+@define-color BUBBLEGUM_100 #{$BUBBLEGUM_100};
+@define-color BUBBLEGUM_300 #{$BUBBLEGUM_300};
+@define-color BUBBLEGUM_500 #{$BUBBLEGUM_500};
+@define-color BUBBLEGUM_700 #{$BUBBLEGUM_700};
+@define-color BUBBLEGUM_900 #{$BUBBLEGUM_900};
+
+@define-color GRAPE_100 #{$GRAPE_100};
+@define-color GRAPE_300 #{$GRAPE_300};
+@define-color GRAPE_500 #{$GRAPE_500};
+@define-color GRAPE_700 #{$GRAPE_700};
+@define-color GRAPE_900 #{$GRAPE_900};
+
+@define-color COCOA_100 #{$COCOA_100};
+@define-color COCOA_300 #{$COCOA_300};
+@define-color COCOA_500 #{$COCOA_500};
+@define-color COCOA_700 #{$COCOA_700};
+@define-color COCOA_900 #{$COCOA_900};
+
+@define-color SILVER_100 #{$SILVER_100};
+@define-color SILVER_300 #{$SILVER_300};
+@define-color SILVER_500 #{$SILVER_500};
+@define-color SILVER_700 #{$SILVER_700};
+@define-color SILVER_900 #{$SILVER_900};
+
+@define-color SLATE_100 #{$SLATE_100};
+@define-color SLATE_300 #{$SLATE_300};
+@define-color SLATE_500 #{$SLATE_500};
+@define-color SLATE_700 #{$SLATE_700};
+@define-color SLATE_900 #{$SLATE_900};
+
+@define-color BLACK_100 #{$BLACK_100};
+@define-color BLACK_300 #{$BLACK_300};
+@define-color BLACK_500 #{$BLACK_500};
+@define-color BLACK_700 #{$BLACK_700};
+@define-color BLACK_900 #{"" + $BLACK_900};

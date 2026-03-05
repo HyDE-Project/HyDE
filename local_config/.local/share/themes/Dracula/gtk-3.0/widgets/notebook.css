@@ -1,0 +1,96 @@
+/************
+ * notebook *
+ ************/
+.notebook {
+    padding: 0;
+    background-color: @theme_base_color;
+    background-image: none;
+    background-clip: border-box;
+    -GtkNotebook-has-tab-gap: false;
+    border: none;
+}
+
+.notebook.header {
+    background-color: @theme_bg_color;
+    background-image: none;
+    box-shadow: none;
+    border-width: 0;
+}
+
+.notebook tab {
+    padding: 8px;
+    box-shadow: none;
+    border: 1px solid @theme_bg_color;
+    background-color: alpha(@theme_base_color,0.3);
+    background-image: none;
+
+}
+
+.notebook tab:active {
+    background-color: @theme_base_color;
+    /*border-left: 3px solid @selected_bg_color;*/
+}
+
+.notebook tab.top:active {
+    border-bottom: 0px;
+}
+
+.notebook tab.left {
+    border-right: 1px solid @theme_bg_color;
+}
+
+.notebook tab.left:active {
+    border-right: 0px;
+}
+
+.notebook tab.bottom {
+    border-top: 1px solid @theme_bg_color;
+}
+
+.notebook tab.bottom:active {
+    border-top: 0px;
+}
+
+.notebook tab.right {
+    border-left: 1px solid @theme_bg_color;
+}
+
+.notebook tab.right:active {
+    border-left: 0px;
+}
+
+.notebook tab.left:first-child:active,
+.notebook tab.right:first-child:active {
+    border-top: 0px;
+}
+
+.notebook tab.left:last-child:active,
+.notebook tab.right:last-child:active {
+    border-bottom: 0px;
+}
+
+.notebook tab.top:first-child:active,
+.notebook tab.bottom:first-child:active {
+    border-left: 0px;
+}
+
+.notebook tab.top:last-child:active,
+.notebook tab.bottom:last-child:active {
+    border-right: 0px;
+}
+
+/* close button styling */
+.notebook tab .button {
+    transition: ease-in 150ms;
+    padding: 2px;
+    border: none;
+    background-image: none;
+    background-color: transparent;
+    color: @theme_text_color;
+}
+
+.notebook tab .button:hover,
+.notebook tab .button:active:hover {
+    color: @red;
+    background-color: transparent;
+}

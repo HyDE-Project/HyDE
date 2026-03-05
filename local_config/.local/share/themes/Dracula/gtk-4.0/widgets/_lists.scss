@@ -1,0 +1,147 @@
+/*********
+ * Lists *
+ *********/
+list, listview {
+  color: $text_color;
+  background-color: $base_color;
+  border-color: $borders_color;
+
+  &:backdrop {
+    background-color: $backdrop_base_color;
+    border-color: $backdrop_borders_color;
+  }
+
+  &.horizontal row.separator,
+  &.separators.horizontal > row:not(.separator) {
+    border-left: 1px solid $borders_color;
+  }
+  &:not(.horizontal) row.separator,
+  &.separators:not(.horizontal) > row:not(.separator) {
+    border-bottom: 1px solid $borders_color;
+  }
+}
+
+row {
+
+
+  &:hover { transition: none; }
+
+  &:backdrop { transition: $backdrop_transition; }
+
+  &.activatable {
+    &.has-open-popup, // this is for indicathing which row generated a popover see https://bugzilla.gnome.org/show_bug.cgi?id=754411
+
+    &:hover { background-color: if(variant == light, transparentize($fg_color, 0.9), transparentize($fg_color, 0.95)); }
+
+    &:active { box-shadow: inset 0 2px 2px -2px transparentize(black, 0.8); }
+
+    &:backdrop:hover { background-color: transparent; }
+
+    &:selected {
+      &:active { box-shadow: inset 0 2px 3px -1px transparentize(black, 0.5); }
+
+      &.has-open-popup,
+      &:hover { background-color: transparentize($selected_bg_color, 0.2); }
+
+      &:backdrop { background-color: $backdrop_selected_bg_color; }
+    }
+  }
+
+  &:selected { @extend %selected_items; }
+}
+
+columnview {
+  // move padding to child cells
+  > listview > row {
+    padding: 0;
+
+    // align horizontal sizing with header buttons
+    > cell {
+      padding: 2px 6px;
+
+      &:not(:first-child) {
+        border-left: 1px solid transparent;
+      }
+    }
+  }
+
+  // make column separators visible when :show-column-separators is true
+  &.column-separators > listview > row > cell {
+    border-left-color: $borders_color;
+  }
+
+  // shrink vertically for .data-table
+  &.data-table > listview > row > cell {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+}
+
+treeexpander {
+  border-spacing: 4px;
+}
+
+/********************************************************
+ * Data Tables                                          *
+ * treeview like tables with individual focusable cells *
+ * https://gitlab.gnome.org/GNOME/gtk/-/issues/2929     *
+ ********************************************************/
+
+columnview row:not(:selected) cell editablelabel:not(.editing):focus-within {
+  outline: 2px solid $borders_color;
+}
+
+columnview row:not(:selected) cell editablelabel.editing:focus-within {
+  outline: 2px solid $selected_bg_color;
+}
+
+columnview row:not(:selected) cell editablelabel.editing text selection {
+  background-color: $backdrop_selected_bg_color;
+  color: transparent;
+  &:focus-within {
+    background-color: $selected_bg_color;
+    color: $fg_color;
+  }
+}
+
+/*******************************************************
+ * Rich Lists                                          *
+ * Large list usually containing lots of widgets       *
+ * https://gitlab.gnome.org/GNOME/gtk/-/issues/3073    *
+ *******************************************************/
+
+
+.rich-list { /* rich lists usually containing other widgets than just labels/text */
+  & > row {
+    padding: 8px 12px;
+    min-height: 32px; /* should be tall even when only containing a label */
+
+    & > box {
+      border-spacing: 12px;
+    }
+  }
+}
+
+/********************************************************
+ * Complex Lists                                        *
+ * Put padding on the cell content so event controllers *
+ * can cover the whole area.                            *
+ ********************************************************/
+
+columnview.complex {
+  > listview > row > cell {
+      padding: 0;
+      > * {
+        padding: 8px 6px;
+      }
+  }
+
+  // shrink vertically for .data-table
+  &.data-table > listview > row > cell {
+    padding: 0;
+    > * {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  }
+}

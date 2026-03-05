@@ -1,0 +1,1051 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "wallpaper": {
+            "description": "Wallpaper configuration.",
+            "type": "object",
+            "properties": {
+                "custom_paths": {
+                    "default": [],
+                    "description": "List of paths to search for wallpapers.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "backend": {
+                    "default": "swww",
+                    "description": "Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH",
+                    "options": [
+                        "swww",
+                        "pcmanfm-qt",
+                        "mpvpaper",
+                        "hyprpaper"
+                    ],
+                    "type": "string"
+                },
+                "swww": {
+                    "description": "swwwallselect.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "framerate": {
+                            "default": 60,
+                            "description": "Transition framerate.",
+                            "type": "integer"
+                        },
+                        "duration": {
+                            "default": 1,
+                            "description": "Transition duration.",
+                            "type": "integer"
+                        },
+                        "transition_next": {
+                            "default": "grow",
+                            "description": "Transition type for next wallpaper.",
+                            "type": "string"
+                        },
+                        "transition_prev": {
+                            "default": "outer",
+                            "description": "Transition type for previous wallpaper.",
+                            "type": "string"
+                        },
+                        "transition_default": {
+                            "default": "grow",
+                            "description": "Transition type for default wallpaper.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "rofi": {
+            "description": "Global rofi configuration.",
+            "type": "object",
+            "properties": {
+                "scale": {
+                    "default": 10,
+                    "description": "Rofi default scaling.",
+                    "type": "integer"
+                },
+                "hyprlock": {
+                    "description": "'hyprlock.sh select' configuration.",
+                    "type": "object",
+                    "properties": {
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for hyprlock.",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "animation": {
+                    "description": "'animation.sh select' configuration.",
+                    "type": "object",
+                    "properties": {
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for animation.",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "glyph": {
+                    "description": "glyph-picker.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for glyph picker.",
+                            "type": "integer"
+                        },
+                        "args": {
+                            "default": [
+                                "-multi-select"
+                            ],
+                            "description": "Additional arguments for glyph picker.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "launch": {
+                    "description": "rofilaunch.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "scale": {
+                            "default": 5,
+                            "description": "Scaling for launch.",
+                            "type": "integer"
+                        },
+                        "drun_args": {
+                            "default": [],
+                            "description": "Additional arguments for drun mode.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "run_args": {
+                            "default": [],
+                            "description": "Additional arguments for run mode.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "window_args": {
+                            "default": [],
+                            "description": "Additional arguments for window mode.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "filebrowser_args": {
+                            "default": [],
+                            "description": "Additional arguments for filebrowser mode.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "drun_style": {
+                            "default": "style_1",
+                            "description": "Style for drun mode.",
+                            "type": "string"
+                        },
+                        "window_style": {
+                            "default": "style_1",
+                            "description": "Style for window mode.",
+                            "type": "string"
+                        },
+                        "run_style": {
+                            "default": "style_1",
+                            "description": "Style for run mode.",
+                            "type": "string"
+                        },
+                        "filebrowser_style": {
+                            "default": "style_1",
+                            "description": "Style for filebrowser mode.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "cliphist": {
+                    "description": "cliphist.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for cliphist.",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "wallpaper": {
+                    "description": "swwwallselect.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for wallpaper.",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "emoji": {
+                    "description": "emoji-picker.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "style": {
+                            "default": 1,
+                            "description": "Style for emoji picker.",
+                            "options": [
+                                1,
+                                2
+                            ],
+                            "type": "integer"
+                        },
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for emoji picker.",
+                            "type": "integer"
+                        },
+                        "args": {
+                            "default": [
+                                "-multi-select"
+                            ],
+                            "description": "Additional arguments for emoji picker.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "theme": {
+                    "description": "themeselect.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "scale": {
+                            "default": 6,
+                            "description": "Scaling for theme selector.",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "websearch": {
+                    "description": "hyde-shell rofi.websearch.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "style": {
+                            "default": "",
+                            "description": "Style for rofi websearch.",
+                            "type": "string"
+                        },
+                        "args": {
+                            "default": [],
+                            "description": "Additional arguments for websearch.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for websearch.",
+                            "type": "integer"
+                        },
+                        "font": {
+                            "default": "JetBrainsMono Nerd Font",
+                            "description": "Font for websearch.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "bookmarks": {
+                    "description": "hyde-shell rofi.bookmarks.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "style": {
+                            "default": "",
+                            "description": "Style for rofi bookmarks.",
+                            "type": "string"
+                        },
+                        "args": {
+                            "default": [],
+                            "description": "Additional arguments for bookmarks.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "scale": {
+                            "default": 10,
+                            "description": "Scaling for bookmarks.",
+                            "type": "integer"
+                        },
+                        "font": {
+                            "default": "JetBrainsMono Nerd Font",
+                            "description": "Font for bookmarks.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "wlogout": {
+            "description": "wlogout configuration.",
+            "type": "object",
+            "properties": {
+                "style": {
+                    "default": 2,
+                    "description": "Style for wlogout.",
+                    "options": [
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                }
+            }
+        },
+        "battery.notify": {
+            "description": "batterynotify.sh configuration.",
+            "type": "object",
+            "properties": {
+                "timer": {
+                    "default": 120,
+                    "description": "Timer for battery notifications.",
+                    "type": "integer"
+                },
+                "notify": {
+                    "default": 1140,
+                    "description": "Notification threshold.",
+                    "type": "integer"
+                },
+                "interval": {
+                    "default": 5,
+                    "description": "Interval for battery notifications.",
+                    "type": "integer"
+                },
+                "dock": {
+                    "default": true,
+                    "description": "Dock status for battery notifications.",
+                    "type": "boolean"
+                },
+                "threshold": {
+                    "description": "Thresholds for battery notifications.",
+                    "type": "object",
+                    "properties": {
+                        "full": {
+                            "default": 90,
+                            "description": "Full battery threshold.",
+                            "type": "integer"
+                        },
+                        "critical": {
+                            "default": 10,
+                            "description": "Critical battery threshold.",
+                            "type": "integer"
+                        },
+                        "low": {
+                            "default": 20,
+                            "description": "Low battery threshold.",
+                            "type": "integer"
+                        },
+                        "unplug": {
+                            "default": 100,
+                            "description": "Unplug battery threshold.",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "execute": {
+                    "description": "Commands to execute for battery notifications.",
+                    "type": "object",
+                    "properties": {
+                        "unplug": {
+                            "default": "",
+                            "description": "Command to execute when unplugged.",
+                            "type": "string"
+                        },
+                        "low": {
+                            "default": "",
+                            "description": "Command to execute when battery is low.",
+                            "type": "string"
+                        },
+                        "critical": {
+                            "default": "systemctl suspend",
+                            "description": "Command to execute when battery is critical.",
+                            "type": "string"
+                        },
+                        "charging": {
+                            "default": "",
+                            "description": "Command to execute when charging.",
+                            "type": "string"
+                        },
+                        "discharging": {
+                            "default": "",
+                            "description": "Command to execute when discharging.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "keybind.hint": {
+            "description": "keybind.hint.py configuration.",
+            "type": "object"
+        },
+        "rofi.keybind.hint": {
+            "description": "keybind_hint.sh configuration.",
+            "type": "object",
+            "properties": {
+                "delimiter": {
+                    "default": "\t",
+                    "description": "Delimiter for keybind hints.",
+                    "type": "string"
+                },
+                "width": {
+                    "default": "40em",
+                    "description": "Width for keybind hints.",
+                    "type": "string"
+                },
+                "height": {
+                    "default": "40em",
+                    "description": "Height for keybind hints.",
+                    "type": "string"
+                },
+                "line": {
+                    "default": 16,
+                    "description": "Number of lines for keybind hints.",
+                    "type": "integer"
+                }
+            }
+        },
+        "screenshot": {
+            "description": "screenshot.sh configuration.",
+            "type": "object",
+            "properties": {
+                "annotation_tool": {
+                    "default": "satty",
+                    "description": "Annotation tool for screenshots.",
+                    "options": [
+                        "satty",
+                        "swappy"
+                    ],
+                    "type": "string"
+                },
+                "annotation_pre_command": {
+                    "default": [],
+                    "description": "Pre command for annotation tool.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "annotation_post_command": {
+                    "default": [
+                        ""
+                    ],
+                    "description": "Post command for annotation tool.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "rofi.bookmark": {
+            "description": "Bookmark configuration.",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Path to the bookmark file.",
+                    "type": "string"
+                }
+            }
+        },
+        "rofi.search": {
+            "description": "Search configuration.",
+            "type": "object",
+            "properties": {
+                "file": {
+                    "description": "Path to the search file.",
+                    "type": "string"
+                }
+            }
+        },
+        "wallbash": {
+            "description": "wallbash configuration.",
+            "type": "object",
+            "properties": {
+                "skip_template": {
+                    "default": [
+                        ""
+                    ],
+                    "description": "Templates to skip when using wallbash.",
+                    "options": [
+                        "waybar.dcol",
+                        "waybar.theme"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "waybar": {
+            "description": "waybar configuration.",
+            "type": "object",
+            "properties": {
+                "font": {
+                    "default": "JetBrainsMono Nerd Font",
+                    "description": "Font for waybar.",
+                    "type": "string"
+                },
+                "scale": {
+                    "default": 10,
+                    "description": "Total scaling for waybar.",
+                    "type": "integer"
+                },
+                "icon_size": {
+                    "default": 10,
+                    "description": "Icon size for waybar.",
+                    "type": "integer"
+                },
+                "position": {
+                    "default": "top",
+                    "description": "A fallback position of the waybar.  ",
+                    "options": [
+                        "top",
+                        "bottom",
+                        "left",
+                        "right"
+                    ],
+                    "type": "string"
+                }
+            }
+        },
+        "weather": {
+            "description": "Weather configuration.",
+            "type": "object",
+            "properties": {
+                "temperature_unit": {
+                    "default": "c",
+                    "description": "Temperature unit ('c' or 'f').",
+                    "type": "string"
+                },
+                "time_format": {
+                    "default": "24h",
+                    "description": "Time format ('12h' or '24h').",
+                    "type": "string"
+                },
+                "windspeed_unit": {
+                    "default": "km/h",
+                    "description": "Windspeed unit ('km/h' or 'mph').",
+                    "type": "string"
+                },
+                "show_icon": {
+                    "default": true,
+                    "description": "Show the weather icon in waybar.",
+                    "type": "boolean"
+                },
+                "show_location": {
+                    "default": true,
+                    "description": "Show the location in waybar.",
+                    "type": "boolean"
+                },
+                "show_today": {
+                    "default": true,
+                    "description": "Show detailed description of today in tooltip.",
+                    "type": "boolean"
+                },
+                "forecast_days": {
+                    "default": 3,
+                    "description": "Number of days to show forecast (0-3).",
+                    "type": "integer"
+                },
+                "location": {
+                    "default": "",
+                    "description": "Location/coordinates string for the weather output.",
+                    "type": "string"
+                }
+            }
+        },
+        "cava.stdout": {
+            "description": "'cava.sh stdout' configuration.",
+            "type": "object",
+            "properties": {
+                "bar": {
+                    "default": "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588",
+                    "description": "Bar characters for cava.",
+                    "type": "string"
+                },
+                "width": {
+                    "default": 20,
+                    "description": "Width of the cava output.",
+                    "type": "integer"
+                },
+                "range": {
+                    "default": 7,
+                    "description": "Number of bars minus one.",
+                    "type": "integer"
+                },
+                "standby": {
+                    "default": "\ud83c\udfb6",
+                    "description": "Standby character for cava.",
+                    "type": "string"
+                },
+                "bar_array": {
+                    "default": [
+                        "\u2591",
+                        "\u2592",
+                        "\u2593",
+                        "\u2588"
+                    ],
+                    "description": "Bar array for stdout preset.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "cava.hyprlock": {
+            "description": "'cava.sh hyprlock' configuration.",
+            "type": "object",
+            "properties": {
+                "bar": {
+                    "default": "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588",
+                    "description": "Bar characters for cava.",
+                    "type": "string"
+                },
+                "width": {
+                    "default": 20,
+                    "description": "Width of the cava output.",
+                    "type": "integer"
+                },
+                "range": {
+                    "default": 7,
+                    "description": "Number of bars minus one.",
+                    "type": "integer"
+                },
+                "standby": {
+                    "default": "\ud83c\udfb6",
+                    "description": "Standby character for cava.",
+                    "type": "string"
+                },
+                "bar_array": {
+                    "default": [
+                        "\u2581",
+                        "\u2582",
+                        "\u2583",
+                        "\u2584",
+                        "\u2585",
+                        "\u2586",
+                        "\u2587",
+                        "\u2588"
+                    ],
+                    "description": "Bar array for hyprlock preset.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "cava.waybar": {
+            "description": "'cava.sh waybar' configuration.",
+            "type": "object",
+            "properties": {
+                "bar": {
+                    "default": "\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588",
+                    "description": "Bar characters for cava.",
+                    "type": "string"
+                },
+                "width": {
+                    "default": 20,
+                    "description": "Width of the cava output.",
+                    "type": "integer"
+                },
+                "range": {
+                    "default": 7,
+                    "description": "Number of bars minus one.",
+                    "type": "integer"
+                },
+                "standby": {
+                    "default": "\ud83c\udfb6",
+                    "description": "Standby character for cava.",
+                    "type": "string"
+                },
+                "bar_array": {
+                    "default": [
+                        "\u25dc",
+                        "\u25dd",
+                        "\u25de",
+                        "\u25df",
+                        "\u25e0",
+                        "\u25e1",
+                        "\u25e2",
+                        "\u25e3"
+                    ],
+                    "description": "Bar array for waybar preset.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "cava": {
+            "description": "Cava visualizer configuration.",
+            "type": "object",
+            "properties": {
+                "channels": {
+                    "default": "stereo",
+                    "description": "Audio channels: stereo or mono.",
+                    "options": [
+                        "stereo",
+                        "mono"
+                    ],
+                    "type": "string"
+                },
+                "reverse": {
+                    "default": 1,
+                    "description": "Reverse spectrum movement (0 or 1).",
+                    "options": [
+                        0,
+                        1
+                    ],
+                    "type": "integer"
+                },
+                "range": {
+                    "default": "8",
+                    "description": "Bar sensitivity",
+                    "type": "string"
+                }
+            }
+        },
+        "hypr.config": {
+            "description": "Hypr configuration.",
+            "type": "object",
+            "properties": {
+                "sanitize": {
+                    "default": [
+                        ".*rgba\\(.*,.*,.*,.*\\)"
+                    ],
+                    "description": "List of regex to sanitize in the theme.config.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "volume": {
+            "description": "volumecontrol.sh configuration.",
+            "type": "object",
+            "properties": {
+                "notify": {
+                    "default": true,
+                    "description": "Enable notifications for volume control.",
+                    "type": "boolean"
+                },
+                "steps": {
+                    "default": 5,
+                    "description": "Number of steps to increase/decrease volume.",
+                    "type": "integer"
+                },
+                "boost": {
+                    "default": false,
+                    "description": "Enable volume boost.",
+                    "type": "boolean"
+                },
+                "boost_limit": {
+                    "default": 120,
+                    "description": "Volume boost limit.",
+                    "type": "integer"
+                }
+            }
+        },
+        "brightness": {
+            "description": "brightnesscontrol.sh configuration.",
+            "type": "object",
+            "properties": {
+                "notify": {
+                    "default": true,
+                    "description": "Enable notifications for brightness control.",
+                    "type": "boolean"
+                },
+                "steps": {
+                    "default": 5,
+                    "description": "Number of steps to increase/decrease brightness.",
+                    "type": "integer"
+                }
+            }
+        },
+        "sysmonitor": {
+            "description": "sysmonlaunch.sh configuration.",
+            "type": "object",
+            "properties": {
+                "execute": {
+                    "default": "",
+                    "description": "Default command to execute.",
+                    "type": "string"
+                },
+                "commands": {
+                    "default": [
+                        ""
+                    ],
+                    "description": "Fallback command options.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "notification": {
+            "description": "Notification script configuration.",
+            "type": "object",
+            "properties": {
+                "font": {
+                    "default": "mononoki Nerd Font",
+                    "description": "Font for notifications.",
+                    "type": "string"
+                },
+                "font_size": {
+                    "default": 10,
+                    "description": "Font size for notifications.",
+                    "type": "integer"
+                }
+            }
+        },
+        "hyprland": {
+            "description": "Hyprland configuration.",
+            "type": "object",
+            "properties": {
+                "browser": {
+                    "default": "firefox",
+                    "description": "Browser.",
+                    "type": "string"
+                },
+                "editor": {
+                    "default": "code",
+                    "description": "Editor.",
+                    "type": "string"
+                },
+                "explorer": {
+                    "default": "dolphin",
+                    "description": "File manager.",
+                    "type": "string"
+                },
+                "idle": {
+                    "default": "hypridle",
+                    "description": "Idle manager.",
+                    "type": "string"
+                },
+                "lockscreen": {
+                    "default": "lockscreen.sh",
+                    "description": "Lockscreen.",
+                    "type": "string"
+                },
+                "terminal": {
+                    "default": "kitty",
+                    "description": "Terminal.",
+                    "type": "string"
+                },
+                "quickapps": {
+                    "default": "kitty",
+                    "description": "Quick apps.",
+                    "type": "string"
+                },
+                "bar": {
+                    "default": "waybar",
+                    "description": "Bar.",
+                    "type": "string"
+                },
+                "color_scheme": {
+                    "default": "prefer-dark",
+                    "description": "Color scheme.",
+                    "type": "string"
+                },
+                "gtk_theme": {
+                    "default": "Wallbash-Gtk",
+                    "description": "GTK theme.",
+                    "type": "string"
+                },
+                "icon_theme": {
+                    "default": "Tela-circle-dracula",
+                    "description": "Icon theme.",
+                    "type": "string"
+                },
+                "cursor_size": {
+                    "default": 24,
+                    "description": "Cursor size.",
+                    "type": "integer"
+                },
+                "cursor_theme": {
+                    "default": "Bibata-Modern-Ice",
+                    "description": "Cursor theme.",
+                    "type": "string"
+                },
+                "button_layout": {
+                    "default": "",
+                    "description": "Button layout. (gtk only)",
+                    "type": "string"
+                },
+                "document_font_size": {
+                    "default": 10,
+                    "description": "Document font size.",
+                    "type": "integer"
+                },
+                "font": {
+                    "default": "Canterell",
+                    "description": "Font.",
+                    "type": "string"
+                },
+                "font_antialiasing": {
+                    "default": "rgba",
+                    "description": "Font antialiasing.",
+                    "type": "string"
+                },
+                "font_hinting": {
+                    "default": "full",
+                    "description": "Font hinting.",
+                    "type": "string"
+                },
+                "font_size": {
+                    "default": 10,
+                    "description": "Font size.",
+                    "type": "integer"
+                },
+                "monospace_font": {
+                    "default": "CaskaydiaCove Nerd Font Mono",
+                    "description": "Monospace font.",
+                    "type": "string"
+                },
+                "monospace_font_size": {
+                    "default": 9,
+                    "description": "Monospace font size.",
+                    "type": "integer"
+                },
+                "background_path": {
+                    "default": "",
+                    "description": "LockScreen's Background path.",
+                    "type": "string"
+                }
+            }
+        },
+        "hyprland_start": {
+            "description": "Hyprland start configuration.",
+            "type": "object",
+            "properties": {
+                "apptray_bluetooth": {
+                    "default": "blueman-applet",
+                    "description": "Bluetooth applet.",
+                    "type": "string"
+                },
+                "auth_dialogue": {
+                    "default": "polkitkdeauth.sh",
+                    "description": "Authentication dialogue.",
+                    "type": "string"
+                },
+                "bar": {
+                    "default": "hyde-shell waybar --watch",
+                    "description": "Bar.",
+                    "type": "string"
+                },
+                "battery_notify": {
+                    "default": "batterynotify.sh",
+                    "description": "Battery notification script.",
+                    "type": "string"
+                },
+                "dbus_share_picker": {
+                    "default": "dbus-update-activation-environment --systemd --all",
+                    "description": "DBus share picker.",
+                    "type": "string"
+                },
+                "idle_daemon": {
+                    "default": "hypridle",
+                    "description": "Idle daemon.",
+                    "type": "string"
+                },
+                "image_clipboard": {
+                    "default": "wl-paste --type image --watch cliphist store",
+                    "description": "Image clipboard.",
+                    "type": "string"
+                },
+                "network_manager": {
+                    "default": "nm-applet --indicator",
+                    "description": "Network manager.",
+                    "type": "string"
+                },
+                "notifications": {
+                    "default": "swaync",
+                    "description": "Notifications.",
+                    "type": "string"
+                },
+                "removable_media": {
+                    "default": "udiskie --no-automount --smart-tray",
+                    "description": "Removable media manager.",
+                    "type": "string"
+                },
+                "systemd_share_picker": {
+                    "default": "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP",
+                    "description": "Systemd share picker.",
+                    "type": "string"
+                },
+                "text_clipboard": {
+                    "default": "wl-paste --type text --watch cliphist store",
+                    "description": "Text clipboard.",
+                    "type": "string"
+                },
+                "wallpaper": {
+                    "default": "$scrPath/wallpaper.sh --global",
+                    "description": "Wallpaper script.",
+                    "type": "string"
+                },
+                "xdg_portal_reset": {
+                    "default": "resetxdgportal.sh",
+                    "description": "XDG portal reset script.",
+                    "type": "string"
+                }
+            }
+        },
+        "mediaplayer": {
+            "description": "mediaplayer.py configuration.",
+            "type": "object",
+            "properties": {
+                "prefix_playing": {
+                    "default": "\uf001",
+                    "description": "Prefix for playing media.",
+                    "type": "string"
+                },
+                "prefix_paused": {
+                    "default": "\uf001  \uf04c",
+                    "description": "Prefix for paused media.",
+                    "type": "string"
+                },
+                "max_length": {
+                    "default": 70,
+                    "description": "Max length of song and artist string.",
+                    "type": "integer"
+                },
+                "standby_text": {
+                    "default": "\uf001  Music",
+                    "description": "To display on standby.",
+                    "type": "string"
+                },
+                "artist_track_separator": {
+                    "default": "\u2004\uf444 ",
+                    "description": "Separator symbols to display between artist and track.",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

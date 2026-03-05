@@ -1,0 +1,31 @@
+.Leader {
+  stroke-width: 0.5 !important;
+  stroke: #585b70;
+  fill: none !important;
+}
+
+.Button {
+  stroke-width: 0.25;
+  stroke: #f5e0dc;
+  fill: #f5e0dc;
+}
+
+.Ring {
+  stroke-width: 0.5 !important;
+  stroke: #585b70 !important;
+  fill: none !important;
+}
+
+.Label {
+  stroke: none !important;
+  stroke-width: 0.1 !important;
+  font-size: 0.1 !important;
+  fill: transparent !important;
+}
+
+.TouchStrip,
+.TouchRing {
+  stroke-width: 0.1 !important;
+  stroke: #f5e0dc !important;
+  fill: #585b70 !important;
+}

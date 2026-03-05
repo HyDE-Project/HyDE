@@ -1,0 +1,20 @@
+//  User can copy this module to their ~/.config/waybar/modules directory
+// and remove --interval 5 from the exec command to let waybar poll the sensorsinfo script every second
+// ONLY do that to save memory but CPU usage will increase
+// Using this uses memory and but the CPU syscalls are less frequent
+
+
+{
+  "custom/sensorsinfo": {
+    "exec": "hyde-shell sensorsinfo --interval 5",
+    "return-type": "json",
+    "format": "{0}",
+    "hide-empty": true,
+    "tooltip": true,
+    "class": "default-margin-padding",
+    "on-scroll-up": "hyde-shell sensorsinfo --prev",
+    "on-scroll-down": "hyde-shell sensorsinfo --next",
+    "signal": 19,
+    "restart-interval": 2 // restart if the script exits (optional)
+  }
+}

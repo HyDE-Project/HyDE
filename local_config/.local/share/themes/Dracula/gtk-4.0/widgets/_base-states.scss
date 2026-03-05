@@ -1,0 +1,179 @@
+/***************
+ * Base States *
+ ***************/
+.background {
+  color: $fg_color;
+  background-color: $bg_color;
+
+  &:backdrop {
+    color: $backdrop_fg_color;
+    background-color: $backdrop_bg_color;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+  }
+
+  &.chromium { background-color: lighten($base_color, 3%); }
+}
+
+/*
+   These wildcard seems unavoidable, need to investigate.
+   Wildcards are bad and troublesome, use them with care,
+   or better, just don't.
+   Everytime a wildcard is used a kitten dies, painfully.
+*/
+
+
+.gtkstyle-fallback {
+  color: $fg_color;
+  background-color: $bg_color;
+
+  &:hover {
+    color: $fg_color;
+    background-color: lighten($bg_color, 10%);
+  }
+
+  &:active {
+    color: $fg_color;
+    background-color: darken($bg_color, 10%);
+  }
+
+  &:disabled {
+    color: $insensitive_fg_color;
+    background-color: $insensitive_bg_color;
+  }
+
+  &:selected {
+    color: $selected_fg_color;
+    background-color: $selected_bg_color;
+  }
+}
+
+.view,
+%view {
+  color: $text_color;
+  background-color: $base_color;
+
+  &:backdrop {
+    color: $backdrop_text_color;
+    background-color: $backdrop_base_color;
+  }
+
+  &:selected {
+    &:focus, & {
+      @extend %selected_items;
+
+      border-radius: 3px;
+    }
+  }
+}
+
+.view,
+textview {
+  text {
+    @extend %view;
+
+    selection { &:focus, & { @extend %selected_items; }}
+  }
+}
+
+textview border { background-color: mix($bg_color, $base_color, 50%); }
+
+iconview { @extend .view; }
+
+.rubberband,
+rubberband {
+  border: 1px solid darken($selected_bg_color, 10%);
+  background-color: transparentize(darken($selected_bg_color, 10%), 0.3);
+}
+
+flowbox {
+  rubberband { @extend rubberband; }
+
+  flowboxchild {
+    padding: 3px;
+    border-radius: 3px;
+
+    &:selected {
+      @extend %selected_items;
+
+      outline-offset: -2px;
+    }
+  }
+}
+
+label {
+  caret-color: currentColor; // this shouldn't be needed.
+
+  &.separator {
+    @extend .dim-label;
+
+    color: $fg_color;
+
+    &:backdrop { color: $backdrop_fg_color; }
+  }
+
+  row:selected &,
+  &:selected { @extend %nobg_selected_items; }
+
+  selection {
+    background-color: $selected_bg_color;
+    color: $selected_fg_color;
+  }
+
+  &:disabled {
+    color: $insensitive_fg_color;
+
+    selection { @extend %selected_items:disabled; }
+
+    &:backdrop { color: $backdrop_insensitive_color; }
+  }
+
+  &:backdrop {
+    color: $backdrop_fg_color;
+
+    selection { @extend %selected_items:backdrop; }
+  }
+}
+
+.dim-label {
+  opacity: 0.55;
+  text-shadow: none;
+}
+
+assistant {
+  .sidebar {
+    background-color: $base_color;
+    border-top: 1px solid $borders_color;
+
+    &:backdrop {
+      background-color: $backdrop_base_color;
+      border-color: $backdrop_borders_color;
+    }
+  }
+
+  &.csd .sidebar { border-top-style: none; }
+
+  .sidebar label { padding: 6px 12px; }
+
+  .sidebar label.highlight { background-color: mix($bg_color, $fg_color, 80%); }
+}
+
+%osd, .osd {
+  color: $osd_fg_color;
+  border: none;
+  background-color: $osd_bg_color;
+  background-clip: padding-box;
+  outline-color: transparentize($osd_fg_color, 0.7);
+  text-shadow: 0 1px black;
+  -gtk-icon-shadow: 0 1px black;
+
+  &:backdrop {
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+  }
+}
+
+*:selected {
+  background: $selected_bg_color;
+  color: $selected_fg_color;
+}

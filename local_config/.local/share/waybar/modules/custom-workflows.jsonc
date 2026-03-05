@@ -1,0 +1,11 @@
+{
+  "custom/workflows": {
+    "format": "{}",
+    "interval": "once",
+    "exec": "hyde-shell workflows --waybar",
+    "on-click": "hyde-shell workflows --select;pkill -RTMIN+19 waybar",
+    "tooltip": true,
+    "return-type": "json",
+    "signal": 19
+  }
+}

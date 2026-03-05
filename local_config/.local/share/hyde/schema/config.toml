@@ -1,0 +1,931 @@
+#!      ░▒▒▒░░░▓▓           ___________
+#!    ░░▒▒▒░░░░░▓▓        //___________/
+#!   ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
+#!   ░░▒▒░░░░░▓▓▓▓▓ | | | | |  | |  __/
+#!    ░▒▒░░░░▓▓   ▓▓ | |_| | |_/ /| |___
+#!     ░▒▒░░▓▓   ▓▓   \__  |____/ |____/
+#!       ░▒▓▓   ▓▓  //____/
+
+# Schema in toml file for config.toml
+# This is intended to be edited manually by HyDE and generate a JSON schema
+# for the configuration file: ~/.config/hyde/config.toml
+
+# ? This file is a reference for:
+# * wiki table
+# * --json to generate the JSON schema
+# TODO --config to generate a copy of config.toml // ! Not implemented yet
+
+"$schema" = "http://json-schema.org/draft-07/schema#"
+type      = "object"
+
+
+[properties.wallpaper]
+    description = "Wallpaper configuration."
+    type        = "object"
+
+[properties.wallpaper.properties.custom_paths]
+    default     = [  ]
+    description = "List of paths to search for wallpapers."
+    type        = "array"
+
+[properties.wallpaper.properties.custom_paths.items]
+    type = "string"
+
+[properties.wallpaper.properties.backend]
+    default     = "swww"
+    description = "Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH"
+    options     = [ "swww", "pcmanfm-qt", "mpvpaper", "hyprpaper" ]
+    type        = "string"
+
+[properties.wallpaper.properties.swww]
+    description = "swwwallselect.sh configuration."
+    type        = "object"
+
+[properties.wallpaper.properties.swww.properties.framerate]
+    default     = 60
+    description = "Transition framerate."
+    type        = "integer"
+
+[properties.wallpaper.properties.swww.properties.duration]
+    default     = 1
+    description = "Transition duration."
+    type        = "integer"
+
+[properties.wallpaper.properties.swww.properties.transition_next]
+    default     = "grow"
+    description = "Transition type for next wallpaper."
+    type        = "string"
+
+[properties.wallpaper.properties.swww.properties.transition_prev]
+    default     = "outer"
+    description = "Transition type for previous wallpaper."
+    type        = "string"
+
+[properties.wallpaper.properties.swww.properties.transition_default]
+    default     = "grow"
+    description = "Transition type for default wallpaper."
+    type        = "string"
+
+[properties.rofi]
+    description = "Global rofi configuration."
+    type        = "object"
+
+[properties.rofi.properties.scale]
+    default     = 10
+    description = "Rofi default scaling."
+    type        = "integer"
+
+[properties.rofi.properties.hyprlock]
+    description = "'hyprlock.sh select' configuration."
+    type        = "object"
+
+[properties.rofi.properties.hyprlock.properties.scale]
+    default     = 10
+    description = "Scaling for hyprlock."
+    type        = "integer"
+
+[properties.rofi.properties.animation]
+    description = "'animation.sh select' configuration."
+    type        = "object"
+
+[properties.rofi.properties.animation.properties.scale]
+    default     = 10
+    description = "Scaling for animation."
+    type        = "integer"
+
+[properties.rofi.properties.glyph]
+    description = "glyph-picker.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.glyph.properties.scale]
+    default     = 10
+    description = "Scaling for glyph picker."
+    type        = "integer"
+
+[properties.rofi.properties.glyph.properties.args]
+    default     = [ "-multi-select" ]
+    description = "Additional arguments for glyph picker."
+    type        = "array"
+[properties.rofi.properties.glyph.properties.args.items]
+    type = "string"
+
+
+[properties.rofi.properties.launch]
+    description = "rofilaunch.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.launch.properties.scale]
+    default     = 5
+    description = "Scaling for launch."
+    type        = "integer"
+
+[properties.rofi.properties.launch.properties.drun_args]
+    default     = [  ]
+    description = "Additional arguments for drun mode."
+    type        = "array"
+
+[properties.rofi.properties.launch.properties.drun_args.items]
+    type = "string"
+
+[properties.rofi.properties.launch.properties.run_args]
+    default     = [  ]
+    description = "Additional arguments for run mode."
+    type        = "array"
+
+[properties.rofi.properties.launch.properties.run_args.items]
+    type = "string"
+
+[properties.rofi.properties.launch.properties.window_args]
+    default     = [  ]
+    description = "Additional arguments for window mode."
+    type        = "array"
+
+[properties.rofi.properties.launch.properties.window_args.items]
+    type = "string"
+
+[properties.rofi.properties.launch.properties.filebrowser_args]
+    default     = [  ]
+    description = "Additional arguments for filebrowser mode."
+    type        = "array"
+
+[properties.rofi.properties.launch.properties.filebrowser_args.items]
+    type = "string"
+
+[properties.rofi.properties.launch.properties.drun_style]
+    default     = "style_1"
+    description = "Style for drun mode."
+    type        = "string"
+
+[properties.rofi.properties.launch.properties.window_style]
+    default     = "style_1"
+    description = "Style for window mode."
+    type        = "string"
+
+[properties.rofi.properties.launch.properties.run_style]
+    default     = "style_1"
+    description = "Style for run mode."
+    type        = "string"
+
+[properties.rofi.properties.launch.properties.filebrowser_style]
+    default     = "style_1"
+    description = "Style for filebrowser mode."
+    type        = "string"
+
+[properties.rofi.properties.cliphist]
+    description = "cliphist.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.cliphist.properties.scale]
+    default     = 10
+    description = "Scaling for cliphist."
+    type        = "integer"
+
+[properties.rofi.properties.wallpaper]
+    description = "swwwallselect.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.wallpaper.properties.scale]
+    default     = 10
+    description = "Scaling for wallpaper."
+    type        = "integer"
+
+[properties.rofi.properties.emoji]
+    description = "emoji-picker.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.emoji.properties.style]
+    default     = 1
+    description = "Style for emoji picker."
+    options     = [ 1, 2 ]
+    type        = "integer"
+
+[properties.rofi.properties.emoji.properties.scale]
+    default     = 10
+    description = "Scaling for emoji picker."
+    type        = "integer"
+
+[properties.rofi.properties.emoji.properties.args]
+    default     = [ "-multi-select" ]
+    description = "Additional arguments for emoji picker."
+    type        = "array"
+[properties.rofi.properties.emoji.properties.args.items]
+    type = "string"
+
+
+[properties.rofi.properties.theme]
+    description = "themeselect.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.theme.properties.scale]
+    default     = 6
+    description = "Scaling for theme selector."
+    type        = "integer"
+
+[properties.rofi.properties.websearch]
+    description = "hyde-shell rofi.websearch.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.websearch.properties.style]
+    default     = ""
+    description = "Style for rofi websearch."
+    type        = "string"
+
+[properties.rofi.properties.websearch.properties.args]
+    default     = [  ]
+    description = "Additional arguments for websearch."
+    type        = "array"
+
+[properties.rofi.properties.websearch.properties.args.items]
+    type = "string"
+
+[properties.rofi.properties.websearch.properties.scale]
+    default     = 10
+    description = "Scaling for websearch."
+    type        = "integer"
+[properties.rofi.properties.websearch.properties.font]
+    default     = "JetBrainsMono Nerd Font"
+    description = "Font for websearch."
+    type        = "string"
+
+
+[properties.rofi.properties.bookmarks]
+    description = "hyde-shell rofi.bookmarks.sh configuration."
+    type        = "object"
+
+[properties.rofi.properties.bookmarks.properties.style]
+    default     = ""
+    description = "Style for rofi bookmarks."
+    type        = "string"
+
+[properties.rofi.properties.bookmarks.properties.args]
+    default     = [  ]
+    description = "Additional arguments for bookmarks."
+    type        = "array"
+
+[properties.rofi.properties.bookmarks.properties.args.items]
+    type = "string"
+
+[properties.rofi.properties.bookmarks.properties.scale]
+    default     = 10
+    description = "Scaling for bookmarks."
+    type        = "integer"
+
+[properties.rofi.properties.bookmarks.properties.font]
+    default     = "JetBrainsMono Nerd Font"
+    description = "Font for bookmarks."
+    type        = "string"
+
+
+[properties.wlogout]
+    description = "wlogout configuration."
+    type        = "object"
+
+[properties.wlogout.properties.style]
+    default     = 2
+    description = "Style for wlogout."
+    options     = [ 1, 2 ]
+    type        = "integer"
+
+[properties."battery.notify"]
+    description = "batterynotify.sh configuration."
+    type        = "object"
+
+[properties."battery.notify".properties.timer]
+    default     = 120
+    description = "Timer for battery notifications."
+    type        = "integer"
+
+[properties."battery.notify".properties.notify]
+    default     = 1140
+    description = "Notification threshold."
+    type        = "integer"
+
+[properties."battery.notify".properties.interval]
+    default     = 5
+    description = "Interval for battery notifications."
+    type        = "integer"
+
+[properties."battery.notify".properties.dock]
+    default     = true
+    description = "Dock status for battery notifications."
+    type        = "boolean"
+
+[properties."battery.notify".properties.threshold]
+    description = "Thresholds for battery notifications."
+    type        = "object"
+
+[properties."battery.notify".properties.threshold.properties.full]
+    default     = 90
+    description = "Full battery threshold."
+    type        = "integer"
+
+[properties."battery.notify".properties.threshold.properties.critical]
+    default     = 10
+    description = "Critical battery threshold."
+    type        = "integer"
+
+[properties."battery.notify".properties.threshold.properties.low]
+    default     = 20
+    description = "Low battery threshold."
+    type        = "integer"
+
+[properties."battery.notify".properties.threshold.properties.unplug]
+    default     = 100
+    description = "Unplug battery threshold."
+    type        = "integer"
+
+[properties."battery.notify".properties.execute]
+    description = "Commands to execute for battery notifications."
+    type        = "object"
+
+[properties."battery.notify".properties.execute.properties.unplug]
+    default     = ""
+    description = "Command to execute when unplugged."
+    type        = "string"
+
+[properties."battery.notify".properties.execute.properties.low]
+    default     = ""
+    description = "Command to execute when battery is low."
+    type        = "string"
+
+[properties."battery.notify".properties.execute.properties.critical]
+    default     = "systemctl suspend"
+    description = "Command to execute when battery is critical."
+    type        = "string"
+
+[properties."battery.notify".properties.execute.properties.charging]
+    default     = ""
+    description = "Command to execute when charging."
+    type        = "string"
+
+[properties."battery.notify".properties.execute.properties.discharging]
+    default     = ""
+    description = "Command to execute when discharging."
+    type        = "string"
+
+[properties."keybind.hint"]
+    description = "keybind.hint.py configuration."
+    type        = "object"
+
+[properties."rofi.keybind.hint"]
+    description = "keybind_hint.sh configuration."
+    type        = "object"
+
+[properties."rofi.keybind.hint".properties.delimiter]
+    default     = "\t"
+    description = "Delimiter for keybind hints."
+    type        = "string"
+
+[properties."rofi.keybind.hint".properties.width]
+    default     = "40em"
+    description = "Width for keybind hints."
+    type        = "string"
+
+[properties."rofi.keybind.hint".properties.height]
+    default     = "40em"
+    description = "Height for keybind hints."
+    type        = "string"
+
+[properties."rofi.keybind.hint".properties.line]
+    default     = 16
+    description = "Number of lines for keybind hints."
+    type        = "integer"
+
+[properties.screenshot]
+    description = "screenshot.sh configuration."
+    type        = "object"
+
+[properties.screenshot.properties.annotation_tool]
+    default     = "satty"
+    description = "Annotation tool for screenshots."
+    options     = [ "satty", "swappy" ]
+    type        = "string"
+
+[properties.screenshot.properties.annotation_pre_command]
+    default     = [  ]
+    description = "Pre command for annotation tool."
+    type        = "array"
+
+[properties.screenshot.properties.annotation_pre_command.items]
+    type = "string"
+
+[properties.screenshot.properties.annotation_post_command]
+    default     = [ "" ]
+    description = "Post command for annotation tool."
+    type        = "array"
+
+[properties.screenshot.properties.annotation_post_command.items]
+    type = "string"
+
+[properties."rofi.bookmark"]
+    description = "Bookmark configuration."
+    type        = "object"
+
+[properties."rofi.bookmark".properties.file]
+    description = "Path to the bookmark file."
+    type        = "string"
+
+[properties."rofi.search"]
+    description = "Search configuration."
+    type        = "object"
+
+[properties."rofi.search".properties.file]
+    description = "Path to the search file."
+    type        = "string"
+
+[properties.wallbash]
+    description = "wallbash configuration."
+    type        = "object"
+
+[properties.wallbash.properties.skip_template]
+    default     = [ "" ]
+    description = "Templates to skip when using wallbash."
+    options     = [ "waybar.dcol", "waybar.theme" ]
+    type        = "array"
+
+[properties.wallbash.properties.skip_template.items]
+    type = "string"
+
+[properties.waybar]
+    description = "waybar configuration."
+    type        = "object"
+
+[properties.waybar.properties.font]
+    default     = "JetBrainsMono Nerd Font"
+    description = "Font for waybar."
+    type        = "string"
+
+[properties.waybar.properties.scale]
+    default     = 10
+    description = "Total scaling for waybar."
+    type        = "integer"
+
+[properties.waybar.properties.icon_size]
+    default     = 10
+    description = "Icon size for waybar."
+    type        = "integer"
+
+[properties.waybar.properties.position]
+    default     = "top"
+    description = "A fallback position of the waybar.  "
+    options     = [ "top", "bottom", "left", "right" ]
+    type        = "string"
+
+[properties.weather]
+    description = "Weather configuration."
+    type        = "object"
+
+[properties.weather.properties.temperature_unit]
+    default     = "c"
+    description = "Temperature unit ('c' or 'f')."
+    type        = "string"
+
+[properties.weather.properties.time_format]
+    default     = "24h"
+    description = "Time format ('12h' or '24h')."
+    type        = "string"
+
+[properties.weather.properties.windspeed_unit]
+    default     = "km/h"
+    description = "Windspeed unit ('km/h' or 'mph')."
+    type        = "string"
+
+[properties.weather.properties.show_icon]
+    default     = true
+    description = "Show the weather icon in waybar."
+    type        = "boolean"
+
+[properties.weather.properties.show_location]
+    default     = true
+    description = "Show the location in waybar."
+    type        = "boolean"
+
+[properties.weather.properties.show_today]
+    default     = true
+    description = "Show detailed description of today in tooltip."
+    type        = "boolean"
+
+[properties.weather.properties.forecast_days]
+    default     = 3
+    description = "Number of days to show forecast (0-3)."
+    type        = "integer"
+
+[properties.weather.properties.location]
+    default     = ""
+    description = "Location/coordinates string for the weather output."
+    type        = "string"
+
+[properties."cava.stdout"]
+    description = "'cava.sh stdout' configuration."
+    type        = "object"
+
+[properties."cava.stdout".properties.bar]
+    default     = "▁▂▃▄▅▆▇█"
+    description = "Bar characters for cava."
+    type        = "string"
+
+[properties."cava.stdout".properties.width]
+    default     = 20
+    description = "Width of the cava output."
+    type        = "integer"
+
+[properties."cava.stdout".properties.range]
+    default     = 7
+    description = "Number of bars minus one."
+    type        = "integer"
+
+[properties."cava.stdout".properties.standby]
+    default     = "🎶"
+    description = "Standby character for cava."
+    type        = "string"
+
+[properties."cava.stdout".properties.bar_array]
+    default     = [ "░", "▒", "▓", "█" ]
+    description = "Bar array for stdout preset."
+    type        = "array"
+
+[properties."cava.stdout".properties.bar_array.items]
+    type = "string"
+
+[properties."cava.hyprlock"]
+    description = "'cava.sh hyprlock' configuration."
+    type        = "object"
+
+[properties."cava.hyprlock".properties.bar]
+    default     = "▁▂▃▄▅▆▇█"
+    description = "Bar characters for cava."
+    type        = "string"
+
+[properties."cava.hyprlock".properties.width]
+    default     = 20
+    description = "Width of the cava output."
+    type        = "integer"
+
+[properties."cava.hyprlock".properties.range]
+    default     = 7
+    description = "Number of bars minus one."
+    type        = "integer"
+
+[properties."cava.hyprlock".properties.standby]
+    default     = "🎶"
+    description = "Standby character for cava."
+    type        = "string"
+
+[properties."cava.hyprlock".properties.bar_array]
+    default     = [ "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ]
+    description = "Bar array for hyprlock preset."
+    type        = "array"
+
+[properties."cava.hyprlock".properties.bar_array.items]
+    type = "string"
+
+[properties."cava.waybar"]
+    description = "'cava.sh waybar' configuration."
+    type        = "object"
+
+[properties."cava.waybar".properties.bar]
+    default     = "▁▂▃▄▅▆▇█"
+    description = "Bar characters for cava."
+    type        = "string"
+
+[properties."cava.waybar".properties.width]
+    default     = 20
+    description = "Width of the cava output."
+    type        = "integer"
+
+[properties."cava.waybar".properties.range]
+    default     = 7
+    description = "Number of bars minus one."
+    type        = "integer"
+
+[properties."cava.waybar".properties.standby]
+    default     = "🎶"
+    description = "Standby character for cava."
+    type        = "string"
+
+[properties."cava.waybar".properties.bar_array]
+    default     = [ "◜", "◝", "◞", "◟", "◠", "◡", "◢", "◣" ]
+    description = "Bar array for waybar preset."
+    type        = "array"
+
+[properties."cava.waybar".properties.bar_array.items]
+    type = "string"
+
+[properties."cava"]
+    description = "Cava visualizer configuration."
+    type        = "object"
+
+[properties.cava.properties.channels]
+    default     = "stereo"
+    description = "Audio channels: stereo or mono."
+    options     = [ "stereo", "mono" ]
+    type        = "string"
+
+[properties.cava.properties.reverse]
+    default     = 1
+    description = "Reverse spectrum movement (0 or 1)."
+    options     = [ 0, 1 ]
+    type        = "integer"
+
+[properties.cava.properties.range]
+    default     = "8"
+    description = "Bar sensitivity"
+    type        = "string"
+
+[properties."hypr.config"]
+    description = "Hypr configuration."
+    type        = "object"
+
+[properties."hypr.config".properties.sanitize]
+    default     = [ ".*rgba\\(.*,.*,.*,.*\\)" ]
+    description = "List of regex to sanitize in the theme.config."
+    type        = "array"
+
+[properties."hypr.config".properties.sanitize.items]
+    type = "string"
+
+[properties.volume]
+    description = "volumecontrol.sh configuration."
+    type        = "object"
+
+[properties.volume.properties.notify]
+    default     = true
+    description = "Enable notifications for volume control."
+    type        = "boolean"
+
+[properties.volume.properties.steps]
+    default     = 5
+    description = "Number of steps to increase/decrease volume."
+    type        = "integer"
+
+[properties.volume.properties.boost]
+    default     = false
+    description = "Enable volume boost."
+    type        = "boolean"
+
+[properties.volume.properties.boost_limit]
+    default     = 120
+    description = "Volume boost limit."
+    type        = "integer"
+
+[properties.brightness]
+    description = "brightnesscontrol.sh configuration."
+    type        = "object"
+
+[properties.brightness.properties.notify]
+    default     = true
+    description = "Enable notifications for brightness control."
+    type        = "boolean"
+
+[properties.brightness.properties.steps]
+    default     = 5
+    description = "Number of steps to increase/decrease brightness."
+    type        = "integer"
+
+[properties.sysmonitor]
+    description = "sysmonlaunch.sh configuration."
+    type        = "object"
+
+[properties.sysmonitor.properties.execute]
+    default     = ""
+    description = "Default command to execute."
+    type        = "string"
+
+[properties.sysmonitor.properties.commands]
+    default     = [ "" ]
+    description = "Fallback command options."
+    type        = "array"
+
+[properties.sysmonitor.properties.commands.items]
+    type = "string"
+
+[properties.notification]
+    description = "Notification script configuration."
+    type        = "object"
+
+[properties.notification.properties.font]
+    default     = "mononoki Nerd Font"
+    description = "Font for notifications."
+    type        = "string"
+
+[properties.notification.properties.font_size]
+    default     = 10
+    description = "Font size for notifications."
+    type        = "integer"
+
+[properties.hyprland]
+    description = "Hyprland configuration."
+    type        = "object"
+
+[properties.hyprland.properties.browser]
+    default     = "firefox"
+    description = "Browser."
+    type        = "string"
+
+[properties.hyprland.properties.editor]
+    default     = "code"
+    description = "Editor."
+    type        = "string"
+
+[properties.hyprland.properties.explorer]
+    default     = "dolphin"
+    description = "File manager."
+    type        = "string"
+
+[properties.hyprland.properties.idle]
+    default     = "hypridle"
+    description = "Idle manager."
+    type        = "string"
+
+[properties.hyprland.properties.lockscreen]
+    default     = "lockscreen.sh"
+    description = "Lockscreen."
+    type        = "string"
+
+[properties.hyprland.properties.terminal]
+    default     = "kitty"
+    description = "Terminal."
+    type        = "string"
+
+[properties.hyprland.properties.quickapps]
+    default     = "kitty"
+    description = "Quick apps."
+    type        = "string"
+
+[properties.hyprland.properties.bar]
+    default     = "waybar"
+    description = "Bar."
+    type        = "string"
+
+[properties.hyprland.properties.color_scheme]
+    default     = "prefer-dark"
+    description = "Color scheme."
+    type        = "string"
+
+[properties.hyprland.properties.gtk_theme]
+    default     = "Wallbash-Gtk"
+    description = "GTK theme."
+    type        = "string"
+
+[properties.hyprland.properties.icon_theme]
+    default     = "Tela-circle-dracula"
+    description = "Icon theme."
+    type        = "string"
+
+[properties.hyprland.properties.cursor_size]
+    default     = 24
+    description = "Cursor size."
+    type        = "integer"
+
+[properties.hyprland.properties.cursor_theme]
+    default     = "Bibata-Modern-Ice"
+    description = "Cursor theme."
+    type        = "string"
+
+[properties.hyprland.properties.button_layout]
+    default     = ""
+    description = "Button layout. (gtk only)"
+    type        = "string"
+
+[properties.hyprland.properties.document_font_size]
+    default     = 10
+    description = "Document font size."
+    type        = "integer"
+
+[properties.hyprland.properties.font]
+    default     = "Canterell"
+    description = "Font."
+    type        = "string"
+
+[properties.hyprland.properties.font_antialiasing]
+    default     = "rgba"
+    description = "Font antialiasing."
+    type        = "string"
+
+[properties.hyprland.properties.font_hinting]
+    default     = "full"
+    description = "Font hinting."
+    type        = "string"
+
+[properties.hyprland.properties.font_size]
+    default     = 10
+    description = "Font size."
+    type        = "integer"
+
+[properties.hyprland.properties.monospace_font]
+    default     = "CaskaydiaCove Nerd Font Mono"
+    description = "Monospace font."
+    type        = "string"
+
+[properties.hyprland.properties.monospace_font_size]
+    default     = 9
+    description = "Monospace font size."
+    type        = "integer"
+
+[properties.hyprland.properties.background_path]
+    default     = ""
+    description = "LockScreen's Background path."
+    type        = "string"
+
+[properties.hyprland_start]
+    description = "Hyprland start configuration."
+    type        = "object"
+
+[properties.hyprland_start.properties.apptray_bluetooth]
+    default     = "blueman-applet"
+    description = "Bluetooth applet."
+    type        = "string"
+
+[properties.hyprland_start.properties.auth_dialogue]
+    default     = "polkitkdeauth.sh"
+    description = "Authentication dialogue."
+    type        = "string"
+
+[properties.hyprland_start.properties.bar]
+    default     = "hyde-shell waybar --watch"
+    description = "Bar."
+    type        = "string"
+
+[properties.hyprland_start.properties.battery_notify]
+    default     = "batterynotify.sh"
+    description = "Battery notification script."
+    type        = "string"
+
+[properties.hyprland_start.properties.dbus_share_picker]
+    default     = "dbus-update-activation-environment --systemd --all"
+    description = "DBus share picker."
+    type        = "string"
+
+[properties.hyprland_start.properties.idle_daemon]
+    default     = "hypridle"
+    description = "Idle daemon."
+    type        = "string"
+
+[properties.hyprland_start.properties.image_clipboard]
+    default     = "wl-paste --type image --watch cliphist store"
+    description = "Image clipboard."
+    type        = "string"
+
+[properties.hyprland_start.properties.network_manager]
+    default     = "nm-applet --indicator"
+    description = "Network manager."
+    type        = "string"
+
+[properties.hyprland_start.properties.notifications]
+    default     = "swaync"
+    description = "Notifications."
+    type        = "string"
+
+[properties.hyprland_start.properties.removable_media]
+    default     = "udiskie --no-automount --smart-tray"
+    description = "Removable media manager."
+    type        = "string"
+
+[properties.hyprland_start.properties.systemd_share_picker]
+    default     = "systemctl --user import-environment QT_QPA_PLATFORMTHEME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+    description = "Systemd share picker."
+    type        = "string"
+
+[properties.hyprland_start.properties.text_clipboard]
+    default     = "wl-paste --type text --watch cliphist store"
+    description = "Text clipboard."
+    type        = "string"
+
+[properties.hyprland_start.properties.wallpaper]
+    default     = "$scrPath/wallpaper.sh --global"
+    description = "Wallpaper script."
+    type        = "string"
+
+[properties.hyprland_start.properties.xdg_portal_reset]
+    default     = "resetxdgportal.sh"
+    description = "XDG portal reset script."
+    type        = "string"
+
+[properties.mediaplayer]
+    description = "mediaplayer.py configuration."
+    type        = "object"
+
+[properties.mediaplayer.properties.prefix_playing]
+    default     = ""
+    description = "Prefix for playing media."
+    type        = "string"
+
+[properties.mediaplayer.properties.prefix_paused]
+    default     = "  "
+    description = "Prefix for paused media."
+    type        = "string"
+
+[properties.mediaplayer.properties.max_length]
+    default     = 70
+    description = "Max length of song and artist string."
+    type        = "integer"
+
+[properties.mediaplayer.properties.standby_text]
+    default     = "  Music"
+    description = "To display on standby."
+    type        = "string"
+
+[properties.mediaplayer.properties.artist_track_separator]
+    default     = "  "
+    description = "Separator symbols to display between artist and track."
+    type        = "string"

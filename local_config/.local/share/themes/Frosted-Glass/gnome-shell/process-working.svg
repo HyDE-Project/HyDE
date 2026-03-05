@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="32" viewBox="0 0 512 32">
+  <defs>
+    <g id="g" fill="#ffffff" fill-opacity=".7">
+      <circle cx="8" cy="8" r="8" fill="none"/>
+      <path d="M8 1a7 7 0 0 0-7 7 7 7 0 0 0 7 7 7 7 0 0 0 7-7h-3a4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4V1z"/>
+    </g>
+  </defs>
+  <use xlink:href="#g" transform="translate(0) rotate(0 8 8)"/>
+  <use xlink:href="#g" transform="translate(16) rotate(5.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(32) rotate(11.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(48) rotate(16.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(64) rotate(22.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(80) rotate(28.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(96) rotate(33.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(112) rotate(39.375 8 8)"/>
+  <use xlink:href="#g" transform="translate(128) rotate(45 8 8)"/>
+  <use xlink:href="#g" transform="translate(144) rotate(50.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(160) rotate(56.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(176) rotate(61.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(192) rotate(67.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(208) rotate(73.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(224) rotate(78.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(240) rotate(84.375 8 8)"/>
+  <use xlink:href="#g" transform="translate(256) rotate(90 8 8)"/>
+  <use xlink:href="#g" transform="translate(272) rotate(95.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(288) rotate(101.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(304) rotate(106.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(320) rotate(112.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(336) rotate(118.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(352) rotate(123.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(368) rotate(129.375 8 8)"/>
+  <use xlink:href="#g" transform="translate(384) rotate(135 8 8)"/>
+  <use xlink:href="#g" transform="translate(400) rotate(140.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(416) rotate(146.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(432) rotate(151.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(448) rotate(157.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(464) rotate(163.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(480) rotate(168.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(496) rotate(174.375 8 8)"/>
+  <use xlink:href="#g" transform="translate(0 16) rotate(180 8 8)"/>
+  <use xlink:href="#g" transform="translate(16 16) rotate(185.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(32 16) rotate(191.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(48 16) rotate(196.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(64 16) rotate(202.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(80 16) rotate(208.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(96 16) rotate(213.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(112 16) rotate(219.375 8 8)"/>
+  <use xlink:href="#g" transform="translate(128 16) rotate(225 8 8)"/>
+  <use xlink:href="#g" transform="translate(144 16) rotate(230.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(160 16) rotate(236.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(176 16) rotate(241.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(192 16) rotate(247.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(208 16) rotate(253.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(224 16) rotate(258.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(240 16) rotate(264.375 8 8)"/>
+  <use xlink:href="#g" transform="translate(256 16) rotate(270 8 8)"/>
+  <use xlink:href="#g" transform="translate(272 16) rotate(275.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(288 16) rotate(281.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(304 16) rotate(286.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(320 16) rotate(292.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(336 16) rotate(298.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(352 16) rotate(303.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(368 16) rotate(309.375 8 8)"/>
+  <use xlink:href="#g" transform="translate(384 16) rotate(315 8 8)"/>
+  <use xlink:href="#g" transform="translate(400 16) rotate(320.625 8 8)"/>
+  <use xlink:href="#g" transform="translate(416 16) rotate(326.25 8 8)"/>
+  <use xlink:href="#g" transform="translate(432 16) rotate(331.875 8 8)"/>
+  <use xlink:href="#g" transform="translate(448 16) rotate(337.5 8 8)"/>
+  <use xlink:href="#g" transform="translate(464 16) rotate(343.125 8 8)"/>
+  <use xlink:href="#g" transform="translate(480 16) rotate(348.75 8 8)"/>
+  <use xlink:href="#g" transform="translate(496 16) rotate(354.375 8 8)"/>
+</svg>

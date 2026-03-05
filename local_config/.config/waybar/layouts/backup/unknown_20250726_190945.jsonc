@@ -1,0 +1,66 @@
+{
+  "layer": "top",
+  "output": ["*"],
+  "position": "top",
+  "mode": "dock",
+  "exclusive": true,
+  "passthrough": false,
+  "reload_style_on_change": true,
+  "include": [
+    "$XDG_CONFIG_HOME/waybar/modules/*json*", // This can be used on waybar-git
+    "$XDG_DATA_HOME/waybar/modules/*json*" // This can be used on waybar-git
+    // "$XDG_CONFIG_HOME/waybar/includes/includes.json" // This will be deprecated if waybar 0.12.0 is released on debian
+  ],
+  // ? Groups per side
+  "modules-left": ["group/leaf-inverse"],
+  "modules-center": ["group/pill#1", "group/pill-in#center", "group/pill#2"],
+  "modules-right": ["group/leaf"],
+  //  ? Declaring the groups
+  "group/pill#2": {
+    "orientation": "inherit",
+    "modules": ["custom/hyprsunset", "idle_inhibitor"]
+  },
+  "group/pill#1": {
+    "orientation": "inherit",
+    "modules": ["custom/weather"]
+  },
+  "group/leaf-inverse": {
+    "orientation": "inherit",
+    "modules": ["hyprland/workspaces", "wlr/taskbar"]
+  },
+  "group/pill-in#center": {
+    "orientation": "inherit",
+    "modules": [
+      "keyboard-state",
+      "clock",
+      "custom/updates",
+      "custom/keybindhint",
+      "custom/gamemode"
+    ]
+  },
+  "group/leaf": {
+    "orientation": "inherit",
+    "modules": [
+      "privacy",
+      "backlight",
+      "tray",
+      "network#bandwidthUpBytes",
+      "network#bandwidthDownBytes",
+      "custom/bluetooth",
+      "pulseaudio",
+      "pulseaudio#microphone",
+      "battery",
+      "power-profiles-daemon",
+      "custom/gpuinfo",
+      "custom/cpuinfo",
+      "custom/sensorsinfo",
+      "custom/swaync",
+      "custom/dunst",
+      "custom/hyde-menu"
+    ]
+  },
+  "group/pill-in#clipboard": {
+    "orientation": "inherit",
+    "modules": ["custom/clipboard"]
+  }
+}

@@ -1,0 +1,120 @@
+/**************
+ * GtkInfoBar *
+ **************/
+%infobar,
+infobar {
+  text-shadow: none;
+  color: $fg_color;
+  background-color: $bg_color;
+  border-bottom:1px solid darken($bg_color,10%);
+  box-shadow: 0 1px 0 0 transparentize(black, 0.95),
+              0 1px 2px 0 transparentize(black, 0.85);
+
+}
+
+%color_infobar {
+
+  @extend %infobar;
+
+  text-shadow: none;
+  color: $selected_fg_color;
+  border:none;
+
+  .label {
+    color: $selected_fg_color;
+
+    &:backdrop {
+      color: $backdrop_selected_fg_color;
+    }
+  }
+
+  button {
+    border-radius: 2px;
+    border: none;
+    background: transparentize($base_color, 0.02);
+    color: $fg_color;
+    box-shadow: 0 1px 0 0 transparentize(black, 0.8);
+
+    .label {
+      color: $fg_color;
+    }
+
+    &:active {
+      background: $base_color;
+      color: $fg_color;
+
+      box-shadow: 0 1px 2px 0 transparentize(black, 0.6);
+
+      &:backdrop {
+        background: transparentize($base_color, 0.2);
+        color: transparentize($fg_color, 0.5);
+        box-shadow: none;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      box-shadow: 0 1px 2px 0 transparentize(black, 0.6);
+    }
+
+    &:disabled {
+      background: transparentize($base_color, 0.4);
+      color: transparentize($fg_color, 0.5);
+      box-shadow: none;
+
+        &:backdrop {
+          background: transparentize($base_color, 0.5);
+          color: transparentize($fg_color, 0.5);
+          box-shadow: none;
+        }
+    }
+
+    &:backdrop {
+      background: transparentize($base_color, 0.2);
+      color: transparentize($fg_color, 0.5);
+      box-shadow: none;
+    }
+  }
+}
+
+.info {
+  @extend %color_infobar;
+  background-color: $info_color;
+  color: $bg_color;
+
+  &:backdrop {
+    background-color:lighten($info_color,10%);
+    color: $backdrop_selected_fg_color;
+  }
+}
+
+.warning {
+  @extend %color_infobar;
+  background-color: $warning_color;
+
+  &:backdrop {
+    background-color:lighten($warning_color,10%);
+    color: $backdrop_selected_fg_color;
+  }
+}
+
+.question {
+  @extend %color_infobar;
+  background-color: $question_color;
+
+  &:backdrop {
+    background-color:lighten($question_color,10%);
+    color: $backdrop_selected_fg_color;
+  }
+
+}
+
+.error {
+  @extend %color_infobar;
+  background-color: $error_color;
+
+  &:backdrop {
+    background-color:lighten($error_color,10%);
+    color: $backdrop_selected_fg_color;
+  }
+}

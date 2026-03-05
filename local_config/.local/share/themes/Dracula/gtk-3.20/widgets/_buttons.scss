@@ -1,0 +1,554 @@
+/***********
+ * Buttons *
+ ***********/
+// stuff for .needs-attention
+$_dot_color: if($variant=='light', $selected_bg_color,
+                                   lighten($selected_bg_color,15%));
+@keyframes needs_attention {
+  from {
+    background-image: -gtk-gradient(radial,
+                                    center center, 0,
+                                    center center, 0.01,
+                                    to($_dot_color),
+                                    to(transparent));
+  }
+
+  to {
+    background-image: -gtk-gradient(radial,
+                                    center center, 0,
+                                    center center, 0.5,
+                                    to($selected_bg_color),
+                                    to(transparent));
+  }
+}
+
+%button,
+button {
+  @at-root %button_basic, & {
+
+    min-height: 24px;
+    min-width: 16px;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 3px;
+    transition: $button_transition;
+
+    @include button(normal);
+
+    &.flat {
+      @include button(undecorated);
+      // to avoid adiacent buttons borders clashing when transitioning, the transition on the normal state is set
+      // to none, while it's added back in the hover state, so the button decoration will fade in on hover, but
+      // it won't fade out when the pointer leave the button allocation area. To make the transition more evident
+      // in this case the duration is increased.
+      transition: none;
+
+      &:hover {
+        transition: $button_transition;
+        transition-duration: 500ms;
+
+        &:active { transition: $button_transition; }
+      }
+    }
+
+    &:hover {
+      @include button(hover,$selected_bg_color,$selected_fg_color);
+      -gtk-icon-effect: highlight;
+    }
+
+    &:active,
+    &:checked {
+      @include button(active,darken($selected_bg_color,5%),$selected_fg_color);
+
+      transition-duration: 50ms;
+    }
+
+    &:backdrop {
+      &.flat, & {
+        @include button(backdrop);
+
+        transition: $backdrop_transition;
+        -gtk-icon-effect: none;
+
+        &:active,
+        &:checked { @include button(backdrop-active); }
+
+        &:disabled {
+          @include button(backdrop-insensitive);
+
+          &:active,
+          &:checked { @include button(backdrop-insensitive-active); }
+        }
+      }
+    }
+
+    &.flat { &:backdrop, &:disabled, &:backdrop:disabled { @include button(undecorated); }}
+
+    &:disabled {
+      @include button(insensitive);
+
+      &:active,
+      &:checked { @include button(insensitive-active); }
+    }
+
+    &.image-button {
+      min-width: 24px;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    &.text-button {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    &.text-button.image-button {
+      padding-left: 8px;
+      padding-right: 8px;
+
+      label {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+    }
+
+    &:drop(active) {
+      color: $drop_target_color;
+      border-color: $drop_target_color;
+      box-shadow: inset 0 0 0 1px $drop_target_color;
+    }
+  }
+
+  @at-root %button_selected, & {
+    row:selected & {
+      @if $variant == 'light' { border-color: $selected_borders_color; }
+
+      &.flat:not(:active):not(:checked):not(:hover):not(disabled) {
+        color: $selected_fg_color;
+        border-color: transparent;
+
+        &:backdrop { color: if($variant=='light', $backdrop_base_color, $backdrop_fg_color); }
+      }
+    }
+  }
+
+
+  // big standalone buttons like in Documents pager
+  &.osd {
+    min-width: 24px;
+    min-height: 32px;
+
+    &.image-button { min-width: 32px; }
+
+    color: $osd_fg_color;
+    border-radius: 5px;
+    outline-color: transparentize($osd_fg_color, 0.7);  //FIXME: define a color var?
+
+    @include button(osd);
+
+    border: none;
+    box-shadow: none;
+
+    &:hover {
+      @include button(osd-hover);
+
+      border: none;
+      box-shadow: none;
+    }
+
+    &:active,
+    &:checked {
+      @include button(osd-active);
+
+      border: none;
+      box-shadow: none;
+    }
+
+    &:disabled {
+      &:backdrop, & {
+        @include button(osd-insensitive);
+
+        border: none;
+      }
+    }
+
+    &:backdrop {
+      @include button(osd-backdrop);
+
+      border: none;
+    }
+  }
+
+  //overlay / OSD style
+  @at-root %osd_button,
+  .osd & {
+    @include button(osd);
+
+    &:hover { @include button(osd-hover); }
+
+    &:active,
+    &:checked { &:backdrop, & { @include button(osd-active); }}
+
+    &:disabled { &:backdrop, & { @include button(osd-insensitive); }}
+
+    &:backdrop { @include button(osd-backdrop); }
+
+    &.flat {
+      @include button(undecorated);
+
+      box-shadow: none; //FIXME respect no edge on the button mixin
+      text-shadow: 0 1px black;
+      -gtk-icon-shadow: 0 1px black;
+
+      &:hover { @include button(osd-hover); }
+
+      &:disabled {
+        @include button(osd-insensitive);
+        background-image: none;
+        border-color: transparent;
+        box-shadow: none;
+      }
+
+      &:backdrop { @include button(undecorated); }
+
+      &:active,
+      &:checked { @include button(osd-active); }
+    }
+  }
+
+  // Suggested and Destructive Action buttons
+  @each $b_type, $b_color in (suggested-action, $purple),
+                             (destructive-action, $destructive_color) {
+    &.#{$b_type} {
+      @include button(normal, $b_color, white);
+
+      &.flat {
+        @include button(undecorated);
+
+        color: $b_color; //FIXME: does it work on the dark variant?
+      }
+
+      &:hover { @include button(hover, $b_color, white); }
+
+      &:active,
+      &:checked { @include button(active, $b_color, white); }
+
+      &:backdrop,
+      &.flat:backdrop {
+        @include button(backdrop, $b_color, white);
+        label { color: transparentize(white, 0.5);}
+        &:active,
+        &:checked { @include button(backdrop-active, $b_color, white); }
+
+        &:disabled {
+          @include button(backdrop-insensitive, $b_color, white);
+          label { color: transparentize(white, 0.5);}
+
+          &:active,
+          &:checked { @include button(backdrop-insensitive-active, $b_color, white); }
+        }
+      }
+
+      &.flat {
+        &:backdrop, &:disabled, &:backdrop:disabled {
+          @include button(undecorated);
+
+          color: transparentize($b_color, 0.2);
+        }
+      }
+
+      &:disabled {
+        @include button(insensitive, $b_color, white);
+        label { color: transparentize($selected_fg_color, 0.2); }
+        &:active,
+        &:checked { @include button(insensitive-active, $b_color, white); }
+      }
+
+      .osd & {
+        @include button(osd, $b_color);
+
+        &:hover { @include button(osd-hover, $b_color); }
+
+        &:active,
+        &:checked { &:backdrop, & { @include button(osd-active, $b_color); }}
+
+        &:disabled { &:backdrop, & { @include button(osd-insensitive, $b_color); }}
+
+        &:backdrop { @include button(osd-backdrop, $b_color); }
+      }
+    }
+  }
+
+  .stack-switcher > & {
+    // to position the needs attention dot, padding is added to the button
+    // child, a label needs just lateral padding while an icon needs vertical
+    // padding added too.
+
+    outline-offset: -3px; // needs to be set or it gets overriden by GtkRadioButton outline-offset
+
+    > label {
+      padding-left: 6px;  // label padding
+      padding-right: 6px; //
+    }
+
+    > image {
+      padding-left: 6px;   // image padding
+      padding-right: 6px;  //
+      padding-top: 3px;    //
+      padding-bottom: 3px; //
+    }
+
+    &.text-button {
+      // compensate text-button paddings
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    &.image-button {
+      // we want image buttons to have a 1:1 aspect ratio, so compensation
+      // of the padding added to the GtkImage is needed
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+
+    &.needs-attention {
+      > label,
+      > image { @extend %needs_attention; }
+
+      &:active,
+      &:checked {
+        > label,
+        > image {
+          animation: none;
+          background-image: none;
+        }
+      }
+    }
+  }
+
+  //inline-toolbar buttons
+  .inline-toolbar &, .inline-toolbar &:backdrop {
+    border-radius: 2px;
+    border-width: 1px;
+    @extend %linked;
+  }
+
+  .primary-toolbar & { -gtk-icon-shadow: none; } // tango icons don't need shadows
+
+  .linked > &,
+  .linked > &:hover,
+  .linked > &:active,
+  .linked > &:checked,
+  .linked > &:backdrop { @extend %linked; }
+
+  .linked.vertical > &,
+  .linked.vertical > &:hover,
+  .linked.vertical > &:active,
+  .linked.vertical > &:checked,
+  .linked.vertical > &:backdrop { @extend %linked_vertical; }
+}
+
+%needs_attention {
+  animation: needs_attention 150ms ease-in;
+  $_dot_shadow: _text_shadow_color();
+  $_dot_shadow_r: if($variant=='light',0.5,0.45);
+  background-image: -gtk-gradient(radial,
+                                  center center, 0,
+                                  center center, 0.5,
+                                  to($_dot_color),
+                                  to(transparent)),
+                    -gtk-gradient(radial,
+                                  center center, 0,
+                                  center center, $_dot_shadow_r,
+                                  to($_dot_shadow),
+                                  to(transparent));
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+
+  @if $variant == 'light' { background-position: right 3px, right 4px; }
+
+  @else { background-position: right 3px, right 2px; }
+
+  &:backdrop { background-size: 6px 6px, 0 0;}
+
+  &:dir(rtl) {
+    @if $variant == 'light' { background-position: left 3px, left 4px; }
+
+    @else { background-position: left 3px, left 2px; }
+  }
+}
+
+toolbar {
+  button {
+    &:hover { @include button(normal,darken($bg_color,7%));}
+    &:active { @include button(normal,darken($bg_color,12%));}
+  }
+}
+// all the following is for the +|- buttons on inline toolbars, that way
+// should really be deprecated...
+.inline-toolbar toolbutton > button { // redefining the button look is
+                                      // needed since those are flat...
+  @include button(undecorated);
+
+  &:hover { color: $selected_bg_color; }
+
+  &:active,
+  &:checked{ color: darken($selected_bg_color, 5%); }
+
+  &:disabled {
+    color: $backdrop_text_color;
+
+    &:active,
+    &:checked { color: transparentize(darken($selected_bg_color, 5%),0.7); }
+  }
+
+  &:backdrop {
+    color: $backdrop_text_color;
+
+    &:active,
+    &:checked { color: darken($selected_bg_color, 5%); }
+
+    &:disabled {
+      color: $backdrop_text_color;
+
+      &:active,
+      &:checked { color: transparentize(darken($selected_bg_color, 5%),0.7); }
+    }
+  }
+}
+
+// More inline toolbar buttons
+toolbar.inline-toolbar toolbutton,
+toolbar.inline-toolbar toolbutton:backdrop {
+  > button.flat {
+    &:backdrop {
+      border-color: transparent;
+      box-shadow: none;
+    }
+  }
+}
+
+%linked_middle {
+  border: 1px solid $borders_color;
+  border-radius: 0;
+  border-right-style: none;
+  box-shadow: inset 0px 1px 0px 0px $top_highlight;
+}
+
+%linked {
+  @extend %linked_middle;
+
+  &:first-child {
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-right-style: solid;
+  }
+
+  &:only-child {
+    border-radius: 3px;
+    border-style: solid;
+  }
+}
+
+%linked_vertical_middle {
+  border-style: solid solid none solid;
+  border-radius: 0;
+}
+
+%linked_vertical{
+  @extend %linked_vertical_middle;
+
+  &:first-child {
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+  }
+
+  &:last-child {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-style: solid;
+  }
+
+  &:only-child {
+    border-radius: 3px;
+    border-style: solid;
+  }
+}
+
+%undecorated_button {
+  background-color: transparent;
+  background-image: none;
+  border-color: transparent;
+  box-shadow: inset 0 1px transparentize(white,1),
+              0 1px transparentize(white, 1);
+  text-shadow: none;
+  -gtk-icon-shadow: none;
+}
+
+/* menu buttons */
+modelbutton.flat,
+.menuitem.button.flat {
+  min-height: 26px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 3px;
+  outline-offset: -2px;
+
+  @extend %undecorated_button;
+
+  &:hover { background-color: $popover_hover_color; }
+
+  &:selected { @extend %selected_items; }
+
+  &:backdrop,
+  &:backdrop:hover { @extend %undecorated_button; }
+
+  // FIXME: remove the following when the checks/radios rewrite lands
+  check:last-child,
+  radio:last-child { margin-left: 8px; }
+
+  check:first-child,
+  radio:first-child { margin-right: 8px; }
+}
+
+modelbutton.flat arrow {
+  background: none;
+
+  &:hover { background: none; }
+
+  &.left { -gtk-icon-source: -gtk-icontheme("pan-start-symbolic"); }
+
+  &.right { -gtk-icon-source: -gtk-icontheme("pan-end-symbolic"); }
+}
+
+button.color {
+  padding: 4px;
+
+  colorswatch:only-child {
+    &, overlay { border-radius: 0; }
+
+    @if $variant == 'light' {
+      box-shadow: 0 1px _text_shadow_color();
+
+      &:disabled,
+      &:backdrop { box-shadow: none; }
+    }
+  }
+}
+
+notebook, list, .view, popover {
+  button {
+    box-shadow: inset 0px 0px 0px 1px $borders_color;
+    &:backdrop {
+      box-shadow: inset 0px 0px 0px 1px $borders_color;
+    }
+  }
+  .linked > button {
+    box-shadow: none;
+  }
+}

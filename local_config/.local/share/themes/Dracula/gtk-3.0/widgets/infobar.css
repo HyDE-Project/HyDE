@@ -1,0 +1,108 @@
+/***********
+ * infobar *
+ ***********/
+GtkInfoBar {
+    border-width: 0px;
+    border-style: none;
+}
+
+.info {
+    border: none;
+    background-color: shade(@info_bg_color,0.9);
+    background-image: none;
+    color: @info_fg_color;
+}
+
+.error .button {
+    border: none;
+    color: @info_fg_color;
+    background-image: none;
+    background-color: @info_bg_color;
+}
+
+.error .button:hover {
+    color: @info_fg_color;
+    background-image: none;
+    background-color: shade(@info_bg_color,1.1);
+}
+
+.error .button:active {
+    color: @info_fg_color;
+    background-image: none;
+    background-color: shade(@info_bg_color,1.2);
+}
+
+.warning {
+    background-color: shade(@warning_bg_color, 0.9);
+    background-image: none;
+    color: @warning_fg_color;
+}
+
+.warning .button {
+    border: none;
+    color: @warning_fg_color;
+    background-image: none;
+    background-color: @warning_bg_color;
+}
+
+.warning .button:hover {
+    color: @question_fg_color;
+    background-image: none;
+    background-color: shade(@warning_bg_color,1.1);
+}
+
+.warning .button:active {
+    color: @question_fg_color;
+    background-image: none;
+    background-color: shade(@warning_bg_color,1.2);
+}
+
+.question {
+    background-color: shade(@question_bg_color, 0.9);
+    background-image: none;
+    color: @question_fg_color;
+}
+
+.question .button {
+    border: none;
+    color: @question_fg_color;
+    background-image: none;
+    background-color: @question_bg_color;
+}
+
+.question .button:hover {
+    color: @question_fg_color;
+    background-image: none;
+    background-color: shade(@question_bg_color,1.1);
+}
+
+.question .button:active {
+    color: @question_fg_color;
+    background-image: none;
+    background-color: shade(@question_bg_color,1.2);
+}
+
+.error {
+    background-color: shade(@error_bg_color, 0.9);
+    background-image: none;
+    color: @error_fg_color;
+}
+
+.error .button {
+    border: none;
+    color: @error_fg_color;
+    background-image: none;
+    background-color: @error_bg_color;
+}
+
+.error .button:hover {
+    color: @error_fg_color;
+    background-image: none;
+    background-color: shade(@error_bg_color,1.1);
+}
+
+.error .button:active {
+    color: @error_fg_color;
+    background-image: none;
+    background-color: shade(@error_bg_color,1.2);
+}

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="37">
+ <defs>
+  <clipPath>
+   <rect y="1015.36" x="20" height="37" width="20" opacity="0.12" fill="#ff00ff" color="#000000"/>
+  </clipPath>
+  <clipPath>
+   <rect y="1033.36" x="20" height="19" width="10" opacity="0.12" fill="#ff00ff" color="#000000"/>
+  </clipPath>
+ </defs>
+ <g transform="translate(0,-1015.3622)">
+  <path d="M 6 13 C 4.892 13 4 13.669002 4 14.5 L 4 23.5 C 4 24.330998 4.892 25 6 25 L 10 25 C 11.108 25 12 24.330998 12 23.5 L 12 14.5 C 12 13.669002 11.108 13 10 13 L 6 13 z M 6 15 L 10 15 L 10 23 L 6 23 L 6 15 z " transform="translate(0,1015.3622)" fill="#f9f9f9"/>
+ </g>
+</svg>

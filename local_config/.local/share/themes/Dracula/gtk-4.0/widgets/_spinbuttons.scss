@@ -1,0 +1,195 @@
+/*****************
+ * GtkSpinButton *
+ *****************/
+spinbutton {
+  &:not(.vertical) {
+    // in this horizontal configuration, the whole spinbutton
+    // behaves as the entry, so we extend the entry styling
+    // and nuke the style on the internal entry
+    @extend %entry;
+
+    padding: 0;
+    border-spacing: 0;
+
+    %spinbutton_horz_entry {
+      min-width: 28px;
+      // reset all the other props since the spinbutton node is styled here
+      margin: 0;
+      background: none;
+      background-color: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 6px;
+
+      &:backdrop:disabled { background-color: transparent; }
+    }
+
+    > text {
+      @extend %spinbutton_horz_entry;
+    }
+
+    /* :not here just to bump specificity above that of the list button styling */
+    > button.image-button.up:not(.flat),
+    > button.image-button.down:not(.flat) {
+      min-height: 16px;
+      margin: 0;
+      padding-bottom: 0;
+      padding-top: 0;
+      color: mix($fg_color, $base_color, 90%);
+      background-image: none;
+      border-style: none none none solid;
+      border-color: transparentize($borders_color, 0.7);
+      border-radius: 0;
+      box-shadow: none;
+
+      &:dir(rtl) { border-style: none solid none none; }
+
+      &:hover {
+        color: $fg_color;
+        background-color: lighten($base_color, 10%);
+      }
+
+      &:disabled {
+        color: transparentize($insensitive_fg_color, 0.7);
+        background-color: transparent;
+      }
+
+      &:active {
+        background-color: lighten($base_color, 13%);
+        box-shadow: inset 0 2px 3px -1px transparentize(black, 0.8);
+        color: $selected_fg_color;
+      }
+
+      &:dir(ltr):last-child { border-radius: 0 3px 3px 0; }
+
+      &:dir(rtl):first-child { border-radius: 3px 0 0 3px; }
+    }
+  }
+
+  // OSD horizontal
+  .osd &:not(.vertical) {
+    > text {
+      @extend %spinbutton_horz_entry;
+    }
+
+    > button.image-button.up:not(.flat),
+    > button.image-button.down:not(.flat) {
+      @include button(undecorated);
+
+      color: $osd_fg_color;
+      border-style: none none none solid;
+      border-color: transparentize($osd_borders_color, 0.3);
+      border-radius: 0;
+      box-shadow: none;
+      -gtk-icon-shadow: 0 1px black;
+
+      &:dir(rtl) { border-style: none solid none none; }
+
+      &:hover {
+        @include button(undecorated);
+
+        color: $osd_fg_color;
+        border-color: transparentize(opacify($osd_borders_color, 1), 0.5);
+        background-color: darken($osd_bg_color,10%);
+        -gtk-icon-shadow: 0 1px black;
+        box-shadow: none;
+      }
+
+      &:disabled {
+        @include button(undecorated);
+
+        color: $osd_insensitive_fg_color;
+        border-color: transparentize(opacify($osd_borders_color, 1), 0.5);
+        -gtk-icon-shadow: none;
+        box-shadow: none;
+      }
+
+      &:dir(ltr):last-child { border-radius: 0 3px 3px 0; }
+
+      &:dir(rtl):first-child { border-radius: 3px 0 0 3px; }
+    }
+  }
+
+  // Vertical
+  &.vertical {
+    // in the vertical configuration, we treat the spinbutton
+    // as a box, and tweak the style of the entry in the middle
+    // so that it's linked
+
+    // FIXME: this should not be set at all, but otherwise it gets the wrong
+    // color
+    &:disabled { color: $insensitive_fg_color; }
+
+    &:drop(active) {
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    > text {
+      @extend %entry;
+
+      min-height: 32px;
+      min-width: 32px;
+      padding: 0;
+      border-radius: 0;
+
+      > selection {
+        background-color: $backdrop_selected_bg_color;
+        color: transparent;
+        &:focus-within {
+          background-color: $selected_bg_color;
+          color: $fg_color;
+        }
+      }
+      > block-cursor { @include entry(block_cursor); }
+    }
+
+    > button {
+      min-height: 32px;
+      min-width: 32px;
+      padding: 0;
+
+      &.up { @extend %top_button; }
+
+      &.down { @extend %bottom_button; }
+    }
+
+    %top_button {
+      border-bottom-style: none;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    %bottom_button {
+      border-top-style: none;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+
+  // OSD vertical
+  .osd &.vertical > button:first-child {
+    @include button(osd);
+
+    &:hover { @include button(osd-hover);}
+
+    &:active { @include button(osd-active); }
+
+    &:disabled { @include button(osd-insensitive); }
+  }
+
+  // Misc
+  treeview &:not(.vertical) {
+    min-height: 0;
+    border-style: none;
+    border-radius: 0;
+
+    > text {
+      min-height: 0;
+      padding: 1px 2px;
+    }
+  }
+
+  font-feature-settings: "tnum";
+}

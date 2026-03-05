@@ -1,0 +1,76 @@
+/**********
+ * Frames *
+ **********/
+frame > border,
+.frame {
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  border: 1px solid $borders_color;
+
+  &.flat { border-style: none; }
+
+  &:backdrop { border-color: $backdrop_borders_color; }
+}
+
+actionbar > revealer >  box {
+  padding: 6px;
+  border-top: 1px solid $borders_color;
+
+  &:backdrop { border-color: $backdrop_borders_color; }
+}
+
+scrolledwindow {
+  viewport.frame { // avoid double borders when viewport inside scrolled window
+    border-style: none;
+  }
+
+  // This is used when content is touch-dragged past boundaries.
+  // draws a box on top of the content, the size changes programmatically.
+  overshoot {
+    &.top {
+      @include overshoot(top);
+
+      &:backdrop { @include overshoot(top, backdrop); }
+    }
+
+    &.bottom {
+      @include overshoot(bottom);
+
+      &:backdrop { @include overshoot(bottom, backdrop); }
+    }
+
+    &.left {
+      @include overshoot(left);
+
+      &:backdrop { @include overshoot(left, backdrop); }
+    }
+
+    &.right {
+      @include overshoot(right);
+
+      &:backdrop { @include overshoot(right, backdrop); }
+    }
+  }
+  
+  junction { // the small square between two scrollbars
+    border-color: transparent;
+    // the border image is used to add the missing dot between the borders, details, details, details...
+    border-image: linear-gradient(to bottom, $borders_color 1px, transparent 1px) 0 0 0 1 / 0 1px stretch;
+    background-color: $scrollbar_bg_color;
+
+    &:dir(rtl) { border-image-slice: 0 1 0 0; }
+
+    &:backdrop {
+      border-image-source: linear-gradient(to bottom, $backdrop_borders_color 1px, transparent 1px);
+      background-color: $backdrop_scrollbar_bg_color;
+      transition: $backdrop_transition;
+    }
+  }
+}
+
+//vbox and hbox separators
+separator {
+  background: transparentize(black, 0.9);
+}

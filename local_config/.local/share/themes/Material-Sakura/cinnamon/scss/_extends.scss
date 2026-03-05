@@ -1,0 +1,372 @@
+// extend-elements
+
+// to bottom
+%bg-grad-to-bottom {
+    background-gradient-direction: vertical;
+    background-gradient-start: $dark_bg_grad;
+    background-gradient-end: $light_bg_grad;
+}
+
+// hover to bottom
+%hover-bg-grad-to-bottom {
+    background-gradient-direction: vertical;
+    background-gradient-start: $dark_hover_bg_grad;
+    background-gradient-end: $light_hover_bg_grad;
+}
+
+// button to top
+%button-bg-grad-to-top {
+    background-gradient-direction: vertical;
+    background-gradient-start: $light_button_bg_grad;
+    background-gradient-end: $dark_button_bg_grad;
+}
+
+// hover button to top
+%hover-button-bg-grad-to-top {
+    background-gradient-direction: vertical;
+    background-gradient-start: $light_hover_button_bg_grad;
+    background-gradient-end: $dark_hover_button_bg_grad;
+}
+
+// to top
+%bg-grad-to-top {
+    background-gradient-direction: vertical;
+    background-gradient-start: $light_bg_grad;
+    background-gradient-end: $dark_bg_grad;
+}
+
+// hover to top
+%hover-bg-grad-to-top {
+    background-gradient-direction: vertical;
+    background-gradient-start: $light_hover_bg_grad;
+    background-gradient-end: $dark_hover_bg_grad;
+}
+
+// selected to bottom
+%selected-bg-grad-to-bottom {
+    background-gradient-direction: vertical;
+    background-gradient-start: $dark_selected_bg_grad;
+    background-gradient-end: $light_selected_bg_grad;
+}
+
+// selected to top
+%selected-bg-grad-to-top {
+    background-gradient-direction: vertical;
+    background-gradient-start: $light_selected_bg_grad;
+    background-gradient-end: $dark_selected_bg_grad;
+}
+
+// hover selected to bottom
+%hover-selected-grad-to-bottom {
+    background-gradient-direction: vertical;
+    background-gradient-start: $dark_hover_selected_grad;
+    background-gradient-end: $light_hover_selected_grad;
+}
+
+// hover selected to top
+%hover-selected-grad-to-top {
+    background-gradient-direction: vertical;
+    background-gradient-start: $light_hover_selected_grad;
+    background-gradient-end: $dark_hover_selected_grad;
+}
+
+// to right
+%bg-grad-to-right {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $dark_bg_grad;
+    background-gradient-end: $light_bg_grad;
+}
+
+// to left
+%bg-grad-to-left {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $light_bg_grad;
+    background-gradient-end: $dark_bg_grad;
+}
+
+// hover to right
+%hover-bg-grad-to-right {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $dark_hover_bg_grad;
+    background-gradient-end: $light_hover_bg_grad;
+}
+
+// hover to left
+%hover-bg-grad-to-left {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $light_hover_bg_grad;
+    background-gradient-end: $dark_hover_bg_grad;
+}
+
+// selected to right
+%selected-bg-grad-to-right {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $dark_selected_bg_grad;
+    background-gradient-end: $light_selected_bg_grad;
+}
+
+// selected to left
+%selected-bg-grad-to-left {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $light_selected_bg_grad;
+    background-gradient-end: $dark_selected_bg_grad;
+}
+
+// hover selected to right
+%hover-selected-grad-to-right {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $dark_hover_selected_grad;
+    background-gradient-end: $light_hover_selected_grad;
+}
+
+// hover selected to left
+%hover-selected-grad-to-left {
+    background-gradient-direction: horizontal;
+    background-gradient-start: $light_hover_selected_grad;
+    background-gradient-end: $dark_hover_selected_grad;
+}
+
+// tooltip to top
+%tooltip-bg-grad-to-top {
+    background-gradient-direction: vertical;
+    background-gradient-start: $light_tooltip_bg_grad;
+    background-gradient-end: $dark_tooltip_bg_grad;
+}
+
+// used in selectors
+// .osd-window, .info-osd, .workspace-osd
+%osd-shared {
+    @extend %bg-grad-to-bottom;
+
+    border: 1px solid $exterior_border;
+    border-radius: $roundness;
+    color: $dark_fg_color;
+}
+
+// used in selectors
+// .slider, .sound-player .slider, .popup-slider-menu-item
+%slider-shared {
+    height: 1.2em;
+    min-width: 15em;
+    color: $button_bg_color;
+    -slider-height: 2px;
+    -slider-background-color: $scrollbar_bg_color;
+    -slider-border-color: $interior_border;
+    -slider-active-background-color: $scrollbar_slider_hover_color;
+    -slider-active-border-color: $selected_border;
+    -slider-border-width: 1px;
+    -slider-border-radius: $roundness;
+    -slider-handle-radius: 8px;
+    -slider-handle-border-color: $button_border;
+}
+
+// used in selectors
+// .separator, .popup-seperator-menu-item
+%separator-shared {
+    -gradient-height: 3px;
+    -gradient-start: $selected_bg_color;
+    -gradient-end: $dark_bg_color;
+    -margin-horizontal: 4px;
+    height: 1em;
+}
+
+// used in selectors
+// #menu-search-entry, .run-dialog-entry, #notification StEntry
+%dialog-entry {
+    @extend %tooltip-bg-grad-to-top;
+
+    padding: $spacing_plus2;
+    border-radius: $roundness;
+    color: $tooltip_fg_color;
+    border: 1px solid $interior_border;
+    selection-background-color: $selected_bg_color;
+    selected-color: $selected_fg_color;
+    caret-color: $primary_caret_color;
+    caret-size: 0.1em;
+    width: 250px;
+    height: 1.5em;
+    transition-duration: 150;
+}
+
+// used in selectors
+// .desklet-with-borders, .desklet-with-borders-and-header, .desklet-header, .photoframe-box
+%desklet-shared {
+    @extend %bg-grad-to-right;
+
+    color: $dark_fg_color;
+    padding: 8px;
+    border: 1px solid $exterior_border;
+}
+
+// used in selectors
+// .calendar-change-month-back, .calendar-change-month-forward
+%calendar-shared {
+    width: 16px;
+    height: 16px;
+    border-radius: $roundness;
+    transition-duration: 150;
+}
+
+// used in selectors
+// .notification-button, .notification-icon-button, .modal-dialog-button, .sound-player-overlay StButton, .keyboard-key
+%shared-button {
+    @extend %button-bg-grad-to-top;
+
+    border: 1px solid $button_border;
+    border-radius: $roundness;
+    text-align: center;
+    color: $button_fg_color;
+    transition-duration: 150;
+}
+
+// used in selectors
+// .notification-button:hover, .notification-icon-button:hover, .modal-dialog-button:hover, .sound-player-overlay StButton:hover, .keyboard-key:hover
+%shared-button-hover {
+    @extend %hover-button-bg-grad-to-top;
+
+    border: 1px solid $selected_border;
+}
+
+// used in selectors
+// .notification-button:active, .notification-icon-button:active, .modal-dialog-button:active, .modal-dialog-button:pressed, .sound-player-overlay StButton:active, .keyboard-key:active
+%shared-button-active {
+    @extend %selected-bg-grad-to-bottom;
+
+    color: $selected_fg_color;
+}
+
+// used in selectors
+// .menu .popup-combo-menu
+%shared-menu {
+    @extend %bg-grad-to-right;
+
+    padding: 8px;
+    border: 1px solid $exterior_border;
+    border-radius: $roundness;
+    color: $dark_fg_color;
+}
+
+// used in selectors
+// .menu-application-button-label, .menu-category-button-label
+%menu-button-label-shared {
+    &:ltr {
+        padding-left: 4px;
+    }
+    &:rtl {
+        padding-right: 4px;
+    }
+}
+
+// used in selectors
+// .popup-menu-item, .popup-combobox-item, .menu-favorites-button, .menu-places-button, .menu-category-button, .menu-category-button-greyed, .menu-category-button-selected
+%menu-buttons-shared {
+	//min-height: 22px; //setting a min height accross the board for all menu types (menu entries with an application icon are hardcoded to this min-height) causes display issues in cinnamon :-(
+    padding: $spacing_plus2;
+}
+
+// used in selectors
+// .show-processes-dialog-subject, .mount-question-dialog-subject
+%shared-dialogs-subject {
+    font-weight: bold;
+    color: $dark_fg_color;
+    padding-top: 10px;
+    padding-left: 17px;
+    padding-bottom: 6px;
+}
+
+// used in selectors
+// .show-processes-dialog-subject:rtl, .mount-question-dialog-subject:rtl
+%shared-dialogs-subject-rtl {
+    padding-left: 0;
+    padding-right: 17px;
+}
+
+// used in selectors
+// .show-processes-dialog-description, .mount-question-dialog-description
+%shared-dialogs-description {
+    color: $dark_fg_color;
+    padding-left: 17px;
+    width: 28em;
+}
+
+// used in selectors
+// .menu-applications-inner-box StScrollView, .starkmenu-favorites-box .menu-context-menu
+%menu-context-shared {
+    @extend %bg-grad-to-bottom;
+
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: $roundness;
+    border: 1px solid $interior_border;
+        StIcon {
+            &:ltr {
+			    padding-right: 4px;
+            }
+            &:rtl {
+			    padding-left: 4px;
+            }
+        }
+}
+
+// used in selectors
+// .panel-top .window-list-item-box:active, .panel-top .window-list-item-box:checked, .panel-top .window-list-item-box:focus
+%panel-top-shared {
+    @extend %selected-bg-grad-to-top;
+
+    color: $selected_fg_color;
+}
+
+// used in selectors
+// .panel-bottom .windows-list-item-box:active, .panel-bottom .window-list-item-box:checked, .panel-bottom .window-list-item-box:focus
+%panel-bottom-shared {
+    @extend %selected-bg-grad-to-bottom;
+
+    color: $selected_fg_color;
+}
+
+// used in selectors
+// .panel-left .window-list-item-box:active, .panel-left .window-list-item-box:checked, .panel-left .window-list-item-box:focus
+%panel-left-shared {
+    @extend %selected-bg-grad-to-left;
+
+    color: $selected_fg_color;
+}
+
+// used in selectors
+// .panel-right .windows-list-item-box:active, .panel-right .window-list-item-box:checked, .panel-right .window-list-item-box:focus
+%panel-right-shared {
+    @extend %selected-bg-grad-to-right;
+
+    color: $selected_fg_color;
+}
+
+// used in selectors
+// .check-box StBin, .check-box:focus StBin
+%check-box-shared {
+    width: 16px;
+    height: 16px;
+    background-image: url(assets/checkbox-off.svg);
+}
+
+// used in selectors
+// .radiobutton StBin, .radiobutton:focus StBin
+%radiobutton-shared {
+    width: 16px;
+    height: 16px;
+    background-image: url(assets/radiobutton-off.svg);
+    border-radius: $roundness;
+}
+
+// used in selectors
+// .tile-preview, .tile-hud
+%tile-shared {
+    background-color: $dark_bg_color_trans;
+    border: 2px solid $exterior_border;
+}
+
+// used in selectors
+// .tile-preview.snap, .tile-hud.snap
+%tile-shared-snap {
+    background-color: $dark_bg_color_trans;
+    border: 2px solid $selected_border;
+}

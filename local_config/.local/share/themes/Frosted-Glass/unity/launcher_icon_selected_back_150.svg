@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 149.99998 150">
+ <defs>
+  <clipPath>
+   <rect y="1040.22" x="505" height="150" width="150" opacity="0.2" fill-rule="evenodd" color="#000000" rx="42"/>
+  </clipPath>
+ </defs>
+ <g transform="translate(-505.00002,-1040.2193)">
+  <rect width="150" height="4" x="505" y="1186.22" rx="2" fill="#f9f9f9" fill-rule="evenodd"/>
+ </g>
+</svg>

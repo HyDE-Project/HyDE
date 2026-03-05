@@ -1,0 +1,50 @@
+# ==============================================================================
+# CHROME/-UIM SPECIFIC SETTINGS
+# ==============================================================================
+
+# Chromium lets us define some colours and settings for better integration
+
+style "chrome-gtk-frame"
+{
+	ChromeGtkFrame::frame-color = @wm_color
+	ChromeGtkFrame::inactive-frame-color = @unfocused_wm_color
+
+	ChromeGtkFrame::frame-gradient-size = 16
+	ChromeGtkFrame::frame-gradient-color = shade(1.07, @wm_color)
+
+	ChromeGtkFrame::incognito-frame-color = shade(0.85, @wm_color)
+	ChromeGtkFrame::incognito-inactive-frame-color = @wm_color
+
+	ChromeGtkFrame::incognito-frame-gradient-color = @wm_color
+
+	ChromeGtkFrame::scrollbar-trough-color = shade(0.912, @wm_color)
+	ChromeGtkFrame::scrollbar-slider-prelight-color = shade(1.04, @wm_color)
+	ChromeGtkFrame::scrollbar-slider-normal-color = @wm_color
+}
+
+class "ChromeGtkFrame" style "chrome-gtk-frame"
+
+# Chromium uses base as the fill colour of its own entries
+# This would be fine but Gtk+ uses it to fill the surrounding space, so its set to bg
+# That results in Chromium using it for the fill, so we need to handle that
+
+style "chrome_entry" {
+  base[NORMAL] = @base_color
+  base[INSENSITIVE] = @base_color
+}
+
+widget_class "*Chrom*<GtkEntry>" style "chrome_entry"
+
+# Chrome Menu item background
+
+style "chrome_menu_item"
+{
+    bg[SELECTED] = @wm_color
+}
+
+widget_class "*<GtkCustomMenu>*<GtkCustomMenuItem>*" 	style "chrome_menu_item"
+
+
+# Chrome buttons
+
+widget_class "*Chrom*Button*"		             		style "button"

@@ -1,0 +1,6 @@
+/* XPM */
+static char * bottom_left_inactive_xpm[] = {
+"1 1 2 1",
+" 	c None",
+".	c #faf4ed",
+"."};

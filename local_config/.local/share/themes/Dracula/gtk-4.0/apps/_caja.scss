@@ -1,0 +1,85 @@
+.caja-notebook {
+
+  .frame { border-width: 0 0 1px; }
+
+  .entry {
+      background: $bg_color;
+      color: $fg_color;
+      border-color: $borders_color;
+      &:selected {
+        background: $selected_bg_color;
+        color: $selected_fg_color;
+      }
+  }
+}
+
+
+
+/**************
+* Caja sidebar *
+**************/
+
+.caja-side-pane {
+
+  .frame { border-width: 1px 0 0; }
+
+  background: $headerbar_color;
+  treeview.view,
+  textview.view text,
+  viewport.frame,
+  widget .vertical {
+    background: $headerbar_color;
+    padding: 3px 2px;
+    &:hover {
+        background-color: transparentize($base_color, 0.4);
+    }
+    &:selected {
+        color: $purple;
+        background: $headerbar_color;
+        &:hover {
+            background-color: transparentize($selected_bg_color, 0.8);
+        }
+    }
+  }
+}
+
+/**************
+* Caja pathbar *
+**************/
+
+.caja-navigation-window paned {
+  background: $base_color;
+}
+
+.caja-navigation-window .primary-toolbar {
+  background: $headerbar_color;
+  button {
+      &, &:backdrop { @include button(normal-header); }
+      &:hover,
+      &:active,
+      &:backdrop:active,
+      &:backdrop:checked {
+        background: $selected_bg_color;
+        box-shadow: none;
+        &, & label {
+            color: $selected_fg_color;  
+        }
+      }
+  }
+
+}
+
+.caja-pathbar button {
+  &, &:backdrop { @include button(normal-header); }
+  &:hover,
+  &:active,
+  &:checked,
+  &:backdrop:active,
+  &:backdrop:checked {
+    background: transparent;
+    box-shadow: none;
+    &, & label {
+        color: $purple;
+    }
+  }
+}

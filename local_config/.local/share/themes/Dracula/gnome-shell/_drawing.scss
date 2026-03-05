@@ -1,0 +1,231 @@
+/*****************
+* Drawing mixins *
+*****************/
+
+// drawing of depth/shadows
+
+  $depth: 0 1px 2px rgba(0, 0, 0, 0.10);
+  $depth2: 0 1px 2px rgba(0, 0, 0, 0.15);
+  $depth3: inset 0 1px 1px rgba(0, 0, 0, 0.06);
+  $depth4: inset 0 1px 2px rgba(0, 0, 0, 0.10);
+  $depth5: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  $depth6: 0 2px 4px 2px transparentize(black, 0.8);
+
+// generic drawing of more complex things
+
+@function _widget_edge($c:$borders_edge) {
+// outer highlight "used" on most widgets
+  @return 0 1px $c;
+}
+
+// provide font size in rem, with px fallback
+@mixin fontsize($size: 24, $base: 16) {
+  font-size: round($size) + pt;
+  //font-size: ($size / $base) * 1rem;
+}
+
+@mixin _shadows($shadow1, $shadow2:none, $shadow3:none, $shadow4:none) {
+//
+// Helper function to stack up to 4 box-shadows;
+//
+  @if $shadow4!=none { box-shadow: $shadow1, $shadow2, $shadow3, $shadow4; }
+  @else if $shadow3!=none { box-shadow: $shadow1, $shadow2, $shadow3; }
+  @else if $shadow2!=none { box-shadow: $shadow1, $shadow2; }
+  @else { box-shadow: $shadow1; }
+}
+
+// entries
+
+@mixin entry($t, $fc:$selected_bg_color, $edge: $borders_edge) {
+//
+// Entries drawing function
+//
+// $t: entry type
+// $fc: focus color
+// $edge: set to none to not draw the bottom edge or specify a color to not
+//        use the default one
+//
+// possible $t values:
+// normal, focus, insensitive
+//
+
+  @if $t==normal {
+    background-color: lighten($base_color, 5%);
+    border-color: $borders_color;
+  }
+  @if $t==focus { 
+    box-shadow: inset 0px 0px 1px 1px $selected_bg_color !important; 
+    border-color: $selected_bg_color;
+  }
+  @if $t==hover {  
+    background-color: lighten($base_color, 8%);
+  }
+  @if $t==insensitive {
+    color: $insensitive_fg_color;
+    box-shadow: $depth;
+  }
+}
+
+// buttons
+
+@function _border_color ($c) { @return darken($c,25%); } // colored buttons want
+                                                         // the border form the
+                                                         // base color
+
+@function _text_shadow_color ($tc:$fg_color, $bg:$bg_color) {
+//
+// calculate the color of text shadows
+//
+// $tc is the text color
+// $bg is the background color
+//
+  $_lbg: lightness($bg)/100%;
+  @if lightness($tc)<50% { @return transparentize(white,1-$_lbg/($_lbg*1.3)); }
+  @else { @return transparentize(black,$_lbg*0.8); }
+}
+
+@function _button_hilight_color($c) {
+//
+// calculate the right top hilight color for buttons
+//
+// $c: base color;
+//
+  @if lightness($c)>90% { @return white; }
+  @else if lightness($c)>80% { @return transparentize(white, 0.3); }
+  @else if lightness($c)>50% { @return transparentize(white, 0.5); }
+  @else if lightness($c)>40% { @return transparentize(white, 0.7); }
+  @else { @return transparentize(white, 0.9); }
+}
+
+@mixin _button_text_shadow ($tc:$fg_color, $bg:$bg_color) {
+//
+// helper function for the text emboss effect
+//
+// $tc is the optional text color, not the shadow color
+//
+// TODO: this functions needs a way to deal with special cases
+//
+
+  $_shadow: _text_shadow_color($tc, $bg);
+
+  @if lightness($tc)<50% {
+    text-shadow: 0 1px $_shadow;
+    icon-shadow: 0 1px $_shadow;
+  }
+  @else {
+    text-shadow: 0 -1px $_shadow;
+    icon-shadow: 0 -1px $_shadow;
+  }
+}
+
+@mixin button($t, $c:$osd_bg_color, $tc:$fg_color, $edge: $borders_edge) {
+//
+// Button drawing function
+//
+// $t:    button type,
+// $c:    base button color for colored* types
+// $tc:   optional text color for colored* types
+// $edge: set to none to not draw the bottom edge or specify a color to not
+//        use the default one
+//
+// possible $t values:
+// normal, hover, active, insensitive, insensitive-active,
+// backdrop, backdrop-active, backdrop-insensitive, backdrop-insensitive-active,
+// osd, osd-hover, osd-active, osd-insensitive, osd-backdrop, undecorated
+//
+
+  $_hilight_color: _button_hilight_color($c);
+  $_button_edge: if($edge == none, none, _widget_edge($edge));
+  $_blank_edge: if($edge == none, none, _widget_edge(transparentize($edge,1)));
+
+
+  @if $t==normal {
+  //
+  // normal button
+  //
+
+    color: $fg_color;
+    background-color: lighten($base_color, 2%);
+    box-shadow: none;
+    border: 1px solid $borders_color;
+    text-shadow: 0 1px black;
+    icon-shadow: 0 1px black;
+  }
+  @if $t==focus {
+  //
+  // focused button
+  //
+    $_bg: if($c!=$osd_bg_color, transparentize($c, 0.5),
+                          $osd_bg_color);
+
+    background-color: lighten($base_color, 6%);
+    color: $selected_fg_color;
+    text-shadow: 0 1px black;
+    icon-shadow: 0 1px black;
+    box-shadow: none !important;
+    border: 1px solid $borders_color;
+  }
+
+  @else if $t==hover {
+  //
+  // active osd button
+  //
+    $_bg: if($c!=$osd_bg_color, transparentize($c, 0.3),
+                            lighten($main_dark, 2%));
+
+    background-color: lighten($base_color, 6%);
+    color: $selected_fg_color;
+    border: 1px solid $borders_color;
+    text-shadow: 0 1px black;
+    icon-shadow: 0 1px black;
+
+  }
+  @else if $t==active {
+  //
+  // active osd button
+  //
+    $_bg: if($c!=$bg_color, $c, $selected_bg_color);
+
+    color: $purple;
+    background-color: $_bg;
+    // This should be none, but it's creating some issues with borders, so to
+    // workaround it for now, use inset wich goes through a different code path.
+    // see https://bugzilla.gnome.org/show_bug.cgi?id=752934
+    border: 1px solid $borders_color;
+    text-shadow: none;
+    icon-shadow: none;
+  }
+  @else if $t==insensitive {
+  //
+  // insensitive osd button
+  //
+    $_bg: transparentize(mix($insensitive_fg_color,$osd_bg_color,20%),0.3);
+
+    color: $insensitive_fg_color;
+    background-color: $_bg;
+    box-shadow: $depth4;
+    border: none;
+    text-shadow: none;
+    icon-shadow: none;
+  }
+  @else if $t==undecorated {
+  //
+  // reset
+  //
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+
+    @include _shadows(inset 0 1px transparentize(white,1),
+                      $_blank_edge);
+
+    text-shadow: none;
+    icon-shadow: none;
+  }
+}
+
+@mixin gradient($c1: $g1, $c2: $g2, $dir: horizontal) {
+  background-gradient-start: $c1;
+  background-gradient-end: $c2;
+  background-gradient-direction: $dir;
+}

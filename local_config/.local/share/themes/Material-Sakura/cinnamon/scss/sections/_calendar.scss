@@ -1,0 +1,120 @@
+// the calendar displayed by the calendar applet is a heavily modified menu and inherits from the .menu selectosr
+// indivudual elements within the menu can be themed seperately with these selectors
+.calendar {
+    padding: 1em 1.75em;
+    spacing-rows: 1px;
+    spacing-columns: 5px;
+}
+// also covers the year label
+.calendar-month-label {
+    color: $dark_fg_color;
+    font-size: 0.8em;
+    padding: 5px 10px;
+    border-radius: $roundness;
+    font-weight: bold;
+    text-align: center;
+}
+.calendar-change-month-back {
+    @extend %calendar-shared;
+
+    border: 1px solid transparent;
+    background-image: url(assets/calendar-arrow-left.svg);
+    &:rtl {
+        background-image: url(assets/calendar-arrow-right.svg);
+    }
+    &:hover {
+        border: 1px solid $selected_bg_color;
+    }
+    &:active {
+        background-color: $selected_bg_color;
+    }
+}
+.calendar-change-month-forward {
+    @extend %calendar-shared;
+
+    border: 1px solid transparent;
+    background-image: url(assets/calendar-arrow-right.svg);
+    &:rtl {
+        background-image: url(assets/calendar-arrow-left.svg);
+    }
+    &:hover {
+        border: 1px solid $selected_bg_color;
+    }
+    &:active {
+        background-color: $selected_bg_color;
+    }
+}
+.datemenu-date-label {
+    padding: 1em 1.75em;
+    color: $dark_fg_color;
+    font-weight: bold;
+    text-align: center;
+}
+.calendar-day-base {
+    font-size: 0.8em;
+    text-align: center;
+    width: 2.4em;
+    height: 1.8em;
+    border-radius: $roundness;
+    &:active {
+        background-color: $selected_bg_color;
+    }
+    &:hover {
+    }
+}
+.calendar-day-heading {
+    color: $dark_fg_color;
+    padding-top: 0.9em;
+}
+.calendar-week-number {
+    color: $dark_fg_color;
+    font-weight: bold;
+    padding-top: 0.6em;
+}
+.calendar-day {
+    &:ltr {
+        color: $dark_fg_color;
+        padding: 2px;
+    }
+    &:rtl {
+        color: $dark_fg_color;
+        padding: 3px;
+    }
+}
+.calendar-day-top {
+    &:ltr {
+    }
+    &:rtl {
+    }
+}
+.calendar-day-left {
+    &:ltr {
+    }
+    &:rtl {
+    }
+}
+.calendar-work-day {
+}
+.calendar-nonwork-day {
+    font-weight: bold;
+}
+// this is always is an active state
+.calendar-today {
+    @extend %selected-bg-grad-to-bottom;
+
+    font-weight: bold;
+    &:active {
+        color: $selected_fg_color;
+    }
+}
+.calendar-other-month-day {
+    font-style: italic;
+}
+// this is always is an active state
+.calendar-day-with-events {
+    background-color: $selected_bg_color;
+    font-weight: bold;
+    &:active {
+        color: $selected_fg_color;
+    }
+}

@@ -1,0 +1,130 @@
+# HyDE Configuration Registry
+# This file defines applications and their configuration files with hooks
+
+
+
+[hyde]
+description = "hyde Script Configuration"
+icon = "📝"
+
+[hyde.files.config]
+description = "hyde Configuration File"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/config.toml"
+pre_hook = ["bash", "-c", "echo 'Editing hyde config...'"]
+post_hook = ["bash", "-c", "echo 'HyDE config updated.'"]
+
+[hyde.files.bookmarks]
+description = "Bookmark Database directory list"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/bookmarks.list"
+
+
+
+[Kitty]
+description = "Kitty Terminal Emulator"
+icon = "🐱"
+
+
+
+# Nested configuration files for kitty
+[Kitty.files.main]
+description = "Main Kitty Configuration"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
+pre_hook = ["bash", "-c", "echo 'Editing Kitty main config...'"]
+post_hook = ["bash", "-c", "killall -SIGUSR1 kitty || true"]
+
+[zsh]
+description = "Z Shell Configuration"
+icon = "🐚"
+
+[zsh.files.zshrc]
+description = "Main Zsh Configuration"
+path = "$ZDOTDIR/.zshrc"
+pre_hook = ["bash", "-c", "echo 'Editing .zshrc...'"]
+post_hook = ["bash", "-c", "echo 'Zsh config updated. Restart shell to apply changes.'"]
+
+[zsh.files.user]
+description = "Zsh Aliases"
+path = "$ZDOTDIR/user.zsh"
+
+
+[dunst]
+description = "Dunst Notification Daemon"
+icon = "🔔"
+
+[dunst.files.main]
+description = "Dunst Configuration"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/dunst/dunstrc"
+pre_hook = ["bash", "-c", "echo 'Editing Dunst config...'"]
+post_hook = ["bash", "-c", "killall dunst && dunst & disown"]
+
+[dunst.files.user]
+description = "Dunst Configuration"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/dunst/dunst.conf"
+pre_hook = ["bash", "-c", "echo 'Editing Dunst config...'"]
+post_hook = ["bash", "-c", "killall dunst && dunst & disown"]
+
+
+[hyprland]
+description = "Hyprland Window Manager"
+icon = "🪟"
+
+[hyprland.files.main]
+description = "Main Hyprland Configuration"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/userprefs.conf"
+pre_hook = ["bash", "-c", "echo 'Editing Hyprland main config...'"]
+
+[hyprland.files.keybinds]
+description = "Hyprland Keybindings"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/keybindings.conf"
+pre_hook = ["bash", "-c", "echo 'Editing Hyprland keybinds...'"]
+
+[hyprland.files.windowrules]
+description = "Hyprland Window Rules"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/windowrules.conf"
+pre_hook = ["bash", "-c", "echo 'Editing Hyprland window rules...'"]
+
+[hyprland.files.nvidia]
+description = "Hyprland NVIDIA Settings"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/nvidia.conf"
+pre_hook = ["bash", "-c", "echo 'Editing Hyprland NVIDIA settings...'"]
+
+
+
+
+[waybar]
+description = "Waybar Status Bar"
+icon = "📊"
+
+[waybar.files.config]
+description = "Waybar Configuration"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/waybar/config.jsonc"
+pre_hook = ["bash", "-c", "echo 'Editing Waybar config...'"]
+post_hook = ["bash", "-c", "killall waybar && waybar & disown"]
+
+[waybar.files.user-style]
+description = "Waybar User style overrides"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/waybar/user-style.css"
+pre_hook = ["bash", "-c", "echo 'Editing Waybar styles...'"]
+post_hook = ["bash", "-c", "killall waybar && waybar & disown"]
+
+
+[waybar.files.theme-colors]
+description = "Waybar theme colors"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/waybar/theme.css"
+
+
+[rofi]
+description = "Rofi Application Launcher"
+icon = "🚀"
+
+[rofi.files.config]
+description = "Rofi Configuration"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/config.rasi"
+pre_hook = ["bash", "-c", "echo 'Editing Rofi config...'"]
+post_hook = ["bash", "-c", "echo 'Rofi config updated.'"]
+
+[rofi.files.theme]
+description = "Rofi Theme"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/rofi/themes/current.rasi"
+pre_hook = ["bash", "-c", "mkdir -p ${XDG_CONFIG_HOME:-$HOME/.config}/rofi/themes"]
+post_hook = ["bash", "-c", "echo 'Rofi theme updated.'"]

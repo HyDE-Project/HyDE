@@ -1,0 +1,22 @@
+{
+    "custom/power": {
+        "format": "{0}",
+        "rotate": 0,
+        "tooltip": true,
+        "tooltip-format": " Logout menu",
+        "on-click": "hyde-shell logoutlaunch 1",
+        "menu": "on-click-right",
+        "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/power.xml",
+        "menu-actions": {
+            "lock": "hyde-shell lockscreen.sh",
+            "logout": "hyprctl dispatch exit 0",
+            "shutdown-now": "shutdown now",
+            "shutdown-wait": "systemctl poweroff",
+            "reboot-now": "systemctl reboot",
+            "reboot-firmware": "systemctl reboot --firmware-setup",
+            "suspend": "systemctl suspend",
+            "hibernate": "systemctl hibernate"
+        },
+        "interval": 86400
+    }
+}

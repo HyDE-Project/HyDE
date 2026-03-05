@@ -1,0 +1,16 @@
+# vim:set ft=gtkrc ts=2 sw=2 sts=2 ai et:
+#
+# GTK+ 2 hardcodes a light shadow under certain inactive things. We can use this
+# horrible workaround to make it at least distinguishable.
+
+style "dark_insensitive" {
+
+  fg[INSENSITIVE]   = insensitive_bg_color
+  text[INSENSITIVE] = insensitive_bg_color
+
+}
+
+widget_class "*<GtkButton>*"                          style "dark_insensitive"
+widget_class "*<GtkComboBoxText>.<GtkCellView>"       style "dark_insensitive"
+widget_class "*<GtkMenuItem>*"                        style "dark_insensitive"
+widget_class "*<GtkMenuBar>.<GtkMenuItem>.<GtkLabel>" style "dark_insensitive"

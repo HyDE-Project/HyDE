@@ -1,0 +1,20 @@
+//
+// Mate OSD Window
+//
+
+MsdOsdWindow.background.osd {
+    border-radius: 2px;
+    border: 1px solid $borders_color;
+  
+    .progressbar {
+      background-color: $selected_bg_color;
+      border: none;
+      border-color: $selected_bg_color;
+      border-radius: 5px;
+    }
+    .trough {
+      background-color: darken($osd_bg_color, 5%);
+      border: none;
+      border-radius: 5px;
+    }
+  }

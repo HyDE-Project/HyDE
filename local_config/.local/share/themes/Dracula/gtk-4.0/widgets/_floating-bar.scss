@@ -1,0 +1,33 @@
+/****************
+ * Floating Bar *
+ ****************/
+.floating-bar {
+  background-color: $bg_color;
+  border-width: 1px;
+  border-style: solid solid none;
+  border-color: $borders_color;
+  border-radius: 3px 3px 0 0;
+  box-shadow: inset 0 1px $top_highlight;
+
+  &.bottom {
+
+    &.left {
+      border-left-style: none;
+      border-top-left-radius: 0;
+    }
+
+    &.right {
+      border-right-style: none;
+      border-top-right-radius: 0;
+    }
+  }
+
+  > button {
+    padding:4px;
+  }
+
+  &:backdrop {
+    background-color: $backdrop_bg_color;
+    border-color: $backdrop_borders_color;
+  }
+}

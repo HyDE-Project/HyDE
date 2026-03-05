@@ -1,0 +1,167 @@
+// Drawing mixins
+
+// generic drawing of more complex things
+
+// provide font size in rem, with px fallback
+@mixin fontsize($size: 24, $base: 16) {
+  font-size: round($size) + pt;
+  //font-size: ($size / $base) * 1rem;
+}
+
+// Entries
+
+@mixin entry($t, $dark:false) {
+//
+// Entries drawing function
+//
+  //@extend %reset_style;
+
+  @if $t==normal {
+    color: $text_color;
+    background-color: $entry_bg;
+    border: 1px solid $entry_border;
+    box-shadow: inset 0 2px 4px transparentize($entry_bg, 0.95);
+  }
+
+  @if $t==focus {
+    color: $fg_color;
+    background-color: $entry_bg;
+    border: 1px solid $selected_bg_color;
+    box-shadow: inset 0 2px 4px transparentize($entry_bg, 0.95);
+  }
+
+  @if $t==insensitive {
+    color: $insensitive_fg_color;
+    background-color: mix($entry_bg, $bg_color, 55%);
+    border-color: 1px solid mix($entry_border, $bg_color, 55%);
+    box-shadow: inset 0 2px 4px transparentize(mix($entry_bg, $bg_color, 55%), 0.95);
+  }
+
+  @if $t==osd {
+    color: $osd_fg_color;
+    background-color: $osd_entry_bg;
+    border: 1px solid $osd_entry_border;
+    box-shadow: inset 0 2px 4px transparentize(black, 0.95);
+  }
+
+  @if $t==osd-focus {
+    color: $selected_fg_color;
+    background-color: $selected_bg_color;
+    border: 1px solid $selected_bg_color;
+    box-shadow: inset 0 2px 4px transparentize(black, 0.95);
+  }
+
+  @if $t==osd-insensitive {
+    color: transparentize($osd_fg_color, 0.45);
+    background-color: transparentize($osd_entry_bg, 0.15);
+    border: 1px solid $osd_entry_border;
+    box-shadow: inset 0 2px 4px transparentize(black, 0.95);
+  }
+}
+
+// Buttons
+
+@mixin button($t) {
+//
+// Button drawing function
+//
+  //@extend %reset_style;
+
+  text-shadow: 0 1px transparentize($base_color, 1);
+
+  @if $t==normal {
+  //
+  // normal button
+  //
+    color: $fg_color;
+    background-color: $button_bg;
+    border: 1px solid $button_border;
+    box-shadow: inset 0 2px 4px transparentize($button_bg, 0.95);
+  }
+
+  @else if $t==focus {
+  //
+  // focused button
+  //
+    color: $fg_color;
+    background-color: $button_bg;
+    border: 1px solid $selected_bg_color;
+    box-shadow: inset 0 2px 4px transparentize($button_bg, 0.95);
+  }
+
+  @else if $t==focus-hover {
+  //
+  // focused button
+  //
+    color: $fg_color;
+    background-color: $button_bg;
+    border: 1px solid $selected_bg_color;
+    box-shadow: inset 0 2px 4px transparentize($button_bg, 0.95);
+  }
+
+  @else if $t==hover {
+  //
+  // hovered button
+  //
+    color: $fg_color;
+    background-color: lighten($button_bg, 5%);
+    border: 1px solid $button_border;
+    box-shadow: inset 0 2px 4px transparentize(lighten($button_bg, 5%), 0.95);
+  }
+
+  @else if $t==active {
+  //
+  // pushed button
+  //
+    color: $selected_fg_color;
+    background-color: $selected_bg_color;
+    border: 1px solid $selected_bg_color;
+    box-shadow: inset 0 2px 4px $selected_bg_color;
+  }
+
+  @else if $t==insensitive {
+  //
+  // insensitive button
+  //
+    color: $insensitive_fg_color;
+    border: 1px solid transparentize($button_border, 0.45);
+    background-color: transparentize($button_bg, 0.45);
+    box-shadow: inset 0 2px 4px transparentize($button_bg, 0.95);
+  }
+
+  @else if $t==osd {
+  //
+  // normal osd button
+  //
+    color: $osd_fg_color;
+    border: 1px solid $osd_button_border;
+    background-color: $osd_button_bg;
+  }
+
+  @else if $t==osd-hover {
+  //
+  // active osd button
+  //
+    color: $osd_fg_color;
+    border: 1px solid $osd_button_border;
+    background-color: opacify(lighten($osd_button_bg, 7%), 0.1);
+  }
+
+  @else if $t==osd-active {
+  //
+  // active osd button
+  //
+    color: $selected_fg_color;
+    border: 1px solid $selected_bg_color;
+    background-color: $selected_bg_color;
+  }
+
+  @else if $t==osd-insensitive {
+  //
+  // insensitive osd button
+  //
+    color: $osd_insensitive_fg_color;
+    border: 1px solid $osd_button_border;
+    background-color: transparentize($osd_button_bg, 0.15);
+  }
+}

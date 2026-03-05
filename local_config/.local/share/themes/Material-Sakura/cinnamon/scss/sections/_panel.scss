@@ -1,0 +1,573 @@
+// panels can be on any side of the screen
+// some panel item theming is specific to panel orientation and is included in this section
+// each panel is also split into three zones
+// dnd is for panel edit mode
+// dummy is for adding or moving panels
+#panel {
+    color: $dark_fg_color;
+    height: 2.5em;
+    width: 3.2em;
+    &:highlight {
+        background-color: $selected_bg_color;
+    }
+}
+.panel-dummy {
+    background-color: rgba(255, 0, 0, 0.6);
+    &:entered {
+        background-color: rgba(0, 255, 0, 0.6);
+    }
+}
+.panelLeft {
+    spacing: 4px;
+    &:dnd {
+        background-color: rgba(255, 0, 0, 0.6);
+    }
+    &:ltr {
+        padding-right: 4px;
+    }
+    &:rtl {
+        padding-left: 4px;
+    }
+    &.vertical {
+        padding: 0;
+        &:dnd {
+        }
+    }
+}
+.panelCenter {
+    spacing: 4px;
+    &:dnd {
+        background-color: rgba(0, 255, 0, 0.6);
+    }
+    &.vertical {
+        padding-left: 0;
+        padding-right: 0;
+        &:dnd {
+        }
+    }
+}
+.panelRight {
+    spacing: 4px;
+    &:dnd {
+        background-color: rgba(0, 0, 255, 0.6);
+    }
+    &:ltr {
+        padding-left: 0;
+        spacing: 0;
+    }
+    &:rtl {
+        padding-right: 0;
+        spacing: 0;
+    }
+    &.vertical {
+        padding: 0;
+        &:dnd {
+        }
+    }
+}
+// panel borders must be defined with a border-top color or other color definition that encompasses border-top
+// panels do not support different colors of borders on different edges
+// due to a bug in cinnamons placing of panel items on a bordered panel small margins are used to ensure that bordered panel objects
+// do not overlap the panel border
+.panel-top {
+    @extend %bg-grad-to-bottom;
+
+    box-shadow: 0 -1px 0 0 $exterior_border inset;
+    .window-list-item-box {
+        @extend %bg-grad-to-top;
+        margin-bottom: 1px;
+        &:hover {
+            @extend %hover-bg-grad-to-top;
+        }
+        &:active, &:checked, &:focus, &:running {
+            @extend %panel-top-shared;
+
+            &:hover {
+                @extend %hover-selected-grad-to-top;
+                }
+        }
+    }
+    .grouped-window-list-item-box {
+        &:active, &:checked {      
+          box-shadow: 0 2px 0 0 $dark_fg_color inset;
+          }
+        &:hover {
+          box-shadow: 0 2px 0 0 $selected_border inset;
+          }
+        &:focus {
+          box-shadow: 0 4px 0 0 $selected_border inset;
+          }
+    }
+    .workspace-switcher, .workspace-graph {
+        padding: 1px $spacing;
+    }
+    .panel-launchers .launcher:hover {
+        box-shadow: 0 2px 0 0 $selected_border inset;
+    }
+    .applet-separator {
+        padding: 3px $spacing;
+    }
+}
+.panel-bottom {
+    @extend %bg-grad-to-top;
+
+    box-shadow: 0 1px 0 0 $exterior_border inset;
+    .window-list-item-box {
+        @extend %bg-grad-to-bottom;
+        margin-top: 1px;
+
+        &:hover {
+            @extend %hover-bg-grad-to-bottom;
+        }
+        &:active, &:checked, &:focus, &:running {
+            @extend %panel-bottom-shared;
+
+            &:hover {
+                @extend %hover-selected-grad-to-bottom;
+                }
+        }
+    }
+    .grouped-window-list-item-box {
+        &:active, &:checked {      
+          box-shadow: 0 -2px 0 0 $dark_fg_color inset;
+          }
+        &:hover {
+          box-shadow: 0 -2px 0 0 $selected_border inset;
+          }
+        &:focus {
+          box-shadow: 0 -4px 0 0 $selected_border inset;
+          }
+    }
+    .workspace-switcher, .workspace-graph {
+        padding: 1px $spacing;
+    }
+    .panel-launchers .launcher:hover {
+        box-shadow: 0 -2px 0 0 $selected_border inset;
+    }
+    .applet-separator {
+        padding: 3px $spacing;
+    }
+}
+.panel-left {
+    @extend %bg-grad-to-right;
+
+    box-shadow: -1px 0 0 0 $exterior_border inset;
+    .window-list-item-box {
+        margin-right: 1px;
+        @extend %bg-grad-to-left;
+
+        &:hover {
+            @extend %hover-bg-grad-to-left;
+        }
+        &:active, &:checked, &:focus, &:running {
+            @extend %panel-left-shared;
+
+            &:hover {
+                @extend %hover-selected-grad-to-left;
+            }
+        }
+    }
+    .grouped-window-list-item-box {
+        &:active, &:checked {      
+          box-shadow: 2px 0 0 0 $dark_fg_color inset;
+          }
+        &:hover {
+          box-shadow: 2px 0 0 0 $selected_border inset;
+          }
+        &:focus {
+          box-shadow: 4px 0 0 0 $selected_border inset;
+          }
+    }
+    .workspace-switcher, .workspace-graph {
+        padding: $spacing 1px;
+    }
+    .panel-launchers .launcher:hover {
+        box-shadow: 2px 0 0 0 $selected_border inset;
+    }
+    .applet-separator {
+        padding: $spacing 3px;
+    }
+}
+.panel-right {
+    @extend %bg-grad-to-left;
+
+     box-shadow: 1px 0 0 0 $exterior_border inset;
+    .window-list-item-box {
+        margin-left: 1px;
+        @extend %bg-grad-to-right;
+
+        &:hover {
+            @extend %hover-bg-grad-to-right;
+        }
+        &:active, &:checked, &:focus, &:running {
+            @extend %panel-right-shared;
+
+            &:hover {
+                @extend %hover-selected-grad-to-right;
+                }
+        }
+    }
+     .grouped-window-list-item-box {
+        &:active, &:checked {      
+          box-shadow: -2px 0 0 0 $dark_fg_color inset;
+          }
+        &:hover {
+          box-shadow: -2px 0 0 0 $selected_border inset;
+          }
+        &:focus {
+          box-shadow: -4px 0 0 0 $selected_border inset;
+          }
+    }
+    .workspace-switcher, .workspace-graph {
+        padding: $spacing 1px;
+    }
+    .panel-launchers .launcher:hover {
+        box-shadow: -2px 0 0 0 $selected_border inset;
+    }
+    .applet-separator {
+        padding: $spacing 3px;
+    }
+}
+// a non feature - not worth themeing
+.panel-corner {
+    &:active {
+    }
+    &:overview {
+    }
+    &:focus {
+    }
+}
+// remaining code is for panel items starting with the generic applets
+.applet-separator-line {
+    width: 2px;
+    background: $selected_bg_color;
+}
+.applet-separator-line-vertical {
+    border-color: $selected_bg_color;
+    border-bottom: 2px solid;
+}
+.applet-spacer:highlight {
+    background-color: $selected_bg_color;
+}
+.applet-box {
+    color: $dark_fg_color;
+    transition-duration: 150;
+    border-radius: $roundness;
+    padding: 0 $spacing;
+    &.vertical {
+        padding: $spacing 0;
+    }
+    &:checked {
+        color: $selected_bg_color;
+        .applet-label {
+            color: $selected_bg_color;
+        }
+    }
+    &:hover {
+        color: $selected_bg_color;
+        .applet-label {
+            color: $selected_bg_color;
+        }
+    }
+    &:highlight {
+        background-color: $selected_bg_color;
+        color: $selected_fg_color;
+        .applet-label {
+            color: $selected_fg_color;
+        }
+    }
+}
+.applet-label {
+    font-weight: bold;
+    color: $dark_fg_color;
+    padding-left: 3px;
+}
+// icon-size set to 22 to match hard-coded menu icon size - applet-icon style is used for search provider results in menu
+.applet-icon {
+    color: $dark_fg_color;
+    padding: 0;
+    spacing: 0;
+    icon-size: 22px;
+}
+// used by power applet to warn of low battery
+.system-status-icon {
+    icon-size: 1.14em;
+    padding: 0;
+    spacing: 0;
+    &.warning {
+        color: $warning_color;
+    }
+    &.error {
+        color: $error_color;
+    }
+}
+// keyboard layout applet
+.panel-status-button {
+    -natural-hpadding: 4px;
+    -minimum-hpadding: 4px;
+    font-weight: bold;
+    color: $dark_fg_color;
+    &:hover {
+        color: $selected_bg_color;
+    }
+}
+// user applet specific themeing
+.user-box {
+    padding: 0.4em 1.3em;
+    spacing: 10px;
+}
+.user-icon {
+    padding: 4px;
+    border: none;
+}
+.user-label {
+    color: $dark_fg_color;
+    font-weight: bold;
+    font-size: 1em;
+}
+// the window list applet. Some third party applets inherit some of this theming.
+.window-list-box {
+    spacing: $spacing;
+    padding: 1px 3px;
+    font-size: 0.9em;
+    border-radius: $roundness;
+    &.vertical {
+        spacing: $spacing;
+        padding: 3px 1px;
+    }
+    &:highlight {
+        background-color: $selected_bg_color;
+    }
+    #appMenuIcon {
+    }
+}
+// progress was added with cinnamon 3.6 and allows compatible applications to use the window list as a progress bar
+.window-list-item {
+    &-box {
+        border: 1px solid $interior_border;
+        border-radius: $roundness;
+        transition-duration: 150;
+        &:hover {
+            border: 1px solid $selected_border;
+        }
+        &.top StLabel, &.bottom StLabel {
+            padding-left: 3px;
+        }
+        .progress {
+            background-color: $success_color;
+            border: 1px solid $selected_border;
+            border-radius: $roundness;
+            color: $info_fg_color;
+        }
+        #appMenuIcon {
+		    padding-right: 0.2em;
+        }
+    }
+    &-demands-attention {
+        background-color: $info_bg_color;
+        color: $info_fg_color;
+    }
+}
+// cinnamon 3.8 will support an improved window-list-thumbnail preview which now has it's own selector
+.window-list-preview {
+    @extend %bg-grad-to-right;
+
+    border-radius: $roundness;
+    border: 1px solid $exterior_border;
+    padding: 6px 12px;
+    spacing: $spacing;
+    color: $dark_fg_color;
+}
+// Cinnamon 4.0 has a new grouped window list applet with it's own selectors.
+// Initial theme support is defined here.
+
+.grouped-window-list {
+    &-thumbnail-label {
+        padding-left: 3px;
+    }
+    &-number-label {
+        z-index: 99;
+        font-size: 0.8em;
+        color: $dark_fg_color;
+    }
+    // May need to revise depending on upstream GWL developments
+    &-button-label {
+        padding: 0;
+    }
+    &-badge {
+        border-radius: 256px;
+        background-color: $dark_bg_color; 
+    }
+    &-thumbnail-alert {
+        background: $warning_color;
+    }
+    &-item-box {
+        transition-duration: 150;
+        spacing: 1em;
+        background-color: rgba(0, 0, 0, 0.01);
+        &:hover, &:focus, {
+           color: $selected_bg_color;
+        }
+        &:focus  {
+           font-weight: bold;
+        }
+        .progress {
+           background-color: $success_color;
+        }
+    }
+    &-demands-attention {
+        background-color: $info_bg_color;
+        color: $info_fg_color;
+    }
+    &-thumbnail-menu {
+        @extend %bg-grad-to-right;
+
+        border-radius: $roundness;
+        padding: 10px 15px;
+        spacing: $spacing;
+        color: $dark_fg_color;
+        .item-box {
+            padding: 8px;
+            border-radius: $roundness;
+            border: 1px solid $interior_border;
+            &:outlined {
+                border: 1px solid $selected_border;
+            }
+            &:selected {
+                background-color: $selected_bg_color;
+                border: 1px solid $selected_border;
+                color: $selected_fg_color;
+            }
+        }
+        .thumbnail-box {
+            padding: 2px;
+            spacing: $spacing;
+        }
+        .thumbnail {
+            width: 256px;
+        }
+        .separator {
+            width: 1px;
+            background: $selected_bg_color;
+        }
+    }
+}
+// the sound player applet
+.sound-player {
+    StButton {
+        @extend %shared-button;
+        
+        min-width: 2em;
+        min-height: 2em;
+        padding: $spacing_plus2;
+        color: $button_fg_color;
+        border-radius: $roundness;
+        &:small {
+            min-width: 1.5em;
+            min-height: 1.5em;
+            padding: $spacing;
+            StIcon {
+                icon-size: 1em;
+            }
+        }
+        StIcon {
+            icon-size: 1.5em;
+        }
+        &:hover {
+            @extend %shared-button-hover;
+        }
+        &:focus {
+            color: $selected_fg_color;
+        }
+        &:active {
+            @extend %shared-button-active;
+        }
+    }
+    .slider {
+        @extend %slider-shared;
+        height: 4px;
+    }
+    StBoxLayout {
+        spacing: 0.5em;
+    }
+    > StBoxLayout {
+        padding: 5px;
+    }
+}
+.sound-player-generic-coverart {
+    background: rgba(0,0,0,0.2);
+}
+.sound-player-overlay {
+    @extend %bg-grad-to-bottom;
+
+    min-width: 300px;
+    padding: 12px 16px;
+    spacing: 0.5em;
+    color: $dark_fg_color;
+}
+// workspace switcher applet simple button view
+.workspace-button {
+    width: 2em;
+    height: 1em;
+    color: $dark_fg_color;
+    border: 1px solid $interior_border;
+    margin: 2px;
+    transition-duration: 150;
+    &.vertical {
+    height: 1.5em;
+    }
+    &:outlined {
+        background-color: $selected_bg_color;
+        color: $selected_fg_color;
+        border-color: $selected_border;
+    }
+}
+// workspace switcher applet graph view
+.workspace-graph {
+    .workspace {
+        @extend %bg-grad-to-bottom;
+
+        border: 1px solid $interior_border;
+        &:active {
+            @extend %selected-bg-grad-to-bottom;
+
+            border: 1px solid $interior_border;
+            .windows {
+                -active-window-background: rgba(255, 255, 255, 0.8);
+                -active-window-border: rgba(0, 0, 0, 0.9);
+                -inactive-window-background: rgba(140, 140, 140, 0.8);
+                -inactive-window-border: rgba(0, 0, 0, 0.7);
+            }
+        }
+        .windows {
+            -active-window-background: rgba(140, 140, 140, 0.8);
+            -active-window-border: rgba(0, 0, 0, 0.7);
+            -inactive-window-background: rgba(140, 140, 140, 0.8);
+            -inactive-window-border: rgba(0, 0, 0, 0.7);
+        }
+    }
+}
+// most panel launcher themeing is orientation specific
+.panel-launchers {
+    padding: 0 $spacing;
+    spacing: $spacing;
+    .launcher {
+        background-color:rgba(0, 0, 0, 0.01);
+    }
+    &.vertical {
+        padding: $spacing 0;
+    }
+}
+.notification-applet-padding {
+    padding: .5em 1em;
+}
+.notification-applet-container {
+    max-height: 100px;
+}
+.systray {
+    spacing: $spacing;
+}
+.flashspot {
+    background-color: $selected_bg_color;
+}
+

@@ -1,0 +1,15 @@
+${cacheDir}/wallbash/dunst.conf|${WALLBASH_SCRIPTS}/dunst.sh
+
+[urgency_low]
+    background = "#<wallbash_3xa5>80"
+    foreground = "#<wallbash_3xa9>E6"
+    frame_color = "#<wallbash_3xa5>03"
+    icon = "${iconsDir}/Wallbash-Icon/hyprdots.svg"
+    timeout = 5
+
+[urgency_normal]
+    background = "#<wallbash_2xa2>80"
+    foreground = "#<wallbash_2xa9>E6"
+    frame_color = "#<wallbash_2xa2>03"
+    icon = "${iconsDir}/Wallbash-Icon/hyprdots.svg"
+    timeout = 5

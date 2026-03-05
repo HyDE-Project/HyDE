@@ -1,0 +1,16 @@
+<svg width="40" height="24" version="1.1" viewBox="0 0 40 24" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <filter id="filter1034" x="-.037565" y="-.037565" width="1.0751" height="1.0751" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="0.36"/>
+  </filter>
+  <linearGradient id="linearGradient862" x1="19" x2="19" y1="24" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#ffffff" offset="0"/>
+   <stop stop-color="#ffffff" stop-opacity="0" offset="1"/>
+  </linearGradient>
+ </defs>
+ <rect width="40" height="24" rx="12" ry="12" fill="#0860f2"/>
+ <rect width="40" height="24" rx="12" ry="12" fill="url(#linearGradient862)" opacity=".3"/>
+ <rect y="-.038" width="40" height="24" opacity="0" stroke-width=".87706"/>
+ <circle cx="28" cy="12.5" r="11.5" fill="#000000" filter="url(#filter1034)" opacity=".1"/>
+ <circle cx="28" cy="12" r="11" fill="#ffffff"/>
+</svg>

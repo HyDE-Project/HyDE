@@ -1,0 +1,53 @@
+"${XDG_CACHE_HOME}/hyde/wallbash/wallbash.rasi"
+
+* {
+    wallbash-pry1:            #<wallbash_pry1>E6;
+    wallbash-txt1:            #<wallbash_txt1>E6;
+    wallbash-1xa1:            #<wallbash_1xa1>E6;
+    wallbash-1xa2:            #<wallbash_1xa2>E6;
+    wallbash-1xa3:            #<wallbash_1xa3>E6;
+    wallbash-1xa4:            #<wallbash_1xa4>E6;
+    wallbash-1xa5:            #<wallbash_1xa5>E6;
+    wallbash-1xa6:            #<wallbash_1xa6>E6;
+    wallbash-1xa7:            #<wallbash_1xa7>E6;
+    wallbash-1xa8:            #<wallbash_1xa8>E6;
+    wallbash-1xa9:            #<wallbash_1xa9>E6;
+
+    wallbash-pry2:            #<wallbash_pry2>B3;
+    wallbash-txt2:            #<wallbash_txt2>E6;
+    wallbash-2xa1:            #<wallbash_2xa1>E6;
+    wallbash-2xa2:            #<wallbash_2xa2>E6;
+    wallbash-2xa3:            #<wallbash_2xa3>E6;
+    wallbash-2xa4:            #<wallbash_2xa4>E6;
+    wallbash-2xa5:            #<wallbash_2xa5>E6;
+    wallbash-2xa6:            #<wallbash_2xa6>E6;
+    wallbash-2xa7:            #<wallbash_2xa7>E6;
+    wallbash-2xa8:            #<wallbash_2xa8>E6;
+    wallbash-2xa9:            #<wallbash_2xa9>E6;
+
+    wallbash-pry3:            #<wallbash_pry3>B3;
+    wallbash-txt3:            #<wallbash_txt3>E6;
+    wallbash-3xa1:            #<wallbash_3xa1>E6;
+    wallbash-3xa2:            #<wallbash_3xa2>E6;
+    wallbash-3xa3:            #<wallbash_3xa3>E6;
+    wallbash-3xa4:            #<wallbash_3xa4>E6;
+    wallbash-3xa5:            #<wallbash_3xa5>E6;
+    wallbash-3xa6:            #<wallbash_3xa6>E6;
+    wallbash-3xa7:            #<wallbash_3xa7>E6;
+    wallbash-3xa8:            #<wallbash_3xa8>E6;
+    wallbash-3xa9:            #<wallbash_3xa9>E6;
+
+    wallbash-pry4:            #<wallbash_pry4>B3;
+    wallbash-txt4:            #<wallbash_txt4>E6;
+    wallbash-4xa1:            #<wallbash_4xa1>E6;
+    wallbash-4xa2:            #<wallbash_4xa2>E6;
+    wallbash-4xa3:            #<wallbash_4xa3>E6;
+    wallbash-4xa4:            #<wallbash_4xa4>E6;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+    wallbash-4xa5:            #<wallbash_4xa5>E6;
+    wallbash-4xa6:            #<wallbash_4xa6>E6;
+    wallbash-4xa7:            #<wallbash_4xa7>E6;
+    wallbash-4xa8:            #<wallbash_4xa8>E6;
+    wallbash-4xa9:            #<wallbash_4xa9>E6;
+
+
+}

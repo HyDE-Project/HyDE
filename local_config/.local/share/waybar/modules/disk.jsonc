@@ -1,0 +1,19 @@
+{
+  "disk": {
+    "states": {
+      "c": 90,
+      "h": 60,
+      "m": 30
+    },
+    "interval": 30,
+    "format": "Disk: \udb83\udf86 {percentage_used}%",
+    "rotate": 0,
+    "format-m": "Disk: \udb83\udf85 {percentage_used}%",
+    "format-h": "Disk: \udb81\udcc5 {percentage_used}%",
+    "format-c": "Disk: \uf421 {percentage_used}%",
+    "format-alt": "Disk: \udb83\udf86 {used}",
+    "max-length": 20,
+    "tooltip": true,
+    "tooltip-format": "\udb83\udf86 Memory: {percentage_used}%\n\ue266 Used: {used} / {total}\n\uf85a Available: {free}"
+  }
+}

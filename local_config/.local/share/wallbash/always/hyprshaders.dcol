@@ -1,0 +1,52 @@
+$XDG_CACHE_HOME/hyde/wallbash/colors.inc
+// This is a template file for wallbash shaders this can be use for
+
+#define wallbash_pry1 <wallbash_pry1_rgb> 
+#define wallbash_pry2 <wallbash_pry2_rgb>
+#define wallbash_pry3 <wallbash_pry3_rgb>
+#define wallbash_pry4 <wallbash_pry4_rgb>
+
+#define wallbash_txt1 <wallbash_txt1_rgb>
+#define wallbash_txt2 <wallbash_txt2_rgb>
+#define wallbash_txt3 <wallbash_txt3_rgb>
+#define wallbash_txt4 <wallbash_txt4_rgb>
+
+#define wallbash_1xa1 <wallbash_1xa1_rgb>
+#define wallbash_1xa2 <wallbash_1xa2_rgb>
+#define wallbash_1xa3 <wallbash_1xa3_rgb>
+#define wallbash_1xa4 <wallbash_1xa4_rgb>
+#define wallbash_1xa5 <wallbash_1xa5_rgb>
+#define wallbash_1xa6 <wallbash_1xa6_rgb>
+#define wallbash_1xa7 <wallbash_1xa7_rgb>
+#define wallbash_1xa8 <wallbash_1xa8_rgb>
+#define wallbash_1xa9 <wallbash_1xa9_rgb>
+
+#define wallbash_2xa1 <wallbash_2xa1_rgb>
+#define wallbash_2xa2 <wallbash_2xa2_rgb>
+#define wallbash_2xa3 <wallbash_2xa3_rgb>
+#define wallbash_2xa4 <wallbash_2xa4_rgb>
+#define wallbash_2xa5 <wallbash_2xa5_rgb>
+#define wallbash_2xa6 <wallbash_2xa6_rgb>
+#define wallbash_2xa7 <wallbash_2xa7_rgb>
+#define wallbash_2xa8 <wallbash_2xa8_rgb>
+#define wallbash_2xa9 <wallbash_2xa9_rgb>
+
+#define wallbash_3xa1 <wallbash_3xa1_rgb>
+#define wallbash_3xa2 <wallbash_3xa2_rgb>
+#define wallbash_3xa3 <wallbash_3xa3_rgb>
+#define wallbash_3xa4 <wallbash_3xa4_rgb>
+#define wallbash_3xa5 <wallbash_3xa5_rgb>
+#define wallbash_3xa6 <wallbash_3xa6_rgb>
+#define wallbash_3xa7 <wallbash_3xa7_rgb>
+#define wallbash_3xa8 <wallbash_3xa8_rgb>
+#define wallbash_3xa9 <wallbash_3xa9_rgb>
+
+#define wallbash_4xa1 <wallbash_4xa1_rgb>
+#define wallbash_4xa2 <wallbash_4xa2_rgb>
+#define wallbash_4xa3 <wallbash_4xa3_rgb>
+#define wallbash_4xa4 <wallbash_4xa4_rgb>
+#define wallbash_4xa5 <wallbash_4xa5_rgb>
+#define wallbash_4xa6 <wallbash_4xa6_rgb>
+#define wallbash_4xa7 <wallbash_4xa7_rgb>
+#define wallbash_4xa8 <wallbash_4xa8_rgb>
+#define wallbash_4xa9 <wallbash_4xa9_rgb>

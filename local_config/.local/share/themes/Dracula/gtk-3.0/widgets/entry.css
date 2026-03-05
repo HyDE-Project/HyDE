@@ -1,0 +1,43 @@
+/*********
+ * entry *
+ *********/
+.entry,
+.primary-toolbar .entry {
+    transition: 200ms linear;
+    padding: 6px 8px;
+    border-style: solid;
+    border-radius: 3px;
+    border-width: 1px;
+    border-color: alpha(black,0.2);
+    background-color: @base_color;
+    background-image: none;
+    color: @text_color;
+}
+
+.entry:active,
+.entry:focus {
+    transition: 200ms linear;
+    background-color: @base_color;
+    border-bottom-color: @selected_bg_color;
+    color: @text_color;
+}
+
+.entry:selected,
+.entry:selected:focus {
+    background-color: shade(@bg_color, 0.9);
+	 color: @selected_bg_color;
+}
+
+.entry:insensitive {
+    background-color: alpha(@base_color, 0.5);
+    background-image: none;
+}
+
+.entry.progressbar {
+    border-width: 0;
+    border-radius: 3px;
+    background-color: @selected_bg_color;
+    background-image: none;
+    color: @selected_fg_color;
+    border-color: @selected_bg_color;
+}

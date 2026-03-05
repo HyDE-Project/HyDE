@@ -1,0 +1,234 @@
+/**************
+ * Tree Views *
+ **************/
+treeview.view {
+  @at-root * {
+    -GtkTreeView-horizontal-separator: 4;
+    -GtkTreeView-grid-line-width: 1;
+    -GtkTreeView-grid-line-pattern: '';
+    -GtkTreeView-tree-line-width: 1;
+    -GtkTreeView-tree-line-pattern: '';
+    -GtkTreeView-expander-size: 16;
+  }
+
+  border-left-color: mix($fg_color, $base_color, 50%); // this is actually the tree lines color,
+  border-top-color: $bg_color;                         // while this is the grid lines color, better then nothing
+
+  rubberband { @extend rubberband; } // to avoid borders being overridden by the previously set props
+
+  &:selected {
+    &:focus, & {
+      border-radius: 0;
+
+      @extend %selected_items;
+    }
+
+    &:backdrop, & {
+      border-left-color: mix($selected_fg_color, $selected_bg_color, 50%);
+      border-top-color: transparentize($fg_color, 0.9); // doesn't work unfortunatelly
+    }
+  }
+
+  &:disabled {
+    color: $insensitive_fg_color;
+
+    &:selected {
+      color: mix($selected_fg_color, $selected_bg_color, 40%);
+      &:backdrop { color: mix($backdrop_selected_fg_color, $selected_bg_color, 30%); }
+    }
+
+    &:backdrop { color: $backdrop_insensitive_color; }
+  }
+
+  &.separator {
+    min-height: 2px;
+    color: $bg_color;
+
+    &:backdrop { color: transparentize($bg_color, 0.9); }
+  }
+
+  &:backdrop {
+    border-left-color: mix($backdrop_fg_color, $backdrop_bg_color, 50%);
+    border-top: $backdrop_bg_color;
+  }
+  &:drop(active) {
+    border-style: solid none;
+    border-width: 1px;
+    border-color: $selected_borders_color;
+
+    &.after { border-top-style: none; }
+
+    &.before { border-bottom-style: none; }
+  }
+
+  &.expander {
+    -gtk-icon-source: -gtk-icontheme('pan-end-symbolic');
+
+    &:dir(rtl) { -gtk-icon-source: -gtk-icontheme('pan-end-symbolic-rtl'); }
+
+    color: mix($fg_color, $base_color, 70%);
+
+    &:hover { color: $fg_color; }
+
+    &:selected {
+      color: mix($selected_fg_color, $selected_bg_color, 70%);
+
+      &:hover { color: $selected_fg_color; }
+
+      &:backdrop { color: mix($backdrop_selected_fg_color, $selected_bg_color, 70%); }
+    }
+
+    &:checked { -gtk-icon-source: -gtk-icontheme('pan-down-symbolic'); }
+
+    &:backdrop { color: mix($backdrop_fg_color, $backdrop_base_color, 70%); }
+  }
+
+  &.progressbar { // progress bar in treeviews
+    @if $variant == light { color: $base_color; }
+
+    border: 1px solid $selected_borders_color;
+    border-radius: 4px;
+    background-color: $selected_bg_color;
+    background-image: linear-gradient(to bottom,
+                                      $selected_bg_color,
+                                      darken($selected_bg_color,10%));
+    box-shadow: inset 0 1px if($variant=='light', transparentize(white,0.7),
+                                                  transparentize(white,0.85)),
+                      0 1px if($variant=='light', transparentize(black, 0.8),
+                                                  transparentize(black,0.9));
+
+    &:selected {
+      &:focus, & {
+        border-radius: 4px;
+
+        @if $variant == 'light' {
+          color: $selected_bg_color;
+          box-shadow: none;
+        }
+
+        @else { box-shadow: inset 0 1px transparentize(white, 0.95); }
+
+        background-image: linear-gradient(to bottom,
+                                          $base_color,
+                                          darken($base_color,10%));
+
+        &:backdrop {
+          @if $variant == 'light' {
+            color: $selected_bg_color;
+            border-color: $selected_borders_color; // otherwise it gets inherited by .view(?!?)
+          }
+
+          @else { border-color: $backdrop_base_color; }
+
+          background-color: $backdrop_base_color;
+        }
+      }
+    }
+
+    &:backdrop {
+      @if $variant == 'light' { color: $backdrop_base_color; }
+
+      @else { border-color: $backdrop_base_color; }
+
+      background-image: none;
+      box-shadow: none;
+    }
+  }
+
+  &.trough { // progress bar trough in treeviews
+    background-color: transparentize($fg_color,0.9);
+    border-radius: 4px;
+
+    &:selected {
+      &:focus, & {
+        background-color: if($variant == 'light',
+                             transparentize($selected_fg_color, 0.7),
+                             darken($selected_bg_color, 10%));
+        border-radius: 4px;
+
+        @if $variant == 'light' {
+          border-width: 1px 0;
+          border-style: solid;
+          border-color: $selected_bg_color;
+        }
+      }
+    }
+  }
+
+  header {
+    button {
+      $_column_header_color: mix($fg_color, $base_color, 50%);
+
+      @extend %column_header_button;
+
+      color: $_column_header_color;
+      background-color: $base_color;
+      font-weight: bold;
+      text-shadow: none;
+      box-shadow: none;
+
+      &:hover {
+        @extend %column_header_button;
+
+        color: mix($_column_header_color, $fg_color, 50%);
+        box-shadow: none;
+        transition: none; //I shouldn't need this
+      }
+
+      &:active {
+        @extend %column_header_button;
+
+        color: $fg_color;
+        transition: none; //I shouldn't need this
+      }
+    }
+
+    button:last-child { &:backdrop, & { border-right-style: none; }}
+  }
+
+  button.dnd,
+  header.button.dnd { // for treeview-like derive widgets
+    &:active, &:selected, &:hover, & {
+      padding: 0 6px;
+      transition: none;
+      background-image: none;
+      background-color: $selected_bg_color;
+      color: $base_color;
+      border-radius: 0;
+      border-style: none;
+      box-shadow: inset 0 0 0 1px $base_color;
+      text-shadow: none;
+    }
+  }
+
+  acceleditor > label { background-color: $selected_bg_color; } // see tests/testaccel to test
+}
+
+%column_header_button {
+  padding: 0 6px;
+  border-radius: 0;
+  background-image: none;
+  text-shadow: none;
+  border-width: 1px;
+  border-style: none solid solid none;
+  border-color: $bg_color;
+
+  &:disabled {
+    border-color: $bg_color;
+    background-image: none;
+  }
+
+  &:backdrop {
+    border-color: $backdrop_bg_color;
+    border-style: none solid solid none;
+    color: mix($backdrop_fg_color, $backdrop_bg_color, 50%);
+    background-image: none;
+    background-color: $backdrop_base_color;
+    box-shadow: none;
+
+    &:disabled {
+      border-color: $backdrop_bg_color;
+      background-image: none;
+    }
+  }
+}

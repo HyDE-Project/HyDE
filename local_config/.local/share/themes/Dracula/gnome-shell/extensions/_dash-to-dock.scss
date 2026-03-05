@@ -1,0 +1,20 @@
+#dashtodockContainer #dash {
+
+    background: transparent !important;
+
+    .dash-background {
+        background: $main_dark  !important;
+        border: none;
+    }
+
+    .dash-item-container {
+
+        .app-well-app,
+        .show-apps {
+            .overview-icon.focused .overview-icon {
+                background-color: lighten($bg_color, 7%) !important;
+            }
+        }
+    }
+
+}

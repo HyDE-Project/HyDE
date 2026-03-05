@@ -1,0 +1,170 @@
+/**************
+ * Scrollbars *
+ **************/
+scrollbar {
+  $_slider_min_length: 40px;
+
+  background-color: $scrollbar_bg_color;
+  transition: 300ms $ease-out-quad;
+
+  // scrollbar border
+  &.top { border-bottom: 1px solid $borders_color; }
+  &.bottom { border-top: 1px solid $borders_color; }
+  &.left { border-right: 1px solid $borders_color; }
+  &.right { border-left: 1px solid $borders_color; }
+
+  &:backdrop {
+    background-color: $backdrop_scrollbar_bg_color;
+    border-color: $backdrop_borders_color;
+    transition: $backdrop_transition;
+  }
+
+  // slider
+  slider {
+    min-width: 6px;
+    min-height: 6px;
+    margin: -1px;
+    border: 4px solid transparent;
+    border-radius: 8px;
+    background-clip: padding-box;
+    background-color: $scrollbar_slider_color;
+
+    &:hover { background-color: $scrollbar_slider_hover_color; }
+
+    &:hover:active { background-color: $scrollbar_slider_active_color; }
+
+    &:backdrop { background-color: $backdrop_scrollbar_slider_color; }
+
+    &:disabled { background-color: transparent; }
+  }
+
+  &.fine-tune {
+    slider {
+      min-width: 4px;
+      min-height: 4px;
+    }
+
+    &.horizontal slider { border-width: 5px 4px; }
+    &.vertical slider { border-width: 4px 5px; }
+  }
+
+  &.overlay-indicator {
+    &:not(.dragging):not(.hovering) {
+      border-color: transparent;
+      opacity: 0.4;
+      background-color: transparent;
+
+      slider {
+        margin: 0;
+        min-width: 3px;
+        min-height: 3px;
+        background-color: $fg_color;
+        border: 1px solid if($variant == 'light', white, black);
+      }
+
+      button {
+        min-width: 5px;
+        min-height: 5px;
+        background-color: $fg_color;
+        background-clip: padding-box;
+        border-radius: 100%;
+        border: 1px solid if($variant == 'light', white, black);
+        -gtk-icon-source: none;
+      }
+
+      &.horizontal {
+        slider {
+          margin: 0 2px;
+          min-width: $_slider_min_length;
+        }
+
+        button {
+          margin: 1px 2px;
+          min-width: 5px;
+        }
+      }
+
+      &.vertical {
+        slider {
+          margin: 2px 0;
+          min-height: $_slider_min_length;
+        }
+
+        button {
+          margin: 2px 1px;
+          min-height: 5px;
+        }
+      }
+    }
+
+    &.dragging,
+    &.hovering { opacity: 0.8; }
+  }
+
+  &.horizontal slider { min-width: $_slider_min_length; }
+
+  &.vertical slider { min-height: $_slider_min_length; }
+
+  // button styling
+  button {
+    padding: 0;
+    min-width: 12px;
+    min-height: 12px;
+    border-style: none;
+    border-radius: 0;
+    transition-property: min-height, min-width, color;
+
+    @include button(undecorated);
+
+    color: $scrollbar_slider_color;
+
+    &:hover {
+      @include button(undecorated);
+
+      color: $scrollbar_slider_hover_color;
+    }
+    &:active, &:checked {
+      @include button(undecorated);
+
+      color: $scrollbar_slider_active_color;
+    }
+    &:disabled {
+      @include button(undecorated);
+
+      color: transparentize($scrollbar_slider_color, 0.8);
+    }
+    &:backdrop {
+      @include button(undecorated);
+
+      color: $backdrop_scrollbar_slider_color;
+
+      &:disabled {
+        @include button(undecorated);
+
+        color: transparentize($backdrop_scrollbar_slider_color, 0.8);
+      }
+    }
+  }
+
+  // button icons
+  &.vertical {
+    button {
+      &.down { -gtk-icon-source: -gtk-icontheme('pan-down-symbolic'); }
+
+      &.up { -gtk-icon-source: -gtk-icontheme('pan-up-symbolic'); }
+    }
+  }
+
+  &.horizontal {
+    button {
+      &.down { -gtk-icon-source: -gtk-icontheme('pan-right-symbolic'); }
+
+      &.up { -gtk-icon-source: -gtk-icontheme('pan-left-symbolic'); }
+    }
+  }
+}
+
+treeview ~ scrollbar.vertical {
+  border-top: 1px solid $borders_color;
+  margin-top: -1px;
+}

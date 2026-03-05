@@ -1,0 +1,58 @@
+.xfce4-panel {
+    &.background {
+        background-color: $panel_bg_color;
+        color: $fg_color;
+
+        text-shadow: none;
+        -gtk-icon-shadow: none;
+
+        button.flat:not(.open_group) { @extend %panelbutton; }
+    }
+    &#XfcePanelWindow, &#XfcePanelWindow.marching-ants {transition: none;}
+}
+
+#tasklist-button {
+    color: transparentize($panel_fg_color, 0.2);
+    border-radius: 0;
+    border: none;
+    background-color: transparentize($panel_bg_color, 1);
+
+    &:hover {
+      color: lighten($panel_fg_color, 10%);
+      background-color: transparentize(black, 0.83);
+    }
+
+    &:checked {
+      color: white;
+      background-color: transparentize(black, 0.75);
+      box-shadow: inset 0 -2px $selected_bg_color;
+    }
+}
+
+%panelbutton {
+    color: $panel_fg_color;
+    border-radius: 0;
+    border: none;
+    background-color: transparentize($panel_bg_color, 1);
+    font-weight: normal;
+
+    &:hover {
+      border: none;
+      background-color: lighten($panel_bg_color, 10%);
+    }
+    &:active, &:checked {
+      color: $panel_fg_color;
+      border-bottom: 2px solid $selected_bg_color;
+      background-color: darken($panel_bg_color, 2%);
+
+      label, image { color: inherit; }
+    }
+}
+
+/* Vala-appmenu-plugin*/
+
+.-vala-panel-appmenu-core scrolledwindow,
+.-vala-panel-appmenu-private > menuitem,
+.-vala-panel-appmenu-private > menuitem:first-child > label {
+    color: $panel_fg_color;
+}

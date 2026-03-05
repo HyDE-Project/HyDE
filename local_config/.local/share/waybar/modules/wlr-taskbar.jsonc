@@ -1,0 +1,30 @@
+{
+    "wlr/taskbar": {
+        "all-outputs": true,
+        "active-first": false,
+        "markup": true,
+        "format": "{icon}",
+        "rotate": 0,
+        "spacing": 20,
+        "tooltip-format": "{title} | {app_id}",
+        "on-click": "activate",
+        "on-click-right": "fullscreen",
+        "on-click-middle": "close",
+        "class": "no-margin-padding",
+        "ignore-list": [
+            ""
+        ],
+        "app_ids-mapping": {
+            "firefoxdeveloperedition": "firefox-developer-edition",
+            "firefoxnightly": "firefox-nightly",
+            "Spotify Free": "Spotify"
+        },
+        "rewrite": {
+            "Firefox Web Browser": "Firefox",
+            "Foot Server": "Terminal",
+            "Spotify Free": "Spotify",
+            "org.kde.dolphin": "Dolphin",
+            "libreoffice-writer": "Writer"
+        }
+    }
+}

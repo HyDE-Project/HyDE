@@ -1,0 +1,13 @@
+# ==============================================================================
+# THUNAR SPECIFIC SETTINGS
+# ==============================================================================
+
+style "sidepane" {
+	base[NORMAL] 		= @bg_color
+	base[INSENSITIVE] 	= mix(0.4, shade(1.35, @selected_bg_color), shade(0.9, @base_color))
+	bg[NORMAL] 			= @bg_color
+	text[NORMAL] 		= mix(0.9, @fg_color, @bg_color)
+}
+
+widget_class "*ThunarShortcutsView*" style "sidepane"
+widget_class "*ThunarTreeView*" style "sidepane"

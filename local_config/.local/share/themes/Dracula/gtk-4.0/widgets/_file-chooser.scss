@@ -1,0 +1,102 @@
+/****************
+ * File chooser *
+ ****************/
+$_placesidebar_icons_opacity: 0.7;
+
+placessidebar {
+  > viewport.frame { border-style: none; }
+
+  row {
+    // Needs overriding of the GtkListBoxRow padding
+    min-height: 36px;
+    padding: 0px;
+
+    // Using margins/padding directly in the SidebarRow
+    // will make the animation of the new bookmark row jump
+    > revealer { padding: 0 14px; }
+
+    &:selected { color: $selected_fg_color; }
+
+    &:disabled { color: $insensitive_fg_color; }
+
+    &:backdrop {
+      color: $backdrop_fg_color;
+
+      &:selected { color: $backdrop_selected_fg_color; }
+
+      &:disabled { color: $backdrop_insensitive_color; }
+    }
+
+    image.sidebar-icon {
+      opacity: $_placesidebar_icons_opacity; // dim the device icons
+
+      &:dir(ltr) { padding-right: 8px; }
+      &:dir(rtl) { padding-left: 8px; }
+    }
+
+    label.sidebar-label {
+      &:dir(ltr) { padding-right: 2px; }
+      &:dir(rtl) { padding-left: 2px; }
+    }
+
+    @at-root button.sidebar-button {
+      @extend %button_basic.flat;
+
+      @extend %button_selected.flat;
+
+      min-height: 26px;
+      min-width: 26px;
+      margin-top: 3px;
+      margin-bottom: 3px;
+      padding: 0;
+      border-radius: 100%;
+      -gtk-outline-radius: 100%;
+
+      &:not(:hover):not(:active),
+      &:backdrop { > image { opacity: $_placesidebar_icons_opacity; }}
+    }
+
+    // in the sidebar case it makes no sense to click the selected row
+    &:selected:active { box-shadow: none; }
+
+    &.sidebar-placeholder-row {
+      padding: 0 8px;
+      min-height: 2px;
+      background-image: image($drop_target_color);
+      background-clip: content-box;
+    }
+
+    &.sidebar-new-bookmark-row { color: $selected_bg_color; }
+
+    &:drop(active):not(:disabled) {
+      color: $drop_target_color;
+      box-shadow: inset 0 1px $drop_target_color,
+                  inset 0 -1px $drop_target_color;
+
+      &:selected {
+        color: $selected_fg_color;
+        background-color: $drop_target_color;
+      }
+    }
+  }
+}
+
+placesview {
+  .server-list-button > image {
+    transition: 200ms $ease-out-quad;
+    -gtk-icon-transform: rotate(0turn);
+  }
+
+  .server-list-button:checked > image {
+    transition: 200ms $ease-out-quad;
+    -gtk-icon-transform: rotate(-0.5turn);
+  }
+
+  row.activatable:hover { background-color: transparent; }
+
+  // this selects the "connect to server" label
+  > actionbar > revealer > box > label {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}

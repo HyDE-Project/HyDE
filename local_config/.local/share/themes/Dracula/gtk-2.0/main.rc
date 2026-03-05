@@ -1,0 +1,2614 @@
+style "default" {
+
+  xthickness = 1
+  ythickness = 1
+
+  ####################
+  # Style Properties #
+  ####################
+
+  GtkWidget::focus-line-width = 1
+  GtkWidget::focus-line-pattern = "\2\1"
+
+  GtkToolbar::internal-padding = 4
+  GtkToolButton::icon-spacing  = 4
+
+  GtkWidget::tooltip-radius    = 3
+  GtkWidget::tooltip-alpha     = 235
+  GtkWidget::new-tooltip-style = 1 #for compatibility
+
+  GtkWidget::link-color              = shade(0.9, @selected_bg_color)
+  GtkWidget::visited-link-color      = shade(0.8, @selected_bg_color)
+  GnomeHRef::link_color              = shade(0.9, @selected_bg_color)
+  GtkHTML::link-color                = shade(0.9, @selected_bg_color)
+  GtkHTML::vlink-color               = shade(0.8, @selected_bg_color)
+  GtkIMHtml::hyperlink-color         = shade(0.9, @selected_bg_color)
+  GtkIMHtml::hyperlink-visited-color = shade(0.8, @selected_bg_color)
+
+  GtkSeparatorMenuItem::horizontal-padding = 0
+  GtkSeparatorMenuItem::wide-separators    = 1
+  GtkSeparatorMenuItem::separator-height   = 1
+
+  GtkButton::child-displacement-y = 0
+
+  GtkButton::default-border         = {0, 0, 0, 0}
+  GtkButton::default-outside-border = {0, 0, 0, 0}
+  GtkButton::inner-border           = {4, 4, 4, 4}
+
+  GtkEntry::state-hint = 1
+  GtkEntry::inner-border = {7, 7, 4, 5}
+
+  GtkPaned::handle-size = 9
+  GtkHPaned::handle-size = 9
+  GtkVPaned::handle-size = 9
+
+  GtkScrollbar::trough-border = 0
+  GtkRange::trough-border     = 0
+  GtkRange::slider-width      = 13
+  GtkRange::stepper-size      = 0
+  GtkRange::activate-slider   = 1
+
+  GtkScrollbar::activate-slider              = 1
+  GtkScrollbar::stepper-size                 = 0
+  GtkScrollbar::has-backward-stepper         = 0
+  GtkScrollbar::has-forward-stepper          = 0
+  GtkScrollbar::min-slider-length            = 48 # 42 + 2*3 (margins)
+  GtkScrolledWindow::scrollbar-spacing       = 0
+  GtkScrolledWindow::scrollbars-within-bevel = 1
+
+  GtkScale::slider_length       = 26
+  GtkScale::slider_width        = 26
+  GtkScale::trough-side-details = 1
+
+  GtkProgressBar::min-horizontal-bar-height = 6
+  GtkProgressBar::min-vertical-bar-width    = 6
+  # Making this bigger than the min[height,width]-2*[y,x]spacing makes the
+  # whole progressbar thicker, so by setting it to the exact above value
+  # we get the maximum spacing between the text and the edges without
+  # doing so.
+  GtkProgressBar::xspacing = 4
+  GtkProgressBar::yspacing = 4
+
+  GtkStatusbar::shadow_type    = GTK_SHADOW_NONE
+  GtkSpinButton::shadow_type   = GTK_SHADOW_NONE
+  GtkMenuBar::shadow-type      = GTK_SHADOW_NONE
+  GtkToolbar::shadow-type      = GTK_SHADOW_NONE
+  # TODO: find out what this comment means:
+  # ( every window is misaligned for the sake of menus ):
+  GtkMenuBar::internal-padding = 0
+  GtkMenu::horizontal-padding  = 0
+  GtkMenu::vertical-padding    = 2
+  GtkMenu::double-arrows       = 0
+  GtkMenuItem::arrow-scaling   = 1
+  GtkMenuItem::toggle-spacing  = 10
+
+  GtkCheckButton::indicator_spacing = 3
+  GtkOptionMenu::indicator_spacing  = {13, 13, 5, 8}
+
+  GtkTreeView::expander-size        = 16
+  GtkTreeView::vertical-separator   = 0
+  GtkTreeView::horizontal-separator = 4
+  GtkTreeView::allow-rules          = 1
+  # Set this because some apps read it
+  GtkTreeView::odd-row-color        = @base_color
+  GtkTreeView::even-row-color       = @base_color
+  GtkTreeView::odd_row_color        = shade(0.90, @base_color)
+
+  GtkExpander::expander-size = 16
+
+  GtkNotebook::tab-overlap = 4
+
+  ##########
+  # Colors #
+  ##########
+
+  bg[NORMAL]      = @bg_color
+  bg[PRELIGHT]    = @bg_color
+  bg[SELECTED]    = @selected_bg_color
+  bg[INSENSITIVE] = mix (0.6, @bg_color, @base_color)
+  bg[ACTIVE]      = @bg_color
+
+  fg[NORMAL]      = @fg_color
+  fg[PRELIGHT]    = @fg_color
+  fg[SELECTED]    = @selected_fg_color
+  fg[INSENSITIVE] = mix (0.5, @fg_color, @bg_color)
+  fg[ACTIVE]      = @fg_color
+
+  text[NORMAL]      = @text_color
+  text[PRELIGHT]    = @text_color
+  text[SELECTED]    = @selected_fg_color
+  text[INSENSITIVE] = darker (@bg_color)
+  text[ACTIVE]      = @selected_fg_color
+
+  base[NORMAL]      = @base_color
+  base[PRELIGHT]    = shade (0.95, @bg_color)
+  base[SELECTED]    = @selected_bg_color
+  base[INSENSITIVE] = mix (0.5, @fg_color, @bg_color)
+  base[ACTIVE]      = @selected_bg_color
+
+  # For succinctness, all reasonable pixmap options remain here
+
+  # Draw frame around menu in a non-compositied environment
+  # This needs to go before pixmap because we need to override some stuff
+  engine "adwaita" {}
+
+  engine "pixmap" {
+
+    #################
+    # Check Buttons #
+    #################
+
+    image {
+      function        = CHECK
+      state           = NORMAL
+      shadow          = OUT
+      overlay_file    = "assets/checkbox-unchecked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = PRELIGHT
+      shadow          = OUT
+      overlay_file    = "assets/checkbox-unchecked-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = ACTIVE
+      shadow          = OUT
+      overlay_file    = "assets/checkbox-unchecked-active.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = SELECTED
+      shadow          = OUT
+      overlay_file    = "assets/checkbox-unchecked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = INSENSITIVE
+      shadow          = OUT
+      overlay_file    = "assets/checkbox-unchecked-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = NORMAL
+      shadow          = IN
+      overlay_file    = "assets/checkbox-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = PRELIGHT
+      shadow          = IN
+      overlay_file    = "assets/checkbox-checked-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = ACTIVE
+      shadow          = IN
+      overlay_file    = "assets/checkbox-checked-active.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = SELECTED
+      shadow          = IN
+      overlay_file    = "assets/checkbox-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = INSENSITIVE
+      shadow          = IN
+      overlay_file    = "assets/checkbox-checked-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = NORMAL
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/checkbox-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = PRELIGHT
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/checkbox-mixed-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = ACTIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/checkbox-mixed-active.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = SELECTED
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/checkbox-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = INSENSITIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/checkbox-mixed-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    #################
+    # Radio Buttons #
+    #################
+
+    image {
+      function        = OPTION
+      state           = NORMAL
+      shadow          = OUT
+      overlay_file    = "assets/radio-unchecked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = PRELIGHT
+      shadow          = OUT
+      overlay_file    = "assets/radio-unchecked-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = ACTIVE
+      shadow          = OUT
+      overlay_file    = "assets/radio-unchecked-active.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = SELECTED
+      shadow          = OUT
+      overlay_file    = "assets/radio-unchecked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = INSENSITIVE
+      shadow          = OUT
+      overlay_file    = "assets/radio-unchecked-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = NORMAL
+      shadow          = IN
+      overlay_file    = "assets/radio-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = PRELIGHT
+      shadow          = IN
+      overlay_file    = "assets/radio-checked-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = ACTIVE
+      shadow          = IN
+      overlay_file    = "assets/radio-checked-active.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = SELECTED
+      shadow          = IN
+      overlay_file    = "assets/radio-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = INSENSITIVE
+      shadow          = IN
+      overlay_file    = "assets/radio-checked-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = NORMAL
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/radio-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = PRELIGHT
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/radio-mixed-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = ACTIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/radio-mixed-active.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = SELECTED
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/radio-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = INSENSITIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/radio-mixed-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    ##########
+    # Arrows #
+    ##########
+
+    # Overrides
+
+    # Disable arrows in spinbuttons
+    image {
+      function = ARROW
+      detail = "spinbutton"
+    }
+
+    # Disable arrows for qt in scrollbars
+    image {
+      function = ARROW
+      detail   = "vscrollbar"
+    }
+    image {
+      function = ARROW
+      detail   = "hscrollbar"
+    }
+
+    # Menu arrows
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      detail          = "menuitem"
+      overlay_file    = "assets/menu-pan-left.png"
+      overlay_stretch = FALSE
+      arrow_direction = LEFT
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      detail          = "menuitem"
+      overlay_file    = "assets/menu-pan-left-hover.png"
+      overlay_stretch = FALSE
+      arrow_direction = LEFT
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      detail          = "menuitem"
+      overlay_file    = "assets/menu-pan-left-insensitive.png"
+      overlay_stretch = FALSE
+      arrow_direction = LEFT
+    }
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      detail          = "menuitem"
+      overlay_file    = "assets/menu-pan-right.png"
+      overlay_stretch = FALSE
+      arrow_direction = RIGHT
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      detail          = "menuitem"
+      overlay_file    = "assets/menu-pan-right-hover.png"
+      overlay_stretch = FALSE
+      arrow_direction = RIGHT
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      detail          = "menuitem"
+      overlay_file    = "assets/menu-pan-right-insensitive.png"
+      overlay_stretch = FALSE
+      arrow_direction = RIGHT
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      detail          = "menu_scroll_arrow_up"
+      overlay_file    = "assets/menu-pan-up-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = ARROW
+      detail          = "menu_scroll_arrow_up"
+      overlay_file    = "assets/menu-pan-up.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      detail          = "menu_scroll_arrow_down"
+      overlay_file    = "assets/menu-pan-down-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = ARROW
+      detail          = "menu_scroll_arrow_down"
+      overlay_file    = "assets/menu-pan-down.png"
+      overlay_stretch = FALSE
+    }
+
+    # Regular arrows
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      overlay_file    = "assets/pan-up.png"
+      overlay_stretch = FALSE
+      arrow_direction = UP
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      overlay_file    = "assets/pan-up.png"
+      overlay_stretch = FALSE
+      arrow_direction = UP
+    }
+
+    image {
+      function        = ARROW
+      state           = ACTIVE
+      overlay_file    = "assets/pan-up.png"
+      overlay_stretch = FALSE
+      arrow_direction = UP
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      overlay_file    = "assets/pan-up-insensitive.png"
+      overlay_stretch = FALSE
+      arrow_direction = UP
+    }
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      overlay_file    = "assets/pan-down.png"
+      overlay_stretch = FALSE
+      arrow_direction = DOWN
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      overlay_file    = "assets/pan-down.png"
+      overlay_stretch = FALSE
+      arrow_direction = DOWN
+    }
+
+    image {
+      function        = ARROW
+      state           = ACTIVE
+      overlay_file    = "assets/pan-down.png"
+      overlay_stretch = FALSE
+      arrow_direction = DOWN
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      overlay_file    = "assets/pan-down-insensitive.png"
+      overlay_stretch = FALSE
+      arrow_direction = DOWN
+    }
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      overlay_file    = "assets/pan-left.png"
+      overlay_stretch = FALSE
+      arrow_direction = LEFT
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      overlay_file    = "assets/pan-left.png"
+      overlay_stretch = FALSE
+      arrow_direction = LEFT
+    }
+
+    image {
+      function        = ARROW
+      state           = ACTIVE
+      overlay_file    = "assets/pan-left.png"
+      overlay_stretch = FALSE
+      arrow_direction = LEFT
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      overlay_file    = "assets/pan-left-insensitive.png"
+      overlay_stretch = FALSE
+      arrow_direction = LEFT
+    }
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      overlay_file    = "assets/pan-right.png"
+      overlay_stretch = FALSE
+      arrow_direction = RIGHT
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      overlay_file    = "assets/pan-right.png"
+      overlay_stretch = FALSE
+      arrow_direction = RIGHT
+    }
+
+    image {
+      function        = ARROW
+      state           = ACTIVE
+      overlay_file    = "assets/pan-right.png"
+      overlay_stretch = FALSE
+      arrow_direction = RIGHT
+    }
+
+    image {
+      function        = ARROW
+      state           = INSENSITIVE
+      overlay_file    = "assets/pan-right-insensitive.png"
+      overlay_stretch = FALSE
+      arrow_direction = RIGHT
+    }
+
+    ######################
+    # Option Menu Arrows #
+    ######################
+
+    image {
+      function        = TAB
+      state           = NORMAL
+      overlay_file    = "assets/pan-down.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = TAB
+      state           = PRELIGHT
+      overlay_file    = "assets/pan-down.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = TAB
+      state           = ACTIVE
+      overlay_file    = "assets/pan-down.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = TAB
+      state           = INSENSITIVE
+      overlay_file    = "assets/pan-down-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    #########
+    # Lines #
+    #########
+
+    image {
+      function = VLINE
+      file     = "assets/line.png"
+      border   = {1, 0, 0, 0}
+    }
+
+    image {
+      function = HLINE
+      file     = "assets/line.png"
+      border   = {0, 0, 1, 0}
+    }
+
+    #########
+    # Focus #
+    #########
+
+    image {
+      function = FOCUS
+      file     = "assets/focus.png"
+      border   = {1, 1, 1, 1}
+      stretch  = TRUE
+    }
+
+    ###########
+    # Handles #
+    ###########
+
+    image {
+      function        = HANDLE
+      detail          = "handlebox"
+      overlay_file    = "assets/handle.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function    = HANDLE
+      file        = "assets/handle-horz.png"
+      border      = {0, 0, 4, 4}
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = HANDLE
+      file        = "assets/handle-vert.png"
+      border      = {4, 4, 0, 0}
+      orientation = VERTICAL
+    }
+
+    image {
+      function = RESIZE_GRIP
+    }
+
+    #############
+    # Expanders #
+    #############
+
+    image {
+      function       = EXPANDER
+      expander_style = EXPANDED
+      file           = "assets/pan-down.png"
+    }
+
+    # LTR
+
+    image {
+      function       = EXPANDER
+      expander_style = COLLAPSED
+      file           = "assets/pan-right.png"
+      direction      = LTR
+    }
+
+    image {
+      function       = EXPANDER
+      expander_style = SEMI_COLLAPSED
+      file           = "assets/pan-right-semi.png"
+      direction      = LTR
+    }
+
+    image {
+      function       = EXPANDER
+      expander_style = SEMI_EXPANDED
+      file           = "assets/pan-right-semi.png"
+      direction      = LTR
+    }
+
+    # RTL
+
+    image {
+      function       = EXPANDER
+      expander_style = COLLAPSED
+      file           = "assets/pan-left.png"
+      direction      = RTL
+    }
+
+    image {
+      function       = EXPANDER
+      expander_style = SEMI_COLLAPSED
+      file           = "assets/pan-left-semi.png"
+      direction      = RTL
+    }
+
+    image {
+      function       = EXPANDER
+      expander_style = SEMI_EXPANDED
+      file           = "assets/pan-left-semi.png"
+      direction      = RTL
+    }
+
+    #############
+    # Notebooks #
+    #############
+
+    # Left
+
+    image {
+      function = EXTENSION
+      state    = NORMAL
+      file     = "assets/tab-left-active.png"
+      border   = { 3,3,3,3 }
+      stretch  = TRUE
+      gap_side = RIGHT
+    }
+
+    image {
+      function = EXTENSION
+      file     = "assets/tab-left.png"
+      border   = {  3,3,3,3 }
+      stretch  = TRUE
+      gap_side = RIGHT
+    }
+
+    # Right
+
+    image {
+      function = EXTENSION
+      state    = NORMAL
+      file     = "assets/tab-right-active.png"
+      border   = { 3,3,3,3 }
+      stretch  = TRUE
+      gap_side = LEFT
+    }
+
+    image {
+      function = EXTENSION
+      file     = "assets/tab-right.png"
+      border   = {  3,3,3,3 }
+      stretch  = TRUE
+      gap_side = LEFT
+    }
+
+    # Up
+
+    image {
+      function = EXTENSION
+      state    = NORMAL
+      file     = "assets/tab-up-active.png"
+      border   = { 3,3,5,3 }
+      stretch  = TRUE
+      gap_side = BOTTOM
+    }
+
+    image {
+      function = EXTENSION
+      file     = "assets/tab-up.png"
+      border   = { 3,3,3,3 }
+      stretch  = TRUE
+      gap_side = BOTTOM
+    }
+
+    # Down
+
+    image {
+      function = EXTENSION
+      state    = NORMAL
+      file     = "assets/tab-down-active.png"
+      border   = { 3,3,3,5 }
+      stretch  = TRUE
+      gap_side = TOP
+    }
+
+    image {
+      function = EXTENSION
+      file     = "assets/tab-down.png"
+      border   = { 3,3,3,3 }
+      stretch  = TRUE
+      gap_side = TOP
+    }
+
+    # Inner frame
+
+    image {
+      function   = BOX_GAP
+      detail     = "notebook"
+      file       = "assets/frame-notebook.png"
+      border     = {1, 1, 1, 1}
+      stretch    = TRUE
+      gap_file   = "assets/tab-vert-gap.png"
+      gap_border = {1, 0, 1, 1}
+      gap_side   = LEFT
+    }
+
+    image {
+      function   = BOX_GAP
+      detail     = "notebook"
+      file       = "assets/frame-notebook.png"
+      border     = {1, 1, 1, 1}
+      stretch    = TRUE
+      gap_file   = "assets/tab-vert-gap.png"
+      gap_border = {0, 1, 1, 1}
+      gap_side   = RIGHT
+    }
+
+    image {
+      function   = BOX_GAP
+      detail     = "notebook"
+      file       = "assets/frame-notebook.png"
+      border     = {1, 1, 1, 1}
+      stretch    = TRUE
+      gap_file   = "assets/tab-horz-gap.png"
+      gap_border = {1, 1, 1, 0}
+      gap_side   = TOP
+    }
+
+    image {
+      function   = BOX_GAP
+      detail     = "notebook"
+      file       = "assets/frame-notebook.png"
+      border     = {1, 1, 1, 1}
+      stretch    = TRUE
+      gap_file   = "assets/tab-horz-gap.png"
+      gap_border = {1, 1, 0, 1}
+      gap_side   = BOTTOM
+    }
+
+    # Standalone frame
+    image {
+      function = BOX
+      detail   = "notebook"
+      file     = "assets/frame-notebook.png"
+      border   = {1, 1, 1, 1}
+      stretch  = TRUE
+    }
+
+    ##############
+    # Scrollbars #
+    ##############
+
+    image {
+      function    = BOX
+      detail      = "trough"
+      file        = "assets/scrollbar-horz-trough.png"
+      border      = {0, 0, 1, 0}
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough"
+      file        = "assets/scrollbar-vert-trough.png"
+      border      = {1, 0, 0, 0}
+      orientation = VERTICAL
+      direction   = LTR
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough"
+      file        = "assets/scrollbar-vert-trough-rtl.png"
+      border      = {0, 1, 0, 0}
+      orientation = VERTICAL
+      direction   = RTL
+    }
+
+
+    # Disable insensitive sliders
+
+    image {
+      function = SLIDER
+      state    = INSENSITIVE
+      detail   = "slider"
+    }
+
+    # Horizontal sliders
+
+    image {
+      function    = SLIDER
+      state       = NORMAL
+      detail      = "slider"
+      file        = "assets/scrollbar-horz-slider.png"
+      border      = {6, 6, 7, 6 }
+      stretch     = TRUE
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = SLIDER
+      state       = PRELIGHT
+      detail      = "slider"
+      file        = "assets/scrollbar-horz-slider-hover.png"
+      border      = {6, 6, 7, 6 }
+      stretch     = TRUE
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = SLIDER
+      state       = ACTIVE
+      detail      = "slider"
+      file        = "assets/scrollbar-horz-slider-active.png"
+      border      = {6, 6, 7, 6 }
+      stretch     = TRUE
+      orientation = HORIZONTAL
+    }
+
+    # Vertical sliders
+
+    image {
+      function    = SLIDER
+      state       = NORMAL
+      detail      = "slider"
+      file        = "assets/scrollbar-vert-slider.png"
+      border      = {7, 6, 6, 6}
+      stretch     = TRUE
+      orientation = VERTICAL
+      direction   = LTR
+    }
+
+    image {
+      function    = SLIDER
+      state       = PRELIGHT
+      detail      = "slider"
+      file        = "assets/scrollbar-vert-slider-hover.png"
+      border      = {7, 6, 6, 6}
+      stretch     = TRUE
+      orientation = VERTICAL
+      direction   = LTR
+    }
+
+    image {
+      function    = SLIDER
+      state       = ACTIVE
+      detail      = "slider"
+      file        = "assets/scrollbar-vert-slider-active.png"
+      border      = {7, 6, 6, 6}
+      stretch     = TRUE
+      orientation = VERTICAL
+      direction   = LTR
+    }
+
+    # RTL
+
+    image {
+      function    = SLIDER
+      state       = NORMAL
+      detail      = "slider"
+      file        = "assets/scrollbar-vert-slider-rtl.png"
+      border      = {6, 7, 6, 6}
+      stretch     = TRUE
+      orientation = VERTICAL
+      direction   = RTL
+    }
+
+    image {
+      function    = SLIDER
+      state       = PRELIGHT
+      detail      = "slider"
+      file        = "assets/scrollbar-vert-slider-hover-rtl.png"
+      border      = {6, 7, 6, 6}
+      stretch     = TRUE
+      orientation = VERTICAL
+      direction   = RTL
+    }
+
+    image {
+      function    = SLIDER
+      state       = ACTIVE
+      detail      = "slider"
+      file        = "assets/scrollbar-vert-slider-active-rtl.png"
+      border      = {6, 7, 6, 6}
+      stretch     = TRUE
+      orientation = VERTICAL
+      direction   = RTL
+    }
+
+    ##########
+    # Scales #
+    ##########
+
+    # Troughs
+    # They are overrided later on
+    # We set them here too because some widgets don't specify their orientation
+
+    image {
+      function    = BOX
+      detail      = "trough-upper"
+      file        = "assets/scale-horz-trough.png"
+      border      = {10, 10, 0, 0}
+      stretch     = TRUE
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough-lower"
+      file        = "assets/scale-horz-trough-active.png"
+      border      = {10, 10, 0, 0}
+      stretch     = TRUE
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough-upper"
+      file        = "assets/scale-vert-trough.png"
+      border      = {0, 0, 10, 10}
+      stretch     = TRUE
+      orientation = VERTICAL
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough-lower"
+      file        = "assets/scale-vert-trough-active.png"
+      border      = {0, 0, 10, 10}
+      stretch     = TRUE
+      orientation = VERTICAL
+    }
+
+    # Sliders
+
+    image {
+      function = SLIDER
+      state    = NORMAL
+      detail   = "hscale"
+      file     = "assets/scale-slider.png"
+    }
+
+    image {
+      function = SLIDER
+      state    = PRELIGHT
+      detail   = "hscale"
+      file     = "assets/scale-slider-hover.png"
+    }
+
+    image {
+      function = SLIDER
+      state    = ACTIVE
+      detail   = "hscale"
+      file     = "assets/scale-slider-active.png"
+    }
+
+    image {
+      function = SLIDER
+      state    = INSENSITIVE
+      detail   = "hscale"
+      file     = "assets/scale-slider-insensitive.png"
+    }
+    image {
+      function = SLIDER
+      state    = NORMAL
+      detail   = "vscale"
+      file     = "assets/scale-slider.png"
+    }
+
+    image {
+      function = SLIDER
+      state    = PRELIGHT
+      detail   = "vscale"
+      file     = "assets/scale-slider-hover.png"
+    }
+
+    image {
+      function = SLIDER
+      state    = ACTIVE
+      detail   = "vscale"
+      file     = "assets/scale-slider-active.png"
+    }
+
+    image {
+      function = SLIDER
+      state    = INSENSITIVE
+      detail   = "vscale"
+      file     = "assets/scale-slider-insensitive.png"
+    }
+
+    ###########
+    # Menubar #
+    ###########
+
+    image {
+      function = BOX
+      detail   = "menubar"
+      file     = "assets/line.png"
+      border   = {0, 0, 0, 1}
+    }
+
+    #########
+    # Menus #
+    #########
+
+    image {
+      function = BOX
+      state    = PRELIGHT
+      detail   = "menu_scroll_arrow_up"
+      file     = "assets/line.png"
+    }
+
+    image {
+      function = BOX
+      detail   = "menu_scroll_arrow_up"
+      file     = "assets/line.png"
+      border   = {0, 0, 0, 1}
+    }
+
+    image {
+      function = BOX
+      state    = PRELIGHT
+      detail   = "menu_scroll_arrow_down"
+      file     = "assets/line.png"
+    }
+
+    image {
+      function = BOX
+      detail   = "menu_scroll_arrow_down"
+      file     = "assets/line.png"
+      border   = {0, 0, 1, 0}
+    }
+
+    ###########
+    # Entries #
+    ###########
+
+
+    image {
+      function = SHADOW
+      state    = ACTIVE
+      detail   = "entry"
+      file     = "assets/entry-active.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = SHADOW
+      state    = INSENSITIVE
+      detail   = "entry"
+      file     = "assets/entry-insensitive.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = SHADOW
+      detail   = "entry"
+      file     = "assets/entry.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "entry_bg"
+      file     = "assets/entry-background.png"
+    }
+
+    image {
+      function = FLAT_BOX
+      state    = INSENSITIVE
+      detail   = "entry_bg"
+      file     = "assets/entry-background-insensitive.png"
+    }
+
+    image {
+      function = FLAT_BOX
+      detail   = "entry_bg"
+      file     = "assets/entry-background.png"
+    }
+    #########
+    # Spins #
+    #########
+
+    # Spin-Up LTR
+
+    image {
+      function        = BOX
+      state           = NORMAL
+      detail          = "spinbutton_up"
+      file            = "assets/spin-ltr-up.png"
+      border          = {1, 4, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    image {
+      function        = BOX
+      state           = PRELIGHT
+      detail          = "spinbutton_up"
+      file            = "assets/spin-ltr-up-hover.png"
+      border          = {1, 4, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    image {
+      function        = BOX
+      state           = ACTIVE
+      detail          = "spinbutton_up"
+      file            = "assets/spin-ltr-up-active.png"
+      border          = {1, 4, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    image {
+      function        = BOX
+      state           = INSENSITIVE
+      detail          = "spinbutton_up"
+      file            = "assets/spin-ltr-up-insensitive.png"
+      border          = {1, 4, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up-insensitive.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    # Spin-Up RTL
+
+    image {
+      function        = BOX
+      state           = NORMAL
+      detail          = "spinbutton_up"
+      file            = "assets/spin-rtl-up.png"
+      border          = {4, 1, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    image {
+      function        = BOX
+      state           = PRELIGHT
+      detail          = "spinbutton_up"
+      file            = "assets/spin-rtl-up-hover.png"
+      border          = {4, 1, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    image {
+      function        = BOX
+      state           = ACTIVE
+      detail          = "spinbutton_up"
+      file            = "assets/spin-rtl-up-hover.png"
+      border          = {4, 1, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    image {
+      function        = BOX
+      state           = INSENSITIVE
+      detail          = "spinbutton_up"
+      file            = "assets/spin-rtl-up-insensitive.png"
+      border          = {4, 1, 4, 0}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-up-insensitive.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    # Spin-Down LTR
+
+    image {
+      function        = BOX
+      state           = NORMAL
+      detail          = "spinbutton_down"
+      file            = "assets/spin-ltr-down.png"
+      border          = {1, 4, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    image {
+      function        = BOX
+      state           = PRELIGHT
+      detail          = "spinbutton_down"
+      file            = "assets/spin-ltr-down-hover.png"
+      border          = {1, 4, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    image {
+      function        = BOX
+      state           = ACTIVE
+      detail          = "spinbutton_down"
+      file            = "assets/spin-ltr-down-active.png"
+      border          = {1, 4, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    image {
+      function        = BOX
+      state           = INSENSITIVE
+      detail          = "spinbutton_down"
+      file            = "assets/spin-ltr-down-insensitive.png"
+      border          = {1, 4, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down-insensitive.png"
+      overlay_stretch = FALSE
+      direction       = LTR
+    }
+
+    # Spin-Down RTL
+
+    image {
+      function        = BOX
+      state           = NORMAL
+      detail          = "spinbutton_down"
+      file            = "assets/spin-rtl-down.png"
+      border          = {4, 1, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    image {
+      function        = BOX
+      state           = PRELIGHT
+      detail          = "spinbutton_down"
+      file            = "assets/spin-rtl-down-hover.png"
+      border          = {4, 1, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    image {
+      function        = BOX
+      state           = ACTIVE
+      detail          = "spinbutton_down"
+      file            = "assets/spin-rtl-down-active.png"
+      border          = {4, 1, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    image {
+      function        = BOX
+      state           = INSENSITIVE
+      detail          = "spinbutton_down"
+      file            = "assets/spin-rtl-down-insensitive.png"
+      border          = {4, 1, 1, 4}
+      stretch         = TRUE
+      overlay_file    = "assets/spin-down-insensitive.png"
+      overlay_stretch = FALSE
+      direction       = RTL
+    }
+
+    ##############
+    # Scrollbars #
+    ##############
+
+    image {
+      function    = BOX
+      detail      = "bar"
+      file        = "assets/progressbar-horz.png"
+      stretch     = TRUE
+      border      = {2, 2, 1, 1}
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = BOX
+      detail      = "bar"
+      file        = "assets/progressbar-vert.png"
+      stretch     = TRUE
+      border      = {1, 1, 2, 2}
+      orientation = VERTICAL
+    }
+
+    #############
+    # Treeviews #
+    #############
+
+    # Disable active the column highlight
+    # We need to match specific cells or we break stuff
+    # Looking at you deadbeef
+
+    image {
+      function = FLAT_BOX
+      detail   = "cell_even_sorted"
+      state    = NORMAL
+    }
+
+    image {
+      function = FLAT_BOX
+      detail   = "cell_odd_sorted"
+      state    = NORMAL
+    }
+
+    # Disable all the other shadows
+    # This prevents the Raleigh effect
+    image {
+      function = SHADOW
+    }
+
+  }
+
+}
+
+style "menubar" {
+
+  # Needed to fix Firefox's menubar text
+  bg[NORMAL]      = @dark_bg_color
+  text[NORMAL]    = @dark_fg_color
+  fg[NORMAL]      = @dark_fg_color
+  bg[SELECTED]    = @dark_bg_color
+  fg[SELECTED]    = shade(0.9, @dark_fg_color)
+
+}
+
+style "menubar_item" {
+
+  xthickness = 3
+  ythickness = 4
+
+  fg[NORMAL]      = @dark_fg_color
+  fg[PRELIGHT]    = @dark_fg_color
+  text[NORMAL]    = @dark_fg_color
+
+  engine "pixmap" {
+    image {
+      function    = BOX
+      state       = PRELIGHT
+      file        = "assets/menubar-item-active.png"
+      border      = {0, 0, 0, 3}
+    }
+  }
+
+}
+
+style "menu" {
+
+  xthickness = 0
+  ythickness = 0
+
+  bg[NORMAL]      = @base_color
+  bg[INSENSITIVE] = @base_color
+  bg[PRELIGHT]    = @base_color
+  bg[SELECTED]    = @selected_bg_color
+
+}
+
+style "menu_item" {
+
+  xthickness = 3
+  ythickness = 4
+
+  bg[PRELIGHT]   = @selected_bg_color
+  # Chromium uses this setting
+  bg[SELECTED]   = @selected_bg_color
+
+  fg[PRELIGHT]   = @selected_fg_color
+  # Some widgets use text, we need to handle that
+  text[NORMAL]   = @fg_color
+  text[PRELIGHT] = @selected_fg_color
+
+  # Unfortunately we can't tell regular and menu checks/radios apart
+  # Without the heirarchy
+  engine "pixmap" {
+
+    #################
+    # Check Buttons #
+    #################
+
+    image {
+      function        = CHECK
+      state           = NORMAL
+      shadow          = OUT
+      overlay_file    = "assets/menu-checkbox.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = PRELIGHT
+      shadow          = OUT
+      overlay_file    = "assets/menu-checkbox-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = ACTIVE
+      shadow          = OUT
+      overlay_file    = "assets/menu-checkbox.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = INSENSITIVE
+      shadow          = OUT
+      overlay_file    = "assets/menu-checkbox-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = NORMAL
+      shadow          = IN
+      overlay_file    = "assets/menu-checkbox-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = PRELIGHT
+      shadow          = IN
+      overlay_file    = "assets/menu-checkbox-checked-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = ACTIVE
+      shadow          = IN
+      overlay_file    = "assets/menu-checkbox-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = INSENSITIVE
+      shadow          = IN
+      overlay_file    = "assets/menu-checkbox-checked-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = NORMAL
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-checkbox-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = PRELIGHT
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-checkbox-mixed-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = ACTIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-checkbox-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = CHECK
+      state           = INSENSITIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-checkbox-mixed-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    #################
+    # Radio Buttons #
+    #################
+
+    image {
+      function        = OPTION
+      state           = NORMAL
+      shadow          = OUT
+      overlay_file    = "assets/menu-radio.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = PRELIGHT
+      shadow          = OUT
+      overlay_file    = "assets/menu-radio-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = ACTIVE
+      shadow          = OUT
+      overlay_file    = "assets/menu-radio.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = INSENSITIVE
+      shadow          = OUT
+      overlay_file    = "assets/menu-radio-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = NORMAL
+      shadow          = IN
+      overlay_file    = "assets/menu-radio-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = PRELIGHT
+      shadow          = IN
+      overlay_file    = "assets/menu-radio-checked-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = ACTIVE
+      shadow          = IN
+      overlay_file    = "assets/menu-radio-checked.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = INSENSITIVE
+      shadow          = IN
+      overlay_file    = "assets/menu-radio-checked-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = NORMAL
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-radio-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = PRELIGHT
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-radio-mixed-hover.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = ACTIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-radio-mixed.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = OPTION
+      state           = INSENSITIVE
+      shadow          = ETCHED_IN
+      overlay_file    = "assets/menu-radio-mixed-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+
+
+  }
+
+}
+
+style "separator_menu_item" {
+
+  xthickness = 0
+  ythickness = 0
+
+  engine "pixmap" {
+    image {
+      function = BOX
+      file     = "assets/line.png"
+    }
+  }
+
+}
+
+style "button_label" {
+  fg[PRELIGHT] = @selected_fg_color
+  fg[ACTIVE] = @selected_fg_color
+}
+
+style "misc_button_label" {
+  fg[PRELIGHT] = @fg_color
+  fg[ACTIVE] = @fg_color
+}
+
+style "button" {
+
+  xthickness = 2
+  ythickness = 2
+
+  fg[PRELIGHT] = @selected_fg_color
+  fg[ACTIVE] = @selected_fg_color
+  font_name = "Bold"
+
+  # For the sake of sanity style buttons this way
+  engine "pixmap" {
+
+    ###########
+    # Buttons #
+    ###########
+
+    image {
+      function = BOX
+      state    = NORMAL
+      file     = "assets/button.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = BOX
+      state    = PRELIGHT
+      shadow   = OUT
+      file     = "assets/button-hover.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    # Don't add hover effect on pressed buttons
+    image {
+      function = BOX
+      state    = PRELIGHT
+      shadow   = IN
+      file     = "assets/button-active.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = BOX
+      state    = ACTIVE
+      file     = "assets/button-active.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = BOX
+      state    = INSENSITIVE
+      file     = "assets/button-insensitive.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+  }
+}
+
+style "link_button" {
+
+  # Disable the button effect, leave just the link
+  engine "pixmap" {
+    image {
+      function = BOX
+    }
+  }
+
+}
+
+style "entry" {
+
+  # We set this same as the border of the border of the entry
+  # This way theres no overlap
+  xthickness = 4
+  ythickness = 4
+
+}
+
+style "combobox" {
+
+  xthickness = 6
+  ythickness = 4
+
+  # This affects only the button beside an entry
+  GtkButton::inner-border = {0, 0, 0, 0}
+
+}
+
+style "combobox_cellview" {
+  text[NORMAL]   = @fg_color
+  text[PRELIGHT] = @fg_color
+}
+
+style "combobox_entry" {
+
+  # Since one side of the button is missing, we need to shift the arrow a little to the right
+  GtkButton::inner-border = {0, 1, 0, 0}
+
+  engine "pixmap" {
+
+    #############
+    # LTR entry #
+    #############
+
+    image {
+      function  = SHADOW
+      state     = NORMAL
+      detail    = "entry"
+      file      = "assets/combo-entry-ltr-entry.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = SHADOW
+      state     = ACTIVE
+      detail    = "entry"
+      file      = "assets/combo-entry-ltr-entry-active.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = SHADOW
+      state     = INSENSITIVE
+      detail    = "entry"
+      file      = "assets/combo-entry-ltr-entry-insensitive.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    #############
+    # RTL entry #
+    #############
+
+    image {
+      function  = SHADOW
+      state     = NORMAL
+      detail    = "entry"
+      file      = "assets/combo-entry-rtl-entry.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function  = SHADOW
+      state     = ACTIVE
+      detail    = "entry"
+      file      = "assets/combo-entry-rtl-entry-active.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function  = SHADOW
+      state     = INSENSITIVE
+      detail    = "entry"
+      file      = "assets/combo-entry-rtl-entry-insensitive.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    ##############
+    # LTR button #
+    ##############
+
+    image {
+      function  = BOX
+      state     = NORMAL
+      detail    = "button"
+      file      = "assets/combo-entry-ltr-button.png"
+      border    = {0, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = BOX
+      state     = PRELIGHT
+      detail    = "button"
+      file      = "assets/combo-entry-ltr-button-hover.png"
+      border    = {0, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = BOX
+      state     = ACTIVE
+      detail    = "button"
+      file      = "assets/combo-entry-ltr-button-active.png"
+      border    = {0, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = BOX
+      state     = INSENSITIVE
+      detail    = "button"
+      file      = "assets/combo-entry-ltr-button-insensitive.png"
+      border    = {0, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    ##############
+    # RTL button #
+    ##############
+
+    image {
+      function  = BOX
+      state     = NORMAL
+      detail    = "button"
+      file      = "assets/combo-entry-rtl-button.png"
+      border    = {4, 0, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function  = BOX
+      state     = PRELIGHT
+      detail    = "button"
+      file      = "assets/combo-entry-rtl-button-hover.png"
+      border    = {4, 0, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function  = BOX
+      state     = ACTIVE
+      detail    = "button"
+      file      = "assets/combo-entry-rtl-button-active.png"
+      border    = {4, 0, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function  = BOX
+      state     = INSENSITIVE
+      detail    = "button"
+      file      = "assets/combo-entry-rtl-button-insensitive.png"
+      border    = {4, 0, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+  }
+
+}
+
+style "combo_button_padding" {
+
+  # Since one side of the button is missing, we need to shift the arrow a little to the right
+  # This is the same thing we've done above but the combo, unlike the combobox,
+  # uses padding the same way as a button
+  GtkButton::inner-border = {6, 8, 4, 4}
+
+}
+
+style "notebook" {
+
+  xthickness = 5
+  ythickness = 2
+
+}
+
+style "notebook_viewport" {
+  bg[NORMAL] = @base_color
+}
+
+style "notebook_bg" {
+  bg[NORMAL]      = @base_color
+  bg[PRELIGHT]    = @base_color
+  bg[INSENSITIVE] = @base_color
+}
+
+style "notebook_entry" {
+
+  engine "pixmap" {
+
+    image {
+      function = SHADOW
+      state    = ACTIVE
+      detail   = "entry"
+      file     = "assets/notebook-entry-active.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = SHADOW
+      state    = INSENSITIVE
+      detail   = "entry"
+      file     = "assets/notebook-entry-insensitive.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = SHADOW
+      detail   = "entry"
+      file     = "assets/notebook-entry.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+  }
+}
+
+style "normal_bg" {
+  bg[NORMAL]      = @bg_color
+  bg[PRELIGHT]    = @bg_color
+  bg[INSENSITIVE] = mix (0.6, @bg_color, @base_color)
+}
+
+style "normal_entry" {
+
+  engine "pixmap" {
+
+    image {
+      function = SHADOW
+      state    = ACTIVE
+      detail   = "entry"
+      file     = "assets/entry-active.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = SHADOW
+      state    = INSENSITIVE
+      detail   = "entry"
+      file     = "assets/entry-insensitive.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = SHADOW
+      detail   = "entry"
+      file     = "assets/entry.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+  }
+}
+
+style "notebook_combo" {
+
+  engine "pixmap" {
+
+    #############
+    # LTR entry #
+    #############
+
+    image {
+      function  = SHADOW
+      state     = NORMAL
+      detail    = "entry"
+      file      = "assets/notebook-combo-entry-ltr-entry.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = SHADOW
+      state     = ACTIVE
+      detail    = "entry"
+      file      = "assets/notebook-combo-entry-ltr-entry-active.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = SHADOW
+      state     = INSENSITIVE
+      detail    = "entry"
+      file      = "assets/notebook-combo-entry-ltr-entry-insensitive.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    #############
+    # RTL entry #
+    #############
+
+    image {
+      function  = SHADOW
+      state     = NORMAL
+      detail    = "entry"
+      file      = "assets/notebook-combo-entry-rtl-entry.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function  = SHADOW
+      state     = ACTIVE
+      detail    = "entry"
+      file      = "assets/notebook-combo-entry-rtl-entry-active.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function  = SHADOW
+      state     = INSENSITIVE
+      detail    = "entry"
+      file      = "assets/notebook-combo-entry-rtl-entry-insensitive.png"
+      border    = {4, 4, 4, 4}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+  }
+
+}
+
+style "textview" {
+  bg[NORMAL] = @base_color
+}
+
+style "scale_horz" {
+
+  engine "pixmap" {
+
+    image {
+      function    = BOX
+      detail      = "trough-upper"
+      file        = "assets/scale-horz-trough.png"
+      border      = {10, 10, 0, 0}
+      stretch     = TRUE
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough-lower"
+      file        = "assets/scale-horz-trough-active.png"
+      border      = {10, 10, 0, 0}
+      stretch     = TRUE
+    }
+
+  }
+
+}
+
+style "scale_vert" {
+
+  engine "pixmap" {
+
+    image {
+      function    = BOX
+      detail      = "trough-upper"
+      file        = "assets/scale-vert-trough.png"
+      border      = {0, 0, 10, 10}
+      stretch     = TRUE
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough-lower"
+      file        = "assets/scale-vert-trough-active.png"
+      border      = {0, 0, 10, 10}
+      stretch     = TRUE
+    }
+
+  }
+
+}
+
+style "progressbar" {
+
+  xthickness = 1
+  ythickness = 1
+
+  fg[PRELIGHT] = @selected_fg_color
+
+  engine "pixmap" {
+
+    image {
+      function    = BOX
+      detail      = "trough"
+      file        = "assets/progressbar-horz-trough.png"
+      border      = {3, 3, 2, 2}
+      stretch     = TRUE
+      orientation = HORIZONTAL
+    }
+
+    image {
+      function    = BOX
+      detail      = "trough"
+      file        = "assets/progressbar-vert-trough.png"
+      border      = {2, 2, 3, 3}
+      stretch     = TRUE
+      orientation = VERTICAL
+    }
+
+  }
+
+}
+
+style "treeview_header" {
+
+  xthickness = 1
+  ythickness = 0
+
+  fg[NORMAL]   = mix(0.5, @fg_color, @base_color)
+  fg[PRELIGHT] = mix(0.5, mix(0.5, @fg_color, @base_color), @fg_color)
+
+  font_name    = "Bold"
+
+  GtkButton::inner-border = {5, 5, 0, 1}
+
+  engine "pixmap" {
+
+    image {
+      function  = BOX
+      file      = "assets/treeview-separator-ltr.png"
+      border    = {0, 1, 0, 1}
+      stretch   = TRUE
+      direction = LTR
+    }
+
+    image {
+      function  = BOX
+      file      = "assets/treeview-separator-rtl.png"
+      border    = {1, 0, 0, 1}
+      stretch   = TRUE
+      direction = RTL
+    }
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      overlay_file    = "assets/treeview-pan-up.png"
+      overlay_stretch = FALSE
+      arrow_direction = UP
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      overlay_file    = "assets/treeview-pan-up-hover.png"
+      overlay_stretch = FALSE
+      arrow_direction = UP
+    }
+
+    image {
+      function        = ARROW
+      state           = ACTIVE
+      overlay_file    = "assets/treeview-pan-up-active.png"
+      overlay_stretch = FALSE
+      arrow_direction = UP
+    }
+
+    image {
+      function        = ARROW
+      state           = NORMAL
+      overlay_file    = "assets/treeview-pan-down.png"
+      overlay_stretch = FALSE
+      arrow_direction = DOWN
+    }
+
+    image {
+      function        = ARROW
+      state           = PRELIGHT
+      overlay_file    = "assets/treeview-pan-down-hover.png"
+      overlay_stretch = FALSE
+      arrow_direction = DOWN
+    }
+
+    image {
+      function        = ARROW
+      state           = ACTIVE
+      overlay_file    = "assets/treeview-pan-down-active.png"
+      overlay_stretch = FALSE
+      arrow_direction = DOWN
+    }
+
+  }
+
+}
+
+style "scrolled_window" {
+
+  engine "pixmap" {
+    image {
+      function = SHADOW
+      file     = "assets/frame.png"
+      border   = {1, 1, 1, 1}
+      stretch  = TRUE
+    }
+  }
+
+}
+
+style "frame" {
+
+  engine "pixmap" {
+
+    image {
+      function = SHADOW
+      file     = "assets/frame.png"
+      border   = {0, 0, 0, 0}
+      stretch  = TRUE
+    }
+
+    image {
+      function       = SHADOW_GAP
+      file           = "assets/frame.png"
+      border         = {0, 0, 0, 0}
+      stretch        = TRUE
+      gap_start_file = "assets/border.png"
+      gap_end_file   = "assets/border.png"
+    }
+
+  }
+
+}
+
+style "toolbar_button" {
+
+  xthickness = 2
+  ythickness = 2
+
+  GtkButton::inner-border = {2, 2, 2, 2}
+  
+      engine "pixmap" {
+    image {
+      function = BOX
+      state    = PRELIGHT
+      shadow   = OUT
+      file     = "assets/toolbar-button-hover.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    # Don't add hover effect on pressed buttons
+    image {
+      function = BOX
+      state    = PRELIGHT
+      shadow   = IN
+      file     = "assets/toolbar-button-active.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+
+    image {
+      function = BOX
+      state    = ACTIVE
+      file     = "assets/toolbar-button-active.png"
+      border   = {4, 4, 4, 4}
+      stretch  = TRUE
+    }
+   }
+}
+
+style "toolbar_separator" {
+
+  GtkWidget::wide-separators  = 1
+  GtkWidget::separator-width  = 1
+  GtkWidget::separator-height = 1
+
+  engine "pixmap" {
+    image {
+      function = BOX
+      file     = "assets/line.png"
+    }
+  }
+
+}
+
+style "inline_toolbar" {
+
+  GtkToolbar::button-relief = GTK_RELIEF_NORMAL
+
+  engine "pixmap" {
+    image {
+      function = SHADOW
+      file     = "assets/frame-inline.png"
+      border   = {1, 1, 0, 1}
+      stretch  = TRUE
+    }
+  }
+
+}
+
+style "tooltip" {
+
+  xthickness = 13
+  ythickness = 13
+
+  bg[NORMAL]   = @tooltip_bg_color
+  fg[NORMAL]   = @tooltip_fg_color
+  bg[SELECTED] = @tooltip_bg_color
+
+}
+
+
+style "disable_shadow" {
+
+  engine "pixmap" {
+    image {
+      function = SHADOW
+    }
+  }
+
+}
+
+style "disable_separator" {
+
+  xthickness = 0
+  ythickness = 0
+
+  GtkWidget::wide-separators = 1
+
+}
+
+# Text Style
+style "text" = "default" {
+  engine "murrine" { textstyle = 0 }
+}
+
+style "menu_text" = "menu_item" {
+  engine "murrine" { textstyle = 0 }
+}
+
+# Default style, containing most of the stuff
+class "GtkWidget"            style "default"
+
+# Override padding,          style and colour
+class "GtkButton"            style "button"
+class "GtkLinkButton"        style "link_button"
+class "GtkEntry"             style "entry"
+class "GtkOldEditable"       style "entry"
+class "GtkNotebook"          style "notebook"
+class "GtkHScale"            style "scale_horz"
+class "GtkVScale"            style "scale_vert"
+class "GtkProgressBar"       style "progressbar"
+class "GtkScrolledWindow"    style "scrolled_window"
+class "GtkFrame"             style "frame"
+class "GtkSeparatorToolItem" style "toolbar_separator"
+class "GtkMenuBar"           style "menubar"
+class "GtkMenu"              style "menu"
+class "GtkTextView"          style "textview"
+
+widget_class "*<GtkButton>*<GtkLabel>"               style "button_label"
+widget_class "*<GtkCheckButton>*<GtkLabel>"          style "misc_button_label"
+
+# Menu and menubar items
+widget_class "*<GtkMenuItem>*"              style "menu_item"
+widget_class "*<GtkMenuBar>.<GtkMenuItem>*" style "menubar_item"
+widget_class "*<GtkSeparatorMenuItem>*"     style "separator_menu_item"
+
+# Frames in statusbars look ugly, let's disable them
+widget_class "*<GtkStatusbar>*<GtkFrame>" style "disable_shadow"
+# Disable the frame around poor Wilbert too
+widget_class "*<GimpToolbox>*<GtkFrame>"  style "disable_shadow"
+
+# Treeview buttons
+widget_class "*<GtkTreeView>*<GtkButton>*" style "treeview_header"
+
+# Give the file chooser toolbar a border
+widget_class "*<GtkFileChooserDefault>*<GtkToolbar>" style "inline_toolbar"
+
+# Fix padding on regular comboboxes
+widget_class "*<GtkComboBox>.<GtkButton>" style "combobox"
+# And disable separators on them
+widget_class "*<GtkComboBox>.<GtkButton>*<GtkSeparator>" style "disable_separator"
+
+# Join together the ComboBoxEntry entry and button
+widget_class "*<GtkComboBoxEntry>*"  style "combobox_entry"
+
+# Join the Combo entry and button
+widget_class "*<GtkCombo>*"  style "combobox_entry"
+# Tweak the padding on the button a little bit because it uses it a bit differently
+widget_class "*<GtkCombo>.<GtkButton>" style "combo_button_padding"
+
+# Alas we cannot do the same for ComboBoxText because there isn't a way to apply the style to only
+# the comboboxes that have an entry inside
+
+# Toolbar buttons have different paddings
+widget_class "*<GtkToolbar>*<GtkButton>" style "toolbar_button"
+
+# Notebooks are white, act accordingly
+widget_class "*<GtkNotebook>*<GtkEntry>"                        style "notebook_entry"
+widget_class "*<GtkNotebook>*<GtkProgressBar>"                  style "notebook_bg"
+widget_class "*<GtkNotebook>*<GtkSpinButton>"                   style "notebook_bg"
+widget_class "*<GtkNotebook>*<GtkScrolledWindow>*<GtkViewport>" style "notebook_bg"
+widget_class "*<GtkNotebook>*<GimpRuler>"                       style "notebook_bg"
+widget_class "*<GtkNotebook>.<GimpDisplayShell>*<GtkEventBox>"  style "notebook_bg"
+widget_class "*<GtkNotebook>*<GtkComboBoxEntry>*"               style "notebook_combo"
+widget_class "*<GtkNotebook>*<GtkCombo>*"                       style "notebook_combo"
+
+# However, stuff inside eventboxes inside notebooks is grey again, react
+widget_class "*<GtkNotebook>*<GtkEventBox>*<GtkEntry>"             style "normal_entry"
+widget_class "*<GtkNotebook>*<GtkEventBox>*<GtkProgressBar>"       style "normal_bg"
+widget_class "*<GtkNotebook>*<GtkEventBox>*<GtkSpinButton>"        style "normal_bg"
+widget_class "*<GtkNotebook>*<GtkEventBox>*<GtkComboBoxEntry>*"    style "combobox_entry"
+widget_class "*<GtkNotebook>*<GtkEventBox>*<GtkCombo>*"            style "combobox_entry"
+widget_class "*<GtkNotebook>*<GtkEventBox>*<GtkCombo>.<GtkButton>" style "combo_button_padding"
+
+# ComboBoxes tend to draw the button label with text[] instead of fg[], we need to fix that
+widget_class "*<GtkComboBox>*<GtkCellView>" style "combobox_cellview"
+
+# GTK tooltips
+widget "gtk-tooltip*" style "tooltip"
+
+# Fixes ugly text shadows for insensitive text
+widget_class "*<GtkLabel>"                                          style "text"
+widget_class "*<GtkMenu>*<GtkLabel>"                                style "menu_text" 
+widget_class "*<GtkComboBox>*<GtkCellLayout>"                       style "text"
+widget_class "*<GtkNotebook>*<GtkLabel>"                            style "text"
+widget_class "*<GtkNotebook>*<GtkCellLayout>"                       style "text"

@@ -1,0 +1,23 @@
+/*********************
+ * App Notifications *
+ *********************/
+.app-notification,
+.app-notification.frame {
+  @extend %osd;
+
+  padding: 10px;
+  border-radius: 0 0 5px 5px;
+  background-color: $osd_bg_color;
+  background-image: linear-gradient(to bottom, transparentize(black, 0.8),
+                                               transparent 2px);
+  background-clip: padding-box;
+
+  &:backdrop {
+    background-image: none;
+    transition: $backdrop_transition;
+  }
+
+  button { @extend %osd_button; }
+
+  border { border: none; }
+}

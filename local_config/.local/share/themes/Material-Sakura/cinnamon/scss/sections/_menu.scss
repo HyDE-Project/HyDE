@@ -1,0 +1,238 @@
+.menu {
+    @extend %shared-menu;
+
+    min-width: 100px;
+    margin: 4px;
+}
+// scale view right click menu
+.popup-combo-menu {
+    @extend %shared-menu;
+}
+.popup-menu-arrow {
+    icon-size: 1.14em;
+}
+// applet submenus
+// the margin here causes the 'bounce' on opening the sub menu
+// does StScrollBar need to be here? No as long as it isnt themed differently to staging
+.popup-sub-menu {
+    @extend %bg-grad-to-bottom;
+
+    border: 1px solid $interior_border;
+    border-radius: $roundness;
+    padding: 8px;
+}
+.popup-menu-content {
+    padding: 0;
+}
+// individual menu entries are themed here
+.popup-menu-item {
+    @extend %menu-buttons-shared;
+
+    color: $dark_fg_color;
+    spacing: .5em;
+    &:active {
+        background-color: $selected_bg_color;
+        border-radius: $roundness;
+        color: $selected_fg_color;
+    }
+    &:insensitive {
+        font-style: italic;
+    }
+}
+.popup-combobox-item {
+    @extend %menu-buttons-shared;
+}
+// sliders and separators in menus
+.popup-separator-menu-item {
+    @extend %separator-shared;
+
+    -gradient-direction: horizontal;
+}
+.popup-slider-menu-item {
+    @extend %slider-shared;
+}
+.popup-device-menu-item {
+    spacing: .5em;
+}
+.popup-inactive-menu-item {
+    font-style: italic;
+    color: $dark_fg_color;
+}
+.popup-subtitle-menu-item {
+    font-weight: bold;
+    font-size: 1em;
+}
+.popup-menu-icon {
+    icon-size: 1.14em;
+}
+.popup-menu-item-dot {
+}
+.popup-submenu-menu-item:open {
+}
+.popup-alternating-menu-item:alternate {
+    font-weight: bold;
+}
+// toggles in menus
+.toggle-switch {
+    width: 64px;
+    height: 22px;
+}
+.toggle-switch-us {
+    background-image: url(assets/toggle-off-us.svg);
+    &:checked {
+        background-image: url(assets/toggle-on-us.svg);
+    }
+}
+.toggle-switch-intl {
+    background-image: url(assets/toggle-off-intl.svg);
+    &:checked {
+        background-image: url(assets/toggle-on-intl.svg);
+    }
+}
+.nm-menu-item-icons {
+    spacing: .5em;
+    icon-size: 1.14em;
+}
+// all the remaining code is for the main menu applet
+.menu-favorites-box {
+    @extend %bg-grad-to-right;
+
+    padding: 0.8em;
+    border: 1px solid $interior_border;
+    border-radius: $roundness;
+    transition-duration: 150;
+    spacing: 1em;
+}
+// This is for the stock menu in Cinnamon 4.0.2 and later - adds more vfade to the scrollable favorites box and fakes a seperator from the system buttons with a bottom border.
+.menu-favorites-scrollbox {
+    padding-bottom: 1em;
+    border-bottom: 1px solid;
+    border-color: $interior_border;
+    &.vfade {
+        -st-vfade-offset: 136px;
+    }   
+}
+.menu-favorites-button {
+    @extend %menu-buttons-shared;
+
+    &:hover {
+        background-color: $selected_bg_color;
+        border-radius: $roundness;
+        color: $selected_fg_color;
+    }
+}
+.menu-categories-box {
+    padding: 0.8em;
+}
+.menu-applications-inner-box {
+    @extend %bg-grad-to-right;
+
+    padding: 0.8em;
+    border-radius: $roundness;
+    border: 1px solid $interior_border;
+    StScrollView {
+        @extend %menu-context-shared;
+    }
+}
+.menu-applications-outer-box {
+    @extend %bg-grad-to-right;
+
+    padding: 0.8em;
+    border: 1px solid $interior_border;
+    border-radius: $roundness;
+}
+.menu-application-button {
+    @extend %menu-buttons-shared;
+
+    &:highlighted {
+        font-weight: bold;
+    }
+}
+.menu-application-button-selected {
+    @extend %menu-buttons-shared;
+
+    background-color: $selected_bg_color;
+    border-radius: $roundness;
+    color: $selected_fg_color;
+    &:highlighted {
+        font-weight: bold;
+    }
+}
+.menu-application-button-label {
+    @extend %menu-button-label-shared;
+}
+.menu-category-button {
+	@extend %menu-buttons-shared;
+}
+.menu-category-button-greyed {
+    @extend %menu-buttons-shared;
+
+    color: $dark_fg_color;
+    font-style: italic;
+}
+.menu-category-button-selected {
+    @extend %menu-buttons-shared;
+
+    background-color: $selected_bg_color;
+    border-radius: $roundness;
+    color: $selected_fg_color;
+    &:hover {
+    }
+}
+.menu-category-button-label {
+    @extend %menu-button-label-shared;
+}
+// in the stock menu app descriptions are shown at the base of the menu
+.menu-selected-app-box {
+    padding: 2px 8px;
+    text-align: right;
+    &:rtl {
+        text-align: left;
+    }
+}
+.menu-selected-app-title {
+    font-weight: bold;
+    font-size: 0.8em;
+}
+.menu-selected-app-description {
+    max-width: 150px;
+    font-size: 0.8em;
+}
+// the menus search box
+.menu-search-box {
+    &:ltr {
+        padding-left: 30px;
+        padding-bottom: 5px;
+        padding-top: 5px;
+    }
+    &:rtl {
+        padding-right: 30px;
+        padding-bottom: 5px;
+        padding-top: 5px;
+    }
+}
+#menu-search-entry {
+    @extend %dialog-entry;
+
+    margin-bottom: 0.5em;
+    &:focus {
+        border: 1px solid $selected_border;
+    }
+    &:hover {
+    }
+}
+.menu-search-entry-icon {
+    icon-size: 1em;
+    color: $tooltip_fg_color;
+}
+// new styleclasses for the Cinnamon 4.0.0 stock menu - note this menu was dropped in Cinnamon 4.0.1 but retain styling in case it's revived.
+.menu-top-box {
+  spacing: 10px; }
+.menu-systembuttons-box {
+  padding-bottom: 12px;
+  padding-top: 12px;
+  margin-bottom: 0.5em; }
+// cinnVIIstark menu right click favourites context menu
+.starkmenu-favorites-box .menu-context-menu, .menu-context-menu {
+        @extend %menu-context-shared;
+}

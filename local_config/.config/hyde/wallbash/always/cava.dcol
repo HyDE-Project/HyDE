@@ -1,0 +1,14 @@
+${cacheDir}/wallbash/cava|${WALLBASH_SCRIPTS}/cava.sh
+
+[color]
+
+ gradient = 1
+ gradient_count = 8
+ gradient_color_1 = '#<wallbash_1xa1>'
+ gradient_color_2 = '#<wallbash_1xa2>'
+ gradient_color_3 = '#<wallbash_2xa3>'
+ gradient_color_4 = '#<wallbash_2xa4>'
+ gradient_color_5 = '#<wallbash_3xa5>'
+ gradient_color_6 = '#<wallbash_3xa6>'
+ gradient_color_7 = '#<wallbash_4xa7>'
+ gradient_color_8 = '#<wallbash_4xa8>'

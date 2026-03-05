@@ -1,0 +1,83 @@
+# ==============================================================================
+# GIMP SPECIFIC SETTINGS
+# ==============================================================================
+
+# TODO: This could really look nicer
+style "gimp_spin_scale" {
+
+  # Spin background
+  bg[NORMAL] = @base_color
+
+  engine "pixmap" {
+
+    image {
+      function        = BOX
+      state           = NORMAL
+      detail          = "spinbutton_up"
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = BOX
+      state           = PRELIGHT
+      detail          = "spinbutton_up"
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = BOX
+      state           = ACTIVE
+      detail          = "spinbutton_up"
+      overlay_file    = "assets/spin-up.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = BOX
+      state           = INSENSITIVE
+      detail          = "spinbutton_up"
+      overlay_file    = "assets/spin-up-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = BOX
+      state           = NORMAL
+      detail          = "spinbutton_down"
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = BOX
+      state           = PRELIGHT
+      detail          = "spinbutton_down"
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = BOX
+      state           = ACTIVE
+      detail          = "spinbutton_down"
+      overlay_file    = "assets/spin-down.png"
+      overlay_stretch = FALSE
+    }
+
+    image {
+      function        = BOX
+      state           = INSENSITIVE
+      detail          = "spinbutton_down"
+      overlay_file    = "assets/spin-down-insensitive.png"
+      overlay_stretch = FALSE
+    }
+
+ }
+
+}
+
+
+# Disable spin button assets for GimpSpinScale
+class "GimpSpinScale" style "gimp_spin_scale"

@@ -1,0 +1,82 @@
+/************
+ * Toolbars *
+ ************/
+%toolbar {
+  padding: 4px;
+  background-color: $bg_color;
+}
+
+toolbar {
+  @extend %toolbar;
+
+  padding: 4px 3px 3px 4px;
+
+  // on OSD
+  .osd & { background-color: transparent; }
+
+  // stand-alone OSD toolbars
+  &.osd {
+    padding: 13px;
+    border: none;
+    border-radius: 5px;
+    background-color: $osd_bg_color;
+
+    &.left,
+    &.right,
+    &.top,
+    &.bottom { border-radius: 0; } // positional classes for `attached` osd toolbars
+  }
+
+  // toolbar separators
+  &.horizontal separator { margin: 0 7px 1px 6px; }
+  &.vertical separator { margin: 6px 1px 7px 0; }
+
+  &:not(.inline-toolbar):not(.osd) {
+    switch,
+    scale,
+    entry,
+    spinbutton,
+    button {
+      margin-right: 1px;
+      margin-bottom: 1px;
+    }
+  }
+}
+
+//searchbar, location-bar & inline-toolbar
+.inline-toolbar {
+  @extend %toolbar;
+
+  @extend %darkbar;
+
+  padding: 3px;
+  border-width: 0 1px 1px;
+  border-radius: 0  0 5px 5px;
+}
+
+searchbar > revealer > box {
+  @extend %toolbar;
+
+  @extend %darkbar;
+
+  border-width: 0 0 1px;
+  padding: 5px;
+}
+
+%darkbar {
+  border-style: solid;
+  border-color: $borders_color;
+  $_bg: mix($bg_color, $borders_color, 70%);
+  background-color: $_bg;
+
+  &:backdrop {
+    border-color: $backdrop_borders_color;
+    background-color: $backdrop_dark_fill;
+    box-shadow: none;
+    transition: $backdrop_transition;
+  }
+}
+
+searchbar{
+  background: $base_color;
+}

@@ -1,0 +1,12 @@
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <g id="shade_focused_prelight" transform="matrix(3.7795 0 0 -3.7795 -335 294.52)">
+  <rect x="88.635" y="73.692" width="4.2333" height="4.2333" ry="4.4796e-6" opacity="0" stroke-width=".1255" style="paint-order:markers stroke fill"/>
+  <path d="m90.752 77.66c1.0229 0 1.8521-0.8292 1.8521-1.8521s-0.82921-1.8521-1.8521-1.8521c-1.0229 0-1.8521 0.8292-1.8521 1.8521s0.82921 1.8521 1.8521 1.8521" fill="#0b67ef" fill-rule="evenodd"/>
+  <path d="m90.752 77.528c0.9498 0 1.7198-0.77002 1.7198-1.7198 0-0.94983-0.76998-1.7198-1.7198-1.7198-0.94983 0-1.7198 0.76996-1.7198 1.7198 0 0.9498 0.76998 1.7198 1.7198 1.7198" fill="#4285f4" fill-rule="evenodd"/>
+  <g transform="matrix(.26458 0 0 .26458 88.635 73.956)" fill="#c0e3ff">
+   <g transform="translate(-81,-967)" fill="#c0e3ff">
+    <path transform="translate(-41,867)" d="m130 104-2 3h1v4h2v-4h1z" color="#000000" fill="#000000" opacity=".5" style="text-decoration-line:none;text-indent:0;text-transform:none"/>
+   </g>
+  </g>
+ </g>
+</svg>

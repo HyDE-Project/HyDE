@@ -1,0 +1,17 @@
+<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="ax" x1="51.611" x2="80.996" y1="141.02" y2="141.02" gradientTransform="matrix(.47644 0 0 .48411 -19.593 -56.273)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#0860f2" offset="0"/>
+  </linearGradient>
+  <linearGradient id="bg" x1="66.31" x2="66.31" y1="155.48" y2="126.56" gradientTransform="matrix(.47644 0 0 .44953 -19.593 -50.897)" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#000000" stop-opacity=".25" offset="0"/>
+   <stop stop-color="#000000" stop-opacity=".1" offset="1"/>
+  </linearGradient>
+ </defs>
+ <rect x="3.9988" y="4.0018" width="16" height="16" color="#000000" fill="none" stroke-width=".93592"/>
+ <rect x="3.9966" y="3.9983" width="16" height="16" rx="7.9998" ry="7.9999" color="#000000" opacity=".12" stroke-width=".48026"/>
+ <rect x="4.9967" y="4.9956" width="14" height="14" rx="6.9998" ry="7.0002" color="#000000" fill="url(#ax)" stroke-width="0"/>
+ <rect x="4.9967" y="4.9956" width="14" height="14" rx="6.9998" ry="7.0002" color="#000000" fill="#ffffff" opacity=".1" stroke-width="0"/>
+ <rect x="4.9967" y="5.9977" width="14" height="13" rx="6.9998" ry="6.5002" color="#000000" fill="url(#bg)" stroke-width="0"/>
+ <rect x="10" y="9.9998" width="4" height="4" rx="1.9989" ry="2" color="#000000" fill="#ffffff" filter="url(#bp)"/>
+</svg>

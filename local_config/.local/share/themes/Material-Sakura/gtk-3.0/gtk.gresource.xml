@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gresources>
+	<gresource prefix='/org/numixproject/gtk'>
+		<file preprocess='to-pixdata'>assets/checkbox-checked-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-checked-insensitive-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-checked-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-checked.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-mixed-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-mixed-insensitive-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-mixed-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-mixed.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-unchecked-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-unchecked-insensitive-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-unchecked-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/checkbox-unchecked.svg</file>
+		<file preprocess='to-pixdata'>assets/grid-selection-checked-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/grid-selection-checked.svg</file>
+		<file preprocess='to-pixdata'>assets/grid-selection-unchecked-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/grid-selection-unchecked.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-checkbox-checked-hover.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-checkbox-checked-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-checkbox-checked.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-checkbox-unchecked.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-checkbox-mixed-hover.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-checkbox-mixed-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-checkbox-mixed.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-radio-checked-hover.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-radio-checked-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-radio-checked.svg</file>
+		<file preprocess='to-pixdata'>assets/menuitem-radio-unchecked.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-checked-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-checked-insensitive-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-checked-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-checked.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-mixed-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-mixed-insensitive-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-mixed-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-mixed.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-unchecked-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-unchecked-insensitive-dark.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-unchecked-insensitive.svg</file>
+		<file preprocess='to-pixdata'>assets/radio-unchecked.svg</file>
+		<file preprocess='to-pixdata'>assets/pane-handle.png</file>
+        <file preprocess='to-pixdata'>assets/pane-handle@2.png</file>
+		<file>dist/gtk.css</file>
+		<file>dist/gtk-dark.css</file>
+	</gresource>
+</gresources>

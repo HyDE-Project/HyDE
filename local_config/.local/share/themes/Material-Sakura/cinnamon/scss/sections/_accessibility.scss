@@ -1,0 +1,46 @@
+// on screen keyboard
+#keyboard {
+    background-color: $dark_bg_color_trans;
+}
+.keyboard-key {
+    @extend %shared-button;
+
+    &:grayed {
+        color: $selected_fg_color;
+        border-color: $selected_fg_color;
+    }
+    &:checked {
+        border-color: $selected_border;
+    }
+    &:hover {
+        @extend %shared-button-hover;
+    }
+    &:active {
+        @extend %shared-button-active;
+    }
+}
+.keyboard-layout {
+    spacing: 8px;
+    padding: 8px;
+}
+.keyboard-row {
+    spacing: 16px;
+}
+.keyboard-subkeys {
+    color: $dark_fg_color;
+    padding: 4px;
+    -arrow-border-radius: $roundness;
+    -arrow-background-color: $dark_bg_color;
+    -arrow-border-width: 1px;
+    -arrow-border-color: $dark_fg_color;
+    -arrow-base: 16px;
+    -arrow-rise: 8px;
+    -boxpointer-gap: 4px;
+}
+// desktop zoom feature
+.magnifier-zoom-region {
+    border: 3px solid $exterior_border;
+    &.full-screen {
+        border-width: 0;
+    }
+}

@@ -1,0 +1,12 @@
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <g id="titlebutton-minimize-backdrop" transform="matrix(1 0 0 -1 -253 -252.64)">
+  <rect x="253" y="-268.64" width="16" height="16" ry="1.6931e-5" opacity="0" stroke-width=".47432" style="paint-order:markers stroke fill"/>
+  <g transform="translate(254,-267.64)" enable-background="new">
+   <g transform="translate(-5,-1033.4)" fill="#bababa" fill-rule="evenodd">
+    <path d="m12 1047.4c3.8659 0 6.9999-3.134 6.9999-7s-3.134-7-6.9999-7c-3.866 0-7.0001 3.134-7.0001 7s3.134 7 7.0001 7"/>
+    <path d="m12 1046.9c3.5898 0 6.4999-2.9103 6.4999-6.5001 0-3.5899-2.9102-6.5-6.4999-6.5-3.5899 0-6.5001 2.9101-6.5001 6.5 0 3.5898 2.9102 6.5001 6.5001 6.5001"/>
+   </g>
+  </g>
+ </g>
+ <path d="m8 12-2-3h1v-4h2v4h1z" color="#000000" fill="#000000" opacity=".5" style="text-decoration-line:none;text-indent:0;text-transform:none"/>
+</svg>

@@ -1,0 +1,119 @@
+// scale and expo views
+#overview {
+    spacing: 12px;
+}
+.workspace-thumbnails {
+    spacing: 14px;
+}
+.workspace-add-button {
+    background-image: url(assets/add-workspace.png);
+    height: 200px;
+    width: 35px;
+    border-radius-topleft: 10px;
+    border-radius-bottomleft: 10px;
+    transition-duration: 150;
+    background-color: $info_bg_color;
+    border-top: 1px solid;
+    border-left: 1px solid;
+    border-bottom: 1px solid;
+    border-color: $button_border;
+    &:hover {
+        background-image: url(assets/add-workspace-hover.png);
+        border-color: $selected_border;
+    }
+    &:active {
+        background-image: url(assets/add-workspace.png);
+        border-color: $selected_border;
+        background-color: $success_color;
+    }
+}
+.workspace-close-button {
+    background-image: url(assets/close-window.svg);
+    height: 32px;
+    width: 32px;
+    -cinnamon-close-overlap: 20px;
+}
+// this always looks better semi transparent
+.workspace-overview-background-shade {
+    background-color: $dark_bg_color_trans;
+}
+.window-caption {
+    @extend %bg-grad-to-bottom;
+
+    padding: 4px 6px;
+    border: 1px solid $exterior_border;
+    border-radius: $roundness;
+    color: $dark_fg_color;
+    -cinnamon-caption-spacing: 4px;
+    &:focus, &#selected {
+        @extend %selected-bg-grad-to-bottom;
+
+        color: $selected_fg_color;
+        border: 1px solid $selected_border;
+    }
+}
+.window-border {
+    border: 1px solid $selected_border;
+}
+.window-close {
+    background-image: url(assets/close-window.svg);
+    height: 32px;
+    width: 32px;
+    -cinnamon-close-overlap: 20px;
+    &:rtl {
+        -st-background-image-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    }
+}
+.window-close-area {
+    background-image: url(assets/trash-icon.png);
+    background-size: 100px;
+    background-color: $dark_bg_color_trans;
+    border: 1px solid $exterior_border;
+    border-bottom-width: 0;
+    border-radius: 20px 20px 0 0;
+    height: 120px;
+    width: 400px;
+}
+.expo-background {
+    @extend %bg-grad-to-bottom;
+}
+.expo-workspace-thumbnail-frame {
+    border: 1px solid $exterior_border;
+    &#active {
+        border: 1px solid $selected_border;
+    }
+}
+.expo-workspaces-name-entry {
+    @extend %bg-grad-to-bottom;
+
+    padding: 4px 6px;
+    height: 1.5em;
+    border: 1px solid $exterior_border;
+    border-radius: $roundness;
+    selected-color: $selected_fg_color;
+    selection-background-color: $selected_bg_color;
+    color: $dark_fg_color;
+    text-align: center;
+    &#selected {
+        @extend %selected-bg-grad-to-bottom;
+
+        color: $selected_fg_color;
+        selected-color: $dark_fg_color;
+        selection-background-color: $selected_bg_color;
+        border: 1px solid $selected_border;
+    }
+    &:focus {
+        border: 1px solid $selected_border;
+    }
+    &:hover {
+        border: 1px solid $selected_border;
+    }
+}
+// hot corners animation
+.ripple-box {
+    width: 104px;
+    height: 104px;
+    background-image: url(assets/corner-ripple.png);
+    background-color: $selected_bg_color;
+    border-radius: 52px;
+}

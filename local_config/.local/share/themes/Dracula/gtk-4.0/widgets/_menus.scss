@@ -1,0 +1,127 @@
+/*********
+ * Menus *
+ *********/
+menubar,
+.menubar {
+  background-color: $headerbar_color;
+  color: $headerbar_fg_color;
+  padding: 0px;
+  box-shadow: inset 0 -1px transparentize(black, 0.9);
+
+  > item {
+    min-height: 16px;
+    padding: 4px 8px;
+
+    &:hover { //Seems like it :hover even with keyboard focus
+      box-shadow: inset 0 -3px $selected_bg_color;
+    }
+
+    &:disabled {
+      color: $insensitive_fg_color;
+      box-shadow: none;
+    }
+  }
+}
+
+menu,
+.menu,
+.context-menu {
+  margin: 4px;
+  padding: 2px 0px;
+  background-color: $menu_color;
+  border: 1px solid $borders_color; // adds borders in a non composited env
+  font: initial;
+  
+  .csd & { border: none; }  // axes borders in a composited env
+
+  &:backdrop { background-color: $backdrop_menu_color; }
+
+  menuitem {
+    min-height: 16px;
+    min-width: 40px;
+    padding: 4px 6px;
+    text-shadow: none;
+
+    &:hover {
+      color: $selected_fg_color;
+      background-color: $selected_bg_color;
+    }
+
+    &:disabled {
+      color: $insensitive_fg_color;
+      &:backdrop { color: $backdrop_insensitive_color; }
+    }
+
+    &:backdrop,
+    &:backdrop:hover {
+      color: $backdrop_fg_color;
+      background-color: transparent;
+    }
+
+    // submenu indicators
+    arrow {
+      min-height: 16px;
+      min-width: 16px;
+
+      &:dir(ltr) {
+        -gtk-icon-source: -gtk-icontheme('pan-end-symbolic');
+        margin-left: 10px;
+      }
+
+      &:dir(rtl) {
+        -gtk-icon-source:-gtk-icontheme('pan-end-symbolic-rtl');
+        margin-right: 10px;
+      }
+    }
+
+    // avoids labels color being overridden, see
+    // https://bugzilla.gnome.org/show_bug.cgi?id=767058
+    label { &:dir(rtl), &:dir(ltr) { color: inherit; }}
+  }
+
+  // overflow arrows
+  > arrow {
+    @include button(undecorated);
+
+    min-height: 16px;
+    min-width: 16px;
+    padding: 4px;
+    background-color: $menu_color;
+    border-radius: 0;
+
+    &.top {
+      margin-top: -6px;
+      border-bottom: 1px solid mix($fg_color, $base_color, 10%);
+      -gtk-icon-source: -gtk-icontheme('pan-up-symbolic');
+    }
+
+    &.bottom {
+      margin-bottom: -6px;
+      border-top: 1px solid mix($fg_color, $base_color, 10%);
+      -gtk-icon-source: -gtk-icontheme('pan-down-symbolic');
+    }
+
+    &:hover { background-color: mix($fg_color, $base_color, 10%); }
+
+    &:backdrop { background-color: $backdrop_menu_color; }
+
+    &:disabled {
+      color: transparent;
+      background-color: transparent;
+      border-color: transparent ;
+    }
+  }
+}
+
+menuitem {
+  accelerator { color: gtkalpha(currentColor,0.55); }
+
+  check,
+  radio {
+    min-height: 16px;
+    min-width: 16px;
+
+    &:dir(ltr) { margin-right: 7px; }
+    &:dir(rtl) { margin-left: 7px; }
+  }
+}

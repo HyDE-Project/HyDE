@@ -1,0 +1,201 @@
+// on screen messages and input boxes
+.modal-dialog {
+    @extend %bg-grad-to-right;
+
+    border: 1px solid $exterior_border;
+    border-radius: $roundness;
+    color: $dark_fg_color;
+    padding: 16px 20px;
+}
+.modal-dialog-button-box {
+    spacing: 16px;
+}
+.modal-dialog-button {
+    @extend %shared-button;
+
+    min-width: 5em;
+    min-height: 1em;
+    padding: $spacing_plus2;
+    &:hover {
+        @extend %shared-button-hover;
+    }
+    &:focus {
+        color: $selected_fg_color;
+    }
+    &:active {
+        @extend %shared-button-active;
+    }
+    &:pressed {
+        @extend %shared-button-active;
+    }
+    &:disabled {
+        color: rgb(60, 60, 60);
+    }
+}
+// run dialog (ALT-F2)
+.run-dialog-label {
+    color: $dark_fg_color;
+    padding-bottom: 10px;
+}
+.run-dialog-error-label {
+    color: $selected_bg_color;
+}
+.run-dialog-error-box {
+    padding-top: 15px;
+    spacing: 5px;
+}
+.run-dialog-completion-box {
+    padding-left: 15px;
+}
+.run-dialog-entry {
+        @extend %dialog-entry;
+
+        &:focus  {
+            border: 1px solid $selected_border;
+        }
+}
+.run-dialog {
+    border-radius: $roundness;
+    padding: 16px 20px;
+}
+// removable media dialogs
+.cinnamon-mount-operation-icon {
+    icon-size: 4.8em;
+}
+.mount-password-reask {
+    color: $warning_color;
+}
+.show-processes-dialog {
+    spacing: 24px;
+}
+.mount-question-dialog {
+    spacing: 24px;
+}
+.show-processes-dialog-subject {
+    @extend %shared-dialogs-subject;
+
+    &:rtl {
+        @extend %shared-dialogs-subject-rtl;
+    }
+}
+.mount-question-dialog-subject {
+    @extend %shared-dialogs-subject;
+
+    &:rtl {
+        @extend %shared-dialogs-subject-rtl;
+    }
+}
+.show-processes-dialog-description {
+    @extend %shared-dialogs-description;
+
+    &:rtl {
+        padding-right: 17px;
+    }
+}
+.mount-question-dialog-description {
+    @extend %shared-dialogs-description;
+
+    &:rtl {
+        padding-right: 17px;
+    }
+}
+.show-processes-dialog-app-list {
+    max-height: 200px;
+    padding-top: 24px;
+    padding-left: 49px;
+    padding-right: 32px;
+    &:rtl {
+        padding-right: 49px;
+        padding-left: 32px;
+    }
+}
+.show-processes-dialog-app-list-item {
+    color: $dark_fg_color;
+    &:hover {
+        color: $dark_fg_color;
+    }
+    &:ltr {
+        padding-right: 1em;
+    }
+    &:rtl {
+        padding-left: 1em;
+    }
+}
+.show-processes-dialog-app-list-item-icon {
+    &:ltr {
+        padding-right: 17px;
+    }
+    &:rtl {
+        padding-left: 17px;
+    }
+}
+.show-processes-dialog-app-list-item-name {
+}
+// displayed when media keys are pressed.
+.osd-window {
+    @extend %osd-shared;
+
+    spacing: 1em;
+    padding: 16px;
+    .level {
+        height: 0.7em;
+        border-radius: 0.3em;
+        background-color: $scrollbar_bg_color;
+    }
+    .level-bar {
+        border-radius: 0.3em;
+        background-color: $scrollbar_slider_hover_color;
+    }
+}
+.info-osd, .workspace-osd, .overview-empty-placeholder {
+    @extend %osd-shared;
+
+    font-size: 1.5em;
+    text-align: center;
+    padding: 8px 10px;
+}
+// this is an full screen overlay that is displayed with any cinnamon OSD or modal dialog which needs to always be semi transparent
+.lightbox {
+    background-color: $dark_bg_color_trans;
+}
+// applet 'about' OSDs - inherits from modal dialogs
+.about-content {
+    min-width: 250px;
+    min-height: 150px;
+    spacing: 8px;
+    padding-bottom: 16px;
+}
+.about-title {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+.about-uuid {
+    font-size: 0.8em;
+}
+.about-icon {
+    padding-right: 20px;
+}
+.about-scrollBox {
+    border: 1px solid $exterior_border;
+    border-radius: $roundness;
+}
+.about-scrollBox-innerBox {
+    padding: 1.2em;
+    spacing: 1.2em;
+}
+.about-description {
+    padding-top: 4px;
+}
+.about-version {
+    padding-left: 7px;
+}
+// dialog box for the cinnamon debug utility
+#LookingGlassDialog {
+    @extend %bg-grad-to-bottom;
+
+    spacing: 4px;
+    padding: 8px;
+    border: 1px solid $exterior_border;
+    border-radius: $roundness;
+    color: $dark_fg_color;
+}

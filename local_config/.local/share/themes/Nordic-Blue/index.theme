@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Nordic-bluish-accent-standard-buttons
+Comment=Dark theme created using the awesome Nord color pallete
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Nordic-bluish-accent-standard-buttons
+MetacityTheme=Nordic-bluish-accent-standard-buttons
+IconTheme=Zafiro-icons
+ButtonLayout=:minimize,maximize,close

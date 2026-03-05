@@ -1,0 +1,46 @@
+/***************
+ * Popovers   *
+ ***************/
+
+popover.background {
+  padding: 2px;
+  border-radius: 5px;
+  background-color: $popover_bg_color;
+
+  .csd &, & { border: 1px solid $borders_color; }
+
+  box-shadow: 0 1px 6px transparentize(black, 0.6);
+
+  &:backdrop {
+    background-color: $backdrop_bg_color;
+    box-shadow: none;
+  }
+
+  > list,
+  > .view,
+  > toolbar {
+    border-style: none;
+    background-color: transparent;
+  }
+
+  .csd &, & {
+    &.touch-selection,
+    &.magnifier {
+      @extend %osd;
+
+      border: 1px solid transparentize(white, 0.9);
+
+      button { @extend %osd_button };
+    }
+
+    &.osd { @extend %osd; }
+  }
+
+  separator { margin: 3px; }
+
+  list separator { margin: 0px; }
+  list row { padding: 8px; }
+
+  checkbutton,
+  radiobutton { @extend modelbutton.flat; }
+}

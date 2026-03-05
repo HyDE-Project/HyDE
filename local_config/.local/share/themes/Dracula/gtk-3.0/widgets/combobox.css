@@ -1,0 +1,48 @@
+/******************
+ * combobox entry *
+ ******************/
+GtkComboBox*:hover {
+color: @selected_fg_color;
+}
+
+GtkComboBox .button {
+    padding: 5px 6px 5px 6px;
+}
+
+GtkComboBox.combobox-entry .button {
+    border-color: alpha(black,0.2);
+}
+
+GtkComboBox.combobox-entry .button:hover {
+    border-color: transparent;
+    border-top-color: alpha(white,0.2);
+    border-bottom-color: alpha(black,0.2);
+}
+
+.primary-toolbar GtkComboBox.combobox-entry .entry,
+.primary-toolbar GtkComboBox.combobox-entry .entry:active,
+.primary-toolbar GtkComboBox.combobox-entry .entry:focus,
+.primary-toolbar GtkComboBox.combobox-entry .entry:insensitive,
+GtkComboBox.combobox-entry .entry,
+GtkComboBox.combobox-entry .entry:active,
+GtkComboBox.combobox-entry .entry:focus,
+GtkComboBox.combobox-entry .entry:insensitive {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.primary-toolbar GtkComboBox.combobox-entry .button,
+.primary-toolbar GtkComboBox.combobox-entry .button:hover,
+.primary-toolbar GtkComboBox.combobox-entry .button:active,
+.primary-toolbar GtkComboBox.combobox-entry .button:insensitive,
+GtkComboBox.combobox-entry .button,
+GtkComboBox.combobox-entry .button:hover,
+GtkComboBox.combobox-entry .button:active,
+GtkComboBox.combobox-entry .button:insensitive {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-left-width: 0px;
+}
+.linked-entry .entry {
+    border-color: alpha(white,0.2);
+}

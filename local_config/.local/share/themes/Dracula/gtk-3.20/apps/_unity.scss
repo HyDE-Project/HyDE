@@ -1,0 +1,170 @@
+/********
+* Unity *
+*********/
+
+$unity_color: #31363D; /* Unity window border color */
+$unity_text_color: #fefefe; /* Unity window text color */
+$backdrop_unity_text_color: darken($unity_text_color,10%); /* Backdrop Unity window text color */
+$unity_panel_color: darken($unity_color, 10%); /* Unity panel color #454D50 */
+
+UnityDecoration {
+
+  /* Border properties (top, right, bottom, left) */
+  -UnityDecoration-extents: 28px 1px 1px 1px;/* the size of the decorations  */
+  -UnityDecoration-input-extents: 10px;/* the extra size of the input areas */
+
+  /* Shadows settings */
+  -UnityDecoration-shadow-offset-x: 1px;/* Size property, the shadow x offset */
+  -UnityDecoration-shadow-offset-y: 1px;/* Size property, the shadow y offset */
+  -UnityDecoration-active-shadow-color: rgba (0, 0, 0, 0.647);/* Color property, active window shadow color */
+  -UnityDecoration-active-shadow-radius: 8px;/* Size property, active window shadow radius */
+  -UnityDecoration-inactive-shadow-color: rgba (0, 0, 0, 0.647);/* Color property, inactive windows shadow color */
+  -UnityDecoration-inactive-shadow-radius: 5px;/* Size property, inactive windows shadow radius */
+
+  /* Glow applied to the selected scaled window */
+  -UnityDecoration-glow-size: 8px;/* Size property, size of glow */
+  -UnityDecoration-glow-color: $selected_bg_color;/* Color property of the glow */
+
+  /* Title settings */
+  -UnityDecoration-title-indent: 10px;/* Size property, left indent of the title */
+  -UnityDecoration-title-fade: 35px;/* Size property, space of the title that can be faded */
+  -UnityDecoration-title-alignment: 0.0;/* Float from 0.0 to 1.0, to align the title */
+  background-color: $unity_color;
+  color: $unity_text_color;
+
+  .top {
+    padding: 0 5px 0 5px;
+    border-radius: 4px 4px 0px 0px;
+    box-shadow: none;
+    border: 1px solid $unity_color;
+    border-bottom-width: 0;
+    background-color: $unity_color;
+    color: $unity_text_color;
+    border-top: 1px solid rgba(255,255,255,0.1);
+
+    &:backdrop {
+      border-bottom-width: 0;
+      color: $backdrop_unity_text_color;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .menuitem {
+      color: $unity_text_color;
+
+      &:backdrop {
+        color: $backdrop_unity_text_color;
+      }
+    }
+  }
+}
+
+
+UnityDecoration.left,
+UnityDecoration.right {
+  background-repeat: repeat-x;
+  background-color: darken($unity_color, 0.6);
+  background-size: 1px 120px;
+  background-clip: border-box;
+  background-image: linear-gradient(to bottom,
+                                    $unity_color,
+                                    darken($unity_color, 0.6)
+                                    );
+}
+
+UnityDecoration.bottom {
+  background-size: 1px;
+  background-repeat: repeat-x;
+  background-color: darken($unity_color, 0.6);
+}
+
+UnityDecoration.left:backdrop,
+UnityDecoration.right:backdrop,
+UnityDecoration.bottom:backdrop {
+  background-size: 1px;
+  background-repeat: repeat-x;
+}
+
+
+/**************
+* Unity Panel *
+***************/
+
+UnityPanelWidget,
+.unity-panel {
+background-color: $unity_panel_color;
+color: $unity_text_color;
+}
+
+
+UnityPanelWidget:backdrop,
+.unity-panel:backdrop {
+  color: $backdrop_unity_text_color;
+}
+
+.unity-panel.menuitem,
+.unity-panel .menuitem {
+  border-width: 0 1px;
+  color: $unity_text_color;
+}
+
+.unity-panel.menubar,
+.unity-panel .menubar {
+  color: $unity_text_color;
+}
+
+.unity-panel.menu.menubar,
+.unity-panel .menu .menubar {
+  background-color: $unity_panel_color;
+  color: $unity_text_color;
+}
+
+.unity-panel.menubar:backdrop,
+.unity-panel .menubar *:backdrop {
+  color: $backdrop_fg_color;
+}
+
+.unity-panel.menubar.menuitem,
+.unity-panel.menubar .menuitem {
+  padding: 3px 5px;
+  border-width: 1px;
+  border-style: solid;
+  border: none;
+  background: none;
+  color: $unity_text_color;
+  box-shadow: none;
+}
+
+.unity-panel.menubar.menuitem:hover,
+.unity-panel.menubar .menuitem:hover {
+  border-radius: 0;
+  background-color: darken($unity_color, 1.05);
+  color: $unity_text_color;
+  box-shadow: none;
+}
+
+.unity-panel.menubar .menuitem *:hover {
+  color: white;
+  box-shadow: none;
+}
+
+.unity-panel.menubar .menuitem.separator,
+.unity-panel.menubar.menuitem.separator {
+  border: none;
+  color: $borders_color;
+}
+
+/* Force Quit */
+SheetStyleDialog.unity-force-quit {
+   background-color: $base_color;
+}
+
+
+@keyframes playbackmenuitem_spinner {
+  to { -gtk-icon-transform: rotate(1turn); }
+}
+
+.menu IdoPlaybackMenuItem.menuitem:active {
+  -gtk-icon-source: -gtk-icontheme("process-working-symbolic");
+  animation: playbackmenuitem_spinner 1s infinite linear;
+  color: $selected_bg_color;
+}

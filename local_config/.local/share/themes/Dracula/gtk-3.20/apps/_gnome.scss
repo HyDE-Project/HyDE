@@ -1,0 +1,229 @@
+/************
+ * Nautilus *
+ ************/
+.nautilus-window {
+  // .frame{
+  //   *:selected, *:selected:backdrop{
+  //     background: transparent;
+  //     color: $selected_bg_color;
+  //   } 
+  //   *:selected:backdrop{
+  //     label {
+  //       color: $backdrop_selected_bg_color;
+  //     }
+  //   }
+  // }
+  paned {
+    > separator { background-image: none; }
+  }
+  .sidebar {
+    background-color: transparent;
+    background-image: none;
+
+    &:backdrop {
+      background-color: transparent;
+      background-image: none;
+    }
+
+    .list-row {
+      button {
+        border: none;
+        background-color: transparentize(darken($base_color,3%),0.05);
+        &:active {
+          background-color: transparentize($selected_bg_color,0.25);
+        }
+      }
+
+      &:selected {
+        background-color: transparentize($selected_bg_color,0.25);
+        &:hover {
+          background-color: transparentize($selected_bg_color,0.1);
+        }
+      }
+
+      &:hover {
+        background-color: transparentize($base_color,0.5);
+        &:active {
+          background-color: transparentize($selected_bg_color,0.1);
+        }
+      }
+    }
+  }
+  &.background {
+    background-color: transparentize(darken($base_color,3%),0.05);
+    &:backdrop {
+      background-color: transparentize(darken($base_color,3%),0.05);
+    }
+  }
+
+  notebook {
+    > stack:only-child { // the :not(:only-child) is for "hidden" notebooks
+        background-color: $base_color;
+        &:backdrop { background-color: $backdrop_base_color; }
+    }
+  }
+
+  searchbar {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  
+ .searchbar-container {
+    margin-top: -1px;
+  }
+
+  .titlebar {
+    .search{
+      border: 1px solid $borders_color;
+      border-radius: 3px;
+    }
+  }
+
+  .path-bar-box {
+    .dim-label {
+      color: transparent;
+    }
+    widget > .text-button:last-child{
+      @include button(active-header, transparent, $purple);
+      &:backdrop label{
+        color: $backdrop_selected_bg_color;
+      }
+    }
+    button {
+      transition: all 100ms ease-in;
+      margin-left: -5px;
+      &:backdrop {
+        &:hover,
+        &:active,
+        &:checked {
+          @include button(active-header);
+          label {
+            color: $backdrop_selected_bg_color;
+          }
+        }
+      }
+    }
+  }
+
+  .path-buttons-box {
+
+    .dim-label { color: transparent; }
+  
+    //Buttons before current path
+    button {
+      .horizontal  .dim-label { color: $headerbar_fg_color; }
+      &:hover, &:focus {
+        .dim-label { color: $purple; }
+      }
+    }
+    button > .horizontal > image { 
+      padding: 0px 6px; 
+      border-right: none;
+    }
+    .current-dir  {
+      label { padding: 0px 12px; }
+
+      label, image { @include button(active-header, transparentize($selected_bg_color, 0.3), $purple); }
+    }
+
+    button.current-dir:only-child {
+      image {
+        margin-right: -6px;
+        padding: 0px 0px 0px 6px;
+        border-radius: 7px 0px 0px 7px;
+      }
+      label { border-radius: 0px 7px 7px 0px; }
+    }
+  }
+}
+
+.nautilus-circular-button {
+  border-radius: 20px;
+  -gtk-outline-radius: 20px;
+}
+
+.disk-space-display {
+  border: 2px solid;
+
+  .unknown {
+    background-color: #888a85;
+    border-color: darken(#888a85, 20%);
+  }
+
+  .used {
+    background-color: #9FB0B9;
+    border-color: darken(#9FB0B9, 20%);
+  }
+
+  .free {
+    background-color: #D8D8D8;
+    border-color: darken(#D8D8D8, 20%);
+  }
+}
+
+.nautilus-desktop {
+
+  color: $fg_color;
+
+  .nautilus-canvas-item {
+    border-radius: 5px;
+    color: $selected_fg_color;
+    text-shadow: 1px 1px transparentize(black, 0.4);
+
+    &:active {
+      color: $fg_color;
+      text-shadow: none;
+    }
+
+    &:hover {
+      color: $fg_color;
+      text-shadow: none;
+    }
+
+    &:selected {
+      color: $selected_fg_color;
+      text-shadow: none;
+    }
+
+    .dim-label {
+      &:selected {
+        color: $selected_fg_color;
+      }
+    }
+  }
+
+  .nautilus-list {
+
+    .dim-label {
+      &:selected {
+        color: $selected_fg_color;
+      }
+    }
+  }
+}
+
+/*********
+ * Gedit *
+ *********/
+.gedit-search-slider {
+     padding: 4px;
+     border-radius: 0 0 3px 3px;
+     border: 0;
+     background-color: $bg_color;
+ }
+
+ 
+/*********
+ * Gnucash *
+*********/
+#gnc-id-main-window {
+  entry.gnc-class-register-foreground {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+  } 
+  .arrow.button.toggle {
+    transition: none;
+    box-shadow: none;
+    &:hover { border-color: $selected_bg_color; }
+  } 
+}

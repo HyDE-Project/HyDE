@@ -1,0 +1,10 @@
+<svg width="16" height="16" version="1.1" xmlns="http://www.w3.org/2000/svg">
+ <g transform="matrix(3.7795,0,0,3.7795,-265,-585.52)">
+  <g transform="matrix(.26465 0 0 .26465 70.643 154.92)" enable-background="new">
+   <g transform="translate(-5,-1033.4)" fill-rule="evenodd">
+    <path d="m11.003 1048.4c3.865 0 6.9982-3.1332 6.9982-6.9983s-3.1333-6.9984-6.9982-6.9984c-3.865 0-6.9983 3.1332-6.9983 6.9984 0 3.865 3.1333 6.9983 6.9983 6.9983" fill="#caa124" stroke-width=".77778"/>
+   </g>
+  </g>
+  <rect x="71.173" y="156.77" width="2.1167" height=".52917" ry=".26458" opacity=".5"/>
+ </g>
+</svg>

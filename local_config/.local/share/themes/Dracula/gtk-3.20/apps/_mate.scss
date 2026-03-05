@@ -1,0 +1,39 @@
+//
+// Mate OSD Window
+//
+
+MsdOsdWindow.background.osd {
+    border-radius: 2px;
+    border: 1px solid $borders_color;
+  
+    .progressbar {
+      background-color: $selected_bg_color;
+      border: none;
+      border-color: $selected_bg_color;
+      border-radius: 5px;
+    }
+    .trough {
+      background-color: darken($osd_bg_color, 5%);
+      border: none;
+      border-radius: 5px;
+    }
+  }
+
+//
+// Mate Panel
+//
+
+.mate-panel-menu-bar {
+  border-radius: 0;
+  button {
+    border-radius: 0;
+    &, &:hover {
+      background-color: transparent;
+      color: $fg_color;
+    }
+    &:active, &:checked {
+      box-shadow: 0 -2px 0 $selected_bg_color inset;
+      color: $fg_color;
+    }
+  }
+}
