@@ -1,0 +1,52 @@
+$HOME/.config/hypr/themes/theme.conf|> $HOME/.config/hypr/themes/colors.conf
+
+exec = gsettings set org.gnome.desktop.interface icon-theme 'Azure-Dark-Icons'
+exec = gsettings set org.gnome.desktop.interface gtk-theme 'Dracula'
+exec = gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+
+exec = hyprctl setcursor Dracula-cursors 25
+exec = gsettings set org.gnome.desktop.interface cursor-theme 'Dracula-cursors'
+exec = gsettings set org.gnome.desktop.interface cursor-size 25
+
+general {
+    gaps_in = 12
+    gaps_out = 18
+    border_size = 2
+    col.active_border = rgb(44475a) rgb(bd93f9) 90deg
+    col.inactive_border = rgba(44475aaa)
+    layout = dwindle
+    resize_on_border = true
+}
+
+group {
+    col.border_active = rgba(03edf9ff) rgba(72f1b8ff) 45deg
+    col.border_inactive = rgba(495495cc) rgba(614D85cc) 45deg
+    col.border_locked_active = rgba(03edf9ff) rgba(72f1b8ff) 45deg
+    col.border_locked_inactive = rgba(495495cc) rgba(614D85cc) 45deg
+}
+
+decoration {
+    rounding = 2
+
+    blur {
+        enabled = yes
+        size = 6
+        passes = 3
+        new_optimizations = on
+        ignore_opacity = on
+        xray = false
+    }
+
+    shadow {
+      enabled = true
+      scale = 1
+      ignore_window = true
+      offset = 1 2
+      range = 60
+      render_power = 3
+      color = rgba(1E202966)
+      color_inactive = 0x000000db
+    }
+}
+
+blurls = waybar
