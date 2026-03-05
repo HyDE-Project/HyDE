@@ -1,7 +1,0 @@
-{
-  "hyprland/language": {
-    "format": "{short}",
-    "rotate": 0,
-    "on-click": "hyde-shell keyboardswitch"
-  }
-}
