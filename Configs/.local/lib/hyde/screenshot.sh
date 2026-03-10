@@ -136,7 +136,7 @@ case $1 in
   m) take_screenshot "output" ;;
   sc) ocr_screenshot "area" "--freeze" ;;
   sq) qr_screenshot "area" "--freeze" ;;
-  c) copy_screenshot "area" ;;
+  c) copy_screenshot "area" "--freeze" ;;
   *) USAGE ;;
 esac
 
