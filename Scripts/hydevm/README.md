@@ -155,6 +155,29 @@ sudo usermod -a -G kvm $USER
 virtualisation.libvirtd.enable = true;
 ```
 
+### FreeBSD - command not found: qemu
+> [!NOTE]
+> Adopted from [Chapter 24.6. Virtualization with QEMU on FreeBSD](https://docs.freebsd.org/en/books/handbook/virtualization/#qemu-virtualization-host-guest) by @MFarabi619
+
+```bash
+# modified to not override pre-existing ones, and restore broken setups to a working default from handbook as of March 21, 2026, 1:34 PM
+sudo pkg install qemu
+
+# checks if symlink doesn't exist or points to the wrong location
+if [ "$(readlink /usr/local/bin/qemu)" != "/usr/local/bin/qemu-system-x86_64" ]; then
+  sudo ln -sf /usr/local/bin/qemu-system-x86_64 /usr/local/bin/qemu
+fi
+
+sudo sysctl net.link.tap.user_open=1
+sudo grep -qxF "net.link.tap.user_open=1" /etc/sysctl.conf || \
+echo 'net.link.tap.user_open=1' | sudo tee -a /etc/sysctl.conf
+sudo grep -qxF "add path 'tap*' mode 0660 group operator" /etc/devfs.rules || \
+printf "add path 'tap*' mode 0660 group operator\n" | sudo tee -a /etc/devfs.rules
+
+# should show window saying boot failed .... no bootable device, proves that qemu is working as intended
+qemu
+```
+
 ### Missing Dependencies
 
 - **Arch**: Script will prompt to install missing packages
@@ -193,6 +216,7 @@ HyDE uses Hyprland, which has specific requirements for VM environments. Hyprlan
 **CPU:**
 
 - Intel CPU with VT-x or AMD CPU with AMD-V
+  - *FreeBSD*: `x86_64/amd64` machines require `EPT` if *Intel* or `RVI/NPT` if AMD
 - Virtualization enabled in BIOS/UEFI
 
 **GPU & OpenGL Support:**
@@ -215,6 +239,7 @@ nixGL nix run github:HyDE-Project/HyDE
 
 **Packages (Arch):** `qemu-desktop mesa`
 **Packages (NixOS):** `qemu mesa`
+**Packages (FreeBSD):** `qemu drm-kmod`
 
 **NixOS Configuration:**
 
