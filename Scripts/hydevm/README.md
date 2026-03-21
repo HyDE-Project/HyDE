@@ -4,6 +4,7 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 
 - [HydeVM - Simplified VM Tool for HyDE Contributors](#hydevm---simplified-vm-tool-for-hyde-contributors)
   - [Hardware Requirements](#hardware-requirements)
+    - [Hardware Requirements - FreeBSD](#hardware-requirements---freebsd)
   - [Features](#features)
   - [Quick Start](#quick-start)
     - [Arch Linux](#arch-linux)
@@ -43,6 +44,22 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 
 **OpenGL:** 3.3+ support required for Hyprland
 **Note:** Tested on AMD GPU + Intel CPU. Hyprland VM support is experimental.
+
+### Hardware Requirements - FreeBSD
+
+**CPU:** `x86_64/amd64` machines require `EPT` if *Intel* or `RVI/NPT` if AMD
+
+**GPU & OpenGL Support:** From [Chapter 5.2. Graphics Drivers - FreeBSD Handbook](https://docs.freebsd.org/en/books/handbook/x11/#x-graphic-card-drivers)
+
+| *Type*                        | *License*       | *Module*                             | *Port*                                          |
+|-----------------------------|--------------|------------------------------------|-----------------------------------------------|
+| Intel®                      | Open Source  | `i915kms`                            | `graphics/drm-kmod`                             |
+| AMD®                        | Open Source  | `amdgpu` / `radeonkms`                 | `graphics/drm-kmod`                             |
+| NVIDIA®                     | Proprietary  | `nvidia-drm` / `nvidia-modeset` / `nvidia` | `graphics/nvidia-drm-kmod`, `x11/nvidia-driver`   |
+| System Console Framebuffer  | Open Source  | `scfb`                               | `x11-drivers`/`xf86-video-scfb`                   |
+| VESA BIOS Extension         | Open Source  | `vesa`                               | `x11-drivers`/`xf86-video-vesa`                   |
+| VirtualBox®                 | Open Source  | `vboxvideo`                          | `emulators`/`virtualbox-ose-additions`            |
+| VMware®                     | Open Source  | `vmwgfx`                             | `x11-drivers`/`xf86-video-vmware`                 |
 
 ## Features
 
@@ -235,7 +252,6 @@ HyDE uses Hyprland, which has specific requirements for VM environments. Hyprlan
 **CPU:**
 
 - Intel CPU with VT-x or AMD CPU with AMD-V
-  - *FreeBSD*: `x86_64/amd64` machines require `EPT` if *Intel* or `RVI/NPT` if AMD
 - Virtualization enabled in BIOS/UEFI
 
 **GPU & OpenGL Support:**
@@ -287,6 +303,7 @@ hydevm
 
 **Packages (Arch):** `qemu-desktop mesa intel-media-driver`
 **Packages (NixOS):** `qemu mesa intel-media-driver`
+**Packages (FreeBSD):** `qemu drm-kmod`
 
 **NixOS Configuration:**
 
@@ -309,6 +326,12 @@ lsmod | grep virtio
 
 # Default QEMU args should work perfectly
 hydevm
+```
+
+**FreeBSD Configuration:**
+
+```bash
+sudo pkg install qemu drm-kmod
 ```
 
 ### NVIDIA GPU + Any CPU ⚠️
@@ -356,6 +379,9 @@ glxinfo | grep "OpenGL renderer"
 # Should work with default args
 hydevm
 ```
+
+#### FreeBSD (WIP)
+TODO: cover various NVIDIA installation paths and common problems
 
 Option 3: Software Rendering (Fallback)
 
