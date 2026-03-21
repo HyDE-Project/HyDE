@@ -8,6 +8,7 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
   - [Quick Start](#quick-start)
     - [Arch Linux](#arch-linux)
     - [NixOS](#nixos)
+    - [FreeBSD](#freebsd)
   - [First-Time Setup](#first-time-setup)
   - [Usage](#usage)
     - [Basic Commands](#basic-commands)
@@ -28,7 +29,7 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
     - [Verification Steps](#verification-steps)
     - [Troubleshooting Hyprland in VM](#troubleshooting-hyprland-in-vm)
 
-**Supported Host Operating Systems:** Arch Linux, NixOS
+**Supported Host Operating Systems:** Arch Linux, NixOS, FreeBSD
 
 ## Hardware Requirements
 
@@ -53,7 +54,7 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 
 ## Quick Start
 
-### Arch Linux
+### Arch Linux & FreeBSD
 
 ```bash
 # Download and run (will auto-detect missing packages)
@@ -77,7 +78,7 @@ nix run
 When you run a new branch/commit for the first time, hydevm will:
 
 1. **OS Detection**: Automatically detects your OS and checks dependencies
-2. **Dependency Installation**: (Arch only) Prompts to install missing packages
+2. **Dependency Installation**: (Arch & FreeBSD only) Prompts to install missing packages
 3. **VM Setup**: Shows a VM window with setup instructions
 4. **HyDE Installation**: You'll need to:
    - Login as `arch` / `arch`
@@ -116,7 +117,7 @@ hydevm --clean
 # Check dependencies
 hydevm --check-deps
 
-# Install dependencies (Arch only)
+# Install dependencies (Arch & FreeBSD only)
 hydevm --install-deps
 ```
 
@@ -158,6 +159,7 @@ virtualisation.libvirtd.enable = true;
 
 - **Arch**: Script will prompt to install missing packages
 - **NixOS**: Nix will automatically install missing packages
+- **FreeBSD**: Script will prompt to install missing packages
 
 ### Clean Start
 
