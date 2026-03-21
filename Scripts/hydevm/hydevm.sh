@@ -47,7 +47,7 @@ function detect_os() {
 
 function print_usage() {
     echo "HydeVM - Simplified VM tool for HyDE contributors"
-    echo "Supports: Arch Linux, NixOS"
+    echo "Supports: Arch Linux, NixOS, and FreeBSD"
     echo ""
     echo "Usage: hydevm [OPTIONS] [BRANCH/COMMIT]"
     echo ""
@@ -75,9 +75,10 @@ function print_usage() {
     echo "  hydevm abc123           # Run specific commit"
     echo "  hydevm --persist dev    # Run dev branch with persistence"
     echo ""
-    echo "OS-specific notes:"
-    echo "  Arch Linux: Missing packages will be auto-detected and offered for install"
-    echo "  NixOS: automatically installs dependencies"
+    echo "Auto-detected OS-specific install notes:"
+    echo "  Arch Linux: Missing packages will be offered for installation via 'pacman'"
+    echo "  NixOS:      Missing packages will be installed via 'nix shell'"
+    echo "  FreeBSD:    Missing packages will be installed via 'pkg'"
 }
 
 function check_root() {
