@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # HydeVM - Simplified VM tool for HyDE contributors
-# Works on both Arch Linux and NixOS with automatic OS detection
+# Works on Arch Linux, NixOS, and FreeBSD with automatic OS detection
 
 set -e
 
@@ -67,7 +67,7 @@ function print_usage() {
     echo "  --persist               Make VM changes persistent"
     echo "  --list                  List available snapshots"
     echo "  --clean                 Clean all cached data"
-    echo "  --install-deps          Install required dependencies (Arch only)"
+    echo "  --install-deps          Install required dependencies (Arch & FreeBSD only)"
     echo "  --check-deps            Check if dependencies are installed"
     echo "  --help                  Show this help"
     echo ""
@@ -186,6 +186,103 @@ function check_arch_dependencies() {
     return 0
 }
 
+function check_freebsd_dependencies() {
+    local missing_packages=()
+
+    for package in "${FREEBSD_PACKAGES[@]}"; do
+        if ! pkg info -e "$package" > /dev/null 2>&1; then
+            missing_packages+=("$package")
+        fi
+    done
+
+    if [ ${#missing_packages[@]} -gt 0 ]; then
+        echo "❌ Missing required packages: ${missing_packages[*]}"
+        echo ""
+        read -p "Would you like to install them now? (y/N): " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            install_freebsd_packages "${missing_packages[@]}"
+        else
+            echo "   You can install them manually with: sudo pkg install ${missing_packages[*]}"
+            return 1
+        fi
+    fi
+
+    # Check if qemu is available; if not, prompt for QEMU or bhyve setup
+    if ! command -v qemu >/dev/null 2>&1; then
+        cat <<'EOF'
+⚠️  Additional system setup is required (not applied automatically).
+❌  QEMU not available.
+   You can use either QEMU or bhyve on FreeBSD.
+
+   1) QEMU
+   2) bhyve
+
+EOF
+        read -p "Choose a virtualization backend to set up (1/2, or anything else to skip): " -r
+
+        if [[ $REPLY == "1" ]]; then
+            cat <<'EOF'
+Adopted from [Chapter 24.6. Virtualization with QEMU on FreeBSD](https://docs.freebsd.org/en/books/handbook/virtualization/#qemu-virtualization-host-guest) by @MFarabi619
+   To set up QEMU, run:
+   sudo pkg install qemu
+
+   # Fix missing or broken qemu symlink
+   if [ "$(readlink /usr/local/bin/qemu)" != "/usr/local/bin/qemu-system-x86_64" ]; then
+     sudo ln -sf /usr/local/bin/qemu-system-x86_64 /usr/local/bin/qemu
+   fi
+
+   sudo sysctl net.link.tap.user_open=1
+   sudo grep -qxF "net.link.tap.user_open=1" /etc/sysctl.conf || \
+   echo 'net.link.tap.user_open=1' | sudo tee -a /etc/sysctl.conf
+   sudo grep -qxF "add path 'tap*' mode 0660 group operator" /etc/devfs.rules || \
+   printf "add path 'tap*' mode 0660 group operator\n" | sudo tee -a /etc/devfs.rules
+
+   Then test with:
+   qemu
+EOF
+        elif [[ $REPLY == "2" ]]; then
+            cat <<'EOF'
+Adopted from [Chapter 24.6. Virtualization with bhyve on FreeBSD](https://docs.freebsd.org/en/books/handbook/virtualization/#virtualization-host-bhyve) by @MFarabi619
+   To set up bhyve, run:
+   sudo kldload vmm
+
+   sudo ifconfig tap0 create
+   sudo sysctl net.link.tap.up_on_open=1
+   sudo grep -qxF "net.link.tap.up_on_open=1" /etc/sysctl.conf || \
+   echo 'net.link.tap.up_on_open=1' | sudo tee -a /etc/sysctl.conf
+   sudo grep -qxF "add path 'tap*' mode 0660 group operator" /etc/devfs.rules || \
+   printf "add path 'tap*' mode 0660 group operator\n" | sudo tee -a /etc/devfs.rules
+
+   sudo ifconfig bridge0 create
+   sudo ifconfig bridge0 addm igb0 addm tap0
+   sudo ifconfig bridge0 up
+EOF
+        else
+            echo "   Skipping virtualization backend setup."
+        fi
+    fi
+
+    # Check if /dev/vmm exists for bhyve acceleration
+    if [ ! -e /dev/vmm ]; then
+        cat <<'EOF'
+⚠️  bhyve/VMM not available. Native FreeBSD virtualization may not work.
+   Make sure the vmm module is loaded: sudo kldload vmm
+EOF
+    fi
+
+    # Check if tap access is likely unavailable for non-root users
+    if ! sysctl -n net.link.tap.user_open >/dev/null 2>&1 || [ "$(sysctl -n net.link.tap.user_open 2>/dev/null)" != "1" ]; then
+        cat <<'EOF'
+⚠️  Non-root tap access is not enabled.
+   To enable it, run: sudo sysctl net.link.tap.user_open=1
+   Then persist it in /etc/sysctl.conf.
+EOF
+    fi
+
+    return 0
+}
+
 function install_arch_packages() {
     local packages=("$@")
 
@@ -209,12 +306,28 @@ function install_arch_packages() {
     echo "✅ Packages installed successfully"
 }
 
+function install_freebsd_packages() {
+    local packages=("$@")
+
+    echo "📦 Installing missing packages: ${packages[*]}"
+
+    # Update package database
+    echo "🔄 Updating package database..."
+    sudo pkg update
+
+    # Install required packages
+    echo "📥 Installing packages..."
+    sudo pkg install -y "${packages[@]}"
+
+    echo "✅ Packages installed successfully"
+}
+
 function install_all_arch_dependencies() {
     local os
     os=$(detect_os)
 
     if [[ "$os" != "arch" ]]; then
-        echo "❌ --install-deps is only supported on Arch Linux"
+        echo "❌ --install-deps is only supported on Arch Linux & FreeBSD"
         echo "   Current OS: $os"
         exit 1
     fi
