@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # HydeVM - Simplified VM tool for HyDE contributors
 # Works on both Arch Linux and NixOS with automatic OS detection
