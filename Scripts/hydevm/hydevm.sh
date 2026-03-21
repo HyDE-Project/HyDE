@@ -10,12 +10,21 @@ CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/hydevm"
 BASE_IMAGE="$CACHE_DIR/archbase.qcow2"
 SNAPSHOTS_DIR="$CACHE_DIR/snapshots"
 HYDE_REPO="https://github.com/HyDE-Project/HyDE.git"
+
+COMMON_PACKAGES=(
+  "curl" "python" "git"
+)
+
 # Required packages for Arch Linux
 ARCH_PACKAGES=(
     "qemu-desktop"
-    "curl"
-    "python"
-    "git"
+    "${COMMON_PACKAGES[@]}"
+)
+
+# Required packages for FreeBSD
+FREEBSD_PACKAGES=(
+    "qemu"
+    "${COMMON_PACKAGES[@]}"
 )
 
 # Create cache directories
@@ -104,8 +113,11 @@ function check_dependencies() {
         "arch")
             check_arch_dependencies
             ;;
+        "freebsd")
+            check_freebsd_dependencies
+            ;;
         *)
-            echo "⚠️  Unsupported OS. This script supports Arch Linux and NixOS."
+            echo "⚠️  Unsupported OS. This script supports Arch Linux, NixOS, and FreeBSD."
             echo "   Please ensure qemu, curl, python, and git are installed."
             return 0
             ;;
