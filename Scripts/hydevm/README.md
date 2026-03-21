@@ -178,6 +178,25 @@ printf "add path 'tap*' mode 0660 group operator\n" | sudo tee -a /etc/devfs.rul
 qemu
 ```
 
+#### FreeBSD - [Bhyve](https://bhyve.org)
+> [!NOTE]
+> Adopted from [Chapter 24.6. Virtualization with QEMU on FreeBSD](https://docs.freebsd.org/en/books/handbook/virtualization/#virtualization-host-bhyve) by @MFarabi619
+
+```bash
+sudo kldload vmm
+
+sudo ifconfig tap0 create
+sudo sysctl net.link.tap.up_on_open=1
+sudo grep -qxF "net.link.tap.up_on_open=1" /etc/sysctl.conf || \
+echo 'net.link.tap.up_on_open=1' | sudo tee -a /etc/sysctl.conf
+sudo grep -qxF "add path 'tap*' mode 0660 group operator" /etc/devfs.rules || \
+printf "add path 'tap*' mode 0660 group operator\n" | sudo tee -a /etc/devfs.rules
+
+sudo ifconfig bridge0 create
+sudo ifconfig bridge0 addm igb0 addm tap0
+sudo ifconfig bridge0 up
+```
+
 ### Missing Dependencies
 
 - **Arch**: Script will prompt to install missing packages
