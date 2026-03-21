@@ -49,6 +49,8 @@ function detect_os() {
         echo "arch"
     elif [[ "$(uname -s)" == "FreeBSD" ]]; then
         echo "freebsd"
+    elif [[ "$(uname -s)" == "Darwin" ]]; then
+        echo "darwin"
     else
         echo "unknown"
     fi
@@ -56,7 +58,7 @@ function detect_os() {
 
 function print_usage() {
     echo "HydeVM - Simplified VM tool for HyDE contributors"
-    echo "Supports: Arch Linux, NixOS, and FreeBSD"
+    echo "Supports: Arch Linux, NixOS, FreeBSD, and Darwin"
     echo ""
     echo "Usage: hydevm [OPTIONS] [BRANCH/COMMIT]"
     echo ""
@@ -67,7 +69,7 @@ function print_usage() {
     echo "  --persist               Make VM changes persistent"
     echo "  --list                  List available snapshots"
     echo "  --clean                 Clean all cached data"
-    echo "  --install-deps          Install required dependencies (Arch & FreeBSD only)"
+    echo "  --install-deps          Install required dependencies (Arch, FreeBSD, Darwin)"
     echo "  --check-deps            Check if dependencies are installed"
     echo "  --help                  Show this help"
     echo ""
@@ -88,6 +90,7 @@ function print_usage() {
     echo "  Arch Linux: Missing packages will be offered for installation via 'pacman'"
     echo "  NixOS:      Missing packages will be installed via 'nix shell'"
     echo "  FreeBSD:    Missing packages will be installed via 'pkg'"
+    echo "  Darwin :    Missing packages can be installed via ''nix shell', 'brew', or direct download"
 }
 
 function check_root() {
@@ -115,6 +118,9 @@ function check_dependencies() {
             ;;
         "freebsd")
             check_freebsd_dependencies
+            ;;
+        "darwin")
+            check_darwin_dependencies
             ;;
         *)
             echo "⚠️  Unsupported OS. This script supports Arch Linux, NixOS, and FreeBSD."
@@ -264,12 +270,12 @@ EOF
     fi
 
     # Check if /dev/vmm exists for bhyve acceleration
-    if [ ! -e /dev/vmm ]; then
-        cat <<'EOF'
+if ! kldstat -q -m vmm; then
+    cat <<'EOF'
 ⚠️  bhyve/VMM not available. Native FreeBSD virtualization may not work.
-   Make sure the vmm module is loaded: sudo kldload vmm
+  Make sure the vmm module is loaded: sudo kldload vmm
 EOF
-    fi
+fi
 
     # Check if tap access is likely unavailable for non-root users
     if ! sysctl -n net.link.tap.user_open >/dev/null 2>&1 || [ "$(sysctl -n net.link.tap.user_open 2>/dev/null)" != "1" ]; then
@@ -281,6 +287,158 @@ EOF
     fi
 
     return 0
+}
+
+check_darwin_dependencies() {
+    if [[ "$(uname -p 2>/dev/null || true)" != "arm" && "$(uname -p 2>/dev/null || true)" != "arm64" ]]; then
+        echo "❌ x86_64-darwin is not supported"
+        exit 1
+    fi
+
+    # NOTE: temporary UTM-first workflow for Darwin. Later we should simplify
+    # this by removing UTM and driving qemu directly.
+    if command -v utmctl >/dev/null 2>&1; then
+        echo "UTM version $(utmctl version) is installed"
+
+        if [[ "${HYDEVM_CHECK_DEPS_ONLY:-0}" == "1" ]]; then
+            echo "Supported VM guests on macOS Host: NixOS, FreeBSD"
+            return 0
+        fi
+
+        echo "Supported VM guests on macOS Host: NixOS, FreeBSD"
+        echo ""
+        echo "Choose a VM target OS:"
+        echo "  1) NixOS"
+        echo "  2) FreeBSD"
+        read -r -p "Select target OS (1/2): " reply
+
+        if [[ "$reply" == "1" ]]; then
+            HYDEVM_DARWIN_TARGET="nixos"
+            export HYDEVM_DARWIN_TARGET
+            echo "Selected target: NixOS"
+            exit 0
+        elif [[ "$reply" == "2" ]]; then
+            HYDEVM_DARWIN_TARGET="freebsd"
+            export HYDEVM_DARWIN_TARGET
+            echo "Selected target: FreeBSD"
+            exit 0
+        fi
+
+        echo "❌ Invalid selection. Please choose 1 for NixOS or 2 for FreeBSD."
+        return 1
+    fi
+
+    if command -v nix >/dev/null 2>&1; then
+        cat <<'EOF'
+❌ UTM is not installed.
+
+You can set it up with nix using:
+  nix shell nixpkgs#utm
+
+Or manually:
+1. Install UTM via https://mac.getutm.app.
+2. Install UTM via brew (requires brew): brew install --cask utm
+3. Install UTM via Determinate Nix (if needed):
+   curl -fsSL https://install.determinate.systems/nix | sh -s -- install
+   Then use a nix shell, home manager, or nix-darwin.
+
+For nix-darwin, ensure Homebrew paths are available when using Homebrew-managed UTM:
+environment.systemPath = [
+  "/usr/local/bin"
+  "/opt/homebrew/bin"
+];
+
+More info: https://nix-darwin.github.io/nix-darwin/manual/index.html#opt-homebrew.enable
+EOF
+        return 1
+    fi
+
+    if command -v brew >/dev/null 2>&1; then
+        cat <<'EOF'
+❌ UTM is not installed.
+
+Homebrew is available. Install UTM with:
+  brew install --cask utm
+
+Or manually:
+1. Install UTM via https://mac.getutm.app.
+2. Install UTM via Determinate Nix:
+   curl -fsSL https://install.determinate.systems/nix | sh -s -- install
+   Then use a nix shell, home manager, or nix-darwin.
+
+For nix-darwin, ensure Homebrew paths are available when using Homebrew-managed UTM:
+environment.systemPath = [
+  "/usr/local/bin"
+  "/opt/homebrew/bin"
+];
+
+More info: https://nix-darwin.github.io/nix-darwin/manual/index.html#opt-homebrew.enable
+EOF
+        return 1
+    fi
+
+    cat <<'EOF'
+UTM is required on macOS for the current HyDE VM flow.
+
+You can set it up manually in one of these ways:
+1. Install UTM via https://mac.getutm.app.
+2. Install UTM via brew, requires installing brew.
+3. Install UTM via Determinate Nix, requires installing Determinate nix with:
+   curl -fsSL https://install.determinate.systems/nix | sh -s -- install
+   Then use a nix shell, home manager, or nix-darwin.
+EOF
+
+    return 1
+}
+
+function install_darwin_dependencies() {
+    if [[ "$(uname -p 2>/dev/null || true)" != "arm" && "$(uname -p 2>/dev/null || true)" != "arm64" ]]; then
+        echo "❌ x86_64-darwin is not supported"
+        exit 1
+    fi
+
+    if command -v utmctl >/dev/null 2>&1; then
+        echo "✅ UTM is already installed: $(utmctl version)"
+        return 0
+    fi
+
+    echo "📦 UTM is required on macOS for the current HyDE VM flow."
+
+    if command -v brew >/dev/null 2>&1; then
+        read -r -p "Install UTM with Homebrew now? (y/N): " reply
+        if [[ "$reply" =~ ^[Yy]$ ]]; then
+            brew install --cask utm
+            return 0
+        fi
+    fi
+
+    if command -v nix >/dev/null 2>&1; then
+        read -r -p "Open nix shell with UTM now (nix shell nixpkgs#utm)? (y/N): " reply
+        if [[ "$reply" =~ ^[Yy]$ ]]; then
+            nix shell nixpkgs#utm
+            echo "Re-run hydevm after entering the nix shell."
+            return 1
+        fi
+    fi
+
+    cat <<'EOF'
+Install UTM manually with one of these options:
+1. Install UTM via https://mac.getutm.app.
+2. Install UTM via brew, requires installing brew.
+3. Install UTM via Determinate Nix, requires installing Determinate nix with:
+   curl -fsSL https://install.determinate.systems/nix | sh -s -- install
+   Then use a nix shell, home manager, or nix-darwin.
+
+For nix-darwin, ensure Homebrew paths are available when using Homebrew-managed UTM:
+environment.systemPath = [
+  "/usr/local/bin"
+  "/opt/homebrew/bin"
+];
+
+More info: https://nix-darwin.github.io/nix-darwin/manual/index.html#opt-homebrew.enable
+EOF
+
+    return 1
 }
 
 function install_arch_packages() {
@@ -322,36 +480,78 @@ function install_freebsd_packages() {
     echo "✅ Packages installed successfully"
 }
 
-function install_all_arch_dependencies() {
+function install_all_dependencies() {
     local os
     os=$(detect_os)
 
-    if [[ "$os" != "arch" ]]; then
-        echo "❌ --install-deps is only supported on Arch Linux & FreeBSD"
+    if [[ "$os" != "arch" && "$os" != "freebsd" && "$os" != "darwin" ]]; then
+        echo "❌ --install-deps is only supported on Arch Linux, FreeBSD, and Darwin"
         echo "   Current OS: $os"
         exit 1
     fi
 
     echo "📦 Installing all HydeVM dependencies..."
-    install_arch_packages "${ARCH_PACKAGES[@]}"
+
+    if [[ "$os" == "arch" ]]; then
+        install_arch_packages "${ARCH_PACKAGES[@]}"
     echo "💡 You may need to reboot or logout/login for all changes to take effect"
+    elif [[ "$os" == "freebsd" ]]; then
+        install_freebsd_packages "${FREEBSD_PACKAGES[@]}"
+    elif [[ "$os" == "darwin" ]]; then
+        install_darwin_dependencies
+    fi
 }
 
 function check_deps_only() {
     local os
+    local memory
+    local accel_available
+    local accel_label
+    local cpu_cores
+
     os=$(detect_os)
     echo "🔍 Checking HydeVM dependencies..."
     echo "   Detected OS: $os"
 
+    HYDEVM_CHECK_DEPS_ONLY=1
+    export HYDEVM_CHECK_DEPS_ONLY
     if check_dependencies; then
+        unset HYDEVM_CHECK_DEPS_ONLY
         echo "✅ All dependencies are installed"
 
         # Check additional system info
         echo ""
         echo "📊 System Information:"
-        echo "   CPU cores: $(nproc)"
-        echo "   Memory: $(free -h | awk '/^Mem:/ {print $2}' 2>/dev/null || echo "Unknown")"
-        echo "   KVM available: $([ -r /dev/kvm ] && echo "Yes" || echo "No")"
+        cpu_cores="$(nproc 2>/dev/null || getconf _NPROCESSORS_ONLN 2>/dev/null || echo "Unknown")"
+
+        case "$os" in
+            freebsd)
+                memory="$(sysctl -n hw.physmem 2>/dev/null | awk '{printf "%.1fGiB", $1/1024/1024/1024}' || echo "Unknown")"
+                accel_available="$(kldstat -q -m vmm && echo "Yes" || echo "No")"
+                accel_label="BSD Hypervisor (bhyve)"
+                ;;
+            darwin)
+                memory="$(sysctl -n hw.memsize 2>/dev/null | awk '{printf "%.1fGiB", $1/1024/1024/1024}' || echo "Unknown")"
+
+                if command -v qemu-system-aarch64 >/dev/null 2>&1 && \
+                  qemu-system-aarch64 -accel help 2>/dev/null | grep -q hvf; then
+                    accel_available="Yes"
+                else
+                    accel_available="No"
+                fi
+
+                accel_label="Apple HVF"
+                ;;
+            *)
+                memory="$(free -h 2>/dev/null | awk '/^Mem:/ {print $2}' || echo "Unknown")"
+                accel_available="$([ -r /dev/kvm ] && echo "Yes" || echo "No")"
+                accel_label="KVM"
+                ;;
+        esac
+
+        echo "   CPU cores: $cpu_cores"
+        echo "   Memory: $memory"
+        echo "   $accel_label: $accel_available"
 
         if command -v qemu-system-x86_64 >/dev/null 2>&1; then
             echo "   QEMU version: $(qemu-system-x86_64 --version | head -1)"
@@ -359,6 +559,7 @@ function check_deps_only() {
 
         return 0
     else
+        unset HYDEVM_CHECK_DEPS_ONLY
         return 1
     fi
 }
@@ -446,6 +647,20 @@ function download_archbox() {
         echo "📦 Downloading Arch Linux base image..."
         local latest_url
         latest_url=$(get_latest_arch_image_url)
+        curl -L "$latest_url" -o "$BASE_IMAGE"
+        echo "✅ Base image downloaded successfully"
+    fi
+}
+
+function get_latest_freebsd_image_url() {
+    echo "https://download.freebsd.org/releases/VM-IMAGES/15.0-RELEASE/amd64/Latest/FreeBSD-15.0-RELEASE-amd64-ufs.qcow2.xz"
+}
+
+function download_freebsdbox() {
+    if [ ! -f "$BASE_IMAGE" ]; then
+        echo "📦 Downloading FreeBSD base image..."
+        local latest_url
+        latest_url=$(get_latest_freebsd_image_url)
         curl -L "$latest_url" -o "$BASE_IMAGE"
         echo "✅ Base image downloaded successfully"
     fi
@@ -662,6 +877,20 @@ check_root
 
 persistent="false"
 ref="master"
+original_argc=$#
+
+if [ "$original_argc" -eq 0 ]; then
+    os=$(detect_os)
+    case "$os" in
+        arch|nixos|freebsd|darwin) ;;
+        *)
+            print_usage
+            echo ""
+            echo "❌ Unsupported OS: $os"
+            exit 1
+            ;;
+    esac
+fi
 
 # Parse arguments
 while [ $# -gt 0 ]; do
@@ -679,7 +908,7 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         --install-deps)
-            install_all_arch_dependencies
+            install_all_dependencies
             exit 0
             ;;
         --check-deps)

@@ -30,9 +30,9 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
     - [Verification Steps](#verification-steps)
     - [Troubleshooting Hyprland in VM](#troubleshooting-hyprland-in-vm)
 
-**Supported Host Operating Systems:** Arch Linux, NixOS, FreeBSD
+**Supported Host Operating Systems:** Arch Linux, NixOS, FreeBSD, macOS Silicon
 
-## Hardware Requirements
+## Hardware Requirements (non macOS)
 
 **CPU:** x86_64 with virtualization support (Intel VT-x or AMD-V, enabled in BIOS)
 **Memory:** 4GB+ RAM (VM uses 4GB by default)
@@ -71,7 +71,7 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 
 ## Quick Start
 
-### Arch Linux & FreeBSD
+### Arch Linux, FreeBSD, and macOS Silicon
 
 ```bash
 # Download and run (will auto-detect missing packages)
