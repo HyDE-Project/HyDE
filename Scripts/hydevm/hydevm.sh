@@ -29,6 +29,8 @@ function detect_os() {
             echo "nixos"
         elif [[ "$ID" == "arch" ]]; then
             echo "arch"
+        elif [[ "$ID" == "freebsd" ]]; then
+            echo "freebsd"
         else
             echo "unknown"
         fi
@@ -36,6 +38,8 @@ function detect_os() {
         echo "nixos"
     elif command -v pacman >/dev/null 2>&1; then
         echo "arch"
+    elif [[ "$(uname -s)" == "FreeBSD" ]]; then
+        echo "freebsd"
     else
         echo "unknown"
     fi
