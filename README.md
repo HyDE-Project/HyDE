@@ -74,6 +74,8 @@ While installing HyDE alongside another [DE](https://wiki.archlinux.org/title/De
 
 For NixOS support there is a separate project being maintained @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
+[FreeBSD](https://www.freebsd.org) is supported via HydeBSD. Due to differences in bootloader, kernel, userspace, and package availability, not all features of HyDE may be present.
+
 > [!IMPORTANT]
 > The install script will auto-detect an NVIDIA card and install nvidia-open-dkms drivers for your kernel.
 > For legacy cards [check this first](./Scripts/nvidia-db/)
