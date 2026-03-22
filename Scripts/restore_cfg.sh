@@ -193,6 +193,10 @@ deploy_psv() {
 }
 
 hyprland_hook() {
+    if [[ "$(uname -s)" == "FreeBSD" ]]; then
+        print_log -y "[hook] " -b "hyprland :: " "Skipping hyq marker validation on FreeBSD."
+        return 0
+    fi
 
     local hyde_config="${cloneDir}/Configs/.config/hypr/hyprland.conf"
     local hyprland_default_config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf"
@@ -267,10 +271,18 @@ echo ""
 hyprland_hook
 
 print_log -g "[python env]" -b " :: " "Rebuilding HyDE Python environment..."
-if command -v hyde-shell >/dev/null 2>&1; then
-    hyde-shell pyinit
+if [[ "$(uname -s)" == "FreeBSD" ]]; then
+    if command -v hyde-shell >/dev/null 2>&1; then
+        hyde-shell pyinit || print_log -warn "python env" "Failed to rebuild Python environment on FreeBSD (non-fatal)."
+    else
+        "${HOME}/.local/bin/hyde-shell" pyinit || print_log -warn "python env" "Failed to rebuild Python environment on FreeBSD (non-fatal)."
+    fi
 else
-    "${HOME}/.local/bin/hyde-shell" pyinit
+    if command -v hyde-shell >/dev/null 2>&1; then
+        hyde-shell pyinit
+    else
+        "${HOME}/.local/bin/hyde-shell" pyinit
+    fi
 fi
 
 print_log -g "[version]" -b " :: " "saving version info..."

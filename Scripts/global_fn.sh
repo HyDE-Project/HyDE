@@ -23,8 +23,19 @@ export shlList
 
 pkg_installed() {
     local PkgIn=$1
+    local PkgResolved
 
-    if "${pacmanCmd}" query "${PkgIn}" &>/dev/null; then
+    case "${PkgIn}" in
+    kvantum) PkgResolved="Kvantum" ;;
+    imagemagick) PkgResolved="ImageMagick7" ;;
+    *) PkgResolved="${PkgIn}" ;;
+    esac
+
+    if [[ "${PkgIn}" == "zsh-theme-powerlevel10k" ]] && [[ -d "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k" ]]; then
+        return 0
+    fi
+
+    if "${pacmanCmd}" query "${PkgResolved}" &>/dev/null; then
         return 0
     else
         return 1
