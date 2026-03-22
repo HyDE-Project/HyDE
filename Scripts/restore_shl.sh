@@ -54,7 +54,8 @@ if pkg_installed zsh; then
         Zsh_rc="${ZDOTDIR:-$HOME}/.zshenv"
         Zsh_Path="${Zsh_Path:-$HOME/.oh-my-zsh}"
         Zsh_Plugins="$Zsh_Path/custom/plugins"
-        Fix_Completion=""
+        Add_Completion=0
+        [ -f "${Zsh_rc}" ] || touch "${Zsh_rc}"
 
         # generate plugins from list
         while read -r r_plugin; do
@@ -67,7 +68,7 @@ if pkg_installed zsh; then
                 fi
             fi
             if [ "${z_plugin}" == "zsh-completions" ] && [ "$(grep -c 'fpath+=.*plugins/zsh-completions/src' "${Zsh_rc}")" -eq 0 ]; then
-                Fix_Completion='\nfpath+=${ZSH_CUSTOM:-${ZSH:-/usr/share/oh-my-zsh}/custom}/plugins/zsh-completions/src'
+                Add_Completion=1
             else
                 [ -z "${z_plugin}" ] || w_plugin+=" ${z_plugin}"
             fi
@@ -75,7 +76,31 @@ if pkg_installed zsh; then
 
         # update plugin array in zshrc
         print_log -sec "SHELL" -stat "installing" "plugins (${w_plugin} )"
-        sed -i "/^hyde_plugins=/c\hyde_plugins=(${w_plugin} )${Fix_Completion}" "${Zsh_rc}"
+        plugin_line="hyde_plugins=(${w_plugin} )"
+        completion_line='fpath+=${ZSH_CUSTOM:-${ZSH:-/usr/share/oh-my-zsh}/custom}/plugins/zsh-completions/src'
+
+        if grep -q '^hyde_plugins=' "${Zsh_rc}"; then
+            awk -v repl="${plugin_line}" '
+                BEGIN { done = 0 }
+                /^hyde_plugins=/ {
+                    if (!done) {
+                        print repl
+                        done = 1
+                    }
+                    next
+                }
+                { print }
+                END {
+                    if (!done) print repl
+                }
+            ' "${Zsh_rc}" >"${Zsh_rc}.tmp" && mv "${Zsh_rc}.tmp" "${Zsh_rc}"
+        else
+            printf '%s\n' "${plugin_line}" >>"${Zsh_rc}"
+        fi
+
+        if [ "${Add_Completion}" -eq 1 ] && ! grep -q 'plugins/zsh-completions/src' "${Zsh_rc}"; then
+            printf '%s\n' "${completion_line}" >>"${Zsh_rc}"
+        fi
     else
         if [ "${flg_DryRun}" -eq "1" ]; then
             while read -r r_plugin; do

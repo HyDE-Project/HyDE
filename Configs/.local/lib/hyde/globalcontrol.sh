@@ -186,6 +186,7 @@ get_themes() {
     unset thmSort
     unset thmList
     unset thmWall
+    [ -d "$HYDE_CONFIG_HOME/themes" ] || return 0
     while read -r thmDir; do
         local realWallPath
         realWallPath="$(readlink "$thmDir/wall.set")"
@@ -223,7 +224,7 @@ case "$enableWallDcol" in
 esac
 if [ -z "$HYDE_THEME" ] || [ ! -d "$HYDE_CONFIG_HOME/themes/$HYDE_THEME" ]; then
     get_themes
-    HYDE_THEME="${thmList[0]}"
+    [ "${#thmList[@]}" -gt 0 ] && HYDE_THEME="${thmList[0]}"
 fi
 HYDE_THEME_DIR="$HYDE_CONFIG_HOME/themes/$HYDE_THEME"
 WALLBASH_DIRS=(
