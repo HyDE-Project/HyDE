@@ -90,7 +90,7 @@ function print_usage() {
     echo "  Arch Linux: Missing packages will be offered for installation via 'pacman'"
     echo "  NixOS:      Missing packages will be installed via 'nix shell'"
     echo "  FreeBSD:    Missing packages will be installed via 'pkg'"
-    echo "  Darwin :    Missing packages can be installed via ''nix shell', 'brew', or direct download"
+    echo "  Darwin :    Missing packages can be installed via 'nix shell', 'brew', or direct download"
 }
 
 function check_root() {
@@ -653,6 +653,8 @@ function download_archbox() {
 }
 
 function get_latest_freebsd_image_url() {
+# https://download.freebsd.org/releases/ISO-IMAGES/15.0/FreeBSD-15.0-RELEASE-amd64-dvd1.iso
+# https://download.freebsd.org/releases/ISO-IMAGES/15.0/FreeBSD-15.0-RELEASE-arm64-aarch64-dvd1.iso
     echo "https://download.freebsd.org/releases/VM-IMAGES/15.0-RELEASE/amd64/Latest/FreeBSD-15.0-RELEASE-amd64-ufs.qcow2.xz"
 }
 

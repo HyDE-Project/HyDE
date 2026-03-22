@@ -14,9 +14,12 @@ fi
 
 flg_DryRun=${flg_DryRun:-0}
 export log_section="package"
+currentPm="$(${pacmanCmd} which)"
 
-"${scrDir}/install_aur.sh" "${getAur}" 2>&1
-chk_list "aurhlpr" "${aurList[@]}"
+if [[ "${currentPm}" == "pacman" || "${currentPm}" == "yay" || "${currentPm}" == "paru" ]]; then
+    "${scrDir}/install_aur.sh" "${getAur}" 2>&1
+    chk_list "aurhlpr" "${aurList[@]}"
+fi
 listPkg="${1:-"${scrDir}/pkg_core.lst"}"
 archPkg=()
 aurhPkg=()
@@ -58,11 +61,15 @@ while read -r pkg deps; do
 
     if pkg_installed "${pkg}"; then
         print_log -y "[skip] " "${pkg}"
-    elif pkg_available "${pkg}"; then
-        repo=$(pacman -Si "${pkg}" | awk -F ': ' '/Repository / {print $2}' | tr '\n' ' ')
+    elif "${pacmanCmd}" info "${pkg}" &>/dev/null; then
+        if [[ "${currentPm}" == "pacman" || "${currentPm}" == "yay" || "${currentPm}" == "paru" ]]; then
+            repo=$(pacman -Si "${pkg}" | awk -F ': ' '/Repository / {print $2}' | tr '\n' ' ')
+        else
+            repo="${currentPm}"
+        fi
         print_log -b "[queue] " "${pkg}" -b " :: " -g "${repo}"
         archPkg+=("${pkg}")
-    elif aur_available "${pkg}"; then
+    elif [[ "${currentPm}" == "pacman" || "${currentPm}" == "yay" || "${currentPm}" == "paru" ]] && aur_available "${pkg}"; then
         print_log -b "[queue] " "${pkg}" -b " :: " -g "aur"
         aurhPkg+=("${pkg}")
     else
@@ -84,12 +91,20 @@ install_packages() {
                 print_log -b "[pkg] " "${pkg}"
             done
         else
-            $install_cmd ${use_default:+"$use_default"} -S "${pkg_array[@]}"
+            if [[ "${currentPm}" == "pacman" || "${currentPm}" == "yay" || "${currentPm}" == "paru" ]]; then
+                $install_cmd ${use_default:+"$use_default"} -S "${pkg_array[@]}"
+            else
+                $install_cmd install "${pkg_array[@]}"
+            fi
         fi
     fi
 }
 
 echo ""
-install_packages archPkg "arch" "sudo pacman"
-echo ""
-install_packages aurhPkg "aur" "${aurhlpr}"
+if [[ "${currentPm}" == "pacman" || "${currentPm}" == "yay" || "${currentPm}" == "paru" ]]; then
+    install_packages archPkg "arch" "sudo pacman"
+    echo ""
+    install_packages aurhPkg "aur" "${aurhlpr}"
+else
+    install_packages archPkg "${currentPm}" "${pacmanCmd}"
+fi
