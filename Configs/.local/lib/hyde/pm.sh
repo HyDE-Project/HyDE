@@ -207,7 +207,7 @@ skip_table_header() {
 xargs_self() {
     xargs -r sh -c '"$0" "$@" </dev/tty' "$0" "$@"
 }
-PMS="paru yay pacman apt dnf zypper apk brew scoop flatpak"
+PMS="paru yay pacman pkg apt dnf zypper apk brew scoop flatpak"
 pm_detect() {
     if [ ! "${PM-}" ]; then
         for NAME in $PMS; do
@@ -289,6 +289,41 @@ pacman_is_installed() {
 }
 pacman_file_query() {
     pacman -F "$1"
+}
+pkg_install() {
+    sudo pkg install -y "$@"
+}
+pkg_remove() {
+    sudo pkg delete -y "$@"
+}
+pkg_upgrade() {
+    sudo pkg upgrade -y
+}
+pkg_fetch() {
+    sudo pkg update
+}
+pkg_info() {
+    pkg info "$1" 2> /dev/null || pkg search -x "$1"
+}
+pkg_list_all() {
+    pkg rquery '%n %v'
+}
+pkg_list_installed() {
+    pkg query '%n %v'
+}
+pkg_format_all() {
+    awk "{ print $FMT_NAME \$1 $FMT_VERSION \$2 $FMT_RESET }"
+}
+pkg_format_installed() {
+    awk "{ print $FMT_NAME \$1 $FMT_VERSION \$2 $FMT_RESET }"
+}
+pkg_is_installed() {
+    pkg info -e "$1" > /dev/null 2>&1 && echo "Installed" || {
+        echo "Not installed" && return 1
+    }
+}
+pkg_file_query() {
+    pkg which "$1"
 }
 AUR_HELPERS="paru paru-bin yay yay-bin"
 aur_helpers_contain() {
