@@ -24,6 +24,8 @@ FreeBSD-bluetooth
 # brightnessctl                                          # screen brightness control
 playerctl                                              # media controls
 # udiskie                                                # manage removable media
+dconf
+dconf-editor
 
 # --------------------------------------------------- // Display Manager
 sddm                                                   # display manager for KDE plasma
