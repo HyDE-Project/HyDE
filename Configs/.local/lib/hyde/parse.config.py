@@ -114,6 +114,11 @@ def parse_toml_to_hypr(toml_file, hypr_file=None):
                 if parent_key and not parent_key.startswith("hyprland"):
                     new_key = f"{parent_key}_{new_key}"
                 elif parent_key.startswith("hyprland"):
+                    # parent_key[9:] strips "hyprland" (8 chars) plus the separator
+                    # character at index 8 (either '_' or '-'), leaving the namespace.
+                    # e.g. "hyprland-start"[9:] -> "start"  =>  $start.KEY
+                    #      "hyprland_ipc"[9:]   -> "ipc"    =>  $ipc.KEY
+                    #      "hyprland"[9:]        -> ""       =>  $KEY
                     new_key = (
                         f"${parent_key[9:]}.{new_key.upper()}"
                         if parent_key[9:]
