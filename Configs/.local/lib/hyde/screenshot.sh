@@ -5,7 +5,7 @@ else
   export_hyde_config
 fi
 USAGE() {
-  cat <<"USAGE"
+  cat <<USAGE
 
 	Usage: $(basename "$0") [option]
 	Options:
