@@ -19,7 +19,7 @@ options:
     -h, --help                Display this help message
 
 flags:
-    -b, --backend <backend>   Set wallpaper backend to use (swww, hyprpaper, etc.)
+    -b, --backend <backend>   Set wallpaper backend to use (awww, hyprpaper, etc.)
     -G, --global              Set wallpaper as global
 
 

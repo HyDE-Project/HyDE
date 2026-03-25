@@ -25,7 +25,7 @@ main() {
     esac
     if [ -z "$wallpaper_backend" ] && [ "$requires_backend" = true ]; then
         print_log -sec "wallpaper" -err "No backend specified"
-        print_log -sec "wallpaper" " Please specify a backend, try '--backend swww'"
+        print_log -sec "wallpaper" " Please specify a backend, try '--backend awww'"
         print_log -sec "wallpaper" " See available commands: '--help | -h'"
         exit 1
     fi
@@ -184,7 +184,7 @@ fi
 LONGOPTS="link,global,select,multi-select,json,next,previous,random,set:,start,backend:,get,output:,help,filetypes:"
 PARSED=$(getopt --options GSjnprb:s:t:go:h --longoptions "$LONGOPTS" --name "$0" -- "$@") || exit 2
 WALLPAPER_OVERRIDE_FILETYPES=()
-wallpaper_backend="${WALLPAPER_BACKEND:-swww}"
+wallpaper_backend="${WALLPAPER_BACKEND:-awww}"
 wallpaper_setter_flag=""
 output_flag=false
 wallpaper_outputs=()
