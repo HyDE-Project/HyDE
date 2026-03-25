@@ -70,7 +70,7 @@ fn_update() {
 
 
 		#*┌────────────────────────────────────────────────────────────────────────────┐
-		#*│ # See https://wiki.hyprland.org/Configuring/Animations/                    │
+		#*│ # See https://wiki.hypr.land/Configuring/Animations/                    │
 		#*│ # HyDE Controlled content // DO NOT EDIT                                   │
 		#*│ # Edit or add animations in the ./hypr/animations/ directory               │
 		#*│ # and run the 'animations.sh --select' command to update this file         │

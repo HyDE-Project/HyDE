@@ -175,7 +175,7 @@ pkill -f "python3 -m http.server"
 
 ## VM Host Guide
 
-HyDE uses Hyprland, which has specific requirements for VM environments. Hyprland VM support is limited - see [Hyprland - Running in a VM](https://wiki.hyprland.org/Getting-Started/Installation/#running-in-a-vm) for official guidance.
+HyDE uses Hyprland, which has specific requirements for VM environments. Hyprland VM support is limited - see [Hyprland - Running in a VM](https://wiki.hypr.land/Getting-Started/Installation/#running-in-a-vm) for official guidance.
 
 > [!NOTE]
 > I'm trying here to make HyDE easier to work with VM's. If you have any suggestions based on your hardware and experience, or find this documentation inaccurate, please let me know.

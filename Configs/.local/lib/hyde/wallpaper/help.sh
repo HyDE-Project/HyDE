@@ -16,6 +16,8 @@ options:
         --multi-select        Enable multi-selection in select mode (Works for --output only)
         --link                Resolved the linked wallpaper according to the theme
     -t  --filetypes <types>   Specify file types to override (colon-separated ':')
+        --cache <mode> [arg]  Build wallpaper cache
+                              modes: current, wall <file>, theme <name>, full
     -h, --help                Display this help message
 
 flags:

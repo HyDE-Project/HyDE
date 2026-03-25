@@ -99,7 +99,7 @@ hyde_reload() {
 
 	print_log -sec "hyde" "Reloading HyDE"
 	python_initialized
-	"$LIB_DIR/hyde/swwwallcache.sh" -t ""
+	"$LIB_DIR/hyde/wallpaper/cache.sh" commence -t ""
 	"$LIB_DIR/hyde/theme.switch.sh"
 }
 

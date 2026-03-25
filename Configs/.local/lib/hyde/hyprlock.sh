@@ -294,7 +294,7 @@ source = $hyde_hyprlock_conf
  #│  Command Variables                                                       │
  #│ # Hyprlock ships with there default variables that can be used to          │
  #│ customize the lock screen.                                                 |                   │
- #│ https://wiki.hyprland.org/Hypr-Ecosystem/hyprlock/#label                   │                                                               │
+ #│ https://wiki.hypr.land/Hypr-Ecosystem/hyprlock/#label                   │                                                               │
  #│                                                                            │
  #└────────────────────────────────────────────────────────────────────────────┘
 
