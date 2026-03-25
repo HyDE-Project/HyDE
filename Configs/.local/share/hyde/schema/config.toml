@@ -7,9 +7,9 @@
 # Wallpaper configuration.
 [wallpaper]
 custom_paths = []  # List of paths to search for wallpapers.
-backend = "swww"  # Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH
-# swwwallselect.sh configuration.
-[wallpaper.swww]
+backend = "awww"  # Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH
+# awwwallselect.sh configuration.
+[wallpaper.awww]
 framerate = 60  # Transition framerate.
 duration = 1  # Transition duration.
 transition_next = "grow"  # Transition type for next wallpaper.
@@ -49,7 +49,7 @@ filebrowser_style = "style_1"  # Style for filebrowser mode.
 [rofi.cliphist]
 scale = 10  # Scaling for cliphist.
 
-# swwwallselect.sh configuration.
+# awwwallselect.sh configuration.
 [rofi.wallpaper]
 scale = 10  # Scaling for wallpaper.
 column_count = 3  # Number of columns for wallpaper selector.

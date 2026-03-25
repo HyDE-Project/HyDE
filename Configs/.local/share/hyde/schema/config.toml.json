@@ -15,18 +15,18 @@
                     }
                 },
                 "backend": {
-                    "default": "swww",
+                    "default": "awww",
                     "description": "Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH",
                     "options": [
-                        "swww",
+                        "awww",
                         "pcmanfm-qt",
                         "mpvpaper",
                         "hyprpaper"
                     ],
                     "type": "string"
                 },
-                "swww": {
-                    "description": "swwwallselect.sh configuration.",
+                "awww": {
+                    "description": "awwwallselect.sh configuration.",
                     "type": "object",
                     "properties": {
                         "framerate": {
@@ -185,7 +185,7 @@
                     }
                 },
                 "wallpaper": {
-                    "description": "swwwallselect.sh configuration.",
+                    "description": "awwwallselect.sh configuration.",
                     "type": "object",
                     "properties": {
                         "scale": {
