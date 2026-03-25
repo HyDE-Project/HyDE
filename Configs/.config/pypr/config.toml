@@ -4,7 +4,7 @@
 
 
 # Since You are using Hyde, you can use `hyde-shell` to run pypr commands
-# See  'hyde-shell pypr --help' for more information on how to use it!
+# See  'hyde-shell pypr help' for more information on how to use it!
 
 [pyprland]
     # pypr has a lot of plugins, but this is just a basic example config
