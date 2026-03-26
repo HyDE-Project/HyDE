@@ -19,6 +19,7 @@ _These contributors help with code review, triaging, and development._
 - [@Metalhearf](https://github.com/Metalhearf)
 - [@prime-run](https://github.com/prime-run)
 - [@heeeeeeeeeeh](https://github.com/heeeeeeeeeeh/)
+- [@naye2m](https://github.com/naye2m/)
 
 ## Testers
 
