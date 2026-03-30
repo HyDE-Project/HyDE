@@ -48,7 +48,8 @@
 
     "modules-center": [
       "group/pill-up#left",
-      "group/pill-in",
+      "group/pill-left#center1",
+      "group/pill-right#center2",
       "group/pill-up#right"
     ],
 
@@ -60,17 +61,25 @@
             "backlight#eyecare-preview",
         ],
     },
-    "group/pill-in": {
+    "group/pill-left#center1": {
         "orientation": "inherit",
         "modules": [
             "clock",
         ],
     },
+    "group/pill-right#center2": {
+            "modules": [
+                "hyprland/workspaces",
+                "hyprland/window"
+            ],
+            "orientation": "inherit"
+        },
     "group/pill-up#right": {
         "orientation": "inherit",
         "modules": [
             "pulseaudio#microphone",
             "pulseaudio",  
+            "battery",
         ],
     },
     
@@ -101,6 +110,7 @@
     "group/leaf-inverse#right2": {
         "orientation": "inherit",
         "modules": [
+	        "tray",
             "custom/updates",
             "custom/keybindhint",
             "custom/cliphist",
