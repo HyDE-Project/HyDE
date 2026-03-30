@@ -18,6 +18,10 @@ Multi-language README support
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
+<<<<<<< HEAD
+=======
+[![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](README.tr.md)
+>>>>>>> master
 
 <div align="center">
 
@@ -27,7 +31,11 @@ Multi-language README support
 <a href="#atualizando"><kbd> <br> Atualizando <br> </kbd></a>&ensp;&ensp;
 <a href="#temas"><kbd> <br> Temas <br> </kbd></a>&ensp;&ensp;
 <a href="#estilos"><kbd> <br> Estilos <br> </kbd></a>&ensp;&ensp;
+<<<<<<< HEAD
 <a href="../../KEYBINDINGS.md"><kbd> <br> Atalhos de teclado <br> </kbd></a>&ensp;&ensp;
+=======
+<a href="../assets/keybinds/KEYBINDINGS.pt-br.md"><kbd> <br> Atalhos de teclado <br> </kbd></a>&ensp;&ensp;
+>>>>>>> master
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
 <a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
@@ -68,8 +76,13 @@ Embora instalar o HyDE com outro [ambiente desktop (DE)](https://wiki.archlinux.
 Para o suporte a NixOS, existe um projeto separado sendo mantido em @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
+<<<<<<< HEAD
 > O script de instalação detectará automaticamente uma placa NVIDIA e instalará os drivers nvidia-dkms para o seu kernel.
 > Por favor, verifique se sua placa NVIDIA é compatível com os drivers nvidia-dkms listados [aqui](https://wiki.archlinux.org/title/NVIDIA).
+=======
+> O script de instalação detectará automaticamente uma placa NVIDIA e instalará os drivers nvidia-open-dkms para o seu kernel.
+> Por favor, verifique se sua placa NVIDIA é compatível com os drivers nvidia-open-dkms listados [aqui](https://wiki.archlinux.org/title/NVIDIA).
+>>>>>>> master
 
 > [!CAUTION]
 > O script de instalação modifica as configurações do seu `grub` ou `systemd-boot` para habilitar o DRM da NVIDIA.
@@ -246,4 +259,8 @@ Para mais informações, visite [HyDE-Project/hyde-themes](https://github.com/Hy
    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
  </picture>
+<<<<<<< HEAD
 </a>
+=======
+</a>
+>>>>>>> master

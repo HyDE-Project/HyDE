@@ -97,8 +97,12 @@ class CavaDataParser:
                 else:
                     fraction = original_pos - left_idx
                     interpolated = (
+<<<<<<< HEAD
                         values[left_idx]
                         + (values[right_idx] - values[left_idx]) * fraction
+=======
+                        values[left_idx] + (values[right_idx] - values[left_idx]) * fraction
+>>>>>>> master
                     )
                     expanded_values.append(int(round(interpolated)))
 
@@ -140,9 +144,13 @@ class CavaServer:
     """Cava server that manages the cava process and broadcasts to clients"""
 
     def __init__(self):
+<<<<<<< HEAD
         self.runtime_dir = os.getenv(
             "XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid()))
         )
+=======
+        self.runtime_dir = os.getenv("XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid())))
+>>>>>>> master
         self.socket_file = os.path.join(self.runtime_dir, "hyde", "cava.sock")
         self.pid_file = os.path.join(self.runtime_dir, "hyde", "cava.pid")
         self.temp_dir = Path(os.path.join(self.runtime_dir, "hyde"))
@@ -166,9 +174,13 @@ class CavaServer:
 
     def cleanup(self):
         """Cleanup function called on exit"""
+<<<<<<< HEAD
         if not (
             self.successfully_started and (self.server_socket or self.cava_process)
         ):
+=======
+        if not (self.successfully_started and (self.server_socket or self.cava_process)):
+>>>>>>> master
             return
 
         print(f"Shutting down cava manager (PID: {os.getpid()})...")
@@ -364,9 +376,13 @@ class CavaServer:
         except FileNotFoundError:
             print("Error: cava not found. Please install cava.")
 
+<<<<<<< HEAD
     def _create_cava_config(
         self, bars=16, range_val=15, channels="stereo", reverse=0, prefix=""
     ):
+=======
+    def _create_cava_config(self, bars=16, range_val=15, channels="stereo", reverse=0, prefix=""):
+>>>>>>> master
         """Create cava configuration file with channels and reverse support, using HydeConfig with or without prefix as appropriate"""
         hyde_config = HydeConfig()
 
@@ -382,9 +398,13 @@ class CavaServer:
             try:
                 reverse = int(config_reverse)
             except ValueError:
+<<<<<<< HEAD
                 reverse = (
                     1 if str(config_reverse).lower() in ("true", "yes", "on") else 0
                 )
+=======
+                reverse = 1 if str(config_reverse).lower() in ("true", "yes", "on") else 0
+>>>>>>> master
 
         self.temp_dir.mkdir(parents=True, exist_ok=True)
 
@@ -472,15 +492,20 @@ reverse = {reverse}
 
                 while not self.shutdown_event.is_set():
                     if self.cava_process.stdout:
+<<<<<<< HEAD
                         rlist, _, _ = select.select(
                             [self.cava_process.stdout], [], [], 0.2
                         )
+=======
+                        rlist, _, _ = select.select([self.cava_process.stdout], [], [], 0.2)
+>>>>>>> master
                         if rlist:
                             line = self.cava_process.stdout.readline()
                             if not line or self.shutdown_event.is_set():
                                 break
                             line_stripped = line.strip()
                             if line_stripped:
+<<<<<<< HEAD
                                 values = [
                                     x for x in line_stripped.split(";") if x.isdigit()
                                 ]
@@ -490,6 +515,12 @@ reverse = {reverse}
                                         self.consecutive_zero_count
                                         <= self.zero_threshold
                                     ):
+=======
+                                values = [x for x in line_stripped.split(";") if x.isdigit()]
+                                if values and all(int(v) == 0 for v in values):
+                                    self.consecutive_zero_count += 1
+                                    if self.consecutive_zero_count <= self.zero_threshold:
+>>>>>>> master
                                         self._broadcast_data(line.encode("utf-8"))
                                 else:
                                     self.consecutive_zero_count = 0
@@ -524,6 +555,7 @@ reverse = {reverse}
                     time.sleep(1)
                     with self.clients_lock:
                         if not self.clients and time.time() - self.last_client_time > 1:
+<<<<<<< HEAD
                             print(
                                 "No clients connected for 5 seconds, shutting down..."
                             )
@@ -533,6 +565,13 @@ reverse = {reverse}
             threads.append(
                 threading.Thread(target=handle_client_connections, daemon=True)
             )
+=======
+                            print("No clients connected for 5 seconds, shutting down...")
+                            self.shutdown_event.set()
+                            break
+
+            threads.append(threading.Thread(target=handle_client_connections, daemon=True))
+>>>>>>> master
             threads.append(threading.Thread(target=check_auto_shutdown, daemon=True))
             threads.append(threading.Thread(target=read_cava_output, daemon=True))
             for t in threads:
@@ -617,9 +656,13 @@ class CavaClient:
     """Cava client that connects to the server and formats output"""
 
     def __init__(self):
+<<<<<<< HEAD
         self.runtime_dir = os.getenv(
             "XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid()))
         )
+=======
+        self.runtime_dir = os.getenv("XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid())))
+>>>>>>> master
         self.socket_file = os.path.join(self.runtime_dir, "hyde", "cava.sock")
         self.parser = CavaDataParser()
 
@@ -654,9 +697,13 @@ class CavaClient:
         start_time = time.time()
         while not os.path.exists(self.socket_file):
             if time.time() - start_time > timeout:
+<<<<<<< HEAD
                 print(
                     "Error: Cava manager not accessible after timeout", file=sys.stderr
                 )
+=======
+                print("Error: Cava manager not accessible after timeout", file=sys.stderr)
+>>>>>>> master
                 sys.exit(1)
             time.sleep(0.1)
 
@@ -664,9 +711,13 @@ class CavaClient:
             client_socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             client_socket.connect(self.socket_file)
 
+<<<<<<< HEAD
             standby_output = self.parser._handle_standby_mode(
                 standby_mode, bar_chars, width
             )
+=======
+            standby_output = self.parser._handle_standby_mode(standby_mode, bar_chars, width)
+>>>>>>> master
             if not (
                 (standby_mode == 0 and standby_output == "")
                 or (standby_mode == "" and standby_output == "")
@@ -696,9 +747,15 @@ class CavaClient:
                             formatted = self.parser.format_data(
                                 line, bar_chars, width, standby_mode
                             )
+<<<<<<< HEAD
                             should_suppress = (
                                 standby_mode == 0 and formatted == ""
                             ) or (standby_mode == "" and formatted == "")
+=======
+                            should_suppress = (standby_mode == 0 and formatted == "") or (
+                                standby_mode == "" and formatted == ""
+                            )
+>>>>>>> master
                             if not should_suppress:
                                 if json_output:
                                     output = {
@@ -734,9 +791,13 @@ class CavaClient:
             if bar_array and isinstance(bar_array, list):
                 bar_chars = bar_array
             else:
+<<<<<<< HEAD
                 bar_chars = args.bar or hyde_config.get_value(
                     f"{prefix}_BAR", "▁▂▃▄▅▆▇█"
                 )
+=======
+                bar_chars = args.bar or hyde_config.get_value(f"{prefix}_BAR", "▁▂▃▄▅▆▇█")
+>>>>>>> master
                 if isinstance(bar_chars, str):
                     bar_chars = list(bar_chars)
 
@@ -766,9 +827,13 @@ class CavaReloadClient:
     """Minimal client to send reload command to the server"""
 
     def __init__(self):
+<<<<<<< HEAD
         self.runtime_dir = os.getenv(
             "XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid()))
         )
+=======
+        self.runtime_dir = os.getenv("XDG_RUNTIME_DIR", os.path.join("/run/user", str(os.getuid())))
+>>>>>>> master
         self.socket_file = os.path.join(self.runtime_dir, "hyde", "cava.sock")
 
     def reload(self):

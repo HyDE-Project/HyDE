@@ -11,7 +11,7 @@
     {
       "type": "host",
       "key": "  󰢮  MRB",
-      "keyColor": "white",  
+      "keyColor": "white",
       "format": "MSI {2}"
     },
     {
@@ -22,45 +22,44 @@
       "type": "cpu",
       "key": "   CPU",
       "format": "{1}",
-      "keyColor": "magenta"   
+      "keyColor": "magenta"
     },
     {
       "type": "gpu",
       "key": "  󰊴 GPU",
       "format": "{1} {2}",
-      "keyColor": "magenta"   
+      "keyColor": "magenta"
     },
     {
       "type": "memory",
       "key": "   RAM ",
-      "keyColor": "blue"   
+      "keyColor": "blue"
     },
     {
       "type": "disk",
       "key": "   Disk",
-      "keyColor": "blue"   
+      "keyColor": "blue"
     },
     {
       "type": "swap",
       "key": "  󰓡 Swap",
-      "keyColor": "blue"   
+      "keyColor": "blue"
     },
     {
       "type": "display",
       "key": "  󰍹 Display",
       "format": "{1}x{2} @ {3}Hz",
-      "keyColor": "#8be9fd"   
+      "keyColor": "#8be9fd"
     },
     {
       "type": "custom",
       "format": "└───────────────────────────────────────────────┘"
     },
     "break",
-    
     {
       "type": "title",
       "key": "   GitHub",
-      "keyColor": "white",  
+      "keyColor": "white",
       "format": "TomLaclavere"
     },
     {
@@ -71,46 +70,45 @@
       "type": "wm",
       "key": "  󱗃 WM   ",
       "format": "{2}",
-      "keyColor": "yellow"   
+      "keyColor": "yellow"
     },
     {
       "type": "theme",
       "key": "  󰉼 Theme",
-      "keyColor": "yellow",  
+      "keyColor": "yellow",
       "format": "{2}"
     },
     {
       "type": "terminal",
       "key": "   Terminal",
-      "keyColor": "green"   
+      "keyColor": "green"
     },
     {
       "type": "shell",
       "key": "   Shell   ",
-      "keyColor": "green"   
+      "keyColor": "green"
     },
     {
       "type": "editor",
       "key": "  󰨞 Editor  ",
-      "keyColor": "green"   
+      "keyColor": "green"
     },
     {
       "type": "gpu",
       "format": "{3}",
       "key": "   GPU Driver",
-      "keyColor": "red"   
+      "keyColor": "red"
     },
     {
       "type": "custom",
       "format": "└───────────────────────────────────────────────┘"
     },
     "break",
-
     {
       "type": "title",
       "key": "    User",
       "format": "{6} {7} {8}",
-      "keyColor": "#f8f8f2"   
+      "keyColor": "#f8f8f2"
     },
     {
       "type": "custom",
@@ -120,28 +118,28 @@
       "type": "os",
       "key": "  󰣇 OS      ",
       "format": "{2}",
-      "keyColor": "magenta"  
+      "keyColor": "magenta"
     },
     {
       "type": "kernel",
       "key": "   Kernel  ",
       "format": "{2}",
-      "keyColor": "magenta"  
+      "keyColor": "magenta"
     },
     {
       "type": "packages",
       "key": "  󰏖 Packages",
-      "keyColor": "magenta"  
+      "keyColor": "magenta"
     },
     {
       "type": "uptime",
       "key": "  󱫐 Uptime",
-      "keyColor": "blue"   
+      "keyColor": "blue"
     },
     {
       "type": "disk",
       "key": "  󰅐 OS Age",
-      "keyColor": "blue",  
+      "keyColor": "blue",
       "folders": "/",
       "format": "{days} days"
     },

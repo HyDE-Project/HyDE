@@ -1,13 +1,17 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 # shellcheck disable=SC1091
 # shellcheck disable=SC1090
 
 # xdg resolution
+=======
+>>>>>>> master
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+<<<<<<< HEAD
 # ! export XDG_DATA_DIRS="$XDG_DATA_HOME/hyde:/usr/local/share/hyde/:/usr/share/hyde/:$XDG_DATA_DIRS" # Causes issues https://github.com/HyDE-Project/HyDE/issues/308#issuecomment-2691229673
 
 # hyde envs
@@ -22,6 +26,16 @@ export THEMES_DIR="${XDG_DATA_HOME}/themes"
 
 #legacy hyde envs // should be deprecated
 
+=======
+export HYDE_CONFIG_HOME="$XDG_CONFIG_HOME/hyde"
+export HYDE_DATA_HOME="$XDG_DATA_HOME/hyde"
+export HYDE_CACHE_HOME="$XDG_CACHE_HOME/hyde"
+export HYDE_STATE_HOME="$XDG_STATE_HOME/hyde"
+export HYDE_RUNTIME_DIR="$XDG_RUNTIME_DIR/hyde"
+export ICONS_DIR="$XDG_DATA_HOME/icons"
+export FONTS_DIR="$XDG_DATA_HOME/fonts"
+export THEMES_DIR="$XDG_DATA_HOME/themes"
+>>>>>>> master
 export scrDir="${LIB_DIR:-$HOME/.local/lib}/hyde"
 export confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 export hydeConfDir="$HYDE_CONFIG_HOME"
@@ -32,21 +46,30 @@ export iconsDir="$ICONS_DIR"
 export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
+<<<<<<< HEAD
 
 #? avoid notify-send to stall the script
+=======
+>>>>>>> master
 send_notifs() {
     local args=("$@")
     notify-send "${args[@]}" &
 }
+<<<<<<< HEAD
 
 print_log() {
     # [ -t 1 ] && return 0 # Skip if not in the terminal
     while (("$#")); do
         # [ "${colored}" == "true" ]
+=======
+print_log() {
+    while (("$#")); do
+>>>>>>> master
         case "$1" in
         -r | +r)
             echo -ne "\e[31m$2\e[0m" >&2
             shift 2
+<<<<<<< HEAD
             ;; # Red
         -g | +g)
             echo -ne "\e[32m$2\e[0m" >&2
@@ -100,6 +123,61 @@ print_log() {
             echo -ne "ERROR :: \e[4;31m$2 \e[0m" >&2
             shift 2
             ;; #error
+=======
+            ;;
+        -g | +g)
+            echo -ne "\e[32m$2\e[0m" >&2
+            shift 2
+            ;;
+        -y | +y)
+            echo -ne "\e[33m$2\e[0m" >&2
+            shift 2
+            ;;
+        -b | +b)
+            echo -ne "\e[34m$2\e[0m" >&2
+            shift 2
+            ;;
+        -m | +m)
+            echo -ne "\e[35m$2\e[0m" >&2
+            shift 2
+            ;;
+        -c | +c)
+            echo -ne "\e[36m$2\e[0m" >&2
+            shift 2
+            ;;
+        -wt | +w)
+            echo -ne "\e[37m$2\e[0m" >&2
+            shift 2
+            ;;
+        -n | +n)
+            echo -ne "\e[96m$2\e[0m" >&2
+            shift 2
+            ;;
+        -stat)
+            echo -ne "\e[4;30;46m $2 \e[0m :: " >&2
+            shift 2
+            ;;
+        -crit)
+            echo -ne "\e[30;41m $2 \e[0m :: " >&2
+            shift 2
+            ;;
+        -warn)
+            echo -ne "WARNING :: \e[30;43m $2 \e[0m :: " >&2
+            shift 2
+            ;;
+        +)
+            echo -ne "\e[38;5;$2m$3\e[0m" >&2
+            shift 3
+            ;;
+        -sec)
+            echo -ne "\e[32m[$2] \e[0m" >&2
+            shift 2
+            ;;
+        -err)
+            echo -ne "ERROR :: \e[4;31m$2 \e[0m" >&2
+            shift 2
+            ;;
+>>>>>>> master
         *)
             echo -ne "$1" >&2
             shift
@@ -108,20 +186,28 @@ print_log() {
     done
     echo "" >&2
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 get_hashmap() {
     unset wallHash
     unset wallList
     unset skipStrays
     unset filetypes
+<<<<<<< HEAD
 
     list_extensions() {
         # Define supported file extensions
+=======
+    list_extensions() {
+>>>>>>> master
         supported_files=(
             "gif"
             "jpg"
             "jpeg"
             "png"
+<<<<<<< HEAD
             "${WALLPAPER_FILETYPES[@]}"
         )
         if [ -n "${WALLPAPER_OVERRIDE_FILETYPES}" ]; then
@@ -221,6 +307,75 @@ get_hashmap() {
 }
 
 # shellcheck disable=SC2120
+=======
+            "${WALLPAPER_FILETYPES[@]}")
+        if [ -n "$WALLPAPER_OVERRIDE_FILETYPES" ]; then
+            supported_files=("${WALLPAPER_OVERRIDE_FILETYPES[@]}")
+        fi
+        printf -- '-iname "*.%s" -o ' "${supported_files[@]}" | sed 's/ -o $//'
+    }
+    list_skipped_path() {
+        local skip_path=(
+            "*/logo/*")
+        printf -- '! -path "%s" ' "${skip_path[@]}" | sed 's/ $//'
+    }
+    find_wallpapers() {
+        local wallSource="$1"
+        if [ -z "$wallSource" ]; then
+            print_log -err "ERROR: wallSource is empty"
+            return 1
+        fi
+        local find_command
+        find_command="find -H \"$wallSource\" -type f \\( $(list_extensions) \\) $(list_skipped_path) -exec \"$hashMech\" {} +"
+        [ "$LOG_LEVEL" == "debug" ] && print_log -g "DEBUG:" -b "Running command:" "$find_command"
+        tmpfile=$(mktemp)
+        eval "$find_command" 2>"$tmpfile" | sort -k2
+        error_output=$(<"$tmpfile") && rm -f "$tmpfile"
+        [ -n "$error_output" ] && print_log -err "ERROR:" -b "found an error: " -r "$error_output" -y " skipping..."
+    }
+    for wallSource in "$@"; do
+        [ "$LOG_LEVEL" == "debug" ] && print_log -g "DEBUG:" -b "wallpaper source path:" "$wallSource"
+        [ -z "$wallSource" ] && continue
+        [ "$wallSource" == "--no-notify" ] && no_notify=1 && continue
+        [ "$wallSource" == "--skipstrays" ] && skipStrays=1 && continue
+        [ "$wallSource" == "--verbose" ] && verboseMap=1 && continue
+        wallSource="$(realpath "$wallSource")"
+        [ -e "$wallSource" ] || {
+            print_log -err "ERROR:" -b "wallpaper source does not exist:" "$wallSource" -y " skipping..."
+            continue
+        }
+        [ "$LOG_LEVEL" == "debug" ] && print_log -g "DEBUG:" -b "wallSource path:" "$wallSource"
+        hashMap=$(find_wallpapers "$wallSource")
+        if [ -z "$hashMap" ]; then
+            no_wallpapers+=("$wallSource")
+            print_log -warn "No compatible wallpapers found in: " "$wallSource"
+            continue
+        fi
+        while read -r hash image; do
+            wallHash+=("$hash")
+            wallList+=("$image")
+        done <<<"$hashMap"
+    done
+    if [ "${#no_wallpapers[@]}" -gt 0 ]; then
+        print_log -warn "No compatible wallpapers found in:" "${no_wallpapers[*]}"
+    fi
+    if [ -z "${#wallList[@]}" ] || [[ ${#wallList[@]} -eq 0 ]]; then
+        if [[ $skipStrays -eq 1 ]]; then
+            return 1
+        else
+            echo "ERROR: No image found in any source"
+            [ -n "$no_notify" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
+            exit 1
+        fi
+    fi
+    if [[ $verboseMap -eq 1 ]]; then
+        echo "// Hash Map //"
+        for indx in "${!wallHash[@]}"; do
+            echo ":: \${wallHash[$indx]}=\"${wallHash[indx]}\" :: \${wallList[$indx]}=\"${wallList[indx]}\""
+        done
+    fi
+}
+>>>>>>> master
 get_themes() {
     unset thmSortS
     unset thmListS
@@ -228,6 +383,7 @@ get_themes() {
     unset thmSort
     unset thmList
     unset thmWall
+<<<<<<< HEAD
 
     while read -r thmDir; do
         local realWallPath
@@ -310,12 +466,64 @@ export HYDE_THEME \
 
 #// hypr vars
 
+=======
+    while read -r thmDir; do
+        local realWallPath
+        realWallPath="$(readlink "$thmDir/wall.set")"
+        if [ ! -e "$realWallPath" ]; then
+            get_hashmap "$thmDir" --skipstrays || continue
+            echo "fixing link :: $thmDir/wall.set"
+            ln -fs "${wallList[0]}" "$thmDir/wall.set"
+        fi
+        [ -f "$thmDir/.sort" ] && thmSortS+=("$(head -1 "$thmDir/.sort")") || thmSortS+=("0")
+        thmWallS+=("$realWallPath")
+        thmListS+=("${thmDir##*/}")
+    done < <(find -H "$HYDE_CONFIG_HOME/themes" -mindepth 1 -maxdepth 1 -type d)
+    while IFS='|' read -r sort theme wall; do
+        thmSort+=("$sort")
+        thmList+=("$theme")
+        thmWall+=("$wall")
+    done < <(paste -d '|' <(printf "%s\n" "${thmSortS[@]}") <(printf "%s\n" "${thmListS[@]}") <(printf "%s\n" "${thmWallS[@]}") | sort -n -k 1 -k 2)
+    if [ "$1" == "--verbose" ]; then
+        echo "// Theme Control //"
+        for indx in "${!thmList[@]}"; do
+            echo -e ":: \${thmSort[$indx]}=\"${thmSort[indx]}\" :: \${thmList[$indx]}=\"${thmList[indx]}\" :: \${thmWall[$indx]}=\"${thmWall[indx]}\""
+        done
+    fi
+}
+export_hyde_config() {
+    local user_conf_state="$XDG_STATE_HOME/hyde/staterc"
+    local user_conf="$XDG_STATE_HOME/hyde/config"
+    [ -f "$user_conf_state" ] && source "$user_conf_state"
+    [ -f "$user_conf" ] && source "$user_conf"
+}
+export_hyde_config
+case "$enableWallDcol" in
+0 | 1 | 2 | 3) ;;
+*) enableWallDcol=0 ;;
+esac
+if [ -z "$HYDE_THEME" ] || [ ! -d "$HYDE_CONFIG_HOME/themes/$HYDE_THEME" ]; then
+    get_themes
+    HYDE_THEME="${thmList[0]}"
+fi
+HYDE_THEME_DIR="$HYDE_CONFIG_HOME/themes/$HYDE_THEME"
+WALLBASH_DIRS=(
+    "$XDG_CONFIG_HOME/wallbash"
+    "$XDG_CONFIG_HOME/hyde/wallbash"
+    "$XDG_DATA_HOME/wallbash"
+    "$XDG_DATA_HOME/hyde/wallbash"
+    "/usr/local/share/hyde/wallbash"
+    "/usr/share/hyde/wallbash")
+wallbashDirs=("${WALLBASH_DIRS[@]}")
+export HYDE_THEME HYDE_THEME_DIR WALLBASH_DIRS wallbashDirs enableWallDcol
+>>>>>>> master
 if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
     hypr_border="$(hyprctl -j getoption decoration:rounding | jq '.int')"
     hypr_width="$(hyprctl -j getoption general:border_size | jq '.int')"
 fi
 export hypr_border=${hypr_border:-${HYDE_BORDER_RADIUS:-2}}
 export hypr_width=${hypr_width:-${HYDE_BORDER_WIDTH:-2}}
+<<<<<<< HEAD
 
 #// extra fns
 
@@ -326,16 +534,29 @@ pkg_installed() {
     elif command -v "flatpak" &>/dev/null && flatpak info "${pkgIn}" &>/dev/null; then
         return 0
     elif hyde-shell pm.sh pq "${pkgIn}" &>/dev/null; then
+=======
+pkg_installed() {
+    local pkgIn=$1
+    if command -v "$pkgIn" &>/dev/null; then
+        return 0
+    elif command -v "flatpak" &>/dev/null && flatpak info "$pkgIn" &>/dev/null; then
+        return 0
+    elif hyde-shell pm.sh pq "$pkgIn" &>/dev/null; then
+>>>>>>> master
         return 0
     else
         return 1
     fi
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 get_aurhlpr() {
     if pkg_installed yay; then
         aurhlpr="yay"
     elif pkg_installed paru; then
+<<<<<<< HEAD
         # shellcheck disable=SC2034
         aurhlpr="paru"
     fi
@@ -370,10 +591,39 @@ check_package() {
     for pkg in "$@"; do
         if ! pkg_installed "${pkg}"; then
             print_log -err "Package is not installed" "'${pkg}'"
+=======
+        aurhlpr="paru"
+    fi
+}
+set_conf() {
+    local varName="$1"
+    local varData="$2"
+    touch "$XDG_STATE_HOME/hyde/staterc"
+    if [ "$(grep -c "^$varName=" "$XDG_STATE_HOME/hyde/staterc")" -eq 1 ]; then
+        sed -i "/^$varName=/c$varName=\"$varData\"" "$XDG_STATE_HOME/hyde/staterc"
+    else
+        echo "$varName=\"$varData\"" >>"$XDG_STATE_HOME/hyde/staterc"
+    fi
+}
+set_hash() {
+    local hashImage="$1"
+    "$hashMech" "$hashImage" | awk '{print $1}'
+}
+check_package() {
+    local lock_file="${XDG_RUNTIME_DIR:-/tmp}/hyde/__package.lock"
+    mkdir -p "${XDG_RUNTIME_DIR:-/tmp}/hyde"
+    if [ -f "$lock_file" ]; then
+        return 0
+    fi
+    for pkg in "$@"; do
+        if ! pkg_installed "$pkg"; then
+            print_log -err "Package is not installed" "'$pkg'"
+>>>>>>> master
             rm -f "$lock_file"
             exit 1
         fi
     done
+<<<<<<< HEAD
 
     touch "$lock_file"
 }
@@ -401,6 +651,38 @@ get_hyprConf() {
     local gsVal
     gsVal="$(grep "^[[:space:]]*\$${hyVar}\s*=" "${file}" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
     [ -n "${gsVal}" ] && [[ "${gsVal}" != \$* ]] && echo "${gsVal}" && return 0
+=======
+    touch "$lock_file"
+}
+get_hyprConf() {
+    local hyArg="$1"
+    local file="${2:-"$HYDE_THEME_DIR/hypr.theme"}"
+    local hyVar="$hyArg"
+    local hyType=""
+
+    #? Allow optional type hint: e.g., FONT_SIZE[int]
+    if [[ "$hyArg" =~ ^([^[]+)\[([a-zA-Z0-9_]+)\]$ ]]; then
+        hyVar="${BASH_REMATCH[1]}"
+        hyType="${BASH_REMATCH[2]}"
+    fi
+
+    #? hyq first (sanitized, then raw), with optional type
+    #? hyq cannot handle $FOO and $FOO_BAR so we will impose hints to make it work
+    if command -v hyq &>/dev/null; then
+        local query="\$$hyVar"
+        [ -n "$hyType" ] && query="${query}[${hyType}]"
+        local hyq_result
+        hyq_result=$(hyq -s --query "$query" "$file" 2>/dev/null)
+        if [ -z "$hyq_result" ]; then
+            hyq_result=$(hyq --query "$query" "$file" 2>/dev/null)
+        fi
+        [ -n "$hyq_result" ] && echo "$hyq_result" && return 0
+    fi
+
+    local gsVal
+    gsVal="$(grep "^[[:space:]]*\$$hyVar\s*=" "$file" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+    [ -n "$gsVal" ] && [[ $gsVal != \$* ]] && echo "$gsVal" && return 0
+>>>>>>> master
     declare -A gsMap=(
         [GTK_THEME]="gtk-theme"
         [ICON_THEME]="icon-theme"
@@ -412,6 +694,7 @@ get_hyprConf() {
         [MONOSPACE_FONT]="monospace-font-name"
         [FONT_SIZE]="font-size"
         [DOCUMENT_FONT_SIZE]="document-font-size"
+<<<<<<< HEAD
         [MONOSPACE_FONT_SIZE]="monospace-font-size"
         # [CODE_THEME]="Wallbash"
         # [SDDM_THEME]=""
@@ -449,13 +732,43 @@ get_rofi_pos() {
     eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
         "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" ")))"')"
 
+=======
+        [MONOSPACE_FONT_SIZE]="monospace-font-size")
+    if [[ -n ${gsMap[$hyVar]} ]]; then
+        gsVal="$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"${gsMap[$hyVar]}"'[[:space:]]*/ {last=$2} END {print last}' "$file")"
+    fi
+    if [ -z "$gsVal" ] || [[ $gsVal == \$* ]]; then
+        case "$hyVar" in
+        "CODE_THEME") echo "Wallbash" ;;
+        "SDDM_THEME") echo "" ;;
+        *) grep "^[[:space:]]*\$default.$hyVar\s*=" \
+            "XDG_DATA_HOME/hyde/hyde.conf" \
+            "$XDG_DATA_HOME/hyde/hyprland.conf" \
+            "/usr/local/share/hyde/hyde.conf" \
+            "/usr/local/share/hyde/hyprland.conf" \
+            "/usr/share/hyde/hyde.conf" \
+            "/usr/share/hyde/hyprland.conf" 2>/dev/null | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | head -n 1 ;;
+        esac
+    else
+        echo "$gsVal"
+    fi
+}
+get_rofi_pos() {
+    [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
+    readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
+    eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
+        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" ")))"')"
+>>>>>>> master
     monRes[2]="${monRes[2]//./}"
     monRes[0]=$((monRes[0] * 100 / monRes[2]))
     monRes[1]=$((monRes[1] * 100 / monRes[2]))
     curPos[0]=$((curPos[0] - monRes[3]))
     curPos[1]=$((curPos[1] - monRes[4]))
     offRes=("${offRes// / }")
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     if [ "${curPos[0]}" -ge "$((monRes[0] / 2))" ]; then
         local x_pos="east"
         local x_off="-$((monRes[0] - curPos[0] - offRes[2]))"
@@ -463,7 +776,10 @@ get_rofi_pos() {
         local x_pos="west"
         local x_off="$((curPos[0] - offRes[0]))"
     fi
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     if [ "${curPos[1]}" -ge "$((monRes[1] / 2))" ]; then
         local y_pos="south"
         local y_off="-$((monRes[1] - curPos[1] - offRes[3]))"
@@ -471,19 +787,31 @@ get_rofi_pos() {
         local y_pos="north"
         local y_off="$((curPos[1] - offRes[1]))"
     fi
+<<<<<<< HEAD
 
     local coordinates="window{location:${x_pos} ${y_pos};anchor:${x_pos} ${y_pos};x-offset:${x_off}px;y-offset:${y_off}px;}"
     echo "${coordinates}"
 }
 
 #? handle pasting
+=======
+    local coordinates="window{location:$x_pos $y_pos;anchor:$x_pos $y_pos;x-offset:${x_off}px;y-offset:${y_off}px;}"
+    echo "$coordinates"
+
+}
+>>>>>>> master
 paste_string() {
     if ! command -v wtype >/dev/null; then exit 0; fi
     if [ -t 1 ]; then return 0; fi
     ignore_paste_file="$HYDE_STATE_HOME/ignore.paste"
+<<<<<<< HEAD
 
     if [[ ! -e "${ignore_paste_file}" ]]; then
         cat <<EOF >"${ignore_paste_file}"
+=======
+    if [[ ! -e $ignore_paste_file ]]; then
+        cat <<EOF >"$ignore_paste_file"
+>>>>>>> master
 kitty
 org.kde.konsole
 terminator
@@ -492,6 +820,7 @@ Alacritty
 xterm-256color
 EOF
     fi
+<<<<<<< HEAD
 
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
     [ -n "${ignore_class}" ] && echo "${ignore_class}" >>"${ignore_paste_file}" && print_log -y "[ignore]" "'$ignore_class'" && exit 0
@@ -508,25 +837,45 @@ is_hovered() {
     eval "$(echo "$data" | jq -r '@sh "cursor_x=\(.x) cursor_y=\(.y) window_x=\(.at[0]) window_y=\(.at[1]) window_size_x=\(.size[0]) window_size_y=\(.size[1])"')"
 
     # Handle variables in case they are null
+=======
+    ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
+    [ -n "$ignore_class" ] && echo "$ignore_class" >>"$ignore_paste_file" && print_log -y "[ignore]" "'$ignore_class'" && exit 0
+    class=$(hyprctl -j activewindow | jq -r '.initialClass')
+    if ! grep -q "$class" "$ignore_paste_file"; then
+        hyprctl -q dispatch exec 'wtype -M ctrl V -m ctrl'
+    fi
+}
+is_hovered() {
+    data=$(hyprctl --batch -j "cursorpos;activewindow" | jq -s '.[0] * .[1]')
+    eval "$(echo "$data" | jq -r '@sh "cursor_x=\(.x) cursor_y=\(.y) window_x=\(.at[0]) window_y=\(.at[1]) window_size_x=\(.size[0]) window_size_y=\(.size[1])"')"
+>>>>>>> master
     cursor_x=${cursor_x:-$(jq -r '.x // 0' <<<"$data")}
     cursor_y=${cursor_y:-$(jq -r '.y // 0' <<<"$data")}
     window_x=${window_x:-$(jq -r '.at[0] // 0' <<<"$data")}
     window_y=${window_y:-$(jq -r '.at[1] // 0' <<<"$data")}
     window_size_x=${window_size_x:-$(jq -r '.size[0] // 0' <<<"$data")}
     window_size_y=${window_size_y:-$(jq -r '.size[1] // 0' <<<"$data")}
+<<<<<<< HEAD
     # Check if the cursor is hovered in the active window
+=======
+>>>>>>> master
     if ((cursor_x >= window_x && cursor_x <= window_x + window_size_x && cursor_y >= window_y && cursor_y <= window_y + window_size_y)); then
         return 0
     fi
     return 1
 }
+<<<<<<< HEAD
 
 toml_write() {
     # Use kwriteconfig6 to write to config files in toml format
+=======
+toml_write() {
+>>>>>>> master
     local config_file=$1
     local group=$2
     local key=$3
     local value=$4
+<<<<<<< HEAD
 
     if ! kwriteconfig6 --file "${config_file}" --group "${group}" --key "${key}" "${value}" 2>/dev/null; then
         if ! grep -q "^\[${group}\]" "${config_file}"; then
@@ -553,11 +902,33 @@ accepted_mime_types() {
 
     for mime_type in "${mime_types_array[@]}"; do
         if file --mime-type -b "${file}" | grep -q "^${mime_type}"; then
+=======
+    if ! kwriteconfig6 --file "$config_file" --group "$group" --key "$key" "$value" 2>/dev/null; then
+        if ! grep -q "^\[$group\]" "$config_file"; then
+            echo -e "\n[$group]\n$key=$value" >>"$config_file"
+        elif ! grep -q "^$key=" "$config_file"; then
+            sed -i "/^\[$group\]/a $key=$value" "$config_file"
+        fi
+    fi
+}
+extract_thumbnail() {
+    local x_wall="$1"
+    x_wall=$(realpath "$x_wall")
+    local temp_image="$2"
+    ffmpeg -y -i "$x_wall" -vf "thumbnail,scale=1000:-1" -frames:v 1 -update 1 "$temp_image" &>/dev/null
+}
+accepted_mime_types() {
+    local mime_types_array=$1
+    local file=$2
+    for mime_type in "${mime_types_array[@]}"; do
+        if file --mime-type -b "$file" | grep -q "^$mime_type"; then
+>>>>>>> master
             return 0
         else
             print_log -err "File type not supported for this wallpaper backend."
             notify-send -u critical -a "HyDE-Alert" "File type not supported for this wallpaper backend."
         fi
+<<<<<<< HEAD
 
     done
 
@@ -582,3 +953,17 @@ export -f get_hyprConf get_rofi_pos \
     extract_thumbnail accepted_mime_types \
     dconf_write send_notifs \
     export_hyde_config
+=======
+    done
+}
+dconf_write() {
+    local key="$1"
+    local value="$2"
+    if dconf write "$key" "'$value'"; then
+        print_log -sec "dconf" -stat "set" "$key to $value"
+    else
+        print_log -sec "dconf" -warn "failed to set" "$key"
+    fi
+}
+export -f get_hyprConf get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config
+>>>>>>> master

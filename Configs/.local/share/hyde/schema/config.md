@@ -95,6 +95,7 @@ Cava visualizer configuration.
 | standby | Standby character for cava. | 🎶 |
 | width | Width of the cava output. | 20 |
 
+<<<<<<< HEAD
 ### [hypr.config]
 
 Hypr configuration.
@@ -102,6 +103,16 @@ Hypr configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | sanitize | List of regex to sanitize in the theme.config. | [".*rgba\(.*,.*,.*,.*\)"] |
+=======
+### [gtk3]
+
+GTK3 configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| font | GTK3 font. | Canterell |
+| font_size | GTK3 font size. | 10 |
+>>>>>>> master
 
 ### [hyprland]
 
@@ -126,13 +137,21 @@ Hyprland configuration.
 | gtk_theme | GTK theme. | Wallbash-Gtk |
 | icon_theme | Icon theme. | Tela-circle-dracula |
 | idle | Idle manager. | hypridle |
+<<<<<<< HEAD
+=======
+| blue_light_filter | Blue-light filter. | hyprsunset |
+>>>>>>> master
 | lockscreen | Lockscreen. | lockscreen.sh |
 | monospace_font | Monospace font. | CaskaydiaCove Nerd Font Mono |
 | monospace_font_size | Monospace font size. | 9 |
 | quickapps | Quick apps. | kitty |
 | terminal | Terminal. | kitty |
 
+<<<<<<< HEAD
 ### [hyprland_start]
+=======
+### [hyprland-start]
+>>>>>>> master
 
 Hyprland start configuration.
 
@@ -144,6 +163,10 @@ Hyprland start configuration.
 | battery_notify | Battery notification script. | batterynotify.sh |
 | dbus_share_picker | DBus share picker. | dbus-update-activation-environment --systemd --all |
 | idle_daemon | Idle daemon. | hypridle |
+<<<<<<< HEAD
+=======
+| blue_light_filter_daemon | Blue-light filter daemon. | hyprsunset |
+>>>>>>> master
 | image_clipboard | Image clipboard. | wl-paste --type image --watch cliphist store |
 | network_manager | Network manager. | nm-applet --indicator |
 | notifications | Notifications. | swaync |
@@ -174,6 +197,31 @@ Notification script configuration.
 | font | Font for notifications. | mononoki Nerd Font |
 | font_size | Font size for notifications. | 10 |
 
+<<<<<<< HEAD
+=======
+### [qt5]
+
+Qt5 configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| font | Qt5 font. | Canterell |
+| font_size | Qt5 font size. | 10 |
+| monospace_font | Qt5 monospace font. | CaskaydiaCove Nerd Font Mono |
+| monospace_font_size | Qt5 monospace font size. | 9 |
+
+### [qt6]
+
+Qt6 configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| font | Qt6 font. | Canterell |
+| font_size | Qt6 font size. | 10 |
+| monospace_font | Qt6 monospace font. | CaskaydiaCove Nerd Font Mono |
+| monospace_font_size | Qt6 monospace font size. | 9 |
+
+>>>>>>> master
 ### [rofi]
 
 Global rofi configuration.
@@ -258,14 +306,26 @@ themeselect.sh configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+<<<<<<< HEAD
+=======
+| column_count | Number of columns for theme selector. | 3 |
+>>>>>>> master
 | scale | Scaling for theme selector. | 6 |
 
 ### [rofi.wallpaper]
 
+<<<<<<< HEAD
 swwwallselect.sh configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+=======
+wallpaper select configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| column_count | Number of columns for wallpaper selector. | 3 |
+>>>>>>> master
 | scale | Scaling for wallpaper. | 10 |
 
 ### [rofi.websearch]
@@ -296,10 +356,25 @@ screenshot.sh configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+<<<<<<< HEAD
+=======
+| annotation_enabled | Enable or disable annotation feature. | true |
+>>>>>>> master
 | annotation_post_command | Post command for annotation tool. | [""] |
 | annotation_pre_command | Pre command for annotation tool. | [] |
 | annotation_tool | Annotation tool for screenshots. | satty |
 
+<<<<<<< HEAD
+=======
+### [screenshot.ocr]
+
+OCR configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| tesseract_languages | Place desired languages to use for text recognition. To see installed languages run `tesseract --list-langs`. | ["eng"] |
+
+>>>>>>> master
 ### [sysmonitor]
 
 sysmonlaunch.sh configuration.
@@ -334,12 +409,21 @@ Wallpaper configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+<<<<<<< HEAD
 | backend | Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH | swww |
 | custom_paths | List of paths to search for wallpapers. | [] |
 
 ### [wallpaper.swww]
 
 swwwallselect.sh configuration.
+=======
+| backend | Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH | awww |
+| custom_paths | List of paths to search for wallpapers. | [] |
+
+### [wallpaper.awww]
+
+wallpaper select configuration.
+>>>>>>> master
 
 | Key | Description | Default |
 | --- | ----------- | ------- |

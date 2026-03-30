@@ -19,6 +19,10 @@ Support multilingue pour le README
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 [![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](README.pt-br.md)
+<<<<<<< HEAD
+=======
+[![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](README.tr.md)
+>>>>>>> master
 
 <div align="center">
 
@@ -68,7 +72,11 @@ Le script d'installation est conçu pour une installation minimale d'[Arch Linux
 Pour supporter NixOS, un projet séparé est maintenu @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
+<<<<<<< HEAD
 > Le script d'installation détectera automatiquement une carte NVIDIA et installera les pilotes nvidia-dkms pour votre noyau.
+=======
+> Le script d'installation détectera automatiquement une carte NVIDIA et installera les pilotes nvidia-open-dkms pour votre noyau.
+>>>>>>> master
 > Assurez-vous que votre carte NVIDIA supporte les pilotes dkms dans la liste fournie [ici](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]

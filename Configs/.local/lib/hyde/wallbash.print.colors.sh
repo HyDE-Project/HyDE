@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 # shellcheck disable=SC2154
 
 if [[ -z $dcol_pry1 ]]; then
@@ -8,23 +9,38 @@ if [[ -z $dcol_pry1 ]]; then
 fi
 
 # Function to convert hex to RGB
+=======
+if [[ -z $dcol_pry1 ]]; then
+    cacheDir=${cacheDir:-$HOME/.cache/hyde}
+    source "$cacheDir/wall.dcol"
+fi
+>>>>>>> master
 hex_to_rgb() {
     local hex=$1
     echo "$((16#${hex:0:2})) $((16#${hex:2:2})) $((16#${hex:4:2}))"
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 print_color() {
     echo -n " "
     for hex_color in "$@"; do
         local rgb_color
         rgb_color=$(hex_to_rgb "$hex_color")
+<<<<<<< HEAD
         # echo -en "\e[48;2;${rgb_color// /;};1m        \e[0m "
+=======
+>>>>>>> master
         echo -en "\e[48;2;${rgb_color// /;};m  \e[0m"
     done
     echo
 }
+<<<<<<< HEAD
 
 # Print grouped colors
+=======
+>>>>>>> master
 print_color "$dcol_pry1" "$dcol_txt1" "$dcol_1xa1" "$dcol_1xa2" "$dcol_1xa3" "$dcol_1xa4" "$dcol_1xa5" "$dcol_1xa6" "$dcol_1xa7" "$dcol_1xa8" "$dcol_1xa9"
 print_color "$dcol_pry2" "$dcol_txt2" "$dcol_2xa1" "$dcol_2xa2" "$dcol_2xa3" "$dcol_2xa4" "$dcol_2xa5" "$dcol_2xa6" "$dcol_2xa7" "$dcol_2xa8" "$dcol_2xa9"
 print_color "$dcol_pry3" "$dcol_txt3" "$dcol_3xa1" "$dcol_3xa2" "$dcol_3xa3" "$dcol_3xa4" "$dcol_3xa5" "$dcol_3xa6" "$dcol_3xa7" "$dcol_3xa8" "$dcol_3xa9"

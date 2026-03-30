@@ -21,8 +21,13 @@ def main():
     parser.add_argument(
         "file",
         nargs="?",
+<<<<<<< HEAD
         default="./config.toml",
         help="Path to the TOML file (default: ./config.toml)",
+=======
+        default="./schema.toml",
+        help="Path to the TOML file (default: ./schema.toml)",
+>>>>>>> master
     )
     args = parser.parse_args()
 

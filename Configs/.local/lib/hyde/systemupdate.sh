@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 
 # Check release
 if [ ! -f /etc/arch-release ]; then
@@ -82,3 +83,8 @@ if [ $upd -eq 0 ]; then
 else
     echo "{\"text\":\"󰮯 $upd\", \"tooltip\":\"󱓽 Official $ofc\n󱓾 AUR $aur$fpk_disp\"}"
 fi
+=======
+[[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+notify-send -a "Deprecation Notice" "systemupdate is deprecated. Please use hyde-shell system.update instead." -i dialog-information
+"${LIB_DIR}/hyde/system.update.sh" "$@"
+>>>>>>> master

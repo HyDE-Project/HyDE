@@ -142,6 +142,7 @@ def get_theme_preview(theme):
         theme_author = theme_data.get("OWNER")
         theme_description = theme_data.get("DESCRIPTION")
         color1 = (
+<<<<<<< HEAD
             theme_data.get("COLORSCHEME", [])[0]
             if theme_data.get("COLORSCHEME")
             else "#000000"
@@ -150,6 +151,12 @@ def get_theme_preview(theme):
             theme_data.get("COLORSCHEME", [])[1]
             if theme_data.get("COLORSCHEME")
             else "#000000"
+=======
+            theme_data.get("COLORSCHEME", [])[0] if theme_data.get("COLORSCHEME") else "#000000"
+        )
+        color2 = (
+            theme_data.get("COLORSCHEME", [])[1] if theme_data.get("COLORSCHEME") else "#000000"
+>>>>>>> master
         )
 
         # Calculate opposite colors for text
@@ -209,9 +216,13 @@ def get_theme_preview(theme):
 
 
 def patch_single_theme(theme):
+<<<<<<< HEAD
     url = [
         theme_data["LINK"] for theme_data in JSON_DATA if theme_data["THEME"] == theme
     ]
+=======
+    url = [theme_data["LINK"] for theme_data in JSON_DATA if theme_data["THEME"] == theme]
+>>>>>>> master
     print(f"📦 Fetching {theme}...")
     try:
         result = subprocess.run(
@@ -292,9 +303,13 @@ def fetch_all_themes():
     themes_dir = os.path.join(config_home, "hyde/themes")
     if os.path.exists(themes_dir):
         theme_dirs = [
+<<<<<<< HEAD
             d
             for d in os.listdir(themes_dir)
             if os.path.isdir(os.path.join(themes_dir, d))
+=======
+            d for d in os.listdir(themes_dir) if os.path.isdir(os.path.join(themes_dir, d))
+>>>>>>> master
         ]
         for theme_name in theme_dirs:
             theme_data = next((t for t in JSON_DATA if t["THEME"] == theme_name), None)
@@ -329,6 +344,7 @@ def main():
         epilog="Env:\n"
         "'export FULL_THEME_UPDATE=true' Overwrites the archived files (useful for updates and changes in archives)",
     )
+<<<<<<< HEAD
     parser.add_argument(
         "--json", "-j", action="store_true", help="Fetch JSON data after cloning"
     )
@@ -338,13 +354,22 @@ def main():
     parser.add_argument(
         "--preview", "-p", type=str, metavar="THEME", help="Get theme preview"
     )
+=======
+    parser.add_argument("--json", "-j", action="store_true", help="Fetch JSON data after cloning")
+    parser.add_argument("--select", "-S", action="store_true", help="Select themes using fzf")
+    parser.add_argument("--preview", "-p", type=str, metavar="THEME", help="Get theme preview")
+>>>>>>> master
 
     parser.add_argument(
         "--preview-text", "-t", type=str, metavar="TEXT", help="Preview text to display"
     )
+<<<<<<< HEAD
     parser.add_argument(
         "--skip-clone", action="store_true", help="Skip cloning repository"
     )
+=======
+    parser.add_argument("--skip-clone", action="store_true", help="Skip cloning repository")
+>>>>>>> master
     parser.add_argument(
         "--fetch",
         "-f",

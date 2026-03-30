@@ -31,7 +31,11 @@ window {
     transparency:                "real";
     cursor:                      "default";
     //background-image: this is dynamically set
+<<<<<<< HEAD
     background-image:            url("~/.local/share/hyde/rofi/steamdeck_holographic.png", width);
+=======
+    background-image:            url("~/.local/share/hyde/rofi/assets/steamdeck_holographic.png", width);
+>>>>>>> master
     background-color:            transparent;
 }
 mainbox {

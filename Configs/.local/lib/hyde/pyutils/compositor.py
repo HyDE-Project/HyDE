@@ -1,11 +1,16 @@
 import os
 import json
+<<<<<<< HEAD
 import subprocess
+=======
+import socket as _socket
+>>>>>>> master
 from typing import Union, Any
 
 
 class HyprctlWrapper:
     @staticmethod
+<<<<<<< HEAD
     def _execute_command(cmd: list) -> str:
         """Execute hyprctl command and return output"""
         try:
@@ -13,11 +18,42 @@ class HyprctlWrapper:
             return result.stdout
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"hyprctl command failed: {e}")
+=======
+    def _socket_path() -> str:
+        his = os.getenv("HYPRLAND_INSTANCE_SIGNATURE")
+        if not his:
+            raise EnvironmentError(
+                "HYPRLAND_INSTANCE_SIGNATURE is not set. Is Hyprland running?"
+            )
+        runtime_dir = os.getenv("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
+        return os.path.join(runtime_dir, "hypr", his, ".socket.sock")
+
+    @staticmethod
+    def _send(command: str) -> str:
+        """Send a command to the Hyprland IPC socket and return the response.
+
+        Format: [flags]/command args  (e.g. 'j/getoption decoration:rounding')
+        The socket is opened immediately before the request and closed right after,
+        as required by Hyprland's synchronous socket model.
+        """
+        with _socket.socket(_socket.AF_UNIX, _socket.SOCK_STREAM) as sock:
+            sock.connect(HyprctlWrapper._socket_path())
+            sock.sendall(command.encode())
+            sock.shutdown(_socket.SHUT_WR)
+            chunks = []
+            while chunk := sock.recv(4096):
+                chunks.append(chunk)
+        return b"".join(chunks).decode()
+>>>>>>> master
 
     @staticmethod
     def getoption(option: str, get_set: bool = False) -> Union[int, str, bool, Any]:
         """
+<<<<<<< HEAD
         Get hyprctl option value
+=======
+        Get a Hyprland option value via the IPC socket.
+>>>>>>> master
 
         Args:
             option: Option name (e.g., 'decoration:rounding')
@@ -26,6 +62,7 @@ class HyprctlWrapper:
         Returns:
             The option value or set status depending on get_set parameter
         """
+<<<<<<< HEAD
         if not os.getenv("HYPRLAND_INSTANCE_SIGNATURE"):
             raise EnvironmentError(
                 "HYPRLAND_INSTANCE_SIGNATURE is not set. Cannot run hyprctl command."
@@ -33,6 +70,9 @@ class HyprctlWrapper:
 
         cmd = ["hyprctl", "getoption", option, "-j"]
         output = HyprctlWrapper._execute_command(cmd)
+=======
+        output = HyprctlWrapper._send(f"j/getoption {option}")
+>>>>>>> master
 
         try:
             data = json.loads(output)
@@ -86,6 +126,7 @@ class HyprctlWrapper:
         Returns:
             The formatted rofi position string.
         """
+<<<<<<< HEAD
         cursor_pos = json.loads(
             HyprctlWrapper._execute_command(["hyprctl", "cursorpos", "-j"])
         )
@@ -96,6 +137,12 @@ class HyprctlWrapper:
         focused_monitor = next(
             (monitor for monitor in monitors if monitor["focused"]), None
         )
+=======
+        cursor_pos = json.loads(HyprctlWrapper._send("j/cursorpos"))
+        monitors = json.loads(HyprctlWrapper._send("j/monitors"))
+
+        focused_monitor = next((monitor for monitor in monitors if monitor["focused"]), None)
+>>>>>>> master
         if not focused_monitor:
             raise RuntimeError("No focused monitor found.")
 
@@ -142,6 +189,7 @@ class HyprctlWrapper:
         Returns:
             True if the cursor is hovered on a window, False otherwise.
         """
+<<<<<<< HEAD
         data = json.loads(
             HyprctlWrapper._execute_command(
                 ["hyprctl", "--batch", "-j", "cursorpos;activewindow"]
@@ -154,6 +202,17 @@ class HyprctlWrapper:
         window_y = data.get("at", [0, 0])[1]
         window_size_x = data.get("size", [0, 0])[0]
         window_size_y = data.get("size", [0, 0])[1]
+=======
+        cursor_pos = json.loads(HyprctlWrapper._send("j/cursorpos"))
+        active_window = json.loads(HyprctlWrapper._send("j/activewindow"))
+
+        cursor_x = cursor_pos.get("x", 0)
+        cursor_y = cursor_pos.get("y", 0)
+        window_x = active_window.get("at", [0, 0])[0]
+        window_y = active_window.get("at", [0, 0])[1]
+        window_size_x = active_window.get("size", [0, 0])[0]
+        window_size_y = active_window.get("size", [0, 0])[1]
+>>>>>>> master
 
         if (
             window_x <= cursor_x <= window_x + window_size_x

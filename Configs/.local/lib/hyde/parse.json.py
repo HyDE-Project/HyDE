@@ -11,9 +11,13 @@ logger = logger.get_logger()
 def remove_comments(json_data):
     """Remove single-line and multi-line comments from JSON data."""
     json_data = re.sub(r"//.*", "", json_data)  # Remove single-line comments
+<<<<<<< HEAD
     json_data = re.sub(
         r"/\*.*?\*/", "", json_data, flags=re.DOTALL
     )  # Remove multi-line comments
+=======
+    json_data = re.sub(r"/\*.*?\*/", "", json_data, flags=re.DOTALL)  # Remove multi-line comments
+>>>>>>> master
     return json_data
 
 

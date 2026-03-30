@@ -19,6 +19,10 @@ Multi-language README support
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](README.ar.md)
 [![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](README.pt-br.md)
+<<<<<<< HEAD
+=======
+[![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](README.tr.md)
+>>>>>>> master
 
 <div align="center"><br>
   <a href="#installatie"><kbd> <br> Installatie <br> </kbd></a>&ensp;&ensp;
@@ -59,7 +63,11 @@ Hoewel het installeren van HyDE naast een andere [DE](https://wiki.archlinux.org
 Voor NixOS-ondersteuning is er een apart project dat wordt onderhouden op [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
+<<<<<<< HEAD
 > Het installatiescript detecteert automatisch een NVIDIA-kaart en installeert nvidia-dkms drivers voor je kernel.
+=======
+> Het installatiescript detecteert automatisch een NVIDIA-kaart en installeert nvidia-open-dkms drivers voor je kernel.
+>>>>>>> master
 > Zorg controleer dat je NVIDIA-kaart dkms drivers ondersteunt in [deze lijst](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]

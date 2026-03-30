@@ -131,7 +131,11 @@ class CurveEditor(QtWidgets.QWidget):
     def __init__(self, points=None, parent=None):
         super().__init__(parent)
         self.setMinimumHeight(160)  # Increased from 120 to 160
+<<<<<<< HEAD
         self.setMinimumWidth(500)   # Increased from 400 to 500
+=======
+        self.setMinimumWidth(500)  # Increased from 400 to 500
+>>>>>>> master
         self.radius = 6
         self.drag_idx = None
         self.hover_idx = None
@@ -144,7 +148,11 @@ class CurveEditor(QtWidgets.QWidget):
             self.points = []
             for i in range(9):  # A1-A9 accents
                 x = (i + 1) * 10  # 10, 20, 30, ..., 90 (equal spacing)
+<<<<<<< HEAD
                 y = 80 - i * 5    # 80, 75, 70, ..., 40 (gradual decrease)
+=======
+                y = 80 - i * 5  # 80, 75, 70, ..., 40 (gradual decrease)
+>>>>>>> master
                 self.points.append((x, y))
             # Text point at the end
             self.points.append((95, 20))  # Text point at far right, low
@@ -156,7 +164,11 @@ class CurveEditor(QtWidgets.QWidget):
         qp = QtGui.QPainter(self)
         qp.setRenderHint(QtGui.QPainter.RenderHint.Antialiasing)
         w, h = self.width(), self.height()
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Get system colors from palette
         palette = self.palette()
         base_color = palette.color(QtGui.QPalette.ColorRole.Base)
@@ -164,6 +176,7 @@ class CurveEditor(QtWidgets.QWidget):
         disabled_text = palette.color(QtGui.QPalette.ColorRole.PlaceholderText)
         highlight_color = palette.color(QtGui.QPalette.ColorRole.Highlight)
         window_color = palette.color(QtGui.QPalette.ColorRole.Window)
+<<<<<<< HEAD
         
         # Apply disabled state
         if not self.enabled:
@@ -172,11 +185,25 @@ class CurveEditor(QtWidgets.QWidget):
         # Draw background
         qp.fillRect(self.rect(), base_color)
         
+=======
+
+        # Apply disabled state
+        if not self.enabled:
+            qp.setOpacity(0.4)
+
+        # Draw background
+        qp.fillRect(self.rect(), base_color)
+
+>>>>>>> master
         # Draw minimal grid
         grid_color = disabled_text if not self.enabled else text_color
         grid_color.setAlpha(30)
         qp.setPen(QtGui.QPen(grid_color, 1))
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Simple grid lines without labels - 11 vertical lines create 10 equal spaces
         for i in range(1, 11):  # 10 vertical lines (plus the edges = 11 total)
             x = i * (w - 2 * self.radius) / 10 + self.radius
@@ -184,24 +211,40 @@ class CurveEditor(QtWidgets.QWidget):
         for i in range(1, 10):  # Keep 9 horizontal lines
             y = i * (h - 2 * self.radius) / 10 + self.radius
             qp.drawLine(self.radius, int(y), w - self.radius, int(y))
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Draw curve
         curve_color = disabled_text if not self.enabled else highlight_color
         pen = QtGui.QPen(curve_color, 2)
         qp.setPen(pen)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         if len(self.points) > 1:
             for i in range(len(self.points) - 1):
                 p1 = self._to_screen(self.points[i], w, h)
                 p2 = self._to_screen(self.points[i + 1], w, h)
                 qp.drawLine(*p1, *p2)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Draw control points
         for idx, pt in enumerate(self.points):
             x, y = self._to_screen(pt, w, h)
             is_hover = idx == self.hover_idx and self.enabled
             is_drag = idx == self.drag_idx and self.enabled
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> master
             # Point styling
             if is_drag:
                 r = 8
@@ -222,7 +265,11 @@ class CurveEditor(QtWidgets.QWidget):
                 else:  # Accent points
                     color = base_color
                     border_color = highlight_color
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> master
             # Draw point
             qp.setBrush(color)
             qp.setPen(QtGui.QPen(border_color, 1))
@@ -268,9 +315,19 @@ class CurveEditor(QtWidgets.QWidget):
                 # Show tooltip with current values
                 bri, sat = pt
                 if idx == 9:
+<<<<<<< HEAD
                     self.setToolTip(f"Text: Brightness={int(bri)}%, Saturation={int(sat)}%\nDrag to adjust text color properties")
                 else:
                     self.setToolTip(f"Accent {idx + 1}: Brightness={int(bri)}%, Saturation={int(sat)}%\nDrag to adjust this accent color's properties")
+=======
+                    self.setToolTip(
+                        f"Text: Brightness={int(bri)}%, Saturation={int(sat)}%\nDrag to adjust text color properties"
+                    )
+                else:
+                    self.setToolTip(
+                        f"Accent {idx + 1}: Brightness={int(bri)}%, Saturation={int(sat)}%\nDrag to adjust this accent color's properties"
+                    )
+>>>>>>> master
                 found = True
                 break
         if not found:
@@ -278,9 +335,13 @@ class CurveEditor(QtWidgets.QWidget):
             self.setCursor(QtCore.Qt.CursorShape.ArrowCursor)
             self.setToolTip("")
         if self.drag_idx is not None:
+<<<<<<< HEAD
             bri, sat = self._from_screen(
                 event.position().x(), event.position().y(), w, h
             )
+=======
+            bri, sat = self._from_screen(event.position().x(), event.position().y(), w, h)
+>>>>>>> master
             self.points[self.drag_idx] = (bri, sat)
             self._drag_pos = (event.position().x(), event.position().y())
             # Mark as touched when user drags
@@ -291,7 +352,13 @@ class CurveEditor(QtWidgets.QWidget):
             if self.drag_idx == 9:
                 self.setToolTip(f"Text: Brightness={int(bri)}%, Saturation={int(sat)}%")
             else:
+<<<<<<< HEAD
                 self.setToolTip(f"Accent {self.drag_idx + 1}: Brightness={int(bri)}%, Saturation={int(sat)}%")
+=======
+                self.setToolTip(
+                    f"Accent {self.drag_idx + 1}: Brightness={int(bri)}%, Saturation={int(sat)}%"
+                )
+>>>>>>> master
             self.curveChanged.emit(self.points)
             self.update()
         else:
@@ -361,6 +428,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
     ):
         super().__init__()
         self.setWindowTitle("Hyde Color Editor")
+<<<<<<< HEAD
         
         # FORCE FLOATING - This WILL work!
         self.setWindowFlags(
@@ -375,6 +443,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
         self.save_shortcut = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+S"), self)
         self.save_shortcut.activated.connect(self.on_save)
         
+=======
+
+        # FORCE FLOATING - This WILL work!
+        self.setWindowFlags(QtCore.Qt.WindowType.Window | QtCore.Qt.WindowType.WindowStaysOnTopHint)
+
+        # Set window properties
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips)
+
+        # Setup keyboard shortcuts
+        self.save_shortcut = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+S"), self)
+        self.save_shortcut.activated.connect(self.on_save)
+
+>>>>>>> master
         self.input_path = input_path
         self.output_path = output_path
         self.curve_presets = curve_presets or {
@@ -390,7 +471,16 @@ class ColorShuffleQt(QtWidgets.QWidget):
         ColorRow = type("ColorRow", (), {})
         self.color_rows = []
         self.text_locked = [True, True, True, True]  # Text colors locked by default
+<<<<<<< HEAD
         self.primary_locked = [False, False, False, False]  # Primary colors unlocked by default
+=======
+        self.primary_locked = [
+            False,
+            False,
+            False,
+            False,
+        ]  # Primary colors unlocked by default
+>>>>>>> master
         self.accent_locked = [[False] * 9 for _ in range(4)]  # Accent colors unlocked by default
         # Store original colors for reset functionality
         self.original_colors = initial_colors.copy()
@@ -420,38 +510,61 @@ class ColorShuffleQt(QtWidgets.QWidget):
         top_bar = QtWidgets.QHBoxLayout()
         top_bar.setContentsMargins(0, 0, 0, 0)
         top_bar.setSpacing(5)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Title
         title_label = QtWidgets.QLabel("Hyde Color Editor")
         title_label.setStyleSheet("font-weight: bold; font-size: 14px;")
         top_bar.addWidget(title_label)
+<<<<<<< HEAD
         
         top_bar.addStretch()  # Push buttons to the right
         
+=======
+
+        top_bar.addStretch()  # Push buttons to the right
+
+>>>>>>> master
         # Reset button with icon
         reset_btn = QtWidgets.QPushButton("↻")  # Reset symbol
         reset_btn.setFixedSize(30, 30)
         reset_btn.setToolTip("Reset to original colors")
         reset_btn.clicked.connect(self.on_reset)
         top_bar.addWidget(reset_btn)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Save button with icon
         save_btn = QtWidgets.QPushButton("💾")  # Save icon
         save_btn.setFixedSize(30, 30)
         save_btn.setToolTip("Save colors (Ctrl+S)")
         save_btn.clicked.connect(self.on_save)
         top_bar.addWidget(save_btn)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         layout.addLayout(top_bar)
 
         # === MAIN SECTION: Color Grid + Curve Editor (Side by Side) ===
         main_content = QtWidgets.QHBoxLayout()
         main_content.setSpacing(6)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # LEFT: Color Palette (Direct, no wrapper)
         palette_label = QtWidgets.QLabel("Color Palette")
         palette_label.setStyleSheet("font-weight: bold;")
         palette_label.setContentsMargins(0, 0, 0, 0)
+<<<<<<< HEAD
         
         # Color grid as QListWidget for drag-and-drop
         self.row_list = QtWidgets.QListWidget()
@@ -470,6 +583,18 @@ class ColorShuffleQt(QtWidgets.QWidget):
         self.row_list.setHorizontalScrollBarPolicy(
             QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff
         )
+=======
+
+        # Color grid as QListWidget for drag-and-drop
+        self.row_list = QtWidgets.QListWidget()
+        self.row_list.setFixedWidth(420)  # Increased width for extra text column
+        self.row_list.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.InternalMove)
+        self.row_list.setDefaultDropAction(QtCore.Qt.DropAction.MoveAction)
+        self.row_list.setSpacing(1)  # 1px spacing between rows
+        self.row_list.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
+        self.row_list.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.row_list.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+>>>>>>> master
         self.row_list.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.row_list.setStyleSheet(
             "QListWidget { padding: 1; margin: 0; border: none; border-radius: 0px; background: transparent; } QListWidget::item { margin: 0; padding: 0; background: transparent; } QPushButton { min-width: 0; min-height: 0; padding: 0; margin: 0; }"
@@ -487,7 +612,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
             )
             pry_btn.clicked.connect(lambda _, idx=i: self.pick_color(idx, "primary"))
             pry_btn.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+<<<<<<< HEAD
             pry_btn.customContextMenuRequested.connect(lambda pos, idx=i: self.toggle_primary_lock(idx))
+=======
+            pry_btn.customContextMenuRequested.connect(
+                lambda pos, idx=i: self.toggle_primary_lock(idx)
+            )
+>>>>>>> master
             # Set initial style and tooltip
             self.update_primary_button_style(pry_btn, i)
             self.update_primary_button_tooltip(pry_btn, i)
@@ -499,7 +630,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
             )
             txt_btn.clicked.connect(lambda _, idx=i: self.pick_color(idx, "text"))
             txt_btn.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+<<<<<<< HEAD
             txt_btn.customContextMenuRequested.connect(lambda pos, idx=i: self.toggle_text_lock(idx))
+=======
+            txt_btn.customContextMenuRequested.connect(
+                lambda pos, idx=i: self.toggle_text_lock(idx)
+            )
+>>>>>>> master
             # Set initial text to lock icon since locked by default
             txt_btn.setText("🔒")
             # Set initial tooltip and style based on lock state
@@ -515,11 +652,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
                     QtWidgets.QSizePolicy.Policy.Fixed,
                     QtWidgets.QSizePolicy.Policy.Fixed,
                 )
+<<<<<<< HEAD
                 acc_btn.clicked.connect(
                     lambda _, ii=i, jj=j: self.pick_color((ii, jj), "accent")
                 )
                 acc_btn.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
                 acc_btn.customContextMenuRequested.connect(lambda pos, ii=i, jj=j: self.toggle_accent_lock(ii, jj))
+=======
+                acc_btn.clicked.connect(lambda _, ii=i, jj=j: self.pick_color((ii, jj), "accent"))
+                acc_btn.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+                acc_btn.customContextMenuRequested.connect(
+                    lambda pos, ii=i, jj=j: self.toggle_accent_lock(ii, jj)
+                )
+>>>>>>> master
                 # Set initial style and tooltip
                 self.update_accent_button_style(acc_btn, i, j)
                 self.update_accent_button_tooltip(acc_btn, i, j)
@@ -537,19 +682,31 @@ class ColorShuffleQt(QtWidgets.QWidget):
             self.row_widgets.append((pry_btn, txt_btn, acc_btns))
         self.row_list.setMinimumHeight(108)  # 4 rows × 25px + some spacing
         self.row_list.setMaximumHeight(108)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Add palette label and grid directly to main content with minimal spacing
         palette_layout = QtWidgets.QVBoxLayout()
         palette_layout.setContentsMargins(0, 0, 0, 0)
         palette_layout.setSpacing(1)  # Minimal spacing between label and grid
         palette_layout.addWidget(palette_label)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Add column headers
         header_widget = QtWidgets.QWidget()
         header_layout = QtWidgets.QHBoxLayout(header_widget)
         header_layout.setSpacing(1)
         header_layout.setContentsMargins(2, 0, 2, 0)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Header labels with same width as color buttons
         primary_header = QtWidgets.QLabel("P")
         primary_header.setFixedSize(35, 20)
@@ -557,13 +714,18 @@ class ColorShuffleQt(QtWidgets.QWidget):
         primary_header.setStyleSheet("font-weight: bold; font-size: 10px;")
         primary_header.setToolTip("Primary Color")
         header_layout.addWidget(primary_header)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         text_header = QtWidgets.QLabel("T")
         text_header.setFixedSize(35, 20)
         text_header.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         text_header.setStyleSheet("font-weight: bold; font-size: 10px;")
         text_header.setToolTip("Text Color")
         header_layout.addWidget(text_header)
+<<<<<<< HEAD
         
         for i in range(9):
             acc_header = QtWidgets.QLabel(f"A{i+1}")
@@ -573,6 +735,17 @@ class ColorShuffleQt(QtWidgets.QWidget):
             acc_header.setToolTip(f"Accent Color {i+1}")
             header_layout.addWidget(acc_header)
         
+=======
+
+        for i in range(9):
+            acc_header = QtWidgets.QLabel(f"A{i + 1}")
+            acc_header.setFixedSize(35, 20)
+            acc_header.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+            acc_header.setStyleSheet("font-weight: bold; font-size: 10px;")
+            acc_header.setToolTip(f"Accent Color {i + 1}")
+            header_layout.addWidget(acc_header)
+
+>>>>>>> master
         header_layout.addStretch()
         palette_layout.addWidget(header_widget)
         palette_layout.addWidget(self.row_list)
@@ -582,11 +755,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
         curve_layout = QtWidgets.QVBoxLayout()
         curve_layout.setContentsMargins(0, 0, 0, 0)
         curve_layout.setSpacing(1)  # Minimal spacing
+<<<<<<< HEAD
         
         curve_label = QtWidgets.QLabel("Accent Color Generator")
         curve_label.setStyleSheet("font-weight: bold;")
         curve_layout.addWidget(curve_label)
         
+=======
+
+        curve_label = QtWidgets.QLabel("Accent Color Generator")
+        curve_label.setStyleSheet("font-weight: bold;")
+        curve_layout.addWidget(curve_label)
+
+>>>>>>> master
         # Curve editor
         self.curve_editor = CurveEditor()
         self.curve_editor.set_curve_str(self.curve_str)
@@ -595,19 +776,31 @@ class ColorShuffleQt(QtWidgets.QWidget):
         self.curve_editor.setMinimumHeight(160)  # Increased to match CurveEditor
         self.curve_editor.setMaximumHeight(200)  # Increased for more space
         curve_layout.addWidget(self.curve_editor)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Add explanation text
         self.curve_explanation = QtWidgets.QLabel("Select a preset to enable curve generation")
         self.curve_explanation.setWordWrap(True)
         curve_layout.addWidget(self.curve_explanation)
         main_content.addLayout(curve_layout)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         layout.addLayout(main_content)
 
         # === CURVE CONTROLS ===
         curve_controls = QtWidgets.QHBoxLayout()
         curve_controls.setSpacing(5)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         curve_controls.addWidget(QtWidgets.QLabel("Preset:"))
         self.curve_combo = QtWidgets.QComboBox()
         self.curve_combo.setMaximumWidth(100)
@@ -618,34 +811,58 @@ class ColorShuffleQt(QtWidgets.QWidget):
         self.curve_combo.addItem("Custom")
         self.curve_combo.currentTextChanged.connect(self.on_curve_preset)
         curve_controls.addWidget(self.curve_combo)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         self.curve_entry = QtWidgets.QLineEdit(self.curve_str)
         self.curve_entry.setPlaceholderText("Custom curve values...")
         self.curve_entry.textChanged.connect(self.on_curve_text_changed)
         curve_controls.addWidget(self.curve_entry)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         layout.addLayout(curve_controls)
 
         # === ACTIONS ===
         actions_layout = QtWidgets.QHBoxLayout()
         actions_layout.setSpacing(8)
+<<<<<<< HEAD
         
         self.mode_switch = QtWidgets.QCheckBox("Dark Mode")
         self.mode_switch.setChecked("dark" in self.mode.lower() if self.mode else False)
         actions_layout.addWidget(self.mode_switch)
         
+=======
+
+        self.mode_switch = QtWidgets.QCheckBox("Dark Mode")
+        self.mode_switch.setChecked("dark" in self.mode.lower() if self.mode else False)
+        actions_layout.addWidget(self.mode_switch)
+
+>>>>>>> master
         rotate_btn = QtWidgets.QPushButton("Rotate")
         rotate_btn.setMaximumWidth(80)
         rotate_btn.clicked.connect(self.on_rotate)
         actions_layout.addWidget(rotate_btn)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         actions_layout.addStretch()  # Push buttons to the left
         layout.addLayout(actions_layout)
 
         # === FILE PATHS (Compact) ===
         files_layout = QtWidgets.QVBoxLayout()
         files_layout.setSpacing(2)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Input file row
         input_row = QtWidgets.QHBoxLayout()
         input_row.addWidget(QtWidgets.QLabel("Input:"))
@@ -656,7 +873,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
         input_btn.clicked.connect(self.on_input_pick)
         input_row.addWidget(input_btn)
         files_layout.addLayout(input_row)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Output file row
         output_row = QtWidgets.QHBoxLayout()
         output_row.addWidget(QtWidgets.QLabel("Output:"))
@@ -667,9 +888,15 @@ class ColorShuffleQt(QtWidgets.QWidget):
         output_btn.clicked.connect(self.on_output_pick)
         output_row.addWidget(output_btn)
         files_layout.addLayout(output_row)
+<<<<<<< HEAD
         
         layout.addLayout(files_layout)
         
+=======
+
+        layout.addLayout(files_layout)
+
+>>>>>>> master
         # Auto-resize to minimum needed size but allow expansion
         self.adjustSize()
         self.setMinimumSize(self.sizeHint())  # Allow window to be resized larger
@@ -704,11 +931,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
         if self.primary_locked[row_idx]:
             # Locked: border with lock symbol overlay
             r = int(color[0:2], 16)
+<<<<<<< HEAD
             g = int(color[2:4], 16) 
             b = int(color[4:6], 16)
             brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255
             text_color = "black" if brightness > 0.5 else "white"
             
+=======
+            g = int(color[2:4], 16)
+            b = int(color[4:6], 16)
+            brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255
+            text_color = "black" if brightness > 0.5 else "white"
+
+>>>>>>> master
             pry_btn.setStyleSheet(
                 f"QPushButton {{ background-color: #{color}; border: 2px solid #888; margin: 0px; padding: 0px; border-radius: 2px; color: {text_color}; font-weight: bold; font-size: 8px; min-width: 35px; max-width: 35px; min-height: 25px; max-height: 25px; }}"
             )
@@ -733,11 +968,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
         if self.accent_locked[row_idx][accent_idx]:
             # Locked: border with lock symbol overlay
             r = int(color[0:2], 16)
+<<<<<<< HEAD
             g = int(color[2:4], 16) 
             b = int(color[4:6], 16)
             brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255
             text_color = "black" if brightness > 0.5 else "white"
             
+=======
+            g = int(color[2:4], 16)
+            b = int(color[4:6], 16)
+            brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255
+            text_color = "black" if brightness > 0.5 else "white"
+
+>>>>>>> master
             acc_btn.setStyleSheet(
                 f"QPushButton {{ background-color: #{color}; border: 2px solid #888; margin: 0px; padding: 0px; border-radius: 2px; color: {text_color}; font-weight: bold; font-size: 8px; min-width: 35px; max-width: 35px; min-height: 25px; max-height: 25px; }}"
             )
@@ -752,9 +995,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
     def update_accent_button_tooltip(self, acc_btn, row_idx, accent_idx):
         """Update accent button tooltip based on lock state"""
         if self.accent_locked[row_idx][accent_idx]:
+<<<<<<< HEAD
             acc_btn.setToolTip(f"🔒 Accent {accent_idx + 1} is LOCKED (independent)\nRight-click to unlock and follow curve")
         else:
             acc_btn.setToolTip(f"🔓 Accent {accent_idx + 1} follows curve\nRight-click to lock (make independent)")
+=======
+            acc_btn.setToolTip(
+                f"🔒 Accent {accent_idx + 1} is LOCKED (independent)\nRight-click to unlock and follow curve"
+            )
+        else:
+            acc_btn.setToolTip(
+                f"🔓 Accent {accent_idx + 1} follows curve\nRight-click to lock (make independent)"
+            )
+>>>>>>> master
 
     def update_text_button_style(self, txt_btn, row_idx):
         """Update text button style based on lock state"""
@@ -763,11 +1016,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
             # Locked: thick border with lock symbol overlay
             # Use contrasting text color based on background brightness
             r = int(color[0:2], 16)
+<<<<<<< HEAD
             g = int(color[2:4], 16) 
             b = int(color[4:6], 16)
             brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255
             text_color = "black" if brightness > 0.5 else "white"
             
+=======
+            g = int(color[2:4], 16)
+            b = int(color[4:6], 16)
+            brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255
+            text_color = "black" if brightness > 0.5 else "white"
+
+>>>>>>> master
             txt_btn.setStyleSheet(
                 f"QPushButton {{ background-color: #{color}; border: 2px solid #888; margin: 0px; padding: 0px; border-radius: 2px; color: {text_color}; font-weight: bold; font-size: 8px; min-width: 35px; max-width: 35px; min-height: 25px; max-height: 25px; }}"
             )
@@ -782,9 +1043,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
     def update_text_button_tooltip(self, txt_btn, row_idx):
         """Update text button tooltip based on lock state"""
         if self.text_locked[row_idx]:
+<<<<<<< HEAD
             txt_btn.setToolTip("🔒 Text color is LOCKED (independent)\nRight-click to unlock and follow curve")
         else:
             txt_btn.setToolTip("🔓 Text color follows curve\nRight-click to lock (make independent)")
+=======
+            txt_btn.setToolTip(
+                "🔒 Text color is LOCKED (independent)\nRight-click to unlock and follow curve"
+            )
+        else:
+            txt_btn.setToolTip(
+                "🔓 Text color follows curve\nRight-click to lock (make independent)"
+            )
+>>>>>>> master
 
     def update_from_color_rows(self):
         for i, (pry_btn, txt_btn, acc_btns) in enumerate(self.row_widgets):
@@ -825,7 +1096,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
     def apply_default_curve_to_row(self, row_idx):
         """Apply default curve to a single row when primary color changes"""
         import colorsys
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Use the EXACT wallbash default curve from the script
         default_curve_str = "32 50\n42 46\n49 40\n56 39\n64 38\n76 37\n90 33\n94 29\n100 20"
         curve = []
@@ -838,14 +1113,22 @@ class ColorShuffleQt(QtWidgets.QWidget):
                     curve.append((bri, sat))
                 except Exception:
                     continue
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Apply curve to this row only
         base = self.color_rows[row_idx].primary
         r = int(base[0:2], 16) / 255.0
         g = int(base[2:4], 16) / 255.0
         b = int(base[4:6], 16) / 255.0
         h, s, v = colorsys.rgb_to_hsv(r, g, b)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Update accent colors (A1-A9) for this row (only if not locked)
         for j in range(9):
             if len(curve) > j and not self.accent_locked[row_idx][j]:
@@ -855,7 +1138,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
                 r2, g2, b2 = colorsys.hsv_to_rgb(h, s2, v2)
                 hexcol = f"{int(r2 * 255):02X}{int(g2 * 255):02X}{int(b2 * 255):02X}"
                 setattr(self.color_rows[row_idx], f"accent{j + 1}", hexcol)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Update text color if not locked
         if not self.text_locked[row_idx]:
             if len(curve) > 9:
@@ -869,23 +1156,40 @@ class ColorShuffleQt(QtWidgets.QWidget):
             else:
                 # Use wallbash text color algorithm - RGB negative + brightness modulation
                 primary_r = int(base[0:2], 16)
+<<<<<<< HEAD
                 primary_g = int(base[2:4], 16) 
                 primary_b = int(base[4:6], 16)
                 
+=======
+                primary_g = int(base[2:4], 16)
+                primary_b = int(base[4:6], 16)
+
+>>>>>>> master
                 # Step 1: Create RGB negative (wallbash rgb_negative function)
                 neg_r = 255 - primary_r
                 neg_g = 255 - primary_g
                 neg_b = 255 - primary_b
+<<<<<<< HEAD
                 
                 # Step 2: Check brightness of primary (wallbash fx_brightness function)
                 # Uses ImageMagick's %[fx:mean] which is grayscale conversion
                 primary_brightness = (0.299 * primary_r + 0.587 * primary_g + 0.114 * primary_b) / 255.0
                 
+=======
+
+                # Step 2: Check brightness of primary (wallbash fx_brightness function)
+                # Uses ImageMagick's %[fx:mean] which is grayscale conversion
+                primary_brightness = (
+                    0.299 * primary_r + 0.587 * primary_g + 0.114 * primary_b
+                ) / 255.0
+
+>>>>>>> master
                 # Step 3: Apply brightness modulation like wallbash
                 if primary_brightness < 0.5:
                     # Dark primary -> bright text (txtDarkBri=188)
                     brightness_mod = 188
                 else:
+<<<<<<< HEAD
                     # Light primary -> dark text (txtLightBri=16)  
                     brightness_mod = 16
                 
@@ -897,6 +1201,21 @@ class ColorShuffleQt(QtWidgets.QWidget):
                 mod_v = min(1.0, neg_v * (brightness_mod / 100.0))
                 mod_s = 0.1  # Low saturation like wallbash (,10,100 in modulate)
                 
+=======
+                    # Light primary -> dark text (txtLightBri=16)
+                    brightness_mod = 16
+
+                # Step 4: Apply modulation to negative color (like ImageMagick -modulate)
+                # Convert negative to HSV for brightness adjustment
+                neg_h, neg_s, neg_v = colorsys.rgb_to_hsv(
+                    neg_r / 255.0, neg_g / 255.0, neg_b / 255.0
+                )
+
+                # Apply brightness modulation (scale by percentage like ImageMagick)
+                mod_v = min(1.0, neg_v * (brightness_mod / 100.0))
+                mod_s = 0.1  # Low saturation like wallbash (,10,100 in modulate)
+
+>>>>>>> master
                 # Convert back to RGB
                 r_text, g_text, b_text = colorsys.hsv_to_rgb(neg_h, mod_s, mod_v)
                 text_hex = f"{int(r_text * 255):02X}{int(g_text * 255):02X}{int(b_text * 255):02X}"
@@ -924,7 +1243,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
         # Switch to "Custom" if not already there
         if self.curve_combo.currentText() != "Custom":
             self.curve_combo.setCurrentText("Custom")
+<<<<<<< HEAD
         self.curve_explanation.setText("Custom curve - drag points to adjust accent and text colors")
+=======
+        self.curve_explanation.setText(
+            "Custom curve - drag points to adjust accent and text colors"
+        )
+>>>>>>> master
 
     def on_curve_text_changed(self):
         """Called when curve text entry is manually edited"""
@@ -939,7 +1264,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
         if text == "Custom":
             # Enable curve for custom editing
             self.curve_editor.setEnabled(True)
+<<<<<<< HEAD
             self.curve_explanation.setText("Custom curve - drag points to adjust accent and text colors")
+=======
+            self.curve_explanation.setText(
+                "Custom curve - drag points to adjust accent and text colors"
+            )
+>>>>>>> master
         elif text in self.curve_presets:
             # Load preset and enable curve
             self.curve_entry.setText(self.curve_presets[text])
@@ -947,9 +1278,19 @@ class ColorShuffleQt(QtWidgets.QWidget):
             self.curve_editor.setEnabled(True)
             self.curve_editor.has_been_touched = False  # Reset touch state
             if text == "Wallbash":
+<<<<<<< HEAD
                 self.curve_explanation.setText("Wallbash default preset - drag points to customize or select another preset")
             else:
                 self.curve_explanation.setText(f"{text} preset - drag points to customize or select another preset")
+=======
+                self.curve_explanation.setText(
+                    "Wallbash default preset - drag points to customize or select another preset"
+                )
+            else:
+                self.curve_explanation.setText(
+                    f"{text} preset - drag points to customize or select another preset"
+                )
+>>>>>>> master
             self.apply_curve_to_accents_and_text(self.curve_presets[text])
 
     def on_curve_changed(self, points):
@@ -973,7 +1314,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
                     continue
         while len(curve) < 10:  # Need 10 points (A1-A9, T)
             curve.append((100, 100))
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
         # Update colors for each row
         for i in range(4):  # Back to 4 rows
             # Use primary color as base for generating accents and text
@@ -983,7 +1328,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
             g = int(base[2:4], 16) / 255.0
             b = int(base[4:6], 16) / 255.0
             h, s, v = colorsys.rgb_to_hsv(r, g, b)
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> master
             # Points 0-8 control accent colors (A1-A9) ONLY (if not locked)
             for j in range(9):
                 if len(curve) > j and not self.accent_locked[i][j]:
@@ -995,7 +1344,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
                     setattr(self.color_rows[i], f"accent{j + 1}", hexcol)
                 # Update button styling regardless of whether color changed
                 self.update_accent_button_style(self.row_widgets[i][2][j], i, j)
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> master
             # Point 9 controls text color ONLY (if not locked)
             if len(curve) > 9 and not self.text_locked[i]:
                 bri, sat = curve[9]
@@ -1006,7 +1359,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
                 self.color_rows[i].text = text_hex
                 # Update text button with proper lock styling
                 self.update_text_button_style(self.row_widgets[i][1], i)
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> master
             # Primary color is NEVER modified by the curve - it stays as manually set
 
     def on_rotate(self):
@@ -1024,7 +1381,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
         # Reset curve preset to "Wallbash"
         self.curve_combo.setCurrentText("Wallbash")
         self.curve_editor.setEnabled(True)
+<<<<<<< HEAD
         self.curve_explanation.setText("Wallbash default preset - drag points to customize or select another preset")
+=======
+        self.curve_explanation.setText(
+            "Wallbash default preset - drag points to customize or select another preset"
+        )
+>>>>>>> master
 
     def on_save(self):
         out_path = self.output_entry.text()
@@ -1083,9 +1446,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
                 j = accent_idx[i]
                 if i < 4 and j < 9:
                     color = getattr(self.color_rows[i], f"accent{j + 1}")
+<<<<<<< HEAD
                     new_lines.append(
                         f'dcol_{i + 1}xa{j + 1}="{color}"\n'
                     )
+=======
+                    new_lines.append(f'dcol_{i + 1}xa{j + 1}="{color}"\n')
+>>>>>>> master
                     accent_idx[i] += 1
                 else:
                     new_lines.append(line)
@@ -1098,9 +1465,13 @@ class ColorShuffleQt(QtWidgets.QWidget):
                     r = int(c[0:2], 16)
                     g = int(c[2:4], 16)
                     b = int(c[4:6], 16)
+<<<<<<< HEAD
                     new_lines.append(
                         f'dcol_{i + 1}xa{j + 1}_rgba="rgba({r},{g},{b},1.00)"\n'
                     )
+=======
+                    new_lines.append(f'dcol_{i + 1}xa{j + 1}_rgba="rgba({r},{g},{b},1.00)"\n')
+>>>>>>> master
                 else:
                     new_lines.append(line)
             elif line.startswith("wallbashCurve="):
@@ -1120,7 +1491,11 @@ class ColorShuffleQt(QtWidgets.QWidget):
             return
         mode, color_rows, other = extract_colors(lines)
         self.color_rows = color_rows
+<<<<<<< HEAD
         self.mode = mode.split('=')[1].strip().strip('"') if mode else "light"
+=======
+        self.mode = mode.split("=")[1].strip().strip('"') if mode else "light"
+>>>>>>> master
         self.mode_switch.setChecked("dark" in self.mode.lower())
         self.update_from_color_rows()
         # Optionally set curve string
@@ -1139,6 +1514,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
                     self.drag_row_idx = i
                     self.drag_start_pos = event.globalPosition().toPoint()
                     break
+<<<<<<< HEAD
         elif (
             event.type() == QtCore.QEvent.Type.MouseMove
             and self.drag_row_idx is not None
@@ -1146,6 +1522,10 @@ class ColorShuffleQt(QtWidgets.QWidget):
             if (
                 event.globalPosition().toPoint() - self.drag_start_pos
             ).manhattanLength() > 10:
+=======
+        elif event.type() == QtCore.QEvent.Type.MouseMove and self.drag_row_idx is not None:
+            if (event.globalPosition().toPoint() - self.drag_start_pos).manhattanLength() > 10:
+>>>>>>> master
                 # Start drag
                 drag = QtGui.QDrag(self)
                 mime = QtCore.QMimeData()
@@ -1173,9 +1553,13 @@ def main():
     parser = argparse.ArgumentParser(description="Manipulate .dcol color files.")
     parser.add_argument("input", nargs="?", help="Input .dcol file")
     parser.add_argument("-o", "--output", help="Output .dcol file", default=None)
+<<<<<<< HEAD
     parser.add_argument(
         "--shuffle", action="store_true", help="Shuffle the 4 main colors"
     )
+=======
+    parser.add_argument("--shuffle", action="store_true", help="Shuffle the 4 main colors")
+>>>>>>> master
     parser.add_argument(
         "--rotate",
         action="store_true",
@@ -1187,9 +1571,13 @@ def main():
         metavar=("C1", "C2", "C3", "C4"),
         help="Override the 4 main primary colors (hex)",
     )
+<<<<<<< HEAD
     parser.add_argument(
         "--curve", type=str, help="Override the accent curve (not implemented yet)"
     )
+=======
+    parser.add_argument("--curve", type=str, help="Override the accent curve (not implemented yet)")
+>>>>>>> master
     parser.add_argument(
         "--gui", action="store_true", help="Open a Qt color picker UI for main colors"
     )
@@ -1227,10 +1615,14 @@ def main():
         initial_colors = [row.primary for row in color_rows]
         initial_texts = [row.text for row in color_rows]
         accent_colors = [
+<<<<<<< HEAD
             [
                 (f"dcol_{i + 1}xa{j + 1}", getattr(row, f"accent{j + 1}"))
                 for j in range(9)
             ]
+=======
+            [(f"dcol_{i + 1}xa{j + 1}", getattr(row, f"accent{j + 1}")) for j in range(9)]
+>>>>>>> master
             for i, row in enumerate(color_rows)
         ]
         # Try to get curve string from wallbashCurve= if present
@@ -1240,7 +1632,13 @@ def main():
                 curve_str = line.split("=", 1)[1].strip().strip('"')
                 break
         if not curve_str:
+<<<<<<< HEAD
             curve_str = "32 50\n42 46\n49 40\n56 39\n64 38\n76 37\n90 33\n94 29\n100 20"  # Wallbash default
+=======
+            curve_str = (
+                "32 50\n42 46\n49 40\n56 39\n64 38\n76 37\n90 33\n94 29\n100 20"  # Wallbash default
+            )
+>>>>>>> master
         curve_presets = {}
         input_path = args.input or ""
         output_path = args.output or input_path
@@ -1290,9 +1688,13 @@ def main():
     # Write accents
     for i, row in enumerate(color_rows):
         for j in range(9):
+<<<<<<< HEAD
             out_lines.append(
                 f'dcol_{i + 1}xa{j + 1}="{getattr(row, f"accent{j + 1}")}"\n'
             )
+=======
+            out_lines.append(f'dcol_{i + 1}xa{j + 1}="{getattr(row, f"accent{j + 1}")}"\n')
+>>>>>>> master
     out_lines.extend(other)
 
     out_path = args.output or args.input + ".out"

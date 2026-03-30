@@ -13,7 +13,11 @@
 Multi-language README support
 -->
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+<<<<<<< HEAD
 [![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
+=======
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+>>>>>>> master
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/docs/README.es.md)
 [![de](https://img.shields.io/badge/lang-de-black.svg)](Source/docs/README.de.md)
@@ -22,6 +26,10 @@ Multi-language README support
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/docs/README.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](Source/docs/README.ar.md)
 [![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](Source/docs/README.pt-br.md)
+<<<<<<< HEAD
+=======
+[![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](Source/docs/README.tr.md)
+>>>>>>> master
 
 <div align="center">
 
@@ -73,7 +81,12 @@ While installing HyDE alongside another [DE](https://wiki.archlinux.org/title/De
 For NixOS support there is a separate project being maintained @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
+<<<<<<< HEAD
 > The install script will auto-detect an NVIDIA card and install nvidia-dkms drivers for your kernel.
+=======
+> The install script will auto-detect an NVIDIA card and install nvidia-open-dkms drivers for your kernel.
+> For legacy cards [check this first](./Scripts/nvidia-db/)
+>>>>>>> master
 > Please ensure that your NVIDIA card supports dkms drivers in the list provided [here](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]
@@ -82,7 +95,11 @@ For NixOS support there is a separate project being maintained @ [Hydenix](https
 To install, execute the following commands:
 
 ```shell
+<<<<<<< HEAD
 pacman -S --needed git base-devel
+=======
+sudo pacman -S --needed git base-devel
+>>>>>>> master
 git clone --depth 1 https://github.com/HyDE-Project/HyDE ~/HyDE
 cd ~/HyDE/Scripts
 ./install.sh
@@ -144,9 +161,19 @@ Whether you're helping with code, testing, or documentation, we appreciate your 
 
 To update HyDE, you will need to pull the latest changes from GitHub and restore the configs by running the following commands:
 
+<<<<<<< HEAD
 ```shell
 cd ~/HyDE/Scripts
 git pull origin master
+=======
+> [!WARNING]
+> The following commands will discard any uncommitted local changes in the repository.
+
+```shell
+cd ~/HyDE/Scripts
+git fetch --update-shallow --depth 1 origin master
+git reset --hard origin/master
+>>>>>>> master
 ./install.sh -r
 ```
 
@@ -284,6 +311,7 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STARS" width="450"/>
+<<<<<<< HEAD
 
 ---
 
@@ -294,6 +322,12 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=hyde-project/hyde&type=Timeline" />
  </picture>
 </a>
+=======
+                        
+[![Stargazers over time](https://starchart.cc/HyDE-Project/HyDE.svg?background=%231f2226&axis=%23ebbcba&line=%23c79bf0)](https://starchart.cc/HyDE-Project/HyDE)
+
+                    
+>>>>>>> master
 
 ---
 
@@ -329,6 +363,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://rubiin.is-a.dev"><img src="https://avatars.githubusercontent.com/u/8222059?v=4?s=100" width="100px;" alt="Rubin Bhandari"/><br /><sub><b>Rubin Bhandari</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=rubiin" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kRHYME7"><img src="https://avatars.githubusercontent.com/u/53417443?v=4?s=100" width="100px;" alt="Khing"/><br /><sub><b>Khing</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=kRHYME7" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=kRHYME7" title="Documentation">📖</a></td>
+<<<<<<< HEAD
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/prasanthrangan"><img src="https://avatars.githubusercontent.com/u/106020512?v=4?s=100" width="100px;" alt="Tittu"/><br /><sub><b>Tittu</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=prasanthrangan" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=prasanthrangan" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/dieBakterie"><img src="https://avatars.githubusercontent.com/u/50206827?v=4?s=100" width="100px;" alt="dieBakterie"/><br /><sub><b>dieBakterie</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=dieBakterie" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=dieBakterie" title="Tests">⚠️</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=dieBakterie" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/richen604"><img src="https://avatars.githubusercontent.com/u/56615615?v=4?s=100" width="100px;" alt="Richard Henninger"/><br /><sub><b>Richard Henninger</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=richen604" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=richen604" title="Tests">⚠️</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=richen604" title="Documentation">📖</a></td>
@@ -343,6 +378,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://unatried.com"><img src="https://avatars.githubusercontent.com/u/103455203?v=4?s=100" width="100px;" alt="UnaTried"/><br /><sub><b>UnaTried</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=UnaTried" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://metalhearf.fr"><img src="https://avatars.githubusercontent.com/u/6446231?v=4?s=100" width="100px;" alt="Metalhearf"/><br /><sub><b>Metalhearf</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/commits?author=Metalhearf" title="Code">💻</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=Metalhearf" title="Tests">⚠️</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=Metalhearf" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zeerayne"><img src="https://avatars.githubusercontent.com/u/13994839?v=4?s=100" width="100px;" alt="Ilya Bogdanov"/><br /><sub><b>Ilya Bogdanov</b></sub></a><br /><a href="https://github.com/HyDE-Project/HyDE/issues?q=author%3Azeerayne" title="Bug reports">🐛</a> <a href="https://github.com/HyDE-Project/HyDE/commits?author=zeerayne" title="Code">💻</a></td>
+=======
+>>>>>>> master
     </tr>
   </tbody>
 </table>

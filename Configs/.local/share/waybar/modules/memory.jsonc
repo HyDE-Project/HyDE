@@ -6,6 +6,7 @@
       "m": 30
     },
     "interval": 30,
+<<<<<<< HEAD
     "format": "RAM: \udb83\udf86 {used:0.2f}GiB",
     "rotate": 0,
     "format-m": "RAM: \udb83\udf85 {used:0.2f}GiB",
@@ -13,6 +14,15 @@
     "format-c": "RAM: \uf421 {used:0.2f}GiB",
     "format-alt": "RAM: \udb83\udf86 {percentage}%",
     "max-length": 15,
+=======
+    "format": "\udb83\udf86 {used}GB",
+    "rotate": 0,
+    "format-m": "\udb83\udf85 {used}GB",
+    "format-h": "\udb81\udcc5 {used}GB",
+    "format-c": "\uf421 {used}GB",
+    "format-alt": "\udb83\udf86 {percentage}%",
+    "max-length": 10,
+>>>>>>> master
     "tooltip": true,
     //"tooltip-format": "\udb83\udf86 {percentage}%\n\ue266 {used:0.1f}GB/{total:0.1f}GB",
     "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f}GB / {total:0.2f}GB\n\uf85a Available: {avail:0.2f}GB\n\uf233 Swap used: {swapUsed:0.2f}GB / {swapTotal:0.2f}GB ({swapPercentage}%)"

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 set -g fish_greeting
 
 source ~/.config/fish/conf.d/hyde.fish
@@ -79,3 +80,6 @@ abbr mkdir 'mkdir -p'
 
 
 
+=======
+# All User Configs goes here
+>>>>>>> master

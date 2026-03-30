@@ -1,7 +1,11 @@
 {
   "custom/gpuinfo#nvidia": {
     "exec-if": "hyde-shell  gpuinfo.sh --stat nvidia >/dev/null 2>&1",
+<<<<<<< HEAD
     "exec": "hyde-shell app gpuinfo.sh --use nvidia ",
+=======
+    "exec": "hyde-shell app -t scope gpuinfo.sh --use nvidia ",
+>>>>>>> master
     "return-type": "json",
     "format": "{0}",
     "rotate": 0,

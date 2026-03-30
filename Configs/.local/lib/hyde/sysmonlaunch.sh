@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 
 scrDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
@@ -81,3 +82,9 @@ for sysMon in "${!pkgChk[@]}"; do
     fi
   fi
 done
+=======
+[[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+notify-send -a "Deprecation Notice" "sysmonitor.sh is deprecated. Please use hyde-shell system.monitor open instead." -i dialog-information
+
+"${LIB_DIR}/hyde/system.monitor.sh" "$@"
+>>>>>>> master

@@ -132,7 +132,11 @@ def main():
     parser.add_argument(
         "file",
         nargs="?",
+<<<<<<< HEAD
         default="./config.toml",
+=======
+        default="./schema.toml",
+>>>>>>> master
         help="Path to the TOML schema file (default: ./config.toml)",
     )
     args = parser.parse_args()

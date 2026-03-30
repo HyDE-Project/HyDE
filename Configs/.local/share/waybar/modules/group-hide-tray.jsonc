@@ -5,7 +5,11 @@
       "transition-duration": "0.5",
       "children-class": "hide-tray-drawer",
       "transition-left-to-right": false,
+<<<<<<< HEAD
       "click-to-reveal": true
+=======
+      "click-to-reveal": false
+>>>>>>> master
     },
     "modules": ["custom/dropdown#arrow", "tray"]
   },

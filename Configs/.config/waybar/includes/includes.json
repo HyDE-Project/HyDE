@@ -71,6 +71,7 @@
         "icon-size": 10,
         "icon-size-multiplier": 1
     },
+<<<<<<< HEAD
     "image#wallpaper": {
         "size": 30,
         "icon-size-multiplier": 3
@@ -88,4 +89,10 @@
         "icon-size-multiplier": 1.6
     },
     "position": "top"
+=======
+    "tray": {
+        "icon-size": 16.0,
+        "icon-size-multiplier": 1.6
+    }
+>>>>>>> master
 }

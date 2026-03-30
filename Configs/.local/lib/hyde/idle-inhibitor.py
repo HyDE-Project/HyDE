@@ -47,9 +47,13 @@ def handle_registry_global(
         global_registry.surface = compositor.create_surface()  # type: ignore
         logger.debug("Compositor and surface created")
     elif iface_name == "zwp_idle_inhibit_manager_v1":
+<<<<<<< HEAD
         global_registry.inhibit_manager = wl_registry.bind(
             id_num, ZwpIdleInhibitManagerV1, version
         )
+=======
+        global_registry.inhibit_manager = wl_registry.bind(id_num, ZwpIdleInhibitManagerV1, version)
+>>>>>>> master
         logger.debug("Idle inhibit manager created")
 
 
@@ -80,9 +84,13 @@ def audio_listener(done: Event, audio_playing_signal: Event) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Idle inhibitor")
     parser.add_argument("--all", action="store_true", help="Inhibit idle for all cases")
+<<<<<<< HEAD
     parser.add_argument(
         "--audio", action="store_true", help="Inhibit idle when there is audio"
     )
+=======
+    parser.add_argument("--audio", action="store_true", help="Inhibit idle when there is audio")
+>>>>>>> master
     args = parser.parse_args()
 
     done = Event()

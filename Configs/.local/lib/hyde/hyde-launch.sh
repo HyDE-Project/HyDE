@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 
 [[ "${HYDE_SHELL_INIT}" -ne 1 ]] && eval "$(hyde-shell init)"
 
@@ -122,3 +123,10 @@ main() {
     fi
 }
 main "$@"
+=======
+[[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+
+notify-send -a "Deprecation Notice" "hyde-launch.sh is deprecated. Please use hyde-shell open instead." -i dialog-information
+
+"${LIB_DIR}/hyde/open.sh" "$@"
+>>>>>>> master

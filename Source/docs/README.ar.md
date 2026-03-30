@@ -20,6 +20,10 @@ Multi-language README support
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](README.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md)
 [![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](README.pt-br.md)
+<<<<<<< HEAD
+=======
+[![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](README.tr.md)
+>>>>>>> master
 
 <div align="center">
 <br>
@@ -65,7 +69,11 @@ Multi-language README support
 لدعم نظام NixOS، يتم صيانة مشروع منفصل @ [Hydenix](https://github.com/richen604/hydenix/tree/main).
 
 > [!IMPORTANT]
+<<<<<<< HEAD
 > سيقوم البرنامج النصي للتثبيت باكتشاف بطاقة NVIDIA تلقائيًا وتثبيت برامج تشغيل nvidia-dkms الخاصة بنواة النظام.
+=======
+> سيقوم البرنامج النصي للتثبيت باكتشاف بطاقة NVIDIA تلقائيًا وتثبيت برامج تشغيل nvidia-open-dkms الخاصة بنواة النظام.
+>>>>>>> master
 > تأكد من أن بطاقة NVIDIA الخاصة بك تدعم برامج التشغيل dkms في القائمة المتوفرة [هنا](https://wiki.archlinux.org/title/NVIDIA).
 
 > [!CAUTION]

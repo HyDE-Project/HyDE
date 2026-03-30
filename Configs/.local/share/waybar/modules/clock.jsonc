@@ -1,8 +1,14 @@
 {
   "clock": {
+<<<<<<< HEAD
     "format": "{:%R \udb80\udced %d\u00b7%m\u00b7%y}",
     "rotate": 0,
     "format-alt": "{:%I:%M %p}",
+=======
+    "format": "{:%I:%M %p}",
+    "rotate": 0,
+    "format-alt": "{:%R \udb80\udced %d\u00b7%m\u00b7%y}",
+>>>>>>> master
     "tooltip-format": "<span>{calendar}</span>",
     "calendar": {
       "mode": "month",

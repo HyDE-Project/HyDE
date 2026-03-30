@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 # TODO: Add persistent mode
 HYPRGAMEMODE=$(hyprctl getoption animations:enabled | sed -n '1p' | awk '{print $2}')
 
@@ -25,4 +26,17 @@ if [ "$HYPRGAMEMODE" = 1 ]; then
         exit
 else
         hyprctl reload config-only -q
+=======
+LOCK_FILE="${XDG_RUNTIME_DIR}/hyde/gamemode.lck"
+
+if [ -f "$LOCK_FILE" ]; then
+    # Gamemode is ON → turn it OFF
+    hyprctl reload config-only -q
+    rm -f "$LOCK_FILE"
+else
+    # Gamemode is OFF → turn it ON
+    mkdir -p "${XDG_RUNTIME_DIR}/hyde"
+    hyprctl keyword source "${XDG_CONFIG_HOME}/hypr/workflows/gaming.conf"
+    touch "$LOCK_FILE"
+>>>>>>> master
 fi

@@ -9,8 +9,15 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 logger = logger.get_logger()
 
+<<<<<<< HEAD
 pip_env.v_import("pyamdgpuinfo") # fetches the module by name // does `pip install --update pyamdgpuinfo` under the hood
 import pyamdgpuinfo 
+=======
+pip_env.v_import(
+    "pyamdgpuinfo"
+)  # fetches the module by name // does `pip install --update pyamdgpuinfo` under the hood
+import pyamdgpuinfo
+>>>>>>> master
 
 
 def format_frequency(frequency_hz: int) -> str:
@@ -20,11 +27,16 @@ def format_frequency(frequency_hz: int) -> str:
     Returns:
         str: frequency string with the appropriate suffix applied
     """
+<<<<<<< HEAD
     return (
         format_size(frequency_hz, binary=False)
         .replace("B", "Hz")
         .replace("bytes", "Hz")
     )
+=======
+    return format_size(frequency_hz, binary=False).replace("B", "Hz").replace("bytes", "Hz")
+
+>>>>>>> master
 
 def format_size(size: int, binary=True) -> str:
     """
@@ -47,6 +59,7 @@ def format_size(size: int, binary=True) -> str:
 
     return f"{size:.0f} {suffixes[index]}"
 
+<<<<<<< HEAD
 def main():
     # Detect the number of GPUs available
     n_devices = pyamdgpuinfo.detect_gpus()
@@ -58,15 +71,37 @@ def main():
     # Get GPU information for the first GPU (index 0)
     first_gpu = pyamdgpuinfo.get_gpu(0)
     
+=======
+
+def main():
+    # Detect the number of GPUs available
+    n_devices = pyamdgpuinfo.detect_gpus()
+
+    if n_devices == 0:
+        print("No AMD GPUs detected.")
+        return
+
+    # Get GPU information for the first GPU (index 0)
+    first_gpu = pyamdgpuinfo.get_gpu(0)
+
+>>>>>>> master
     try:
         # Query GPU temperature
         temperature = first_gpu.query_temperature()
         temperature = f"{temperature:.0f}°C"  # Format temperature to 2 digits with "°C"
+<<<<<<< HEAD
         
         # Query GPU core clock
         core_clock_hz = first_gpu.query_sclk()  # In Hz
         formatted_core_clock = format_frequency(core_clock_hz)
         
+=======
+
+        # Query GPU core clock
+        core_clock_hz = first_gpu.query_sclk()  # In Hz
+        formatted_core_clock = format_frequency(core_clock_hz)
+
+>>>>>>> master
         # Query GPU power consumption
         power_usage = first_gpu.query_power()
 
@@ -79,15 +114,25 @@ def main():
             "GPU Temperature": temperature,
             "GPU Load": formatted_gpu_load,
             "GPU Core Clock": formatted_core_clock,
+<<<<<<< HEAD
             "GPU Power Usage": f"{power_usage} Watts"
         }
         
+=======
+            "GPU Power Usage": f"{power_usage} Watts",
+        }
+
+>>>>>>> master
         # Convert the dictionary to a JSON string, ensure_ascii=False to prevent escaping
         json_output = json.dumps(gpu_info, ensure_ascii=False)
 
         # Print the JSON string
         print(json_output)
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> master
     except json.JSONDecodeError as e:  # Handle JSON decoding errors (e.g., invalid JSON)
         print(f"JSON Error: {str(e)}")
     except AttributeError as e:  # Handle attribute errors (e.g., method not found)
@@ -101,5 +146,9 @@ def main():
     except Exception as e:  # Handle any other unexpected errors
         print(f"Unexpected Error: {str(e)}")
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 if __name__ == "__main__":
     main()

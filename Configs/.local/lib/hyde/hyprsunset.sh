@@ -1,16 +1,23 @@
 #! /bin/env bash
+<<<<<<< HEAD
 
 # shellcheck source=$HOME/.local/bin/hyde-shell
 # shellcheck disable=SC1091
+=======
+>>>>>>> master
 if ! source "$(which hyde-shell)"; then
     echo "[$0] :: Error: hyde-shell not found."
     echo "[$0] :: Is HyDE installed?"
     exit 1
 fi
+<<<<<<< HEAD
 
 sunsetConf="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprsunset"
 
 # Default settings
+=======
+sunsetConf="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprsunset"
+>>>>>>> master
 default_temp=6500
 default_gamma=100
 temp_step=500
@@ -19,6 +26,7 @@ min_temp=1000
 max_temp=20000
 min_gamma=20
 max_gamma=100
+<<<<<<< HEAD
 
 notify="${waybar_temperature_notification:-true}"
 
@@ -42,6 +50,21 @@ send_notification() {
         if [ "$toggle_mode" -eq 1 ]; then
             title="Hyprsunset: ON"
             # message="Temp: ${currentTemp}K, Gamma: ${currentGamma}"
+=======
+notify="${waybar_temperature_notification:-true}"
+if [ ! -f "$sunsetConf" ]; then
+    printf "%d|%d|%d\n" "$default_temp" "$default_gamma" 1 > "$sunsetConf"
+fi
+IFS='|' read -r currentTemp currentGamma toggle_mode < "$sunsetConf"
+[ -z "$currentTemp" ] && currentTemp=$default_temp
+[ -z "$currentGamma" ] && currentGamma=$default_gamma
+[ -z "$toggle_mode" ] && toggle_mode=1
+send_notification() {
+    local title message
+    if [ "$action" = "toggle" ]; then
+        if [ "$toggle_mode" -eq 1 ]; then
+            title="Hyprsunset: ON"
+>>>>>>> master
         else
             title="Hyprsunset: OFF"
             message=""
@@ -53,6 +76,7 @@ send_notification() {
         title="Mode: Gamma"
         message="$newGamma"
     fi
+<<<<<<< HEAD
 
     # Send notification with title and message separated
     if [ -n "$message" ]; then
@@ -69,10 +93,25 @@ send_signal_to_process() {
             IFS=',' read -r process signal <<<"$signal_proc"
         elif [[ "$signal_proc" == *":"* ]]; then
             IFS=':' read -r process signal <<<"$signal_proc"
+=======
+    if [ -n "$message" ]; then
+        notify-send -a "HyDE Notify" -r 19 -t 800 -i redshift "$message" "$title"
+    else
+        notify-send -a "HyDE Notify" -r 19 -t 800 -i redshift "$title"
+    fi
+}
+send_signal_to_process() {
+    if [ -n "$signal_proc" ]; then
+        if [[ $signal_proc == *","* ]]; then
+            IFS=',' read -r process signal <<< "$signal_proc"
+        elif [[ $signal_proc == *":"* ]]; then
+            IFS=':' read -r process signal <<< "$signal_proc"
+>>>>>>> master
         else
             echo "Error: Invalid sigproc format. Use PROCESS,SIGNAL or PROCESS:SIGNAL"
             return 1
         fi
+<<<<<<< HEAD
 
         # Validate signal number
         if ! [[ "$signal" =~ ^[0-9]+$ ]]; then
@@ -83,28 +122,45 @@ send_signal_to_process() {
         # Send signal to all matching processes
         if pgrep -x "$process" >/dev/null; then
             pkill -RTMIN+"$signal" "$process" 2>/dev/null || echo "Warning: Failed to send signal $signal to $process"
+=======
+        if ! [[ $signal =~ ^[0-9]+$ ]]; then
+            echo "Error: Signal must be a number"
+            return 1
+        fi
+        if pgrep -x "$process" > /dev/null; then
+            pkill -RTMIN+"$signal" "$process" 2> /dev/null || echo "Warning: Failed to send signal $signal to $process"
+>>>>>>> master
         else
             echo "Warning: Process '$process' not found"
         fi
     fi
 }
+<<<<<<< HEAD
 
 # Keep temp in range
+=======
+>>>>>>> master
 clamp_temp() {
     local temp=$1
     [ "$temp" -lt "$min_temp" ] && temp=$min_temp
     [ "$temp" -gt "$max_temp" ] && temp=$max_temp
     echo "$temp"
 }
+<<<<<<< HEAD
 
 # Keep gamma in range
 clamp_gamma() {
     local gamma=$1
     # Gamma is integer from 20-100
+=======
+clamp_gamma() {
+    local gamma=$1
+>>>>>>> master
     [ "$gamma" -lt "$min_gamma" ] && gamma=$min_gamma
     [ "$gamma" -gt "$max_gamma" ] && gamma=$max_gamma
     echo "$gamma"
 }
+<<<<<<< HEAD
 
 # Query current running temperature from hyprctl
 get_running_temp() {
@@ -113,6 +169,13 @@ get_running_temp() {
 
 show_help() {
     cat <<EOF
+=======
+get_running_temp() {
+    hyprctl hyprsunset temperature 2> /dev/null || echo "$default_temp"
+}
+show_help() {
+    cat << EOF
+>>>>>>> master
 Usage: $(basename "$0") [OPTIONS]
 
 Options:
@@ -138,13 +201,18 @@ Examples:
     $(basename "$0") --sigproc waybar,19    # Send SIGUSR1 to waybar
 EOF
 }
+<<<<<<< HEAD
 
 #// evaluate options
 if [ -z "${*}" ]; then
+=======
+if [ -z "$*" ]; then
+>>>>>>> master
     echo "No arguments provided"
     show_help
     exit 1
 fi
+<<<<<<< HEAD
 
 # Define long options
 LONGOPTS="cm:,increase:,decrease:,set:,read,toggle,quiet,sigproc:,help"
@@ -160,10 +228,22 @@ eval set -- "${PARSED}"
 # Initialize variables
 action=""
 color_mode="temp" # Default to temperature mode
+=======
+LONGOPTS="cm:,increase:,decrease:,set:,read,toggle,quiet,sigproc:,help"
+SHORTOPTS="i:d:s:rtqP:h"
+PARSED=$(getopt --options $SHORTOPTS --longoptions "$LONGOPTS" --name "$0" -- "$@")
+if [ $? -ne 0 ]; then
+    exit 2
+fi
+eval set -- "$PARSED"
+action=""
+color_mode="temp"
+>>>>>>> master
 custom_step=""
 newTemp=""
 newGamma=""
 signal_proc=""
+<<<<<<< HEAD
 
 # Parse arguments
 while true; do
@@ -229,13 +309,79 @@ if [ -n "$custom_step" ]; then
         # For set actions, custom_step is the target value, not step size
         if [ "$color_mode" = "gamma" ]; then
             if [[ "$custom_step" =~ ^[0-9]+$ ]] && [ "$custom_step" -ge "$min_gamma" ] && [ "$custom_step" -le "$max_gamma" ]; then
+=======
+while true; do
+    case "$1" in
+        --cm)
+            color_mode="$2"
+            if [ "$color_mode" != "temp" ] && [ "$color_mode" != "gamma" ]; then
+                echo "Error: Color mode must be 'temp' or 'gamma'"
+                exit 1
+            fi
+            shift 2
+            ;;
+        -i | --increase)
+            action="increase"
+            custom_step="$2"
+            shift 2
+            ;;
+        -d | --decrease)
+            action="decrease"
+            custom_step="$2"
+            shift 2
+            ;;
+        -s | --set)
+            action="set"
+            custom_step="$2"
+            shift 2
+            ;;
+        -r | --read)
+            action="read"
+            shift
+            ;;
+        -t | --toggle)
+            action="toggle"
+            shift
+            ;;
+        -q | --quiet)
+            notify=false
+            shift
+            ;;
+        -P | --sigproc)
+            signal_proc="$2"
+            shift 2
+            ;;
+        -h | --help)
+            show_help
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            echo "Invalid option: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+if [ -n "$custom_step" ]; then
+    if [ "$action" = "set" ]; then
+        if [ "$color_mode" = "gamma" ]; then
+            if [[ $custom_step =~ ^[0-9]+$ ]] && [ "$custom_step" -ge "$min_gamma" ] && [ "$custom_step" -le "$max_gamma" ]; then
+>>>>>>> master
                 newGamma="$custom_step"
             else
                 echo "Error: Gamma value must be an integer between $min_gamma and $max_gamma"
                 exit 1
             fi
         else
+<<<<<<< HEAD
             if [[ "$custom_step" =~ ^[0-9]+$ ]] && [ "$custom_step" -ge "$min_temp" ] && [ "$custom_step" -le "$max_temp" ]; then
+=======
+            if [[ $custom_step =~ ^[0-9]+$ ]] && [ "$custom_step" -ge "$min_temp" ] && [ "$custom_step" -le "$max_temp" ]; then
+>>>>>>> master
                 newTemp="$custom_step"
             else
                 echo "Error: Temperature must be an integer between $min_temp and $max_temp"
@@ -243,11 +389,16 @@ if [ -n "$custom_step" ]; then
             fi
         fi
     else
+<<<<<<< HEAD
         # For increase/decrease actions, custom_step is the step size
         # If custom_step is empty or not a number, use defaults
         if [ -z "$custom_step" ] || ! [[ "$custom_step" =~ ^[0-9]+$ ]]; then
             # Use default steps
             : # Do nothing, keep default temp_step and gamma_step
+=======
+        if [ -z "$custom_step" ] || ! [[ $custom_step =~ ^[0-9]+$ ]]; then
+            :
+>>>>>>> master
         else
             if [ "$color_mode" = "gamma" ]; then
                 if [ "$custom_step" -ge 1 ] && [ "$custom_step" -le 50 ]; then
@@ -267,33 +418,47 @@ if [ -n "$custom_step" ]; then
         fi
     fi
 fi
+<<<<<<< HEAD
 
 # Validate specific temperature value
 if [ -n "$newTemp" ]; then
     if [[ "$newTemp" =~ ^[0-9]+$ ]] && [ "$newTemp" -ge "$min_temp" ] && [ "$newTemp" -le "$max_temp" ]; then
+=======
+if [ -n "$newTemp" ]; then
+    if [[ $newTemp =~ ^[0-9]+$ ]] && [ "$newTemp" -ge "$min_temp" ] && [ "$newTemp" -le "$max_temp" ]; then
+>>>>>>> master
         newTemp=$(clamp_temp "$newTemp")
     else
         echo "Error: Temperature must be a number between $min_temp and $max_temp"
         exit 1
     fi
 fi
+<<<<<<< HEAD
 
 # Validate specific gamma value
 if [ -n "$newGamma" ]; then
     if [[ "$newGamma" =~ ^[0-9]+$ ]] && [ "$newGamma" -ge "$min_gamma" ] && [ "$newGamma" -le "$max_gamma" ]; then
+=======
+if [ -n "$newGamma" ]; then
+    if [[ $newGamma =~ ^[0-9]+$ ]] && [ "$newGamma" -ge "$min_gamma" ] && [ "$newGamma" -le "$max_gamma" ]; then
+>>>>>>> master
         newGamma=$(clamp_gamma "$newGamma")
     else
         echo "Error: Gamma must be an integer between $min_gamma and $max_gamma"
         exit 1
     fi
 fi
+<<<<<<< HEAD
 
 # Ensure an action was specified
+=======
+>>>>>>> master
 if [ -z "$action" ]; then
     echo "Error: No action specified"
     show_help
     exit 1
 fi
+<<<<<<< HEAD
 
 # Apply action based on the selected option
 case $action in
@@ -354,6 +519,60 @@ send_signal_to_process
         hyprctl --quiet dispatch exec -- hyprsunset
     fi
 
+=======
+case $action in
+    increase)
+        if
+            [ "$color_mode" = "gamma" ]
+        then
+            newGamma=$(clamp_gamma "$((currentGamma + gamma_step))")
+            printf "%d|%d|%d\n" "$currentTemp" "$newGamma" "$toggle_mode" > "$sunsetConf"
+            currentGamma="$newGamma"
+        else
+            newTemp=$(clamp_temp "$((currentTemp + temp_step))")
+            printf "%d|%d|%d\n" "$newTemp" "$currentGamma" "$toggle_mode" > "$sunsetConf"
+            currentTemp="$newTemp"
+        fi
+        ;;
+    decrease)
+        if
+            [ "$color_mode" = "gamma" ]
+        then
+            newGamma=$(clamp_gamma "$((currentGamma - gamma_step))")
+            printf "%d|%d|%d\n" "$currentTemp" "$newGamma" "$toggle_mode" > "$sunsetConf"
+            currentGamma="$newGamma"
+        else
+            newTemp=$(clamp_temp "$((currentTemp - temp_step))")
+            printf "%d|%d|%d\n" "$newTemp" "$currentGamma" "$toggle_mode" > "$sunsetConf"
+            currentTemp="$newTemp"
+        fi
+        ;;
+    set)
+        if
+            [ "$color_mode" = "gamma" ]
+        then
+            printf "%d|%d|%d\n" "$currentTemp" "$newGamma" "$toggle_mode" > "$sunsetConf"
+            currentGamma="$newGamma"
+        else
+            printf "%d|%d|%d\n" "$newTemp" "$currentGamma" "$toggle_mode" > "$sunsetConf"
+            currentTemp="$newTemp"
+        fi
+        ;;
+    read) ;;
+    toggle)
+        toggle_mode=$((1 - toggle_mode))
+        printf "%d|%d|%d\n" "$currentTemp" "$currentGamma" "$toggle_mode" > "$sunsetConf"
+        ;;
+esac
+[ "$notify" = true ] && send_notification
+send_signal_to_process
+if ! pgrep -x "hyprsunset" > /dev/null; then
+    if [ -f "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprsunset.sock" ]; then
+        rm "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.hyprsunset.sock"
+    fi
+    hyprctl --quiet dispatch exec -- hyprsunset
+fi
+>>>>>>> master
 if [ "$action" = "read" ]; then
     if [ "$toggle_mode" -eq 1 ]; then
         current_running_temp=$(hyprctl hyprsunset temperature)
@@ -364,7 +583,11 @@ if [ "$action" = "read" ]; then
 else
     if [ "$toggle_mode" -eq 0 ]; then
         hyprctl --quiet hyprsunset identity
+<<<<<<< HEAD
         hyprctl --quiet hyprsunset gamma "${default_gamma}"
+=======
+        hyprctl --quiet hyprsunset gamma "$default_gamma"
+>>>>>>> master
     else
         if [ "$color_mode" = "gamma" ] && [ -n "$newGamma" ]; then
             hyprctl --quiet hyprsunset temperature "$currentTemp"
@@ -377,6 +600,7 @@ else
         fi
     fi
 fi
+<<<<<<< HEAD
 
 # Function to determine color based on temperature
 get_temp_color() {
@@ -392,6 +616,19 @@ get_temp_color() {
         [1000]="#ad1f2f"  # Red for extremely warm (1000-1999K)
     )
 
+=======
+get_temp_color() {
+    local temp=$1
+    declare -A temp_colors=(
+             [10000]="#8b0000"
+             [8000]="#ff6347"
+             [6500]=""
+             [5000]="#ffa500"
+             [4000]="#ff8c00"
+             [3000]="#ff471a"
+             [2000]="#d22f2f"
+             [1000]="#ad1f2f")
+>>>>>>> master
     for threshold in $(echo "${!temp_colors[@]}" | tr ' ' '\n' | sort -nr); do
         if ((temp >= threshold)); then
             color=${temp_colors[$threshold]}
@@ -404,6 +641,7 @@ get_temp_color() {
         fi
     done
 }
+<<<<<<< HEAD
 
 # Function to determine color based on gamma value
 get_gamma_color() {
@@ -416,6 +654,16 @@ get_gamma_color() {
         [20]="#ff6347" # Red for very low gamma (dim)
     )
 
+=======
+get_gamma_color() {
+    local gamma=$1
+    declare -A gamma_colors=(
+             [90]="#00ff00"
+             [70]="#90ee90"
+             [50]=""
+             [30]="#ffa500"
+             [20]="#ff6347")
+>>>>>>> master
     for threshold in $(echo "${!gamma_colors[@]}" | tr ' ' '\n' | sort -nr); do
         if ((gamma >= threshold)); then
             color=${gamma_colors[$threshold]}
@@ -428,12 +676,18 @@ get_gamma_color() {
         fi
     done
 }
+<<<<<<< HEAD
 
 # Modular functions for status generation
 get_temp_status() {
     local current_running_temp
     current_running_temp=$(get_running_temp)
 
+=======
+get_temp_status() {
+    local current_running_temp
+    current_running_temp=$(get_running_temp)
+>>>>>>> master
     if [ "$toggle_mode" -eq 1 ]; then
         if [ "$current_running_temp" = "$default_temp" ]; then
             echo "Identity"
@@ -444,6 +698,7 @@ get_temp_status() {
         echo "Identity"
     fi
 }
+<<<<<<< HEAD
 
 get_gamma_status() {
     printf "%d" "$currentGamma"
@@ -477,10 +732,33 @@ generate_status() {
         gamma_colored=$(get_gamma_color "$currentGamma")
 
         # Create rich tooltip with icons and colors
+=======
+get_gamma_status() {
+    printf "%d" "$currentGamma"
+}
+get_saved_temp_status() {
+    echo "${currentTemp}K"
+}
+generate_status() {
+    local text_output alt_text tooltip_text
+    local temp_colored gamma_colored current_running_temp
+    current_running_temp=$(get_running_temp)
+    if [ "$toggle_mode" -eq 1 ]; then
+        text_output="󰈈"
+        alt_text="active"
+    else
+        text_output=""
+        alt_text="inactive"
+    fi
+    if [ "$toggle_mode" -eq 1 ]; then
+        temp_colored=$(get_temp_color "$current_running_temp")
+        gamma_colored=$(get_gamma_color "$currentGamma")
+>>>>>>> master
         tooltip_text="󰈈 <b>Hyprsunset Active</b>\n"
         tooltip_text+="󰔄 Temperature: $temp_colored\n"
         tooltip_text+="󰍉 Gamma: $gamma_colored\n"
         tooltip_text+="\n<i>󰀨 Click to Disable</i>"
+<<<<<<< HEAD
 
     else
         # Show saved settings in inactive tooltip
@@ -488,11 +766,18 @@ generate_status() {
         saved_temp_colored=$(get_temp_color "$currentTemp")
         saved_gamma_colored=$(get_gamma_color "$currentGamma")
 
+=======
+    else
+        local saved_temp_colored saved_gamma_colored
+        saved_temp_colored=$(get_temp_color "$currentTemp")
+        saved_gamma_colored=$(get_gamma_color "$currentGamma")
+>>>>>>> master
         tooltip_text=" <b> Hyprsunset: Inactive</b>\n"
         tooltip_text+="󰔄 Temperature: $saved_temp_colored\n"
         tooltip_text+="󰍉 Gamma: $saved_gamma_colored\n"
         tooltip_text+="\n<i>󰀨 Click to activate with saved settings</i>"
     fi
+<<<<<<< HEAD
 
     # Output JSON for waybar with text, alt, and tooltip
     cat <<JSON
@@ -501,4 +786,10 @@ JSON
 }
 
 # Generate and print status message
+=======
+    cat << JSON
+{"text":"$text_output", "alt":"$alt_text", "tooltip":"$tooltip_text"}
+JSON
+}
+>>>>>>> master
 generate_status

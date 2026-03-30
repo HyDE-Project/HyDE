@@ -29,9 +29,15 @@ function _dedup_zsh_plugins {
     unset -f _dedup_zsh_plugins
     # Oh-my-zsh installation path
     zsh_paths=(
+<<<<<<< HEAD
         "$HOME/.oh-my-zsh"
         "/usr/local/share/oh-my-zsh"
         "/usr/share/oh-my-zsh"
+=======
+        "/usr/share/oh-my-zsh"
+        "/usr/local/share/oh-my-zsh"
+        "$HOME/.oh-my-zsh"
+>>>>>>> master
     )
     for zsh_path in "${zsh_paths[@]}"; do [[ -d $zsh_path ]] && export ZSH=$zsh_path && break; done
     # Load Plugins

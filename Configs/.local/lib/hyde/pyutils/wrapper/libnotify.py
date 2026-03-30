@@ -2,13 +2,18 @@
 # coding: utf-8
 
 import os
+<<<<<<< HEAD
 import threading
+=======
+import shutil
+>>>>>>> master
 from subprocess import run, CalledProcessError, TimeoutExpired
 from typing import Optional
 
 DEFAULT_APP_NAME = "HyDE"
 DEFAULT_URGENCY = "normal"
 
+<<<<<<< HEAD
 
 def _is_gui_available():
     """Check if a GUI environment is available."""
@@ -27,6 +32,34 @@ def _has_notify_send():
         return True
     except (CalledProcessError, TimeoutExpired, FileNotFoundError):
         return False
+=======
+_notify_send_path: Optional[str] = None
+_notify_send_checked = False
+
+
+def _has_notify_send() -> bool:
+    """Check if notify-send command is available (cached)."""
+    global _notify_send_path, _notify_send_checked
+    if not _notify_send_checked:
+        _notify_send_checked = True
+        _notify_send_path = shutil.which("notify-send")
+    return _notify_send_path is not None
+
+
+def _is_gui_available() -> bool:
+    """Check if a GUI environment is available."""
+    return bool(
+        os.environ.get("DISPLAY")
+        or os.environ.get("WAYLAND_DISPLAY")
+        or os.environ.get("XDG_SESSION_TYPE") in ("wayland", "x11")
+    )
+
+
+def _print_fallback(summary: str, body: Optional[str], app_name: Optional[str]) -> None:
+    prefix = f"[{app_name or DEFAULT_APP_NAME}]"
+    msg = f"{summary}: {body}" if body else summary
+    print(f"{prefix} {msg}")
+>>>>>>> master
 
 
 def send(
@@ -38,6 +71,7 @@ def send(
     category: Optional[str] = None,
     app_name: Optional[str] = DEFAULT_APP_NAME,
     replace_id: Optional[int] = None,
+<<<<<<< HEAD
 ):
     """Send a notification using notify-send.
 
@@ -71,6 +105,15 @@ def send(
 
     command = ["notify-send"]
 
+=======
+) -> None:
+    """Send a desktop notification via notify-send, with console fallback."""
+    if not _is_gui_available() or not _has_notify_send():
+        _print_fallback(summary, body, app_name)
+        return
+
+    command = ["notify-send"]
+>>>>>>> master
     if urgency:
         command.extend(["-u", urgency])
     if expire_time:
@@ -83,11 +126,15 @@ def send(
         command.extend(["-a", app_name])
     if replace_id:
         command.extend(["-r", str(replace_id)])
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     command.append(summary)
     if body:
         command.append(body)
 
+<<<<<<< HEAD
     def _send_in_background():
         """Send notification in background thread."""
         try:
@@ -108,3 +155,9 @@ def send(
 # Example usage
 if __name__ == "__main__":
     send("Test Notification", "This is a test notification body.", urgency="normal")
+=======
+    try:
+        run(command, check=True, timeout=3, capture_output=True)
+    except (CalledProcessError, TimeoutExpired, FileNotFoundError):
+        _print_fallback(summary, body, app_name)
+>>>>>>> master

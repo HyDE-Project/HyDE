@@ -1,0 +1,78 @@
+/* Temperature buckets (5°C increments) */
+#custom-gpuinfo.temp-0,
+#custom-gpuinfo.temp-5,
+#custom-gpuinfo.temp-10 {
+    color: #4169e1;
+}
+
+#custom-gpuinfo.temp-15,
+#custom-gpuinfo.temp-20 {
+    color: #4682b4;
+}
+
+#custom-gpuinfo.temp-25,
+#custom-gpuinfo.temp-35,
+#custom-gpuinfo.temp-30 {
+    color: #87ceeb;
+}
+
+#custom-gpuinfo.temp-40,
+#custom-gpuinfo.temp-45,
+#custom-gpuinfo.temp-50,
+#custom-gpuinfo.temp-55 {
+    color: unset;
+}
+
+#custom-gpuinfo.temp-60 {
+    color: #ffa500;
+}
+
+#custom-gpuinfo.temp-65 {
+    color: #ff8c00;
+}
+
+#custom-gpuinfo.temp-70 {
+    color: #ff6347;
+}
+
+#custom-gpuinfo.temp-75 {
+    color: #ff471a;
+}
+
+#custom-gpuinfo.temp-80 {
+    color: #d22f2f;
+}
+
+#custom-gpuinfo.temp-85 {
+    color: #ad1f2f;
+}
+
+#custom-gpuinfo.temp-90,
+#custom-gpuinfo.temp-95,
+#custom-gpuinfo.temp-100 {
+    color: #8b0000;
+}
+
+/* Utilization buckets (font weight by load) */
+#custom-gpuinfo.util-0,
+#custom-gpuinfo.util-10,
+#custom-gpuinfo.util-20 {
+    font-weight: 400;
+}
+
+#custom-gpuinfo.util-30,
+#custom-gpuinfo.util-40,
+#custom-gpuinfo.util-50 {
+    font-weight: 500;
+}
+
+#custom-gpuinfo.util-60,
+#custom-gpuinfo.util-70,
+#custom-gpuinfo.util-80 {
+    font-weight: 600;
+}
+
+#custom-gpuinfo.util-90,
+#custom-gpuinfo.util-100 {
+    font-weight: 700;
+}

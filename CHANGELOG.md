@@ -1,8 +1,170 @@
 # Changelog
 
+<<<<<<< HEAD
 All notable changes to `HyDE` will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
+=======
+<!--  
+All notable changes to `HyDE` will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
+ -->
+
+## Unreleased
+
+### Changed
+
+- Wallpaper: Pt. 1 of multi theming backend.
+- Hyprland: Remove `hyde.conf` as it is too brittle. Use `hyprland.conf` instead!
+- Window: Moved 'windowpin' to 'window.pin'. For consistency.
+- pyutils: Kinda clean up libnotify wrapper.
+
+### Added
+- Window: added 'hyde-shell window.mute' to toggle window audio. This is a python implementation for 'wl-togglesink'
+
+
+
+
+## v26.1.2
+
+
+### Fixed
+
+- Waybar: visual fixes for menus, tooltips and tray (borders, radii, checkbox/radio shapes)
+- Broken venvs are now auto-rebuilt when installing a dependency
+
+### Changed
+
+- Waybar: improved menus and popups; added fade animation and theme color support (#1542, #1549)
+- Font: avoid forcing font hinting to "full"; prefer system default (commits 7ceff6a, bf7cee2)
+- Misc: removed stray "hyprquery" binary (af551c6) and branch sync/merges (dev → rc, docs-ptbr)
+- Docs: Portuguese translations for documentation and keybinds (#1543)
+- Cpuinfo: colors are now available as css class instead hardcoding in scripts.
+- Gpuinfo: colors are now available as css class instead hardcoding in scripts.
+
+
+## v25.12.4
+
+### Fixed
+
+- Game launcher: steamdeck holograph
+- Formatting using 
+- Hyprland 0.53 Syntax Revamp
+- Some old hyprdots theme parsing. 
+
+### Added
+
+- Wallpaper: Added wallpaper '--multi-select' for multiple --outputs. Useful for per monitor or lockscreen/display manager background.  
+- Wallpaper: Selector option to modify column count
+- Theme: Selector option to modify thumbnail types and column count
+- CLI: Added 'hyde-shell open' for apps with mimetypes
+- Core: Clean up 'hyde-shell wallpaper' script 
+- Restore: Added option to trash the config to avoid conflicts
+- Waybar: Added pavucontrol-qt in the module
+- Rofi: Added search functionality to the game launcher menu.
+- Cliphist: image-history #1360
+- Cliphist: Rofi binds #1360
+- Game launcher: lutris inspector py script now uses the lutris DB to get meta dat making it faster than using lutris CLI
+- Game launcher: steam inspector py script is translated from fn_steam shell script. 
+- Game launcher: catalog backend will merge both lutris and steam with hints for duplicates
+- Game launcher: "hyde-shell game launcher" now has --style and --backend args
+- Python: added pyproject.toml for ruff formatter
+- Shell: Added ".editorconfig" for shell scripts.
+- Cliphist: Added OCR backend. Invoking "hyde-shell cliphist -scan-image" or `Alt+V` on clipboard will extract the text of the latest image that exist in cliphist. 
+- Screenshot: Added QR code reading feature using `zbar` package. No default hotkey is provided. Call it via `hyde-shell screenshot sq`
+- Weather Applet: Added automatic locale detection for temperature units (°C/°F), time formats (12h/24h), and wind speed (km/h/mph).
+- Weather Applet: Implemented multi-language support based on system locale and added `WEATHER_LANG` for manual overrides.
+- Weather Applet: Added support for a user-defined configuration file at `~/.config/weather.env`.
+
+### Changed
+
+- NVIDIA: Updated driver database to separate legacy and modern GPU support. `nvidia-open-dkms` now targets Turing (NV160) and newer, while `nvidia-580xx-dkms` covers Maxwell (NV110) through Volta (NV140).
+- QT: Move qtXct/colors.conf into qtXct/colors/wallbash.conf. This is how qtXct Settings parses color schemes the proper way.
+- Core: Moved core "color" switch inside directory in lib path. Prepare to make `~/.local/lib/hyde` external only scripts and corresponding directories will be sourced or executed internally. 
+- Wallbash: Remove wallbash.qt as it is a simple cp command now in the qtct.dcol template
+- UWSM: Start processes launched with app2unit.sh,rofi,`hyde-shell app` as services
+
+### Migration 
+
+##### Hyprland v0.53.0
+
+- Before updating HyDE, Please make sure your hyprland version is 0.53.0!
+- After Updating HyDE please make sure to fix any syntax error in ~/.config/hypr/*
+
+We are trying our best to fix any issues. So please try to your best to search for any duplicate issues and potential fixes! 
+
+Stay HyDErated!
+
+##### NVIDIA Legacy Support
+
+The driver selection/installation logic has been updated to align with Arch Linux recommendations.
+
+- **Turing (NV160) and newer**: Now defaults to `nvidia-open-dkms`.
+- **Maxwell (NV110) to Volta (NV140)**: Now defaults to `nvidia-580xx-dkms`.
+
+
+**Existing Users**
+- nv110-nv140 cards, please install `nvidia-580xx-dkms` before updating your whole system or before rebooting. `nvidia-open-dkms` could potentially borke your display. Goodluck!
+- nv160 (Turing) and above see **Fallback**
+
+**Fallback:**
+Users with Turing or newer cards using `nvidia-open-dkms` can fallback to `nvidia-580xx-dkms` if they encounter issues, as the 580xx branch still supports these architectures. 
+
+
+- Read wiki https://wiki.archlinux.org/title/NVIDIA
+- See common solutions https://github.com/HyDE-Project/HyDE/discussions/1477 
+
+
+## v25.10.1
+
+### Fixed
+- Hyprland: Fix errors when `HYPRLAND_CONFIG` is not set yet
+- Fish: Please Move you configs to `~/.config/fish/conf.d`
+
+### Added
+
+- QT6CT: Added explicit font configuration for QT6 Applications see [#1309](https://github.com/HyDE-Project/HyDE/issues/1309)
+- QT5CT: Added explicit font configuration for QT5 Applications see [#1309](https://github.com/HyDE-Project/HyDE/issues/1309)
+- GTK3: Added explicit font configuration for GTK3 Applications see [#1309](https://github.com/HyDE-Project/HyDE/issues/1309)
+
+### Changed
+
+- Audio volume control: use `wpctl` instead of `pamixer` for managing audio volume when PipeWire server is running.
+- Fish: `config.fish` is now user defined config
+- Fish: `confi.d/hyde.fish` is used for HyDE only stuff. To override this create a separate file or use `config.fish` 
+
+
+### Migration
+
+For fish shell users: 
+Please empty your `~/.config/fish/config.fish` and use it to modify fish configurations.
+
+## v25.9.3
+
+### Changed
+
+- OCR: `imagemagick` screenshot preprocessing tuned for better recognition results
+- Docs: Improves release policy documentation by #1265
+
+### Added
+
+- Turkish documentation.
+- No changes have been made to other codes.
+- OCR: `tesseract` now supports explicit language settings via `hyde/config.toml`:
+    ```toml
+    [screenshot.ocr]
+    tesseract_languages = ["eng"]
+    ```
+    To use text recognition bind `hyde-shell screenshot sc` to any hotkey.
+- Hyprlock: Added hyprlock preview
+- File chooser dialogs in Hyprland now open centered and floating instead of off-screen
+
+### Fixed
+
+- Hyprlock: fix hyprlock crashing by handling it as a systemd scope unit
+- Hyprland: Backport Fix installation/update errors 
+>>>>>>> master
 
 ## v25.9.1
 
@@ -24,7 +186,10 @@ gesture = 3, vertical, workspace
 - Gestures: Chase hyprland v0.51.0 gesture syntax
 
 ### Added
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 - pinch gesture to toggle tile and floating
 
 ## v25.8.3

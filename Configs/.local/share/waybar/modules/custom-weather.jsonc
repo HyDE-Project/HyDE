@@ -2,8 +2,13 @@
   "custom/weather": {
     "exec": "hyde-shell weather",
     "tooltip": true,
+<<<<<<< HEAD
     "format": "{}",
     "interval": 1800,
+=======
+    "format": "{0}",
+    "interval": 30,
+>>>>>>> master
     "return-type": "json"
   }
 }

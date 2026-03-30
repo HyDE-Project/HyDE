@@ -100,7 +100,11 @@
     "critical-threshold": 65, // NVIDIA typical max temp
     "warning-threshold": 55, // Start warning at 75°C
     // Update frequency
+<<<<<<< HEAD
     "interval": 2,
+=======
+    // "interval": 2,
+>>>>>>> master
     // Display formats with GPU-specific styling
     "format": " {temperatureC}°C",
     "format-warning": "<span foreground='#fab387'></span> <span foreground='#fab387'>{temperatureC}°C</span>",
@@ -119,7 +123,11 @@
     "critical-threshold": 85, // CPU critical temp
     "warning-threshold": 70, // CPU warning temp
     // Update frequency
+<<<<<<< HEAD
     "interval": 2,
+=======
+    // "interval": 2,
+>>>>>>> master
     // Display formats with CPU-specific styling
     "format": " {temperatureC}°C",
     "format-warning": "<span foreground='#fab387'></span> <span foreground='#fab387'>{temperatureC}°C</span>",
@@ -138,7 +146,11 @@
     "critical-threshold": 50,
     "warning-threshold": 40,
     // Update frequency
+<<<<<<< HEAD
     "interval": 5,
+=======
+    // "interval": 5,
+>>>>>>> master
     // Display formats with system-specific styling
     "format": "󰔏 {temperatureC}°C",
     "format-warning": "<span foreground='#fab387'>󰔏</span> <span foreground='#fab387'>{temperatureC}°C</span>",
@@ -150,4 +162,8 @@
     "max-length": 12,
     "min-length": 2
   }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master

@@ -23,6 +23,7 @@
 set -euf
 
 # Store original IFS value, assumed to contain the default: <space><tab><newline>
+<<<<<<< HEAD
 OIFS="$IFS"
 # Newline, utility variable used throughout the script
 N='
@@ -36,6 +37,26 @@ RSEP=$(printf '%b' '\036')
 
 # ASCII Unit Separator for Exec parsing
 USEP=$(printf '%b' '\037')
+=======
+XTE__OIFS=$IFS
+# Newline, utility variable used throughout the script
+XTE__LF='
+'
+
+# name of executable
+XTE__SELF_NAME=${0##*/}
+
+# ASCII Record Separator for cache saving
+# ASCII Unit Separator for Exec parsing
+# Carriage return for string expander
+{
+	read -r XTE__RSEP
+	read -r XTE__USEP
+	read -r XTE__CR
+} <<- EOF
+	$(printf '%b\n' '\036' '\037' '\r')
+EOF
+>>>>>>> master
 
 error() {
 	# Print messages to stderr
@@ -54,36 +75,66 @@ check_bool() {
 }
 
 # Utility function to print debug messages to stderr (or not)
+<<<<<<< HEAD
 if check_bool "${DEBUG-0}"; then
 	debug() {
 		# print each arg at new line, prefix each printed line with 'D: '
 		while IFS='' read -r debug_line; do
 			printf 'D: %s\n' "$debug_line"
 		done <<-EOF >&2
+=======
+if check_bool "${XTE_DEBUG-${DEBUG-0}}"; then
+	XTE__DEBUG=true
+	debug() {
+		# print each arg at new line, prefix each printed line with 'D: '
+		while IFS= read -r xte__debug_line; do
+			printf 'D: %s\n' "$xte__debug_line"
+		done <<- EOF >&2
+>>>>>>> master
 			$(printf '%s\n' "$@")
 		EOF
 	}
 else
+<<<<<<< HEAD
+=======
+	XTE__DEBUG=
+>>>>>>> master
 	debug() { :; }
 fi
 
 # builtin stdin cat
 shcat() {
+<<<<<<< HEAD
 	while IFS='' read -r line; do
 		printf '%s\n' "$line"
+=======
+	while IFS= read -r xte__line; do
+		printf '%s\n' "$xte__line"
+>>>>>>> master
 	done
 }
 
 usage() {
+<<<<<<< HEAD
 	shcat <<-EOF
 		Usage:
 		  $SELF_NAME [options] [--] [command [arguments ...]]
+=======
+	shcat <<- EOF
+		Usage:
+		  $XTE__SELF_NAME [options] [--] [command [arguments ...]]
+>>>>>>> master
 	EOF
 }
 
 help() {
+<<<<<<< HEAD
 	shcat <<-EOF
 		$SELF_NAME - Shell-based default terminal launcher.
+=======
+	shcat <<- EOF
+		$XTE__SELF_NAME - Shell-based default terminal launcher.
+>>>>>>> master
 
 		Implementation of the proposed Default Terminal Specification.
 
@@ -94,14 +145,22 @@ help() {
 		Options for modifying terminal behavior (if supported by terminals's
 		entry):
 
+<<<<<<< HEAD
 		  --app-id=app-id set app-id (Wayland) or window class (X11)
 		  --title=title    set tile of terminal.
 		  --dir=workdir    set workdir of terminal.
 		  --hold           instruct terminal to hold after command ends.
+=======
+		  --app-id=app-id    set app-id (Wayland) or window class (X11)
+		  --title=title      set tile of terminal.
+		  --dir=workdir      set workdir of terminal.
+		  --hold             instruct terminal to hold after command ends.
+>>>>>>> master
 
 		Options for printing data instead of executing terminal:
 
 		  --print-id
+<<<<<<< HEAD
 		   print selected Desktop Entry ID. Action is appended delimited
 		   by ":".
 
@@ -121,6 +180,27 @@ help() {
 		   printf sequence to be used as the delimiter between multiple requested
 		   print statements, "\\n" by default. If sequence is "\\n", output is
 		   also terminated with a newline.
+=======
+		      print selected Desktop Entry ID. Action is appended delimited
+		      by ":".
+
+		  --print-path
+		      print path to selected Desktop Entry. Action is appended
+		      delimited by ":".
+
+		  --print-content
+		      print content of selected Desktop Entry. Conflicts with --print-cmd.
+
+		  --print-cmd[=printf_sequence]
+		      print resulting command line, delimited by given printf sequence,
+		      "\\n" by default. If sequence is "\\n", output is also terminated with
+		      a newline.
+
+		  --print-delimiter=printf_sequence
+		      printf sequence to be used as the delimiter between multiple requested
+		      print statements, "\\n" by default. If sequence is "\\n", output is
+		      also terminated with a newline.
+>>>>>>> master
 
 		Configuration:
 
@@ -129,7 +209,11 @@ help() {
 		hierarchy. Where "\${desktop}" is a lowercased string that is matched
 		(case-insensitively) against items of "\${XDG_CURRENT_DESKTOP}".
 
+<<<<<<< HEAD
 		See "man $SELF_NAME" for more details.
+=======
+		See "man $XTE__SELF_NAME" for more details.
+>>>>>>> master
 	EOF
 }
 
@@ -138,6 +222,7 @@ make_paths() {
 	IFS=':'
 
 	# Populate list of config files to read, in descending order of preference
+<<<<<<< HEAD
 	for dir in ${XDG_CONFIG_HOME:-"${HOME}/.config"}${IFS}${XDG_CONFIG_DIRS:-/etc/xdg}; do
 		# Normalise base path and append the data subdirectory with a trailing '/'
 		for desktop in ${LOWERCASE_XDG_CURRENT_DESKTOP}; do
@@ -159,30 +244,70 @@ make_paths() {
 	for dir in ${XDG_DATA_HOME:-${HOME}/.local/share}${IFS}${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
 		# Normalise base path and append the data subdirectory with a trailing '/'
 		APPLICATIONS_DIRS=${dir%/}/applications/${APPLICATIONS_DIRS:+${IFS}${APPLICATIONS_DIRS}}
+=======
+	for xte__dir in ${XDG_CONFIG_HOME:-"${HOME}/.config"}${IFS}${XDG_CONFIG_DIRS:-/etc/xdg}; do
+		# Normalise base path and append the data subdirectory with a trailing '/'
+		for xte__desktop in ${XTE__LOWERCASE_XDG_CURRENT_DESKTOP}; do
+			XTE__CONFIGS=${XTE__CONFIGS:+${XTE__CONFIGS}:}${xte__dir%/}/${xte__desktop}-xdg-terminals.list
+		done
+		XTE__CONFIGS=${XTE__CONFIGS:+${XTE__CONFIGS}:}${xte__dir%/}/xdg-terminals.list
+	done
+
+	# append xdg-terminal-exec dirs in XDG_DATA_DIRS to config hierarchy for distro/upstream level defaults
+	for xte__dir in ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
+		# Normalise base path and append the data subdirectory with a trailing '/'
+		for xte__desktop in ${XTE__LOWERCASE_XDG_CURRENT_DESKTOP}; do
+			XTE__CONFIGS=${XTE__CONFIGS:+${XTE__CONFIGS}:}${xte__dir%/}/xdg-terminal-exec/${xte__desktop}-xdg-terminals.list
+		done
+		XTE__CONFIGS=${XTE__CONFIGS:+${XTE__CONFIGS}:}${xte__dir%/}/xdg-terminal-exec/xdg-terminals.list
+	done
+
+	# Populate list of directories to search for entries in, in ascending order of preference
+	for xte__dir in ${XDG_DATA_HOME:-${HOME}/.local/share}${IFS}${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
+		# Normalise base path and append the data subdirectory with a trailing '/'
+		XTE__APPLICATIONS_DIRS=${xte__dir%/}/applications/${XTE__APPLICATIONS_DIRS:+:${XTE__APPLICATIONS_DIRS}}
+>>>>>>> master
 	done
 
 	# cache
 	XDG_CACHE_HOME=${XDG_CACHE_HOME:-"${HOME}/.cache"}
+<<<<<<< HEAD
 	CACHE_FILE="${XDG_CACHE_HOME}/xdg-terminal-exec"
 
 	debug "paths:" "  CONFIGS=${CONFIGS}" "  APPLICATIONS_DIRS=${APPLICATIONS_DIRS}"
 }
 # Mask IFS within function to allow temporary changes
 alias make_paths='IFS= make_paths'
+=======
+	XTE__CACHE_FILE=${XDG_CACHE_HOME}/xdg-terminal-exec
+
+	IFS=$XTE__OIFS
+	debug "paths:" "  XTE__CONFIGS=${XTE__CONFIGS}" "  XTE__APPLICATIONS_DIRS=${XTE__APPLICATIONS_DIRS}"
+}
+>>>>>>> master
 
 gen_hash() {
 	# return md5 of custom string, XDG_CURRENT_DESKTOP and ls -LRl output for config and data paths
 	# md5 is 4x faster than sha*, and there is no need for cryptography here
+<<<<<<< HEAD
 	# shellcheck disable=SC2034
 	read -r hash _drop <<-EOH
 		$(
 			hash_paths="${CONFIGS}:${APPLICATIONS_DIRS}"
+=======
+	# writes to XTE__NEW_HASH var
+	# shellcheck disable=SC2034
+	read -r xte__hash _drop <<- EOH
+		$(
+			xte__hash_paths=${XTE__CONFIGS}:${XTE__APPLICATIONS_DIRS}
+>>>>>>> master
 			{
 				# cache 'version', change to invalidate when format changes
 				echo 4
 				echo "${XDG_CURRENT_DESKTOP-}"
 				IFS=':'
 				# shellcheck disable=SC2086
+<<<<<<< HEAD
 				debug ">     hashing '${XDG_CURRENT_DESKTOP-}' and listing of:" $hash_paths "^     end of hash listing"
 				# shellcheck disable=SC2012,SC2086
 				LANG=C ls -LRl ${hash_paths} 2>/dev/null
@@ -197,12 +322,29 @@ gen_hash() {
 		;;
 	*)
 		debug "failed to get fresh hash, got '$hash'"
+=======
+				debug ">     hashing '${XDG_CURRENT_DESKTOP-}' and listing of:" $xte__hash_paths "^     end of hash listing"
+				# shellcheck disable=SC2012,SC2086
+				LANG=C ls -LRl ${xte__hash_paths} 2> /dev/null
+			} | md5sum 2> /dev/null
+		)
+	EOH
+	case "$xte__hash" in
+	[0-9a-f]??????????????????????????????[0-9a-f])
+		debug "got fresh hash '$xte__hash'"
+		XTE__NEW_HASH=$xte__hash
+		return 0
+		;;
+	*)
+		debug "failed to get fresh hash, got '$xte__hash'"
+>>>>>>> master
 		return 1
 		;;
 	esac
 }
 
 read_cache() {
+<<<<<<< HEAD
 	# reads $cached_hash, $cached_cmd, $cached_exec_usep, $cached_execarg, and others from cache file,
 	# checks if cache is actual and applies it, otherwise returns 1
 	# tries to bail out as soon as possible if something does not fit
@@ -226,10 +368,36 @@ read_cache() {
 			10) cached_holdarg=$line ;;
 			"$line_limit")
 				debug "reached cache line limit ($line_limit)"
+=======
+	# reads $xte__cached_hash, $xte__cached_cmd, $xte__cached_exec_usep, $xte__cached_execarg, and others from cache file,
+	# checks if cache is actual and applies it, otherwise returns 1
+	# tries to bail out as soon as possible if something does not fit
+	if [ -f "${XTE__CACHE_FILE}" ]; then
+		xte__line_num=0
+		xte__line_limit=50
+		xte__cached_exec_usep=
+		xte__finished=0
+		while IFS= read -r xte__line; do
+			xte__line_num=$((xte__line_num + 1))
+			case "${xte__line_num}" in
+			1) xte__cached_hash=$xte__line ;;
+			2) xte__cached_cmd=$xte__line ;;
+			3) xte__cached_entry_path=$xte__line ;;
+			4) xte__cached_entry_id=$xte__line ;;
+			5) xte__cached_entry_action=$xte__line ;;
+			6) xte__cached_execarg=$xte__line ;;
+			7) xte__cached_appidarg=$xte__line ;;
+			8) xte__cached_titlearg=$xte__line ;;
+			9) xte__cached_dirarg=$xte__line ;;
+			10) xte__cached_holdarg=$xte__line ;;
+			"$xte__line_limit")
+				debug "reached cache line limit ($xte__line_limit)"
+>>>>>>> master
 				return 1
 				;;
 			# Line 11 starts command
 			*)
+<<<<<<< HEAD
 				# Command is stored as raw expanded and tokenized $USEP-separated command,
 				# technically it can contain newline characters.
 				# Reconstruct newlines, use ${RSEP}END_OF_EXEC_USEP string as terminator.
@@ -238,11 +406,22 @@ read_cache() {
 				*"${RSEP}END_OF_EXEC_USEP")
 					cached_exec_usep=${cached_exec_usep%"${RSEP}END_OF_EXEC_USEP"}
 					finished=1
+=======
+				# Command is stored as raw expanded and tokenized $XTE__USEP-separated command,
+				# technically it can contain newline characters.
+				# Reconstruct newlines, use ${XTE__RSEP}END_OF_EXEC_USEP string as terminator.
+				xte__cached_exec_usep=${xte__cached_exec_usep}${xte__cached_exec_usep:+$XTE__LF}${xte__line}
+				case "${xte__line}" in
+				*"${XTE__RSEP}END_OF_EXEC_USEP")
+					xte__cached_exec_usep=${xte__cached_exec_usep%"${XTE__RSEP}END_OF_EXEC_USEP"}
+					xte__finished=1
+>>>>>>> master
 					break
 					;;
 				esac
 				;;
 			esac
+<<<<<<< HEAD
 		done <"${CACHE_FILE}"
 		if [ "$finished" = "1" ]; then
 			debug "got cache:" \
@@ -269,6 +448,35 @@ read_cache() {
 				TITLEARG=${cached_titlearg}
 				DIRARG=${cached_dirarg}
 				HOLDARG=${cached_holdarg}
+=======
+		done < "${XTE__CACHE_FILE}"
+		if [ "$xte__finished" = "1" ]; then
+			debug "got cache:" \
+				"hash=${xte__cached_hash}" \
+				"cmd=${xte__cached_cmd}" \
+				"entry_path=${xte__cached_entry_path}" \
+				"entry_id=${xte__cached_entry_id}" \
+				"entry_action=${xte__cached_entry_action}" \
+				"execarg=${xte__cached_execarg}" \
+				"appidarg=${xte__cached_appidarg}" \
+				"titlearg=${xte__cached_titlearg}" \
+				"dirarg=${xte__cached_dirarg}" \
+				"holdarg=${xte__cached_holdarg}" \
+				"exec_usep=${xte__cached_exec_usep}"
+			gen_hash || return 1
+			XTE__HASH=$XTE__NEW_HASH
+			if [ "$XTE__HASH" = "$xte__cached_hash" ] && command -v "$xte__cached_cmd" > /dev/null; then
+				debug "cache is actual"
+				XTE__EXEC_USEP=${xte__cached_exec_usep}
+				XTE__ENTRY_PATH=${xte__cached_entry_path}
+				XTE__ENTRY_ID=${xte__cached_entry_id}
+				XTE__ENTRY_ACTION=${xte__cached_entry_action}
+				XTE__EXECARG=${xte__cached_execarg}
+				XTE__APPIDARG=${xte__cached_appidarg}
+				XTE__TITLEARG=${xte__cached_titlearg}
+				XTE__DIRARG=${xte__cached_dirarg}
+				XTE__HOLDARG=${xte__cached_holdarg}
+>>>>>>> master
 				return 0
 			else
 				debug "cache is out-of-date"
@@ -285,6 +493,7 @@ read_cache() {
 }
 
 save_cache() {
+<<<<<<< HEAD
 	# saves $HASH, $1 (executable), $EXEC_USEP, $EXECARG, other supported args to cache file or removes it if CACHE_ENABLED is false
 	if check_bool "$CACHE_ENABLED"; then
 		[ ! -d "${XDG_CACHE_HOME}" ] && mkdir -p "${XDG_CACHE_HOME}"
@@ -321,19 +530,66 @@ save_cache() {
 	else
 		debug "cache is disabled, removing '${CACHE_FILE}'"
 		rm -f "${CACHE_FILE}"
+=======
+	# saves $XTE__HASH, $1 (executable), $XTE__EXEC_USEP, $XTE__EXECARG, other supported args to cache file or removes it if XTE__CACHE_ENABLED is false
+	if check_bool "$XTE__CACHE_ENABLED"; then
+		[ ! -d "${XDG_CACHE_HOME}" ] && mkdir -p "${XDG_CACHE_HOME}"
+		if [ -z "${XTE__HASH-}" ]; then
+			gen_hash || {
+				error "could not hash listing of files, removing '${XTE__CACHE_FILE}'"
+				rm -f "${XTE__CACHE_FILE}"
+				return 0
+			}
+			XTE__HASH=$XTE__NEW_HASH
+		fi
+		case "${XTE__HASH}${1}${XTE__EXECARG}${XTE__APPIDARG}${XTE__TITLEARG}${XTE__DIRARG}${XTE__HOLDARG}" in
+		"$XTE__LF")
+			error "One or more of terminal's arguments contains a newline, removing '${XTE__CACHE_FILE}'"
+			rm -f "${XTE__CACHE_FILE}"
+			return 0
+			;;
+		esac
+		XTE__UM=$(umask)
+		umask 0077
+		printf '%s\n' \
+			"${XTE__HASH}" \
+			"${1}" \
+			"${XTE__ENTRY_PATH}" \
+			"${XTE__ENTRY_ID}" \
+			"${XTE__ENTRY_ACTION}" \
+			"${XTE__EXECARG}" \
+			"${XTE__APPIDARG}" \
+			"${XTE__TITLEARG}" \
+			"${XTE__DIRARG}" \
+			"${XTE__HOLDARG}" \
+			"${XTE__EXEC_USEP}${XTE__RSEP}END_OF_EXEC_USEP" > "${XTE__CACHE_FILE}"
+		umask "$XTE__UM"
+		debug ">     saved cache:" "${XTE__HASH}" "${XTE__EXEC_USEP}" "${XTE__EXECARG}" "${1}" "^     end of saved cache"
+	else
+		debug "cache is disabled, removing '${XTE__CACHE_FILE}'"
+		rm -f "${XTE__CACHE_FILE}"
+>>>>>>> master
 		return 0
 	fi
 }
 
 list_contains() {
+<<<<<<< HEAD
 	# checks if list $1 contains item $2 delimited by $3 (default $N)
 	delimiter=${3:-$N}
 	case "${delimiter}${1}${delimiter}" in
 	*"${delimiter}${2}${delimiter}"*) return 0 ;;
+=======
+	# checks if list $1 contains item $2 delimited by $3 (default $XTE__LF)
+	xte__delimiter=${3:-$XTE__LF}
+	case "${xte__delimiter}${1}${xte__delimiter}" in
+	*"${xte__delimiter}${2}${xte__delimiter}"*) return 0 ;;
+>>>>>>> master
 	*) return 1 ;;
 	esac
 }
 
+<<<<<<< HEAD
 # Parse all config files and populate $ENTRY_IDS with read desktop entry IDs
 read_config_paths() {
 	# All config files are read immediately, rather than on demand, even if it's more IO intensive
@@ -347,11 +603,28 @@ read_config_paths() {
 		while IFS="$OIFS" read -r line; do
 			#debug "read line '$line'"
 			case $line in
+=======
+# Parse all config files and populate $XTE__ENTRY_IDS with read desktop entry IDs
+read_config_paths() {
+	# All config files are read immediatelly, rather than on demand, even if it's more IO intensive
+	# This way all IDs are already known, and in order of preference, before iterating over them
+	IFS=':'
+	for xte__config_path in ${XTE__CONFIGS}; do
+		IFS=$XTE__OIFS
+		debug "reading config '$xte__config_path'"
+		# Nonexistant file is not an error
+		[ -f "$xte__config_path" ] || continue
+		# Let `read` trim leading/trailing whitespace from the line
+		while read -r xte__line; do
+			#debug "read line '$xte__line'"
+			case "$xte__line" in
+>>>>>>> master
 
 			# Catch directives first
 
 			# cache control
 			/enable_cache)
+<<<<<<< HEAD
 				debug "found '$line' directive${CACHE_CONFIGURED:+ (ignored)}"
 				[ -z "$CACHE_CONFIGURED" ] || continue
 				CACHE_ENABLED=true
@@ -362,10 +635,23 @@ read_config_paths() {
 				[ -z "$CACHE_CONFIGURED" ] || continue
 				CACHE_ENABLED=false
 				CACHE_CONFIGURED=1
+=======
+				debug "found '$xte__line' directive${XTE__CACHE_CONFIGURED:+ (ignored)}"
+				[ -z "$XTE__CACHE_CONFIGURED" ] || continue
+				XTE__CACHE_ENABLED=true
+				XTE__CACHE_CONFIGURED=1
+				;;
+			/disable_cache)
+				debug "found '$xte__line' directive${XTE__CACHE_CONFIGURED:+ (ignored)}"
+				[ -z "$XTE__CACHE_CONFIGURED" ] || continue
+				XTE__CACHE_ENABLED=false
+				XTE__CACHE_CONFIGURED=1
+>>>>>>> master
 				;;
 
 			# compat mode
 			/execarg_compat)
+<<<<<<< HEAD
 				debug "found '$line' directive${EXECARG_COMPAT_CONFIGURED:+ (ignored)}"
 				[ -z "$EXECARG_COMPAT_CONFIGURED" ] || continue
 				EXECARG_COMPAT=true
@@ -376,10 +662,23 @@ read_config_paths() {
 				[ -z "$EXECARG_COMPAT_CONFIGURED" ] || continue
 				EXECARG_COMPAT=false
 				EXECARG_COMPAT_CONFIGURED=1
+=======
+				debug "found '$xte__line' directive${XTE__EXECARG_COMPAT_CONFIGURED:+ (ignored)}"
+				[ -z "$XTE__EXECARG_COMPAT_CONFIGURED" ] || continue
+				XTE__EXECARG_COMPAT=true
+				XTE__EXECARG_COMPAT_CONFIGURED=1
+				;;
+			/execarg_strict)
+				debug "found '$xte__line' directive${XTE__EXECARG_COMPAT_CONFIGURED:+ (ignored)}"
+				[ -z "$XTE__EXECARG_COMPAT_CONFIGURED" ] || continue
+				XTE__EXECARG_COMPAT=false
+				XTE__EXECARG_COMPAT_CONFIGURED=1
+>>>>>>> master
 				;;
 
 			# default TerminalArgExec overrides
 			/execarg_default:*:*)
+<<<<<<< HEAD
 				if ! check_bool "$EXECARG_COMPAT"; then
 					debug "ignored directive '$line' (strict mode)"
 					continue
@@ -391,6 +690,19 @@ read_config_paths() {
 					debug "added TerminalArgExec default '${execarg_default}' for '${entry_id}'"
 					# do not bother with deduplication, first entry ID will win
 					EXECARG_DEFAULTS=${EXECARG_DEFAULTS}${EXECARG_DEFAULTS:+$N}${entry_id}:${execarg_default}
+=======
+				if ! check_bool "$XTE__EXECARG_COMPAT"; then
+					debug "ignored directive '$xte__line' (strict mode)"
+					continue
+				fi
+				IFS=':' read -r _directive xte__entry_id xte__execarg_default <<- EOF
+					$xte__line
+				EOF
+				if validate_entry_id "${xte__entry_id}"; then
+					debug "added TerminalArgExec default '${xte__execarg_default}' for '${xte__entry_id}'"
+					# do not bother with deduplication, first entry ID will win
+					XTE__EXECARG_DEFAULTS=${XTE__EXECARG_DEFAULTS}${XTE__EXECARG_DEFAULTS:+$XTE__LF}${xte__entry_id}:${xte__execarg_default}
+>>>>>>> master
 				fi
 				;;
 
@@ -403,6 +715,7 @@ read_config_paths() {
 
 			# Catch and validate potential entry ID with action ID (be graceful about an empty one)
 			[a-zA-Z0-9_]* | [+-][a-zA-Z0-9_]*)
+<<<<<<< HEAD
 				case "$line" in
 				[+-]*)
 					# save and cut exclusion marker
@@ -440,25 +753,75 @@ read_config_paths() {
 						else
 							debug "excluding entry '${entry_id}' from fallback"
 							EXCLUDED_ENTRY_IDS=${EXCLUDED_ENTRY_IDS:+${EXCLUDED_ENTRY_IDS}${N}}${entry_id}
+=======
+				case "$xte__line" in
+				[+-]*)
+					# save and cut exclusion marker
+					_line=${xte__line#[+-]}
+					xte__exclusion=${xte__line%"$_line"}
+					xte__line=$_line
+					;;
+				*) xte__exclusion= ;;
+				esac
+				# consider only the first ':' as a delimiter
+				IFS=':' read -r xte__entry_id xte__action_id <<- EOL
+					$xte__line
+				EOL
+				if validate_entry_id "${xte__entry_id}" && validate_action_id "${xte__action_id}"; then
+					case "$xte__exclusion" in
+					'')
+						XTE__ENTRY_IDS=${XTE__ENTRY_IDS:+${XTE__ENTRY_IDS}${XTE__LF}}$xte__line
+						debug "added entry ID with action ID '$xte__line'"
+						;;
+					'+')
+						if list_contains "${XTE__EXCLUDED_ENTRY_IDS}" "${xte__entry_id}"; then
+							debug "entry '${xte__entry_id}' was already excluded from fallback"
+						elif list_contains "${XTE__INCLUDED_ENTRY_IDS}" "${xte__entry_id}"; then
+							debug "entry '${xte__entry_id}' fallback exclusion was already prevented"
+						else
+							debug "preventing fallback exclusion for entry '${xte__entry_id}'"
+							XTE__INCLUDED_ENTRY_IDS=${XTE__INCLUDED_ENTRY_IDS:+${XTE__INCLUDED_ENTRY_IDS}${XTE__LF}}${xte__entry_id}
+						fi
+						;;
+					'-')
+						if list_contains "${XTE__INCLUDED_ENTRY_IDS}" "${xte__entry_id}"; then
+							debug "entry '${xte__entry_id}' fallback exclusion was already prevented"
+						elif list_contains "${XTE__EXCLUDED_ENTRY_IDS}" "${xte__entry_id}"; then
+							debug "entry '${xte__entry_id}' was already excluded from fallback"
+						else
+							debug "excluding entry '${xte__entry_id}' from fallback"
+							XTE__EXCLUDED_ENTRY_IDS=${XTE__EXCLUDED_ENTRY_IDS:+${XTE__EXCLUDED_ENTRY_IDS}${XTE__LF}}${xte__entry_id}
+>>>>>>> master
 						fi
 						;;
 					esac
 				else
+<<<<<<< HEAD
 					error "Discarded possibly misspelled entry '$line'"
+=======
+					error "Discarded possibly misspelled entry '$xte__line'"
+>>>>>>> master
 				fi
 				;;
 
 			esac
 			# By default empty lines and comments get ignored
+<<<<<<< HEAD
 		done <"$config_path"
 	done
 }
 # Mask IFS within function to allow temporary changes
 alias read_config_paths='IFS= read_config_paths'
+=======
+		done < "$xte__config_path"
+	done
+}
+>>>>>>> master
 
 replace() {
 	# takes $1, replaces $2 with $3
 	# does it in large chunks
+<<<<<<< HEAD
 	# writes result to global REPLACED_STR to avoid $() newline issues
 
 	# right part of string
@@ -470,19 +833,39 @@ replace() {
 		# append
 		REPLACED_STR=${REPLACED_STR}$r_left
 		if [ "$r_left" = "$r_remainder" ]; then
+=======
+	# writes result to global XTE__REPLACED_STR to avoid $() newline issues
+
+	# right part of string
+	xte__r_remainder=${1}
+	XTE__REPLACED_STR=
+	while [ -n "$xte__r_remainder" ]; do
+		# left part before first encounter of $2
+		xte__r_left=${xte__r_remainder%%"$2"*}
+		# append
+		XTE__REPLACED_STR=${XTE__REPLACED_STR}$xte__r_left
+		if [ "$xte__r_left" = "$xte__r_remainder" ]; then
+>>>>>>> master
 			# nothing left to cut
 			break
 		fi
 		# append replace substring
+<<<<<<< HEAD
 		REPLACED_STR=${REPLACED_STR}$3
 		# cut remainder
 		r_remainder=${r_remainder#*"$2"}
+=======
+		XTE__REPLACED_STR=${XTE__REPLACED_STR}$3
+		# cut remainder
+		xte__r_remainder=${xte__r_remainder#*"$2"}
+>>>>>>> master
 	done
 }
 
 de_expand_str() {
 	# expands \s, \n, \t, \r, \\
 	# https://specifications.freedesktop.org/desktop-entry-spec/latest/value-types.html
+<<<<<<< HEAD
 	# writes result to global $EXPANDED_STR in place to avoid $() expansion newline issues
 	debug "expander received: $1"
 	EXPANDED_STR=
@@ -497,11 +880,28 @@ de_expand_str() {
 
 		if [ "$exp_left" = "$exp_remainder" ]; then
 			debug "expander ended: $EXPANDED_STR"
+=======
+	# writes result to global $XTE__EXPANDED_STR in place to avoid $() expansion newline issues
+	debug "expander received: $1"
+	XTE__EXPANDED_STR=
+	xte__exp_remainder=$1
+	while [ -n "$xte__exp_remainder" ]; do
+		# left is substring of remainder before the first encountered backslash
+		xte__exp_left=${xte__exp_remainder%%\\*}
+
+		# append left to XTE__EXPANDED_STR
+		XTE__EXPANDED_STR=${XTE__EXPANDED_STR}${xte__exp_left}
+		debug "expander appended: $xte__exp_left"
+
+		if [ "$xte__exp_left" = "$xte__exp_remainder" ]; then
+			debug "expander ended: $XTE__EXPANDED_STR"
+>>>>>>> master
 			# no more backslashes left
 			break
 		fi
 
 		# remove left substring and backslash from remainder
+<<<<<<< HEAD
 		exp_remainder=${exp_remainder#"$exp_left"\\}
 
 		case "$exp_remainder" in
@@ -529,11 +929,44 @@ de_expand_str() {
 		\\*)
 			EXPANDED_STR=${EXPANDED_STR}\\
 			exp_remainder=${exp_remainder#?}
+=======
+		xte__exp_remainder=${xte__exp_remainder#"$xte__exp_left"\\}
+
+		case "$xte__exp_remainder" in
+		# expand and append to XTE__EXPANDED_STR
+		s*)
+			XTE__EXPANDED_STR=${XTE__EXPANDED_STR}' '
+			xte__exp_remainder=${xte__exp_remainder#?}
+			debug "expander substituted space"
+			;;
+		n*)
+			XTE__EXPANDED_STR=${XTE__EXPANDED_STR}$XTE__LF
+			xte__exp_remainder=${xte__exp_remainder#?}
+			debug "expander substituted newline"
+			;;
+		t*)
+			XTE__EXPANDED_STR=${XTE__EXPANDED_STR}'	'
+			xte__exp_remainder=${xte__exp_remainder#?}
+			debug "expander substituted tab"
+			;;
+		r*)
+			XTE__EXPANDED_STR=${XTE__EXPANDED_STR}$XTE__CR
+			xte__exp_remainder=${xte__exp_remainder#?}
+			debug "expander substituted caret return"
+			;;
+		\\*)
+			XTE__EXPANDED_STR=${XTE__EXPANDED_STR}\\
+			xte__exp_remainder=${xte__exp_remainder#?}
+>>>>>>> master
 			debug "expander substituted backslash"
 			;;
 		# unsupported sequence, reappend backslash
 		#*)
+<<<<<<< HEAD
 		#	EXPANDED_STR=${EXPANDED_STR}\\
+=======
+		#	XTE__EXPANDED_STR=${XTE__EXPANDED_STR}\\
+>>>>>>> master
 		#	debug 'expander reappended backslash'
 		#	;;
 		esac
@@ -544,6 +977,7 @@ de_tokenize_exec() {
 	# Shell-based DE Exec string tokenizer.
 	# https://specifications.freedesktop.org/desktop-entry-spec/latest/exec-variables.html
 	# How hard can it be?
+<<<<<<< HEAD
 	# Fills global EXEC_USEP var with $USEP-separated command array in place to avoid $() expansion newline issues
 	debug "tokenizer received: $1"
 	EXEC_USEP=
@@ -561,12 +995,32 @@ de_tokenize_exec() {
 		# end of the line
 		case "$tok_remainder" in
 		"$tok_left")
+=======
+	# Fills global XTE__EXEC_USEP var with $XTE__USEP-separated command array in place to avoid $() expansion newline issues
+	debug "tokenizer received: $1"
+	XTE__EXEC_USEP=
+	xte__tok_remainder=$1
+	xte__tok_quoted=0
+	xte__tok_in_space=0
+	while [ -n "$xte__tok_remainder" ]; do
+		# left is substring of remainder before the first encountered special char
+		xte__tok_left=${xte__tok_remainder%%[[:space:]\"\`\$\\\'\>\<\~\|\&\;\*\?\#\(\)]*}
+
+		# left should be safe to append right away
+		XTE__EXEC_USEP=${XTE__EXEC_USEP}${xte__tok_left}
+		debug "tokenizer appended: >$xte__tok_left<"
+
+		# end of the line
+		case "$xte__tok_remainder" in
+		"$xte__tok_left")
+>>>>>>> master
 			debug "tokenizer is out of special chars"
 			break
 			;;
 		esac
 
 		# isolate special char
+<<<<<<< HEAD
 		tok_remainder=${tok_remainder#"$tok_left"}
 		cut=${tok_remainder#?}
 		tok_char=${tok_remainder%"$cut"}
@@ -576,50 +1030,91 @@ de_tokenize_exec() {
 
 		# check if still in space
 		case "${tok_in_space}${tok_left}${tok_char}" in
+=======
+		xte__tok_remainder=${xte__tok_remainder#"$xte__tok_left"}
+		xte__cut=${xte__tok_remainder#?}
+		xte__tok_char=${xte__tok_remainder%"$xte__cut"}
+		unset cut
+		# cut it from remainder
+		xte__tok_remainder=${xte__tok_remainder#"$xte__tok_char"}
+
+		# check if still in space
+		case "${xte__tok_in_space}${xte__tok_left}${xte__tok_char}" in
+>>>>>>> master
 		1[[:space:]])
 			debug "tokenizer still in space :) skipping space character"
 			continue
 			;;
 		1*)
 			debug "tokenizer no longer in space :("
+<<<<<<< HEAD
 			tok_in_space=0
+=======
+			xte__tok_in_space=0
+>>>>>>> master
 			;;
 		esac
 
 		## decide what to do with the character
 		# doublequote while quoted
+<<<<<<< HEAD
 		case "${tok_quoted}${tok_char}" in
 		'1"')
 			tok_quoted=0
+=======
+		case "${xte__tok_quoted}${xte__tok_char}" in
+		'1"')
+			xte__tok_quoted=0
+>>>>>>> master
 			debug "tokenizer closed double quotes"
 			continue
 			;;
 		# doublequote while unquoted
 		'0"')
+<<<<<<< HEAD
 			tok_quoted=1
+=======
+			xte__tok_quoted=1
+>>>>>>> master
 			debug "tokenizer opened double quotes"
 			continue
 			;;
 		# error out on unquoted special chars
 		0[\`\$\\\'\>\<\~\|\&\;\*\?\#\(\)])
+<<<<<<< HEAD
 			debug "${entry_id}: Encountered unquoted character: '$tok_char'"
+=======
+			debug "${xte__entry_id}: Encountered unquoted character: '$xte__tok_char'"
+>>>>>>> master
 			return 1
 			;;
 		# error out on quoted but unescaped chars
 		1[\`\$])
+<<<<<<< HEAD
 			debug "${entry_id}: Encountered unescaped quoted character: '$tok_char'"
+=======
+			debug "${xte__entry_id}: Encountered unescaped quoted character: '$xte__tok_char'"
+>>>>>>> master
 			return 1
 			;;
 		# process quoted escapes
 		1\\)
+<<<<<<< HEAD
 			case "$tok_remainder" in
 			# if there is no next char, fail
 			'')
 				debug "${entry_id}: Dangling backslash encountered!"
+=======
+			case "$xte__tok_remainder" in
+			# if there is no next char, fail
+			'')
+				debug "${xte__entry_id}: Dangling backslash encountered!"
+>>>>>>> master
 				return 1
 				;;
 			# cut and append the next char right away
 			# or a half of multibyte char, the other half should go into the next
+<<<<<<< HEAD
 			# 'tok_left' hopefully...
 			*)
 				cut=${tok_remainder#?}
@@ -628,17 +1123,36 @@ de_tokenize_exec() {
 				unset cut
 				EXEC_USEP=${EXEC_USEP}${tok_char}
 				debug "tokenizer appended escaped: >$tok_char<"
+=======
+			# 'xte__tok_left' hopefully...
+			*)
+				xte__cut=${xte__tok_remainder#?}
+				xte__tok_char=${xte__tok_remainder%"$xte__cut"}
+				xte__tok_remainder=${xte__cut}
+				unset xte__cut
+				XTE__EXEC_USEP=${XTE__EXEC_USEP}${xte__tok_char}
+				debug "tokenizer appended escaped: >$xte__tok_char<"
+>>>>>>> master
 				;;
 			esac
 			;;
 		# Consider Cosmos
 		0[[:space:]])
+<<<<<<< HEAD
 			case "${tok_remainder}" in
 			# there is non-space to follow
 			*[![:space:]]*)
 				# append separator
 				EXEC_USEP=${EXEC_USEP}${USEP}
 				tok_in_space=1
+=======
+			case "${xte__tok_remainder}" in
+			# there is non-space to follow
+			*[![:space:]]*)
+				# append separator
+				XTE__EXEC_USEP=${XTE__EXEC_USEP}${XTE__USEP}
+				xte__tok_in_space=1
+>>>>>>> master
 				debug "tokenizer entered spaaaaaace!!!! separator appended"
 				;;
 			# ignore unquoted space at the end of string
@@ -650,30 +1164,52 @@ de_tokenize_exec() {
 			;;
 		# append quoted chars
 		1[[:space:]\'\>\<\~\|\&\;\*\?\#\(\)])
+<<<<<<< HEAD
 			EXEC_USEP=${EXEC_USEP}${tok_char}
 			debug "tokenizer appended quoted char: >$tok_char<"
 			;;
 		# this should not happen
 		*)
 			debug "${entry_id}: parsing error at char '$tok_char', (quoted: $tok_quoted)"
+=======
+			XTE__EXEC_USEP=${XTE__EXEC_USEP}${xte__tok_char}
+			debug "tokenizer appended quoted char: >$xte__tok_char<"
+			;;
+		# this should not happen
+		*)
+			debug "${xte__entry_id}: parsing error at char '$xte__tok_char', (quoted: $xte__tok_quoted)"
+>>>>>>> master
 			return 1
 			;;
 		esac
 	done
+<<<<<<< HEAD
 	case "$tok_quoted" in
 	1)
 		debug "${entry_id}: Double quote was not closed!"
+=======
+	case "$xte__tok_quoted" in
+	1)
+		debug "${xte__entry_id}: Double quote was not closed!"
+>>>>>>> master
 		return 1
 		;;
 	esac
 	# shellcheck disable=SC2086
+<<<<<<< HEAD
 	debug "tokenizer ended:" "$(
 		IFS=$USEP
 		printf '  >%s<\n' $EXEC_USEP
+=======
+	[ -z "$XTE__DEBUG" ] || debug "tokenizer ended:" "$(
+		IFS=$XTE__USEP
+		printf '  >%s<\n' $XTE__EXEC_USEP
+>>>>>>> master
 	)"
 }
 
 de_strip_fields() {
+<<<<<<< HEAD
 	# Operates on $EXEC_USEP
 	# modifies according to args/fields
 	# no arguments, erase fields from $EXEC_USEP
@@ -692,15 +1228,40 @@ de_strip_fields() {
 			fi
 			fu_found=true
 			debug "injector removed '$arg'"
+=======
+	# Operates on $XTE__EXEC_USEP
+	# modifies according to args/fields
+	# no arguments, erase fields from $XTE__EXEC_USEP
+	xte__exec_usep=
+	xte__fu_found=false
+	IFS=$XTE__USEP
+	for xte__arg in $XTE__EXEC_USEP; do
+		case "$xte__arg" in
+		# remove deprecated fields
+		*[!%]'%'[dDnNvm]* | '%'[dDnNvm]*) debug "injector removed deprecated '$xte__arg'" ;;
+		# treat file fields
+		*[!%]'%'[fFuU]* | '%'[fFuU]*)
+			if [ "$xte__fu_found" = "true" ]; then
+				debug "${xte__entry_id}: Encountered more than one %[fFuU] field!"
+				return 1
+			fi
+			xte__fu_found=true
+			debug "injector removed '$xte__arg'"
+>>>>>>> master
 			continue
 			;;
 		# other fields
 		*[!%]'%i'* | '%i'* | *[!%]'%c'* | '%c'*)
+<<<<<<< HEAD
 			debug "injector removed '$arg'"
+=======
+			debug "injector removed '$xte__arg'"
+>>>>>>> master
 			continue
 			;;
 		# literal %
 		*[!%]%%* | %%*)
+<<<<<<< HEAD
 			replace "$arg" "%%" "%"
 			rarg=$REPLACED_STR
 			debug "injector replacing '%%': '$arg' -> '$rarg'"
@@ -733,6 +1294,38 @@ reset_keys() {
 	TITLEARG=''
 	DIRARG=''
 	HOLDARG=''
+=======
+			replace "$xte__arg" "%%" "%"
+			xte__rarg=$XTE__REPLACED_STR
+			debug "injector replacing '%%': '$xte__arg' -> '$xte__rarg'"
+			xte__exec_usep=${xte__exec_usep}${xte__exec_usep:+$XTE__USEP}${xte__rarg}
+			;;
+		# invalid field
+		*%?* | *[!%]%)
+			debug "${xte__entry_id}: unknown % field in argument '${xte__arg}'"
+			return 1
+			;;
+		*)
+			debug "injector keeped: '$xte__arg'"
+			xte__exec_usep=${xte__exec_usep}${xte__exec_usep:+$XTE__USEP}${xte__arg}
+			;;
+		esac
+	done
+	XTE__EXEC_USEP=$xte__exec_usep
+	IFS=$XTE__OIFS
+}
+
+reset_keys() {
+	# init vars used in entry checks
+	XTE__IS_TERMINAL=
+	XTE__EXEC_USEP=
+	XTE__EXECARG='-e'
+	XTE__EXECARG_DEFINED=false
+	XTE__APPIDARG=
+	XTE__TITLEARG=
+	XTE__DIRARG=
+	XTE__HOLDARG=
+>>>>>>> master
 }
 
 # Find and map all desktop entry files from standardised paths into aliases
@@ -741,15 +1334,22 @@ find_entry_paths() {
 
 	# Append application directory paths to be searched
 	IFS=':'
+<<<<<<< HEAD
 	for directory in $APPLICATIONS_DIRS; do
 		# Append '.' to delimit start of entry ID
 		set -- "$@" "$directory".
+=======
+	for xte__directory in $XTE__APPLICATIONS_DIRS; do
+		# Append '.' to delimit start of entry ID
+		set -- "$@" "$xte__directory".
+>>>>>>> master
 	done
 
 	# Find all files
 	set -- "$@" -type f
 
 	# Append path conditions per directory
+<<<<<<< HEAD
 	or_arg=''
 	for directory in $APPLICATIONS_DIRS; do
 		# Match full path with proper first character of entry ID and .desktop extension
@@ -777,11 +1377,41 @@ find_entry_paths() {
 		$(
 			# Don't complain about nonexistent directories
 			find -L "$@" 2>/dev/null |
+=======
+	xte__or_arg=
+	for xte__directory in $XTE__APPLICATIONS_DIRS; do
+		# Match full path with proper first character of entry ID and .desktop extension
+		# Reject paths with invalid characters in entry ID
+		set -- "$@" ${xte__or_arg} '(' -path "$xte__directory"'./[a-zA-Z0-9_]*.desktop' ! -path "$xte__directory"'./*[^a-zA-Z0-9_./-]*' ')'
+		xte__or_arg='-o'
+	done
+	IFS=$XTE__OIFS
+
+	# Loop through found entry paths and IDs
+	while IFS= read -r xte__entry_path && IFS= read -r xte__entry_id; do
+		# Entries are checked in ascending order of preference, so use last found if duplicate
+		# shellcheck disable=SC2139
+		alias "$xte__entry_id"="xte__entry_path='$xte__entry_path'"
+		debug "registered '$xte__entry_path' as entry '$xte__entry_id'"
+		# exclude entries based on XTE__EXCLUDED_ENTRY_IDS
+		if list_contains "$XTE__EXCLUDED_ENTRY_IDS" "$xte__entry_id"; then
+			debug "entry '${xte__entry_id}' was excluded from fallback"
+			continue
+		fi
+		# Add as a fallback ID regardles if it's a duplicate
+		XTE__FALLBACK_ENTRY_IDS=${xte__entry_id}${XTE__FALLBACK_ENTRY_IDS:+${XTE__LF}${XTE__FALLBACK_ENTRY_IDS}}
+		debug "added fallback ID '$xte__entry_id'"
+	done <<- EOE
+		$(
+			# Don't complain about nonexistent directories
+			find -L "$@" 2> /dev/null |
+>>>>>>> master
 				# Print entry path and convert it into an ID and print that too
 				awk '{ print; sub(".*/[.]/", ""); gsub("/", "-"); print }'
 		)
 	EOE
 }
+<<<<<<< HEAD
 # Mask IFS within function to allow temporary changes
 alias find_entry_paths='IFS= find_entry_paths'
 
@@ -805,6 +1435,30 @@ check_entry_key() {
 		for category in $value; do
 			[ "$category" = "TerminalEmulator" ] && {
 				IS_TERMINAL=true
+=======
+
+# Check validity of a given entry key - value pair
+# Modifies following global variables:
+# XTE__EXEC_USEP : Program to execute, possibly with arguments, delimited by ASCII Unit Separator.
+# XTE__EXECARG : Execution argument for the terminal emulator.
+# XTE__IS_TERMINAL : Set if application has been categorized as a terminal emulator
+check_entry_key() {
+	xte__key=$1
+	xte__value=$2
+	xte__action=$3
+	xte__read_exec=$4
+	xte__de_checks=$5
+
+	# Order of checks is important
+	case $xte__key in
+	'Categories'*=*)
+		debug "checking for 'TerminalEmulator' in Categories '$xte__value'"
+		IFS=';'
+		for xte__category in $xte__value; do
+			IFS=$XTE__OIFS
+			[ "$xte__category" = "TerminalEmulator" ] && {
+				XTE__IS_TERMINAL=true
+>>>>>>> master
 				return 0
 			}
 		done
@@ -815,12 +1469,22 @@ check_entry_key() {
 		# `It is not valid to have an action group for an action identifier not mentioned in the Actions key.
 		# Such an action group must be ignored by implementors.`
 		# ignore if no action requested
+<<<<<<< HEAD
 		[ -z "$action" ] && return 0
 		debug "checking for '$action' in Actions '$value'"
 		IFS=';'
 		for check_action in $value; do
 			if [ "$check_action" = "$action" ]; then
 				action_listed=true
+=======
+		[ -z "$xte__action" ] && return 0
+		debug "checking for '$xte__action' in Actions '$xte__value'"
+		IFS=';'
+		for xte__check_action in $xte__value; do
+			IFS=$XTE__OIFS
+			if [ "$xte__check_action" = "$xte__action" ]; then
+				xte__action_listed=true
+>>>>>>> master
 				return 0
 			fi
 		done
@@ -828,37 +1492,64 @@ check_entry_key() {
 		return 1
 		;;
 	'OnlyShowIn'*=*)
+<<<<<<< HEAD
 		case "$de_checks" in
 		true) debug "checking for intersecion between '${XDG_CURRENT_DESKTOP-}' and OnlyShowIn '$value'" ;;
+=======
+		case "$xte__de_checks" in
+		true) debug "checking for intersecion between '${XDG_CURRENT_DESKTOP-}' and OnlyShowIn '$xte__value'" ;;
+>>>>>>> master
 		false)
 			debug "skipping OnlyShowIn check"
 			return 0
 			;;
 		esac
 		IFS=';'
+<<<<<<< HEAD
 		for target in $value; do
 			IFS=':'
 			for desktop in ${XDG_CURRENT_DESKTOP-}; do
 				[ "$desktop" = "$target" ] && return 0
+=======
+		for xte__target in $xte__value; do
+			IFS=':'
+			for xte__desktop in ${XDG_CURRENT_DESKTOP-}; do
+				IFS=$XTE__OIFS
+				[ "$xte__desktop" = "$xte__target" ] && return 0
+>>>>>>> master
 			done
 		done
 		# Default in this case is to fail
 		return 1
 		;;
 	'NotShowIn'*=*)
+<<<<<<< HEAD
 		case "$de_checks" in
 		true) debug "checking for intersecion between '${XDG_CURRENT_DESKTOP-}' and NotShowIn '$value'" ;;
+=======
+		case "$xte__de_checks" in
+		true) debug "checking for intersecion between '${XDG_CURRENT_DESKTOP-}' and NotShowIn '$xte__value'" ;;
+>>>>>>> master
 		false)
 			debug "skipping NotShowIn check"
 			return 0
 			;;
 		esac
 		IFS=';'
+<<<<<<< HEAD
 		for target in $value; do
 			IFS=':'
 			for desktop in ${XDG_CURRENT_DESKTOP-}; do
 				debug "checking NotShowIn match '$desktop'='$target'"
 				[ "$desktop" = "$target" ] && return 1
+=======
+		for xte__target in $xte__value; do
+			IFS=':'
+			for xte__desktop in ${XDG_CURRENT_DESKTOP-}; do
+				IFS=$XTE__OIFS
+				debug "checking NotShowIn match '$xte__desktop'='$xte__target'"
+				[ "$xte__desktop" = "$xte__target" ] && return 1
+>>>>>>> master
 			done
 		done
 		# Default in this case is to succeed
@@ -867,6 +1558,7 @@ check_entry_key() {
 	'X-TerminalArgExec'*=* | 'TerminalArgExec'*=*)
 		# Set global variable
 		# values of type string should support escape sequences
+<<<<<<< HEAD
 		de_expand_str "$value"
 		EXECARG=$EXPANDED_STR
 		EXECARG_DEFINED=true
@@ -875,39 +1567,75 @@ check_entry_key() {
 	'X-ExecArg'*=* | 'ExecArg'*=*)
 		# ignore old ExecArg in strict mode
 		case "${EXECARG_COMPAT}" in
+=======
+		de_expand_str "$xte__value"
+		XTE__EXECARG=$XTE__EXPANDED_STR
+		XTE__EXECARG_DEFINED=true
+		debug "read TerminalArgExec '$XTE__EXECARG'"
+		;;
+	'X-ExecArg'*=* | 'ExecArg'*=*)
+		# ignore old ExecArg in strict mode
+		case "${XTE__EXECARG_COMPAT}" in
+>>>>>>> master
 		false) return 0 ;;
 		esac
 		# Set global variable
 		# values of type string should support escape sequences
+<<<<<<< HEAD
 		de_expand_str "$value"
 		EXECARG=$EXPANDED_STR
 		EXECARG_DEFINED=true
 		debug "read TerminalArgExec '$EXECARG'"
+=======
+		de_expand_str "$xte__value"
+		XTE__EXECARG=$XTE__EXPANDED_STR
+		XTE__EXECARG_DEFINED=true
+		debug "read TerminalArgExec '$XTE__EXECARG'"
+>>>>>>> master
 		;;
 	'X-TerminalArgAppId'*=* | 'TerminalArgAppId'*=*)
 		# Set global variable
 		# values of type string should support escape sequences
+<<<<<<< HEAD
 		de_expand_str "$value"
 		APPIDARG=$EXPANDED_STR
 		debug "read TerminalArgAppId '$APPIDARG'"
+=======
+		de_expand_str "$xte__value"
+		XTE__APPIDARG=$XTE__EXPANDED_STR
+		debug "read TerminalArgAppId '$XTE__APPIDARG'"
+>>>>>>> master
 		;;
 	'X-TerminalArgTitle'*=* | 'TerminalArgTitle'*=*)
 		# Set global variable
 		# values of type string should support escape sequences
+<<<<<<< HEAD
 		de_expand_str "$value"
 		TITLEARG=$EXPANDED_STR
 		debug "read TerminalArgTitle '$TITLEARG'"
+=======
+		de_expand_str "$xte__value"
+		XTE__TITLEARG=$XTE__EXPANDED_STR
+		debug "read TerminalArgTitle '$XTE__TITLEARG'"
+>>>>>>> master
 		;;
 	'X-TerminalArgDir'*=* | 'TerminalArgDir'*=*)
 		# Set global variable
 		# values of type string should support escape sequences
+<<<<<<< HEAD
 		de_expand_str "$value"
 		DIRARG=$EXPANDED_STR
 		debug "read TerminalArgDir '$DIRARG'"
+=======
+		de_expand_str "$xte__value"
+		XTE__DIRARG=$XTE__EXPANDED_STR
+		debug "read TerminalArgDir '$XTE__DIRARG'"
+>>>>>>> master
 		;;
 	'X-TerminalArgHold'*=* | 'TerminalArgHold'*=*)
 		# Set global variable
 		# values of type string should support escape sequences
+<<<<<<< HEAD
 		de_expand_str "$value"
 		HOLDARG=$EXPANDED_STR
 		debug "read TerminalArgHold '$HOLDARG'"
@@ -920,6 +1648,20 @@ check_entry_key() {
 	'Hidden'*=*)
 		debug "checking boolean Hidden '$value'"
 		case "$value" in
+=======
+		de_expand_str "$xte__value"
+		XTE__HOLDARG=$XTE__EXPANDED_STR
+		debug "read TerminalArgHold '$XTE__HOLDARG'"
+		;;
+	'TryExec'*=*)
+		de_expand_str "$xte__value"
+		debug "checking TryExec executable '$XTE__EXPANDED_STR'"
+		command -v "$XTE__EXPANDED_STR" > /dev/null || return 1
+		;;
+	'Hidden'*=*)
+		debug "checking boolean Hidden '$xte__value'"
+		case "$xte__value" in
+>>>>>>> master
 		true)
 			debug "ignored Hidden entry"
 			return 1
@@ -927,12 +1669,17 @@ check_entry_key() {
 		esac
 		;;
 	'Exec'*=*)
+<<<<<<< HEAD
 		case "$read_exec" in
+=======
+		case "$xte__read_exec" in
+>>>>>>> master
 		false)
 			debug "ignored Exec from wrong section"
 			return 0
 			;;
 		esac
+<<<<<<< HEAD
 		debug "read Exec '$value'"
 		# Escape sequences of DE string value (sets $EXPANDED_STR)
 		de_expand_str "$value"
@@ -944,10 +1691,24 @@ check_entry_key() {
 		EXEC0=${EXEC_USEP%%"$USEP"*}
 		debug "checking Exec[0] executable '$EXEC0'"
 		command -v "$EXEC0" >/dev/null || return 1
+=======
+		debug "read Exec '$xte__value'"
+		# Escape sequences of DE string value (sets $XTE__EXPANDED_STR)
+		de_expand_str "$xte__value"
+		# Tokenize resulting string (sets $XTE__EXEC_USEP)
+		de_tokenize_exec "$XTE__EXPANDED_STR"
+		# Expand % fields
+		de_strip_fields
+		# Get first word from read Exec value
+		XTE__EXEC0=${XTE__EXEC_USEP%%"$XTE__USEP"*}
+		debug "checking Exec[0] executable '$XTE__EXEC0'"
+		command -v "$XTE__EXEC0" > /dev/null || return 1
+>>>>>>> master
 		;;
 	esac
 	# By default unrecognised keys, empty lines and comments get ignored
 }
+<<<<<<< HEAD
 # Mask IFS within function to allow temporary changes
 alias check_entry_key='IFS= check_entry_key'
 
@@ -974,6 +1735,32 @@ read_entry_path() {
 			value=${value#"${value%%[! ]*}"}
 			# Check the key, continue to next line on success
 			check_entry_key "$line" "$value" "$entry_action" "$read_exec" "$de_checks" && continue
+=======
+
+# Read entry from given path
+read_entry_path() {
+	xte__entry_path=$1
+	xte__entry_action=$2
+	xte__de_checks=$3
+	xte__read_exec=false
+	xte__action_listed=false
+	# shellcheck disable=SC2016
+	debug "reading desktop entry '$xte__entry_path'${xte__entry_action:+ action '}$xte__entry_action${xte__entry_action:+'}"
+	# Let `read` trim leading/trailing whitespace from the line
+	while IFS=$XTE__OIFS read -r xte__line; do
+		case $xte__line in
+		# `There should be nothing preceding [the Desktop Entry group] in the desktop entry file but [comments]`
+		# if xte__entry_action is not requested, allow reading Exec right away from the main group
+		'[Desktop Entry]'*) [ -z "$xte__entry_action" ] && xte__read_exec=true ;;
+		# A `Key=Value` pair
+		[a-zA-Z0-9-]*)
+			# Split value from pair
+			xte__value=${xte__line#*=}
+			# Remove all but leading spaces, and trim that from the value
+			xte__value=${xte__value#"${xte__value%%[! ]*}"}
+			# Check the key, continue to next line on success
+			check_entry_key "$xte__line" "$xte__value" "$xte__entry_action" "$xte__read_exec" "$xte__de_checks" && continue
+>>>>>>> master
 			# Reset values that might have been set
 			reset_keys
 			# shellcheck disable=SC2016
@@ -981,19 +1768,34 @@ read_entry_path() {
 			return 1
 			;;
 		# found requested action, allow reading Exec
+<<<<<<< HEAD
 		"[Desktop Action ${entry_action}]"*)
 			if [ "$action_listed" = "true" ]; then
 				read_exec=true
 			else
 				debug "action '$entry_action' was not listed in Actions"
+=======
+		"[Desktop Action ${xte__entry_action}]"*)
+			if [ "$xte__action_listed" = "true" ]; then
+				xte__read_exec=true
+			else
+				debug "action '$xte__entry_action' was not listed in Actions"
+>>>>>>> master
 				return 1
 			fi
 			;;
 		# Start of the next group header, stop if already read exec
+<<<<<<< HEAD
 		'['*) [ "$read_exec" = "true" ] && break ;;
 		esac
 		# By default empty lines and comments get ignored
 	done <"$entry_path"
+=======
+		'['*) [ "$xte__read_exec" = "true" ] && break ;;
+		esac
+		# By default empty lines and comments get ignored
+	done < "$xte__entry_path"
+>>>>>>> master
 }
 
 validate_entry_id() {
@@ -1034,6 +1836,7 @@ validate_action_id() {
 # Loop through IDs and try to find a valid entry
 find_entry() {
 	# for explicitly listed entries do not apply DE *ShowIn limits
+<<<<<<< HEAD
 	de_checks=false
 	IFS="$N"
 	for entry_id in ${ENTRY_IDS}${N}//fallback_start//${N}$FALLBACK_ENTRY_IDS; do
@@ -1042,11 +1845,23 @@ find_entry() {
 		*:*)
 			entry_action=${entry_id#*:}
 			entry_id=${entry_id%:*}
+=======
+	xte__de_checks=false
+	IFS=$XTE__LF
+	for xte__entry_id in ${XTE__ENTRY_IDS}${XTE__LF}//fallback_start//${XTE__LF}$XTE__FALLBACK_ENTRY_IDS; do
+		IFS=$XTE__OIFS
+		case "$xte__entry_id" in
+		# entry has an action appended
+		*:*)
+			xte__entry_action=${xte__entry_id#*:}
+			xte__entry_id=${xte__entry_id%:*}
+>>>>>>> master
 			;;
 		# skip empty line
 		'') continue ;;
 		# fallback entries ahead, enable *ShowIn checks
 		'//fallback_start//')
+<<<<<<< HEAD
 			de_checks=true
 			continue
 			;;
@@ -1071,11 +1886,39 @@ find_entry() {
 			# get (custom) default in compat mode
 			if check_bool "$EXECARG_COMPAT"; then
 				EXECARG=$(get_default_execarg "$entry_id")
+=======
+			xte__de_checks=true
+			continue
+			;;
+		# nullify action
+		*) xte__entry_action= ;;
+		esac
+
+		debug "matching path for entry ID '$xte__entry_id'"
+		# Check if a matching path was found for ID
+		alias "$xte__entry_id" > /dev/null 2>&1 || continue
+		# Evaluates the alias, it sets $xte__entry_path
+		eval "$xte__entry_id"
+		# Unset the alias, so duplicate entries are skipped
+		unalias "$xte__entry_id"
+		read_entry_path "$xte__entry_path" "$xte__entry_action" "$xte__de_checks" || continue
+		# Check that the entry is actually executable
+		[ -z "${XTE__EXEC_USEP}" ] && continue
+		# ensure entry is a Terminal Emulator
+		[ -z "${XTE__IS_TERMINAL}" ] && continue
+		# if entry lacks TerminalArgExec
+		if [ "$XTE__EXECARG_DEFINED" != "true" ]; then
+			# get (custom) default in compat mode
+			if check_bool "$XTE__EXECARG_COMPAT"; then
+				get_default_execarg "$xte__entry_id"
+				XTE__EXECARG=$XTE__DEFAULT_EXECARG
+>>>>>>> master
 			# discard entry in strict mode
 			else
 				continue
 			fi
 		fi
+<<<<<<< HEAD
 		# Entry is valid, set ENTRY_PATH, ENTRY_ID, ENTRY_ACTION and stop
 		ENTRY_PATH=$entry_path
 		ENTRY_ID=$entry_id
@@ -1135,6 +1978,68 @@ APPLICATIONS_DIRS=''
 
 # this will be filled with values from /execarg_default:*:* directives
 EXECARG_DEFAULTS=''
+=======
+		# Entry is valid, set XTE__ENTRY_PATH, XTE__ENTRY_ID, XTE__ENTRY_ACTION and stop
+		XTE__ENTRY_PATH=$xte__entry_path
+		XTE__ENTRY_ID=$xte__entry_id
+		XTE__ENTRY_ACTION=$xte__entry_action
+		return 0
+	done
+	# shellcheck disable=SC2086
+	IFS=':' error "No valid terminal entry was found in:" ${XTE__APPLICATIONS_DIRS}
+	return 1
+}
+
+get_default_execarg() {
+	# based on xte__entry_id ($1) get TerminalArgExec from XTE__EXECARG_DEFAULTS
+	# write to XTE__DEFAULT_EXECARG var
+	xte__gde_check_entry=$1
+	while IFS=':' read -r xte__gde_entry_id xte__execarg_default; do
+		case "$xte__gde_entry_id" in
+		"$xte__gde_check_entry")
+			XTE__DEFAULT_EXECARG=$xte__execarg_default
+			debug "custom default TerminalArgExec '$xte__execarg_default' for '$xte__gde_check_entry'"
+			return 0
+			;;
+		esac
+	done <<- EOF
+		$XTE__EXECARG_DEFAULTS
+	EOF
+	XTE__DEFAULT_EXECARG='-e'
+	debug "using default TerminalArgExec '-e' for '$xte__gde_check_entry'"
+}
+
+# print help and exit if there's -h|--help before --
+for xte__arg in "$@"; do
+	case "$xte__arg" in
+	--) break ;;
+	-h | --help)
+		help
+		exit 0
+		;;
+	esac
+done
+
+## globals
+XTE__LOWERCASE_XDG_CURRENT_DESKTOP=$(printf '%s' "${XDG_CURRENT_DESKTOP-}" | tr '[:upper:]' '[:lower:]')
+
+# compat mode
+XTE__EXECARG_COMPAT=${XTE_EXECARG_COMPAT-true}
+# flag reused in directive encounter
+XTE__EXECARG_COMPAT_CONFIGURED=${XTE_EXECARG_COMPAT-}
+
+XTE__EXEC_USEP=
+XTE__EXPANDED_STR=
+XTE__ENTRY_PATH=
+XTE__ENTRY_ID=
+XTE__ENTRY_ACTION=
+
+# this will receive proper value later
+XTE__APPLICATIONS_DIRS=
+
+# this will be filled with values from /execarg_default:*:* directives
+XTE__EXECARG_DEFAULTS=
+>>>>>>> master
 
 # this (re)sets vars to be filled from desktop entry
 reset_keys
@@ -1145,6 +2050,7 @@ make_paths
 # At this point we have no way of telling if cache is enabled or not, unless
 # XTE_CACHE_ENABLED is set, so just try reading it by default, otherwise do the
 # usual thing. Editing config to disable cache should invalidate the cache.
+<<<<<<< HEAD
 CACHE_ENABLED=${XTE_CACHE_ENABLED-true}
 # flag reused for directive encounter
 CACHE_CONFIGURED=${XTE_CACHE_ENABLED-}
@@ -1179,12 +2085,49 @@ else
 	IFS="$N" debug ">     final entry ID list:" ${ENTRY_IDS} "^     end of final entry ID list"
 	# shellcheck disable=SC2086
 	IFS="$N" debug ">     final fallback entry ID list:" ${FALLBACK_ENTRY_IDS} "^     end of final fallback entry ID list"
+=======
+XTE__CACHE_ENABLED=${XTE_CACHE_ENABLED-true}
+# flag reused for directive encounter
+XTE__CACHE_CONFIGURED=${XTE_CACHE_ENABLED-}
+
+# HASH can be reused
+XTE__HASH=
+
+if check_bool "${XTE__CACHE_ENABLED}" && read_cache; then
+	XTE__CACHE_USED=true
+else
+	# continue with globals
+	XTE__CACHE_USED=false
+
+	# All desktop entry ids in descending order of preference from *xdg-terminals.list configs,
+	# with duplicates removed
+	XTE__ENTRY_IDS=
+	# All desktop entry ids found in data dirs in descending order of preference,
+	# with duplicates (including those in $XTE__ENTRY_IDS) removed
+	XTE__FALLBACK_ENTRY_IDS=
+
+	# Entry IDs excluded from fallback by '-entry.desktop' directives
+	XTE__EXCLUDED_ENTRY_IDS=
+	# Entry IDS included (exclusion prevented) by '+entry.desktop' directives
+	XTE__INCLUDED_ENTRY_IDS=
+
+	# Modifies $XTE__ENTRY_IDS
+	read_config_paths
+	# Modifies $XTE__ENTRY_IDS and sets global aliases
+	find_entry_paths
+
+	# shellcheck disable=SC2086
+	[ -z "$XTE__DEBUG" ] || IFS=$XTE__LF debug ">     final entry ID list:" ${XTE__ENTRY_IDS} "^     end of final entry ID list"
+	# shellcheck disable=SC2086
+	[ -z "$XTE__DEBUG" ] || IFS=$XTE__LF debug ">     final fallback entry ID list:" ${XTE__FALLBACK_ENTRY_IDS} "^     end of final fallback entry ID list"
+>>>>>>> master
 
 	# walk ID lists and find first applicable
 	find_entry || exit 1
 fi
 
 # Store original argument list, before it's modified
+<<<<<<< HEAD
 debug ">     original args:" "$@" "^     end of original args" "EXEC_USEP=$EXEC_USEP" "EXECARG=$EXECARG"
 
 # process/discard options
@@ -1197,6 +2140,20 @@ TEST_MODE=false
 PRINT_DATA=
 PRINT_DELIMITER='\n'
 PRINT_CMD_DELIMITER='\n'
+=======
+debug ">     original args:" "$@" "^     end of original args" "XTE__EXEC_USEP=$XTE__EXEC_USEP" "XTE__EXECARG=$XTE__EXECARG"
+
+# process/discard options
+debug "option processing"
+XTE__APPIDVAL=
+XTE__TITLEVAL=
+XTE__DIRVAL=
+XTE__HOLD=false
+XTE__TEST_MODE=false
+XTE__PRINT_DATA=
+XTE__PRINT_DELIMITER='\n'
+XTE__PRINT_CMD_DELIMITER='\n'
+>>>>>>> master
 while [ "$#" -gt "0" ]; do
 	case "$1" in
 	--)
@@ -1204,86 +2161,156 @@ while [ "$#" -gt "0" ]; do
 		shift
 		break
 		;;
+<<<<<<< HEAD
 	-e | "$EXECARG")
+=======
+	-e | "$XTE__EXECARG")
+>>>>>>> master
 		debug "found exec arg $1"
 		shift
 		break
 		;;
 	--app-id=*)
 		debug "found option $1"
+<<<<<<< HEAD
 		IFS='=' read -r _opt APPIDVAL <<-EOF
 			$1
 		EOF
 		debug "set app-id option to $APPIDVAL"
+=======
+		IFS='=' read -r _opt XTE__APPIDVAL <<- EOF
+			$1
+		EOF
+		debug "set app-id option to $XTE__APPIDVAL"
+>>>>>>> master
 		shift
 		;;
 	--title=*)
 		debug "found option $1"
+<<<<<<< HEAD
 		IFS='=' read -r _opt TITLEVAL <<-EOF
 			$1
 		EOF
 		debug "set title option to $TITLEVAL"
+=======
+		IFS='=' read -r _opt XTE__TITLEVAL <<- EOF
+			$1
+		EOF
+		debug "set title option to $XTE__TITLEVAL"
+>>>>>>> master
 		shift
 		;;
 	--dir=*)
 		debug "found option $1"
+<<<<<<< HEAD
 		IFS='=' read -r _opt DIRVAL <<-EOF
 			$1
 		EOF
 		debug "set dir option to $DIRVAL"
+=======
+		IFS='=' read -r _opt XTE__DIRVAL <<- EOF
+			$1
+		EOF
+		debug "set dir option to $XTE__DIRVAL"
+>>>>>>> master
 		shift
 		;;
 	--hold)
 		debug "found option $1"
+<<<<<<< HEAD
 		HOLD=true
 		debug "set HOLD=true"
+=======
+		XTE__HOLD=true
+		debug "set XTE__HOLD=true"
+>>>>>>> master
 		shift
 		;;
 	--test)
 		debug "found option $1"
+<<<<<<< HEAD
 		TEST_MODE=true
 		debug "set TEST_MODE=true"
+=======
+		XTE__TEST_MODE=true
+		debug "set XTE__TEST_MODE=true"
+>>>>>>> master
 		shift
 		;;
 	--print-path)
 		debug "found option $1"
+<<<<<<< HEAD
 		PRINT_DATA="$PRINT_DATA path"
 		debug "set PRINT_DATA='$PRINT_DATA'"
+=======
+		XTE__PRINT_DATA="$XTE__PRINT_DATA path"
+		debug "set XTE__PRINT_DATA='$XTE__PRINT_DATA'"
+>>>>>>> master
 		shift
 		;;
 	--print-id)
 		debug "found option $1"
+<<<<<<< HEAD
 		PRINT_DATA="$PRINT_DATA id"
 		debug "set PRINT_DATA=$PRINT_DATA"
+=======
+		XTE__PRINT_DATA="$XTE__PRINT_DATA id"
+		debug "set XTE__PRINT_DATA=$XTE__PRINT_DATA"
+>>>>>>> master
 		shift
 		;;
 	--print-content)
 		debug "found option $1"
+<<<<<<< HEAD
 		PRINT_DATA="$PRINT_DATA content"
 		debug "set PRINT_DATA=$PRINT_DATA"
+=======
+		XTE__PRINT_DATA="$XTE__PRINT_DATA content"
+		debug "set XTE__PRINT_DATA=$XTE__PRINT_DATA"
+>>>>>>> master
 		shift
 		;;
 	--print-cmd)
 		debug "found option $1"
+<<<<<<< HEAD
 		PRINT_DATA="$PRINT_DATA cmd"
 		debug "set PRINT_DATA=$PRINT_DATA"
+=======
+		XTE__PRINT_DATA="$XTE__PRINT_DATA cmd"
+		debug "set XTE__PRINT_DATA=$XTE__PRINT_DATA"
+>>>>>>> master
 		shift
 		;;
 	--print-cmd=*)
 		debug "found option $1"
+<<<<<<< HEAD
 		PRINT_DATA="$PRINT_DATA cmd"
 		IFS='=' read -r _arg PRINT_CMD_DELIMITER <<-EOF
 			$1
 		EOF
 		debug "set PRINT_DATA=$PRINT_DATA" "set PRINT_CMD_DELIMITER=$PRINT_CMD_DELIMITER"
+=======
+		XTE__PRINT_DATA="$XTE__PRINT_DATA cmd"
+		IFS='=' read -r _arg XTE__PRINT_CMD_DELIMITER <<- EOF
+			$1
+		EOF
+		debug "set XTE__PRINT_DATA=$XTE__PRINT_DATA" "set XTE__PRINT_CMD_DELIMITER=$XTE__PRINT_CMD_DELIMITER"
+>>>>>>> master
 		shift
 		;;
 	--print-delimiter=*)
 		debug "found option $1"
+<<<<<<< HEAD
 		IFS='=' read -r _arg PRINT_DELIMITER <<-EOF
 			$1
 		EOF
 		debug "set PRINT_DELIMITER=$PRINT_DELIMITER"
+=======
+		IFS='=' read -r _arg XTE__PRINT_DELIMITER <<- EOF
+			$1
+		EOF
+		debug "set XTE__PRINT_DELIMITER=$XTE__PRINT_DELIMITER"
+>>>>>>> master
 		shift
 		;;
 	[!-]*)
@@ -1299,6 +2326,7 @@ done
 debug "end of option processing, prependig options"
 
 # print some data
+<<<<<<< HEAD
 PRINT_FIRST=true
 case " $PRINT_DATA " in
 *' id '*)
@@ -1310,10 +2338,24 @@ case " $PRINT_DATA " in
 	;;
 esac
 case " $PRINT_DATA " in
+=======
+XTE__PRINT_FIRST=true
+case " $XTE__PRINT_DATA " in
+*' id '*)
+	debug "acting on --print-id"
+
+	printf '%s' "${XTE__ENTRY_ID}${XTE__ENTRY_ACTION:+:}${XTE__ENTRY_ACTION}"
+
+	XTE__PRINT_FIRST=false
+	;;
+esac
+case " $XTE__PRINT_DATA " in
+>>>>>>> master
 *' path '*)
 	debug "acting on --print-path"
 
 	# remove /./ delimiter
+<<<<<<< HEAD
 	case "${ENTRY_PATH}" in
 	*'/./'*) ENTRY_PATH=${ENTRY_PATH%%/./*}/${ENTRY_PATH##*/./} ;;
 	esac
@@ -1338,11 +2380,41 @@ case " $PRINT_DATA " in
 	shcat <"${ENTRY_PATH}"
 
 	PRINT_FIRST=false
+=======
+	case "${XTE__ENTRY_PATH}" in
+	*'/./'*) XTE__ENTRY_PATH=${XTE__ENTRY_PATH%%/./*}/${XTE__ENTRY_PATH##*/./} ;;
+	esac
+
+	case "$XTE__PRINT_FIRST" in
+	false) printf '%b' "$XTE__PRINT_DELIMITER" ;;
+	esac
+
+	printf '%s' "${XTE__ENTRY_PATH}${XTE__ENTRY_ACTION:+:}${XTE__ENTRY_ACTION}"
+
+	XTE__PRINT_FIRST=false
+	;;
+esac
+case " $XTE__PRINT_DATA " in
+*' content '*)
+	debug "acting on --print-content"
+
+	case "$XTE__PRINT_FIRST" in
+	false) printf '%b' "$XTE__PRINT_DELIMITER" ;;
+	esac
+
+	shcat < "${XTE__ENTRY_PATH}"
+
+	XTE__PRINT_FIRST=false
+>>>>>>> master
 	;;
 esac
 
 # early bail out in some print modes
+<<<<<<< HEAD
 case " $PRINT_DATA " in
+=======
+case " $XTE__PRINT_DATA " in
+>>>>>>> master
 '  ' | *' cmd '*)
 	# more stuff to do, continue
 	true
@@ -1353,7 +2425,11 @@ case " $PRINT_DATA " in
 	;;
 *)
 	# terminate with newline if delimiter is newline
+<<<<<<< HEAD
 	case "$PRINT_DELIMITER" in
+=======
+	case "$XTE__PRINT_DELIMITER" in
+>>>>>>> master
 	'\n') printf '%b' '\n' ;;
 	esac
 	exit 0
@@ -1361,6 +2437,7 @@ case " $PRINT_DATA " in
 esac
 
 # option prepend
+<<<<<<< HEAD
 if [ "$#" -gt 0 ] && [ -n "$EXECARG" ]; then
 	set -- "$EXECARG" "$@"
 	debug "prepended $1"
@@ -1415,12 +2492,69 @@ if [ -n "$APPIDARG" ] && [ -n "$APPIDVAL" ]; then
 		;;
 	esac
 elif [ -z "$APPIDARG" ] && [ -n "$APPIDVAL" ]; then
+=======
+if [ "$#" -gt 0 ] && [ -n "$XTE__EXECARG" ]; then
+	set -- "$XTE__EXECARG" "$@"
+	debug "prepended $1"
+fi
+
+if [ -n "$XTE__HOLDARG" ] && check_bool "$XTE__HOLD"; then
+	set -- "${XTE__HOLDARG}" "$@"
+	debug "prepended $1"
+elif [ -z "$XTE__HOLDARG" ] && check_bool "$XTE__HOLD"; then
+	debug "terminal entry has no TerminalArgHold="
+fi
+
+if [ -n "$XTE__DIRARG" ] && [ -n "$XTE__DIRVAL" ]; then
+	case "$XTE__DIRARG" in
+	*=)
+		set -- "${XTE__DIRARG}${XTE__DIRVAL}" "$@"
+		debug "prepended $1"
+		;;
+	*)
+		set -- "${XTE__DIRARG}" "${XTE__DIRVAL}" "$@"
+		debug "prepended $1 $2"
+		;;
+	esac
+elif [ -z "$XTE__DIRARG" ] && [ -n "$XTE__DIRVAL" ]; then
+	debug "terminal entry has no TerminalArgDir="
+fi
+
+if [ -n "$XTE__TITLEARG" ] && [ -n "$XTE__TITLEVAL" ]; then
+	case "$XTE__TITLEARG" in
+	*=)
+		set -- "${XTE__TITLEARG}${XTE__TITLEVAL}" "$@"
+		debug "prepended $1"
+		;;
+	*)
+		set -- "${XTE__TITLEARG}" "${XTE__TITLEVAL}" "$@"
+		debug "prepended $1 $2"
+		;;
+	esac
+elif [ -z "$XTE__TITLEARG" ] && [ -n "$XTE__TITLEVAL" ]; then
+	debug "terminal entry has no TerminalArgTitle="
+fi
+
+if [ -n "$XTE__APPIDARG" ] && [ -n "$XTE__APPIDVAL" ]; then
+	case "$XTE__APPIDARG" in
+	*=)
+		set -- "${XTE__APPIDARG}${XTE__APPIDVAL}" "$@"
+		debug "prepended $1"
+		;;
+	*)
+		set -- "${XTE__APPIDARG}" "${XTE__APPIDVAL}" "$@"
+		debug "prepended $1 $2"
+		;;
+	esac
+elif [ -z "$XTE__APPIDARG" ] && [ -n "$XTE__APPIDVAL" ]; then
+>>>>>>> master
 	debug "terminal entry has no TerminalArgAppId="
 fi
 
 debug "end of option prepending"
 
 # prepend Exec
+<<<<<<< HEAD
 IFS=$USEP
 # shellcheck disable=SC2086
 set -- $EXEC_USEP "$@"
@@ -1429,11 +2563,25 @@ IFS=$OIFS
 debug ">     final args:" "$@" "^     end of final args"
 
 if [ "$CACHE_USED" = "false" ]; then
+=======
+IFS=$XTE__USEP
+# shellcheck disable=SC2086
+set -- $XTE__EXEC_USEP "$@"
+IFS=$XTE__OIFS
+
+debug ">     final args:" "$@" "^     end of final args"
+
+if [ "$XTE__CACHE_USED" = "false" ]; then
+>>>>>>> master
 	# saves or removes cache, forked out of the way
 	save_cache "$1" &
 fi
 
+<<<<<<< HEAD
 case "$TEST_MODE" in
+=======
+case "$XTE__TEST_MODE" in
+>>>>>>> master
 true)
 	printf '%s\n' 'Command and arguments:'
 	printf '  >%s<\n' "$@"
@@ -1441,6 +2589,7 @@ true)
 	;;
 esac
 
+<<<<<<< HEAD
 case " $PRINT_DATA " in
 *' cmd '*)
 	debug "acting on --print-cmd"
@@ -1460,6 +2609,27 @@ case " $PRINT_DATA " in
 
 	# if either delimiter is a newline, terminate with another one
 	if [ "${PRINT_CMD_DELIMITER}" = '\n' ] || { [ "$PRINT_FIRST" = "false" ] && [ "$PRINT_DELIMITER" = '\n' ]; }; then
+=======
+case " $XTE__PRINT_DATA " in
+*' cmd '*)
+	debug "acting on --print-cmd"
+
+	case "$XTE__PRINT_FIRST" in
+	false) printf '%b' "$XTE__PRINT_DELIMITER" ;;
+	esac
+
+	xte__first=true
+	for xte__arg in "$@"; do
+		case "$xte__first" in
+		true) xte__first=false ;;
+		false) printf '%b' "${XTE__PRINT_CMD_DELIMITER:-\n}" ;;
+		esac
+		printf '%s' "$xte__arg"
+	done
+
+	# if either delimiter is a newline, terminate with another one
+	if [ "${XTE__PRINT_CMD_DELIMITER}" = '\n' ] || { [ "$XTE__PRINT_FIRST" = "false" ] && [ "$XTE__PRINT_DELIMITER" = '\n' ]; }; then
+>>>>>>> master
 		printf '%b' '\n'
 	fi
 
@@ -1467,9 +2637,18 @@ case " $PRINT_DATA " in
 	;;
 esac
 
+<<<<<<< HEAD
 if [ -z "$DIRARG" ] && [ -n "$DIRVAL" ]; then
 	debug "no X-TerminalArgDir in entry, changing dir to '$DIRVAL'"
 	cd "$DIRVAL"
 fi
 
 exec "$@"
+=======
+if [ -z "$XTE__DIRARG" ] && [ -n "$XTE__DIRVAL" ]; then
+	debug "no X-TerminalArgDir in entry, changing dir to '$XTE__DIRVAL'"
+	cd "$XTE__DIRVAL"
+fi
+
+exec "$@"
+>>>>>>> master

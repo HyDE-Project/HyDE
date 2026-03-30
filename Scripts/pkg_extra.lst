@@ -17,6 +17,10 @@ xdg-desktop-portal-gtk                                 # xdg desktop portal usin
 wf-recorder                                          # Screen recorder for wlroots-based compositors such as sway
 # emote                                                # emoji picker gtk3
 # wl-screenrec                                         # High performance hardware accelerated wlroots screen recorder // NO support for NVIDIA
+<<<<<<< HEAD
+=======
+# zbar                                                 # Bar/QR code scanner
+>>>>>>> master
 
 # --------------------------------------------------- // Gaming
 steam                                                  # gaming platform
@@ -42,7 +46,14 @@ spicetify-cli                                          # cli to customize spotif
 bat|zsh                                                  # enhanced version of cat
 eza|zsh                                                  # file lister for zsh
 duf|zsh                                                  # prettier version of df for zsh
+<<<<<<< HEAD
 
+=======
+# --------------------------------------------------- // fish
+bat|fish                                                 # enhanced version of cat
+eza|fish                                                 # file lister
+duf|fish                                                 # prettier version of df
+>>>>>>> master
 
 # --------------------------------------------------- // Editor
 # vscodium                                              # Full oss text editor

@@ -29,7 +29,11 @@ hyprland                                               # wlroots-based wayland c
 dunst                                                  # notification daemon
 rofi                                                   # application launcher
 waybar                                                 # system bar
+<<<<<<< HEAD
 swww                                                   # wallpaper
+=======
+awww                                                   # wallpaper
+>>>>>>> master
 hyprlock                                               # lock screen
 wlogout                                                # logout menu
 grim                                                   # screenshot tool
@@ -41,7 +45,11 @@ wl-clip-persist                                        # Keep Wayland clipboard 
 hyprsunset                                             # blue light filter
 
 # --------------------------------------------------- // Dependencies
+<<<<<<< HEAD
 polkit-gnome                                           # authentication agent
+=======
+hyprpolkitagent                                        # authentication agent
+>>>>>>> master
 xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland
 xdg-desktop-portal-gtk                                 # file picker and dbus  integration
 xdg-user-dirs                                          # Manage user directories like ~/Desktop and ~/Music
@@ -78,9 +86,14 @@ fzf                                                    # Command-line fuzzy find
 # --------------------------------------------------- // Shell
 starship|zsh                                           # customizable shell prompt written in Rust
 # starship-git                                         # The cross-shell prompt for astronauts
+<<<<<<< HEAD
 eza|fish                                               # file lister for fish
 starship|fish                                          # customizable shell prompt
 duf|fish                                               # prettier version of df for fish
+=======
+starship|fish                                          # customizable shell prompt
+
+>>>>>>> master
 fastfetch                                              # system information fetch tool
 
 # --------------------------------------------------- // HyDE

@@ -120,6 +120,32 @@ deploy_psv() {
             tgt="${pth//${HOME}/}"
             crnt_cfg="${pth}/${cfg_chk}"
 
+<<<<<<< HEAD
+=======
+            # Handle Trash Cleanup
+            if [ "${ctlFlag}" = "T" ]; then
+                # For Trash flag, act solely on the target's existence
+                [[ ! -d "${BkpDir}${tgt}" ]] && [[ ${flg_DryRun} -ne 1 ]] && mkdir -p "${BkpDir}${tgt}"
+                if [ -e "${crnt_cfg}" ]; then
+                    if [ "${flg_DryRun}" -ne 1 ]; then
+                        if mv "${crnt_cfg}" "${BkpDir}${tgt}"; then
+                            print_log -r "[trash]" -b " :: " "${crnt_cfg} --> ${BkpDir}${tgt}"
+                        else
+                            print_log -r "[error]" -b " :: " "Failed to move ${crnt_cfg} to ${BkpDir}${tgt}"
+                        fi
+                    else
+                        print_log -y "[dry-run]" -b " :: " "Would trash ${crnt_cfg} --> ${BkpDir}${tgt}"
+                    fi
+                else
+                    print_log -y "[trash]" -b " :: " "Target missing, nothing to move: ${crnt_cfg}"
+                fi
+                # Skip further processing for Trash
+                continue
+            fi
+            
+
+
+>>>>>>> master
             if [ ! -e "${CfgDir}${tgt}/${cfg_chk}" ] && [ "${ctlFlag}" != "B" ]; then
                 echo "Source: ${CfgDir}${tgt}/${cfg_chk} does not exist, skipping..."
                 print_log -y "[skip]" -b "no source" "${CfgDir}${tgt}/${cfg_chk} does not exist"
@@ -134,21 +160,37 @@ deploy_psv() {
                 [[ ! -d "${BkpDir}${tgt}" ]] && [[ ${flg_DryRun} -ne 1 ]] && mkdir -p "${BkpDir}${tgt}"
 
                 case "${ctlFlag}" in
+<<<<<<< HEAD
                 "B")
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
                     print_log -g "[copy backup]" -b " :: " "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
                     ;;
                 "O")
+=======
+                "B") # Backup only
+                    [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+                    print_log -g "[copy backup]" -b " :: " "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
+                    ;;
+                "O") # Overwrite
+>>>>>>> master
                     [ "${flg_DryRun}" -ne 1 ] && mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
                     print_log -r "[move to backup]" " > " -r "[overwrite]" -b " :: " "${pth}" -r " <-- " "${CfgDir}${tgt}/${cfg_chk}"
                     ;;
+<<<<<<< HEAD
                 "S")
+=======
+                "S") # Sync
+>>>>>>> master
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
                     [ "${flg_DryRun}" -ne 1 ] && cp -rf "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
                     print_log -g "[copy to backup]" " > " -y "[sync]" -b " :: " "${pth}" -r " <--  " "${CfgDir}${tgt}/${cfg_chk}"
                     ;;
+<<<<<<< HEAD
                 "P")
+=======
+                "P") # Preserve
+>>>>>>> master
                     [ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
                     if ! [ "${flg_DryRun}" -ne 1 ] && cp -rn "${CfgDir}${tgt}/${cfg_chk}" "${pth}" 2>/dev/null; then
                         print_log -g "[copy to backup]" " > " -y "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"

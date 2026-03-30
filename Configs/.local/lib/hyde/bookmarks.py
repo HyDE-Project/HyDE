@@ -1,6 +1,7 @@
 from pathlib import Path
 import argparse
 
+<<<<<<< HEAD
 class XDGPaths:
     def __init__(self):
         import os
@@ -8,6 +9,19 @@ class XDGPaths:
         self.xdg_cache = os.environ.get("XDG_CACHE_HOME", os.path.join(self.HOME, ".cache"))
         self.xdg_config = os.environ.get("XDG_CONFIG_HOME", os.path.join(self.HOME, ".config"))
         self.xdg_runtime = os.environ.get("XDG_RUNTIME_DIR", os.path.join(self.HOME, ".local/share"))
+=======
+
+class XDGPaths:
+    def __init__(self):
+        import os
+
+        self.HOME = str(Path.home())
+        self.xdg_cache = os.environ.get("XDG_CACHE_HOME", os.path.join(self.HOME, ".cache"))
+        self.xdg_config = os.environ.get("XDG_CONFIG_HOME", os.path.join(self.HOME, ".config"))
+        self.xdg_runtime = os.environ.get(
+            "XDG_RUNTIME_DIR", os.path.join(self.HOME, ".local/share")
+        )
+>>>>>>> master
         self.xdg_data = os.environ.get("XDG_DATA_HOME", os.path.join(self.HOME, ".local/share"))
         self.CACHE_DIR = os.path.join(self.xdg_cache, "hyde")
         self.CONFIG_DIR = os.path.join(self.xdg_config, "hyde")
@@ -16,12 +30,20 @@ class XDGPaths:
         self.RECENT_FILE = os.path.join(self.CACHE_DIR, "landing/show_bookmarks.recent")
         self.RECENT_NUMBER = 5
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 class BookmarkManager:
     def __init__(self, xdg: XDGPaths):
         self.xdg = xdg
 
     def find_bookmark_files(self):
         import os
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         files = []
         # Firefox
         for root, dirs, filelist in os.walk(os.path.join(self.xdg.HOME, ".mozilla/firefox")):
@@ -47,6 +69,10 @@ class BookmarkManager:
     def read_firefox_bookmarks(self, places_file):
         import sqlite3
         import sys
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         query = """
         SELECT b.title, p.url
         FROM moz_bookmarks AS b
@@ -68,6 +94,10 @@ class BookmarkManager:
     def read_chromium_bookmarks(self, bookmarks_file):
         import json
         import sys
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         bookmarks = []
         try:
             with open(bookmarks_file, "r") as f:
@@ -84,6 +114,10 @@ class BookmarkManager:
 
     def read_custom_lst(self, lst_file):
         import sys
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         bookmarks = []
         try:
             with open(lst_file, "r") as f:
@@ -100,6 +134,10 @@ class BookmarkManager:
     def read_recent(self):
         import os
         import sys
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         bookmarks = []
         if not os.path.exists(self.xdg.RECENT_FILE):
             return bookmarks
@@ -116,6 +154,10 @@ class BookmarkManager:
 
     def save_recent(self, title, url):
         import os
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         lines = [f"{title} | {url}"]
         if os.path.exists(self.xdg.RECENT_FILE):
             with open(self.xdg.RECENT_FILE, "r") as f:
@@ -165,6 +207,10 @@ class BookmarkManager:
 
     def open_bookmark(self, url, browser=None):
         import subprocess
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
         if browser:
             subprocess.run([browser, url])
         else:
@@ -172,22 +218,58 @@ class BookmarkManager:
 
     def open_by_selection(self, selection, bookmarks, browser=None):
         import sys
+<<<<<<< HEAD
         # Parse index from selection string like '1) Title'
         try:
             index = int(selection.split(')', 1)[0].strip())
             bm = bookmarks[index - 1]
             self.save_recent(bm['title'], bm['url'])
             self.open_bookmark(bm['url'], browser)
+=======
+
+        # Parse index from selection string like '1) Title'
+        try:
+            index = int(selection.split(")", 1)[0].strip())
+            bm = bookmarks[index - 1]
+            self.save_recent(bm["title"], bm["url"])
+            self.open_bookmark(bm["url"], browser)
+>>>>>>> master
             sys.exit()
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
 
+<<<<<<< HEAD
 def main():
     parser = argparse.ArgumentParser(description="Bookmarks manager (feature parity with bookmarks.sh)")
     parser.add_argument('--browser', '-b', type=str, help='Set browser command (default: $BROWSER env or xdg-open)')
     parser.add_argument('--no-custom', action='store_true', help='Run without custom .lst bookmark files')
     parser.add_argument('--list', action='store_true', help='List bookmarks and exit')
     parser.add_argument('selection', nargs='?', type=str, help='Selected bookmark string from rofi (e.g. "1) Title")')
+=======
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Bookmarks manager (feature parity with bookmarks.sh)"
+    )
+    parser.add_argument(
+        "--browser",
+        "-b",
+        type=str,
+        help="Set browser command (default: $BROWSER env or xdg-open)",
+    )
+    parser.add_argument(
+        "--no-custom",
+        action="store_true",
+        help="Run without custom .lst bookmark files",
+    )
+    parser.add_argument("--list", action="store_true", help="List bookmarks and exit")
+    parser.add_argument(
+        "selection",
+        nargs="?",
+        type=str,
+        help='Selected bookmark string from rofi (e.g. "1) Title")',
+    )
+>>>>>>> master
     args = parser.parse_args()
 
     xdg = XDGPaths()
@@ -199,7 +281,16 @@ def main():
     manager.list_bookmarks(bookmarks)
     if args.list:
         import sys
+<<<<<<< HEAD
         sys.exit(0)
 
 if __name__ == "__main__":
     main()
+=======
+
+        sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
+>>>>>>> master
