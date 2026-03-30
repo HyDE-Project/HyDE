@@ -1,0 +1,12 @@
+{
+    "custom/disk": {
+        "exec": "~/.config/waybar/scripts/disk.sh",
+        "return-type": "json",
+        "format": "{0}",
+        "rotate": 0,
+        "interval": 5,
+        "tooltip": true,
+        "max-length": 1000,
+        "on-click": "thunar /"
+    }
+}

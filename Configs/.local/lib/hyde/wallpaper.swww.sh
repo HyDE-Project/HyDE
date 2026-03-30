@@ -13,6 +13,10 @@
 #   In this case we used the method `extract_thumbnail`
 #   to generate a png from a video file as swww do not support video
 
+#! A fallback script. Incase user explcitly set swww as wallpaper backend
+notify-send "" "DEPRECATION NOTICE: swww backend is deprecated, please switch to awww or other supported backends. See 'hyde-shell wallpaper --help' for more info."
+
+
 selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.set"}"
 lockFile="$XDG_RUNTIME_DIR/hyde/$(basename "${0}").lock"
 if [ -e "${lockFile}" ]; then

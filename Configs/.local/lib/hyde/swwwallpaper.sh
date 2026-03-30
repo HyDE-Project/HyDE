@@ -6,10 +6,10 @@ DEPRECATION: This script is deprecated, please use 'wallpaper.sh' instead."
 
 -------------------------------------------------
 example: 
-wallpaper.sh --select --backend swww --global
+wallpaper.sh --select --backend awww --global
 -------------------------------------------------
 EOF
 
 script_dir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
-"${script_dir}/wallpaper.sh" "${@}" --backend swww --global
+"${script_dir}/wallpaper.sh" "${@}" --backend awww --global

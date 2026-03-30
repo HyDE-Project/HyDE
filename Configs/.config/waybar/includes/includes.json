@@ -44,6 +44,7 @@
         "/home/laclavere/.local/share/waybar/modules/pulseaudio.jsonc",
         "/home/laclavere/.local/share/waybar/modules/mpris.jsonc",
         "/home/laclavere/.local/share/waybar/modules/disk.jsonc",
+        "/home/laclavere/.local/share/waybar/modules/custom-disk.jsonc",
         "/home/laclavere/.local/share/waybar/modules/custom-power.jsonc",
         "/home/laclavere/.local/share/waybar/modules/pulseaudio#microphone.jsonc",
         "/home/laclavere/.local/share/waybar/modules/temperature.jsonc",
