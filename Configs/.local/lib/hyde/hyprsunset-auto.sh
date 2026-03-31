@@ -32,6 +32,12 @@ time_to_minutes() {
     local hour=${BASH_REMATCH[1]}
     local min=${BASH_REMATCH[2]}
 
+    # Validate 24-hour clock ranges
+    if (( 10#$hour > 23 || 10#$min > 59 )); then
+        echo "[$0] :: Invalid time value: '$time'" >&2
+        return 1
+    fi
+
     # Force base-10 interpretation to avoid octal issues with leading zeros
     echo $((10#$hour * 60 + 10#$min))
 }
