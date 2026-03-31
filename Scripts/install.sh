@@ -262,7 +262,7 @@ EOF
 		# Initialize hyprsunset auto-scheduler
 		if command -v hyprsunset >/dev/null 2>&1 && [ -f "$HOME/.local/lib/hyde/hyprsunset-auto.sh" ]; then
 			print_log -g "[hyprsunset] " "setup ::" "Auto-scheduler..."
-			"$HOME/.local/lib/hyde/hyprsunset-auto.sh" || true
+			bash "$HOME/.local/lib/hyde/hyprsunset-auto.sh" || true
 		fi
 		
 		echo "[install] reload :: Hyprland"

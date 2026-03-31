@@ -18,21 +18,38 @@ NIGHT_GAMMA=85         # Evening gamma
 
 # Get current time in format HH:MM
 current_time=$(date +"%H:%M")
-current_hour=$(date +"%H")
-current_min=$(date +"%M")
 
 # Convert time to minutes for easier comparison
 time_to_minutes() {
     local time=$1
-    local hour=${time%:*}
-    local min=${time#*:}
-    echo $((hour * 60 + min))
+
+    # Expect HH:MM (or H:MM); validate and extract components
+    if [[ ! $time =~ ^([0-9]{1,2}):([0-9]{2})$ ]]; then
+        echo "[$0] :: Invalid time format: '$time'" >&2
+        return 1
+    fi
+
+    local hour=${BASH_REMATCH[1]}
+    local min=${BASH_REMATCH[2]}
+
+    # Force base-10 interpretation to avoid octal issues with leading zeros
+    echo $((10#$hour * 60 + 10#$min))
 }
 
-current_minutes=$(time_to_minutes "$current_time")
-morning_minutes=$(time_to_minutes "$MORNING_TIME")
-evening_minutes=$(time_to_minutes "$EVENING_TIME")
+if ! current_minutes=$(time_to_minutes "$current_time"); then
+    echo "[$0] :: Failed to parse current time: '$current_time'" >&2
+    exit 1
+fi
 
+if ! morning_minutes=$(time_to_minutes "$MORNING_TIME"); then
+    echo "[$0] :: Failed to parse MORNING_TIME: '$MORNING_TIME'" >&2
+    exit 1
+fi
+
+if ! evening_minutes=$(time_to_minutes "$EVENING_TIME"); then
+    echo "[$0] :: Failed to parse EVENING_TIME: '$EVENING_TIME'" >&2
+    exit 1
+fi
 # Determine if we should use day or night settings
 if [ $current_minutes -ge $morning_minutes ] && [ $current_minutes -lt $evening_minutes ]; then
     # Daytime: use neutral temperature
@@ -50,7 +67,12 @@ fi
 echo "[$0] :: Setting $mode mode: ${target_temp}K, ${target_gamma}% gamma"
 
 # Use the HyDE hyprsunset script to apply settings
-hyde-shell hyprsunset --cm temp -s $target_temp --quiet
-hyde-shell hyprsunset --cm gamma -s $target_gamma --quiet
+if ! hyde-shell hyprsunset --cm temp -s "$target_temp" --quiet; then
+    echo "[$0] :: Failed to apply temperature."
+    exit 1
+fi
 
-exit 0
+if ! hyde-shell hyprsunset --cm gamma -s "$target_gamma" --quiet; then
+    echo "[$0] :: Failed to apply gamma."
+    exit 1
+fi
