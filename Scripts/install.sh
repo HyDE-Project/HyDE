@@ -258,6 +258,13 @@ EOF
 		"$HOME/.local/lib/hyde/wallpaper/cache.sh" commence -t ""
 		"$HOME/.local/lib/hyde/theme.switch.sh" -q || true
 		"$HOME/.local/lib/hyde/waybar.py" --update || true
+		
+		# Initialize hyprsunset auto-scheduler
+		if command -v hyprsunset >/dev/null 2>&1 && [ -f "$HOME/.local/lib/hyde/hyprsunset-auto.sh" ]; then
+			print_log -g "[hyprsunset] " "setup ::" "Auto-scheduler..."
+			"$HOME/.local/lib/hyde/hyprsunset-auto.sh" || true
+		fi
+		
 		echo "[install] reload :: Hyprland"
 	fi
 

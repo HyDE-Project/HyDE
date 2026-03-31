@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Window: added 'hyde-shell window.mute' to toggle window audio. This is a python implementation for 'wl-togglesink'
+- Hyprsunset: enhanced blue light filter integration with automatic time-based temperature adjustment
+- Hyprsunset: fixed configuration with proper day/night profiles and scheduling support
 
 
 
