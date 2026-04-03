@@ -127,6 +127,7 @@ Hyprland configuration.
 | gtk_theme | GTK theme. | Wallbash-Gtk |
 | icon_theme | Icon theme. | Tela-circle-dracula |
 | idle | Idle manager. | hypridle |
+| blue_light_filter | Blue-light filter. | hyprsunset |
 | lockscreen | Lockscreen. | lockscreen.sh |
 | monospace_font | Monospace font. | CaskaydiaCove Nerd Font Mono |
 | monospace_font_size | Monospace font size. | 9 |
@@ -145,6 +146,7 @@ Hyprland start configuration.
 | battery_notify | Battery notification script. | batterynotify.sh |
 | dbus_share_picker | DBus share picker. | dbus-update-activation-environment --systemd --all |
 | idle_daemon | Idle daemon. | hypridle |
+| blue_light_filter_daemon | Blue-light filter daemon. | hyprsunset |
 | image_clipboard | Image clipboard. | wl-paste --type image --watch cliphist store |
 | network_manager | Network manager. | nm-applet --indicator |
 | notifications | Notifications. | swaync |
@@ -286,7 +288,7 @@ themeselect.sh configuration.
 
 ### [rofi.wallpaper]
 
-swwwallselect.sh configuration.
+wallpaper select configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -368,12 +370,12 @@ Wallpaper configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
-| backend | Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH | swww |
+| backend | Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH | awww |
 | custom_paths | List of paths to search for wallpapers. | [] |
 
-### [wallpaper.swww]
+### [wallpaper.awww]
 
-swwwallselect.sh configuration.
+wallpaper select configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |

@@ -38,36 +38,36 @@ type      = "object"
     type = "string"
 
 [properties.wallpaper.properties.backend]
-    default     = "swww"
+    default     = "awww"
     description = "Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH"
-    options     = [ "swww", "pcmanfm-qt", "mpvpaper", "hyprpaper" ]
+    options     = [ "awww", "pcmanfm-qt", "mpvpaper", "hyprpaper" ]
     type        = "string"
 
-[properties.wallpaper.properties.swww]
-    description = "swwwallselect.sh configuration."
+[properties.wallpaper.properties.awww]
+    description = "wallpaper select configuration."
     type        = "object"
 
-[properties.wallpaper.properties.swww.properties.framerate]
+[properties.wallpaper.properties.awww.properties.framerate]
     default     = 60
     description = "Transition framerate."
     type        = "integer"
 
-[properties.wallpaper.properties.swww.properties.duration]
+[properties.wallpaper.properties.awww.properties.duration]
     default     = 1
     description = "Transition duration."
     type        = "integer"
 
-[properties.wallpaper.properties.swww.properties.transition_next]
+[properties.wallpaper.properties.awww.properties.transition_next]
     default     = "grow"
     description = "Transition type for next wallpaper."
     type        = "string"
 
-[properties.wallpaper.properties.swww.properties.transition_prev]
+[properties.wallpaper.properties.awww.properties.transition_prev]
     default     = "outer"
     description = "Transition type for previous wallpaper."
     type        = "string"
 
-[properties.wallpaper.properties.swww.properties.transition_default]
+[properties.wallpaper.properties.awww.properties.transition_default]
     default     = "grow"
     description = "Transition type for default wallpaper."
     type        = "string"
@@ -187,7 +187,7 @@ type      = "object"
     type        = "integer"
 
 [properties.rofi.properties.wallpaper]
-    description = "swwwallselect.sh configuration."
+    description = "wallpaper select configuration."
     type        = "object"
 
 [properties.rofi.properties.wallpaper.properties.scale]
@@ -771,6 +771,11 @@ type      = "object"
     description = "Idle manager."
     type        = "string"
 
+[properties.hyprland.properties.blue_light_filter]
+    default     = "hyprsunset"
+    description = "Blue-light filter."
+    type        = "string"
+
 [properties.hyprland.properties.lockscreen]
     default     = "lockscreen.sh"
     description = "Lockscreen."
@@ -964,7 +969,10 @@ type      = "object"
     default     = "hypridle"
     description = "Idle daemon."
     type        = "string"
-
+[properties.hyprland-start.properties.blue_light_filter_daemon]
+    default     = "hyprsunset"
+    description = "Blue-light filter daemon."
+    type        = "string"
 [properties.hyprland-start.properties.image_clipboard]
     default     = "wl-paste --type image --watch cliphist store"
     description = "Image clipboard."

@@ -57,7 +57,7 @@ T|${HOME}/.config/qt5ct|colors.conf|qt5ct
 T|${HOME}/.config/qt6ct|colors.conf|qt6ct
 
 S|${HOME}/.config/hyde|wallbash|hyprland bash imagemagick
-S|${HOME}/.config/hypr|animations|hyprland  
+S|${HOME}/.config/hypr|animations|hyprland
 S|${HOME}/.config/hypr|workflows|hyprland
 S|${HOME}/.config/hypr|shaders|hyprland
 
@@ -93,7 +93,7 @@ P|${HOME}/.config/starship|starship.toml|starship
 S|${HOME}|.zshenv|zsh
 S|${HOME}/.config/zsh|.zshenv|zsh
 S|${HOME}/.config/zsh/conf.d|hyde 00-hyde.zsh|zsh
-S|${HOME}/.config/zsh/functions|error-handlers.zsh|zsh 
+S|${HOME}/.config/zsh/functions|error-handlers.zsh|zsh
 S|${HOME}/.config/zsh/functions|fzf.zsh|zsh fzf
 S|${HOME}/.config/zsh/functions|duf.zsh|zsh duf
 S|${HOME}/.config/zsh/functions|eza.zsh|zsh eza
@@ -147,3 +147,6 @@ S|${HOME}/.config/hypr|hyprlock|hyprlock
 
  Idle daemon 
 P|${HOME}/.config/hypr|hypridle.conf|hypridle
+
+ Bluelight filter daemon 
+P|${HOME}/.config/hypr|hyprsunset.conf|hyprsunset

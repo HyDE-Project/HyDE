@@ -6,4 +6,4 @@ X-KDE-Submenu=Set As Wallpaper...
 
 [Desktop Action Menu-Refresh]
 Name=.: Refresh List :.
-Exec=swwwallkon.sh
+Exec=wallpaper.kon.sh

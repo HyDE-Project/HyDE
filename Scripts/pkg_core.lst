@@ -29,7 +29,7 @@ hyprland                                               # wlroots-based wayland c
 dunst                                                  # notification daemon
 rofi                                                   # application launcher
 waybar                                                 # system bar
-swww                                                   # wallpaper
+awww                                                   # wallpaper
 hyprlock                                               # lock screen
 wlogout                                                # logout menu
 grim                                                   # screenshot tool
@@ -41,7 +41,7 @@ wl-clip-persist                                        # Keep Wayland clipboard 
 hyprsunset                                             # blue light filter
 
 # --------------------------------------------------- // Dependencies
-polkit-gnome                                           # authentication agent
+hyprpolkitagent                                        # authentication agent
 xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland
 xdg-desktop-portal-gtk                                 # file picker and dbus  integration
 xdg-user-dirs                                          # Manage user directories like ~/Desktop and ~/Music
@@ -77,7 +77,7 @@ fzf                                                    # Command-line fuzzy find
 
 # --------------------------------------------------- // Shell
 starship|zsh                                           # customizable shell prompt written in Rust
-# starship-git                                         # The cross-shell prompt for astronauts  
+# starship-git                                         # The cross-shell prompt for astronauts
 starship|fish                                          # customizable shell prompt
 
 fastfetch                                              # system information fetch tool

@@ -8,9 +8,9 @@
     "menu-actions": {
       "animations-select": "hyde-shell animations --select",
       "wallpaper-select": "hyde-shell wallpaper --select --global",
-      "wallpaper-next": "hyde-shell wallpaper --backend swww --next --global",
-      "wallpaper-previous": "hyde-shell wallpaper --backend swww --previous --global",
-      "wallpaper-random": "hyde-shell wallpaper --backend swww --random --global",
+      "wallpaper-next": "hyde-shell wallpaper --next --global",
+      "wallpaper-previous": "hyde-shell wallpaper --previous --global",
+      "wallpaper-random": "hyde-shell wallpaper --random --global",
       "theme-next": "hyde-shell themeswitch -n",
       "theme-previous": "hyde-shell themeswitch -p",
       "theme-select": "hyde-shell themeselect",

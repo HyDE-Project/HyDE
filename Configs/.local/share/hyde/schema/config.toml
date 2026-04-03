@@ -7,9 +7,9 @@
 # Wallpaper configuration.
 [wallpaper]
 custom_paths = []  # List of paths to search for wallpapers.
-backend = "swww"  # Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH
-# swwwallselect.sh configuration.
-[wallpaper.swww]
+backend = "awww"  # Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH
+# wallpaper select configuration.
+[wallpaper.awww]
 framerate = 60  # Transition framerate.
 duration = 1  # Transition duration.
 transition_next = "grow"  # Transition type for next wallpaper.
@@ -49,7 +49,7 @@ filebrowser_style = "style_1"  # Style for filebrowser mode.
 [rofi.cliphist]
 scale = 10  # Scaling for cliphist.
 
-# swwwallselect.sh configuration.
+# wallpaper select configuration.
 [rofi.wallpaper]
 scale = 10  # Scaling for wallpaper.
 column_count = 3  # Number of columns for wallpaper selector.
@@ -139,7 +139,7 @@ skip_template = [""]  # Templates to skip when using wallbash.
 font = "JetBrainsMono Nerd Font"  # Font for waybar.
 scale = 10  # Total scaling for waybar.
 icon_size = 10  # Icon size for waybar.
-position = "top"  # A fallback position of the waybar.  
+position = "top"  # A fallback position of the waybar.
 
 # Weather configuration.
 [weather]
@@ -213,6 +213,7 @@ browser = "firefox"  # Browser.
 editor = "code"  # Editor.
 explorer = "dolphin"  # File manager.
 idle = "hypridle"  # Idle manager.
+blue_light_filter = "hyprsunset"  # Blue-light filter.
 lockscreen = "lockscreen.sh"  # Lockscreen.
 terminal = "kitty"  # Terminal.
 quickapps = "kitty"  # Quick apps.
@@ -259,6 +260,7 @@ bar = "hyde-shell waybar --watch"  # Bar.
 battery_notify = "batterynotify.sh"  # Battery notification script.
 dbus_share_picker = "dbus-update-activation-environment --systemd --all"  # DBus share picker.
 idle_daemon = "hypridle"  # Idle daemon.
+blue_light_filter_daemon = "hyprsunset"  # Blue-light filter daemon.
 image_clipboard = "wl-paste --type image --watch cliphist store"  # Image clipboard.
 network_manager = "nm-applet --indicator"  # Network manager.
 notifications = "swaync"  # Notifications.

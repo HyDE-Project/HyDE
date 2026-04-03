@@ -2,31 +2,39 @@
 # coding: utf-8
 
 import os
-import threading
+import shutil
 from subprocess import run, CalledProcessError, TimeoutExpired
 from typing import Optional
 
 DEFAULT_APP_NAME = "HyDE"
 DEFAULT_URGENCY = "normal"
 
+_notify_send_path: Optional[str] = None
+_notify_send_checked = False
 
-def _is_gui_available():
+
+def _has_notify_send() -> bool:
+    """Check if notify-send command is available (cached)."""
+    global _notify_send_path, _notify_send_checked
+    if not _notify_send_checked:
+        _notify_send_checked = True
+        _notify_send_path = shutil.which("notify-send")
+    return _notify_send_path is not None
+
+
+def _is_gui_available() -> bool:
     """Check if a GUI environment is available."""
-    return (
-        os.environ.get("DISPLAY") is not None
-        or os.environ.get("WAYLAND_DISPLAY") is not None
-        or os.environ.get("XDG_SESSION_TYPE") == "wayland"
-        or os.environ.get("XDG_SESSION_TYPE") == "x11"
+    return bool(
+        os.environ.get("DISPLAY")
+        or os.environ.get("WAYLAND_DISPLAY")
+        or os.environ.get("XDG_SESSION_TYPE") in ("wayland", "x11")
     )
 
 
-def _has_notify_send():
-    """Check if notify-send command is available."""
-    try:
-        run(["which", "notify-send"], capture_output=True, check=True, timeout=2)
-        return True
-    except (CalledProcessError, TimeoutExpired, FileNotFoundError):
-        return False
+def _print_fallback(summary: str, body: Optional[str], app_name: Optional[str]) -> None:
+    prefix = f"[{app_name or DEFAULT_APP_NAME}]"
+    msg = f"{summary}: {body}" if body else summary
+    print(f"{prefix} {msg}")
 
 
 def send(
@@ -38,39 +46,13 @@ def send(
     category: Optional[str] = None,
     app_name: Optional[str] = DEFAULT_APP_NAME,
     replace_id: Optional[int] = None,
-):
-    """Send a notification using notify-send.
-
-    Parameters
-    ----------
-    summary : str
-        The summary of the notification.
-    body : Optional[str]
-        The body of the notification.
-    urgency : Optional[str]
-        The urgency level (low, normal, critical).
-    expire_time : Optional[int]
-        The timeout in milliseconds at which to expire the notification.
-    icon : Optional[str]
-        The icon filename or stock icon to display.
-    category : Optional[str]
-        The notification category.
-    app_name : Optional[str]
-        The app name for the notification.
-    replace_id : Optional[int]
-        The ID of the notification to replace.
-    """
-    # Fallback to console output if GUI is not available or notify-send is missing
+) -> None:
+    """Send a desktop notification via notify-send, with console fallback."""
     if not _is_gui_available() or not _has_notify_send():
-        prefix = f"[{app_name or DEFAULT_APP_NAME}]"
-        message = f"{summary}"
-        if body:
-            message += f": {body}"
-        print(f"{prefix} {message}")
+        _print_fallback(summary, body, app_name)
         return
 
     command = ["notify-send"]
-
     if urgency:
         command.extend(["-u", urgency])
     if expire_time:
@@ -83,28 +65,11 @@ def send(
         command.extend(["-a", app_name])
     if replace_id:
         command.extend(["-r", str(replace_id)])
-
     command.append(summary)
     if body:
         command.append(body)
 
-    def _send_in_background():
-        """Send notification in background thread."""
-        try:
-            run(command, check=True, timeout=3, capture_output=True)
-        except (CalledProcessError, TimeoutExpired, FileNotFoundError):
-            # Fallback to console output if notification fails
-            prefix = f"[{app_name or DEFAULT_APP_NAME}]"
-            message = f"{summary}"
-            if body:
-                message += f": {body}"
-            print(f"{prefix} {message}")
-
-    # Run in daemon thread so it doesn't block main thread
-    thread = threading.Thread(target=_send_in_background, daemon=True)
-    thread.start()
-
-
-# Example usage
-if __name__ == "__main__":
-    send("Test Notification", "This is a test notification body.", urgency="normal")
+    try:
+        run(command, check=True, timeout=3, capture_output=True)
+    except (CalledProcessError, TimeoutExpired, FileNotFoundError):
+        _print_fallback(summary, body, app_name)

@@ -15,18 +15,18 @@
                     }
                 },
                 "backend": {
-                    "default": "swww",
+                    "default": "awww",
                     "description": "Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH",
                     "options": [
-                        "swww",
+                        "awww",
                         "pcmanfm-qt",
                         "mpvpaper",
                         "hyprpaper"
                     ],
                     "type": "string"
                 },
-                "swww": {
-                    "description": "swwwallselect.sh configuration.",
+                "awww": {
+                    "description": "wallpaper select configuration.",
                     "type": "object",
                     "properties": {
                         "framerate": {
@@ -185,7 +185,7 @@
                     }
                 },
                 "wallpaper": {
-                    "description": "swwwallselect.sh configuration.",
+                    "description": "wallpaper select configuration.",
                     "type": "object",
                     "properties": {
                         "scale": {
@@ -882,6 +882,11 @@
                     "description": "Idle manager.",
                     "type": "string"
                 },
+                "blue_light_filter": {
+                    "default": "hyprsunset",
+                    "description": "Blue-light filter.",
+                    "type": "string"
+                },
                 "lockscreen": {
                     "default": "lockscreen.sh",
                     "description": "Lockscreen.",
@@ -1084,6 +1089,12 @@
                     "description": "Idle daemon.",
                     "type": "string"
                 },
+                "blue_light_filter_daemon": {
+                    "default": "hyprsunset",
+                    "description": "Blue-light filter daemon.",
+                    "type": "string"
+                },
+
                 "image_clipboard": {
                     "default": "wl-paste --type image --watch cliphist store",
                     "description": "Image clipboard.",

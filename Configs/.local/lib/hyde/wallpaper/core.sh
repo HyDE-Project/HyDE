@@ -22,7 +22,8 @@ Wall_Json() {
     else
         wallPathArray=("$HYDE_THEME_DIR")
     fi
-    wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}" "${XDG_PICTURES_DIR}/Wallpapers/${HYDE_THEME}")
+    wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
+    [ -d "${XDG_PICTURES_DIR%/}/Wallpapers/${HYDE_THEME}" ] && wallPathArray+=("${XDG_PICTURES_DIR%/}/Wallpapers/${HYDE_THEME}")
     get_hashmap "${wallPathArray[@]}"
     wallListJson=$(printf '%s\n' "${wallList[@]}" | jq -R . | jq -s .)
     wallHashJson=$(printf '%s\n' "${wallHash[@]}" | jq -R . | jq -s .)
@@ -53,7 +54,7 @@ Wall_Hash() {
     wallPathArray=("$HYDE_THEME_DIR/wallpapers")
     wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
     get_hashmap "${wallPathArray[@]}"
-    [ ! -e "$(readlink -f "$wallSet")" ] && echo "fixing link :: $wallSet" && ln -fs "${wallList[setIndex]}" "$wallSet"
+    [ ! -e "$(readlink -f "$wallSet")" ] && echo "Fixing link :: $wallSet" && ln -fs "${wallList[setIndex]}" "$wallSet"
 }
 
 Wall_Cache() {
@@ -65,7 +66,7 @@ Wall_Cache() {
     ln -fs "${wallList[setIndex]}" "$wallCur"
     if [ "$set_as_global" == "true" ]; then
         print_log -sec "wallpaper" "Setting Wallpaper as global"
-        "$LIB_DIR/hyde/swwwallcache.sh" -w "${wallList[setIndex]}" &> /dev/null
+        "$LIB_DIR/hyde/wallpaper/cache.sh" commence -w "${wallList[setIndex]}" &> /dev/null
         "$LIB_DIR/hyde/color.set.sh" "${wallList[setIndex]}" &
         ln -fs "$thmbDir/${wallHash[setIndex]}.sqre" "$wallSqr"
         ln -fs "$thmbDir/${wallHash[setIndex]}.thmb" "$wallTmb"

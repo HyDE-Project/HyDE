@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+echo "Error: swwwallcache.sh is deprecated and no longer maintained. Please use cache.sh instead."
+
 scrDir="$(dirname "$(realpath "$0")")"
 source "$scrDir/globalcontrol.sh"
 export scrDir

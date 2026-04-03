@@ -58,6 +58,7 @@ Who are the $USER?
 
   - [ ] Waybar
   - [x] Hyprlock
+  - [x] Hyprsunset
   - [x] Animations
   - [ ] ...
 

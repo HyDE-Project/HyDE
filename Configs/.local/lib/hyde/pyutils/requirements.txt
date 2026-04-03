@@ -1,6 +1,6 @@
 loguru==0.7.3
 pulsectl==24.12.0
-requests==2.32.4
+requests==2.33.0
 inotify_simple
 pywayland
 PyGObject

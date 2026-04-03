@@ -260,7 +260,7 @@ bash "$script_dir/restore.config.sh" "$THEME_DIR/restore_cfg.lst" "$THEME_DIR/Co
     exit 1
 }
 if [ "$3" != "--skipcaching" ]; then
-    bash "$script_dir/swwwallcache.sh" -t "$THEME_NAME"
+    bash "$script_dir/wallpaper/cache.sh" commence -t "$THEME_NAME"
     bash "$script_dir/theme.switch.sh"
 fi
 print_log -y "\nNote: " "Warnings are not errors. Review the output to check if it concerns you."

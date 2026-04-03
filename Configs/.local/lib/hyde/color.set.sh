@@ -161,7 +161,7 @@ if [ -z "$wallbash_image" ] || [ ! -f "$wallbash_image" ]; then
 fi
 dcol_file="$dcolDir/$(set_hash "$wallbash_image").dcol"
 if [ ! -f "$dcol_file" ]; then
-    "$scrDir/swwwallcache.sh" -w "$wallbash_image" &> /dev/null
+    "$scrDir/wallpaper/cache.sh" commence -w "$wallbash_image" &> /dev/null
 fi
 set -a
 source "$dcol_file"
