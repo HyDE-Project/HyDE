@@ -13,6 +13,7 @@
         "aarch64-linux"
         "x86_64-darwin"
         "aarch64-darwin"
+        # "x86_64-freebsd" # TODO: evaluate stability, broken as of March 20th, 2026
       ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
     in

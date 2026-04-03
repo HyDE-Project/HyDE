@@ -4,10 +4,12 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 
 - [HydeVM - Simplified VM Tool for HyDE Contributors](#hydevm---simplified-vm-tool-for-hyde-contributors)
   - [Hardware Requirements](#hardware-requirements)
+    - [Hardware Requirements - FreeBSD](#hardware-requirements---freebsd)
   - [Features](#features)
   - [Quick Start](#quick-start)
     - [Arch Linux](#arch-linux)
     - [NixOS](#nixos)
+    - [FreeBSD](#freebsd)
   - [First-Time Setup](#first-time-setup)
   - [Usage](#usage)
     - [Basic Commands](#basic-commands)
@@ -28,9 +30,9 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
     - [Verification Steps](#verification-steps)
     - [Troubleshooting Hyprland in VM](#troubleshooting-hyprland-in-vm)
 
-**Supported Host Operating Systems:** Arch Linux, NixOS
+**Supported Host Operating Systems:** Arch Linux, NixOS, FreeBSD, macOS Silicon
 
-## Hardware Requirements
+## Hardware Requirements (non macOS)
 
 **CPU:** x86_64 with virtualization support (Intel VT-x or AMD-V, enabled in BIOS)
 **Memory:** 4GB+ RAM (VM uses 4GB by default)
@@ -43,6 +45,22 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 **OpenGL:** 3.3+ support required for Hyprland
 **Note:** Tested on AMD GPU + Intel CPU. Hyprland VM support is experimental.
 
+### Hardware Requirements - FreeBSD
+
+**CPU:** `x86_64/amd64` machines require `EPT` if *Intel* or `RVI/NPT` if AMD
+
+**GPU & OpenGL Support:** From [Chapter 5.2. Graphics Drivers - FreeBSD Handbook](https://docs.freebsd.org/en/books/handbook/x11/#x-graphic-card-drivers)
+
+| *Type*                        | *License*       | *Module*                             | *Port*                                          |
+|-----------------------------|--------------|------------------------------------|-----------------------------------------------|
+| Intel®                      | Open Source  | `i915kms`                            | `graphics/drm-kmod`                             |
+| AMD®                        | Open Source  | `amdgpu` / `radeonkms`                 | `graphics/drm-kmod`                             |
+| NVIDIA®                     | Proprietary  | `nvidia-drm` / `nvidia-modeset` / `nvidia` | `graphics/nvidia-drm-kmod`, `x11/nvidia-driver`   |
+| System Console Framebuffer  | Open Source  | `scfb`                               | `x11-drivers`/`xf86-video-scfb`                   |
+| VESA BIOS Extension         | Open Source  | `vesa`                               | `x11-drivers`/`xf86-video-vesa`                   |
+| VirtualBox®                 | Open Source  | `vboxvideo`                          | `emulators`/`virtualbox-ose-additions`            |
+| VMware®                     | Open Source  | `vmwgfx`                             | `x11-drivers`/`xf86-video-vmware`                 |
+
 ## Features
 
 - **Zero Configuration**: Automatically downloads Arch Linux base image and sets up HyDE
@@ -53,7 +71,7 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 
 ## Quick Start
 
-### Arch Linux
+### Arch Linux, FreeBSD, and macOS Silicon
 
 ```bash
 # Download and run (will auto-detect missing packages)
@@ -77,7 +95,7 @@ nix run
 When you run a new branch/commit for the first time, hydevm will:
 
 1. **OS Detection**: Automatically detects your OS and checks dependencies
-2. **Dependency Installation**: (Arch only) Prompts to install missing packages
+2. **Dependency Installation**: (Arch & FreeBSD only) Prompts to install missing packages
 3. **VM Setup**: Shows a VM window with setup instructions
 4. **HyDE Installation**: You'll need to:
    - Login as `arch` / `arch`
@@ -116,7 +134,7 @@ hydevm --clean
 # Check dependencies
 hydevm --check-deps
 
-# Install dependencies (Arch only)
+# Install dependencies (Arch & FreeBSD only)
 hydevm --install-deps
 ```
 
@@ -154,10 +172,53 @@ sudo usermod -a -G kvm $USER
 virtualisation.libvirtd.enable = true;
 ```
 
+### FreeBSD - command not found: qemu
+> [!NOTE]
+> Adopted from [Chapter 24.6. Virtualization with QEMU on FreeBSD](https://docs.freebsd.org/en/books/handbook/virtualization/#qemu-virtualization-host-guest) by @MFarabi619
+
+```bash
+# modified to not override pre-existing ones, and restore broken setups to a working default from handbook as of March 21, 2026, 1:34 PM
+sudo pkg install qemu
+
+# checks if symlink doesn't exist or points to the wrong location
+if [ "$(readlink /usr/local/bin/qemu)" != "/usr/local/bin/qemu-system-x86_64" ]; then
+  sudo ln -sf /usr/local/bin/qemu-system-x86_64 /usr/local/bin/qemu
+fi
+
+sudo sysctl net.link.tap.user_open=1
+sudo grep -qxF "net.link.tap.user_open=1" /etc/sysctl.conf || \
+echo 'net.link.tap.user_open=1' | sudo tee -a /etc/sysctl.conf
+sudo grep -qxF "add path 'tap*' mode 0660 group operator" /etc/devfs.rules || \
+printf "add path 'tap*' mode 0660 group operator\n" | sudo tee -a /etc/devfs.rules
+
+# should show window saying boot failed .... no bootable device, proves that qemu is working as intended
+qemu
+```
+
+#### FreeBSD - [Bhyve](https://bhyve.org)
+> [!NOTE]
+> Adopted from [Chapter 24.6. Virtualization with QEMU on FreeBSD](https://docs.freebsd.org/en/books/handbook/virtualization/#virtualization-host-bhyve) by @MFarabi619
+
+```bash
+sudo kldload vmm
+
+sudo ifconfig tap0 create
+sudo sysctl net.link.tap.up_on_open=1
+sudo grep -qxF "net.link.tap.up_on_open=1" /etc/sysctl.conf || \
+echo 'net.link.tap.up_on_open=1' | sudo tee -a /etc/sysctl.conf
+sudo grep -qxF "add path 'tap*' mode 0660 group operator" /etc/devfs.rules || \
+printf "add path 'tap*' mode 0660 group operator\n" | sudo tee -a /etc/devfs.rules
+
+sudo ifconfig bridge0 create
+sudo ifconfig bridge0 addm igb0 addm tap0
+sudo ifconfig bridge0 up
+```
+
 ### Missing Dependencies
 
 - **Arch**: Script will prompt to install missing packages
 - **NixOS**: Nix will automatically install missing packages
+- **FreeBSD**: Script will prompt to install missing packages
 
 ### Clean Start
 
@@ -213,6 +274,7 @@ nixGL nix run github:HyDE-Project/HyDE
 
 **Packages (Arch):** `qemu-desktop mesa`
 **Packages (NixOS):** `qemu mesa`
+**Packages (FreeBSD):** `qemu drm-kmod`
 
 **NixOS Configuration:**
 
@@ -241,6 +303,7 @@ hydevm
 
 **Packages (Arch):** `qemu-desktop mesa intel-media-driver`
 **Packages (NixOS):** `qemu mesa intel-media-driver`
+**Packages (FreeBSD):** `qemu drm-kmod`
 
 **NixOS Configuration:**
 
@@ -263,6 +326,12 @@ lsmod | grep virtio
 
 # Default QEMU args should work perfectly
 hydevm
+```
+
+**FreeBSD Configuration:**
+
+```bash
+sudo pkg install qemu drm-kmod
 ```
 
 ### NVIDIA GPU + Any CPU ⚠️
@@ -310,6 +379,9 @@ glxinfo | grep "OpenGL renderer"
 # Should work with default args
 hydevm
 ```
+
+#### FreeBSD (WIP)
+TODO: cover various NVIDIA installation paths and common problems
 
 Option 3: Software Rendering (Fallback)
 

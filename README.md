@@ -47,6 +47,7 @@ Multi-language README support
     <img src="Source/assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
     <img src="Source/assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
     <img src="Source/assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+    <img src="Source/assets/freebsd.png" alt="FreeBSD" style="width: 10%; margin: 10px;"/>
   </div>
 </div>
 
@@ -72,6 +73,8 @@ The installation script is designed for a minimal [Arch Linux](https://wiki.arch
 While installing HyDE alongside another [DE](https://wiki.archlinux.org/title/Desktop_environment)/[WM](https://wiki.archlinux.org/title/Window_manager) should work, due to it being a heavily customized setup, it **will** conflict with your [GTK](https://wiki.archlinux.org/title/GTK)/[Qt](https://wiki.archlinux.org/title/Qt) theming, [Shell](https://wiki.archlinux.org/title/Command-line_shell), [SDDM](https://wiki.archlinux.org/title/SDDM), [GRUB](https://wiki.archlinux.org/title/GRUB), etc. and is at your own risk.
 
 For NixOS support there is a separate project being maintained @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
+
+[FreeBSD](https://www.freebsd.org) is supported via HydeBSD. Due to differences in bootloader, kernel, userspace, and package availability, not all features of HyDE may be present.
 
 > [!IMPORTANT]
 > The install script will auto-detect an NVIDIA card and install nvidia-open-dkms drivers for your kernel.
