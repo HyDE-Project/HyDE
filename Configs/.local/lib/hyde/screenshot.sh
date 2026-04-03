@@ -4,6 +4,10 @@ if [[ $HYDE_SHELL_INIT -ne 1 ]]; then
 else
     export_hyde_config
 fi
+
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
+
 USAGE() {
     cat <<"USAGE"
 

@@ -22,6 +22,7 @@ export iconsDir="$ICONS_DIR"
 export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
+
 send_notifs() {
     local args=("$@")
     notify-send "${args[@]}" &

@@ -8,7 +8,7 @@ if [ ! -d "$shaders_dir" ]; then
     exit 1
 fi
 show_help() {
-    cat << HELP
+    cat <<HELP
 Usage: $0 [OPTIONS]
 
 Options:
@@ -34,7 +34,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 fn_select() {
-    shader_items=$(find -L "$shaders_dir" -maxdepth 1 -name "*.frag" ! -name "disable.frag" ! -name ".compiled.cache.glsl" -print0 2> /dev/null | xargs -0 -n1 basename | sed 's/\.frag$//')
+    shader_items=$(find -L "$shaders_dir" -maxdepth 1 -name "*.frag" ! -name "disable.frag" ! -name ".compiled.cache.glsl" -print0 2>/dev/null | xargs -0 -n1 basename | sed 's/\.frag$//')
     if [ -f "$shaders_dir/disable.frag" ]; then
         shader_items="disable\n$shader_items"
     fi
@@ -89,13 +89,13 @@ concat_shader_files() {
             version_directive="#version 300 es"
         fi
     fi
-    echo "$version_directive" > "$compiled_file"
-    echo "" >> "$compiled_file"
+    echo "$version_directive" >"$compiled_file"
+    echo "" >>"$compiled_file"
     for f in "${files[@]}"; do
         if [ -f "$f" ]; then
             print_log -g "Processing shader" " file: $f"
-            sed '/^\s*#version\s/d' "$f" >> "$compiled_file"
-            echo "" >> "$compiled_file"
+            sed '/^\s*#version\s/d' "$f" >>"$compiled_file"
+            echo "" >>"$compiled_file"
         fi
     done
 }
@@ -103,7 +103,7 @@ parse_includes_and_update() {
     local selected_shader="$1"
     local files=()
     local source_var
-    source_var=$(grep -iE '^\s*//\s*!source\s*=\s*.*' "$shaders_dir/$selected_shader.frag" 2> /dev/null | head -n1 | sed -E 's/^\s*\/\/\s*!source\s*=\s*//I' | xargs)
+    source_var=$(grep -iE '^\s*//\s*!source\s*=\s*.*' "$shaders_dir/$selected_shader.frag" 2>/dev/null | head -n1 | sed -E 's/^\s*\/\/\s*!source\s*=\s*//I' | xargs)
     if [ -n "$source_var" ]; then
         source_var=$(eval echo "$source_var")
         if [ -f "$source_var" ]; then
@@ -125,7 +125,7 @@ parse_includes_and_update() {
         print_log -r "Error" " Failed to compile shader $selected_shader"
         return 1
     fi
-    cat << EOF > "$confDir/hypr/shaders.conf"
+    cat <<EOF >"$confDir/hypr/shaders.conf"
 
 #! █▀ █░█ ▄▀█ █▀▄ █▀▀ █▀█ █▀
 #! ▄█ █▀█ █▀█ █▄▀ ██▄ █▀▄ ▄█
@@ -156,26 +156,26 @@ fn_update() {
 }
 while true; do
     case "$1" in
-        -S | --select)
-            fn_select
-            exit 0
-            ;;
-        -r | --reload)
-            fn_reload
-            exit 0
-            ;;
-        --help | -h)
-            show_help
-            exit 0
-            ;;
-        --)
-            shift
-            break
-            ;;
-        *)
-            echo "Invalid option: $1"
-            show_help
-            exit 1
-            ;;
+    -S | --select)
+        fn_select
+        exit 0
+        ;;
+    -r | --reload)
+        fn_reload
+        exit 0
+        ;;
+    --help | -h)
+        show_help
+        exit 0
+        ;;
+    --)
+        shift
+        break
+        ;;
+    *)
+        echo "Invalid option: $1"
+        show_help
+        exit 1
+        ;;
     esac
 done
