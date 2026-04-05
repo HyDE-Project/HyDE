@@ -29,6 +29,39 @@ if ! source "${scrDir}/global_fn.sh"; then
 	exit 1
 fi
 
+add_install_package() {
+	local pkg_name=$1
+
+	if ! grep -Eq "^${pkg_name}([[:space:]]|#|$)" "${scrDir}/install_pkg.lst"; then
+		echo "${pkg_name}" >>"${scrDir}/install_pkg.lst"
+	fi
+}
+
+enable_fingerprint_layout() {
+	local target_conf="${confDir}/hypr/hyprlock.conf"
+	local target_dir="${confDir}/hypr"
+	local layout_path="${confDir}/hypr/hyprlock/HyDE-fingerprint.conf"
+	local template_conf="${cloneDir}/Configs/.config/hypr/hyprlock.conf"
+	local state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyde"
+	local state_file="${state_dir}/staterc"
+
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[dry-run] " -b "fingerprint :: " "Would set ${layout_path} as the active hyprlock layout"
+		return 0
+	fi
+
+	[ -d "${target_dir}" ] || mkdir -p "${target_dir}"
+	[ -f "${target_conf}" ] || cp "${template_conf}" "${target_conf}"
+	sed -i "s|^\$LAYOUT_PATH=.*|\$LAYOUT_PATH=${layout_path}|" "${target_conf}"
+	[ -d "${state_dir}" ] || mkdir -p "${state_dir}"
+	if grep -q '^HYPRLOCK_LAYOUT=' "${state_file}" 2>/dev/null; then
+		sed -i 's/^HYPRLOCK_LAYOUT=.*/HYPRLOCK_LAYOUT="HyDE-fingerprint"/' "${state_file}"
+	else
+		echo 'HYPRLOCK_LAYOUT="HyDE-fingerprint"' >>"${state_file}"
+	fi
+	print_log -g "[fingerprint] " -b "layout :: " "${layout_path}"
+}
+
 #------------------#
 # evaluate options #
 #------------------#
@@ -39,6 +72,7 @@ flg_DryRun=0
 flg_Shell=0
 flg_Nvidia=1
 flg_ThemeInstall=1
+HYDE_INSTALL_FPRINT=false
 
 while getopts idrstmnh RunStep; do
 	case $RunStep in
@@ -88,7 +122,7 @@ done
 
 # Only export that are used outside this script
 HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
-export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall HYDE_LOG
+export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall HYDE_LOG HYDE_INSTALL_FPRINT
 
 if [ "${flg_DryRun}" -eq 1 ]; then
 	print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
@@ -220,6 +254,25 @@ EOF
 		fi
 	fi
 
+	if [ ${flg_Restore} -eq 1 ]; then
+		prompt_timer 120 "Enable fingerprint unlock for hyprlock? [y/N] | q to quit "
+
+		case "${PROMPT_INPUT}" in
+		y | Y)
+			export HYDE_INSTALL_FPRINT=true
+			add_install_package "fprintd"
+			print_log -sec "fingerprint" -stat "enabled" "Hyprlock fingerprint layout will be activated after restore"
+			;;
+		q | Q)
+			print_log -sec "fingerprint" -crit "Quit" "Exiting..."
+			exit 1
+			;;
+		*)
+			print_log -sec "fingerprint" -stat "skipped" "Leaving password-only hyprlock as default"
+			;;
+		esac
+	fi
+
 	if ! grep -q "^#user packages" "${scrDir}/install_pkg.lst"; then
 		print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}/install.sh"
 		exit 1
@@ -252,6 +305,9 @@ EOF
 	"${scrDir}/restore_fnt.sh"
 	"${scrDir}/restore_cfg.sh"
 	"${scrDir}/restore_thm.sh"
+	if [ "${HYDE_INSTALL_FPRINT}" = true ]; then
+		enable_fingerprint_layout
+	fi
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
 		export PATH="$HOME/.local/lib/hyde:$HOME/.local/bin:${PATH}"

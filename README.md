@@ -101,6 +101,11 @@ cd ~/HyDE/Scripts
 > Refer your list from `Scripts/pkg_extra.lst`
 > or you can `cp Scripts/pkg_extra.lst Scripts/pkg_user.lst` if you wish to install all extra packages.
 
+> [!TIP]
+> HyDE can optionally install fingerprint unlock support for `hyprlock` during setup on supported devices.
+> If you enable it in the installer, finish enrollment in a terminal with `fprintd-enroll`, test it with `fprintd-verify`, and make sure PAM is configured correctly for your distro.
+> Existing users can install `fprintd` manually and switch to the bundled fingerprint layout with <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>U</kbd>.
+
 <!--
 
 As a second install option, you can also use `Hyde-install`, which might be easier for some.
