@@ -14,6 +14,7 @@ import argparse
 import json
 import os
 import re
+import sys
 from pathlib import Path
 from typing import List, Dict
 import shutil
@@ -108,19 +109,19 @@ def fetch_icon(appid: int, cache_dir: Path) -> str:
     icon_url = f"https://cdn.cloudflare.steamstatic.com/steam/apps/{appid}/header.jpg"
     icon_path = cache_dir / f"steam_{appid}.jpg"
 
-    if not icon_path.exists():
+    if not icon_path.is_file():
         try:
             response = requests.get(icon_url, timeout=10)
             if response.status_code == 200:
                 icon_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(icon_path, "wb") as f:
                     f.write(response.content)
-                print(f"Fetched icon for AppID {appid} and saved to {icon_path}")
+                print(f"Fetched icon for AppID {appid} and saved to {icon_path}", file=sys.stderr)
             else:
-                print(f"Failed to fetch icon for AppID {appid}: HTTP {response.status_code}")
+                print(f"Failed to fetch icon for AppID {appid}: HTTP {response.status_code}", file=sys.stderr)
         except Exception as e:
-            print(f"Error fetching icon for AppID {appid}: {e}")
-    return str(icon_path) if icon_path.exists() else ""
+            print(f"Error fetching icon for AppID {appid}: {e}", file=sys.stderr)
+    return str(icon_path) if icon_path.is_file() else ""
 
 
 def should_exclude_game(name: str) -> bool:
@@ -135,6 +136,79 @@ def list_games(steamapps_dirs: List[Path], fetch_icons: bool = False) -> List[Di
     xdg_cache = Path(os.environ.get("XDG_CACHE_HOME", str(Path.home() / ".cache")))
     cache_dir = xdg_cache / "hyde" / "gamelauncher"
 
+    # Collect all unique appcache/librarycache dirs across all Steam roots
+    librarycache_roots: List[Path] = []
+    seen_lc: set = set()
+    for sa in steamapps_dirs:
+        lc = sa.parent / "appcache" / "librarycache"
+        if lc not in seen_lc:
+            seen_lc.add(lc)
+            if lc.is_dir():
+                librarycache_roots.append(lc)
+
+    def find_header(appid: int) -> str | None:
+        """Search all known librarycache roots for a portrait cover image for appid.
+
+        Lookup is phased globally across all roots so a portrait asset in any
+        root beats a landscape asset in any other root.
+
+        Priority (best for portrait card UI):
+          1. library_600x900.jpg  — old flat structure, explicit portrait
+          2. library_capsule.jpg  — new hashed-subdir structure, ~300x450 portrait
+          3. library_hero.jpg     — landscape fallback (flat or hashed subdir)
+          4. header.jpg           — landscape fallback (flat or hashed subdir)
+        Small thumbnails (.jpg files directly in the appid dir) are skipped.
+        OSError on iterdir() for a given cache dir is treated as a miss.
+        """
+        # Collect (appid_dir, subdirs) pairs once, skipping unreadable dirs.
+        candidates: list[tuple[Path, list[Path]]] = []
+        for lc in librarycache_roots:
+            appid_dir = lc / str(appid)
+            if not appid_dir.is_dir():
+                continue
+            try:
+                subdirs = sorted(d for d in appid_dir.iterdir() if d.is_dir())
+            except OSError:
+                subdirs = []
+            candidates.append((appid_dir, subdirs))
+
+        # Phase 1 — flat portrait (library_600x900.jpg / library_capsule.jpg)
+        for appid_dir, _ in candidates:
+            for name in ("library_600x900.jpg", "library_capsule.jpg"):
+                c = appid_dir / name
+                if c.is_file():
+                    return str(c)
+
+        # Phase 2 — hashed-subdir portrait
+        for _, subdirs in candidates:
+            for subdir in subdirs:
+                for name in ("library_capsule.jpg", "library_600x900.jpg"):
+                    c = subdir / name
+                    if c.is_file():
+                        return str(c)
+
+        # Phase 3 — library_hero.jpg (flat then hashed)
+        for appid_dir, subdirs in candidates:
+            c = appid_dir / "library_hero.jpg"
+            if c.is_file():
+                return str(c)
+            for subdir in subdirs:
+                c = subdir / "library_hero.jpg"
+                if c.is_file():
+                    return str(c)
+
+        # Phase 4 — header.jpg (flat then hashed)
+        for appid_dir, subdirs in candidates:
+            c = appid_dir / "header.jpg"
+            if c.is_file():
+                return str(c)
+            for subdir in subdirs:
+                c = subdir / "header.jpg"
+                if c.is_file():
+                    return str(c)
+
+        return None
+
     for sa in steamapps_dirs:
         try:
             for p in sa.glob("appmanifest_*.acf"):
@@ -144,20 +218,11 @@ def list_games(steamapps_dirs: List[Path], fetch_icons: bool = False) -> List[Di
                 appid = info["appid"]
                 name = info.get("name") or ""
 
-                header = None
-                candidates = [
-                    sa.parent / "appcache" / "librarycache" / str(appid) / "header.jpg",
-                    sa.parent / "appcache" / "librarycache" / str(appid) / "library_600x900.jpg",
-                    sa.parent / "appcache" / "librarycache" / f"{appid}.jpg",
-                ]
-                for c in candidates:
-                    if c.exists():
-                        header = str(c)
-                        break
+                header = find_header(appid)
 
                 if not header:
                     cached_icon = cache_dir / f"steam_{appid}.jpg"
-                    if cached_icon.exists():
+                    if cached_icon.is_file():
                         header = str(cached_icon)
                 if not header and fetch_icons:
                     header = fetch_icon(appid, cache_dir)
