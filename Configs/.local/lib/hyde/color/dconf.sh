@@ -24,7 +24,7 @@ EOF
 }
 COLOR_SCHEME="prefer-$dcol_mode"
 GTK_THEME="Wallbash-Gtk"
-if [[ -r $HYPRLAND_CONFIG ]] && command -v "hyq" &> /dev/null; then
+if [[ -r $HYPRLAND_CONFIG ]] && command -v "hyq" &> /dev/null && hyq --help >/dev/null 2>&1; then
     eval "$(hyq "$HYPRLAND_CONFIG" --source --export env \
         -Q 'hyde:gtk-theme' \
         -Q 'hyde:color-scheme' \
@@ -40,7 +40,7 @@ if [[ -r $HYPRLAND_CONFIG ]] && command -v "hyq" &> /dev/null; then
         -Q 'hyde:monospace-font-size' \
         -Q 'hyde:button-layout' \
         -Q 'hyde:font-antialiasing' \
-        -Q 'hyde:font-hinting')"
+        -Q 'hyde:font-hinting' 2>/dev/null)" || true
     GTK_THEME=${_hyde_gtk_theme:-$GTK_THEME}
     COLOR_SCHEME=${_hyde_color_scheme:-$COLOR_SCHEME}
     ICON_THEME=${_hyde_icon_theme:-$ICON_THEME}

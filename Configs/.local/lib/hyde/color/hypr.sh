@@ -8,20 +8,22 @@ cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
 HYDE_THEME="${HYDE_THEME:-}"
 HYDE_THEME_DIR="${HYDE_THEME_DIR:-$confDir/hyde/themes/$HYDE_THEME}"
 enableWallDcol="${enableWallDcol:-0}"
-eval "$(hyq "$HYDE_THEME_DIR/hypr.theme" \
-    --export env \
-    -Q '$GTK_THEME[string]' \
-    -Q '$COLOR_SCHEME[string]' \
-    -Q '$ICON_THEME[string]' \
-    -Q '$CURSOR_THEME[string]' \
-    -Q '$CURSOR_SIZE[int]' \
-    -Q '$FONT[string]' \
-    -Q '$FONT_SIZE[int]' \
-    -Q '$DOCUMENT_FONT[string]' \
-    -Q '$DOCUMENT_FONT_SIZE[int]' \
-    -Q '$MONOSPACE_FONT[string]' \
-    -Q '$MONOSPACE_FONT_SIZE[int]' \
-    -Q '$CODE_THEME[string]')"
+if command -v hyq &>/dev/null && hyq --help >/dev/null 2>&1; then
+    eval "$(hyq "$HYDE_THEME_DIR/hypr.theme" \
+        --export env \
+        -Q '$GTK_THEME[string]' \
+        -Q '$COLOR_SCHEME[string]' \
+        -Q '$ICON_THEME[string]' \
+        -Q '$CURSOR_THEME[string]' \
+        -Q '$CURSOR_SIZE[int]' \
+        -Q '$FONT[string]' \
+        -Q '$FONT_SIZE[int]' \
+        -Q '$DOCUMENT_FONT[string]' \
+        -Q '$DOCUMENT_FONT_SIZE[int]' \
+        -Q '$MONOSPACE_FONT[string]' \
+        -Q '$MONOSPACE_FONT_SIZE[int]' \
+        -Q '$CODE_THEME[string]' 2>/dev/null)" || true
+fi
 
 # This is for older themes that do not define the above variables
 [[ -z ${__GTK_THEME} ]] && __GTK_THEME=$(get_hyprConf "GTK_THEME")

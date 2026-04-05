@@ -295,7 +295,7 @@ get_hyprConf() {
 
     #? hyq first (sanitized, then raw), with optional type
     #? hyq cannot handle $FOO and $FOO_BAR so we will impose hints to make it work
-    if command -v hyq &>/dev/null; then
+    if command -v hyq &>/dev/null && hyq --help >/dev/null 2>&1; then
         local query="\$$hyVar"
         [ -n "$hyType" ] && query="${query}[${hyType}]"
         local hyq_result

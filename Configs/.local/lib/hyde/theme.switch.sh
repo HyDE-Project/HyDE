@@ -40,19 +40,21 @@ EOF
 }
 load_hypr_variables() {
     local hypr_file="$1"
-    eval "$(hyq "$hypr_file" \
-        --export env \
-        -Q '$GTK_THEME[string]' \
-        -Q '$ICON_THEME[string]' \
-        -Q '$CURSOR_THEME[string]' \
-        -Q '$CURSOR_SIZE[int]' \
-        -Q '$FONT[string]' \
-        -Q '$FONT_SIZE[int]' \
-        -Q '$FONT_STYLE[string]' \
-        -Q '$DOCUMENT_FONT[string]' \
-        -Q '$DOCUMENT_FONT_SIZE[int]' \
-        -Q '$MONOSPACE_FONT[string]' \
-        -Q '$MONOSPACE_FONT_SIZE[int]')"
+    if command -v hyq &>/dev/null && hyq --help >/dev/null 2>&1; then
+        eval "$(hyq "$hypr_file" \
+            --export env \
+            -Q '$GTK_THEME[string]' \
+            -Q '$ICON_THEME[string]' \
+            -Q '$CURSOR_THEME[string]' \
+            -Q '$CURSOR_SIZE[int]' \
+            -Q '$FONT[string]' \
+            -Q '$FONT_SIZE[int]' \
+            -Q '$FONT_STYLE[string]' \
+            -Q '$DOCUMENT_FONT[string]' \
+            -Q '$DOCUMENT_FONT_SIZE[int]' \
+            -Q '$MONOSPACE_FONT[string]' \
+            -Q '$MONOSPACE_FONT_SIZE[int]' 2>/dev/null)" || true
+    fi
     GTK_THEME=${__GTK_THEME:-$GTK_THEME}
     ICON_THEME=${__ICON_THEME:-$ICON_THEME}
     CURSOR_THEME=${__CURSOR_THEME:-$CURSOR_THEME}
