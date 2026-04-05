@@ -1,17 +1,44 @@
 #!/usr/bin/env bash
-selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.set"}"
+selected_wall="${1:-"$HYDE_CACHE_HOME/wall.set"}"
 lockFile="$XDG_RUNTIME_DIR/hyde/$(basename "$0").lock"
+mkdir -p "$(dirname "$lockFile")"
 if [ -e "$lockFile" ]; then
-    cat << EOF
+    existing_pid="$(cat "$lockFile" 2>/dev/null || true)"
+    if [ -n "$existing_pid" ] && kill -0 "$existing_pid" 2>/dev/null; then
+        cat << EOF
 
 Error: Another instance of $(basename "$0") is running.
+PID:
+    $existing_pid
 If you are sure that no other instance is running, remove the lock file:
     $lockFile
 EOF
-    exit 1
+        exit 1
+    fi
+    # stale lock from crashed session
+    rm -f "$lockFile"
 fi
-touch "$lockFile"
-trap 'rm -f ${lockFile}' EXIT
+printf '%s\n' "$$" >"$lockFile"
+trap 'rm -f "$lockFile"' EXIT INT TERM
+
+if command -v swww >/dev/null 2>&1; then
+    wallpaper_cmd="swww"
+elif command -v awww >/dev/null 2>&1; then
+    wallpaper_cmd="awww"
+else
+    echo "Error: neither 'swww' nor 'awww' is available." >&2
+    exit 127
+fi
+
+if command -v swww-daemon >/dev/null 2>&1; then
+    wallpaper_daemon_cmd="swww-daemon"
+elif command -v awww-daemon >/dev/null 2>&1; then
+    wallpaper_daemon_cmd="awww-daemon"
+else
+    echo "Error: neither 'swww-daemon' nor 'awww-daemon' is available." >&2
+    exit 127
+fi
+
 scrDir="$(dirname "$(realpath "$0")")"
 source "$scrDir/globalcontrol.sh"
 case "$WALLPAPER_SET_FLAG" in
@@ -24,13 +51,12 @@ case "$WALLPAPER_SET_FLAG" in
         xtrans="${xtrans:-"grow"}"
         ;;
 esac
-selected_wall="$1"
 [ -z "$selected_wall" ] && echo "No input wallpaper" && exit 1
 selected_wall="$(readlink -f "$selected_wall")"
-if ! swww query &> /dev/null; then
-    swww-daemon --format xrgb &
+if ! "$wallpaper_cmd" query &>/dev/null; then
+    "$wallpaper_daemon_cmd" --format xrgb &
     disown
-    swww query && swww restore
+    "$wallpaper_cmd" query && "$wallpaper_cmd" restore
 fi
 is_video=$(file --mime-type -b "$selected_wall" | grep -c '^video/')
 if [ "$is_video" -eq 1 ]; then
@@ -45,4 +71,4 @@ xtrans=$WALLPAPER_SWWW_TRANSITION_DEFAULT
 [ -z "$wallFramerate" ] && wallFramerate=60
 [ -z "$wallTransDuration" ] && wallTransDuration=0.4
 print_log -sec "wallpaper" -stat "apply" "$selected_wall"
-swww img "$(readlink -f "$selected_wall")" --transition-bezier .43,1.19,1,.4 --transition-type "$xtrans" --transition-duration "$wallTransDuration" --transition-fps "$wallFramerate" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
+"$wallpaper_cmd" img "$(readlink -f "$selected_wall")" --transition-bezier .43,1.19,1,.4 --transition-type "$xtrans" --transition-duration "$wallTransDuration" --transition-fps "$wallFramerate" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
