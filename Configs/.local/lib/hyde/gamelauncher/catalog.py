@@ -13,6 +13,7 @@ The script probes for Lutris (flatpak or native) and calls the existing
 import json
 import subprocess
 import os
+import sys
 from collections import defaultdict
 
 
@@ -21,7 +22,7 @@ def fetch_entries(command):
         result = subprocess.run(command, stdout=subprocess.PIPE, text=True, check=True)
         return json.loads(result.stdout)
     except Exception as e:
-        print(f"Error fetching entries with {command}: {e}")
+        print(f"Error fetching entries with {command}: {e}", file=sys.stderr)
         return []
 
 

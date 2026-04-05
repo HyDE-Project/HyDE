@@ -35,26 +35,46 @@ EOF
 }
 
 USAGE() {
+	local cols
+	cols=$(tput cols 2>/dev/null || echo 80)
+	local sep
+	sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
 
-	cat <<USAGE
-Usage: $(basename "$0") [command]
-Commands:
-  --help, help, -h              : Display this help message
-  -r, reload                    : Reload HyDE
-  wallbash                      : Execute a wallbash script
-  release-notes                 : Show release notes
-  completions [bash|zsh|fish]   : Generate shell completions
-  validate [args]               : Validate HyDE configuration
-  pyinit                        : Initialize python virtual environment
-  version                       : Show version information
-  init                          : Source initialization script
+	local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m' _CYAN=$'\e[36m'
 
-Available HyDE commands:
+	printf '\n%s  HyDE Shell%s\n' "$_BOLD" "$_R"
+	printf '  %s%s%s\n\n' "$_DIM" "$sep" "$_R"
 
-$(list_script)
+	printf '  %sUSAGE%s\n' "$_BOLD" "$_R"
+	printf '    hyde-shell %s[command]%s %s[args]%s\n\n' "$_CYAN" "$_R" "$_DIM" "$_R"
 
-USAGE
+	printf '  %sCOMMANDS%s\n' "$_BOLD" "$_R"
+	local cmds=(
+		'help, -h'             'Show this help message'
+		'-r, reload'           'Reload HyDE'
+		'-s, scripts'          'List available scripts (formatted)'
+		'wallbash <script>'    'Execute a wallbash script'
+		'version, -v'          'Show version information'
+		'release-notes'        'Show release notes'
+		'completions [shell]'  'Generate completions (bash|zsh|fish)'
+		'validate [args]'      'Validate HyDE configuration'
+		'pyinit'               'Initialize Python virtual environment'
+		'init'                 'Source initialization script'
+		'logout'               'Log out of the current session'
+		'lock-session'         'Lock the current session'
+	)
+	for (( i=0; i<${#cmds[@]}; i+=2 )); do
+		printf '    %s%-26s%s %s\n' "$_CYAN" "${cmds[i]}" "$_R" "${cmds[i+1]}"
+	done
+	printf '\n'
 
+	printf '  %sSCRIPTS%s\n' "$_BOLD" "$_R"
+	printf '    Run any script by name (without extension):\n'
+	printf '      %shyde-shell theme.switch%s\n' "$_DIM" "$_R"
+	printf '      %shyde-shell wallpaper%s\n\n' "$_DIM" "$_R"
+	printf '    Use %shyde-shell -s%s to list all available scripts.\n\n' "$_CYAN" "$_R"
+
+	printf '  %s%s%s\n\n' "$_DIM" "$sep" "$_R"
 }
 
 call_wallbashScript() {
@@ -78,19 +98,15 @@ call_wallbashScript() {
 	if [[ -n "$script_path" ]]; then
 		"$script_path" "${args[@]}"
 	else
-		case $scriptName in
-		*)
-			echo "Usage: wallbash [script-name] [args]"
-			echo "Executes the specified wallbash script with the provided arguments."
-			echo "Available scripts:"
-			for dir in "${dirs[@]}"; do
-				if [[ -d "$dir" ]]; then
-					echo -e "\n[ $dir ]"
-					find -L "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
-				fi
-			done
-			;;
-		esac
+		echo "Usage: wallbash [script-name] [args]"
+		echo "Executes the specified wallbash script with the provided arguments."
+		echo "Available scripts:"
+		for dir in "${dirs[@]}"; do
+			if [[ -d "$dir" ]]; then
+				echo -e "\n[ $dir ]"
+				find -L "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
+			fi
+		done
 	fi
 
 }
@@ -103,32 +119,20 @@ hyde_reload() {
 	"$LIB_DIR/hyde/theme.switch.sh"
 }
 
-list_script() {
-	# Use HYDE_SCRIPTS_PATH to find scripts from all configured directories
-	local HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}"
-
-	# Convert to array, deduplicate, and filter out empty entries
+list_script_path() {
 	IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
-	declare -A seen_dirs
-	local SCRIPT_DIRS=()
+	declare -A _seen_dirs
 	for dir in "${RAW_DIRS[@]}"; do
-		# Skip empty entries (handles multiple colons like :::)
 		[[ -z "$dir" ]] && continue
-		# Deduplicate directories
-		[[ -n "${seen_dirs[$dir]}" ]] && continue
-		seen_dirs["$dir"]=1
-		# Only add existing directories
-		[[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
+		[[ -n "${_seen_dirs[$dir]}" ]] && continue
+		_seen_dirs["$dir"]=1
+		[[ -d "$dir" ]] && find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
 	done
-
-	# Find scripts in all configured directories
-	for dir in "${SCRIPT_DIRS[@]}"; do
-		find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null
-	done | sort -u
 }
 
-list_script_path() {
-	find -L "$LIB_DIR/hyde" -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
+list_script() {
+	# Plain newline-delimited script filenames (with extension) for completion consumers.
+	list_script_path | xargs -I{} basename {} | sort -u
 }
 
 get_version() {
@@ -180,27 +184,8 @@ get_release_notes() {
 
 get_completion_data() {
 	# Get all available commands and scripts
-	local built_in_commands=("--help" "help" "-h" "-r" "reload" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions")
-	local hyde_scripts=()
-	local wallbash_scripts=()
-
-	# Get HyDE scripts (remove extensions)
-	while IFS= read -r script; do
-		if [[ -n "$script" ]]; then
-			script_name="${script%.*}"
-			hyde_scripts+=("$script_name")
-		fi
-	done < <(list_script 2>/dev/null | sort -u)
-
-	# Get wallbash scripts
-	local dirs=("${WALLBASH_DIRS[@]}")
-	wallbash_scripts=("--help") # Add --help as first option
-	# Simplified - just --help for now since dynamic parsing is complex
-
-	# Export arrays for use by completion generators
+	local built_in_commands=("--help" "help" "-h" "-r" "reload" "-s" "scripts" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions" "completions")
 	export HYDE_BUILT_IN_COMMANDS="${built_in_commands[*]}"
-	export HYDE_SCRIPTS="${hyde_scripts[*]}"
-	export HYDE_WALLBASH_SCRIPTS="${wallbash_scripts[*]}"
 }
 
 gen_bash_completion() {
@@ -217,7 +202,7 @@ _hyde_shell_completion() {
     }
     
     local built_in_commands hyde_scripts wallbash_scripts
-    built_in_commands="--help help -h -r reload wallbash --version version -v --release-notes release-notes --list-script --list-script-path --completions"
+    built_in_commands="--help help -h -r reload -s scripts wallbash --version version -v --release-notes release-notes --list-script --list-script-path --completions"
     
     # Get dynamic completions from hyde-shell
     if command -v hyde-shell >/dev/null 2>&1; then
@@ -272,7 +257,7 @@ _hyde_shell() {
     prev="${words[CURRENT-1]}"
     
     local built_in_commands hyde_scripts wallbash_scripts
-    built_in_commands=("--help" "help" "-h" "-r" "reload" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions")
+    built_in_commands=("--help" "help" "-h" "-r" "reload" "-s" "scripts" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions")
     
     # Get dynamic completions
     if (( $+commands[hyde-shell] )); then
@@ -327,6 +312,8 @@ help
 -h
 -r
 reload
+-s
+scripts
 wallbash
 --version
 version
@@ -363,6 +350,7 @@ complete -c hyde-shell -n "__fish_seen_subcommand_from --completions" -a "bash z
 # Option descriptions
 complete -c hyde-shell -s h -l help -d "Display help message"
 complete -c hyde-shell -s r -d "Reload HyDE"
+complete -c hyde-shell -s s -l scripts -d "List available scripts (formatted)"
 complete -c hyde-shell -s v -l version -d "Show version information"
 complete -c hyde-shell -l release-notes -d "Show release notes"
 complete -c hyde-shell -l list-script -d "List available scripts"
@@ -401,7 +389,6 @@ hyde-logout() {
 		else
 			hyprctl dispatch exit 0
 		fi
-		hyprctl dispatch exit 0
 	fi
 }
 
@@ -441,12 +428,7 @@ run_command() {
 	else
 		echo "Command not found: $1"
 		echo "Available commands:"
-		list_script
-		# Show user scripts from all configured directories
-		for dir in "${SCRIPT_DIRS[@]}"; do
-			echo "Scripts in $dir:"
-			find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -executable \) -exec basename {} \; 2>/dev/null | sort
-		done
+		list_scripts_pretty
 	fi
 }
 
@@ -464,7 +446,7 @@ run_pypr() {
 	if command -v pypr >/dev/null 2>&1; then
 
 		socket_path="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.pyprland.sock"
-		if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/pyprland.toml " ]]; then
+		if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/pyprland.toml" ]]; then
 			send_notifs "Missing pyprland.toml" "Please create a pyprland.toml file in ${XDG_CONFIG_HOME:-$HOME/.config}/hypr/ to configure PyPR."
 			exit 1
 		fi
@@ -498,6 +480,98 @@ run_pypr() {
 
 }
 
+list_scripts_pretty() {
+    local cols
+    cols=$(tput cols 2>/dev/null || echo 80)
+    local sep
+    sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
+
+    local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m'
+    local _VIOLET=$'\e[35m' _GREEN=$'\e[92m'
+
+    IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
+    declare -A seen_dirs
+    local SCRIPT_DIRS=()
+
+    for dir in "${RAW_DIRS[@]}"; do
+        [[ -z "$dir" ]] && continue
+        [[ -n "${seen_dirs[$dir]}" ]] && continue
+        seen_dirs["$dir"]=1
+        [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
+    done
+
+    local total=0
+
+    printf '\n%s  Available Scripts%s\n' "$_BOLD" "$_R"
+    printf '  %s%s%s\n' "$_DIM" "$sep" "$_R"
+
+    for dir in "${SCRIPT_DIRS[@]}"; do
+        local scripts=()
+        while IFS= read -r f; do
+            [[ -n "$f" ]] && scripts+=("$f")
+        done < <(find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null | sort)
+
+        [[ ${#scripts[@]} -eq 0 ]] && continue
+
+        printf '\n  %s%s%s\n' "$_VIOLET" "$dir" "$_R"
+
+        unset groups roots
+        declare -A groups roots
+
+        # --- detectar raíces ---
+        for s in "${scripts[@]}"; do
+            local name="${s%.*}"
+            if [[ "$name" == *.* ]]; then
+                local root="${name%%.*}"
+                roots["$root"]=1
+            fi
+        done
+
+        # --- agrupar correctamente ---
+        for s in "${scripts[@]}"; do
+            local name="${s%.*}"
+
+            if [[ "$name" == *.* ]]; then
+                local root="${name%%.*}"
+                groups["$root"]+="$name "
+            else
+                if [[ -n "${roots[$name]}" ]]; then
+                    # es raíz de un grupo
+                    groups["$name"]="$name ${groups[$name]}"
+                else
+                    # standalone
+                    groups["$name"]="$name"
+                fi
+            fi
+        done
+
+        # --- imprimir ---
+        for key in $(printf "%s\n" "${!groups[@]}" | sort); do
+            read -ra items <<< "${groups[$key]}"
+
+            if [[ ${#items[@]} -gt 1 ]]; then
+                printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
+
+                for item in "${items[@]}"; do
+                    if [[ "$item" != "$key" ]]; then
+                        printf "      %s%s%s\n" "$_DIM" "$item" "$_R"
+                    fi
+                    ((total++))
+                done
+            else
+                printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
+                ((total++))
+            fi
+        done
+    done
+
+    local dir_word="directories"
+    (( ${#SCRIPT_DIRS[@]} == 1 )) && dir_word="directory"
+
+    printf '\n  %s%s%s\n' "$_DIM" "$sep" "$_R"
+    printf '  %s%d scripts across %d %s%s\n\n' "$_DIM" "$total" "${#SCRIPT_DIRS[@]}" "$dir_word" "$_R"
+}
+
 lock_session() {
 	#? hyde-shell lock-session wraps around the lockscreen.sh script
 	#? lockscreen.sh activates the set lockscreen blindly
@@ -526,7 +600,7 @@ LIB_DIR=$(realpath "${BIN_DIR}/../lib")
 SHARE_DIR=$(realpath "${BIN_DIR}/../share")
 PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
 # Define hyde scripts search paths (colon-separated, user configurable)
-HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME}/waybar/scripts:${XDG_CONFIG_HOME}/waybar/scripts"
+HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME:-$HOME/.local/share}/waybar/scripts:${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts"
 
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
@@ -597,19 +671,22 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 	--help | help | -h)
 		USAGE
 		;;
+	-s | scripts)
+		list_scripts_pretty
+		;;
 	--list-script)
 		list_script
 		;;
 	--list-script-path)
 		list_script_path
 		;;
-	--completions)
+	--completions | completions)
 		shift
 		generate_completions "$1"
 		;;
 	validate)
 		shift
-		if command -v hyde-shell >/dev/null 2>&1; then
+		if command -v hyde-config >/dev/null 2>&1; then
 			hyde-config -no-daemon "${@}"
 		else
 			echo "hyde-config not found. Please make sure it is in \$PATH."
