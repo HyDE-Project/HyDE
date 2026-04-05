@@ -3,7 +3,7 @@
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
 python_initialized() {
 
-	python "${LIB_DIR}/hyde/pyutils/pip_env.py" rebuild
+	python3 "${LIB_DIR}/hyde/pyutils/pip_env.py" rebuild
 }
 
 python_activate() {
@@ -428,7 +428,7 @@ run_command() {
 		# Try .py extension
 		elif [[ -f "$dir/${1}.py" ]]; then
 			python_activate
-			exec python "$dir/${1}.py" "${@:2}"
+			exec python3 "$dir/${1}.py" "${@:2}"
 		# Try exact name (executable)
 		elif [[ -f "$dir/${1}" && -x "$dir/${1}" ]]; then
 			exec "$dir/${1}" "${@:2}"
@@ -451,9 +451,28 @@ run_command() {
 }
 
 run_pip() {
-	python_activate
+	local project_dir="${LIB_DIR}/hyde"
+	local venv_path="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/pip_env"
 	shift
-	pip "$@"
+	local subcmd="${1:-help}"
+	shift 2>/dev/null || true
+	case "$subcmd" in
+		install)
+			UV_PROJECT_ENVIRONMENT="$venv_path" uv add "$@" --project "$project_dir"
+			;;
+		uninstall|remove)
+			UV_PROJECT_ENVIRONMENT="$venv_path" uv remove "$@" --project "$project_dir"
+			;;
+		list)
+			UV_PROJECT_ENVIRONMENT="$venv_path" uv pip list --python "${venv_path}/bin/python"
+			;;
+		*)
+			echo "Usage: hyde-shell pip [install|uninstall|list] [packages...]"
+			echo "  install   <pkg>  → runs: uv add"
+			echo "  uninstall <pkg>  → runs: uv remove"
+			echo "  list             → list installed packages"
+			;;
+	esac
 }
 
 run_pypr() {
@@ -493,7 +512,7 @@ run_pypr() {
 		fi
 
 	else
-		pip install --no-input pyprland==2.4.7
+		UV_PROJECT_ENVIRONMENT="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/pip_env" uv add "pyprland==2.4.7" --project "${LIB_DIR}/hyde"
 	fi
 
 }

@@ -8,45 +8,55 @@ import importlib
 lib_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, lib_dir)
 
-
 import xdg_base_dirs
 import wrapper.libnotify as notify
 
 
-if lib_dir is None:
-    raise FileNotFoundError("None of the specified lib directories exist.")
-    sys.exit(1)
+def _get_uv():
+    """Resolve the uv binary path. Raises FileNotFoundError if not found."""
+    uv = shutil.which("uv")
+    if uv is None:
+        raise FileNotFoundError(
+            "uv is not installed. Install it with 'pacman -S uv' or "
+            "'curl -LsSf https://astral.sh/uv/install.sh | sh'"
+        )
+    return uv
+
+
+def _get_project_dir():
+    """Return the directory containing pyproject.toml."""
+    return os.path.dirname(lib_dir)
+
+
+def _inject_site_packages():
+    """Insert the venv site-packages into sys.path."""
+    venv_path = get_venv_path()
+    site_packages = os.path.join(
+        venv_path,
+        "lib",
+        f"python{sys.version_info.major}.{sys.version_info.minor}",
+        "site-packages",
+    )
+    if site_packages not in sys.path:
+        sys.path.insert(0, site_packages)
+    if venv_path not in sys.path:
+        sys.path.insert(0, venv_path)
 
 
 def is_venv_valid(venv_path):
-    """Returns whether the venv is valid or not
-    
+    """Returns whether the venv is valid or not.
+
     Args:
         venv_path: Path to the virtual environment to validate
     """
     python_exe = os.path.join(venv_path, "bin", "python")
     pyvenv_cfg = os.path.join(venv_path, "pyvenv.cfg")
 
-    # To determine whether a venv is valid, the following three checks are performed:
-
     # 1.- Must have its own python file and it must be executable
     if not (os.path.isfile(python_exe) and os.access(python_exe, os.X_OK)):
         return False
-    
-    # 2.- Python inside venv must be able to import pip 
-    try:
-        res = subprocess.run(
-            [python_exe, "-c", "import pip"],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            timeout=5,
-        )
-        if res.returncode != 0:
-            return False
-    except Exception:
-        return False
-    
-    # 3.- Python version used to create the venv must match current one
+
+    # 2.- Python version used to create the venv must match current one
     if os.path.exists(pyvenv_cfg):
         try:
             with open(pyvenv_cfg, "r") as f:
@@ -64,211 +74,142 @@ def is_venv_valid(venv_path):
 
 
 def get_venv_path():
-    """Set up the virtual environment path and modify sys.path."""
-    venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
-    if not os.path.exists(venv_path):
-        venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
-    site_packages_path = os.path.join(
-        venv_path,
-        "lib",
-        f"python{sys.version_info.major}.{sys.version_info.minor}",
-        "site-packages",
-    )
-    sys.path.insert(0, site_packages_path)
-    return venv_path
+    """Return the virtual environment path."""
+    return os.path.join(str(xdg_base_dirs.xdg_state_home()), "hyde", "pip_env")
 
 
-def create_venv(venv_path, requirements_file=None):
-    """Create a virtual environment and optionally install dependencies."""
-    if not os.path.exists(os.path.join(venv_path, "bin", "pip")):
-        subprocess.run([sys.executable, "-m", "venv", venv_path], check=True)
-        pip_executable = os.path.join(venv_path, "bin", "pip")
-        subprocess.run([pip_executable, "install", "--upgrade", "pip"], check=True)
-        if requirements_file and os.path.exists(requirements_file):
-            with open(requirements_file, "r") as f:
-                list_requirements = "\n".join(
-                    [
-                        f"📦 {line.strip()}"
-                        for line in f
-                        if line.strip() and not line.startswith("#")
-                    ]
-                )
+def _uv_sync(frozen=False):
+    """Run uv sync to converge the venv to match the lockfile.
 
-            notify.send(
-                "HyDE PIP",
-                f"⏳ Installing virtual environment Dependencies:\n {list_requirements}",
-            )
-            result = subprocess.run(
-                [pip_executable, "install", "-r", requirements_file],
-                capture_output=True,
-                text=True,
-            )
-            result.check_returncode()
-        notify.send("HyDE PIP", "✅ Virtual environment created successfully")
-    else:
-        pass
+    Args:
+        frozen: If True, use --frozen to skip lockfile updates.
+    """
+    uv = _get_uv()
+    venv_path = get_venv_path()
+    project_dir = _get_project_dir()
+
+    env = os.environ.copy()
+    env["UV_PROJECT_ENVIRONMENT"] = venv_path
+
+    cmd = [uv, "sync", "--project", project_dir]
+    if frozen:
+        cmd.append("--frozen")
+
+    result = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    return result
 
 
-def destroy_venv(venv_path):
-    """Destroy the virtual environment while retaining the requirements.txt file."""
+def create_venv(venv_path=None, requirements_file=None):
+    """Create/sync the virtual environment using uv."""
+    notify.send("HyDE UV", "⏳ Syncing virtual environment...")
+    result = _uv_sync()
+    if result.returncode != 0:
+        notify.send(
+            "HyDE UV",
+            f"Failed to sync environment:\n{result.stderr or result.stdout}",
+            urgency="critical",
+        )
+        raise RuntimeError(f"uv sync failed: {result.stderr}")
+    notify.send("HyDE UV", "✅ Virtual environment synced successfully")
+
+
+def destroy_venv(venv_path=None):
+    """Destroy the virtual environment."""
+    if venv_path is None:
+        venv_path = get_venv_path()
     if os.path.exists(venv_path):
         shutil.rmtree(venv_path)
 
 
-def install_dependencies(venv_path, requirements_file):
-    """Install dependencies in the virtual environment."""
-    if not os.path.exists(venv_path):
-        create_venv(venv_path, requirements_file)
-    else:
-        pip_executable = os.path.join(venv_path, "bin", "pip")
-        command = [pip_executable, "install", "-r", requirements_file]
-        result = subprocess.run(command, capture_output=True, text=True)
-        result.check_returncode()
+def install_dependencies():
+    """Sync dependencies using uv."""
+    result = _uv_sync()
+    if result.returncode != 0:
+        raise RuntimeError(f"uv sync failed: {result.stderr}")
 
 
-def install_package(venv_path, package):
-    """Install a single package in the virtual environment."""
-    if os.path.exists(venv_path) and not is_venv_valid(venv_path):
-        notify.send("HyDE PIP", "⚠️ Python version changed or virtualenv is broken, rebuilding…")
-        destroy_venv(venv_path)
-    if not os.path.exists(venv_path):
-        create_venv(venv_path)
-    pip_executable = os.path.join(venv_path, "bin", "pip")
+def install_package(venv_path=None, package=None):
+    """Add a package to pyproject.toml and sync the venv via uv add + uv sync."""
+    if package is None:
+        return
+    uv = _get_uv()
+    project_dir = _get_project_dir()
+    venv_path = venv_path or get_venv_path()
+
+    env = os.environ.copy()
+    env["UV_PROJECT_ENVIRONMENT"] = venv_path
+
     result = subprocess.run(
-        [pip_executable, "install", package],
+        [uv, "add", package, "--project", project_dir],
         capture_output=True,
         text=True,
+        env=env,
     )
-    result.check_returncode()
+    if result.returncode != 0:
+        raise RuntimeError(f"uv add {package} failed: {result.stderr}")
 
 
-def uninstall_package(venv_path, package):
-    """Uninstall a single package from the virtual environment."""
-    pip_executable = os.path.join(venv_path, "bin", "pip")
+def uninstall_package(venv_path=None, package=None):
+    """Remove a package from pyproject.toml and sync the venv via uv remove."""
+    if package is None:
+        return
+    uv = _get_uv()
+    project_dir = _get_project_dir()
+    venv_path = venv_path or get_venv_path()
+
+    env = os.environ.copy()
+    env["UV_PROJECT_ENVIRONMENT"] = venv_path
+
     result = subprocess.run(
-        [pip_executable, "uninstall", "-y", package],
+        [uv, "remove", package, "--project", project_dir],
         capture_output=True,
         text=True,
+        env=env,
     )
-    result.check_returncode()
+    if result.returncode != 0:
+        raise RuntimeError(f"uv remove {package} failed: {result.stderr}")
 
 
 def rebuild_venv(venv_path=None, requirements_file=None):
-    """Rebuild the virtual environment: reinstall if missing, install/upgrade requirements, and update all packages."""
+    """Rebuild the virtual environment: destroy and re-sync."""
     if venv_path is None:
-        venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
-        if not os.path.exists(venv_path):
-            venv_path = os.path.join(xdg_base_dirs.xdg_state_home(), "hyde", "pip_env")
-    pip_executable = os.path.join(venv_path, "bin", "pip")
+        venv_path = get_venv_path()
 
-    if not os.path.exists(pip_executable):
-        create_venv(venv_path, requirements_file)
+    if os.path.exists(venv_path) and not is_venv_valid(venv_path):
+        notify.send("HyDE UV", "⚠️ Python version changed or venv is broken, rebuilding…")
+        destroy_venv(venv_path)
 
-    def _short_summary(stdout: str, stderr: str) -> str:
-        if stderr:
-            for sline in stderr.splitlines():
-                if sline.strip():
-                    return sline.strip()
-        req_lines = [
-            line for line in stdout.splitlines() if line.startswith("Requirement already satisfied")
-        ]
-        if req_lines:
-            return f"{len(req_lines)} requirements already satisfied"
-        for sline in stdout.splitlines():
-            if sline.startswith("Successfully installed"):
-                return sline.strip()
-        return ""
-
-    if requirements_file and os.path.exists(requirements_file):
-        result = subprocess.run(
-            [pip_executable, "install", "--upgrade", "-r", requirements_file],
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            notify.send(
-                "HyDE PIP",
-                f"Failed to install requirements:\n{result.stderr or result.stdout}",
-                urgency="critical",
-            )
-            return
-        else:
-            short = _short_summary(result.stdout, result.stderr)
-            if short:
-                notify.send("HyDE PIP", short)
-
-    result = subprocess.run(
-        [pip_executable, "list", "--outdated", "--format=json"],
-        capture_output=True,
-        text=True,
-    )
+    notify.send("HyDE UV", "⏳ Syncing virtual environment...")
+    result = _uv_sync()
     if result.returncode != 0:
         notify.send(
-            "HyDE PIP",
-            f"Failed to list outdated packages:\n{result.stderr or result.stdout}",
+            "HyDE UV",
+            f"Failed to sync environment:\n{result.stderr or result.stdout}",
             urgency="critical",
         )
         return
 
-    import json
-
-    try:
-        outdated_packages = json.loads(result.stdout) if result.stdout.strip() else []
-        outdated = [pkg["name"] for pkg in outdated_packages]
-    except (json.JSONDecodeError, KeyError) as e:
-        notify.send(
-            "HyDE PIP",
-            f"Failed to parse outdated packages: {e}",
-            urgency="critical",
-        )
-        return
-    if outdated:
-        res2 = subprocess.run(
-            [pip_executable, "install", "--upgrade", "-q"] + outdated,
-            capture_output=True,
-            text=True,
-        )
-        if res2.returncode != 0:
-            notify.send(
-                "HyDE PIP",
-                f"Failed to upgrade packages:\n{res2.stderr or res2.stdout}",
-                urgency="critical",
-            )
-            return
-        else:
-            short2 = _short_summary(res2.stdout, res2.stderr)
-            if short2:
-                notify.send("HyDE PIP", short2)
-
-    notify.send("HyDE PIP", "✅ Virtual environment rebuilt and packages updated.")
+    notify.send("HyDE UV", "✅ Virtual environment rebuilt and packages synced.")
 
 
 def v_import(module_name):
-    """Dynamically import a module, installing it if necessary."""
-    venv_path = get_venv_path()
-    sys.path.insert(0, venv_path)
-    try:
-        module = importlib.import_module(module_name)
-        return module
-    except ImportError:
-        notify.send("HyDE PIP", f"Installing {module_name} module...")
-        install_package(venv_path, module_name)
+    """Dynamically import a module, installing it if necessary.
 
+    Uses uv add so pyproject.toml and uv.lock are updated — the dependency
+    is tracked for all users going forward.
+    """
+    _inject_site_packages()
+    try:
+        return importlib.import_module(module_name)
+    except ImportError:
+        notify.send("HyDE UV", f"Installing {module_name} module...")
+        install_package(package=module_name)
+        _inject_site_packages()
         importlib.invalidate_caches()
-        sys.path.insert(0, venv_path)
-        sys.path.insert(
-            0,
-            os.path.join(
-                venv_path,
-                "lib",
-                f"python{sys.version_info.major}.{sys.version_info.minor}",
-                "site-packages",
-            ),
-        )
 
         try:
             module = importlib.import_module(module_name)
-            notify.send("HyDE PIP", f"Successfully installed {module_name}.")
+            notify.send("HyDE UV", f"Successfully installed {module_name}.")
             return module
         except ImportError as e:
             notify.send(
@@ -281,88 +222,65 @@ def v_import(module_name):
 
 def v_install(module_name, force_reinstall=False):
     """Install a module in the virtual environment without importing it.
+
+    Uses uv add so pyproject.toml and uv.lock are updated — the dependency
+    is tracked for all users going forward.
+
     Args:
         module_name (str): Name of module to install
         force_reinstall (bool): If True, reinstall even if module exists
     """
-    venv_path = get_venv_path()
-    if not os.path.exists(os.path.join(venv_path, "bin", "pip")):
-        create_venv(venv_path)
-    pip_executable = os.path.join(venv_path, "bin", "pip")
+    _inject_site_packages()
 
-    result = subprocess.run(
-        [pip_executable, "show", module_name],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0 or force_reinstall:
-        notify.send("HyDE PIP", f"Installing {module_name} module...")
-        install_package(venv_path, module_name)
-        notify.send("HyDE PIP", f"Successfully installed {module_name}.")
-    sys.path.insert(0, venv_path)
-    sys.path.insert(
-        0,
-        os.path.join(
-            venv_path,
-            "lib",
-            f"python{sys.version_info.major}.{sys.version_info.minor}",
-            "site-packages",
-        ),
-    )
+    if not force_reinstall:
+        try:
+            importlib.import_module(module_name)
+            return
+        except ImportError:
+            pass
+
+    notify.send("HyDE UV", f"Installing {module_name} module...")
+    install_package(package=module_name)
+    _inject_site_packages()
+    importlib.invalidate_caches()
+    notify.send("HyDE UV", f"Successfully installed {module_name}.")
 
 
 def main(args):
     parser = argparse.ArgumentParser(description="Python environment manager for HyDE")
     subparsers = parser.add_subparsers(dest="command")
 
-    create_parser = subparsers.add_parser("create", help="Create the virtual environment")
-    create_parser.set_defaults(func=create_venv)
+    subparsers.add_parser("create", help="Create/sync the virtual environment")
 
     install_parser = subparsers.add_parser(
         "install", help="Install dependencies or a single package"
     )
     install_parser.add_argument("packages", nargs="*", help="Packages to install")
-    install_parser.add_argument(
-        "-f",
-        "--requirements",
-        type=str,
-        help="The requirements file to use for installation",
-    )
-    install_parser.set_defaults(func=install_dependencies)
 
     uninstall_parser = subparsers.add_parser("uninstall", help="Uninstall a single package")
     uninstall_parser.add_argument("package", help="Package to uninstall")
-    uninstall_parser.set_defaults(func=uninstall_package)
 
-    destroy_parser = subparsers.add_parser("destroy", help="Destroy the virtual environment")
-    destroy_parser.set_defaults(func=destroy_venv)
-
-    rebuild_parser = subparsers.add_parser(
-        "rebuild", help="Rebuild the virtual environment and update packages"
-    )
-    rebuild_parser.set_defaults(func=rebuild_venv)
+    subparsers.add_parser("destroy", help="Destroy the virtual environment")
+    subparsers.add_parser("rebuild", help="Rebuild the virtual environment")
 
     args = parser.parse_args(args)
 
     venv_path = get_venv_path()
-    requirements_file = os.path.join(
-        xdg_base_dirs.user_lib_dir(), "hyde", "pyutils", "requirements.txt"
-    )
 
     if args.command == "create":
-        args.func(venv_path, requirements_file)
+        create_venv(venv_path)
     elif args.command == "install":
         if args.packages:
             for package in args.packages:
                 install_package(venv_path, package)
         else:
-            args.func(venv_path, args.requirements or requirements_file)
+            install_dependencies()
     elif args.command == "uninstall":
-        args.func(venv_path, args.package)
+        uninstall_package(venv_path, args.package)
     elif args.command == "destroy":
-        args.func(venv_path)
+        destroy_venv(venv_path)
     elif args.command == "rebuild":
-        args.func(venv_path, requirements_file)
+        rebuild_venv(venv_path)
     else:
         parser.print_help()
 
@@ -378,6 +296,3 @@ def hyde(args):
 
 if __name__ == "__main__":
     hyde(sys.argv[1:])
-
-
-sys.path.insert(0, get_venv_path())

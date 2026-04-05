@@ -59,13 +59,13 @@ rofi_args=()
 
 case "$backend" in
     steam)
-        backend_command=(python3 "$LIB_DIR/hyde/gamelauncher/steam.py" --rofi-string)
+        backend_command=("${XDG_STATE_HOME:-$HOME/.local/state}/hyde/pip_env/bin/python" "$LIB_DIR/hyde/gamelauncher/steam.py" --rofi-string)
         ;;
     lutris)
-        backend_command=(python3 "$LIB_DIR/hyde/gamelauncher/lutris.py" --rofi-string)
+        backend_command=("${XDG_STATE_HOME:-$HOME/.local/state}/hyde/pip_env/bin/python" "$LIB_DIR/hyde/gamelauncher/lutris.py" --rofi-string)
         ;;
     *)
-        backend_command=(python3 "$LIB_DIR/hyde/gamelauncher/catalog.py" --rofi-string)
+        backend_command=("${XDG_STATE_HOME:-$HOME/.local/state}/hyde/pip_env/bin/python" "$LIB_DIR/hyde/gamelauncher/catalog.py" --rofi-string)
         rofi_args=(-markup-rows)
         ;;
 esac
