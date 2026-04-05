@@ -335,6 +335,7 @@ def set_layout(layout):
 
     style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
     shutil.copyfile(layout_path, CONFIG_JSONC)
+    normalize_requested_height()
     write_style_file(style_filepath, style_path)
     update_icon_size()
     update_border_radius()
@@ -512,6 +513,95 @@ def is_waybar_running_for_current_user():
     return False
 
 
+def get_waybar_main_pid():
+    """Get Waybar main PID from the current session unit."""
+    try:
+        result = subprocess.run(
+            ["systemctl", "--user", "show", UNIT_NAME, "--property", "MainPID", "--value"],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            return None
+
+        pid_str = result.stdout.strip()
+        if not pid_str:
+            return None
+
+        pid = int(pid_str)
+        return pid if pid > 0 else None
+    except (ValueError, OSError, subprocess.SubprocessError):
+        return None
+
+
+def get_waybar_layer_pids():
+    """Return PIDs for visible waybar layers in Hyprland, or None if unavailable."""
+    if shutil.which("hyprctl") is None:
+        return None
+
+    try:
+        result = subprocess.run(
+            ["hyprctl", "-j", "layers"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            return None
+
+        data = json.loads(result.stdout)
+        layer_pids = set()
+
+        if not isinstance(data, dict):
+            return layer_pids
+
+        for output_data in data.values():
+            if not isinstance(output_data, dict):
+                continue
+            levels = output_data.get("levels", {})
+            if not isinstance(levels, dict):
+                continue
+
+            for layer_entries in levels.values():
+                if not isinstance(layer_entries, list):
+                    continue
+                for entry in layer_entries:
+                    if not isinstance(entry, dict):
+                        continue
+                    if entry.get("namespace") != "waybar":
+                        continue
+                    pid = entry.get("pid")
+                    if isinstance(pid, int) and pid > 0:
+                        layer_pids.add(pid)
+
+        return layer_pids
+    except (
+        OSError,
+        subprocess.SubprocessError,
+        subprocess.TimeoutExpired,
+        json.JSONDecodeError,
+    ):
+        return None
+
+
+def is_waybar_layer_visible():
+    """Check if Waybar has a visible layer surface for the current service PID."""
+    layer_pids = get_waybar_layer_pids()
+    if layer_pids is None:
+        # If we cannot query layers reliably, skip visual health checks.
+        return True
+
+    if not layer_pids:
+        return False
+
+    main_pid = get_waybar_main_pid()
+    if main_pid is None:
+        # Unit is active but PID unavailable: consider visible if any waybar layer exists.
+        return True
+
+    return main_pid in layer_pids
+
+
 def run_waybar():
     """Run Waybar using hyde-shell app with systemd unit, let systemd handle logging."""
     # check_cmd = ["systemctl", "--user", "is-active", "--quiet", UNIT_NAME]
@@ -519,10 +609,10 @@ def run_waybar():
     # Check if the unit is active
     # result = subprocess.run(check_cmd)
     if is_waybar_running_for_current_user():
-        logger.debug(f"Waybar launched via systemd unit: {UNIT_NAME}")
+        logger.debug(f"Waybar systemd unit already active: {UNIT_NAME}")
     else:
         subprocess.run(run_cmd)
-        logger.debug(f"Waybar systemd unit already active: {UNIT_NAME}")
+        logger.debug(f"Waybar launched via systemd unit: {UNIT_NAME}")
 
 
 def kill_waybar():
@@ -742,6 +832,7 @@ def layout_selector():
         )
         set_state_value("WAYBAR_STYLE_PATH", style_path)
         style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
+        normalize_requested_height()
         write_style_file(style_filepath, style_path)
         update_icon_size()
         update_border_radius()
@@ -1225,6 +1316,37 @@ def generate_includes():
     )
 
 
+def normalize_requested_height():
+    """Drop legacy tiny explicit height so Waybar can auto-size from module/theme metrics."""
+    if not CONFIG_JSONC.exists():
+        return
+
+    try:
+        with open(CONFIG_JSONC, "r") as file:
+            config_data = json.load(file)
+    except (OSError, json.JSONDecodeError):
+        return
+
+    if not isinstance(config_data, dict):
+        return
+
+    requested_height = config_data.get("height")
+    if not isinstance(requested_height, int):
+        return
+
+    # HyDE legacy layouts use 10 here; that frequently clashes with module min-height.
+    if requested_height > 10:
+        return
+
+    config_data.pop("height", None)
+    with open(CONFIG_JSONC, "w") as file:
+        json.dump(config_data, file, indent=2)
+        file.write("\n")
+    logger.debug(
+        f"Removed explicit low Waybar height ({requested_height}) from '{CONFIG_JSONC}' to use auto-sizing."
+    )
+
+
 def update_config(config_path):
     CONFIG_JSONC = os.path.join(str(xdg_config_home()), "waybar", "config.jsonc")
     shutil.copyfile(config_path, CONFIG_JSONC)
@@ -1275,12 +1397,36 @@ def watch_waybar():
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
 
+    startup_deadline = time.monotonic() + 30
+    startup_recovery_attempts = 0
+    seen_visible_layer = False
+
     while True:
         try:
+            waybar_running = is_waybar_running_for_current_user()
+
             # Only check for current user's Waybar
-            if not is_waybar_running_for_current_user():
+            if not waybar_running:
                 run_waybar()
                 logger.debug("Waybar restarted for current user")
+            else:
+                waybar_visible = is_waybar_layer_visible()
+                if waybar_visible:
+                    seen_visible_layer = True
+
+                # Early-session recovery: service can be "active" but bar layer not mapped yet.
+                if (
+                    not seen_visible_layer
+                    and not waybar_visible
+                    and time.monotonic() < startup_deadline
+                    and startup_recovery_attempts < 3
+                ):
+                    startup_recovery_attempts += 1
+                    logger.warning(
+                        "Waybar service is active but no layer is visible. "
+                        f"Attempting recovery {startup_recovery_attempts}/3."
+                    )
+                    restart_waybar()
         except Exception as e:
             logger.error(f"Error monitoring Waybar: {e}")
         time.sleep(2)
@@ -1438,6 +1584,7 @@ def main():
     args = parser.parse_args()
 
     ensure_state_file()
+    normalize_requested_height()
 
     if args.hide:
         # Send SIGUSR1 to Waybar systemd unit
