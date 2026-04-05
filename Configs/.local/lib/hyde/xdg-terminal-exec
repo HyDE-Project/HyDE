@@ -50,9 +50,9 @@ error() {
 check_bool() {
 	case "$1" in
 	true | True | TRUE | yes | Yes | YES | 1) return 0 ;;
-	false | False | FALSE | no | No | NO | 0) return 1 ;;
+	false | False | FALSE | no | No | NO | 0 | release | Release | RELEASE | '') return 1 ;;
 	*)
-		error "Assuming '$1' means no"
+		# Ignore non-boolean DEBUG-like env values from callers.
 		return 1
 		;;
 	esac
