@@ -83,3 +83,12 @@ if ! pkg_installed flatpak; then
 else
     print_log -y "[FLATPAK]" -b " :: " "flatpak is already installed"
 fi
+
+if [ "${HYDE_INSTALL_FPRINT}" = true ]; then
+    echo ""
+    print_log -c "[FINGERPRINT]" -b " enabled :: " "Hyprlock fingerprint layout is ready."
+    print_log -y "[FINGERPRINT]" -b " enroll :: " "Run 'fprintd-enroll' to register your fingerprint."
+    print_log -y "[FINGERPRINT]" -b " verify :: " "Run 'fprintd-verify' to test fingerprint authentication."
+    print_log -y "[FINGERPRINT]" -b " note :: " "If unlock still fails, configure PAM for hyprlock/login on your distro."
+    print_log -y "[FINGERPRINT]" -b " switch :: " "You can change hyprlock layouts later with SUPER+SHIFT+U."
+fi
