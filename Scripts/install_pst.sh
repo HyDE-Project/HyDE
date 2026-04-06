@@ -86,9 +86,9 @@ fi
 
 if [ "${HYDE_INSTALL_FPRINT}" = true ]; then
     echo ""
-    print_log -c "[FINGERPRINT]" -b " enabled :: " "Hyprlock fingerprint layout is ready."
+    print_log -c "[FINGERPRINT]" -b " enabled :: " "Hyprlock fingerprint support is ready."
     print_log -y "[FINGERPRINT]" -b " enroll :: " "Run 'fprintd-enroll' to register your fingerprint."
     print_log -y "[FINGERPRINT]" -b " verify :: " "Run 'fprintd-verify' to test fingerprint authentication."
     print_log -y "[FINGERPRINT]" -b " note :: " "If unlock still fails, configure PAM for hyprlock/login on your distro."
-    print_log -y "[FINGERPRINT]" -b " switch :: " "You can change hyprlock layouts later with SUPER+SHIFT+U."
+    print_log -y "[FINGERPRINT]" -b " layouts :: " "Fingerprint support now applies through the existing hyprlock layouts."
 fi

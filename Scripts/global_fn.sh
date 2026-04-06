@@ -11,6 +11,7 @@ cloneDir="$(dirname "${scrDir}")" # fallback, we will use CLONE_DIR now
 cloneDir="${CLONE_DIR:-${cloneDir}}"
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
+stateDir="${XDG_STATE_HOME:-$HOME/.local/state}/hyde"
 aurList=("yay" "paru")
 shlList=("zsh" "fish")
 pacmanCmd=${cloneDir}/Configs/.local/lib/hyde/pm.sh
@@ -18,6 +19,7 @@ pacmanCmd=${cloneDir}/Configs/.local/lib/hyde/pm.sh
 export cloneDir
 export confDir
 export cacheDir
+export stateDir
 export aurList
 export shlList
 
@@ -102,6 +104,22 @@ prompt_timer() {
     echo ""
     set -e
 }
+
+set_state_var() {
+    local var_name=$1
+    local var_data=$2
+    local state_file="${stateDir}/staterc"
+
+    mkdir -p "${stateDir}"
+    touch "${state_file}"
+
+    if grep -q "^${var_name}=" "${state_file}"; then
+        sed -i "/^${var_name}=/c${var_name}=\"${var_data}\"" "${state_file}"
+    else
+        echo "${var_name}=\"${var_data}\"" >>"${state_file}"
+    fi
+}
+
 print_log() {
     local executable="${0##*/}"
     local logFile="${cacheDir}/logs/${HYDE_LOG}/${executable}.log"

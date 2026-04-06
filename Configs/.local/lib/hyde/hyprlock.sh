@@ -234,6 +234,7 @@ generate_conf() {
     local path="${1:-$confDir/hypr/hyprlock/theme.conf}"
     local target_file="${2:-$confDir/hypr/hyprlock.conf}"
     local hyde_hyprlock_conf=${SHARE_DIR:-$XDG_DATA_HOME}/hyde/hyprlock.conf
+    local fingerprint_state="${HYPRLOCK_FINGERPRINT:-false}"
     cat << CONF > "$target_file"
 #! █░█ █▄█ █▀█ █▀█ █░░ █▀█ █▀▀ █▄▀
 #! █▀█ ░█░ █▀▀ █▀▄ █▄▄ █▄█ █▄▄ █░█
@@ -256,6 +257,7 @@ generate_conf() {
 #*└──────────────────────────────────────────────────────────────────────────┘
 
 \$LAYOUT_PATH=$path
+\$HYDE_FPRINT=${fingerprint_state}
 
 
 #*┌────────────────────────────────────────────────────────────────────────────┐

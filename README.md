@@ -104,7 +104,7 @@ cd ~/HyDE/Scripts
 > [!TIP]
 > HyDE can optionally install fingerprint unlock support for `hyprlock` during setup on supported devices.
 > If you enable it in the installer, finish enrollment in a terminal with `fprintd-enroll`, test it with `fprintd-verify`, and make sure PAM is configured correctly for your distro.
-> Existing users can install `fprintd` manually and switch to the bundled fingerprint layout with <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>U</kbd>.
+> Existing users can install `fprintd` manually and set `$HYDE_FPRINT=true` in `~/.config/hypr/hyprlock.conf` to enable the shared fingerprint flow later.
 
 <!--
 

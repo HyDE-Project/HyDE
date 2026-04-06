@@ -37,29 +37,25 @@ add_install_package() {
 	fi
 }
 
-enable_fingerprint_layout() {
+enable_fingerprint_support() {
+	local fingerprint_state="true"
 	local target_conf="${confDir}/hypr/hyprlock.conf"
-	local target_dir="${confDir}/hypr"
-	local layout_path="${confDir}/hypr/hyprlock/HyDE-fingerprint.conf"
 	local template_conf="${cloneDir}/Configs/.config/hypr/hyprlock.conf"
-	local state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyde"
-	local state_file="${state_dir}/staterc"
 
 	if [ "${flg_DryRun}" -eq 1 ]; then
-		print_log -y "[dry-run] " -b "fingerprint :: " "Would set ${layout_path} as the active hyprlock layout"
+		print_log -y "[dry-run] " -b "fingerprint :: " "Would enable shared hyprlock fingerprint support in state and hyprlock.conf"
 		return 0
 	fi
 
-	[ -d "${target_dir}" ] || mkdir -p "${target_dir}"
+	mkdir -p "${confDir}/hypr"
 	[ -f "${target_conf}" ] || cp "${template_conf}" "${target_conf}"
-	sed -i "s|^\$LAYOUT_PATH=.*|\$LAYOUT_PATH=${layout_path}|" "${target_conf}"
-	[ -d "${state_dir}" ] || mkdir -p "${state_dir}"
-	if grep -q '^HYPRLOCK_LAYOUT=' "${state_file}" 2>/dev/null; then
-		sed -i 's/^HYPRLOCK_LAYOUT=.*/HYPRLOCK_LAYOUT="HyDE-fingerprint"/' "${state_file}"
+	if grep -q '^\$HYDE_FPRINT=' "${target_conf}"; then
+		sed -i 's/^\$HYDE_FPRINT=.*/$HYDE_FPRINT=true/' "${target_conf}"
 	else
-		echo 'HYPRLOCK_LAYOUT="HyDE-fingerprint"' >>"${state_file}"
+		sed -i '/^\$LAYOUT_PATH=/a$HYDE_FPRINT=true' "${target_conf}"
 	fi
-	print_log -g "[fingerprint] " -b "layout :: " "${layout_path}"
+	set_state_var "HYPRLOCK_FINGERPRINT" "${fingerprint_state}"
+	print_log -g "[fingerprint] " -b "config :: " "shared hyprlock fingerprint support enabled"
 }
 
 #------------------#
@@ -261,7 +257,7 @@ EOF
 		y | Y)
 			export HYDE_INSTALL_FPRINT=true
 			add_install_package "fprintd"
-			print_log -sec "fingerprint" -stat "enabled" "Hyprlock fingerprint layout will be activated after restore"
+			print_log -sec "fingerprint" -stat "enabled" "Shared hyprlock fingerprint support will be enabled after restore"
 			;;
 		q | Q)
 			print_log -sec "fingerprint" -crit "Quit" "Exiting..."
@@ -306,7 +302,7 @@ EOF
 	"${scrDir}/restore_cfg.sh"
 	"${scrDir}/restore_thm.sh"
 	if [ "${HYDE_INSTALL_FPRINT}" = true ]; then
-		enable_fingerprint_layout
+		enable_fingerprint_support
 	fi
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
