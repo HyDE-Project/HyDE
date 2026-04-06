@@ -43,37 +43,56 @@ if [ ! -d "$XDG_DATA_HOME/waydeeper/models/inpaint" ] && [ ! -d "$HOME/.local/sh
 fi
 
 # Build waydeeper command with --inpaint always enabled
-waydeeper_cmd="waydeeper set"
-waydeeper_args="\"$selected_wall\" --inpaint"
+waydeeper_args=(waydeeper set "$selected_wall" --inpaint)
 
 # Add strength settings if configured
-[ -n "$WALLPAPER_WAYDEEPER_STRENGTH" ] && waydeeper_args="$waydeeper_args --strength $WALLPAPER_WAYDEEPER_STRENGTH"
-[ -n "$WALLPAPER_WAYDEEPER_STRENGTH_X" ] && waydeeper_args="$waydeeper_args --strength-x $WALLPAPER_WAYDEEPER_STRENGTH_X"
-[ -n "$WALLPAPER_WAYDEEPER_STRENGTH_Y" ] && waydeeper_args="$waydeeper_args --strength-y $WALLPAPER_WAYDEEPER_STRENGTH_Y"
+if [ -n "$WALLPAPER_WAYDEEPER_STRENGTH" ]; then
+    waydeeper_args+=(--strength "$WALLPAPER_WAYDEEPER_STRENGTH")
+fi
+if [ -n "$WALLPAPER_WAYDEEPER_STRENGTH_X" ]; then
+    waydeeper_args+=(--strength-x "$WALLPAPER_WAYDEEPER_STRENGTH_X")
+fi
+if [ -n "$WALLPAPER_WAYDEEPER_STRENGTH_Y" ]; then
+    waydeeper_args+=(--strength-y "$WALLPAPER_WAYDEEPER_STRENGTH_Y")
+fi
 
 # Add animation settings if configured
-[ -n "$WALLPAPER_WAYDEEPER_ANIMATION_SPEED" ] && waydeeper_args="$waydeeper_args --animation-speed $WALLPAPER_WAYDEEPER_ANIMATION_SPEED"
-[ -n "$WALLPAPER_WAYDEEPER_FPS" ] && waydeeper_args="$waydeeper_args --fps $WALLPAPER_WAYDEEPER_FPS"
-[ -n "$WALLPAPER_WAYDEEPER_ACTIVE_DELAY" ] && waydeeper_args="$waydeeper_args --active-delay $WALLPAPER_WAYDEEPER_ACTIVE_DELAY"
-[ -n "$WALLPAPER_WAYDEEPER_IDLE_TIMEOUT" ] && waydeeper_args="$waydeeper_args --idle-timeout $WALLPAPER_WAYDEEPER_IDLE_TIMEOUT"
+if [ -n "$WALLPAPER_WAYDEEPER_ANIMATION_SPEED" ]; then
+    waydeeper_args+=(--animation-speed "$WALLPAPER_WAYDEEPER_ANIMATION_SPEED")
+fi
+if [ -n "$WALLPAPER_WAYDEEPER_FPS" ]; then
+    waydeeper_args+=(--fps "$WALLPAPER_WAYDEEPER_FPS")
+fi
+if [ -n "$WALLPAPER_WAYDEEPER_ACTIVE_DELAY" ]; then
+    waydeeper_args+=(--active-delay "$WALLPAPER_WAYDEEPER_ACTIVE_DELAY")
+fi
+if [ -n "$WALLPAPER_WAYDEEPER_IDLE_TIMEOUT" ]; then
+    waydeeper_args+=(--idle-timeout "$WALLPAPER_WAYDEEPER_IDLE_TIMEOUT")
+fi
 
 # Add depth model if configured
-[ -n "$WALLPAPER_WAYDEEPER_MODEL" ] && waydeeper_args="$waydeeper_args --model $WALLPAPER_WAYDEEPER_MODEL"
+if [ -n "$WALLPAPER_WAYDEEPER_MODEL" ]; then
+    waydeeper_args+=(--model "$WALLPAPER_WAYDEEPER_MODEL")
+fi
 
 # Add smooth animation toggle (default: enabled)
 if [ "$WALLPAPER_WAYDEEPER_SMOOTH_ANIMATION" = "false" ]; then
-    waydeeper_args="$waydeeper_args --smooth-animation=false"
+    waydeeper_args+=(--smooth-animation=false)
 fi
 
 # Add invert depth if configured
-[ "$WALLPAPER_WAYDEEPER_INVERT_DEPTH" = "true" ] && waydeeper_args="$waydeeper_args --invert-depth"
+if [ "$WALLPAPER_WAYDEEPER_INVERT_DEPTH" = "true" ]; then
+    waydeeper_args+=(--invert-depth)
+fi
 
 # Add regenerate flag if configured
-[ "$WALLPAPER_WAYDEEPER_REGENERATE" = "true" ] && waydeeper_args="$waydeeper_args --regenerate"
+if [ "$WALLPAPER_WAYDEEPER_REGENERATE" = "true" ]; then
+    waydeeper_args+=(--regenerate)
+fi
 
 # Set wallpaper on all monitors (waydeeper handles multi-monitor by default)
 print_log -sec "wallpaper" -stat "apply" "$selected_wall"
-eval "$waydeeper_cmd $waydeeper_args" &
+"${waydeeper_args[@]}" &
 
 # Start daemon if not already running
 if ! pgrep -f "waydeeper daemon" &>/dev/null; then
