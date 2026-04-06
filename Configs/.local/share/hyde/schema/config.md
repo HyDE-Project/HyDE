@@ -447,7 +447,7 @@ waydeeper 3D parallax wallpaper configuration.
 | fps | Frame rate (30 or 60). | 60 |
 | idle_timeout | Stops animation (ms) after mouse idle. | 5000 |
 | invert_depth | Inverts depth interpretation. | false |
-| model | ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4, or custom .onnx path. | depth-anything-v3-base |
+| model | ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4. | depth-anything-v3-base |
 | regenerate | Forces regeneration of depth maps & meshes. | false |
 | smooth_animation | Enables smooth easing for animation. | true |
 | strength | Sets both X & Y parallax strength. | 0.02 |

@@ -124,7 +124,7 @@ type      = "object"
 
 [properties.wallpaper.properties.waydeeper.properties.model]
     default     = "depth-anything-v3-base"
-    description = "ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4, or custom .onnx path."
+    description = "ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4."
     options     = [ "depth-anything-v3-base", "midas-small", "depth-pro-q4" ]
     type        = "string"
 
