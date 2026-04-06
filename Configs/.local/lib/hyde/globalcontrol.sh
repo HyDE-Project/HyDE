@@ -3,7 +3,15 @@ export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
-export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+if [[ -z "${XDG_RUNTIME_DIR:-}" ]]; then
+    if [[ "$(uname -s)" == "FreeBSD" ]]; then
+        export XDG_RUNTIME_DIR="/tmp/runtime-$(id -u)"
+    else
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+    fi
+fi
+[[ -d "${XDG_RUNTIME_DIR}" ]] || mkdir -p "${XDG_RUNTIME_DIR}"
+chmod 700 "${XDG_RUNTIME_DIR}" 2>/dev/null || true
 export HYDE_CONFIG_HOME="$XDG_CONFIG_HOME/hyde"
 export HYDE_DATA_HOME="$XDG_DATA_HOME/hyde"
 export HYDE_CACHE_HOME="$XDG_CACHE_HOME/hyde"
@@ -179,6 +187,7 @@ get_themes() {
     unset thmSort
     unset thmList
     unset thmWall
+    [ -d "$HYDE_CONFIG_HOME/themes" ] || return 0
     while read -r thmDir; do
         local realWallPath
         realWallPath="$(readlink "$thmDir/wall.set")"
@@ -216,7 +225,7 @@ case "$enableWallDcol" in
 esac
 if [ -z "$HYDE_THEME" ] || [ ! -d "$HYDE_CONFIG_HOME/themes/$HYDE_THEME" ]; then
     get_themes
-    HYDE_THEME="${thmList[0]}"
+    [ "${#thmList[@]}" -gt 0 ] && HYDE_THEME="${thmList[0]}"
 fi
 HYDE_THEME_DIR="$HYDE_CONFIG_HOME/themes/$HYDE_THEME"
 WALLBASH_DIRS=(

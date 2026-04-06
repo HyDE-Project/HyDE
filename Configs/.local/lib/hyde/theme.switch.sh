@@ -3,6 +3,13 @@
 [ -z "$HYDE_THEME" ] && echo "ERROR: unable to detect theme" && exit 1
 get_themes
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
+sed_in_place() {
+    if sed --version >/dev/null 2>&1; then
+        sed -i "$@"
+    else
+        sed -i '' "$@"
+    fi
+}
 Theme_Change() {
     local x_switch=$1
     for i in "${!thmList[@]}"; do
@@ -85,7 +92,7 @@ sanitize_hypr_theme() {
     dirty_regex+=("${HYPR_CONFIG_SANITIZE[@]}")
     for pattern in "${dirty_regex[@]}"; do
         grep -E "$pattern" "$buffer_file" | while read -r line; do
-            sed -i "\|$line|d" "$buffer_file"
+            sed_in_place "\|$line|d" "$buffer_file"
             print_log -sec "theme" -warn "sanitize" "$line"
         done
     done
@@ -130,8 +137,12 @@ if [[ -r $HYPRLAND_CONFIG ]]; then
     load_hypr_variables "${XDG_STATE_DIR:-$HOME/.local/state}/hyde/hyprland.conf"
 fi
 show_theme_status
-if ! dconf write /org/gnome/desktop/interface/icon-theme "'$ICON_THEME'"; then
-    print_log -sec "theme" -warn "dconf" "failed to set icon theme"
+if command -v dconf >/dev/null 2>&1 && { [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] || [[ -n "${DISPLAY:-}" ]]; }; then
+    if ! dconf write /org/gnome/desktop/interface/icon-theme "'$ICON_THEME'"; then
+        print_log -sec "theme" -warn "dconf" "failed to set icon theme"
+    fi
+else
+    print_log -sec "theme" -warn "dconf" "no active DBus session; skipping icon theme write"
 fi
 if [ -d /run/current-system/sw/share/themes ]; then
     export themesDir=/run/current-system/sw/share/themes
@@ -159,10 +170,10 @@ toml_write "$confDir/kdeglobals" "UiSettings" "ColorScheme" "colors"
 toml_write "$confDir/kdeglobals" "KDE" "widgetStyle" "kvantum"
 toml_write "$XDG_DATA_HOME/icons/default/index.theme" "Icon Theme" "Inherits" "$CURSOR_THEME"
 toml_write "$HOME/.icons/default/index.theme" "Icon Theme" "Inherits" "$CURSOR_THEME"
-sed -i -e "/^gtk-theme-name=/c\gtk-theme-name=\"$GTK_THEME\"" \
-    -e "/^include /c\include \"$HOME/.gtkrc-2.0.mime\"" \
-    -e "/^gtk-cursor-theme-name=/c\gtk-cursor-theme-name=\"$CURSOR_THEME\"" \
-    -e "/^gtk-icon-theme-name=/c\gtk-icon-theme-name=\"$ICON_THEME\"" "$HOME/.gtkrc-2.0"
+sed_in_place -e "s|^gtk-theme-name=.*$|gtk-theme-name=\"$GTK_THEME\"|" \
+    -e "s|^include .*$|include \"$HOME/.gtkrc-2.0.mime\"|" \
+    -e "s|^gtk-cursor-theme-name=.*$|gtk-cursor-theme-name=\"$CURSOR_THEME\"|" \
+    -e "s|^gtk-icon-theme-name=.*$|gtk-icon-theme-name=\"$ICON_THEME\"|" "$HOME/.gtkrc-2.0"
 GTK3_FONT="${GTK3_FONT:-$FONT}"
 GTK3_FONT_SIZE="${GTK3_FONT_SIZE:-$FONT_SIZE}"
 toml_write "$confDir/gtk-3.0/settings.ini" "Settings" "gtk-theme-name" "$GTK_THEME"
@@ -193,10 +204,10 @@ if pkg_installed flatpak; then
         --env=ICON_THEME="$ICON_THEME"
     flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo &
 fi
-sed -i -e "/^Net\/ThemeName /c\Net\/ThemeName \"$GTK_THEME\"" \
-    -e "/^Net\/IconThemeName /c\Net\/IconThemeName \"$ICON_THEME\"" \
-    -e "/^Gtk\/CursorThemeName /c\Gtk\/CursorThemeName \"$CURSOR_THEME\"" \
-    -e "/^Gtk\/CursorThemeSize /c\Gtk\/CursorThemeSize $CURSOR_SIZE" \
+sed_in_place -e "s|^Net/ThemeName .*$|Net/ThemeName \"$GTK_THEME\"|" \
+    -e "s|^Net/IconThemeName .*$|Net/IconThemeName \"$ICON_THEME\"|" \
+    -e "s|^Gtk/CursorThemeName .*$|Gtk/CursorThemeName \"$CURSOR_THEME\"|" \
+    -e "s|^Gtk/CursorThemeSize .*$|Gtk/CursorThemeSize $CURSOR_SIZE|" \
     "$confDir/xsettingsd/xsettingsd.conf"
 if [ ! -L "$HOME/.themes/$GTK_THEME" ] && [ -d "$themesDir/$GTK_THEME" ]; then
     print_log -sec "theme" -warn "linking" "$GTK_THEME to ~/.themes to fix GTK4 not following xdg"
@@ -205,8 +216,8 @@ if [ ! -L "$HOME/.themes/$GTK_THEME" ] && [ -d "$themesDir/$GTK_THEME" ]; then
     ln -snf "$themesDir/$GTK_THEME" "$HOME/.themes/"
 fi
 if [ -f "$HOME/.Xresources" ]; then
-    sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
-        -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xresources"
+    sed_in_place -e "s|^Xcursor\.theme:.*$|Xcursor.theme: $CURSOR_THEME|" \
+        -e "s|^Xcursor\.size:.*$|Xcursor.size: $CURSOR_SIZE|" "$HOME/.Xresources"
     grep -q "^Xcursor\.theme:" "$HOME/.Xresources" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xresources"
     grep -q "^Xcursor\.size:" "$HOME/.Xresources" || echo "Xcursor.size: 30" >>"$HOME/.Xresources"
 else
@@ -216,8 +227,8 @@ Xcursor.size: $CURSOR_SIZE
 EOF
 fi
 if [ -f "$HOME/.Xdefaults" ]; then
-    sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
-        -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xdefaults"
+    sed_in_place -e "s|^Xcursor\.theme:.*$|Xcursor.theme: $CURSOR_THEME|" \
+        -e "s|^Xcursor\.size:.*$|Xcursor.size: $CURSOR_SIZE|" "$HOME/.Xdefaults"
     grep -q "^Xcursor\.theme:" "$HOME/.Xdefaults" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xdefaults"
     grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: 30" >>"$HOME/.Xdefaults"
 fi

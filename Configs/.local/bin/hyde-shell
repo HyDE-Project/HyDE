@@ -606,8 +606,18 @@ export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 #*--------------------------------------------------------------------------------
 
+if [[ -z "${XDG_RUNTIME_DIR:-}" ]]; then
+	if [[ "$(uname -s)" == "FreeBSD" ]]; then
+		export XDG_RUNTIME_DIR="/tmp/runtime-$(id -u)"
+	else
+		export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+	fi
+fi
+[[ -d "${XDG_RUNTIME_DIR}" ]] || mkdir -p "${XDG_RUNTIME_DIR}"
+chmod 700 "${XDG_RUNTIME_DIR}" 2>/dev/null || true
+
 # Prepare runtime directory for hyde
-[[ -d "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde" ]] || mkdir -p "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
+[[ -d "${XDG_RUNTIME_DIR}/hyde" ]] || mkdir -p "${XDG_RUNTIME_DIR}/hyde"
 
 # Priority commands
 case "$1" in

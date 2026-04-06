@@ -20,7 +20,7 @@ if lib_dir is None:
 
 def is_venv_valid(venv_path):
     """Returns whether the venv is valid or not
-    
+
     Args:
         venv_path: Path to the virtual environment to validate
     """
@@ -32,8 +32,8 @@ def is_venv_valid(venv_path):
     # 1.- Must have its own python file and it must be executable
     if not (os.path.isfile(python_exe) and os.access(python_exe, os.X_OK)):
         return False
-    
-    # 2.- Python inside venv must be able to import pip 
+
+    # 2.- Python inside venv must be able to import pip
     try:
         res = subprocess.run(
             [python_exe, "-c", "import pip"],
@@ -45,7 +45,7 @@ def is_venv_valid(venv_path):
             return False
     except Exception:
         return False
-    
+
     # 3.- Python version used to create the venv must match current one
     if os.path.exists(pyvenv_cfg):
         try:
@@ -345,9 +345,12 @@ def main(args):
     args = parser.parse_args(args)
 
     venv_path = get_venv_path()
-    requirements_file = os.path.join(
-        xdg_base_dirs.user_lib_dir(), "hyde", "pyutils", "requirements.txt"
-    )
+    requirements_dir = os.path.join(xdg_base_dirs.user_lib_dir(), "hyde", "pyutils")
+    requirements_file = os.path.join(requirements_dir, "requirements.txt")
+    if sys.platform.startswith("freebsd"):
+        freebsd_requirements = os.path.join(requirements_dir, "requirements-freebsd.txt")
+        if os.path.exists(freebsd_requirements):
+            requirements_file = freebsd_requirements
 
     if args.command == "create":
         args.func(venv_path, requirements_file)

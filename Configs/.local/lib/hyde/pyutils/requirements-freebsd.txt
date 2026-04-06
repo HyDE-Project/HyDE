@@ -1,0 +1,4 @@
+loguru==0.7.3
+pulsectl==24.12.0
+requests==2.32.4
+PyGObject
