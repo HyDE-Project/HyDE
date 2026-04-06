@@ -27,7 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Waybar: Added Eyecare menu
 - Session: *Experimental* feature which might be helpful as session restore in wayland is being worked on. 'hyde-shell session --help' to learn more!
 - Hyprland: *Experimental* Added an Alt-tab like feature that behaves like a browser. It is slow so I might port it to go. 
-
+- Wallpaper: [waydeeper](https://github.com/EdenQwQ/waydeeper) can be used as wallpaper backend. To use it, waydeeper should be installed manually.
 
 
 
