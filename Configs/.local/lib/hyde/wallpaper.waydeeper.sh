@@ -77,7 +77,7 @@ fi
 
 # Add smooth animation toggle (default: enabled)
 if [ "$WALLPAPER_WAYDEEPER_SMOOTH_ANIMATION" = "false" ]; then
-    waydeeper_args+=(--smooth-animation=false)
+    waydeeper_args+=(--no-smooth-animation)
 fi
 
 # Add invert depth if configured
