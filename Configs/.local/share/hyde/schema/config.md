@@ -163,6 +163,7 @@ Hyprland configuration.
 | --- | ----------- | ------- |
 | background_path | LockScreen's Background path. |  |
 | bar | Bar. | waybar |
+| blue_light_filter | Blue-light filter. | hyprsunset |
 | browser | Browser. | firefox |
 | button_layout | Button layout. (gtk only) |  |
 | color_scheme | Color scheme. | prefer-dark |
@@ -434,6 +435,24 @@ wallpaper select configuration.
 | transition_default | Transition type for default wallpaper. | grow |
 | transition_next | Transition type for next wallpaper. | grow |
 | transition_prev | Transition type for previous wallpaper. | outer |
+
+### [wallpaper.waydeeper]
+
+waydeeper 3D parallax wallpaper configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| active_delay | Delay (ms) before animation starts after mouse enters wallpaper surface. | 150 |
+| animation_speed | Animation speed multiplier. | 0.05 |
+| fps | Frame rate (30 or 60). | 60 |
+| idle_timeout | Stops animation (ms) after mouse idle. | 5000 |
+| invert_depth | Inverts depth interpretation. | false |
+| model | ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4, or custom .onnx path. | depth-anything-v3-base |
+| regenerate | Forces regeneration of depth maps & meshes. | false |
+| smooth_animation | Enables smooth easing for animation. | true |
+| strength | Sets both X & Y parallax strength. | 0.02 |
+| strength_x | X-axis parallax strength. | 0.02 |
+| strength_y | Y-axis parallax strength. | 0.02 |
 
 ### [waybar]
 

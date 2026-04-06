@@ -21,7 +21,8 @@
                         "awww",
                         "pcmanfm-qt",
                         "mpvpaper",
-                        "hyprpaper"
+                        "hyprpaper",
+                        "waydeeper"
                     ],
                     "type": "string"
                 },
@@ -53,6 +54,76 @@
                             "default": "grow",
                             "description": "Transition type for default wallpaper.",
                             "type": "string"
+                        }
+                    }
+                },
+                "waydeeper": {
+                    "description": "waydeeper 3D parallax wallpaper configuration.",
+                    "type": "object",
+                    "properties": {
+                        "strength": {
+                            "default": 0.02,
+                            "description": "Sets both X & Y parallax strength.",
+                            "type": "number"
+                        },
+                        "strength_x": {
+                            "default": 0.02,
+                            "description": "X-axis parallax strength.",
+                            "type": "number"
+                        },
+                        "strength_y": {
+                            "default": 0.02,
+                            "description": "Y-axis parallax strength.",
+                            "type": "number"
+                        },
+                        "smooth_animation": {
+                            "default": true,
+                            "description": "Enables smooth easing for animation.",
+                            "type": "boolean"
+                        },
+                        "animation_speed": {
+                            "default": 0.05,
+                            "description": "Animation speed multiplier.",
+                            "type": "number"
+                        },
+                        "fps": {
+                            "default": 60,
+                            "description": "Frame rate (30 or 60).",
+                            "options": [
+                                30,
+                                60
+                            ],
+                            "type": "integer"
+                        },
+                        "active_delay": {
+                            "default": 150,
+                            "description": "Delay (ms) before animation starts after mouse enters wallpaper surface.",
+                            "type": "integer"
+                        },
+                        "idle_timeout": {
+                            "default": 5000,
+                            "description": "Stops animation (ms) after mouse idle.",
+                            "type": "integer"
+                        },
+                        "invert_depth": {
+                            "default": false,
+                            "description": "Inverts depth interpretation.",
+                            "type": "boolean"
+                        },
+                        "model": {
+                            "default": "depth-anything-v3-base",
+                            "description": "ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4, or custom .onnx path.",
+                            "options": [
+                                "depth-anything-v3-base",
+                                "midas-small",
+                                "depth-pro-q4"
+                            ],
+                            "type": "string"
+                        },
+                        "regenerate": {
+                            "default": false,
+                            "description": "Forces regeneration of depth maps & meshes.",
+                            "type": "boolean"
                         }
                     }
                 }

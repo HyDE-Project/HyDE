@@ -40,7 +40,7 @@ type      = "object"
 [properties.wallpaper.properties.backend]
     default     = "awww"
     description = "Wallpaper backend, requires 'wallpaper.<backend>.sh' as handler script in $PATH"
-    options     = [ "awww", "pcmanfm-qt", "mpvpaper", "hyprpaper" ]
+    options     = [ "awww", "pcmanfm-qt", "mpvpaper", "hyprpaper", "waydeeper" ]
     type        = "string"
 
 [properties.wallpaper.properties.awww]
@@ -71,6 +71,67 @@ type      = "object"
     default     = "grow"
     description = "Transition type for default wallpaper."
     type        = "string"
+
+[properties.wallpaper.properties.waydeeper]
+    description = "waydeeper 3D parallax wallpaper configuration."
+    type        = "object"
+
+[properties.wallpaper.properties.waydeeper.properties.strength]
+    default     = 0.02
+    description = "Sets both X & Y parallax strength."
+    type        = "number"
+
+[properties.wallpaper.properties.waydeeper.properties.strength_x]
+    default     = 0.02
+    description = "X-axis parallax strength."
+    type        = "number"
+
+[properties.wallpaper.properties.waydeeper.properties.strength_y]
+    default     = 0.02
+    description = "Y-axis parallax strength."
+    type        = "number"
+
+[properties.wallpaper.properties.waydeeper.properties.smooth_animation]
+    default     = true
+    description = "Enables smooth easing for animation."
+    type        = "boolean"
+
+[properties.wallpaper.properties.waydeeper.properties.animation_speed]
+    default     = 0.05
+    description = "Animation speed multiplier."
+    type        = "number"
+
+[properties.wallpaper.properties.waydeeper.properties.fps]
+    default     = 60
+    description = "Frame rate (30 or 60)."
+    options     = [ 30, 60 ]
+    type        = "integer"
+
+[properties.wallpaper.properties.waydeeper.properties.active_delay]
+    default     = 150
+    description = "Delay (ms) before animation starts after mouse enters wallpaper surface."
+    type        = "integer"
+
+[properties.wallpaper.properties.waydeeper.properties.idle_timeout]
+    default     = 5000
+    description = "Stops animation (ms) after mouse idle."
+    type        = "integer"
+
+[properties.wallpaper.properties.waydeeper.properties.invert_depth]
+    default     = false
+    description = "Inverts depth interpretation."
+    type        = "boolean"
+
+[properties.wallpaper.properties.waydeeper.properties.model]
+    default     = "depth-anything-v3-base"
+    description = "ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4, or custom .onnx path."
+    options     = [ "depth-anything-v3-base", "midas-small", "depth-pro-q4" ]
+    type        = "string"
+
+[properties.wallpaper.properties.waydeeper.properties.regenerate]
+    default     = false
+    description = "Forces regeneration of depth maps & meshes."
+    type        = "boolean"
 
 [properties.rofi]
     description = "Global rofi configuration."
