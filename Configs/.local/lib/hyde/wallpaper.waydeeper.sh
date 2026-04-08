@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
 
-selected_wall="${1:-"$HYDE_CACHE_HOME/wall.set"}"
-lockFile="$XDG_RUNTIME_DIR/hyde/$(basename "$0").lock"
-if [ -e "$lockFile" ]; then
+scrDir="$(dirname "$(realpath "$0")")"
+source "$scrDir/globalcontrol.sh"
+
+lockDir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
+mkdir -p "$lockDir"
+lockFile="$lockDir/$(basename "$0").lock"
+
+if ! ( set -o noclobber; : > "$lockFile" ) 2>/dev/null; then
     cat << EOF
 
 Error: Another instance of $(basename "$0") is running.
@@ -13,17 +18,13 @@ EOF
 fi
 touch "$lockFile"
 trap 'rm -f "${lockFile}"' EXIT
-scrDir="$(dirname "$(realpath "$0")")"
-source "$scrDir/globalcontrol.sh"
 
-selected_wall="$1"
-[ -z "$selected_wall" ] && echo "No input wallpaper" && exit 1
+selected_wall="${1:-"$HYDE_CACHE_HOME/wall.set"}"
 selected_wall="$(readlink -f "$selected_wall")"
 
 is_video=$(file --mime-type -b "$selected_wall" | grep -c '^video/')
 if [ "$is_video" -eq 1 ]; then
     print_log -sec "wallpaper" -stat "converting video" "$selected_wall"
-    mkdir -p "$HYDE_CACHE_HOME/wallpapers/thumbnails"
     cached_thumb="$HYDE_CACHE_HOME/wallpapers/$(${hashMech:-sha1sum} "$selected_wall" | cut -d' ' -f1).png"
     extract_thumbnail "$selected_wall" "$cached_thumb"
     selected_wall="$cached_thumb"
@@ -39,11 +40,29 @@ fi
 # Ensure the inpaint model is downloaded
 if [ ! -d "$XDG_DATA_HOME/waydeeper/models/inpaint" ] && [ ! -d "$HOME/.local/share/waydeeper/models/inpaint" ]; then
     print_log -sec "wallpaper" -stat "downloading inpaint model"
-    waydeeper download-model inpaint
+    if ! waydeeper download-model inpaint; then
+        print_log -err "failed to download waydeeper inpaint model"
+        notify-send -a "HyDE Alert" "ERROR: failed to download waydeeper inpaint model"
+        exit 1
+    fi
 fi
 
 # Build waydeeper command with --inpaint always enabled
 waydeeper_args=(waydeeper set "$selected_wall" --inpaint)
+
+# Add depth model if configured
+if [ -n "$WALLPAPER_WAYDEEPER_MODEL" ]; then
+    waydeeper_args+=(--model "$WALLPAPER_WAYDEEPER_MODEL")
+    # Ensure selected model is downloaded
+    if [ ! -f "$XDG_DATA_HOME/waydeeper/models/$WALLPAPER_WAYDEEPER_MODEL.onnx" ] && [ ! -f "$HOME/.local/share/waydeeper/models/$WALLPAPER_WAYDEEPER_MODEL.onnx" ]; then
+        print_log -sec "wallpaper" -stat "downloading $WALLPAPER_WAYDEEPER_MODEL model"
+        if ! waydeeper download-model $WALLPAPER_WAYDEEPER_MODEL; then
+            print_log -err "failed to download waydeeper $WALLPAPER_WAYDEEPER_MODEL model"
+            notify-send -a "HyDE Alert" "ERROR: failed to download waydeeper $WALLPAPER_WAYDEEPER_MODEL model"
+            exit 1
+        fi
+    fi
+fi
 
 # Add strength settings if configured
 if [ -n "$WALLPAPER_WAYDEEPER_STRENGTH" ]; then
@@ -68,11 +87,6 @@ if [ -n "$WALLPAPER_WAYDEEPER_ACTIVE_DELAY" ]; then
 fi
 if [ -n "$WALLPAPER_WAYDEEPER_IDLE_TIMEOUT" ]; then
     waydeeper_args+=(--idle-timeout "$WALLPAPER_WAYDEEPER_IDLE_TIMEOUT")
-fi
-
-# Add depth model if configured
-if [ -n "$WALLPAPER_WAYDEEPER_MODEL" ]; then
-    waydeeper_args+=(--model "$WALLPAPER_WAYDEEPER_MODEL")
 fi
 
 # Add smooth animation toggle (default: enabled)
