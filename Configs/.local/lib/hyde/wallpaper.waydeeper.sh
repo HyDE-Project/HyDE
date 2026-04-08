@@ -27,6 +27,11 @@ if [ "$is_video" -eq 1 ]; then
     print_log -sec "wallpaper" -stat "converting video" "$selected_wall"
     cached_thumb="$HYDE_CACHE_HOME/wallpapers/$(${hashMech:-sha1sum} "$selected_wall" | cut -d' ' -f1).png"
     extract_thumbnail "$selected_wall" "$cached_thumb"
+    if [ ! -f "$cached_thumb" ]; then
+        print_log -err "failed to extract thumbnail from" "$selected_wall"
+        notify-send -a "HyDE Alert" "ERROR: failed to extract thumbnail from video"
+        exit 1
+    fi
     selected_wall="$cached_thumb"
 fi
 
