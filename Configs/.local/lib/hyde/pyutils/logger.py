@@ -12,8 +12,8 @@ def get_logger():
     if not log_level:
 
         class NoOpLogger:
-            def __getattr__(self):
-                def no_op():
+            def __getattr__(self, name):
+                def no_op(*args, **kwargs):
                     pass
 
                 return no_op
