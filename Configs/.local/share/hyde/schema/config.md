@@ -207,6 +207,20 @@ Hyprland start configuration.
 | wallpaper | Wallpaper script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global |
 | xdg_portal_reset | XDG portal reset script. | hyde-shell resetxdgportal.sh |
 
+### [hyprlock]
+
+hyprlock configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| fail_timeout | Milliseconds until the UI resets after a failed auth attempt. | 2000 |
+| fractional_scaling | Whether to use fractional scaling. 0: disabled, 1: enabled, 2: auto. | 2 |
+| hide_cursor | Hides the cursor instead of making it visible. | false |
+| ignore_empty_input | Skips validation when no password is provided. | false |
+| immediate_render | Makes hyprlock immediately start to draw widgets. | false |
+| screencopy_mode | Selects screencopy mode: 0 gpu accelerated, 1 cpu based (slow). | 0 |
+| text_trim | Sets if the text should be trimmed, useful to avoid trailing newline in commands output. | true |
+
 ### [mediaplayer]
 
 mediaplayer.py configuration.
@@ -306,7 +320,7 @@ glyph-picker.sh configuration.
 
 ### [rofi.hyprlock]
 
-'hyprlock.sh select' configuration.
+'hyde-shell hyprlock select' configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |

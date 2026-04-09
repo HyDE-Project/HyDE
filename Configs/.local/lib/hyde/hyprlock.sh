@@ -38,9 +38,9 @@ fn_profile() {
     return 0
 }
 fn_mpris() {
-    local player=${1:-$(playerctl --list-all 2> /dev/null | head -n 1)}
+    local player=${1:-$(playerctl --list-all 2>/dev/null | head -n 1)}
     THUMB="$cacheDir/landing/mpris"
-    player_status="$(playerctl -p "$player" status 2> /dev/null)"
+    player_status="$(playerctl -p "$player" status 2>/dev/null)"
     if [[ $player_status == "Playing" ]]; then
         playerctl -p "$player" metadata --format "{{xesam:title}} $(mpris_icon "$player")  {{xesam:artist}}"
         mpris_thumb "$player"
@@ -62,13 +62,13 @@ fn_mpris() {
 mpris_icon() {
     local player=${1:-default}
     declare -A player_dict=(
-             ["default"]=""
-             ["spotify"]=""
-             ["firefox"]=""
-             ["vlc"]="嗢"
-             ["google-chrome"]=""
-             ["opera"]=""
-             ["brave"]="")
+        ["default"]=""
+        ["spotify"]=""
+        ["firefox"]=""
+        ["vlc"]="嗢"
+        ["google-chrome"]=""
+        ["opera"]=""
+        ["brave"]="")
     for key in "${!player_dict[@]}"; do
         if [[ $player == "$key"* ]]; then
             echo "${player_dict[$key]}"
@@ -81,7 +81,7 @@ mpris_thumb() {
     local player=${1:-""}
     artUrl=$(playerctl -p "$player" metadata --format '{{mpris:artUrl}}')
     [ "$artUrl" == "$(cat "$THUMB".lnk)" ] && [ -f "$THUMB".png ] && exit 0
-    echo "$artUrl" > "$THUMB".lnk
+    echo "$artUrl" >"$THUMB".lnk
     curl -Lso "$THUMB.art" "$artUrl"
     magick "$THUMB.art" -quality 50 "$THUMB.png"
     reload_hyprlock
@@ -92,7 +92,7 @@ fn_cava() {
     config_file="$XDG_RUNTIME_DIR/hyde/cava.hyprlock"
     if [ "$(pgrep -c -f "cava -p $config_file")" -eq 0 ]; then
         trap 'rm -f ${tempFile}' EXIT
-        "${LIB_DIR}/hyde/cava.py" hyprlock > $tempFile 2>&1
+        "${LIB_DIR}/hyde/cava.py" hyprlock >$tempFile 2>&1
     fi
 }
 fn_art() {
@@ -105,7 +105,7 @@ find_filepath() {
         "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/hyprlock"
         "$HYPRLOCK_CONF_DIR")
     print_log -sec "hyprlock" -stat "Searching for layout" "$filename"
-    find "${search_dirs[@]}" -type f -name "$filename*" 2> /dev/null | head -n 1
+    find "${search_dirs[@]}" -type f -name "$filename*" 2>/dev/null | head -n 1
 }
 fn_select() {
     font_scale="$ROFI_HYPRLOCK_SCALE"
@@ -120,14 +120,14 @@ fn_select() {
     hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
     r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;} wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
     layout_dir="$confDir/hypr/hyprlock"
-    layout_items=$(find -L "$layout_dir" -name "*.conf" ! -name "theme.conf" 2> /dev/null | sed 's/\.conf$//')
+    layout_items=$(find -L "$layout_dir" -name "*.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
     if [ -z "$layout_items" ]; then
         notify-send -i "preferences-desktop-display" "Error" "No .conf files found in $layout_dir"
         exit 1
     fi
     layout_items="Theme Preference
 $layout_items"
-    selected_layout=$(awk -F/ '{print $NF}' <<< "$layout_items" | rofi -dmenu -i -select "$HYPRLOCK_LAYOUT" \
+    selected_layout=$(awk -F/ '{print $NF}' <<<"$layout_items" | rofi -dmenu -i -select "$HYPRLOCK_LAYOUT" \
         -p "Select hyprlock layout" \
         -theme-str 'entry { placeholder: "🔒 Hyprlock Layout..."; }' \
         -theme-str "$font_override" \
@@ -152,21 +152,21 @@ $layout_items"
 }
 check_and_sanitize_process() {
     local unit_name="${1:-$HYPRLOCK_SCOPE_NAME}"
-    if systemctl --user is-active "$unit_name" > /dev/null 2>&1; then
-        systemctl --user stop "$unit_name" > /dev/null 2>&1
+    if systemctl --user is-active "$unit_name" >/dev/null 2>&1; then
+        systemctl --user stop "$unit_name" >/dev/null 2>&1
     fi
 }
 reload_hyprlock() {
     local unit_name="${2:-$HYPRLOCK_SCOPE_NAME}"
-    if systemctl --user is-active "$unit_name" > /dev/null 2>&1; then
-        systemctl --user kill -s USR2 "$HYPRLOCK_SCOPE_NAME" > /dev/null 2>&1
+    if systemctl --user is-active "$unit_name" >/dev/null 2>&1; then
+        systemctl --user kill -s USR2 "$HYPRLOCK_SCOPE_NAME" >/dev/null 2>&1
     else
-        pkill -USR2 hyprlock > /dev/null 2>&1
+        pkill -USR2 hyprlock >/dev/null 2>&1
     fi
 }
 append_label_to_file() {
     local file="$1"
-    cat << EOF >> "$file"
+    cat <<EOF >>"$file"
 label {
   text = PREVIEW! Press a key or swipe to exit.
   color = rgba(\$wallbash_txt122)
@@ -233,8 +233,8 @@ rofi_test_preview() {
 generate_conf() {
     local path="${1:-$confDir/hypr/hyprlock/theme.conf}"
     local target_file="${2:-$confDir/hypr/hyprlock.conf}"
-    local hyde_hyprlock_conf=${SHARE_DIR:-$XDG_DATA_HOME}/hyde/hyprlock.conf
-    cat << CONF > "$target_file"
+    local hyde_hyprlock_conf=${SHARE_DIR:-$XDG_DATA_HOME}/hypr/hyprlock.conf
+    cat <<CONF >"$target_file"
 #! █░█ █▄█ █▀█ █▀█ █░░ █▀█ █▀▀ █▄▀
 #! █▀█ ░█░ █▀▀ █▀▄ █▄▄ █▄█ █▄▄ █░█
 
@@ -374,18 +374,18 @@ argparse "--test-preview" "TEST_PREVIEW_LAYOUT" "Test preview layout" "parameter
 argparse_finalize
 
 case "$ARGPARSE_ACTION" in
-    background) fn_background ;;
-    profile) fn_profile ;;
-    mpris) fn_mpris "$MPRIS_PLAYER" ;;
-    cava) fn_cava ;;
-    art) fn_art ;;
-    select) fn_select ;;
-    test) layout_test "$TEST_LAYOUT" ;;
-    test-preview) rofi_test_preview "$TEST_PREVIEW_LAYOUT" ;;
-    *)
-        ensure_lockscreen_bg_exist
-        check_and_sanitize_process
-        "${LIB_DIR}/hyde/app2unit.sh" -u "$HYPRLOCK_SCOPE_NAME" -t scope -- hyprlock
-        exit 0
-        ;;
+background) fn_background ;;
+profile) fn_profile ;;
+mpris) fn_mpris "$MPRIS_PLAYER" ;;
+cava) fn_cava ;;
+art) fn_art ;;
+select) fn_select ;;
+test) layout_test "$TEST_LAYOUT" ;;
+test-preview) rofi_test_preview "$TEST_PREVIEW_LAYOUT" ;;
+*)
+    ensure_lockscreen_bg_exist
+    check_and_sanitize_process
+    "${LIB_DIR}/hyde/app2unit.sh" -u "$HYPRLOCK_SCOPE_NAME" -t scope -- hyprlock
+    exit 0
+    ;;
 esac

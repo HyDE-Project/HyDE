@@ -139,7 +139,7 @@
                     "type": "integer"
                 },
                 "hyprlock": {
-                    "description": "'hyprlock.sh select' configuration.",
+                    "description": "'hyde-shell hyprlock select' configuration.",
                     "type": "object",
                     "properties": {
                         "scale": {
@@ -910,6 +910,56 @@
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "hyprlock": {
+            "description": "hyprlock configuration.",
+            "type": "object",
+            "properties": {
+                "hide_cursor": {
+                    "default": false,
+                    "description": "Hides the cursor instead of making it visible.",
+                    "type": "boolean"
+                },
+                "ignore_empty_input": {
+                    "default": false,
+                    "description": "Skips validation when no password is provided.",
+                    "type": "boolean"
+                },
+                "immediate_render": {
+                    "default": false,
+                    "description": "Makes hyprlock immediately start to draw widgets.",
+                    "type": "boolean"
+                },
+                "text_trim": {
+                    "default": true,
+                    "description": "Sets if the text should be trimmed, useful to avoid trailing newline in commands output.",
+                    "type": "boolean"
+                },
+                "fractional_scaling": {
+                    "default": 2,
+                    "description": "Whether to use fractional scaling. 0: disabled, 1: enabled, 2: auto.",
+                    "options": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "type": "integer"
+                },
+                "screencopy_mode": {
+                    "default": 0,
+                    "description": "Selects screencopy mode: 0 gpu accelerated, 1 cpu based (slow).",
+                    "options": [
+                        0,
+                        1
+                    ],
+                    "type": "integer"
+                },
+                "fail_timeout": {
+                    "default": 2000,
+                    "description": "Milliseconds until the UI resets after a failed auth attempt.",
+                    "type": "integer"
                 }
             }
         },

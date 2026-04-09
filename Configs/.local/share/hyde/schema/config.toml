@@ -20,7 +20,7 @@ transition_default = "grow"  # Transition type for default wallpaper.
 # Global rofi configuration.
 [rofi]
 scale = 10  # Rofi default scaling.
-# 'hyprlock.sh select' configuration.
+# 'hyde-shell hyprlock select' configuration.
 [rofi.hyprlock]
 scale = 10  # Scaling for hyprlock.
 
@@ -201,6 +201,16 @@ steps = 5  # Number of steps to increase/decrease brightness.
 [sysmonitor]
 execute = ""  # Default command to execute.
 commands = [""]  # Fallback command options.
+
+# hyprlock configuration.
+[hyprlock]
+hide_cursor = false  # Hides the cursor instead of making it visible.
+ignore_empty_input = false  # Skips validation when no password is provided.
+immediate_render = false  # Makes hyprlock immediately start to draw widgets.
+text_trim = true  # Sets if the text should be trimmed, useful to avoid trailing newline in commands output.
+fractional_scaling = 2  # Whether to use fractional scaling. 0: disabled, 1: enabled, 2: auto.
+screencopy_mode = 0  # Selects screencopy mode: 0 gpu accelerated, 1 cpu based (slow).
+fail_timeout = 2000  # Milliseconds until the UI resets after a failed auth attempt.
 
 # Notification script configuration.
 [notification]
