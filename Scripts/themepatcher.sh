@@ -98,7 +98,7 @@ if [[ -z $1 || -z $2 ]]; then
 fi
 
 wallbashDirs=(
-    "${XDG_CONFIG_HOME:-$HOME.config}/hyde/wallbash"
+    "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/wallbash"
     "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/wallbash"
     "${XDG_DATA_HOME}/wallbash"
     "${XDG_DATA_HOME}/hyde/wallbash"
