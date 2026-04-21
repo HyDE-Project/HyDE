@@ -10,7 +10,8 @@ dependencies = [
     "pywayland",
     "PyGObject",
     "PyQt6",
-    "pyprland==2.4.7",
+    "pyprland==3.3.1",
+    "hererocks>=0.25.1",
 ]
 
 [project.optional-dependencies]

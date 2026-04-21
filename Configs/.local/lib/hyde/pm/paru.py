@@ -7,20 +7,34 @@ from typing import Sequence
 PackageEntry = tuple[str, str | None, str | None, str | None]
 
 
-def install(ctx, packages: Sequence[str]) -> None:
-    ctx.run(["paru", "-S", "--needed", *packages])
+def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
+    args = ["paru", "-S", "--needed"]
+    if no_confirm:
+        args.append("--noconfirm")
+    args.extend(packages)
+    ctx.run(args)
 
 
-def remove(ctx, packages: Sequence[str]) -> None:
-    ctx.run(["paru", "-Rsc", *packages])
+def remove(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
+    args = ["paru", "-Rsc"]
+    if no_confirm:
+        args.append("--noconfirm")
+    args.extend(packages)
+    ctx.run(args)
 
 
-def upgrade(ctx) -> None:
-    ctx.run(["paru", "-Su"])
+def upgrade(ctx, no_confirm: bool = False) -> None:
+    args = ["paru", "-Su"]
+    if no_confirm:
+        args.append("--noconfirm")
+    ctx.run(args)
 
 
-def fetch(ctx) -> None:
-    ctx.run(["paru", "-Sy"])
+def fetch(ctx, no_confirm: bool = False) -> None:
+    args = ["paru", "-Sy"]
+    if no_confirm:
+        args.append("--noconfirm")
+    ctx.run(args)
 
 
 def info(ctx, package: str) -> None:

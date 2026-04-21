@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 # This script will soon be used to resolve $PATHS and LIB_DIR specific to hyde
 # wallbash script can source this script to resolve the paths cleanly on a separate shell
+# shellcheck disable=SC1091
+# shellcheck disable=SC2086
+# shellcheck disable=SC1090
+
+
 python_initialized() {
 
+	python3 "${LIB_DIR}/hyde/pyutils/python_env.py" sync || \
 	python3 "${LIB_DIR}/hyde/pyutils/python_env.py" rebuild
+
 }
 
 python_activate() {
@@ -19,6 +26,13 @@ python_activate() {
 	fi
 
 }
+
+lua_initialized() {
+python_activate
+python3 "${LIB_DIR}/hyde/pyutils/lua_env.py" sync || \
+python3 "${LIB_DIR}/hyde/pyutils/lua_env.py" rebuild
+}
+
 
 initialized() {
 	cat <<EOF
@@ -50,22 +64,22 @@ USAGE() {
 
 	printf '  %sCOMMANDS%s\n' "$_BOLD" "$_R"
 	local cmds=(
-		'help, -h'             'Show this help message'
-		'-r, reload'           'Reload HyDE'
-		'-s, scripts'          'List available scripts (formatted)'
-		'wallbash <script>'    'Execute a wallbash script'
-		'version, -v'          'Show version information'
-		'release-notes'        'Show release notes'
-		'completions [shell]'  'Generate completions (bash|zsh|fish)'
-		'validate [args]'      'Validate HyDE configuration'
-		'pyinit'               'Initialize Python virtual environment'
-		'uv <cmd> [pkg]'       'Manage packages (install|uninstall|list)'
-		'init'                 'Source initialization script'
-		'logout'               'Log out of the current session'
-		'lock-session'         'Lock the current session'
+		'help, -h' 'Show this help message'
+		'-r, reload' 'Reload HyDE'
+		'-s, scripts' 'List available scripts (formatted)'
+		'wallbash <script>' 'Execute a wallbash script'
+		'version, -v' 'Show version information'
+		'release-notes' 'Show release notes'
+		'completions [shell]' 'Generate completions (bash|zsh|fish)'
+		'validate [args]' 'Validate HyDE configuration'
+		'pyinit' 'Initialize Python virtual environment'
+		'uv <cmd> [pkg]' 'Manage packages (install|uninstall|list)'
+		'init' 'Source initialization script'
+		'logout' 'Log out of the current session'
+		'lock-session' 'Lock the current session'
 	)
-	for (( i=0; i<${#cmds[@]}; i+=2 )); do
-		printf '    %s%-26s%s %s\n' "$_CYAN" "${cmds[i]}" "$_R" "${cmds[i+1]}"
+	for ((i = 0; i < ${#cmds[@]}; i += 2)); do
+		printf '    %s%-26s%s %s\n' "$_CYAN" "${cmds[i]}" "$_R" "${cmds[i + 1]}"
 	done
 	printf '\n'
 
@@ -201,18 +215,18 @@ _hyde_shell_completion() {
         cur="${COMP_WORDS[COMP_CWORD]}"
         prev="${COMP_WORDS[COMP_CWORD-1]}"
     }
-    
+
     local built_in_commands hyde_scripts wallbash_scripts
     built_in_commands="--help help -h -r reload -s scripts wallbash --version version -v --release-notes release-notes --list-script --list-script-path --completions uv"
-    
+
     # Get dynamic completions from hyde-shell
     if command -v hyde-shell >/dev/null 2>&1; then
         hyde_scripts=$(hyde-shell --list-script 2>/dev/null | sed 's/\.[^.]*$//' | tr '\n' ' ')
-        
+
         # Get wallbash scripts - just --help for now
         wallbash_scripts="--help"
     fi
-    
+
     # Only provide completions for the first argument
     if [[ $COMP_CWORD -eq 1 ]]; then
         # First argument: complete with all available commands
@@ -256,20 +270,20 @@ _hyde_shell() {
     local cur prev words
     cur="${words[CURRENT]}"
     prev="${words[CURRENT-1]}"
-    
+
     local built_in_commands hyde_scripts wallbash_scripts
     built_in_commands=("--help" "help" "-h" "-r" "reload" "-s" "scripts" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions" "uv")
-    
+
     # Get dynamic completions
     if (( $+commands[hyde-shell] )); then
         local scripts_raw
         scripts_raw=(${(f)"$(hyde-shell --list-script 2>/dev/null)"})
         hyde_scripts=(${scripts_raw[@]%.*})  # Remove extensions
-        
+
         # Get wallbash scripts - just --help for now
         wallbash_scripts=("--help")
     fi
-    
+
     # Only complete for first two arguments max
     if [[ $CURRENT -eq 2 ]]; then
         # First argument: all commands
@@ -324,7 +338,7 @@ release-notes
 --list-script
 --list-script-path
 --completions"
-    
+
     # Get hyde scripts
     if command -v hyde-shell >/dev/null 2>&1
         hyde-shell --list-script 2>/dev/null | sed 's/\.[^.]*$//'
@@ -413,7 +427,21 @@ run_command() {
 		# Try .sh extension first
 		if [[ -f "$dir/${1}.sh" ]]; then
 			exec bash "$dir/${1}.sh" "${@:2}"
-		# Try .py extension
+		# Try .lua extension second
+		elif [[ -f "$dir/${1}.lua" 	]]; then
+			lua_runtime="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/lua"
+			activate_script="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/activate_posix"
+			if [[ -f "$activate_script" ]] && [[ -x "$lua_runtime" ]]; then
+			source "$activate_script"
+			else
+			# I hate automating this as building the environment is slow and should be optional for now.
+			# Calling for lua gods to speed up the process 🙏
+				print_log -warn "Lua environment not found!" " Please run 'hyde-shell luainit' to set up the environment."
+				send_notifs "Lua environment not found!" "Please run 'hyde-shell luainit' to set up the environment."
+				exit 1
+			fi
+			exec "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/lua" "$dir/${1}.lua" "${@:2}"
+		# Try .py extension third
 		elif [[ -f "$dir/${1}.py" ]]; then
 			exec "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env/bin/python" "$dir/${1}.py" "${@:2}"
 		# Try exact name (executable)
@@ -439,22 +467,35 @@ run_uv() {
 	local subcmd="${1:-help}"
 	shift 2>/dev/null || true
 	case "$subcmd" in
-		install)
-			UV_PROJECT_ENVIRONMENT="$venv_path" uv add "$@" --project "$project_dir"
-			;;
-		uninstall|remove)
-			UV_PROJECT_ENVIRONMENT="$venv_path" uv remove "$@" --project "$project_dir"
-			;;
-		list)
-			UV_PROJECT_ENVIRONMENT="$venv_path" uv pip list --python "${venv_path}/bin/python"
-			;;
-		*)
-			echo "Usage: hyde-shell uv [install|uninstall|list] [packages...]"
-			echo "  install   <pkg>  → runs: uv add"
-			echo "  uninstall <pkg>  → runs: uv remove"
-			echo "  list             → list installed packages"
-			;;
+	install)
+		UV_PROJECT_ENVIRONMENT="$venv_path" uv add "$@" --project "$project_dir"
+		;;
+	uninstall | remove)
+		UV_PROJECT_ENVIRONMENT="$venv_path" uv remove "$@" --project "$project_dir"
+		;;
+	list)
+		UV_PROJECT_ENVIRONMENT="$venv_path" uv pip list --python "${venv_path}/bin/python"
+		;;
+	*)
+		echo "Usage: hyde-shell uv [install|uninstall|list] [packages...]"
+		echo "  install   <pkg>  → runs: uv add"
+		echo "  uninstall <pkg>  → runs: uv remove"
+		echo "  list             → list installed packages"
+		;;
 	esac
+}
+
+# Run luarocks inside the LuaJIT environment
+run_luarocks() {
+	shift
+	local luarocks_bin="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/luarocks"
+	if [[ -x "$luarocks_bin" ]]; then
+		source ${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/activate_posix
+		"$luarocks_bin" "$@"
+	else
+		echo "luarocks not found in LuaJIT environment."
+		echo "You may need to run 'python ${LIB_DIR}/hyde/lua_env.py rebuild' to set up the environment."
+	fi
 }
 
 run_pypr() {
@@ -465,8 +506,8 @@ run_pypr() {
 	if command -v pypr >/dev/null 2>&1; then
 
 		socket_path="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.pyprland.sock"
-		if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/pyprland.toml" ]]; then
-			send_notifs "Missing pyprland.toml" "Please create a pyprland.toml file in ${XDG_CONFIG_HOME:-$HOME/.config}/hypr/ to configure PyPR."
+		if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/pypr/config.toml" ]]; then
+			send_notifs "Missing config.toml" "Please create a config.toml file in ${XDG_CONFIG_HOME:-$HOME/.config}/pypr/ to configure PyPR."
 			exit 1
 		fi
 
@@ -494,100 +535,100 @@ run_pypr() {
 		fi
 
 	else
-		UV_PROJECT_ENVIRONMENT="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env" uv add "pyprland==2.4.7" --project "${LIB_DIR}/hyde"
-	fi	
+		UV_PROJECT_ENVIRONMENT="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env" uv add "pyprland==3.3.1" --project "${LIB_DIR}/hyde"
+	fi
 }
 
 list_scripts_pretty() {
-    local cols
-    cols=$(tput cols 2>/dev/null || echo 80)
-    local sep
-    sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
+	local cols
+	cols=$(tput cols 2>/dev/null || echo 80)
+	local sep
+	sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
 
-    local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m'
-    local _VIOLET=$'\e[35m' _GREEN=$'\e[92m'
+	local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m'
+	local _VIOLET=$'\e[35m' _GREEN=$'\e[92m'
 
-    IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
-    declare -A seen_dirs
-    local SCRIPT_DIRS=()
+	IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
+	declare -A seen_dirs
+	local SCRIPT_DIRS=()
 
-    for dir in "${RAW_DIRS[@]}"; do
-        [[ -z "$dir" ]] && continue
-        [[ -n "${seen_dirs[$dir]}" ]] && continue
-        seen_dirs["$dir"]=1
-        [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
-    done
+	for dir in "${RAW_DIRS[@]}"; do
+		[[ -z "$dir" ]] && continue
+		[[ -n "${seen_dirs[$dir]}" ]] && continue
+		seen_dirs["$dir"]=1
+		[[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
+	done
 
-    local total=0
+	local total=0
 
-    printf '\n%s  Available Scripts%s\n' "$_BOLD" "$_R"
-    printf '  %s%s%s\n' "$_DIM" "$sep" "$_R"
+	printf '\n%s  Available Scripts%s\n' "$_BOLD" "$_R"
+	printf '  %s%s%s\n' "$_DIM" "$sep" "$_R"
 
-    for dir in "${SCRIPT_DIRS[@]}"; do
-        local scripts=()
-        while IFS= read -r f; do
-            [[ -n "$f" ]] && scripts+=("$f")
-        done < <(find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null | sort)
+	for dir in "${SCRIPT_DIRS[@]}"; do
+		local scripts=()
+		while IFS= read -r f; do
+			[[ -n "$f" ]] && scripts+=("$f")
+		done < <(find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null | sort)
 
-        [[ ${#scripts[@]} -eq 0 ]] && continue
+		[[ ${#scripts[@]} -eq 0 ]] && continue
 
-        printf '\n  %s%s%s\n' "$_VIOLET" "$dir" "$_R"
+		printf '\n  %s%s%s\n' "$_VIOLET" "$dir" "$_R"
 
-        unset groups roots
-        declare -A groups roots
+		unset groups roots
+		declare -A groups roots
 
-        # --- detectar raíces ---
-        for s in "${scripts[@]}"; do
-            local name="${s%.*}"
-            if [[ "$name" == *.* ]]; then
-                local root="${name%%.*}"
-                roots["$root"]=1
-            fi
-        done
+		# --- detectar raíces ---
+		for s in "${scripts[@]}"; do
+			local name="${s%.*}"
+			if [[ "$name" == *.* ]]; then
+				local root="${name%%.*}"
+				roots["$root"]=1
+			fi
+		done
 
-        # --- agrupar correctamente ---
-        for s in "${scripts[@]}"; do
-            local name="${s%.*}"
+		# --- agrupar correctamente ---
+		for s in "${scripts[@]}"; do
+			local name="${s%.*}"
 
-            if [[ "$name" == *.* ]]; then
-                local root="${name%%.*}"
-                groups["$root"]+="$name "
-            else
-                if [[ -n "${roots[$name]}" ]]; then
-                    # es raíz de un grupo
-                    groups["$name"]="$name ${groups[$name]}"
-                else
-                    # standalone
-                    groups["$name"]="$name"
-                fi
-            fi
-        done
+			if [[ "$name" == *.* ]]; then
+				local root="${name%%.*}"
+				groups["$root"]+="$name "
+			else
+				if [[ -n "${roots[$name]}" ]]; then
+					# es raíz de un grupo
+					groups["$name"]="$name ${groups[$name]}"
+				else
+					# standalone
+					groups["$name"]="$name"
+				fi
+			fi
+		done
 
-        # --- imprimir ---
-        for key in $(printf "%s\n" "${!groups[@]}" | sort); do
-            read -ra items <<< "${groups[$key]}"
+		# --- imprimir ---
+		for key in $(printf "%s\n" "${!groups[@]}" | sort); do
+			read -ra items <<<"${groups[$key]}"
 
-            if [[ ${#items[@]} -gt 1 ]]; then
-                printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
+			if [[ ${#items[@]} -gt 1 ]]; then
+				printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
 
-                for item in "${items[@]}"; do
-                    if [[ "$item" != "$key" ]]; then
-                        printf "      %s%s%s\n" "$_DIM" "$item" "$_R"
-                    fi
-                    ((total++))
-                done
-            else
-                printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
-                ((total++))
-            fi
-        done
-    done
+				for item in "${items[@]}"; do
+					if [[ "$item" != "$key" ]]; then
+						printf "      %s%s%s\n" "$_DIM" "$item" "$_R"
+					fi
+					((total++))
+				done
+			else
+				printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
+				((total++))
+			fi
+		done
+	done
 
-    local dir_word="directories"
-    (( ${#SCRIPT_DIRS[@]} == 1 )) && dir_word="directory"
+	local dir_word="directories"
+	((${#SCRIPT_DIRS[@]} == 1)) && dir_word="directory"
 
-    printf '\n  %s%s%s\n' "$_DIM" "$sep" "$_R"
-    printf '  %s%d scripts across %d %s%s\n\n' "$_DIM" "$total" "${#SCRIPT_DIRS[@]}" "$dir_word" "$_R"
+	printf '\n  %s%s%s\n' "$_DIM" "$sep" "$_R"
+	printf '  %s%d scripts across %d %s%s\n\n' "$_DIM" "$total" "${#SCRIPT_DIRS[@]}" "$dir_word" "$_R"
 }
 
 lock_session() {
@@ -672,6 +713,10 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 		run_uv "${@}"
 		exit 0
 		;;
+	luarocks)
+		run_luarocks "${@}"
+		exit 0
+		;;
 	-r | reload)
 		hyde_reload
 		;;
@@ -713,6 +758,9 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
 		;;
 	pyinit)
 		python_initialized
+		;;
+	luainit)
+		lua_initialized
 		;;
 	"")
 		for func in $(compgen -A function); do

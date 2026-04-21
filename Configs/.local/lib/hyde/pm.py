@@ -17,7 +17,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Callable, Iterable, Sequence
 
-PMS = ["paru", "yay", "pacman", "apt", "dnf", "zypper", "apk", "brew", "scoop", "flatpak"]
+PMS = ["yay", "paru",  "pacman", "apt", "dnf", "zypper", "flatpak"]
 PACKAGE_ENTRY = tuple[str, str | None, str | None, str | None]
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 _MANAGER_CACHE: dict[str, ModuleType] = {}
@@ -37,6 +37,7 @@ class ManagerContext:
     name: str
     color_mode: str
     cache_dir: Path
+    no_confirm: bool = False
 
     def run(
         self,
@@ -47,14 +48,38 @@ class ManagerContext:
         env: dict[str, str] | None = None,
         cwd: str | Path | None = None,
     ) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(  # noqa: PLW1510
-            list(args),
-            check=check,
-            capture_output=capture,
-            text=True,
-            env=env,
-            cwd=str(cwd) if cwd is not None else None,
-        )
+        if env is None:
+            env = os.environ.copy()
+        # Always force LANG and LC_ALL to C for predictable output
+        env["LANG"] = "C"
+        env["LC_ALL"] = "C"
+        # Support PACKAGE_MANAGER_NO_CONFIRM for all backends
+        if self.no_confirm:
+            env["PACKAGE_MANAGER_NO_CONFIRM"] = "1"
+        # Sanitize environment: remove any variable containing NUL bytes
+        env = {k: v for k, v in env.items() if isinstance(v, str) and "\x00" not in v}
+        # Debug: print environment to help diagnose paru issues
+        if os.environ.get("PM_DEBUG_ENV") == "1":
+            print("[pm.py] Environment for subprocess:")
+            for k, v in env.items():
+                print(f"[pm.py]   {k}={v}")
+        try:
+            result = subprocess.run(
+                list(args),
+                check=check,
+                capture_output=capture,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                env=env,
+                cwd=str(cwd) if cwd is not None else None,
+            )
+            return result
+        except subprocess.CalledProcessError as e:
+            print(f"\n[pm.py] Command failed: {' '.join(args)}", file=sys.stderr)
+            if hasattr(e, 'stderr') and e.stderr:
+                print(f"[pm.py] stderr:\n{e.stderr}", file=sys.stderr)
+            raise
 
     def capture(self, args: Sequence[str], **kwargs: object) -> str:
         return self.run(args, capture=True, **kwargs).stdout
@@ -67,6 +92,7 @@ class PMState:
     ctx: ManagerContext
     colors: ColorProfile
     script_path: Path
+    no_confirm: bool = False
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -74,6 +100,7 @@ def build_parser() -> argparse.ArgumentParser:
         description="Package manager wrapper over multiple backends.",
     )
     parser.add_argument("--pm", dest="force_pm", help="Force package manager to use a specific backend.")
+    parser.add_argument("--no-confirm", dest="no_confirm", action="store_true", help="Do not ask for confirmation when installing/removing packages.")
     subparsers = parser.add_subparsers(dest="action", required=True)
 
     def add_cmd(name: str, action: str, *, aliases: Sequence[str] = (), help_text: str) -> argparse.ArgumentParser:
@@ -127,6 +154,10 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    # Check PACKAGE_MANAGER_NO_CONFIRM env variable
+    env_no_confirm = os.environ.get("PACKAGE_MANAGER_NO_CONFIRM", "").lower() in ("1", "true", "yes", "on")
+    no_confirm = args.no_confirm or env_no_confirm
+
     pm_name = determine_pm(args.force_pm)
     color_mode = os.environ.get("PM_COLOR")
     if not color_mode:
@@ -134,13 +165,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     pm_module = load_manager(pm_name)
     cache_dir = Path(os.environ.get("XDG_CACHE_DIR", Path.home() / ".cache")) / "pm" / pm_name
     cache_dir.mkdir(parents=True, exist_ok=True)
-    ctx = ManagerContext(pm_name, color_mode, cache_dir)
+    ctx = ManagerContext(pm_name, color_mode, cache_dir, no_confirm=no_confirm)
     state = PMState(
         name=pm_name,
         module=pm_module,
         ctx=ctx,
         colors=build_color_profile(color_mode),
         script_path=Path(__file__).resolve(),
+        no_confirm=no_confirm,
     )
 
     handler = COMMAND_HANDLERS[args.action]
@@ -221,8 +253,15 @@ def handle_info(state: PMState, package: str) -> None:
 
 def handle_list(state: PMState, source: str) -> None:
     entries = get_entries(state, source)
-    for line in format_entries(entries, source, state.colors):
-        print(line)
+    try:
+        for line in format_entries(entries, source, state.colors):
+            print(line)
+    except BrokenPipeError:
+        try:
+            sys.stdout.close()
+        except Exception:
+            pass
+        sys.exit(0)
 
 
 def handle_search_command(state: PMState, source: str) -> None:
@@ -467,7 +506,20 @@ def strip_ansi(value: str) -> str:
 
 def call_module(state: PMState, func_name: str, *args: object):
     func = getattr(state.module, func_name)
-    return func(state.ctx, *args)
+    import inspect
+    sig = inspect.signature(func)
+    try:
+        if 'no_confirm' in sig.parameters:
+            return func(state.ctx, *args, no_confirm=state.no_confirm)
+        return func(state.ctx, *args)
+    except subprocess.CalledProcessError as e:
+        # For list/list_all/list_installed, display error but continue gracefully
+        if func_name in {"list", "list_all", "list_installed"}:
+            print(f"[pm.py] Command failed: {e.cmd}", file=sys.stderr)
+            if hasattr(e, 'stderr') and e.stderr:
+                print(f"[pm.py] stderr:\n{e.stderr}", file=sys.stderr)
+            return []
+        raise
 
 
 def ensure_command(name: str) -> None:

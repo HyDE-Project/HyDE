@@ -189,10 +189,20 @@ wheels = [
 ]
 
 [[package]]
+name = "hererocks"
+version = "0.25.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/76/a0/9a9e8312da627ac39a5a719cadaf6b7f207856f7fc1c6461f3efd4dc690c/hererocks-0.25.1.tar.gz", hash = "sha256:a88b73693cf7753cf7e4139247a81f03c71bac4cb035f5d6bfe20dcddd86d100", size = 36613, upload-time = "2022-04-07T13:10:12.395Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/14/a8/7903eac744562b403b608c4c6fa667e34631ac0787e13e1b1a33ae956366/hererocks-0.25.1-py3-none-any.whl", hash = "sha256:43d5e9283588f83aeb703d6d9bc74249d2fa75126638699ca5fdfd1782f47909", size = 36196, upload-time = "2022-04-07T13:10:10.472Z" },
+]
+
+[[package]]
 name = "hyde-pyutils"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "hererocks" },
     { name = "inotify-simple" },
     { name = "loguru" },
     { name = "pulsectl" },
@@ -210,6 +220,7 @@ amd = [
 
 [package.metadata]
 requires-dist = [
+    { name = "hererocks", specifier = ">=0.25.1" },
     { name = "inotify-simple" },
     { name = "loguru", specifier = "==0.7.3" },
     { name = "pulsectl", specifier = "==24.12.0" },

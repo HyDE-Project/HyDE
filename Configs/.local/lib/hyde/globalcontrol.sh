@@ -28,6 +28,7 @@ send_notifs() {
     notify-send "${args[@]}" &
 }
 print_log() {
+    [[ "${PRINT_LOG}" == "false" ]] && return 0
     while (("$#")); do
         case "$1" in
         -r | +r)
@@ -94,6 +95,8 @@ print_log() {
     done
     echo "" >&2
 }
+
+
 get_hashmap() {
     unset wallHash
     unset wallList

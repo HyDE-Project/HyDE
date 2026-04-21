@@ -1,0 +1,9 @@
+{
+    "custom/app-launcher": {
+        "format": "",
+        "tooltip": true,
+        "tooltip-format": "  Application Launcher",
+        "rotate": 0,
+        "on-click": "hyde-shell rofilaunch d -click-to-exit"
+    }
+}

@@ -61,7 +61,7 @@ def run_uv(args, venv_path: str = None, notify_msg: str = None, stream: bool = F
     env["UV_PROJECT_ENVIRONMENT"] = venv_path
 
     if notify_msg:
-        notify.send("HyDE UV", notify_msg)
+        notify.send("HyDE UV", notify_msg, replace_id=9)
 
     cmd = [uv] + args + ["--project", project_dir]
 
@@ -146,11 +146,13 @@ def rebuild_venv() -> None:
 # Package management
 # =========================
 
-def install_dependencies() -> None:
-    """Installs dependencies from pyproject.toml."""
-    run_uv(["sync"], notify_msg="📦 Syncing dependencies...")
-    notify.send("HyDE UV", "✅ Dependencies are up to date")
 
+def sync_packages() -> None:
+    """Installs dependencies from pyproject.toml explicitly."""
+    project_dir = get_project_dir()
+    toml_file = os.path.join(project_dir, "pyproject.toml")
+    run_uv(["pip", "install", "-U", "-r", toml_file],notify_msg="📦 Syncing dependencies...")
+    notify.send("HyDE UV", "✅ Dependencies are up to date", replace_id=9)
 
 def install_package(package: str | Iterable[str]) -> None:
     """Installs a package or list of packages using uv."""
@@ -158,11 +160,11 @@ def install_package(package: str | Iterable[str]) -> None:
         pkgs = [package]
     else:
         pkgs = list(package)
-        
+
     if not pkgs:
         notify.send("HyDE UV", "No packages specified for installation", urgency="warning")
         return
-    
+
     notify.send("HyDE UV", f"Installing {', '.join(pkgs)}...")
     try:
         run_uv(["add"] + pkgs, stream=True)
@@ -177,11 +179,11 @@ def uninstall_package(package: str | Iterable[str]) -> None:
         pkgs = [package]
     else:
         pkgs = list(package)
-        
+
     if not pkgs:
         notify.send("HyDE UV", "No packages specified for uninstallation", urgency="warning")
         return
-    
+
     notify.send("HyDE UV", f"Uninstalling {', '.join(pkgs)}...")
     try:
         run_uv(["remove"] + pkgs, stream=True)
@@ -253,8 +255,8 @@ def cmd_create(_) -> None:
 
 
 def cmd_sync(_) -> None:
-    install_dependencies()
-    
+    sync_packages()
+
 
 def cmd_install(args) -> None:
     install_package(args.packages)
@@ -263,7 +265,7 @@ def cmd_install(args) -> None:
 def cmd_uninstall(args) -> None:
         uninstall_package(args.packages)
 
-    
+
 def cmd_destroy(_) -> None:
     destroy_venv()
 

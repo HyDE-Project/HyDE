@@ -7,7 +7,7 @@ fi
 export VERBOSE="$4"
 set +e
 ask_help() {
-    cat << HELP
+    cat <<HELP
 Usage:
     $(print_log "$0 " -y "Theme-Name " -c "/Path/to/Configs")
     $(print_log "$0 " -y "Theme-Name " -c "https://github.com/User/Repository")
@@ -43,8 +43,8 @@ fi
 WALLBASH_DIRS=(
     "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/wallbash"
     "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/wallbash"
-    "$XDG_DATA_HOME/wallbash"
-    "$XDG_DATA_HOME/hyde/wallbash"
+    "${XDG_DATA_HOME:-$HOME/.local/share}/wallbash"
+    "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/wallbash"
     "/usr/local/share/hyde/wallbash"
     "/usr/share/hyde/wallbash")
 THEME_NAME="$1"
@@ -78,15 +78,15 @@ else
     if [ -d "$THEME_DIR" ]; then
         print_log "Directory $THEME_DIR" -y " already exists. Using existing directory."
         if cd "$THEME_DIR"; then
-            git fetch --all &> /dev/null
-            git reset --hard "@{upstream}" &> /dev/null
-            cd - &> /dev/null || exit
+            git fetch --all &>/dev/null
+            git reset --hard "@{upstream}" &>/dev/null
+            cd - &>/dev/null || exit
         else
             print_log -y "Could not navigate to $THEME_DIR. Skipping git pull."
         fi
     else
         print_log "Directory $THEME_DIR does not exist. Cloning repository into new directory."
-        if ! git clone -b "$branch" --depth 1 "$git_repo" "$THEME_DIR" &> /dev/null; then
+        if ! git clone -b "$branch" --depth 1 "$git_repo" "$THEME_DIR" &>/dev/null; then
             print_log "Git clone failed"
             exit 1
         fi
@@ -95,7 +95,7 @@ fi
 print_log "Patching" -g " --// $THEME_NAME //-- " "from " -b "$THEME_DIR\n"
 FAV_THEME_DIR="$THEME_DIR/Configs/.config/hyde/themes/$THEME_NAME"
 [ ! -d "$FAV_THEME_DIR" ] && print_log -r "[ERROR] " "'$FAV_THEME_DIR'" -y " Do not Exist" && exit 1
-config=$(find -H "${WALLBASH_DIRS[@]}" -type f -path "*/theme*" -name "*.dcol" 2> /dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | awk -v favTheme="$THEME_NAME" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
+config=$(find -H "${WALLBASH_DIRS[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | awk -v favTheme="$THEME_NAME" -F 'theme/' '{gsub(/\.dcol$/, ".theme"); print ".config/hyde/themes/" favTheme "/" $2}')
 restore_list=""
 while IFS= read -r fileCheck; do
     [[ $LOG_LEVEL == "debug" ]] && print_log -n "[debug] " "fileCheck: $fileCheck"
@@ -107,7 +107,7 @@ while IFS= read -r fileCheck; do
     else
         print_log -y "[note] " "$fileCheck --> " -r "do not exist in " "$THEME_DIR/Configs/"
     fi
-done <<< "$config"
+done <<<"$config"
 if [ -f "$FAV_THEME_DIR/theme.dcol" ]; then
     print_log -n "[note] " "found theme.dcol to override wallpaper dominant colors"
     restore_list+="Y|Y|\${HOME}/.config/hyde/themes/$THEME_NAME|theme.dcol|hyprland\n"
@@ -115,7 +115,7 @@ fi
 [[ $LOG_LEVEL == "debug" ]] && print_log -n "[debug] " "restore_list: $restore_list"
 readonly restore_list
 wallpapers=$(find -H "$FAV_THEME_DIR" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*")
-wpCount="$(wc -l <<< "$wallpapers")"
+wpCount="$(wc -l <<<"$wallpapers")"
 {
     [ -z "$wallpapers" ] && print_log -r "[ERROR] " "No wallpapers found" && exit_flag=true
 } || {
@@ -123,7 +123,7 @@ wpCount="$(wc -l <<< "$wallpapers")"
 }
 if [ -d "$FAV_THEME_DIR/logo" ]; then
     logos=$(find -H "$FAV_THEME_DIR/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
-    logosCount="$(wc -l <<< "$logos")"
+    logosCount="$(wc -l <<<"$logos")"
     {
         [ -z "$logos" ] && print_log -y "[note] " "No logos found"
     } || {
@@ -168,7 +168,7 @@ check_tars() {
             grep "^[[:space:]]*\$NOTIFICATION[-_]FONT\s*=" "$FAV_THEME_DIR/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
             ;;
         *) awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"$gsLow"'-theme[[:space:]]*/ {last=$2} END {print last}' "$FAV_THEME_DIR/hypr.theme" ;;
-    esac)"
+        esac)"
     gsVal=${gsVal:-$(awk -F"[\"']" '/^[[:space:]]*exec[[:space:]]*=[[:space:]]*gsettings[[:space:]]*set[[:space:]]*org.gnome.desktop.interface[[:space:]]*'"$gsLow"'-theme[[:space:]]*/ {last=$2} END {print last}' "$FAV_THEME_DIR/hypr.theme")}
     if [ -n "$gsVal" ]; then
         if [[ $gsVal =~ ^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$ ]]; then
@@ -197,16 +197,16 @@ check_tars Menu-Font
 check_tars Notification-Font
 print_log "" && [[ $exit_flag == true ]] && exit 1
 declare -A archive_map=(
-         ["Gtk"]="$HOME/.local/share/themes"
-         ["Icon"]="$HOME/.local/share/icons"
-         ["Cursor"]="$HOME/.local/share/icons"
-         ["Sddm"]="/usr/share/sddm/themes"
-         ["Font"]="$HOME/.local/share/fonts"
-         ["Document-Font"]="$HOME/.local/share/fonts"
-         ["Monospace-Font"]="$HOME/.local/share/fonts"
-         ["Bar-Font"]="$HOME/.local/share/fonts"
-         ["Menu-Font"]="$HOME/.local/share/fonts"
-         ["Notification-Font"]="$HOME/.local/share/fonts")
+    ["Gtk"]="$HOME/.local/share/themes"
+    ["Icon"]="$HOME/.local/share/icons"
+    ["Cursor"]="$HOME/.local/share/icons"
+    ["Sddm"]="/usr/share/sddm/themes"
+    ["Font"]="$HOME/.local/share/fonts"
+    ["Document-Font"]="$HOME/.local/share/fonts"
+    ["Monospace-Font"]="$HOME/.local/share/fonts"
+    ["Bar-Font"]="$HOME/.local/share/fonts"
+    ["Menu-Font"]="$HOME/.local/share/fonts"
+    ["Notification-Font"]="$HOME/.local/share/fonts")
 for prefix in "${!archive_map[@]}"; do
     tarFile="$(find -H "$THEME_DIR" -type f -name "${prefix}_*.tar.*")"
     [ -f "$tarFile" ] || continue
@@ -230,7 +230,7 @@ for prefix in "${!archive_map[@]}"; do
         tar -xf "$tarFile" -C "$tgtDir"
     else
         print_log -y "Not writable. Extracting as root: $tgtDir"
-        if ! sudo tar -xf "$tarFile" -C "$tgtDir" 2> /dev/null; then
+        if ! sudo tar -xf "$tarFile" -C "$tgtDir" 2>/dev/null; then
             print_log -r "Extraction by root FAILED. Giving up..."
             print_log "The above error can be ignored if the '$tgtDir' is not writable..."
         fi
@@ -241,7 +241,7 @@ theme_wallpapers="$confDir/hyde/themes/$THEME_NAME/wallpapers"
 [ ! -d "$theme_wallpapers" ] && mkdir -p "$theme_wallpapers"
 while IFS= read -r walls; do
     cp -f "$walls" "$theme_wallpapers"
-done <<< "$wallpapers"
+done <<<"$wallpapers"
 theme_logos="$confDir/hyde/themes/$THEME_NAME/logo"
 if [ -n "$logos" ]; then
     [ ! -d "$theme_logos" ] && mkdir -p "$theme_logos"
@@ -251,11 +251,11 @@ if [ -n "$logos" ]; then
         else
             print_log -y "[note] " "$logo --> do not exist"
         fi
-    done <<< "$logos"
+    done <<<"$logos"
 fi
-echo -en "$restore_list" > "$THEME_DIR/restore_cfg.lst"
+echo -en "$restore_list" >"$THEME_DIR/restore_cfg.lst"
 print_log -g "\n[exec] " "restore.config.sh \"$THEME_DIR/restore_cfg.lst\" \"$THEME_DIR/Configs\" \"$THEME_NAME\"\n"
-bash "$script_dir/restore.config.sh" "$THEME_DIR/restore_cfg.lst" "$THEME_DIR/Configs" "$THEME_NAME" &> /dev/null || {
+bash "$script_dir/restore.config.sh" "$THEME_DIR/restore_cfg.lst" "$THEME_DIR/Configs" "$THEME_NAME" &>/dev/null || {
     print_log -r "[ERROR] " "restore.config.sh failed"
     exit 1
 }
