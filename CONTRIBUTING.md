@@ -57,8 +57,9 @@ Thank you for your interest in contributing to Community Standards! We welcome a
      1. Go to your forked repository.
      2. Click the **Compare & pull request** button next to your `your-branch-name` branch.
      3. Make sure the base repository branch is set to `dev`.
-     4. Add a title and description for your pull request.
-     5. Click **Create pull request** and remember to add the relevant labels with using the [pull request template](https://github.com/HyDE-Project/HyDE/blob/master/.github/PULL_REQUEST_TEMPLATE.md).
+     4. Run pre-commit checks `pre-commit run --all-files`.
+     5. Add a title and description for your pull request.
+     6. Click **Create pull request** and remember to add the relevant labels with using the [pull request template](https://github.com/HyDE-Project/HyDE/blob/master/.github/PULL_REQUEST_TEMPLATE.md).
 
 ## Guidelines
 

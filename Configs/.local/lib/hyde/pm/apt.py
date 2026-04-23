@@ -7,16 +7,27 @@ from typing import Sequence
 PackageEntry = tuple[str, str | None, str | None, str | None]
 
 
-def install(ctx, packages: Sequence[str]) -> None:
-    ctx.run(["sudo", "apt", "install", *packages])
+def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
+    args = ["sudo", "apt", "install"]
+    if no_confirm:
+        args.append("-y")
+    args.extend(packages)
+    ctx.run(args)
 
 
-def remove(ctx, packages: Sequence[str]) -> None:
-    ctx.run(["sudo", "apt", "remove", *packages])
+def remove(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
+    args = ["sudo", "apt", "remove"]
+    if no_confirm:
+        args.append("-y")
+    args.extend(packages)
+    ctx.run(args)
 
 
-def upgrade(ctx) -> None:
-    ctx.run(["sudo", "apt", "upgrade"])
+def upgrade(ctx, no_confirm: bool = False) -> None:
+    args = ["sudo", "apt", "upgrade"]
+    if no_confirm:
+        args.append("-y")
+    ctx.run(args)
 
 
 def fetch(ctx) -> None:

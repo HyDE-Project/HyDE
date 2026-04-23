@@ -1,21 +1,33 @@
 # Changelog
 
-<!--  
-All notable changes to `HyDE` will be documented in this file.
+<!--
+All notable changes to 'HyDE' will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
+
+## Unreleased
+
+### Changed
+- Pyprland: Upgraded to v3.3.1
+- Hypr: removed 'hypr.altab.py' as it is too slow and and use 'hypr.altab.lua' instead. Test using 'hyde-shell altab' to see if it works!
+
+### Added
+- Core: Use 'rsync' for file copy operations. Only recommended if users already have 'rsync' installed.
+- Package Manager: Added --no-confirm flag to 'hyde-shell pm.py' commands.
+- Lua: Added 'hyde-shell luainit' to initialize the Lua runtime. It is slow and should be optional for now.
+- Python: 'hyde-shell pyinit' will now sync like pip to preserve user packages.
 
 ## v26.4.3 | 3rd week of April 2026 Release!
 
 ### Changed
 
 - Wallpaper: Pt. 1 of multi theming backend.
-- Hyprland: Remove `hyde.conf` as it is too brittle. Use `hyprland.conf` instead!
+- Hyprland: Remove 'hyde.conf' as it is too brittle. Use 'hyprland.conf' instead!
 - Window: Moved 'windowpin' to 'window.pin'. For consistency.
 - pyutils: Kinda clean up libnotify wrapper.
 - Updated app2unit. https://github.com/Vladimir-csp/app2unit/blob/87dd9cd14e020b199256854c84f31b62680d1b21/app2unit
-- Changed Shader main manu into 'Eye Care' and sub menus will have Temperature, Gamma and the Shaders Selector. 
+- Changed Shader main manu into 'Eye Care' and sub menus will have Temperature, Gamma and the Shaders Selector.
 - Waybar: waybar now uses systemd run instead of app2unit to handle env properly.
 - Updated the hyde-config binary
 - Python-env: Deprecate pip and use uv instead.
@@ -25,13 +37,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Window: added 'hyde-shell window.mute' to toggle window audio. This is a python implementation for 'wl-togglesink'
+- Windowrules: add opacity rule and floating rules for Blender to disable transparency, float render window, and set render window size to 50% of monitor
 - l10n: Added a bash POC for localization. Python already has built in support for localization. This is just a POC for bash scripts. It is not yet fully implemented and is not yet available for all scripts. So we can share language packs. Please open a discussion if you are interested in helping with localization. (keeping this here just to see who really cared lol.)
 - hyprsunset: Added identity param to be used temp
 - Waybar: Added Eyecare menu
 - Session: *Experimental* feature which might be helpful as session restore in wayland is being worked on. 'hyde-shell session --help' to learn more!
-- Hyprland: *Experimental* Added an Alt-tab like feature that behaves like a browser. It is slow so I might port it to go. 
+- Hyprland: *Experimental* Added an Alt-tab like feature that behaves like a browser. It is slow so I might port it to go.
 - Wallpaper: [waydeeper](https://github.com/EdenQwQ/waydeeper) can be used as wallpaper backend. To use it, waydeeper should be installed manually.
-
+- Lua: ****Experimental** Lua support. Please open a discussion if you are interested in helping with Lua support. Uses hererocks to install lua.
 
 ### Fixed
 - Weather: Fix [#1664](https://github.com/HyDE-Project/HyDE/issues/1664)
@@ -61,50 +74,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - Game launcher: steamdeck holograph
-- Formatting using 
+- Formatting using
 - Hyprland 0.53 Syntax Revamp
-- Some old hyprdots theme parsing. 
+- Some old hyprdots theme parsing.
 
 ### Added
 
-- Wallpaper: Added wallpaper '--multi-select' for multiple --outputs. Useful for per monitor or lockscreen/display manager background.  
+- Wallpaper: Added wallpaper '--multi-select' for multiple --outputs. Useful for per monitor or lockscreen/display manager background.
 - Wallpaper: Selector option to modify column count
 - Theme: Selector option to modify thumbnail types and column count
 - CLI: Added 'hyde-shell open' for apps with mimetypes
-- Core: Clean up 'hyde-shell wallpaper' script 
+- Core: Clean up 'hyde-shell wallpaper' script
 - Restore: Added option to trash the config to avoid conflicts
 - Waybar: Added pavucontrol-qt in the module
 - Rofi: Added search functionality to the game launcher menu.
 - Cliphist: image-history #1360
 - Cliphist: Rofi binds #1360
 - Game launcher: lutris inspector py script now uses the lutris DB to get meta dat making it faster than using lutris CLI
-- Game launcher: steam inspector py script is translated from fn_steam shell script. 
+- Game launcher: steam inspector py script is translated from fn_steam shell script.
 - Game launcher: catalog backend will merge both lutris and steam with hints for duplicates
 - Game launcher: "hyde-shell game launcher" now has --style and --backend args
 - Python: added pyproject.toml for ruff formatter
 - Shell: Added ".editorconfig" for shell scripts.
-- Cliphist: Added OCR backend. Invoking "hyde-shell cliphist -scan-image" or `Alt+V` on clipboard will extract the text of the latest image that exist in cliphist. 
-- Screenshot: Added QR code reading feature using `zbar` package. No default hotkey is provided. Call it via `hyde-shell screenshot sq`
+- Cliphist: Added OCR backend. Invoking "hyde-shell cliphist -scan-image" or 'Alt+V' on clipboard will extract the text of the latest image that exist in cliphist.
+- Screenshot: Added QR code reading feature using 'zbar' package. No default hotkey is provided. Call it via 'hyde-shell screenshot sq'
 - Weather Applet: Added automatic locale detection for temperature units (°C/°F), time formats (12h/24h), and wind speed (km/h/mph).
-- Weather Applet: Implemented multi-language support based on system locale and added `WEATHER_LANG` for manual overrides.
-- Weather Applet: Added support for a user-defined configuration file at `~/.config/weather.env`.
+- Weather Applet: Implemented multi-language support based on system locale and added 'WEATHER_LANG' for manual overrides.
+- Weather Applet: Added support for a user-defined configuration file at '~/.config/weather.env'.
 
 ### Changed
 
-- NVIDIA: Updated driver database to separate legacy and modern GPU support. `nvidia-open-dkms` now targets Turing (NV160) and newer, while `nvidia-580xx-dkms` covers Maxwell (NV110) through Volta (NV140).
+- NVIDIA: Updated driver database to separate legacy and modern GPU support. 'nvidia-open-dkms' now targets Turing (NV160) and newer, while 'nvidia-580xx-dkms' covers Maxwell (NV110) through Volta (NV140).
 - QT: Move qtXct/colors.conf into qtXct/colors/wallbash.conf. This is how qtXct Settings parses color schemes the proper way.
-- Core: Moved core "color" switch inside directory in lib path. Prepare to make `~/.local/lib/hyde` external only scripts and corresponding directories will be sourced or executed internally. 
+- Core: Moved core "color" switch inside directory in lib path. Prepare to make '~/.local/lib/hyde' external only scripts and corresponding directories will be sourced or executed internally.
 - Wallbash: Remove wallbash.qt as it is a simple cp command now in the qtct.dcol template
-- UWSM: Start processes launched with app2unit.sh,rofi,`hyde-shell app` as services
+- UWSM: Start processes launched with app2unit.sh,rofi,'hyde-shell app' as services
 
-### Migration 
+### Migration
 
 ##### Hyprland v0.53.0
 
 - Before updating HyDE, Please make sure your hyprland version is 0.53.0!
 - After Updating HyDE please make sure to fix any syntax error in ~/.config/hypr/*
 
-We are trying our best to fix any issues. So please try to your best to search for any duplicate issues and potential fixes! 
+We are trying our best to fix any issues. So please try to your best to search for any duplicate issues and potential fixes!
 
 Stay HyDErated!
 
@@ -112,27 +125,27 @@ Stay HyDErated!
 
 The driver selection/installation logic has been updated to align with Arch Linux recommendations.
 
-- **Turing (NV160) and newer**: Now defaults to `nvidia-open-dkms`.
-- **Maxwell (NV110) to Volta (NV140)**: Now defaults to `nvidia-580xx-dkms`.
+- **Turing (NV160) and newer**: Now defaults to 'nvidia-open-dkms'.
+- **Maxwell (NV110) to Volta (NV140)**: Now defaults to 'nvidia-580xx-dkms'.
 
 
 **Existing Users**
-- nv110-nv140 cards, please install `nvidia-580xx-dkms` before updating your whole system or before rebooting. `nvidia-open-dkms` could potentially borke your display. Goodluck!
+- nv110-nv140 cards, please install 'nvidia-580xx-dkms' before updating your whole system or before rebooting. 'nvidia-open-dkms' could potentially borke your display. Goodluck!
 - nv160 (Turing) and above see **Fallback**
 
 **Fallback:**
-Users with Turing or newer cards using `nvidia-open-dkms` can fallback to `nvidia-580xx-dkms` if they encounter issues, as the 580xx branch still supports these architectures. 
+Users with Turing or newer cards using 'nvidia-open-dkms' can fallback to 'nvidia-580xx-dkms' if they encounter issues, as the 580xx branch still supports these architectures.
 
 
 - Read wiki https://wiki.archlinux.org/title/NVIDIA
-- See common solutions https://github.com/HyDE-Project/HyDE/discussions/1477 
+- See common solutions https://github.com/HyDE-Project/HyDE/discussions/1477
 
 
 ## v25.10.1
 
 ### Fixed
-- Hyprland: Fix errors when `HYPRLAND_CONFIG` is not set yet
-- Fish: Please Move you configs to `~/.config/fish/conf.d`
+- Hyprland: Fix errors when 'HYPRLAND_CONFIG' is not set yet
+- Fish: Please Move you configs to '~/.config/fish/conf.d'
 
 ### Added
 
@@ -142,58 +155,58 @@ Users with Turing or newer cards using `nvidia-open-dkms` can fallback to `nvidi
 
 ### Changed
 
-- Audio volume control: use `wpctl` instead of `pamixer` for managing audio volume when PipeWire server is running.
-- Fish: `config.fish` is now user defined config
-- Fish: `confi.d/hyde.fish` is used for HyDE only stuff. To override this create a separate file or use `config.fish` 
+- Audio volume control: use 'wpctl' instead of 'pamixer' for managing audio volume when PipeWire server is running.
+- Fish: 'config.fish' is now user defined config
+- Fish: 'confi.d/hyde.fish' is used for HyDE only stuff. To override this create a separate file or use 'config.fish'
 
 
 ### Migration
 
-For fish shell users: 
-Please empty your `~/.config/fish/config.fish` and use it to modify fish configurations.
+For fish shell users:
+Please empty your '~/.config/fish/config.fish' and use it to modify fish configurations.
 
 ## v25.9.3
 
 ### Changed
 
-- OCR: `imagemagick` screenshot preprocessing tuned for better recognition results
+- OCR: 'imagemagick' screenshot preprocessing tuned for better recognition results
 - Docs: Improves release policy documentation by #1265
 
 ### Added
 
 - Turkish documentation.
 - No changes have been made to other codes.
-- OCR: `tesseract` now supports explicit language settings via `hyde/config.toml`:
-    ```toml
+- OCR: 'tesseract' now supports explicit language settings via 'hyde/config.toml':
+    '''toml
     [screenshot.ocr]
     tesseract_languages = ["eng"]
-    ```
-    To use text recognition bind `hyde-shell screenshot sc` to any hotkey.
+    '''
+    To use text recognition bind 'hyde-shell screenshot sc' to any hotkey.
 - Hyprlock: Added hyprlock preview
 - File chooser dialogs in Hyprland now open centered and floating instead of off-screen
 
 ### Fixed
 
 - Hyprlock: fix hyprlock crashing by handling it as a systemd scope unit
-- Hyprland: Backport Fix installation/update errors 
+- Hyprland: Backport Fix installation/update errors
 
 ## v25.9.1
 
 This release delivers a new gesture syntax for hyprland v0.51.0. This is a breaking change for users of the previous gesture syntax. Please update HyDE before opening an issue.
 
-For contributors, if you need to make the workspace animation vertical, example the `vertical.conf` animation, please **explicitly** add the following line to file.
+For contributors, if you need to make the workspace animation vertical, example the 'vertical.conf' animation, please **explicitly** add the following line to file.
 
 
-```
+'''
 gesture = 3, horizontal, unset # unsets the default horizontal gesture
 gesture = 3, vertical, workspace
-```
+'''
 
 ### Changed
 
 - Waybar: Make temperature background transparent
 - hyde-shell: silent pyinit command
-- Binds: Use `hyde-shell logout` for cleaner session logout
+- Binds: Use 'hyde-shell logout' for cleaner session logout
 - Gestures: Chase hyprland v0.51.0 gesture syntax
 
 ### Added
@@ -232,18 +245,18 @@ gesture = 3, vertical, workspace
 
 ## v25.8.1
 
-Big CHANGE in HyDE! We are now using `uwsm` for session management and app2unit for application management.
+Big CHANGE in HyDE! We are now using 'uwsm' for session management and app2unit for application management.
 
 **PLEASE run install.sh again to upgrade and install missing dependencies and REBOOT!**
 
-In SDDM, please choose `Hyprland (UWSM Managed)` as your session. Or else you will handle the session yourself!
+In SDDM, please choose 'Hyprland (UWSM Managed)' as your session. Or else you will handle the session yourself!
 
 ### Changed
 
 - Hyprlock: Sourcing hyprlock/HyDE.conf as default theme
 - Core: Improved theming script stack
-- Removed `xdg-config/hypr/hyde.conf` as it is too brittle. Use hyprland.conf instead!
-- Moved all core hypr stuff to `~/.local/share/hypr`
+- Removed 'xdg-config/hypr/hyde.conf' as it is too brittle. Use hyprland.conf instead!
+- Moved all core hypr stuff to '~/.local/share/hypr'
 
 ### Added
 
@@ -265,11 +278,11 @@ In SDDM, please choose `Hyprland (UWSM Managed)` as your session. Or else you wi
 
 ## v25.7.3
 
-We use a dedicated Python environment to keep HyDE clean and dependency-free. Just run your scripts with `hyde-shell`— this handles the environment for you.
+We use a dedicated Python environment to keep HyDE clean and dependency-free. Just run your scripts with 'hyde-shell'— this handles the environment for you.
 
-Examples:  
- `hyde-shell mediaplayer.py`  
- `hyde-shell waybar`
+Examples:
+ 'hyde-shell mediaplayer.py'
+ 'hyde-shell waybar'
 
 ### Added
 
@@ -294,8 +307,8 @@ Examples:
 
 - Launch Scripts using 'hyde-shell' instead of '$scrPath/'
 - Hyprland: Remove dconf setting in Hyprland config and add a separate dconf stack on color setup. This removes some hiccups on hyprctl reload.
-- Updated `hyq` hyprquery v0.6.3r2
-- Updated `hydectl`
+- Updated 'hyq' hyprquery v0.6.3r2
+- Updated 'hydectl'
 
 ### Fixed
 

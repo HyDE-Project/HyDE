@@ -30,9 +30,10 @@ B = Backup - Backup the target
 
  Hyde core files 
 P|${HOME}/.config/hyde|config.toml|hyprland
-P|${HOME}/.config/hypr|pyprland.toml shaders.conf workflows.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
+P|${HOME}/.config/hypr|shaders.conf workflows.conf animations.conf windowrules.conf keybindings.conf userprefs.conf monitors.conf|hyprland
 P|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
 P|${HOME}/.config/hypr/themes|theme.conf wallbash.conf colors.conf|hyprland
+P|${HOME}/.config/pypr|config.toml|hyprland
 S|${HOME}/.config/systemd|user|systemd
 P|${HOME}/.local/state/hyde|hyprland.conf|hyprland
 

@@ -12,6 +12,8 @@ THEME_IMPORT_FILE="${1:-${scrDir}/themepatcher.lst}"
 confDir=${confDir:-"$HOME/.config"}
 flg_ThemeInstall=${flg_ThemeInstall:-1}
 flg_DryRun=${flg_DryRun:-0}
+cloneDir=${cloneDir:-"$(dirname "${scrDir}")"}
+export PRINT_LOG=false
 
 if [ ! -f "$THEME_IMPORT_FILE" ] || [ -z "$THEME_IMPORT_FILE" ]; then
     print_log -crit "error" "'$THEME_IMPORT_FILE'  No such file or directory"
@@ -28,7 +30,7 @@ if [ "$flg_ThemeInstall" -eq 1 ]; then
         [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" >"${themePath}/.sort"
 
         if [ "${THEME_IMPORT_ASYNC}" -ne 1 ] && [ "${flg_DryRun}" -ne 1 ]; then
-            if ! "${scrDir}/themepatcher.sh" "${themeName}" "${themeRepo}" "--skipcaching" "false"; then
+            if ! "${cloneDir}/Configs/.local/lib/hyde/theme.patch.sh" "${themeName}" "${themeRepo}" "--skipcaching" "false"; then
                 print_log -r "[THEME] " -crit "error" "importing" "${themeName}"
             else
                 print_log -g "[THEME] " -stat "added" "${themeName}"
@@ -41,8 +43,8 @@ if [ "$flg_ThemeInstall" -eq 1 ]; then
 
     if [ "${THEME_IMPORT_ASYNC}" -eq 1 ]; then
         set +e
-        parallel --bar --link "\"${scrDir}/themepatcher.sh\"" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+        parallel --bar --link "\"${cloneDir}/Configs/.local/lib/hyde/theme.patch.sh\"" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
         set -e
     fi
-    print_log -y "Be sure to cache the wallpapers!"
+    print_log -y "Run \'hyde-shell reload\' if themes look broken"
 fi

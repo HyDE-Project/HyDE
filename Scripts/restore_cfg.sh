@@ -6,6 +6,13 @@
 #|-/ /--| Prasanth Rangan                |-/ /--|#
 #|/ /---+--------------------------------+/ /---|#
 
+# Optional rsync. The logic for now looks very explicit as it helps  in debugging just in case. In future, if more options are added, this can be refactored to be more modular.
+if command -v rsync >/dev/null 2>&1; then
+	USE_RSYNC=${USE_RSYNC:-0}
+else
+	USE_RSYNC=0
+fi
+
 deploy_list() {
 
 	while read -r lst; do
@@ -110,6 +117,8 @@ deploy_psv() {
 			fi
 		done < <(echo "${pkg}" | xargs -n 1)
 
+		[[ "${USE_RSYNC}" -eq 1 ]] && print_log -g "Using rsync"
+
 		# Pipe the value of cfg to xargs, which splits it into separate arguments based on spaces, and then pipe the output to a while loop
 		echo "${cfg}" | xargs -n 1 | while read -r cfg_chk; do
 
@@ -156,25 +165,64 @@ deploy_psv() {
 
 				case "${ctlFlag}" in
 				"B") # Backup only
-					[ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+					if [ "${flg_DryRun}" -ne 1 ]; then
+						if [ "$USE_RSYNC" -eq 1 ]; then
+							rsync -a "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+						else
+							cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+						fi
+					fi
 					print_log -g "[copy backup]" -b " :: " "${pth}/${cfg_chk} --> ${BkpDir}${tgt}..."
 					;;
 				"O") # Overwrite
-					[ "${flg_DryRun}" -ne 1 ] && mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-					[ "${flg_DryRun}" -ne 1 ] && cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
+					if [ "${flg_DryRun}" -ne 1 ]; then
+						if [ "$USE_RSYNC" -eq 1 ]; then
+							rsync -a --remove-source-files "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+						else
+							mv "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+						fi
+						if [ "$USE_RSYNC" -eq 1 ]; then
+							rsync -a "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
+						else
+							cp -r "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
+						fi
+					fi
 					print_log -r "[move to backup]" " > " -r "[overwrite]" -b " :: " "${pth}" -r " <-- " "${CfgDir}${tgt}/${cfg_chk}"
 					;;
 				"S") # Sync
-					[ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-					[ "${flg_DryRun}" -ne 1 ] && cp -rf "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
+					if [ "${flg_DryRun}" -ne 1 ]; then
+						if [ "$USE_RSYNC" -eq 1 ]; then
+							rsync -a "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+							rsync -a "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
+						else
+							cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+							cp -rf "${CfgDir}${tgt}/${cfg_chk}" "${pth}"
+						fi
+					fi
 					print_log -g "[copy to backup]" " > " -y "[sync]" -b " :: " "${pth}" -r " <--  " "${CfgDir}${tgt}/${cfg_chk}"
 					;;
 				"P") # Preserve
-					[ "${flg_DryRun}" -ne 1 ] && cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
-					if ! [ "${flg_DryRun}" -ne 1 ] && cp -rn "${CfgDir}${tgt}/${cfg_chk}" "${pth}" 2>/dev/null; then
-						print_log -g "[copy to backup]" " > " -y "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"
+					if [ "${flg_DryRun}" -ne 1 ]; then
+						if [ "$USE_RSYNC" -eq 1 ]; then
+							rsync -a "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+							rsync -a --ignore-existing "${CfgDir}${tgt}/${cfg_chk}" "${pth}" 2>/dev/null
+						else
+							cp -r "${pth}/${cfg_chk}" "${BkpDir}${tgt}"
+							cp -rn "${CfgDir}${tgt}/${cfg_chk}" "${pth}" 2>/dev/null
+						fi
+					fi
+					if [ "$USE_RSYNC" -eq 1 ]; then
+						if [ $? -eq 0 ]; then
+							print_log -g "[copy to backup]" " > " -y "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"
+						else
+							print_log -g "[copy to backup]" " > " -y "[preserved]" -b " :: " "${pth}" + 208 " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+						fi
 					else
-						print_log -g "[copy to backup]" " > " -y "[preserved]" -b " :: " "${pth}" + 208 " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+						if ! [ "${flg_DryRun}" -ne 1 ] && cp -rn "${CfgDir}${tgt}/${cfg_chk}" "${pth}" 2>/dev/null; then
+							print_log -g "[copy to backup]" " > " -y "[populate]" -b " :: " "${pth}${tgt}/${cfg_chk}"
+						else
+							print_log -g "[copy to backup]" " > " -y "[preserved]" -b " :: " "${pth}" + 208 " <--  " "${CfgDir}${tgt}/${cfg_chk}"
+						fi
 					fi
 					;;
 				esac

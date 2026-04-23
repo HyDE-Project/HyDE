@@ -1,0 +1,62 @@
+default: true
+
+# This repository uses HTML in Markdown for badges, image grids, and centered blocks.
+MD033: false
+
+# Banner-style READMEs start with HTML wrappers instead of an H1.
+MD041: false
+
+# Long lines are common in image links and localized docs.
+MD013: false
+
+# HTML <img> tags are used without markdown alt text fields.
+MD045: false
+
+# Intentional blank lines inside complex blockquote sections.
+MD028: false
+
+# Intentional multiple blank lines in some translated docs.
+MD012: false
+
+# Existing link text like "here" is currently accepted.
+MD059: false
+
+# Existing docs contain repeated translated section headings.
+MD024: false
+
+# Existing heading hierarchies are not strictly incremental.
+MD001: false
+
+# Existing docs mix setext and atx headings.
+MD003: false
+
+# Existing docs use emphasis as pseudo-headings.
+MD036: false
+
+# Existing docs include bare links.
+MD034: false
+
+# Existing docs often omit blank lines around fences/headings/lists.
+MD031: false
+MD022: false
+MD032: false
+
+# Existing docs use non-sequential ordered list numbers.
+MD029: false
+
+# Existing docs include heading punctuation.
+MD026: false
+
+# Existing docs have many table style/alignment inconsistencies.
+MD060: false
+
+# Existing docs include unlabeled fences.
+MD040: false
+
+# Existing docs include multiple H1 headings and nonstandard table shapes.
+MD025: false
+MD056: false
+MD058: false
+
+# Existing docs may include hard tabs in markdown tables/schemas.
+MD010: false

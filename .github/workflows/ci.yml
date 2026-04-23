@@ -335,8 +335,8 @@ jobs:
               per_page: 2
             });
 
-            const previousTag = allReleases.data.length > 1 ? 
-              allReleases.data[1].tag_name : 
+            const previousTag = allReleases.data.length > 1 ?
+              allReleases.data[1].tag_name :
               'HEAD~20'; // Fallback to last 20 commits if no previous release
 
             // Get commits between the two tags
@@ -355,15 +355,15 @@ jobs:
             const features = commitList.split('\n')
               .filter(line => line.includes('feat:') || line.includes('feat('))
               .join('\n');
-              
+
             const fixes = commitList.split('\n')
               .filter(line => line.includes('fix:') || line.includes('fix('))
               .join('\n');
-              
+
             const docs = commitList.split('\n')
               .filter(line => line.includes('docs:') || line.includes('docs('))
               .join('\n');
-              
+
             const other = commitList.split('\n')
               .filter(line => !line.includes('feat:') && !line.includes('fix:') && !line.includes('docs:') &&
                              !line.includes('feat(') && !line.includes('fix(') && !line.includes('docs('))

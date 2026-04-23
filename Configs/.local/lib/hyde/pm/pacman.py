@@ -10,26 +10,40 @@ AUR_HELPERS = ("paru", "paru-bin", "yay", "yay-bin")
 PackageEntry = tuple[str, str | None, str | None, str | None]
 
 
-def install(ctx, packages: Sequence[str]) -> None:
+def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
     remaining = list(packages)
     for helper in AUR_HELPERS:
         if helper in remaining:
-            _install_aur_helper(ctx, helper)
+            _install_aur_helper(ctx, helper, no_confirm=no_confirm)
             remaining = [pkg for pkg in remaining if pkg != helper]
     if remaining:
-        ctx.run(["sudo", "pacman", "-S", "--needed", *remaining])
+        args = ["sudo", "pacman", "-S", "--needed"]
+        if no_confirm:
+            args.append("--noconfirm")
+        args.extend(remaining)
+        ctx.run(args)
 
 
-def remove(ctx, packages: Sequence[str]) -> None:
-    ctx.run(["sudo", "pacman", "-Rsc", *packages])
+def remove(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
+    args = ["sudo", "pacman", "-Rsc"]
+    if no_confirm:
+        args.append("--noconfirm")
+    args.extend(packages)
+    ctx.run(args)
 
 
-def upgrade(ctx) -> None:
-    ctx.run(["sudo", "pacman", "-Su"])
+def upgrade(ctx, no_confirm: bool = False) -> None:
+    args = ["sudo", "pacman", "-Su"]
+    if no_confirm:
+        args.append("--noconfirm")
+    ctx.run(args)
 
 
-def fetch(ctx) -> None:
-    ctx.run(["sudo", "pacman", "-Sy"])
+def fetch(ctx, no_confirm: bool = False) -> None:
+    args = ["sudo", "pacman", "-Sy"]
+    if no_confirm:
+        args.append("--noconfirm")
+    ctx.run(args)
 
 
 def info(ctx, package: str) -> None:
@@ -82,12 +96,16 @@ def list_updates(ctx) -> None:
     ctx.run(["pacman", "-Qu"], check=False)
 
 
-def _install_aur_helper(ctx, helper: str) -> None:
-    ctx.run(["sudo", "pacman", "-S", "--needed", "git", "base-devel"])
+def _install_aur_helper(ctx, helper: str, no_confirm: bool = False) -> None:
+    args = ["sudo", "pacman", "-S", "--needed", "git", "base-devel"]
+    ctx.run(args)
     with TemporaryDirectory() as tmp:
         repo_path = Path(tmp) / helper
         ctx.run(["git", "clone", f"https://aur.archlinux.org/{helper}.git", str(repo_path)])
-        ctx.run(["makepkg", "-si"], cwd=repo_path)
+        mk_args = ["makepkg", "-si"]
+        if no_confirm or getattr(ctx, 'no_confirm', False):
+            mk_args.append("--noconfirm")
+        ctx.run(mk_args, cwd=repo_path)
 
 
 def _color_flag(ctx) -> str:

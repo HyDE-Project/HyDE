@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-json
+      - id: check-yaml
+      - id: check-toml
+      - id: check-xml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.48.0
+    hooks:
+      - id: markdownlint
+      - id: markdownlint
+        name: markdownlint-strict
+        args: [--config, .markdownlint-strict.yaml]
+        stages: [manual]

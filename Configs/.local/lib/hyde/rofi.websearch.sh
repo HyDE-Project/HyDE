@@ -88,12 +88,14 @@ handle_query() {
     fi
     write_to_top "$cached_search_dir/$site.txt" "$query"
     write_to_top "$cached_search_dir/recent.sites" "$site | ${SITES[$site]}"
+    encoded_query=$(printf '%s' "$query" | jq -sRr @uri)
+    query_url=$(printf '%s' "${SITES[$site]}" | sed "s/%s/$encoded_query/")
     if [ -n "$BROWSER" ]; then
-        printf "Using browser: %s %s\n" "$BROWSER" "${SITES[$site]}$query"
-        nohup "$BROWSER" "${SITES[$site]}$query" > /dev/null 2>&1 &
+        printf "Using browser: %s %s\n" "$BROWSER" "$query_url"
+        nohup "$BROWSER" "$query_url" > /dev/null 2>&1 &
     else
-        printf "Using default browser: xdg-open %s\n" "${SITES[$site]}$query"
-        [ -z "$BROWSER" ] && nohup xdg-open "${SITES[$site]}$query" > /dev/null 2>&1 &
+        printf "Using default browser: xdg-open %s\n" "$query_url"
+        [ -z "$BROWSER" ] && nohup xdg-open "$query_url" > /dev/null 2>&1 &
     fi
 }
 smart_input() {
