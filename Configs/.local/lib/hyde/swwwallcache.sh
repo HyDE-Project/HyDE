@@ -26,6 +26,39 @@ fi
 #// define functions
 
 # shellcheck disable=SC2317
+fn_generate_dcol() {
+    # Generate dcol color file using configured backend
+    # Supports: imagemagick (default), matugen, auto (imagemagick with matugen fallback)
+    local img="${1}"
+    local out="${2}"
+    local backend="${DCOL_BACKEND:-imagemagick}"
+
+    case "${backend}" in
+        matugen)
+            if command -v matugen &>/dev/null; then
+                "${scrDir}/wallbash-matugen.sh" --custom "${wallbashCustomCurve}" "${img}" "${out}" &>/dev/null
+            else
+                echo "Warning: matugen not found, falling back to imagemagick"
+                "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${img}" "${out}" &>/dev/null
+            fi
+            ;;
+        auto)
+            # Try imagemagick first, fallback to matugen if it fails or produces invalid output
+            if ! "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${img}" "${out}" &>/dev/null || \
+               [ ! -e "${out}.dcol" ] || [ "$(wc -l <"${out}.dcol")" -ne 89 ]; then
+                if command -v matugen &>/dev/null; then
+                    "${scrDir}/wallbash-matugen.sh" --custom "${wallbashCustomCurve}" "${img}" "${out}" &>/dev/null
+                fi
+            fi
+            ;;
+        *)
+            # Default: imagemagick via wallbash.sh
+            "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${img}" "${out}" &>/dev/null
+            ;;
+    esac
+}
+
+# shellcheck disable=SC2317
 fn_wallcache() {
     local x_hash="${1}"
     local x_wall="${2}"
@@ -33,7 +66,7 @@ fn_wallcache() {
     [ ! -e "${thmbDir}/${x_hash}.sqre" ] && magick "${x_wall}"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "${thmbDir}/${x_hash}.sqre"
     [ ! -e "${thmbDir}/${x_hash}.blur" ] && magick "${x_wall}"[0] -strip -scale 10% -blur 0x3 -resize 100% "${thmbDir}/${x_hash}.blur"
     [ ! -e "${thmbDir}/${x_hash}.quad" ] && magick "${thmbDir}/${x_hash}.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "${thmbDir}/${x_hash}.png" && mv "${thmbDir}/${x_hash}.png" "${thmbDir}/${x_hash}.quad"
-    { [ ! -e "${dcolDir}/${x_hash}.dcol" ] || [ "$(wc -l <"${dcolDir}/${x_hash}.dcol")" -ne 89 ]; } && "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${thmbDir}/${x_hash}.thmb" "${dcolDir}/${x_hash}" &>/dev/null
+    { [ ! -e "${dcolDir}/${x_hash}.dcol" ] || [ "$(wc -l <"${dcolDir}/${x_hash}.dcol")" -ne 89 ]; } && fn_generate_dcol "${thmbDir}/${x_hash}.thmb" "${dcolDir}/${x_hash}"
 }
 
 # shellcheck disable=SC2317
@@ -44,9 +77,10 @@ fn_wallcache_force() {
     magick "${x_wall}"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "${thmbDir}/${x_hash}.sqre"
     magick "${x_wall}"[0] -strip -scale 10% -blur 0x3 -resize 100% "${thmbDir}/${x_hash}.blur"
     magick "${thmbDir}/${x_hash}.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "${thmbDir}/${x_hash}.png" && mv "${thmbDir}/${x_hash}.png" "${thmbDir}/${x_hash}.quad"
-    "${scrDir}/wallbash.sh" --custom "${wallbashCustomCurve}" "${thmbDir}/${x_hash}.thmb" "${dcolDir}/${x_hash}" &>/dev/null
+    fn_generate_dcol "${thmbDir}/${x_hash}.thmb" "${dcolDir}/${x_hash}"
 }
 
+export -f fn_generate_dcol
 export -f fn_wallcache
 export -f fn_wallcache_force
 

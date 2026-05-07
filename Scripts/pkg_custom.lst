@@ -9,6 +9,9 @@ ddccui                                                 # GUI to control brightne
 hyprgui-bin                                            # GUI for hyprland configuration // might mess your userprefs but convenient
 # satty                                                  # Annotation tool like swappy but better
 
+# --------------------------------------------------- // Color backends
+# matugen-bin                                          # Material You color generation (optional alternative to imagemagick for dcol)
+
 # --------------------------------------------------- // Shell
 # oh-my-zsh-git|zsh                                      # Optional plugin manager for zsh // already installed locally
 
