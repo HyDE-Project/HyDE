@@ -72,6 +72,7 @@ _BLACKLIST_EXE = frozenset(
         "dbus-broker",
         # bars & widgets
         "waybar",
+        "wayle",
         "ags",
         "eww",
         # notification daemons
