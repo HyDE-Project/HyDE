@@ -35,6 +35,23 @@ wallpaper_cache_init() {
 	fi
 }
 
+fn_generate_dcol() {
+	# Generate color cache files for wallbash
+	# Always generates .dcol (imagemagick dominant colors)
+	# Also generates .mcol (matugen material colors) if matugen is available
+	local img="$1"
+	local out="$2"
+
+	# Always generate .dcol via imagemagick (primary/default)
+	"$scrDir/wallbash.sh" --custom "$wallbashCustomCurve" "$img" "$out" &>/dev/null
+
+	# Also generate .mcol via matugen if available (coexist)
+	if command -v matugen &>/dev/null; then
+		{ [ ! -e "${out}.mcol" ] || [ "$(wc -l < "${out}.mcol")" -ne 89 ]; } && \
+			"$scrDir/wallbash-matugen.py" --custom "$wallbashCustomCurve" "$img" "$out" &>/dev/null
+	fi
+}
+
 fn_wallcache() {
 	local x_hash="$1"
 	local x_wall="$2"
@@ -54,7 +71,7 @@ fn_wallcache() {
 	[ ! -e "$thmbDir/$x_hash.quad" ] && magick "$thmbDir/$x_hash.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "$thmbDir/$x_hash.quad.png" && mv "$thmbDir/$x_hash.quad.png" "$thmbDir/$x_hash.quad"
 	{
 		[ ! -e "$dcolDir/$x_hash.dcol" ] || [ "$(wc -l < "$dcolDir/$x_hash.dcol")" -ne 89 ]
-	} && "$scrDir/wallbash.sh" --custom "$wallbashCustomCurve" "$thmbDir/$x_hash.thmb" "$dcolDir/$x_hash" &> /dev/null
+	} && fn_generate_dcol "$thmbDir/$x_hash.thmb" "$dcolDir/$x_hash"
 	if [ "$is_video" -eq 1 ]; then
 		rm -f "$temp_image"
 	fi
@@ -74,7 +91,7 @@ fn_wallcache_force() {
 	magick "$x_wall"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "$thmbDir/$x_hash.sqre.png" && mv "$thmbDir/$x_hash.sqre.png" "$thmbDir/$x_hash.sqre"
 	magick "$x_wall"[0] -strip -scale 10% -blur 0x3 -resize 100% "$thmbDir/$x_hash.blur"
 	magick "$thmbDir/$x_hash.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "$thmbDir/$x_hash.quad.png" && mv "$thmbDir/$x_hash.quad.png" "$thmbDir/$x_hash.quad"
-	"$scrDir/wallbash.sh" --custom "$wallbashCustomCurve" "$thmbDir/$x_hash.thmb" "$dcolDir/$x_hash" &> /dev/null
+	fn_generate_dcol "$thmbDir/$x_hash.thmb" "$dcolDir/$x_hash"
 	if [ "$is_video" -eq 1 ]; then
 		rm -f "$temp_image"
 	fi
@@ -150,7 +167,7 @@ wallpaper_cache_commence() {
 	parallel --bar --link "fn_wallcache$mode" ::: "${wallHash[@]}" ::: "${wallList[@]}"
 }
 
-export -f fn_wallcache fn_wallcache_force fn_envar_cache wallpaper_cache_bootstrap wallpaper_cache_init wallpaper_cache_commence extract_thumbnail
+export -f fn_generate_dcol fn_wallcache fn_wallcache_force fn_envar_cache wallpaper_cache_bootstrap wallpaper_cache_init wallpaper_cache_commence extract_thumbnail
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
 	subcommand="$1"
