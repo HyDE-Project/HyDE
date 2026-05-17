@@ -25,12 +25,12 @@ if [ "$flg_ThemeInstall" -eq 1 ]; then
     while IFS='"' read -r _ themeName _ themeRepo; do
         themeNameQ+=("${themeName//\"/}")
         themeRepoQ+=("${themeRepo//\"/}")
-        themePath="${confDir}/hyde/themes/${themeName}"
+        themePath="${confDir}/hallwayde/themes/${themeName}"
         [ -d "${themePath}" ] || mkdir -p "${themePath}"
         [ -f "${themePath}/.sort" ] || echo "${#themeNameQ[@]}" >"${themePath}/.sort"
 
         if [ "${THEME_IMPORT_ASYNC}" -ne 1 ] && [ "${flg_DryRun}" -ne 1 ]; then
-            if ! "${cloneDir}/Configs/.local/lib/hyde/theme.patch.sh" "${themeName}" "${themeRepo}" "--skipcaching" "false"; then
+            if ! "${cloneDir}/Configs/.local/lib/hallwayde/theme.patch.sh" "${themeName}" "${themeRepo}" "--skipcaching" "false"; then
                 print_log -r "[THEME] " -crit "error" "importing" "${themeName}"
             else
                 print_log -g "[THEME] " -stat "added" "${themeName}"
@@ -43,8 +43,8 @@ if [ "$flg_ThemeInstall" -eq 1 ]; then
 
     if [ "${THEME_IMPORT_ASYNC}" -eq 1 ]; then
         set +e
-        parallel --bar --link "\"${cloneDir}/Configs/.local/lib/hyde/theme.patch.sh\"" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
+        parallel --bar --link "\"${cloneDir}/Configs/.local/lib/hallwayde/theme.patch.sh\"" "{1}" "{2}" "{3}" "{4}" ::: "${themeNameQ[@]}" ::: "${themeRepoQ[@]}" ::: "--skipcaching" ::: "false"
         set -e
     fi
-    print_log -y "Run \'hyde-shell reload\' if themes look broken"
+    print_log -y "Run \'hallwayde-shell reload\' if themes look broken"
 fi

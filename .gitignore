@@ -1,11 +1,42 @@
+# Scripts
 Scripts/install_pkg.lst
-.vscode
-user
 Scripts/pkg_black.lst
 Scripts/pkg_user.lst
+
+# User overrides
+user/
+*.local
+
+# Python
 *__pycache__*
-Scripts/pkg_black.lst
-Scripts/pkg_user.lst
+*.pyc
+
+# Zsh
 .zsh_history*
 .zcompdump*
+
+# Configs that shouldn't be tracked
 Configs/.config/uwsm/*
+
+# Nix
+result
+result-*
+.direnv/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Secrets (should never be here)
+*.age
+secrets/

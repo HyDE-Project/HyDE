@@ -1,0 +1,4 @@
+# Configuration file for HALLwayDE
+# Environment variables should be on top
+# Updated config.toml file can be found at $HOME/.local/share/hallwayde/config.toml
+"$schema" = "https://raw.githubusercontent.com/HyDE-Project/HyDE/refs/heads/master/Configs/.local/share/hallwayde/schema/config.toml.json"

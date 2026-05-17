@@ -10,10 +10,10 @@ scrDir="$(dirname "$(realpath "$0")")"
 cloneDir="$(dirname "${scrDir}")" # fallback, we will use CLONE_DIR now
 cloneDir="${CLONE_DIR:-${cloneDir}}"
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
+cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hallwayde"
 aurList=("yay" "paru")
 shlList=("zsh" "fish")
-pacmanCmd=${cloneDir}/Configs/.local/lib/hyde/pm.sh
+pacmanCmd=${cloneDir}/Configs/.local/lib/hallwayde/pm.sh
 
 export cloneDir
 export confDir
@@ -104,7 +104,7 @@ prompt_timer() {
 }
 print_log() {
     local executable="${0##*/}"
-    local logFile="${cacheDir}/logs/${HYDE_LOG}/${executable}.log"
+    local logFile="${cacheDir}/logs/${HALLWAYDE_LOG}/${executable}.log"
     mkdir -p "$(dirname "${logFile}")"
     local section=${log_section:-}
     {
@@ -174,7 +174,7 @@ print_log() {
             esac
         done
         echo ""
-    } | if [ -n "${HYDE_LOG}" ]; then
+    } | if [ -n "${HALLWAYDE_LOG}" ]; then
         tee >(sed 's/\x1b\[[0-9;]*m//g' >>"${logFile}")
     else
         cat

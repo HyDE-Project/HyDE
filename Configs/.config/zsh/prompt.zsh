@@ -1,7 +1,7 @@
 # Add you own custom prompt here
 
-return 1 # TODO <--- Comment out or REMOVE this line to disable HyDE's prompt
-#! As long as this file returns non-zero, HyDE will ignore this file!
+return 1 # TODO <--- Comment out or REMOVE this line to disable HALLwayDE's prompt
+#! As long as this file returns non-zero, HALLwayDE will ignore this file!
 #! return 0 will lead to no prompt being loaded
 
 # ================================================================

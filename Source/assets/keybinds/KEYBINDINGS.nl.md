@@ -275,7 +275,7 @@ Je kunt je eigen sneltoetsen instellen door dit bestand te bewerken:
 Bijvoorbeeld, om een sneltoets toe te voegen voor het starten van de **HyDE Game Launcher**, voeg deze regel toe:
 
 ```ini
-bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
 ```
 
 Hiermee koppel je de Game Launcher aan <kbd>SUPER</kbd> + <kbd>Spatie</kbd>.  
@@ -284,7 +284,7 @@ Je kunt `SPACE` vervangen door een andere gewenste toets.
 Het script `gamelauncher.sh` is standaard inbegrepen en staat op:
 
 ```bash
-~/.local/lib/hyde/gamelauncher.sh
+~/.local/lib/hallwayde/gamelauncher.sh
 ```
 
 <div align="right">

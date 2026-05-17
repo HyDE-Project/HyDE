@@ -87,8 +87,8 @@ EOF
 done
 
 # Only export that are used outside this script
-HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
-export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall HYDE_LOG
+HALLWAYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
+export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall HALLWAYDE_LOG
 
 if [ "${flg_DryRun}" -eq 1 ]; then
 	print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
@@ -134,7 +134,7 @@ EOF
 	shift $((OPTIND - 1))
 	custom_pkg=$1
 	cp "${scrDir}/pkg_core.lst" "${scrDir}/install_pkg.lst"
-	trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${HYDE_LOG}/install_pkg.lst"' EXIT
+	trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${HALLWAYDE_LOG}/install_pkg.lst"' EXIT
 
 	echo -e "\n#user packages" >>"${scrDir}/install_pkg.lst" # Add a marker for user packages
 	if [ -f "${custom_pkg}" ] && [ -n "${custom_pkg}" ]; then
@@ -185,7 +185,7 @@ EOF
 			;;
 		esac
 		if [[ -z "$getAur" ]]; then
-			print_log -sec "AUR" -crit "No AUR helper found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+			print_log -sec "AUR" -crit "No AUR helper found..." "Log file at ${cacheDir}/logs/${HALLWAYDE_LOG}"
 			exit 1
 		fi
 	fi
@@ -213,7 +213,7 @@ EOF
 		echo "${myShell}" >>"${scrDir}/install_pkg.lst"
 
 		if [[ -z "$myShell" ]]; then
-			print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+			print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HALLWAYDE_LOG}"
 			exit 1
 		else
 			print_log -sec "shell" -stat "detected :: " "${myShell}"
@@ -221,7 +221,7 @@ EOF
 	fi
 
 	if ! grep -q "^#user packages" "${scrDir}/install_pkg.lst"; then
-		print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}/install.sh"
+		print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${HALLWAYDE_LOG}/install.sh"
 		exit 1
 	fi
 
@@ -254,10 +254,10 @@ EOF
 	"${scrDir}/restore_thm.sh"
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
-		export PATH="$HOME/.local/lib/hyde:$HOME/.local/bin:${PATH}"
-		"$HOME/.local/lib/hyde/wallpaper/cache.sh" commence -t ""
-		"$HOME/.local/lib/hyde/theme.switch.sh" -q || true
-		"$HOME/.local/lib/hyde/waybar.py" --update || true
+		export PATH="$HOME/.local/lib/hallwayde:$HOME/.local/bin:${PATH}"
+		"$HOME/.local/lib/hallwayde/wallpaper/cache.sh" commence -t ""
+		"$HOME/.local/lib/hallwayde/theme.switch.sh" -q || true
+		"$HOME/.local/lib/hallwayde/waybar.py" --update || true
 		echo "[install] reload :: Hyprland"
 	fi
 
@@ -327,7 +327,7 @@ if [ $flg_Install -eq 1 ]; then
 	echo ""
 	print_log -g "Installation" " :: " "COMPLETED!"
 fi
-print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
+print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HALLWAYDE_LOG}"
 if [ $flg_Install -eq 1 ] ||
 	[ $flg_Restore -eq 1 ] ||
 	[ $flg_Service -eq 1 ] &&
@@ -338,7 +338,7 @@ if [ $flg_Install -eq 1 ] ||
 		print_log -warn "Please reboot the system to apply new changes."
 	fi
 
-	print_log -stat "HyDE" "It is not recommended to use newly installed or upgraded HyDE without rebooting the system. Do you want to reboot the system? (y/N)"
+	print_log -stat "HALLwayDE" "It is not recommended to use newly installed or upgraded HALLwayDE without rebooting the system. Do you want to reboot the system? (y/N)"
 	read -r answer
 
 	if [[ "$answer" == [Yy] ]]; then

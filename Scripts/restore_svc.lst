@@ -6,7 +6,7 @@
 # NetworkManager|root |enable
 # bluetooth|root|enable --now
 # sddm|root|enable --now
-# hyde-config|user|start
+# hallwayde-config|user|start
 #
 # Legacy format (single service per line) is still supported:
 

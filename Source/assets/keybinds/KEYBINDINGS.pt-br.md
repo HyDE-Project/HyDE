@@ -46,7 +46,7 @@ Multi-language KEYBINDINGS support
   </div>
 </div>
 
-<!-- # <a id=hyde-keybindings>HyDE Keybindings</a> -->
+<!-- # <a id=hyde-keybindings>HALLwayDE Keybindings</a> -->
 <!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
 
 Aqui estão todos os atalhos de teclado específicos do HyDE listados.
@@ -297,7 +297,7 @@ Você pode definir seus próprios atalhos de teclado editando o arquivo de prefe
 Por exemplo, para criar um atalho que abre o **HyDE Game Launcher**, adicione a seguinte linha:
 
 ```ini
-bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
 ```
 
 Isto irá vincular o **Game Launcher** à combinação <kbd>SUPER</kbd> + <kbd>Space</kbd>.  
@@ -306,7 +306,7 @@ Você pode substituir `SPACE` por qualquer outra tecla que preferir.
 O script `gamelauncher.sh` está incluído por padrão e fica em:
 
 ```bash
-~/.local/lib/hyde/gamelauncher.sh
+~/.local/lib/hallwayde/gamelauncher.sh
 ```
 
 <!--

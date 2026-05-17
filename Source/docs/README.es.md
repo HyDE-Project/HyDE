@@ -161,7 +161,7 @@ Ya sea que ayude con código, pruebas o documentación, agradecemos su apoyo par
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="hydevm"></a>
+<a id="hallwaydevm"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=HYDEVM" width="450"/>
 
 ---
@@ -174,9 +174,9 @@ HyDEVM es un script que le permite ejecutar HyDE en una máquina virtual para pr
 
 ```bash
 # Descargar y ejecutar (detectará automáticamente los paquetes faltantes)
-curl -L https://raw.githubusercontent.com/HyDE-Project/HyDE/main/Scripts/hydevm/hydevm.sh -o hydevm
-chmod +x hydevm
-./hydevm
+curl -L https://raw.githubusercontent.com/HyDE-Project/HyDE/main/Scripts/hallwaydevm/hallwaydevm.sh -o hallwaydevm
+chmod +x hallwaydevm
+./hallwaydevm
 ```
 
 ### NixOS (o Nix)
@@ -189,7 +189,7 @@ nix run github:HyDE-Project/HyDE
 nix run .
 ```
 
-Para más detalles, consulte el [README de HyDEVM](Scripts/hydevm/README.md).
+Para más detalles, consulte el [README de HyDEVM](Scripts/hallwaydevm/README.md).
 
 <div align="right">
   <br>

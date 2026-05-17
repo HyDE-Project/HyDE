@@ -136,7 +136,7 @@ For more details, you can refer to [Hyde-cli - dots management wiki](https://git
   <a href="#-design-by-t2"><kbd> <br> 🡅 <br> </kbd></a>
 </div>
 
-<a id="hydevm"></a>
+<a id="hallwaydevm"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=HYDEVM" width="450"/>
 
 ---
@@ -149,9 +149,9 @@ HyDEVM, test ve geliştirme amacıyla HyDE'yi sanal makinede çalıştırmanıza
 
 ```bash
 # İndirin ve çalıştırın (eksik paketleri otomatik olarak algılar)
-curl -L https://raw.githubusercontent.com/HyDE-Project/HyDE/main/Scripts/hydevm/hydevm.sh -o hydevm
-chmod +x hydevm
-./hydevm
+curl -L https://raw.githubusercontent.com/HyDE-Project/HyDE/main/Scripts/hallwaydevm/hallwaydevm.sh -o hallwaydevm
+chmod +x hallwaydevm
+./hallwaydevm
 ```
 
 ### NixOS (veya Nix)
@@ -164,7 +164,7 @@ nix run github:HyDE-Project/HyDE
 nix run .
 ```
 
-Daha fazla ayrıntı için lütfen [HyDEVM README](Scripts/hydevm/README.md) dosyasına bakın.
+Daha fazla ayrıntı için lütfen [HyDEVM README](Scripts/hallwaydevm/README.md) dosyasına bakın.
 
 <div align="right">
   <br>

@@ -3,8 +3,8 @@
 # https://hyprland-community.github.io/pyprland/
 
 
-# Since You are using Hyde, you can use `hyde-shell` to run pypr commands
-# See  'hyde-shell pypr help' for more information on how to use it!
+# Since you are using HALLwayDE, you can use `hallwayde-shell` to run pypr commands
+# See  'hallwayde-shell pypr help' for more information on how to use it!
 
 [pyprland]
     # pypr has a lot of plugins, but this is just a basic example config
@@ -13,7 +13,7 @@
 
 # using variables for demonstration purposes (not needed)
 [pyprland.variables]
-    # term_with_class = "hyde-shell app -T" # You cannot set the class for this
+    # term_with_class = "hallwayde-shell app -T" # You cannot set the class for this
     # term_with_class = "alacritty --class"
     # term_with_class = "foot --app-id"
     term_with_class = "kitty --class"

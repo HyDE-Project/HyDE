@@ -20,7 +20,7 @@ if pkg_installed sddm; then
     if [ ! -d /etc/sddm.conf.d ]; then
         [ ${flg_DryRun} -eq 1 ] || sudo mkdir -p /etc/sddm.conf.d
     fi
-    if [ ! -f /etc/sddm.conf.d/backup_the_hyde_project.conf ] || [ "${HYDE_INSTALL_SDDM}" = true ]; then
+    if [ ! -f /etc/sddm.conf.d/backup_the_hallwayde_project.conf ] || [ "${HALLWAYDE_INSTALL_SDDM}" = true ]; then
         print_log -g "[DISPLAYMANAGER] " -b " :: " "configuring sddm..."
         print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Corners"
         read -p " :: Enter option number : " -r sddmopt
@@ -32,9 +32,9 @@ if pkg_installed sddm; then
 
         if [[ ${flg_DryRun} -ne 1 ]]; then
             sudo tar -xzf "${cloneDir}/Source/arcs/Sddm_${sddmtheme}.tar.gz" -C /usr/share/sddm/themes/
-            sudo touch /etc/sddm.conf.d/the_hyde_project.conf
-            sudo cp /etc/sddm.conf.d/the_hyde_project.conf /etc/sddm.conf.d/backup_the_hyde_project.conf
-            sudo cp /usr/share/sddm/themes/${sddmtheme}/the_hyde_project.conf /etc/sddm.conf.d/
+            sudo touch /etc/sddm.conf.d/the_hallwayde_project.conf
+            sudo cp /etc/sddm.conf.d/the_hallwayde_project.conf /etc/sddm.conf.d/backup_the_hallwayde_project.conf
+            sudo cp /usr/share/sddm/themes/${sddmtheme}/the_hallwayde_project.conf /etc/sddm.conf.d/
         fi
 
         print_log -g "[DISPLAYMANAGER] " -b " :: " "sddm configured with ${sddmtheme} theme..."
