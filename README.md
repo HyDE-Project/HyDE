@@ -4,26 +4,26 @@
 
 > **Your desktop should be beautiful, functional, and yours — by default.**
 
-A highly customized Hyprland configuration forked from [HyDE](https://github.com/HyDE-Project/HyDE), adapted for NixOS and the [HALLway](https://github.com/MarkusBitterman/HALLway) ecosystem.
+HALLwayDE is a complete Hyprland desktop environment built for NixOS and the [HALLway](https://github.com/MarkusBitterman/HALLway) ecosystem. It originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE) and has been fully rebranded and adapted for declarative NixOS configuration.
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
+- [What is HALLwayDE?](#what-is-hallwayde)
 - [Quick Start](#quick-start)
 - [Components](#components)
 - [Configuration](#configuration)
 - [Themes](#themes)
 - [Keybindings](#keybindings)
 - [Contributing](#contributing)
-- [Acknowledgments](#acknowledgments)
+- [Origins & Acknowledgments](#origins--acknowledgments)
 
 ---
 
-## Overview
+## What is HALLwayDE?
 
-HALLwayDE provides a complete Hyprland desktop experience:
+HALLwayDE is the desktop environment layer of HALLway OS. It provides:
 
 | Component | Purpose |
 |-----------|---------|
@@ -35,12 +35,12 @@ HALLwayDE provides a complete Hyprland desktop experience:
 | **Wlogout** | Logout/power menu |
 | **Wallbash** | Dynamic theming from wallpapers |
 
-**Why fork HyDE?**
+**Why HALLwayDE exists:**
 
-- **NixOS-native** — No pacman/AUR, integrates with Home Manager
-- **HALLway integration** — Shares the same philosophy and tooling
-- **Independence** — Evolve the DE separately from the OS configuration
-- **Customization** — Full control to shape it to our needs
+- **NixOS-native** — Designed for declarative configuration with Home Manager
+- **Part of HALLway** — Shares the ecosystem's philosophy of user sovereignty
+- **Independent evolution** — The DE evolves separately from the OS configuration
+- **Self-contained** — All configs live in this repo, not scattered across the system
 
 ---
 
@@ -48,7 +48,7 @@ HALLwayDE provides a complete Hyprland desktop experience:
 
 ### For HALLway OS Users
 
-HALLwayDE configs are designed to work with the [HALLway](https://github.com/MarkusBitterman/HALLway) NixOS flake.
+HALLwayDE is designed to integrate with the [HALLway](https://github.com/MarkusBitterman/HALLway) NixOS flake.
 
 **Prerequisites**: Hyprland and dependencies installed via NixOS/Home Manager
 
@@ -56,24 +56,13 @@ HALLwayDE configs are designed to work with the [HALLway](https://github.com/Mar
 # Clone HALLwayDE
 git clone https://github.com/MarkusBitterman/HALLwayDE.git ~/HALLwayDE
 
-# Symlink configs (quick setup)
-ln -sf ~/HALLwayDE/Configs/.config/hypr ~/.config/hypr
-ln -sf ~/HALLwayDE/Configs/.config/waybar ~/.config/waybar
-ln -sf ~/HALLwayDE/Configs/.config/rofi ~/.config/rofi
-ln -sf ~/HALLwayDE/Configs/.config/hallwayde ~/.config/hallwayde
-ln -sf ~/HALLwayDE/Configs/.local/lib/hallwayde ~/.local/lib/hallwayde
-ln -sf ~/HALLwayDE/Configs/.local/share/hallwayde ~/.local/share/hallwayde
-ln -sf ~/HALLwayDE/Configs/.local/share/hypr ~/.local/share/hypr
+# Run the setup script
+cd ~/HALLwayDE/Scripts
+./setup-nixos.sh
 
-# Copy utilities to PATH
-cp ~/HALLwayDE/Configs/.local/bin/* ~/.local/bin/
-chmod +x ~/.local/bin/hallwayde-*
-
-# Configure your monitor
-echo 'monitor=HDMI-A-1,1920x1080@60,0x0,1' > ~/.config/hypr/monitors.conf
-
-# Reload Hyprland
-hyprctl reload
+# Or use the flake (in your HALLway config):
+# imports = [ inputs.hallwayde.homeManagerModules.default ];
+# hallwayde.enable = true;
 ```
 
 ### Required NixOS Packages
@@ -201,7 +190,7 @@ HALLwayDE supports dynamic theming via Wallbash — colors are extracted from yo
 
 ### Available Themes
 
-Themes from upstream [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes):
+Compatible with themes from [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes):
 
 <div align="center">
   <table><tr><td>
@@ -292,13 +281,16 @@ See [KEYBINDINGS.md](KEYBINDINGS.md) for the complete reference.
 
 ## Contributing
 
-We welcome contributions! This project follows HALLway's development practices.
+We welcome contributions! HALLwayDE follows HALLway's development practices.
 
 ### Development Setup
 
 ```bash
 git clone https://github.com/MarkusBitterman/HALLwayDE.git
 cd HALLwayDE
+
+# Enter dev shell with all tools
+nix develop
 
 # Make changes to configs in Configs/
 # Test by symlinking to your ~/.config/
@@ -317,19 +309,19 @@ shellcheck Scripts/*.sh
 
 ---
 
-## Acknowledgments
+## Origins & Acknowledgments
 
-HALLwayDE is forked from [HyDE](https://github.com/HyDE-Project/HyDE) by the HyDE Project team.
+HALLwayDE originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE), the Hyprland Desktop Environment project. We've rebranded and adapted it for NixOS while maintaining theme compatibility with the upstream ecosystem.
 
-**Upstream Credits:**
-- [prasanthrangan/hyprdots](https://github.com/prasanthrangan/hyprdots) — Original Hyprdots
+**Upstream lineage:**
+- [prasanthrangan/hyprdots](https://github.com/prasanthrangan/hyprdots) — Original Hyprdots project
 - [HyDE-Project/HyDE](https://github.com/HyDE-Project/HyDE) — HyDE continuation
-- [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes) — Theme repository
+- [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes) — Compatible theme repository
 
-**Special Thanks:**
+**Thanks to:**
+- The HyDE Project team for the excellent foundation
 - The Hyprland developers
 - The NixOS community
-- Everyone who contributed to HyDE
 
 ---
 

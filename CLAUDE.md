@@ -2,7 +2,9 @@
 
 ## Project Overview
 
-**HALLwayDE** is the Hyprland Desktop Environment for [HALLway OS](https://github.com/MarkusBitterman/HALLway). It's a fork of [HyDE](https://github.com/HyDE-Project/HyDE) rebranded and adapted for NixOS.
+**HALLwayDE** is the Hyprland Desktop Environment for [HALLway OS](https://github.com/MarkusBitterman/HALLway). It originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE) and has been fully rebranded as an independent project adapted for NixOS.
+
+**Important distinction:** HALLwayDE is NOT a "port" of HyDE. It IS HALLwayDE — its own project with its own identity, that happens to share lineage with HyDE. When writing documentation or comments, refer to this project as "HALLwayDE" not "HyDE fork" or "ported from HyDE".
 
 ### Philosophy
 

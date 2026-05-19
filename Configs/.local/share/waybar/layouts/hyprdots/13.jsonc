@@ -70,7 +70,7 @@
         "orientation": "inherit",
         "modules": [
             "custom/cliphist",
-            "custom/hyde-menu",
+            "custom/hallwayde-menu",
             "custom/power"
         ]
     }
