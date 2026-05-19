@@ -20,7 +20,7 @@
 
         # UI components
         waybar
-        rofi-wayland
+        rofi
         dunst
         wlogout
 
