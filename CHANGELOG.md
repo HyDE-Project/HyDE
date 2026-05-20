@@ -18,6 +18,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   - Updated systemd services, waybar modules, shell completions, rofi themes
   - Preserved upstream HyDE URLs for attribution
   - Preserved HALLway OS integration references
+- **Flake**: Fixed `swww` → `awww` package rename (nixpkgs upstream change)
+
+### Added
+- **TODO.md**: Migration workbook for tracking Hyprland lua configuration conversion
+
+### Removed
+- **TEAM_ROLES.md**: HyDE team structure (not applicable for DOORwayDE)
+- **CONTRIBUTORS.md**: HyDE contributors list (CREDITS.md provides attribution)
+- **Hyprdots-to-HyDE.md**: HyDE origin story and translations
+
+### Documentation
+- **HyDE-to-DOORwayDE.md**: New document explaining DOORwayDE's origins and the Arch→NixOS migration story
+- **RELEASE_POLICY.md**: Updated for rolling releases with Nix flakes
+- **CONTRIBUTING.md**: Simplified for solo project workflow
+- **CREDITS.md**: Clarified fork relationship with upstream HyDE
 
 ### Note
 This rebrand distinguishes DOORwayDE (the desktop environment module) from HALLway OS (the parent operating system project), reducing naming confusion.

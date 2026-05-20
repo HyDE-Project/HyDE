@@ -29,7 +29,7 @@
         slurp
         satty
         cliphist
-        swww
+        awww
 
         # System integration
         brightnessctl
