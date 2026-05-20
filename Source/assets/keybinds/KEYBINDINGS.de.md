@@ -290,7 +290,7 @@ Du kannst deine eigenen Tastenkombinationen definieren, indem du die Datei bearb
 Zum Beispiel, um eine Tastenkombination für den **HyDE Game Launcher** zu erstellen, füge diese Zeile hinzu:
 
 ```ini
-bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 Dies weist den **Game Launcher** der Kombination <kbd>SUPER</kbd> + <kbd>Leertaste</kbd> zu.  
@@ -299,7 +299,7 @@ Du kannst `SPACE` durch jede andere Taste ersetzen.
 Das Skript `gamelauncher.sh` ist standardmäßig enthalten und befindet sich unter:
 
 ```bash
-~/.local/lib/hallwayde/gamelauncher.sh
+~/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 <!--

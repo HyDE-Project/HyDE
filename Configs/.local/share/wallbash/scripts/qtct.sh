@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-wallbash_cache=${XDG_CACHE_HOME:-$HOME/.cache}/hallwayde/wallbash/qtct.conf
+wallbash_cache=${XDG_CACHE_HOME:-$HOME/.cache}/doorwayde/wallbash/qtct.conf
 declare -A color_scheme_target_paths=(
     ["qt5ct_legacy"]="${XDG_CONFIG_HOME:-$HOME/.config}/qt5ct/colors.conf"
     ["qt6ct_legacy"]="${XDG_CONFIG_HOME:-$HOME/.config}/qt6ct/colors.conf"

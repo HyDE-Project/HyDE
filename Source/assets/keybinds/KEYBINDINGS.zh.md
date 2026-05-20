@@ -46,7 +46,7 @@ Multi-language KEYBINDINGS support
   </div>
 </div>
 
-<!-- # <a id=hyde-keybindings>HALLwayDE Keybindings</a> -->
+<!-- # <a id=hyde-keybindings>DOORwayDE Keybindings</a> -->
 <!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
 
 以下列出了所有 HyDE 特有的键盘快捷键。
@@ -297,7 +297,7 @@ Multi-language KEYBINDINGS support
 例如，要创建一个启动 **HyDE 游戏启动器** 的快捷键，请添加以下行：
 
 ```ini
-bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 这将把 **游戏启动器** 绑定到 <kbd>SUPER</kbd> + <kbd>Space</kbd>。
@@ -306,7 +306,7 @@ bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
 `gamelauncher.sh` 脚本默认包含在内，位于：
 
 ```bash
-~/.local/lib/hallwayde/gamelauncher.sh
+~/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 <!--

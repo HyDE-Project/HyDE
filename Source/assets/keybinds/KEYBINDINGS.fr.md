@@ -289,7 +289,7 @@ Vous pouvez définir vos propres raccourcis clavier en modifiant le fichier suiv
 Par exemple, pour créer un raccourci qui lance le **HyDE Game Launcher**, ajoutez cette ligne :
 
 ```ini
-bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 Cela assignera le Game Launcher à <kbd>SUPER</kbd> + <kbd>Espace</kbd>.  
@@ -298,7 +298,7 @@ Vous pouvez remplacer `SPACE` par une autre touche de votre choix.
 Le script `gamelauncher.sh` est inclus par défaut et se trouve ici :
 
 ```bash
-~/.local/lib/hallwayde/gamelauncher.sh
+~/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 <div align="right">

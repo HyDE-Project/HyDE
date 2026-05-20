@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# HALLwayDE Setup Script for NixOS
+# DOORwayDE Setup Script for NixOS
 # Part of the HALLway OS ecosystem
 #
 # Usage: ./setup-nixos.sh [options]
@@ -20,8 +20,8 @@ NC='\033[0m' # No Color
 
 # Script location (resolve symlinks)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HALLWAYDE_ROOT="$(dirname "$SCRIPT_DIR")"
-CONFIGS_DIR="$HALLWAYDE_ROOT/Configs"
+DOORWAYDE_ROOT="$(dirname "$SCRIPT_DIR")"
+CONFIGS_DIR="$DOORWAYDE_ROOT/Configs"
 
 # Options
 FORCE=false
@@ -39,7 +39,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -h|--help)
-            echo "HALLwayDE Setup Script for NixOS"
+            echo "DOORwayDE Setup Script for NixOS"
             echo ""
             echo "Usage: $0 [options]"
             echo ""
@@ -135,7 +135,7 @@ check_packages() {
 # Backup existing config
 backup_config() {
     local target="$1"
-    local backup_dir="$HOME/.config/hallwayde-backups/$(date +%Y%m%d_%H%M%S)"
+    local backup_dir="$HOME/.config/doorwayde-backups/$(date +%Y%m%d_%H%M%S)"
 
     if [[ -e "$target" && ! -L "$target" ]]; then
         log_info "Backing up $target"
@@ -185,7 +185,7 @@ create_link() {
 
 # Copy binaries (can't symlink compiled binaries reliably)
 copy_binaries() {
-    log_info "Installing HALLwayDE utilities..."
+    log_info "Installing DOORwayDE utilities..."
 
     run_cmd mkdir -p "$HOME/.local/bin"
 
@@ -211,7 +211,7 @@ copy_binaries() {
 main() {
     echo ""
     echo "╔═══════════════════════════════════════════════════════════╗"
-    echo "║           HALLwayDE Setup for NixOS                       ║"
+    echo "║           DOORwayDE Setup for NixOS                       ║"
     echo "║   Your desktop should be beautiful, functional, and yours ║"
     echo "╚═══════════════════════════════════════════════════════════╝"
     echo ""
@@ -234,7 +234,7 @@ main() {
         "waybar"
         "rofi"
         "dunst"
-        "hallwayde"
+        "doorwayde"
         "kitty"
         "wlogout"
         "swaync"
@@ -253,8 +253,8 @@ main() {
     run_cmd mkdir -p "$HOME/.local/lib"
     run_cmd mkdir -p "$HOME/.local/share"
 
-    create_link "$CONFIGS_DIR/.local/lib/hallwayde" "$HOME/.local/lib/hallwayde"
-    create_link "$CONFIGS_DIR/.local/share/hallwayde" "$HOME/.local/share/hallwayde"
+    create_link "$CONFIGS_DIR/.local/lib/doorwayde" "$HOME/.local/lib/doorwayde"
+    create_link "$CONFIGS_DIR/.local/share/doorwayde" "$HOME/.local/share/doorwayde"
     create_link "$CONFIGS_DIR/.local/share/hypr" "$HOME/.local/share/hypr"
     echo ""
 

@@ -7,7 +7,7 @@ if ! command -v uwsm >/dev/null 2>&1; then
 
 fi
 
-if command -v hallwayde-shell >/dev/null 2>&1; then
-    echo "Reloading HALLwayDE shell shaders..."
-    hallwayde-shell shaders --reload
+if command -v doorwayde-shell >/dev/null 2>&1; then
+    echo "Reloading DOORwayDE shell shaders..."
+    doorwayde-shell shaders --reload
 fi

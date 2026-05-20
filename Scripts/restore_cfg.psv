@@ -45,7 +45,7 @@ P|${HOME}/.config|xdg-terminals.list|xdg-utils
 
 P|${HOME}/.config/hypr|hyprland.conf|hyprland
 S|${HOME}/.local/share|hypr|hyprland
-O|${HOME}/.local/bin|hallwayde-shell hallwaydectl|hyprland
+O|${HOME}/.local/bin|doorwayde-shell doorwaydectl|hyprland
 S|${HOME}/.config|gtk-3.0|nwg-look
 S|${HOME}/.config|nwg-look|nwg-look
 S|${HOME}/.config|xsettingsd|nwg-look
@@ -100,7 +100,7 @@ S|${HOME}/.config/zsh/functions|duf.zsh|zsh duf
 S|${HOME}/.config/zsh/functions|eza.zsh|zsh eza
 S|${HOME}/.config/zsh/functions|bat.zsh|zsh bat
 S|${HOME}/.config/zsh/completions|fzf.zsh|zsh fzf
-S|${HOME}/.config/zsh/completions|hallwaydectl.zsh|zsh
+S|${HOME}/.config/zsh/completions|doorwaydectl.zsh|zsh
 
 P|${HOME}/.config/zsh|.zshrc user.zsh prompt.zsh plugin.zsh|zsh
 P|${HOME}/.config/zsh|.p10k.zsh|zsh zsh-theme-powerlevel10k

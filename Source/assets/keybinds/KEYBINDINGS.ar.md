@@ -45,7 +45,7 @@ Multi-language KEYBINDINGS support
   </div>
 </div>
 
-<!-- # <a id=hyde-keybindings>HALLwayDE Keybindings</a> -->
+<!-- # <a id=hyde-keybindings>DOORwayDE Keybindings</a> -->
 <!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
 
 >[!TIP] 
@@ -276,7 +276,7 @@ Multi-language KEYBINDINGS support
 على سبيل المثال، لتعيين اختصار لتشغيل **HyDE Game Launcher**، أضف السطر التالي:
 
 ```ini
-bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
+bind = $mainMod, SPACE, exec, $HOME/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 سيؤدي ذلك إلى تعيين المشغّل على <kbd>SUPER</kbd> + <kbd>مسافة</kbd>.  
@@ -285,7 +285,7 @@ bind = $mainMod, SPACE, exec, $HOME/.local/lib/hallwayde/gamelauncher.sh
 السكريبت `gamelauncher.sh` موجود بشكل افتراضي في:
 
 ```bash
-~/.local/lib/hallwayde/gamelauncher.sh
+~/.local/lib/doorwayde/gamelauncher.sh
 ```
 
 <div align="right">

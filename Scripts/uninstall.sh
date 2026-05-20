@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #|---/ /+-------------------------------+---/ /|#
-#|--/ /-| Script to remove HALLwayDE configs |--/ /-|#
+#|--/ /-| Script to remove DOORwayDE configs |--/ /-|#
 #|-/ /--| Prasanth Rangan               |-/ /--|#
 #|/ /---+-------------------------------+/ /---|#
 
@@ -17,13 +17,13 @@ cat <<"EOF"
 -------------------------------------------------
 
 
-.: WARNING :: This will remove all config files related to HALLwayDE :.
+.: WARNING :: This will remove all config files related to DOORwayDE :.
 
-please type "DONT HALLWAYDE" to continue...
+please type "DONT DOORWAYDE" to continue...
 EOF
 
 read -r PROMPT_INPUT
-[ "${PROMPT_INPUT}" == "DONT HALLWAYDE" ] || exit 0
+[ "${PROMPT_INPUT}" == "DONT DOORWAYDE" ] || exit 0
 
 cat <<"EOF"
 
@@ -69,16 +69,16 @@ cat "${CfgLst}" | while read lst; do
     done
 done
 
-[ -d "$HOME/.config/hallwayde" ] && rm -rf "$HOME/.config/hallwayde"
-[ -d "$HOME/.cache/hallwayde" ] && rm -rf "$HOME/.cache/hallwayde"
-[ -d "$HOME/.local/state/hallwayde" ] && rm -rf "$HOME/.local/state/hallwayde"
+[ -d "$HOME/.config/doorwayde" ] && rm -rf "$HOME/.config/doorwayde"
+[ -d "$HOME/.cache/doorwayde" ] && rm -rf "$HOME/.cache/doorwayde"
+[ -d "$HOME/.local/state/doorwayde" ] && rm -rf "$HOME/.local/state/doorwayde"
 
 cat <<"NOTE"
 -------------------------------------------------------
 .: Manual action required to complete uninstallation :.
 -------------------------------------------------------
 
-Remove HALLwayDE related backups/icons/fonts/themes manually from these paths
+Remove DOORwayDE related backups/icons/fonts/themes manually from these paths
 $HOME/.config/cfg_backups               # remove all previous backups
 $HOME/.local/share/fonts                # remove fonts from here
 $HOME/.local/share/icons                # remove fonts from here
@@ -87,12 +87,12 @@ $HOME/.icons                            # remove icons from here
 $HOME/.themes                           # remove themes from here
 
 Revert back bootloader/pacman/sddm settings manually from these backups
-/boot/loader/entries/*.conf.hallwayde.bkp    # restore systemd-boot from this backup
-/etc/default/grub.hallwayde.bkp              # restore grub from this backup
-/boot/grub/grub.hallwayde.bkp                # restore grub from this backup
+/boot/loader/entries/*.conf.doorwayde.bkp    # restore systemd-boot from this backup
+/etc/default/grub.doorwayde.bkp              # restore grub from this backup
+/boot/grub/grub.doorwayde.bkp                # restore grub from this backup
 /usr/share/grub/themes                  # remove grub themes from here
-/etc/pacman.conf.hallwayde.bkp               # restore pacman from this backup
-/etc/sddm.conf.d/kde_settings.hallwayde.bkp  # restore sddm from this backup
+/etc/pacman.conf.doorwayde.bkp               # restore pacman from this backup
+/etc/sddm.conf.d/kde_settings.doorwayde.bkp  # restore sddm from this backup
 /usr/share/sddm/themes                  # remove sddm themes from here
 
 Uninstall the packages manually that are no longer required based on these list

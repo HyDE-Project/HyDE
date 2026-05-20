@@ -1,5 +1,5 @@
 {
-  description = "HALLwayDE - Hyprland Desktop Environment for HALLway OS";
+  description = "DOORwayDE - Hyprland Desktop Environment for HALLway OS";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -10,8 +10,8 @@
       systems = [ "x86_64-linux" "aarch64-linux" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
 
-      # HALLwayDE runtime dependencies
-      hallwaydeDeps = pkgs: with pkgs; [
+      # DOORwayDE runtime dependencies
+      doorwaydeDeps = pkgs: with pkgs; [
         # Core Hyprland ecosystem
         hyprland
         hyprlock
@@ -53,13 +53,13 @@
       ];
 
       # Home Manager module definition
-      hallwaydeModule = { config, lib, pkgs, ... }:
+      doorwaydeModule = { config, lib, pkgs, ... }:
         let
-          cfg = config.hallwayde;
+          cfg = config.doorwayde;
           configDir = "${self}/Configs";
         in {
-          options.hallwayde = {
-            enable = lib.mkEnableOption "HALLwayDE Hyprland configuration";
+          options.doorwayde = {
+            enable = lib.mkEnableOption "DOORwayDE Hyprland configuration";
 
             monitor = lib.mkOption {
               type = lib.types.str;
@@ -84,24 +84,26 @@
             installPackages = lib.mkOption {
               type = lib.types.bool;
               default = true;
-              description = "Install HALLwayDE dependencies";
+              description = "Install DOORwayDE dependencies";
             };
           };
 
           config = lib.mkIf cfg.enable {
-            home.packages = lib.mkIf cfg.installPackages (hallwaydeDeps pkgs);
+            wayland.windowManager.hyprland.configType = "lua";
+
+            home.packages = lib.mkIf cfg.installPackages (doorwaydeDeps pkgs);
 
             xdg.configFile = {
               "hypr".source = "${configDir}/.config/hypr";
               "waybar".source = "${configDir}/.config/waybar";
               "rofi".source = "${configDir}/.config/rofi";
               "dunst".source = "${configDir}/.config/dunst";
-              "hallwayde".source = "${configDir}/.config/hallwayde";
+              "doorwayde".source = "${configDir}/.config/doorwayde";
               "kitty".source = "${configDir}/.config/kitty";
               "wlogout".source = "${configDir}/.config/wlogout";
 
               "hypr/monitors.conf".text = ''
-                # HALLwayDE Monitor Configuration
+                # DOORwayDE Monitor Configuration
                 monitor=${cfg.monitor}
                 ${lib.concatStringsSep "\n" (map (m: "monitor=${m}") cfg.extraMonitors)}
               '';
@@ -120,19 +122,19 @@
             };
 
             home.file = {
-              ".local/lib/hallwayde".source = "${configDir}/.local/lib/hallwayde";
-              ".local/share/hallwayde".source = "${configDir}/.local/share/hallwayde";
+              ".local/lib/doorwayde".source = "${configDir}/.local/lib/doorwayde";
+              ".local/share/doorwayde".source = "${configDir}/.local/share/doorwayde";
               ".local/share/hypr".source = "${configDir}/.local/share/hypr";
-              ".local/bin/hallwayde-shell" = {
-                source = "${configDir}/.local/bin/hallwayde-shell";
+              ".local/bin/doorwayde-shell" = {
+                source = "${configDir}/.local/bin/doorwayde-shell";
                 executable = true;
               };
-              ".local/bin/hallwaydectl" = {
-                source = "${configDir}/.local/bin/hallwaydectl";
+              ".local/bin/doorwaydectl" = {
+                source = "${configDir}/.local/bin/doorwaydectl";
                 executable = true;
               };
-              ".local/bin/hallwayde-ipc" = {
-                source = "${configDir}/.local/bin/hallwayde-ipc";
+              ".local/bin/doorwayde-ipc" = {
+                source = "${configDir}/.local/bin/doorwayde-ipc";
                 executable = true;
               };
             };
@@ -144,13 +146,13 @@
     in {
       # Home Manager module (the main export)
       # Usage in HALLway flake:
-      #   inputs.hallwayde.url = "github:MarkusBitterman/HALLwayDE";
+      #   inputs.doorwayde.url = "github:MarkusBitterman/DOORwayDE";
       #   ...
-      #   imports = [ inputs.hallwayde.homeManagerModules.default ];
-      #   hallwayde.enable = true;
+      #   imports = [ inputs.doorwayde.homeManagerModules.default ];
+      #   doorwayde.enable = true;
       homeManagerModules = {
-        default = hallwaydeModule;
-        hallwayde = hallwaydeModule;
+        default = doorwaydeModule;
+        doorwayde = doorwaydeModule;
       };
 
       # Development shell with all Hyprland packages
@@ -158,10 +160,10 @@
         let pkgs = nixpkgs.legacyPackages.${system};
         in {
           default = pkgs.mkShell {
-            name = "hallwayde-dev";
-            buildInputs = (hallwaydeDeps pkgs) ++ (devDeps pkgs);
+            name = "doorwayde-dev";
+            buildInputs = (doorwaydeDeps pkgs) ++ (devDeps pkgs);
             shellHook = ''
-              echo "HALLwayDE Development Shell"
+              echo "DOORwayDE Development Shell"
               echo "All Hyprland packages available."
               echo ""
               echo "  shellcheck Scripts/*.sh  - Lint"
@@ -172,6 +174,6 @@
         });
 
       # Expose the dependency list for HALLway to import
-      lib.hallwaydeDeps = hallwaydeDeps;
+      lib.doorwaydeDeps = doorwaydeDeps;
     };
 }

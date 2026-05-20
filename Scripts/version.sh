@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-HALLWAYDE_CLONE_PATH=$(git rev-parse --show-toplevel)
-HALLWAYDE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-HALLWAYDE_REMOTE=$(git config --get remote.origin.url)
-HALLWAYDE_VERSION=$(git describe --tags --always)
-HALLWAYDE_COMMIT_HASH=$(git rev-parse HEAD)
-HALLWAYDE_VERSION_COMMIT_MSG=$(git log -1 --pretty=%B)
-HALLWAYDE_VERSION_LAST_CHECKED=$(date +%Y-%m-%d\ %H:%M%S\ %z)
+DOORWAYDE_CLONE_PATH=$(git rev-parse --show-toplevel)
+DOORWAYDE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+DOORWAYDE_REMOTE=$(git config --get remote.origin.url)
+DOORWAYDE_VERSION=$(git describe --tags --always)
+DOORWAYDE_COMMIT_HASH=$(git rev-parse HEAD)
+DOORWAYDE_VERSION_COMMIT_MSG=$(git log -1 --pretty=%B)
+DOORWAYDE_VERSION_LAST_CHECKED=$(date +%Y-%m-%d\ %H:%M%S\ %z)
 
 generate_release_notes() {
   local latest_tag
@@ -31,33 +31,33 @@ generate_release_notes() {
   echo "$commits"
 }
 
-# HALLWAYDE_RELEASE_NOTES=$(generate_release_notes)
+# DOORWAYDE_RELEASE_NOTES=$(generate_release_notes)
 
-echo "HALLwayDE $HALLWAYDE_VERSION built from branch $HALLWAYDE_BRANCH at commit ${HALLWAYDE_COMMIT_HASH:0:12} ($HALLWAYDE_VERSION_COMMIT_MSG)"
-echo "Date: $HALLWAYDE_VERSION_LAST_CHECKED"
-echo "Repository: $HALLWAYDE_CLONE_PATH"
-echo "Remote: $HALLWAYDE_REMOTE"
+echo "DOORwayDE $DOORWAYDE_VERSION built from branch $DOORWAYDE_BRANCH at commit ${DOORWAYDE_COMMIT_HASH:0:12} ($DOORWAYDE_VERSION_COMMIT_MSG)"
+echo "Date: $DOORWAYDE_VERSION_LAST_CHECKED"
+echo "Repository: $DOORWAYDE_CLONE_PATH"
+echo "Remote: $DOORWAYDE_REMOTE"
 echo ""
 
 if [[ "$1" == "--cache" ]]; then
-  state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hallwayde"
+  state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/doorwayde"
   mkdir -p "$state_dir"
   version_file="$state_dir/version"
 
   cat >"$version_file" <<EOL
-HALLWAYDE_CLONE_PATH='$HALLWAYDE_CLONE_PATH'
-HALLWAYDE_BRANCH='$HALLWAYDE_BRANCH'
-HALLWAYDE_REMOTE='$HALLWAYDE_REMOTE'
-HALLWAYDE_VERSION='$HALLWAYDE_VERSION'
-HALLWAYDE_VERSION_LAST_CHECKED='$HALLWAYDE_VERSION_LAST_CHECKED'
-HALLWAYDE_VERSION_COMMIT_MSG='$HALLWAYDE_VERSION_COMMIT_MSG'
-HALLWAYDE_COMMIT_HASH='$HALLWAYDE_COMMIT_HASH'
+DOORWAYDE_CLONE_PATH='$DOORWAYDE_CLONE_PATH'
+DOORWAYDE_BRANCH='$DOORWAYDE_BRANCH'
+DOORWAYDE_REMOTE='$DOORWAYDE_REMOTE'
+DOORWAYDE_VERSION='$DOORWAYDE_VERSION'
+DOORWAYDE_VERSION_LAST_CHECKED='$DOORWAYDE_VERSION_LAST_CHECKED'
+DOORWAYDE_VERSION_COMMIT_MSG='$DOORWAYDE_VERSION_COMMIT_MSG'
+DOORWAYDE_COMMIT_HASH='$DOORWAYDE_COMMIT_HASH'
 EOL
-# HALLWAYDE_RELEASE_NOTES='$HALLWAYDE_RELEASE_NOTES'
+# DOORWAYDE_RELEASE_NOTES='$DOORWAYDE_RELEASE_NOTES'
 
   echo -e "Version cache output to $version_file\n"
 
 elif [[ "$1" == "--release-notes" ]]; then
-  echo "$HALLWAYDE_RELEASE_NOTES"
+  echo "$DOORWAYDE_RELEASE_NOTES"
 
 fi

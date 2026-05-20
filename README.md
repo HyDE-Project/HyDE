@@ -1,16 +1,16 @@
-# HALLwayDE
+# DOORwayDE
 
 **The Hyprland Desktop Environment for HALLway OS**
 
 > **Your desktop should be beautiful, functional, and yours — by default.**
 
-HALLwayDE is a complete Hyprland desktop environment built for NixOS and the [HALLway](https://github.com/MarkusBitterman/HALLway) ecosystem. It originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE) and has been fully rebranded and adapted for declarative NixOS configuration.
+DOORwayDE is a complete Hyprland desktop environment built for NixOS and the [HALLway](https://github.com/MarkusBitterman/HALLway) ecosystem. It originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE) and has been fully rebranded and adapted for declarative NixOS configuration.
 
 ---
 
 ## Table of Contents
 
-- [What is HALLwayDE?](#what-is-hallwayde)
+- [What is DOORwayDE?](#what-is-doorwayde)
 - [Quick Start](#quick-start)
 - [Components](#components)
 - [Configuration](#configuration)
@@ -21,9 +21,9 @@ HALLwayDE is a complete Hyprland desktop environment built for NixOS and the [HA
 
 ---
 
-## What is HALLwayDE?
+## What is DOORwayDE?
 
-HALLwayDE is the desktop environment layer of HALLway OS. It provides:
+DOORwayDE is the desktop environment layer of HALLway OS. It provides:
 
 | Component | Purpose |
 |-----------|---------|
@@ -35,7 +35,7 @@ HALLwayDE is the desktop environment layer of HALLway OS. It provides:
 | **Wlogout** | Logout/power menu |
 | **Wallbash** | Dynamic theming from wallpapers |
 
-**Why HALLwayDE exists:**
+**Why DOORwayDE exists:**
 
 - **NixOS-native** — Designed for declarative configuration with Home Manager
 - **Part of HALLway** — Shares the ecosystem's philosophy of user sovereignty
@@ -48,21 +48,21 @@ HALLwayDE is the desktop environment layer of HALLway OS. It provides:
 
 ### For HALLway OS Users
 
-HALLwayDE is designed to integrate with the [HALLway](https://github.com/MarkusBitterman/HALLway) NixOS flake.
+DOORwayDE is designed to integrate with the [HALLway](https://github.com/MarkusBitterman/HALLway) NixOS flake.
 
 **Prerequisites**: Hyprland and dependencies installed via NixOS/Home Manager
 
 ```bash
-# Clone HALLwayDE
-git clone https://github.com/MarkusBitterman/HALLwayDE.git ~/HALLwayDE
+# Clone DOORwayDE
+git clone https://github.com/MarkusBitterman/DOORwayDE.git ~/DOORwayDE
 
 # Run the setup script
-cd ~/HALLwayDE/Scripts
+cd ~/DOORwayDE/Scripts
 ./setup-nixos.sh
 
 # Or use the flake (in your HALLway config):
-# imports = [ inputs.hallwayde.homeManagerModules.default ];
-# hallwayde.enable = true;
+# imports = [ inputs.doorwayde.homeManagerModules.default ];
+# doorwayde.enable = true;
 ```
 
 ### Required NixOS Packages
@@ -105,13 +105,13 @@ dolphin        # file manager
 
 | Tool | Description |
 |------|-------------|
-| `hallwayde-shell` | Shell wrapper for HALLwayDE operations |
-| `hallwaydectl` | IPC control utility |
-| `hallwayde-ipc` | Direct IPC communication |
+| `doorwayde-shell` | Shell wrapper for DOORwayDE operations |
+| `doorwaydectl` | IPC control utility |
+| `doorwayde-ipc` | Direct IPC communication |
 
 ### Scripts Library
 
-Located in `~/.local/lib/hallwayde/`:
+Located in `~/.local/lib/doorwayde/`:
 
 | Script | Function |
 |--------|----------|
@@ -143,13 +143,13 @@ Located in `~/.local/lib/hallwayde/`:
 │   └── themes/            # Theme colors
 ├── waybar/                # Status bar config
 ├── rofi/                  # Launcher themes
-└── hallwayde/
-    └── config.toml        # HALLwayDE settings
+└── doorwayde/
+    └── config.toml        # DOORwayDE settings
 
 ~/.local/
-├── lib/hallwayde/         # Utility scripts
-├── share/hallwayde/       # Data files, schemas
-└── bin/                   # hallwayde-shell, hallwaydectl
+├── lib/doorwayde/         # Utility scripts
+├── share/doorwayde/       # Data files, schemas
+└── bin/                   # doorwayde-shell, doorwaydectl
 ```
 
 ### User Configuration Files
@@ -186,7 +186,7 @@ misc {
 
 ## Themes
 
-HALLwayDE supports dynamic theming via Wallbash — colors are extracted from your wallpaper.
+DOORwayDE supports dynamic theming via Wallbash — colors are extracted from your wallpaper.
 
 ### Available Themes
 
@@ -211,10 +211,10 @@ Compatible with themes from [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 
 ```bash
 # Switch theme
-hallwayde-shell theme.switch.sh
+doorwayde-shell theme.switch.sh
 
 # Set wallpaper
-hallwayde-shell wallpaper.sh /path/to/wallpaper.jpg
+doorwayde-shell wallpaper.sh /path/to/wallpaper.jpg
 
 # Keybinding
 Super + T  # Theme selector
@@ -281,13 +281,13 @@ See [KEYBINDINGS.md](KEYBINDINGS.md) for the complete reference.
 
 ## Contributing
 
-We welcome contributions! HALLwayDE follows HALLway's development practices.
+We welcome contributions! DOORwayDE follows HALLway's development practices.
 
 ### Development Setup
 
 ```bash
-git clone https://github.com/MarkusBitterman/HALLwayDE.git
-cd HALLwayDE
+git clone https://github.com/MarkusBitterman/DOORwayDE.git
+cd DOORwayDE
 
 # Enter dev shell with all tools
 nix develop
@@ -311,7 +311,7 @@ shellcheck Scripts/*.sh
 
 ## Origins & Acknowledgments
 
-HALLwayDE originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE), the Hyprland Desktop Environment project. We've rebranded and adapted it for NixOS while maintaining theme compatibility with the upstream ecosystem.
+DOORwayDE originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE), the Hyprland Desktop Environment project. We've rebranded and adapted it for NixOS while maintaining theme compatibility with the upstream ecosystem.
 
 **Upstream lineage:**
 - [prasanthrangan/hyprdots](https://github.com/prasanthrangan/hyprdots) — Original Hyprdots project

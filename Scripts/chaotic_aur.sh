@@ -6,7 +6,7 @@ rootOpts=("--install" "--purge" "--revert" "fresh") #? List Of Flags that needs 
 vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
 
 box_me() {
-    local s="HALLwayDE: $*"
+    local s="DOORwayDE: $*"
     tput setaf 3
     echo " ═${s//?/═}"
     echo "║$s ║"
@@ -211,7 +211,7 @@ This repo is generated on-demand from packages we use on our personal computers.
 For more information, visit: https://aur.chaotic.cx/
 $vertL
 
-HALLwayDE is not affiliated with Chaotic AUR.
+DOORwayDE is not affiliated with Chaotic AUR.
 
 CHAOS
 

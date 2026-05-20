@@ -1,10 +1,10 @@
-# CLAUDE.md - AI Assistant Guidelines for HALLwayDE
+# CLAUDE.md - AI Assistant Guidelines for DOORwayDE
 
 ## Project Overview
 
-**HALLwayDE** is the Hyprland Desktop Environment for [HALLway OS](https://github.com/MarkusBitterman/HALLway). It originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE) and has been fully rebranded as an independent project adapted for NixOS.
+**DOORwayDE** is the Hyprland Desktop Environment for [HALLway OS](https://github.com/MarkusBitterman/HALLway). It originated as a fork of [HyDE](https://github.com/HyDE-Project/HyDE) and has been fully rebranded as an independent project adapted for NixOS.
 
-**Important distinction:** HALLwayDE is NOT a "port" of HyDE. It IS HALLwayDE — its own project with its own identity, that happens to share lineage with HyDE. When writing documentation or comments, refer to this project as "HALLwayDE" not "HyDE fork" or "ported from HyDE".
+**Important distinction:** DOORwayDE is NOT a "port" of HyDE. It IS DOORwayDE — its own project with its own identity, that happens to share lineage with HyDE. When writing documentation or comments, refer to this project as "DOORwayDE" not "HyDE fork" or "ported from HyDE".
 
 ### Philosophy
 
@@ -19,20 +19,20 @@ This project follows the HALLway ecosystem principles:
 ## Architecture
 
 ```
-HALLwayDE/
+DOORwayDE/
 ├── Configs/                    # All dotfiles (the payload)
 │   ├── .config/
 │   │   ├── hypr/              # Hyprland config (main entry point)
 │   │   ├── waybar/            # Status bar
 │   │   ├── rofi/              # App launcher
 │   │   ├── dunst/             # Notifications
-│   │   ├── hallwayde/         # HALLwayDE-specific settings
+│   │   ├── doorwayde/         # DOORwayDE-specific settings
 │   │   ├── kitty/             # Terminal
 │   │   └── wlogout/           # Logout menu
 │   └── .local/
-│       ├── bin/               # hallwayde-shell, hallwaydectl, hallwayde-ipc
-│       ├── lib/hallwayde/     # 100+ utility scripts
-│       └── share/hallwayde/   # Data files, schemas, templates
+│       ├── bin/               # doorwayde-shell, doorwaydectl, doorwayde-ipc
+│       ├── lib/doorwayde/     # 100+ utility scripts
+│       └── share/doorwayde/   # Data files, schemas, templates
 ├── Scripts/                    # Installation and setup scripts
 │   └── setup-nixos.sh         # NixOS setup script
 ├── flake.nix                  # Nix flake with Home Manager module
@@ -47,7 +47,7 @@ HALLwayDE/
 | `Configs/.config/hypr/monitors.conf` | Monitor configuration (user edits this) |
 | `Configs/.config/hypr/userprefs.conf` | User preferences (keyboard, etc.) |
 | `Configs/.config/hypr/keybindings.conf` | All keybindings |
-| `Configs/.local/lib/hallwayde/globalcontrol.sh` | Core environment setup |
+| `Configs/.local/lib/doorwayde/globalcontrol.sh` | Core environment setup |
 | `flake.nix` | Nix flake with homeManagerModules.default |
 | `Scripts/setup-nixos.sh` | Manual setup script for NixOS |
 
@@ -55,26 +55,26 @@ HALLwayDE/
 
 ### Naming Conventions
 
-- **hallwayde** (lowercase) — paths, variables, file names
-- **HALLWAYDE_** — environment variable prefix
-- **HALLwayDE** — branding, documentation, user-facing text
-- **hallwayde-shell** — CLI tools use hyphenated lowercase
+- **doorwayde** (lowercase) — paths, variables, file names
+- **DOORWAYDE_** — environment variable prefix
+- **DOORwayDE** — branding, documentation, user-facing text
+- **doorwayde-shell** — CLI tools use hyphenated lowercase
 
 ### Environment Variables
 
-All HALLwayDE environment variables use the `HALLWAYDE_` prefix:
+All DOORwayDE environment variables use the `DOORWAYDE_` prefix:
 
 ```bash
-$HALLWAYDE_CONFIG_HOME   # ~/.config/hallwayde
-$HALLWAYDE_DATA_HOME     # ~/.local/share/hallwayde
-$HALLWAYDE_CACHE_HOME    # ~/.cache/hallwayde
-$HALLWAYDE_THEME         # Current theme name
-$HALLWAYDE_HYPRLAND      # Marker variable in hyprland.conf
+$DOORWAYDE_CONFIG_HOME   # ~/.config/doorwayde
+$DOORWAYDE_DATA_HOME     # ~/.local/share/doorwayde
+$DOORWAYDE_CACHE_HOME    # ~/.cache/doorwayde
+$DOORWAYDE_THEME         # Current theme name
+$DOORWAYDE_HYPRLAND      # Marker variable in hyprland.conf
 ```
 
 ### Adding New Features
 
-1. **Scripts** go in `Configs/.local/lib/hallwayde/`
+1. **Scripts** go in `Configs/.local/lib/doorwayde/`
 2. **Configs** go in `Configs/.config/<app>/`
 3. **Update flake.nix** if adding new config directories
 4. **Update setup-nixos.sh** if adding new symlink targets
@@ -83,7 +83,7 @@ $HALLWAYDE_HYPRLAND      # Marker variable in hyprland.conf
 
 ```bash
 # Quick test (symlink approach)
-ln -sf ~/HALLwayDE/Configs/.config/hypr ~/.config/hypr
+ln -sf ~/DOORwayDE/Configs/.config/hypr ~/.config/hypr
 hyprctl reload
 
 # Full dev environment
@@ -93,7 +93,7 @@ shellcheck Scripts/*.sh
 
 ## Upstream Relationship
 
-HALLwayDE is forked from HyDE. When referencing upstream:
+DOORwayDE is forked from HyDE. When referencing upstream:
 - Keep GitHub URLs pointing to HyDE-Project for attribution
 - Use "forked from HyDE" in comments where appropriate
 - Don't rename upstream references in theme files
@@ -105,8 +105,8 @@ HALLwayDE is forked from HyDE. When referencing upstream:
 If pulling changes from HyDE upstream:
 ```bash
 # After merge, fix branding
-find . -type f \( -name "*.sh" -o -name "*.conf" \) -exec sed -i 's/hyde/hallwayde/g' {} +
-find . -type f \( -name "*.sh" -o -name "*.conf" \) -exec sed -i 's/HYDE_/HALLWAYDE_/g' {} +
+find . -type f \( -name "*.sh" -o -name "*.conf" \) -exec sed -i 's/hyde/doorwayde/g' {} +
+find . -type f \( -name "*.sh" -o -name "*.conf" \) -exec sed -i 's/HYDE_/DOORWAYDE_/g' {} +
 # Review changes carefully - some hyde references should stay (URLs, attribution)
 ```
 
@@ -125,19 +125,19 @@ find . -type f \( -name "*.sh" -o -name "*.conf" \) -exec sed -i 's/HYDE_/HALLWA
 
 ## Integration with HALLway
 
-HALLwayDE is designed to be imported into HALLway's flake:
+DOORwayDE is designed to be imported into HALLway's flake:
 
 ```nix
 # In HALLway's flake.nix inputs:
-hallwayde.url = "github:MarkusBitterman/HALLwayDE";
+doorwayde.url = "github:MarkusBitterman/DOORwayDE";
 
 # In home-manager config:
-imports = [ inputs.hallwayde.homeManagerModules.default ];
-hallwayde = {
+imports = [ inputs.doorwayde.homeManagerModules.default ];
+doorwayde = {
   enable = true;
   monitor = "HDMI-A-1,1920x1080@100,0x0,1";
   keyboard = "us";
 };
 ```
 
-The flake exposes `lib.hallwaydeDeps` so HALLway can reference the same package list.
+The flake exposes `lib.doorwaydeDeps` so HALLway can reference the same package list.

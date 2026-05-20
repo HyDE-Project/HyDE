@@ -2,7 +2,7 @@
 # shellcheck disable=SC2154
 # shellcheck disable=SC1091
 #|---/ /+--------------------------------+---/ /|#
-#|--/ /-| Script to restore hallwayde configs |--/ /-|#
+#|--/ /-| Script to restore doorwayde configs |--/ /-|#
 #|-/ /--| Prasanth Rangan                |-/ /--|#
 #|/ /---+--------------------------------+/ /---|#
 
@@ -262,24 +262,24 @@ ensure_hyq() {
 
 hyprland_hook() {
 
-	local hallwayde_config="${cloneDir}/Configs/.config/hypr/hyprland.conf"
+	local doorwayde_config="${cloneDir}/Configs/.config/hypr/hyprland.conf"
 	local hyprland_default_config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.conf"
 	local hyq_exec
 
 	ensure_hyq || return 1
 	hyq_exec="$(command -v hyq 2>/dev/null || true)"
 
-	if ! "${hyq_exec}" "${hyprland_default_config}" --query "\$HALLWAYDE_HYPRLAND"; then
+	if ! "${hyq_exec}" "${hyprland_default_config}" --query "\$DOORWAYDE_HYPRLAND"; then
 		mkdir -p "$(dirname "${hyprland_default_config}")" "${BkpDir}/.config/hypr"
-		print_log -g "[hook] " -b "hyprland :: " "No HALLWAYDE_HYPRLAND variable found in ${hyprland_default_config}, restoring default HALLwayDE marker..."
+		print_log -g "[hook] " -b "hyprland :: " "No DOORWAYDE_HYPRLAND variable found in ${hyprland_default_config}, restoring default DOORwayDE marker..."
 
 		if [[ ${flg_DryRun} -ne 1 && -f "${hyprland_default_config}" ]]; then
 			cp -f "${hyprland_default_config}" "${BkpDir}/.config/hypr/hyprland.conf"
 		fi
 
 		print_log -r "[backup] :: " "${hyprland_default_config} to ${BkpDir}/.config/hypr/hyprland.conf"
-		[[ ${flg_DryRun} -ne 1 ]] && cp -f "${hallwayde_config}" "${hyprland_default_config}"
-		print_log -g "[restore] :: " "${hallwayde_config} to ${hyprland_default_config}"
+		[[ ${flg_DryRun} -ne 1 ]] && cp -f "${doorwayde_config}" "${hyprland_default_config}"
+		print_log -g "[restore] :: " "${doorwayde_config} to ${hyprland_default_config}"
 	fi
 }
 
@@ -358,16 +358,16 @@ hyprland_hook
 
 uv_hook
 
-print_log -g "[python env]" -b " :: " "Rebuilding HALLwayDE Python environment..."
-if command -v hallwayde-shell >/dev/null 2>&1; then
-	hallwayde-shell pyinit
+print_log -g "[python env]" -b " :: " "Rebuilding DOORwayDE Python environment..."
+if command -v doorwayde-shell >/dev/null 2>&1; then
+	doorwayde-shell pyinit
 else
-	"${HOME}/.local/bin/hallwayde-shell" pyinit
+	"${HOME}/.local/bin/doorwayde-shell" pyinit
 fi
 
 print_log -g "[version]" -b " :: " "saving version info..."
 "${scrDir}/version.sh" --cache || echo "Failed to save version info."
 
-state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hallwayde"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/doorwayde"
 clone_dir=$(git rev-parse --show-toplevel 2>/dev/null || echo "${HOME}/HyDE")
 [[ -f ${clone_dir}/CHANGELOG.md ]] && cp -f "${clone_dir}/CHANGELOG.md" "${state_dir}/CHANGELOG.md"

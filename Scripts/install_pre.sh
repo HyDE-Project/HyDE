@@ -17,9 +17,9 @@ flg_DryRun=${flg_DryRun:-0}
 if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
     print_log -sec "bootloader" -b "detected :: " "grub..."
 
-    if [ ! -f /etc/default/grub.hallwayde.bkp ] && [ ! -f /boot/grub/grub.hallwayde.bkp ]; then
-        [ "${flg_DryRun}" -eq 1 ] || sudo cp /etc/default/grub /etc/default/grub.hallwayde.bkp
-        [ "${flg_DryRun}" -eq 1 ] || sudo cp /boot/grub/grub.cfg /boot/grub/grub.hallwayde.bkp
+    if [ ! -f /etc/default/grub.doorwayde.bkp ] && [ ! -f /boot/grub/grub.doorwayde.bkp ]; then
+        [ "${flg_DryRun}" -eq 1 ] || sudo cp /etc/default/grub /etc/default/grub.doorwayde.bkp
+        [ "${flg_DryRun}" -eq 1 ] || sudo cp /boot/grub/grub.cfg /boot/grub/grub.doorwayde.bkp
 
         # Only if the nvidia installation doesn't skip
         if nvidia_detect; then
@@ -65,11 +65,11 @@ fi
 if pkg_installed systemd && nvidia_detect && [ "$(bootctl status 2>/dev/null | awk '{if ($1 == "Product:") print $2}')" == "systemd-boot" ]; then
     print_log -sec "bootloader" -stat "detected" "systemd-boot"
 
-    if [ "$(find /boot/loader/entries/ -type f -name '*.conf.hallwayde.bkp' 2>/dev/null | wc -l)" -ne "$(find /boot/loader/entries/ -type f -name '*.conf' 2>/dev/null | wc -l)" ]; then
+    if [ "$(find /boot/loader/entries/ -type f -name '*.conf.doorwayde.bkp' 2>/dev/null | wc -l)" -ne "$(find /boot/loader/entries/ -type f -name '*.conf' 2>/dev/null | wc -l)" ]; then
         print_log -g "[bootloader] " -b " :: " "nvidia detected, adding nvidia_drm.modeset=1 to boot option..."
         if [[ "${flg_DryRun}" -ne 1 ]]; then
             find /boot/loader/entries/ -type f -name "*.conf" | while read -r imgconf; do
-                sudo cp "${imgconf}" "${imgconf}.hallwayde.bkp"
+                sudo cp "${imgconf}" "${imgconf}.doorwayde.bkp"
                 sdopt=$(grep -w "^options" "${imgconf}" | sed 's/\b quiet\b//g' | sed 's/\b splash\b//g' | sed 's/\b nvidia_drm.modeset=.\b//g')
                 sudo sed -i "/^options/c${sdopt} quiet splash nvidia_drm.modeset=1" "${imgconf}"
             done
@@ -81,11 +81,11 @@ fi
 
 # pacman
 
-if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.hallwayde.bkp ]; then
+if [ -f /etc/pacman.conf ] && [ ! -f /etc/pacman.conf.doorwayde.bkp ]; then
     print_log -g "[PACMAN] " -b "modify :: " "adding extra spice to pacman..."
 
     # shellcheck disable=SC2154
-    [ "${flg_DryRun}" -eq 1 ] || sudo cp /etc/pacman.conf /etc/pacman.conf.hallwayde.bkp
+    [ "${flg_DryRun}" -eq 1 ] || sudo cp /etc/pacman.conf /etc/pacman.conf.doorwayde.bkp
     [ "${flg_DryRun}" -eq 1 ] || sudo sed -i "/^#Color/c\Color\nILoveCandy
     /^#VerbosePkgLists/c\VerbosePkgLists
     /^#ParallelDownloads/c\ParallelDownloads = 5" /etc/pacman.conf

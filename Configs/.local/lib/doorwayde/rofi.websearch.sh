@@ -1,0 +1,230 @@
+#!/usr/bin/env bash
+set -e
+if [[ $DOORWAYDE_SHELL_INIT -ne 1 ]]; then
+    eval "$(doorwayde-shell init)"
+else
+    export_doorwayde_config
+fi
+
+# Source argparse.sh for argument parsing
+source "${LIB_DIR}/doorwayde/shutils/argparse.sh"
+
+cached_search_dir="${XDG_CACHE_HOME:-$HOME/.cache}/doorwayde/landing/websearch"
+declare -A SITES SITES_ICON
+search_file=(
+    "$SHARE_DIR/doorwayde/websearch.lst"
+    "$XDG_CONFIG_HOME/doorwayde/websearch.lst")
+load_search_engines() {
+    local lst_files=()
+    for f in "${search_file[@]}"; do
+        [[ $f == *.lst && -f $f ]] && lst_files+=("$f")
+    done
+    if [[ ${#lst_files[@]} -eq 0 ]]; then
+        print_log +r "[error] " +y "No search engine files found."
+        exit 1
+    fi
+    eval "$(awk -F'|' '
+        function trim(s) {
+            gsub(/^[ \t\r\n]+|[ \t\r\n]+$/, "", s);
+            return s
+        }
+        {
+            icon = trim($1);
+            key = trim($2);
+            url = trim($3);
+            if (key != "" && url != "") {
+                #! Escape double quotes and backslashes in url and icon for safe shell eval
+                gsub(/["\\]/, "\\\\&", url);
+                gsub(/["\\]/, "\\\\&", icon);
+                print "SITES[\"" key "\"]=\"" url "\""
+                print "SITES_ICON[\"" key "\"]=\"" icon "\""
+            }
+        }
+        ' "${lst_files[@]}")"
+}
+get_sites_list() {
+    {
+        local cache="$cached_search_dir/recent.sites"
+        [[ -f $cache ]] && awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $1); print $1}' "$cache" | while read -r key; do
+            [[ -n $key && -n ${SITES_ICON[$key]} ]] && printf "%s \t%s\n" "${SITES_ICON[$key]}" "$key"
+        done
+        for key in "${!SITES[@]}"; do
+            [[ -n ${SITES_ICON[$key]} ]] && printf "%s \t%s\n" "${SITES_ICON[$key]}" "$key"
+        done | sort -u
+    } | awk '!seen[$0]++'
+}
+get_queries_list() {
+    site=$1
+    cat "$cached_search_dir/$site.txt" 2> /dev/null || true
+}
+write_to_top() {
+    file=$1
+    content=$2
+    if [[ $file == *"recent.sites" ]]; then
+        key="$(awk -F '|' '{print $1}' <<< "$content" | xargs)"
+        if [[ -n ${SITES[$key]} ]]; then
+            grep -vx "$key" "$file" 2> /dev/null > temp_recent || true
+            printf "%s\n" "$key" > "$file"
+            cat temp_recent >> "$file"
+            rm -f temp_recent
+        fi
+    else
+        {
+            printf "%s\n" "$content"
+            cat "$file" 2> /dev/null
+        } > temp && mv temp "$file"
+        awk 'NF' "$file" | awk '!seen[$0]++' > temp && mv temp "$file"
+    fi
+}
+handle_query() {
+    site=$1
+    query=$2
+    [ -z "$site" ] && exit 0
+    [ -z "$query" ] && exit 0
+    mkdir -p "$cached_search_dir"
+    touch "$cached_search_dir/$site.txt"
+    if grep -Fxq "$query" "$cached_search_dir/$site.txt"; then
+        printf "%s\n" "$(grep -xv "$query" "$cached_search_dir/$site.txt")" > "$cached_search_dir/$site.txt"
+    fi
+    write_to_top "$cached_search_dir/$site.txt" "$query"
+    write_to_top "$cached_search_dir/recent.sites" "$site | ${SITES[$site]}"
+    encoded_query=$(printf '%s' "$query" | jq -sRr @uri)
+    query_url=$(printf '%s' "${SITES[$site]}" | sed "s/%s/$encoded_query/")
+    if [ -n "$BROWSER" ]; then
+        printf "Using browser: %s %s\n" "$BROWSER" "$query_url"
+        nohup "$BROWSER" "$query_url" > /dev/null 2>&1 &
+    else
+        printf "Using default browser: xdg-open %s\n" "$query_url"
+        [ -z "$BROWSER" ] && nohup xdg-open "$query_url" > /dev/null 2>&1 &
+    fi
+}
+smart_input() {
+    local input="$1"
+    local site_raw
+    local query
+    if [[ $input == *:* ]]; then
+        site_raw="${input%%:*}"
+        query="${input#*:}"
+    else
+        site_raw=$(printf "%s\t" "$input" | cut -f2)
+        query=""
+    fi
+    local site
+    [[ -n ${SITES[$site_raw]} ]] && site="$site_raw"
+    if [[ -z $site ]]; then
+        for candidate in "${!SITES[@]}"; do
+            [[ ${candidate,,} == *"${site_raw,,}"* ]] && site="$candidate" && break
+        done
+    fi
+    [[ -z $site ]] && {
+        printf "Unknown site: %s\n" "$site_raw"
+        exit 1
+    }
+    export FINAL_QUERY="$query" FINAL_SITE="$site"
+}
+setup_rofi_config() {
+    local font_scale="$ROFI_WEBSEARCH_SCALE"
+    [[ $font_scale =~ ^[0-9]+$ ]] || font_scale=${ROFI_SCALE:-10}
+    local font_name=${ROFI_WEBSEARCH_FONT:-$ROFI_FONT}
+    font_name=${font_name:-$(get_hyprConf "MENU_FONT")}
+    font_name=${font_name:-$(get_hyprConf "FONT")}
+    font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} $font_scale\";}"
+    local hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
+    local wind_border=$((hypr_border * 3 / 2))
+    local elem_border=$((hypr_border == 0 ? 5 : hypr_border))
+    local hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
+    r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;}wallbox{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
+}
+usage() {
+    cat << EOF
+--clear-cache               Reset cache
+--browser | -b [browser]    Browser to use, defaults to xdg browser
+--site | -s [search engine] Search-engine to use
+-h | --help                 Show this help message
+Available:
+$(for site in "${!SITES[@]}"; do
+        echo -e "\t${SITES_ICON[$site]} $site"
+    done | sort)
+EOF
+    exit 0
+}
+rofi_interactive() {
+    unset FINAL_SITE FINAL_QUERY
+    setup_rofi_config
+    if [[ -n $SITE_TO_USE ]]; then
+        if [[ -z ${SITES[$SITE_TO_USE]} ]]; then
+            printf "Invalid site: %s\n" "$FINAL_SITE"
+            exit 1
+        else
+            printf "Using site: %s\n" "$SITE_TO_USE"
+            FINAL_SITE="$SITE_TO_USE"
+        fi
+    else
+        text_input=$(get_sites_list | rofi -dmenu -i "${ROFI_WEBSEARCH_ARGS[@]}" \
+            -p "🔎 Select engine" \
+            -theme-str "$r_override" \
+            -config "${ROFI_WEBSEARCH_STYLE:-clipboard}" \
+            -theme-str 'entry { placeholder: "🔎 Search engine...";}' \
+            -theme-str "$font_override" \
+            -theme-str "window {width: 50%;}" \
+            -theme-str 'listview { columns: 3; }')
+        [[ -z $text_input ]] && exit 0
+        printf "Input: %s\n" "$text_input"
+        smart_input "${text_input[@]}"
+    fi
+    if [[ -z $FINAL_SITE ]]; then
+        FINAL_SITE=$(awk '{print $1}' <<< "$text_input")
+        if [[ -z ${SITES[$FINAL_SITE]} ]]; then
+            printf "Invalid FINAL_SITE: %s\n" "$FINAL_SITE"
+            exit 1
+        fi
+    fi
+    if [[ -z $FINAL_QUERY ]]; then
+        FINAL_QUERY=$(get_queries_list "$FINAL_SITE" | rofi -dmenu -i "${ROFI_WEBSEARCH_ARGS[@]}" \
+            -theme-str "$r_override" \
+            -config "${ROFI_WEBSEARCH_STYLE:-clipboard}" \
+            -theme-str 'entry { placeholder: "🔎 Query...";}' \
+            -theme-str "$font_override" \
+            -theme-str "window {width: 50%;}")
+    fi
+    printf "Final site: %s\n" "$FINAL_SITE"
+    printf "Final query: %s\n" "$FINAL_QUERY"
+    if [[ -n $FINAL_QUERY ]] && [[ -n $FINAL_SITE ]]; then
+        handle_query "$FINAL_SITE" "$FINAL_QUERY"
+    fi
+}
+main() {
+    # Initialize argparse
+    argparse_init "$@"
+
+    # Set program name and header
+    argparse_program "doorwayde-shell rofi.websearch"
+    argparse_header "DOORwayDE Web Search"
+
+    # Define arguments
+    argparse "--site,-s" "SITE_TO_USE" "Search-engine to use" "parameter"
+    argparse "--browser,-b" "BROWSER" "Browser to use, defaults to xdg browser" "parameter"
+    argparse "--clear-cache" "" "Reset cache"
+    argparse "--help,-h" "" "Show this help message"
+
+    # Load search engines (needed for usage)
+    load_search_engines
+
+    argparse_finalize
+
+    # Handle arguments
+    case "$ARGPARSE_ACTION" in
+        clear-cache)
+            rm -fr "$cached_search_dir"
+            print_log +g "[ok] " +y "cleared cache"
+            exit 0
+            ;;
+        help)
+            usage
+            ;;
+        *)
+            rofi_interactive
+            ;;
+    esac
+}
+main "$@"

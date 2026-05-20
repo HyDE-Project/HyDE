@@ -1,0 +1,4 @@
+# Configuration file for DOORwayDE
+# Environment variables should be on top
+# Updated config.toml file can be found at $HOME/.local/share/doorwayde/config.toml
+"$schema" = "https://raw.githubusercontent.com/HyDE-Project/HyDE/refs/heads/master/Configs/.local/share/doorwayde/schema/config.toml.json"
