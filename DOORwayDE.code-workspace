@@ -1,0 +1,77 @@
+{
+  "folders": [
+    {
+      "name": "DOORwayDE",
+      "path": "."
+    },
+    {
+      "name": "Configs",
+      "path": "Configs"
+    },
+    {
+      "name": "Scripts",
+      "path": "Scripts"
+    }
+  ],
+  "settings": {
+    // Workspace-specific overrides
+    "window.title": "DOORwayDE - ${activeEditorShort}${separator}${rootName}",
+
+    // Task runner
+    "task.autoDetect": "on"
+  },
+  "extensions": {
+    "recommendations": [
+      "jnoortheen.nix-ide",
+      "mkhl.direnv",
+      "timonwong.shellcheck",
+      "charliermarsh.ruff",
+      "editorconfig.editorconfig"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": []
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Nix Flake Check",
+        "type": "shell",
+        "command": "nix flake check",
+        "group": "build",
+        "problemMatcher": []
+      },
+      {
+        "label": "Shellcheck Scripts",
+        "type": "shell",
+        "command": "shellcheck Scripts/*.sh",
+        "group": "test",
+        "problemMatcher": "$shellcheck"
+      },
+      {
+        "label": "Shellcheck Lib",
+        "type": "shell",
+        "command": "find Configs/.local/lib/doorwayde -name '*.sh' -exec shellcheck {} +",
+        "group": "test",
+        "problemMatcher": "$shellcheck"
+      },
+      {
+        "label": "Reload Hyprland",
+        "type": "shell",
+        "command": "hyprctl reload",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Dev Shell",
+        "type": "shell",
+        "command": "nix develop",
+        "group": "none",
+        "problemMatcher": [],
+        "isBackground": true
+      }
+    ]
+  }
+}

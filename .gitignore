@@ -24,7 +24,9 @@ result-*
 .direnv/
 
 # Editors
-.vscode/
+.vscode/*.log
+.vscode/.ropeproject/
+.vscode/ipch/
 .idea/
 *.swp
 *.swo

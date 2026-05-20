@@ -1,0 +1,31 @@
+{
+  "recommendations": [
+    // Nix
+    "jnoortheen.nix-ide",
+    "arrterian.nix-env-selector",
+
+    // Direnv
+    "mkhl.direnv",
+
+    // Shell scripting
+    "timonwong.shellcheck",
+    "foxundermoon.shell-format",
+
+    // Python
+    "charliermarsh.ruff",
+    "ms-python.python",
+
+    // Lua
+    "sumneko.lua",
+
+    // General
+    "editorconfig.editorconfig",
+    "tamasfe.even-better-toml",
+    "redhat.vscode-yaml",
+
+    // Git
+    "eamodio.gitlens",
+    "mhutchie.git-graph"
+  ],
+  "unwantedRecommendations": []
+}

@@ -46,10 +46,21 @@
 
       # Development dependencies
       devDeps = pkgs: with pkgs; [
+        # Shell
         shellcheck
         shfmt
+
+        # Nix
+        nil          # Nix LSP
+        nixfmt-rfc-style  # Nix formatter
+
+        # Python
         python3
+        ruff         # Python linter/formatter
+
+        # General
         git
+        direnv
       ];
 
       # Home Manager module definition

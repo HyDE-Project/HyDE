@@ -1,0 +1,93 @@
+{
+  // Direnv integration
+  "direnv.restart.automatic": true,
+  "direnv.status.showChangesCount": true,
+
+  // Nix
+  "nix.enableLanguageServer": true,
+  "nix.serverPath": "nil",
+  "nix.serverSettings": {
+    "nil": {
+      "formatting": {
+        "command": ["nixfmt"]
+      },
+      "diagnostics": {
+        "ignored": ["unused_binding"]
+      },
+      "nix": {
+        "flake": {
+          "autoArchive": true
+        }
+      }
+    }
+  },
+
+  // Shell scripts
+  "shellcheck.enable": true,
+  "shellcheck.run": "onSave",
+  "shellcheck.executablePath": "shellcheck",
+  "shellformat.path": "shfmt",
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format",
+    "editor.formatOnSave": false
+  },
+
+  // Python
+  "python.analysis.typeCheckingMode": "basic",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    }
+  },
+  "ruff.lint.run": "onSave",
+
+  // Lua
+  "Lua.workspace.library": [
+    "${workspaceFolder}/Configs/.local/lib/doorwayde/luautils"
+  ],
+  "Lua.runtime.version": "Lua 5.4",
+
+  // File associations
+  "files.associations": {
+    "*.conf": "ini",
+    "*.rasi": "css",
+    "*.dcol": "shellscript",
+    "hyprland.conf": "hyprlang",
+    "hyprlock.conf": "hyprlang",
+    "hypridle.conf": "hyprlang",
+    "*.zsh": "shellscript",
+    "*.fish": "fish"
+  },
+
+  // Editor
+  "editor.formatOnSave": false,
+  "editor.rulers": [80, 120],
+  "editor.renderWhitespace": "boundary",
+
+  // Files
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.direnv": true,
+    "**/result": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true
+  },
+
+  // Search
+  "search.exclude": {
+    ".direnv": true,
+    "result": true,
+    "**/*.lock": true
+  },
+
+  // Terminal
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.env.linux": {
+    "DIRENV_LOG_FORMAT": ""
+  }
+}
