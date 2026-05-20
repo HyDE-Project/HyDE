@@ -46,8 +46,7 @@ Multi-language README support
   </div>
 </div>
 
-看这里了解完整说明：
-[Hyde 之旅：起源与未来蓝图](./Hyprdots-to-HyDE.zh.md)
+查看 [HyDE-to-DOORwayDE.md](../../HyDE-to-DOORwayDE.md) 了解此 fork 的历史。
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">

@@ -43,8 +43,7 @@ Multi-language README support
   </div>
 </div>
 
-اقرأ هذا لرؤية الملاحظة الكاملة:
-[رحلة إلى HyDE وما بعدها](../../Hyprdots-to-HyDE.md)
+راجع [HyDE-to-DOORwayDE.md](../../HyDE-to-DOORwayDE.md) لمعرفة تاريخ هذا المشروع.
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">

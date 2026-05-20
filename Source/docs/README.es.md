@@ -51,8 +51,7 @@ Soporte para README multilingüe.
   </div>
 </div>
 
-Mire esto para ver la nota completa:
-[Viaje a HyDE y más allá](./Hyprdots-to-HyDE.es.md)
+Vea [HyDE-to-DOORwayDE.md](../../HyDE-to-DOORwayDE.md) para conocer la historia de este fork.
 
 <!--
 <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
@@ -149,12 +148,10 @@ Para más detalles, consulte la [wiki de gestión de dots de Hyde-cli](https://g
 
 ¡Damos la bienvenida a las contribuciones de la comunidad! Para comenzar:
 
-- Consulte nuestras pautas en [CONTRIBUTING.md](CONTRIBUTING.md)
-- Lea sobre los roles del equipo en [TEAM_ROLES.md](TEAM_ROLES.md)
-- Revise nuestro proceso de lanzamiento en [RELEASE_POLICY.md](RELEASE_POLICY.md)
-- Agregue su nombre en [CONTRIBUTORS.md](CONTRIBUTORS.md) al realizar su primer PR
+- Consulte nuestras pautas en [CONTRIBUTING.md](../../CONTRIBUTING.md)
+- Revise nuestro proceso de lanzamiento en [RELEASE_POLICY.md](../../RELEASE_POLICY.md)
 
-Ya sea que ayude con código, pruebas o documentación, agradecemos su apoyo para mejorar HyDE para todos. ¡Gracias!
+Ya sea que ayude con código, pruebas o documentación, agradecemos su apoyo para mejorar DOORwayDE. ¡Gracias!
 
 <div align="right">
   <br>
