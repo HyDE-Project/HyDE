@@ -5,7 +5,6 @@ Scripts/pkg_user.lst
 
 # User overrides
 user/
-*.local
 
 # Python
 *__pycache__*
@@ -17,6 +16,7 @@ user/
 
 # Configs that shouldn't be tracked
 Configs/.config/uwsm/*
+Configs/.local/state/
 
 # Nix
 result

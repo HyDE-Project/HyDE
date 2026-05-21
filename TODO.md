@@ -21,8 +21,8 @@
 
 Create `hyprland.lua` as the new entry point that can coexist with existing `.conf` files during transition.
 
-- [ ] Create `Configs/.config/hypr/hyprland.lua`
-- [ ] Test hybrid loading (lua entry + hyprlang modules)
+- [x] Create `Configs/.config/hypr/hyprland.lua`
+- [ ] Test hybrid loading (lua entry + hyprlang modules via `hl.source()`)
 
 ---
 
@@ -30,11 +30,11 @@ Create `hyprland.lua` as the new entry point that can coexist with existing `.co
 
 | File | Status | Notes |
 |------|--------|-------|
-| `monitors.conf` → `monitors.lua` | ⬜ TODO | User monitor config |
-| `userprefs.conf` → `userprefs.lua` | ⬜ TODO | User preferences |
-| `keybindings.conf` → `keybindings.lua` | ⬜ TODO | 150+ binds, custom grouping |
-| `windowrules.conf` → `windowrules.lua` | ⬜ TODO | Window rules |
-| `workflows.conf` → `workflows.lua` | ⬜ TODO | Workflow selector |
+| `monitors.conf` → `monitors.lua` | ✅ DONE | User monitor config |
+| `userprefs.conf` → `userprefs.lua` | ✅ DONE | User preferences |
+| `windowrules.conf` → `windowrules.lua` | ✅ DONE | Window rules (with layer rules) |
+| `keybindings.conf` → `keybindings.lua` | ✅ DONE | 150+ binds, custom grouping |
+| `workflows.conf` → `workflows.lua` | ✅ DONE | Workflow selector |
 
 ---
 
@@ -42,12 +42,12 @@ Create `hyprland.lua` as the new entry point that can coexist with existing `.co
 
 | File | Status |
 |------|--------|
-| `animations.conf` → `animations.lua` | ⬜ TODO |
-| `animations/standard.conf` → `standard.lua` | ⬜ TODO |
-| `animations/fast.conf` → `fast.lua` | ⬜ TODO |
-| `animations/optimized.conf` → `optimized.lua` | ⬜ TODO |
-| `animations/me-1.conf` → `me-1.lua` | ⬜ TODO |
-| `animations/diablo-2.conf` → `diablo-2.lua` | ⬜ TODO |
+| `animations.conf` → `animations.lua` | ✅ DONE |
+| `animations/standard.conf` → `standard.lua` | ✅ DONE |
+| `animations/fast.conf` → `fast.lua` | ✅ DONE |
+| `animations/optimized.conf` → `optimized.lua` | ✅ DONE |
+| `animations/me-1.conf` → `me-1.lua` | ✅ DONE |
+| `animations/diablo-2.conf` → `diablo-2.lua` | ✅ DONE |
 
 ---
 
@@ -55,10 +55,10 @@ Create `hyprland.lua` as the new entry point that can coexist with existing `.co
 
 | File | Status |
 |------|--------|
-| `themes/theme.conf` → `theme.lua` | ⬜ TODO |
-| `themes/colors.conf` → `colors.lua` | ⬜ TODO |
-| `themes/wallbash.conf` → `wallbash.lua` | ⬜ TODO |
-| `shaders.conf` → `shaders.lua` | ⬜ TODO |
+| `themes/theme.conf` → `theme.lua` | ✅ DONE |
+| `themes/colors.conf` → `colors.lua` | ✅ DONE |
+| `themes/wallbash.conf` → `wallbash.lua` | ✅ DONE |
+| `shaders.conf` → `shaders.lua` | ✅ DONE |
 
 ---
 
@@ -66,11 +66,11 @@ Create `hyprland.lua` as the new entry point that can coexist with existing `.co
 
 | File | Status |
 |------|--------|
-| `workflows/default.conf` → `default.lua` | ⬜ TODO |
-| `workflows/gaming.conf` → `gaming.lua` | ⬜ TODO |
-| `workflows/editing.conf` → `editing.lua` | ⬜ TODO |
-| `workflows/powersaver.conf` → `powersaver.lua` | ⬜ TODO |
-| `workflows/snappy.conf` → `snappy.lua` | ⬜ TODO |
+| `workflows/default.conf` → `default.lua` | ✅ DONE |
+| `workflows/gaming.conf` → `gaming.lua` | ✅ DONE |
+| `workflows/editing.conf` → `editing.lua` | ✅ DONE |
+| `workflows/powersaver.conf` → `powersaver.lua` | ✅ DONE |
+| `workflows/snappy.conf` → `snappy.lua` | ✅ DONE |
 
 ---
 
@@ -80,18 +80,27 @@ These files in `~/.local/share/hypr/` define the DOORwayDE runtime:
 
 | File | Status | Notes |
 |------|--------|-------|
-| `variables.conf` | ⬜ TODO | Script paths, app commands, systemd integration |
-| `defaults.conf` | ⬜ TODO | Default settings |
-| `env.conf` | ⬜ TODO | Environment setup |
-| `startup.conf` | ⬜ TODO | Autostart applications |
-| `dynamic.conf` | ⬜ TODO | Dynamic theming |
-| `windowrules.conf` | ⬜ TODO | Default window rules |
-| `finale.conf` | ⬜ TODO | Variable finalization |
+| `variables.conf` → `variables.lua` | ✅ DONE | Shared-state lua module (returns table) |
+| `defaults.conf` → `defaults.lua` | ✅ DONE | `hl.config()` + gestures as `hl.keyword()` |
+| `env.conf` → `env.lua` | ✅ DONE | `hl.config({ env = {...} })` |
+| `startup.conf` → `startup.lua` | ✅ DONE | `hl.config({ exec_once = {...} })`, reads `vars.start.*` |
+| `dynamic.conf` → `dynamic.lua` | ✅ DONE | Sources theme files; `hl.keyword()` for `group:groupbar:*` |
+| `windowrules.conf` → `windowrules.lua` | ✅ DONE | Core DOORwayDE rules (separate from user one) |
+| `finale.conf` → `finale.lua` | ✅ DONE | `doorwayde:*` custom keywords via `hl.keyword()` + `pcall` |
+| `migration.conf` | ⏭️ SKIPPED | Version-guard logic obsolete on pinned 0.55+ |
 
 Main entry:
 | File | Status |
 |------|--------|
-| `.local/share/doorwayde/hyprland.conf` | ⬜ TODO |
+| `.local/share/doorwayde/hyprland.lua` | ✅ DONE — core orchestrator with `package.path` setup |
+| User `.config/hypr/hyprland.lua` updated | ✅ DONE — `hl.source(.conf)` → `dofile(.lua)` |
+
+**Load order (final):** `monitors` → `userprefs` → user `windowrules` → `keybindings` → `env` → `variables` → `defaults` → core `windowrules` → `dynamic` → `startup` → `workflows` → `finale`
+
+**Caveats to verify at runtime:**
+- `hl.keyword("group:groupbar:col.active", "rgba($wallbash_pry3ee)")` — does hyprland's lua bridge accept the dotted nested form?
+- `hl.keyword("doorwayde:theme", ...)` — does it accept arbitrary custom-namespace keywords? Wrapped in `pcall` so failures are silent (matches original `# noerror true`)
+- `hl.source()` of the wallbash-generated `.conf` files works during the hybrid period (and is still needed until Phase 7 updates the wallbash script to emit lua)
 
 ---
 
@@ -156,4 +165,34 @@ require("themes/colors")
 ### 2026-05-20
 - [x] Created TODO.md workbook
 - [x] Fixed `swww` → `awww` in flake.nix
-- [ ] Cleaned up HyDE legacy documentation (TEAM_ROLES.md, etc.)
+- [x] Cleaned up HyDE legacy documentation (TEAM_ROLES.md, etc.)
+- [x] Created `hyprland.lua` entry point
+- [x] Converted `monitors.conf` → `monitors.lua`
+- [x] Converted `userprefs.conf` → `userprefs.lua`
+- [x] Converted `windowrules.conf` → `windowrules.lua` (including layer rules)
+- [x] Converted `workflows.conf` → `workflows.lua` (loader)
+- [x] Converted `workflows/default.conf` → `default.lua`
+- [x] Converted `workflows/gaming.conf` → `gaming.lua`
+- [x] Converted `workflows/editing.conf` → `editing.lua`
+- [x] Converted `workflows/powersaver.conf` → `powersaver.lua`
+- [x] Converted `workflows/snappy.conf` → `snappy.lua`
+- [x] Converted `animations.conf` → `animations.lua` (loader)
+- [x] Converted `animations/standard.conf` → `standard.lua`
+- [x] Converted `animations/fast.conf` → `fast.lua`
+- [x] Converted `animations/optimized.conf` → `optimized.lua`
+- [x] Converted `animations/me-1.conf` → `me-1.lua`
+- [x] Converted `animations/diablo-2.conf` → `diablo-2.lua`
+- [x] Converted `themes/theme.conf` → `theme.lua`
+- [x] Converted `themes/colors.conf` → `colors.lua` (wallbash placeholder)
+- [x] Converted `themes/wallbash.conf` → `wallbash.lua` (wallbash placeholder)
+- [x] Converted `shaders.conf` → `shaders.lua`
+- [x] Converted `keybindings.conf` → `keybindings.lua` (150+ binds, all bind flags)
+- [x] **Phase 6**: Created shared `variables.lua` module (returns table for cross-file state)
+- [x] Converted core `env.conf` → `env.lua`
+- [x] Converted core `defaults.conf` → `defaults.lua`
+- [x] Converted core `windowrules.conf` → `windowrules.lua`
+- [x] Converted core `dynamic.conf` → `dynamic.lua` (hl.source for wallbash-generated theme files)
+- [x] Converted core `startup.conf` → `startup.lua` (reads `vars.start.*` for daemon commands)
+- [x] Converted core `finale.conf` → `finale.lua` (`doorwayde:*` keywords via pcall'd `hl.keyword`)
+- [x] Created core entry `.local/share/doorwayde/hyprland.lua` (orchestrator with `package.path` setup)
+- [x] Updated user `.config/hypr/hyprland.lua`: `hl.source(.conf)` → `dofile(.lua)`, removed stale TODO block, fixed workflows load order

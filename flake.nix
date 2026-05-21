@@ -52,7 +52,7 @@
 
         # Nix
         nil          # Nix LSP
-        nixfmt-rfc-style  # Nix formatter
+        nixfmt            # Nix formatter
 
         # Python
         python3
@@ -177,8 +177,14 @@
               echo "DOORwayDE Development Shell"
               echo "All Hyprland packages available."
               echo ""
-              echo "  shellcheck Scripts/*.sh  - Lint"
-              echo "  nix develop             - Enter this shell"
+              echo "  shellcheck Scripts/*.sh    - Lint shell scripts"
+              echo "  nixfmt flake.nix           - Format Nix"
+              echo ""
+              echo "Testing Hyprland changes without logging out:"
+              echo "  WLR_BACKENDS=x11 Hyprland  - Run nested in current X11/XFCE session"
+              echo "  WLR_BACKENDS=x11 Hyprland --config ./Configs/.config/hypr/hyprland.conf"
+              echo "  hyprctl reload             - Live-reload config (inside any Hyprland session)"
+              echo "  ls /tmp/hypr/              - List active Hyprland instances"
               echo ""
             '';
           };

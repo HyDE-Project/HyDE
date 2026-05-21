@@ -24,7 +24,6 @@
     "redhat.vscode-yaml",
 
     // Git
-    "eamodio.gitlens",
     "mhutchie.git-graph"
   ],
   "unwantedRecommendations": []

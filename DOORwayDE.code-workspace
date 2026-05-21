@@ -18,7 +18,10 @@
     "window.title": "DOORwayDE - ${activeEditorShort}${separator}${rootName}",
 
     // Task runner
-    "task.autoDetect": "on"
+    "task.autoDetect": "on",
+    "nixEnvSelector.nixFile": "${workspaceFolder}/flake.nix",
+    "nixEnvSelector.useFlakes": true,
+    "nixEnvSelector.flakeShell": "default"
   },
   "extensions": {
     "recommendations": [

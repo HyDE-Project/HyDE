@@ -292,12 +292,40 @@ cd DOORwayDE
 # Enter dev shell with all tools
 nix develop
 
-# Make changes to configs in Configs/
-# Test by symlinking to your ~/.config/
-
 # Validate before committing
 shellcheck Scripts/*.sh
 ```
+
+### Testing Hyprland Changes
+
+**Without logging out** — run Hyprland nested inside your current X11/XFCE session:
+
+```bash
+# Uses wlroots' X11 backend — Hyprland opens as a window
+WLR_BACKENDS=x11 Hyprland
+
+# Point directly at the repo config
+WLR_BACKENDS=x11 Hyprland --config ./Configs/.config/hypr/hyprland.conf
+```
+
+**Live-reload** — once inside any Hyprland session, apply config changes without restarting:
+
+```bash
+hyprctl reload
+
+# Target a specific instance (if multiple are running)
+ls /tmp/hypr/                                    # list instances
+HYPRLAND_INSTANCE_SIGNATURE=<sig> hyprctl reload
+```
+
+**Via TTY** — full DRM backend, identical to a real login (useful for GPU-specific features):
+
+```
+Ctrl+Alt+F2  →  login  →  Hyprland
+Ctrl+Alt+F7  →  back to XFCE (session stays live)
+```
+
+Inside DOORwayDE: `Super + F5` reloads the config live (see [Keybindings](#keybindings)).
 
 ### Pull Request Process
 
