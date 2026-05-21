@@ -43,10 +43,11 @@ DOORwayDE/
 
 | File | Purpose |
 |------|---------|
-| `Configs/.config/hypr/hyprland.conf` | Main Hyprland config entry point |
-| `Configs/.config/hypr/monitors.conf` | Monitor configuration (user edits this) |
-| `Configs/.config/hypr/userprefs.conf` | User preferences (keyboard, etc.) |
-| `Configs/.config/hypr/keybindings.conf` | All keybindings |
+| `Configs/.config/hypr/hyprland.lua` | Main Hyprland config entry point |
+| `Configs/.config/hypr/monitors.lua` | Monitor configuration (user edits this — lua format) |
+| `Configs/.config/hypr/userprefs.lua` | User preferences (keyboard, etc.) |
+| `Configs/.config/hypr/keybindings.lua` | All keybindings |
+| `Configs/.local/share/doorwayde/hyprland.lua` | Core DOORwayDE orchestrator (env, variables, defaults, dynamic, startup, finale) |
 | `Configs/.local/lib/doorwayde/globalcontrol.sh` | Core environment setup |
 | `flake.nix` | Nix flake with homeManagerModules.default |
 | `Scripts/setup-nixos.sh` | Manual setup script for NixOS |
@@ -69,7 +70,7 @@ $DOORWAYDE_CONFIG_HOME   # ~/.config/doorwayde
 $DOORWAYDE_DATA_HOME     # ~/.local/share/doorwayde
 $DOORWAYDE_CACHE_HOME    # ~/.cache/doorwayde
 $DOORWAYDE_THEME         # Current theme name
-$DOORWAYDE_HYPRLAND      # Marker variable in hyprland.conf
+$DOORWAYDE_HYPRLAND      # Marker variable in hyprland.lua
 ```
 
 ### Adding New Features
@@ -80,6 +81,8 @@ $DOORWAYDE_HYPRLAND      # Marker variable in hyprland.conf
 4. **Update setup-nixos.sh** if adding new symlink targets
 
 ### Testing Changes
+
+Configs in `Configs/.config/hypr/` use Hyprland 0.55+ lua format (`hl.config`, `hl.bind`, `hl.window_rule`). `hyprctl reload` works the same on lua configs as it did on hyprlang.
 
 ```bash
 # Quick test (symlink approach)
@@ -109,6 +112,8 @@ find . -type f \( -name "*.sh" -o -name "*.conf" \) -exec sed -i 's/hyde/doorway
 find . -type f \( -name "*.sh" -o -name "*.conf" \) -exec sed -i 's/HYDE_/DOORWAYDE_/g' {} +
 # Review changes carefully - some hyde references should stay (URLs, attribution)
 ```
+
+Note: these `*.conf` sed commands no longer apply to the lua files in `Configs/.config/hypr/` (which DOORwayDE now owns and maintains directly). The commands are still safe to run — they simply won't match much in the hypr/ tree anymore. Lua-side rebranding should be done by hand or with a separate `-name "*.lua"` pass if upstream ever adopts lua.
 
 ### Add a new config directory
 

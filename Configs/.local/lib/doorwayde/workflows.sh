@@ -64,30 +64,14 @@ get_info() {
 }
 fn_update() {
     get_info
-    cat <<EOF >"$confDir/hypr/workflows.conf"
-#! █░█░█ █▀█ █▀█ █▄▀ █▀▀ █░░ █▀█ █░█░█ █▀
-#! ▀▄▀▄▀ █▄█ █▀▄ █░█ █▀░ █▄▄ █▄█ ▀▄▀▄▀ ▄█
+    cat <<EOF >"$confDir/hypr/workflows.lua"
+-- DOORwayDE controlled content -- DO NOT EDIT
+-- Edit or add workflows in ./workflows/ and run
+-- 'doorwayde-shell workflows --select' to update this file.
+-- See https://wiki.hypr.land/Configuring/Variables/
 
-
-#*┌────────────────────────────────────────────────────────────────────────────┐
-#*│ # DOORwayDE Controlled content // DO NOT EDIT                                   │
-#*│ # This file sets the current workflow for Hyprland                         │
-#*│ # Edit or add workflows in the ./workflows/ directory                      │
-#*│ # and run the 'doorwayde-shell workflows --select' command to update this file          │
-#*│                                                                            │
-#*│ #  Workflows are a set of configurations that can be applied to Hyprland   │
-#*│ #   that suits the actual workflow you are doing.                          │
-#*│ # It can be gaming mode, work mode, or anything else you can think of.     │
-#*│ # you can also exec a command within the workflow                          │
-#*│                                                                            │
-#*└────────────────────────────────────────────────────────────────────────────┘
-
-\$WORKFLOW = $current_workflow
-\$WORKFLOW_ICON = $current_icon
-\$WORKFLOW_DESCRIPTION = $current_description
-\$WORKFLOWS_PATH = ./workflows/$current_workflow.conf
-source = \$WORKFLOWS_PATH
-
+local workflow = "$current_workflow"
+require("workflows/" .. workflow)
 EOF
     printf "%s %s: %s\n" "$current_icon" "$current_workflow" "$current_description"
     notify-send -r 9 -i "preferences-desktop-display" "Workflow: $current_icon $current_workflow" "$current_description"

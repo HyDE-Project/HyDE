@@ -134,13 +134,14 @@ Located in `~/.local/lib/doorwayde/`:
 ```
 ~/.config/
 ├── hypr/
-│   ├── hyprland.conf      # Main config (sources others)
-│   ├── keybindings.conf   # All keybindings
-│   ├── windowrules.conf   # Window-specific rules
-│   ├── monitors.conf      # Display configuration ← EDIT THIS
-│   ├── userprefs.conf     # Your personal preferences ← EDIT THIS
-│   ├── animations.conf    # Animation settings
-│   └── themes/            # Theme colors
+│   ├── hyprland.lua       # Main config (sources others)
+│   ├── keybindings.lua    # All keybindings
+│   ├── windowrules.lua    # Window-specific rules
+│   ├── monitors.lua       # Display configuration ← EDIT THIS
+│   ├── userprefs.lua      # Your personal preferences ← EDIT THIS
+│   ├── animations.lua     # Animation settings
+│   └── themes/            # Theme colors (wallbash still emits .conf
+│                          #   colour files which dynamic.lua sources)
 ├── waybar/                # Status bar config
 ├── rofi/                  # Launcher themes
 └── doorwayde/
@@ -154,32 +155,30 @@ Located in `~/.local/lib/doorwayde/`:
 
 ### User Configuration Files
 
-**`~/.config/hypr/monitors.conf`** — Your display setup:
-```conf
-# Single monitor
-monitor=HDMI-A-1,1920x1080@60,0x0,1
+**`~/.config/hypr/monitors.lua`** — Your display setup:
+```lua
+-- Single monitor
+hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@60", position = "0x0", scale = "1" })
 
-# Dual monitors
-monitor=DP-1,2560x1440@144,0x0,1
-monitor=HDMI-A-1,1920x1080@60,2560x0,1
+-- Dual monitors
+hl.monitor({ output = "DP-1",     mode = "2560x1440@144", position = "0x0",    scale = "1" })
+hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@60",  position = "2560x0", scale = "1" })
 ```
 
-**`~/.config/hypr/userprefs.conf`** — Personal preferences:
-```conf
-input {
-    kb_layout = us
-    follow_mouse = 1
-    sensitivity = 0
-
-    touchpad {
-        natural_scroll = yes
-    }
-}
-
-misc {
-    enable_swallow = true
-    swallow_regex = (kitty|Alacritty)
-}
+**`~/.config/hypr/userprefs.lua`** — Personal preferences:
+```lua
+hl.config({
+    input = {
+        kb_layout = "us",
+        follow_mouse = 1,
+        sensitivity = 0,
+        touchpad = { natural_scroll = true },
+    },
+    misc = {
+        enable_swallow = true,
+        swallow_regex = "(kitty|Alacritty)",
+    },
+})
 ```
 
 ---
@@ -305,7 +304,7 @@ shellcheck Scripts/*.sh
 WLR_BACKENDS=x11 Hyprland
 
 # Point directly at the repo config
-WLR_BACKENDS=x11 Hyprland --config ./Configs/.config/hypr/hyprland.conf
+WLR_BACKENDS=x11 Hyprland --config ./Configs/.config/hypr/hyprland.lua
 ```
 
 **Live-reload** — once inside any Hyprland session, apply config changes without restarting:

@@ -60,8 +60,7 @@ for sysMon in "${!pkgChk[@]}"; do
         break
     fi
     if pkg_installed "${pkgChk[sysMon]}"; then
-        term=$(grep -E '^\s*'"$term" "$HOME/.config/hypr/keybindings.conf" | cut -d '=' -f2 | xargs)
-        term=${TERMINAL:-$term}
+        term=${TERMINAL:-kitty}
         term=${SYSMONITOR_TERMINAL:-$term}
         if $term "${pkgChk[sysMon]}"; then
             pid="$!"

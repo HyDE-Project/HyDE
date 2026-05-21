@@ -17,9 +17,9 @@ if [ ! -d "$animations_dir" ]; then
 fi
 
 fn_select() {
-    animation_items=$(find -L "$animations_dir" -name "*.conf" ! -name "disable.conf" ! -name "theme.conf" 2> /dev/null | sed 's/\.conf$//')
+    animation_items=$(find -L "$animations_dir" -name "*.lua" ! -name "disable.lua" ! -name "theme.lua" 2> /dev/null | sed 's/\.lua$//')
     if [ -z "$animation_items" ]; then
-        notify-send -i "preferences-desktop-display" "Error" "No .conf files found in $animations_dir"
+        notify-send -i "preferences-desktop-display" "Error" "No .lua files found in $animations_dir"
         exit 1
     fi
     font_scale="$ROFI_ANIMATION_SCALE"
@@ -63,23 +63,14 @@ fn_update() {
     [ -f "$DOORWAYDE_STATE_HOME/staterc" ] && source "$DOORWAYDE_STATE_HOME/staterc"
     current_animation=${HYPR_ANIMATION:-"theme"}
     echo "Animation updated to: $current_animation"
-    cat <<- EOF > "$confDir/hypr/animations.conf"
+    cat <<- EOF > "$confDir/hypr/animations.lua"
+		-- DOORwayDE controlled content -- DO NOT EDIT
+		-- Edit or add presets in ./hypr/animations/ and run
+		-- 'doorwayde-shell animations --select' to update this file.
+		-- See https://wiki.hypr.land/Configuring/Animations/
 
-		#! ▄▀█ █▄░█ █ █▀▄▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█
-		#! █▀█ █░▀█ █ █░▀░█ █▀█ ░█░ █ █▄█ █░▀█
-
-
-		#*┌────────────────────────────────────────────────────────────────────────────┐
-		#*│ # See https://wiki.hypr.land/Configuring/Animations/                    │
-		#*│ # DOORwayDE Controlled content // DO NOT EDIT                                   │
-		#*│ # Edit or add animations in the ./hypr/animations/ directory               │
-		#*│ # and run the 'animations.sh --select' command to update this file         │
-		#*│                                                                            │
-		#*└────────────────────────────────────────────────────────────────────────────┘
-
-		\$ANIMATION=$current_animation
-		\$ANIMATION_PATH=./animations/$current_animation.conf
-		source = \$ANIMATION_PATH
+		local animation = "$current_animation"
+		require("animations/" .. animation)
 	EOF
 }
 

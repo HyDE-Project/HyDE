@@ -106,11 +106,23 @@ Main entry:
 
 ## Phase 7: Cleanup
 
-- [ ] Update flake.nix to deploy `.lua` files
-- [ ] Update scripts that reference `.conf` files (grep for `.conf`)
-- [ ] Remove deprecated `.conf` files
-- [ ] Update CLAUDE.md with lua config info
-- [ ] Update README.md examples
+- [x] Update flake.nix to generate `monitors.lua` / `userprefs.lua` text= (was `.conf`)
+- [x] Update `animations.sh` to find `*.lua` and write `animations.lua`
+- [x] Convert remaining 14 animation `.conf` presets to `.lua` (full preset parity)
+- [x] Update `workflows.sh` to write `workflows.lua` (kept `workflows/*.conf` as metadata source — see deferred section)
+- [x] Update `keybinds_hint.sh` (removed dead `kb_hint_conf` array — actual hint generator is `hint-hyprland.py` which uses `hyprctl binds -j`)
+- [x] Update `system.monitor.sh` (removed broken keybindings.conf grep, simplified to `${TERMINAL:-kitty}`)
+- [x] Convert keybinding `description` strings from `"Group: action"` to `"[Group|Sub] action"` (113 substitutions; matches `hint-hyprland.py:parse_description` format)
+- [x] Delete deprecated `.conf` files (27 files — see commit)
+- [x] Delete dead placeholder lua files at `themes/{colors,theme,wallbash}.lua` (not required by anything; dynamic.lua sources the wallbash-generated `.conf` versions)
+- [x] Update CLAUDE.md with lua config info
+- [x] Update README.md examples
+
+### Phase 7 Deferred (low-priority follow-ups)
+
+- [ ] `workflows.sh:get_info` still reads `WORKFLOW_ICON` / `WORKFLOW_DESCRIPTION` from `workflows/*.conf` via `get_hyprConf`. Until we add lua-comment-based metadata parsing (or expose them as `_G.WORKFLOW_*` globals in the preset `.lua` files), we keep `workflows/*.conf` alongside `workflows/*.lua` purely as metadata sources.
+- [ ] `wallbash` / `theme.switch` still emit hyprlang `themes/{colors,theme,wallbash}.conf`. `dynamic.lua` sources them via `hl.source()`. Could be migrated to lua emission, but would require rewriting the wallbash colour-substitution layer to expose colours as `hl.keyword("$wallbash_pry1", ...)` keywords (status of which is untested in the lua bridge).
+- [ ] Runtime verification: `hl.keyword("group:groupbar:col.active", "rgba($wallbash_pry1ee)")` resolution; `hl.keyword("doorwayde:theme", ...)` acceptance of custom-namespace keywords; `hl.source()` of wallbash-generated `.conf` files.
 
 ---
 
