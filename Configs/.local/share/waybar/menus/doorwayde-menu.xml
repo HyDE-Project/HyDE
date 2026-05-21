@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<interface>
+    <object class="GtkMenu" id="menu">
+
+        <child>
+            <object class="GtkMenuItem" id="animation_menu">
+                <property name="label">󰗘 Animations</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="animations-select">
+                                <property name="label"> Select Animation</property>
+                            </object>
+                        </child>
+
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="wallpaper_menu">
+                <property name="label">󰸉 Wallpaper</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="wallpaper-select">
+                                <property name="label"> Select Wallpaper</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="wallpaper-next">
+                                <property name="label"> Next Wallpaper</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="wallpaper-previous">
+                                <property name="label"> Previous Wallpaper</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkMenuItem" id="wallpaper-random">
+                                <property name="label"> Random Wallpaper</property>
+                            </object>
+                        </child>
+
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="theme_menu">
+                <property name="label"> Theme</property>
+                <child
+                    type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="theme-select">
+                                <property name="label"> Select Theme</property>
+                            </object>
+                        </child>
+
+                        <child>
+                            <object class="GtkMenuItem" id="theme-next">
+                                <property name="label"> Next Theme</property>
+                            </object>
+                        </child>
+
+                        <child>
+                            <object class="GtkMenuItem" id="theme-previous">
+                                <property name="label"> Previous Theme</property>
+                            </object>
+                        </child>
+
+                        <child>
+                            <object class="GtkMenuItem" id="theme-import">
+                                <property name="label"> More Themes</property>
+                            </object>
+                        </child>
+
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="waybar-menu">
+                <property name="label"> Waybar</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+
+                        <child>
+                            <object class="GtkMenuItem" id="waybar-layout-select">
+                                <property name="label"> Select Layout</property>
+                            </object>
+                        </child>
+
+
+                        <child>
+                            <object class="GtkMenuItem" id="waybar-style-select">
+                                <property name="label"> Select Style</property>
+                            </object>
+                        </child>
+
+
+                        <child>
+                            <object class="GtkMenuItem" id="waybar-layout-next">
+                                <property name="label"> Next Layout</property>
+                            </object>
+                        </child>
+
+                        <child>
+                            <object class="GtkMenuItem" id="waybar-layout-prev">
+                                <property name="label"> Previous Layout</property>
+                            </object>
+                        </child>
+
+
+                        <child>
+                            <object class="GtkMenuItem" id="waybar-reload-css">
+                                <property name="label">󰑓 Reload CSS</property>
+                            </object>
+                        </child>
+
+
+                        <child>
+                            <object class="GtkSeparatorMenuItem" id="delimiter-2" />
+                        </child>
+
+
+                        <child>
+                            <object class="GtkMenuItem" id="waybar-restart">
+                                <property name="label">󰜉 Restart</property>
+                            </object>
+                        </child>
+
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="workflows_menu">
+                <property name="label"> Workflows</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="workflows-select">
+                                <property name="label"> Select Workflow</property>
+                            </object>
+                        </child>
+
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="lockscreen_menu">
+                <property name="label"> Lockscreen</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="lockscreen-select">
+                                <property name="label"> Select Lockscreen</property>
+                            </object>
+                        </child>
+
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="eyecare_menu">
+                <property name="label">󰛨 Eye Care</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <!-- Hyprsunset submenu -->
+                        <child>
+                            <object class="GtkMenuItem" id="hyprsunset_menu">
+                                <property name="label"> Hyprsunset</property>
+                                <child type="submenu">
+                                    <object class="GtkMenu">
+
+                                        <child>
+                                            <object class="GtkMenuItem" id="hyprsunset-toggle">
+                                                <property name="label">Toggle</property>
+                                            </object>
+                                        </child>
+
+                                        <child>
+                                            <object class="GtkSeparatorMenuItem"
+                                                id="hyprsunset-sep-1" />
+                                        </child>
+
+                                        <!-- Temperature submenu -->
+                                        <child>
+                                            <object class="GtkMenuItem" id="temperature_menu">
+                                                <property name="label"> Temperature</property>
+                                                <child type="submenu">
+                                                    <object class="GtkMenu">
+
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="temp-off">
+                                                                <property name="label">󰨙 Default</property>
+                                                            </object>
+                                                        </child>
+
+                                                        <child>
+                                                            <object class="GtkSeparatorMenuItem"
+                                                                id="temp-sep-1" />
+                                                        </child>
+
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="warm-candle">
+                                                                <property name="label">Warm Candle
+                                                                    (3000K)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="soft-warm">
+                                                                <property name="label">Soft Warm
+                                                                    (4000K)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="neutral-white">
+                                                                <property name="label">Neutral White
+                                                                    (5000K)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="daylight">
+                                                                <property name="label">Daylight
+                                                                    (6500K)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="cool-white">
+                                                                <property name="label">Cool White
+                                                                    (7500K)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="bright-blue">
+                                                                <property name="label">Bright Blue
+                                                                    (9000K)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="arctic-blue">
+                                                                <property name="label">Arctic Blue
+                                                                    (10000K)</property>
+                                                            </object>
+                                                        </child>
+
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                        <!-- Gamma submenu -->
+                                        <child>
+                                            <object class="GtkMenuItem" id="gamma_menu">
+                                                <property name="label">󰃝 Gamma</property>
+                                                <child type="submenu">
+                                                    <object class="GtkMenu">
+
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-100">
+                                                                <property name="label">Default (100)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-90">
+                                                                <property name="label">Slightly
+                                                                    Dimmer (90)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-80">
+                                                                <property name="label">Dimmer (80)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-70">
+                                                                <property name="label">Quite Dim
+                                                                    (70)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-60">
+                                                                <property name="label">Dim (60)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-50">
+                                                                <property name="label">Very Dim (50)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-40">
+                                                                <property name="label">Extra Dim
+                                                                    (40)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-30">
+                                                                <property name="label">Super Dim
+                                                                    (30)</property>
+                                                            </object>
+                                                        </child>
+                                                        <child>
+                                                            <object class="GtkMenuItem"
+                                                                id="gamma-20">
+                                                                <property name="label">Ultra Dim
+                                                                    (20)</property>
+                                                            </object>
+                                                        </child>
+
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+
+                        <child>
+                            <object class="GtkSeparatorMenuItem" id="eyecare-sep-1" />
+                        </child>
+
+                        <!-- Shaders direct item -->
+                        <child>
+                            <object class="GtkMenuItem" id="shaders-select">
+                                <property name="label"> Shaders</property>
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
+            <object class="GtkSeparatorMenuItem" id="delimiter-1" />
+        </child>
+
+
+        <child>
+            <object class="GtkMenuItem" id="keybinds-hint">
+                <property name="label"> Keybinds</property>
+            </object>
+        </child>
+
+        <child>
+            <object class="GtkMenuItem" id="about-hyde">
+                <property name="label"> About</property>
+            </object>
+        </child>
+
+    </object>
+</interface>
