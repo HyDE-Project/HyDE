@@ -153,7 +153,7 @@
               };
             };
 
-            home.sessionPath = [ "$HOME/.local/bin" ];
+            home.sessionPath = [ "$HOME/.local/bin" "$HOME/.local/lib/doorwayde" ];
           };
         };
 
@@ -183,9 +183,27 @@
               echo "  shellcheck Scripts/*.sh    - Lint shell scripts"
               echo "  nixfmt flake.nix           - Format Nix"
               echo ""
-              echo "Testing Hyprland changes:"
-              echo "  hyprctl reload   - Live-reload config (inside any Hyprland session)"
-              echo "  ls /tmp/hypr/    - List active Hyprland instances"
+              echo "Testing Hyprland:"
+              echo "  hyprctl reload             - Live-reload config (inside any Hyprland session)"
+              echo "  start-hyprland             - Start nested Hyprland (WAYLAND SESSION ONLY)"
+              echo "    NOTE: Requires a running Wayland compositor (e.g. XFCE Wayland session)."
+              echo "    Keyboard is dead in nested mode (libseat cannot open /dev/input)."
+              echo "    Use for visual checks only; native login required for keybinding tests."
+              echo ""
+              echo "Debugging startup failures:"
+              echo "  cat /run/user/\$(id -u)/hypr/*/hyprland.log | grep -v 'DEBUG from aquamarine'"
+              echo "    Lua config errors appear here; exec_once failures do NOT."
+              echo "  journalctl --user -b -n 200 | grep -iE '(waybar|dunst|doorwayde|hypr)'"
+              echo "    Daemon crashes from exec_once land here."
+              echo "  doorwayde-shell app -u test.scope -t scope -- echo ok"
+              echo "    Sanity check: verifies app2unit.sh is findable in PATH."
+              echo ""
+              # Mimic what env.lua injects before exec_once so doorwayde-shell app works
+              # directly from this dev shell or an XFCE Wayland terminal.
+              export PATH="$HOME/.local/lib/doorwayde:$PATH"
+              export XDG_SESSION_DESKTOP=Hyprland
+              export XDG_CURRENT_DESKTOP=Hyprland
+              echo "  (PATH includes ~/.local/lib/doorwayde — doorwayde-shell app works here)"
               echo ""
             '';
           };

@@ -59,7 +59,7 @@ HYDE_SCRIPTS_PATH=${HYDE_SCRIPTS_PATH}
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH HYDE_SHELL_INIT
 EOF
 	#? Use sed to remove any shebang hints to avoid conflicts with "eval"
-	command cat "${LIB_DIR}/hyde/globalcontrol.sh"
+	command cat "${LIB_DIR}/doorwayde/globalcontrol.sh"
 }
 
 USAGE() {
@@ -668,19 +668,19 @@ else
 	EXECUTABLE="${BASH_SOURCE[0]}"
 fi
 
-BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
+BIN_DIR=$(dirname "$(which "${EXECUTABLE:-doorwayde-shell}")")
 LIB_DIR=$(realpath "${BIN_DIR}/../lib")
 SHARE_DIR=$(realpath "${BIN_DIR}/../share")
-PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
+PATH="${XDG_CONFIG_HOME:-$HOME/.config}/doorwayde/scripts:$BIN_DIR:$LIB_DIR/doorwayde:$PATH" #! doorwayde lib scripts (app2unit.sh, wallpaper.sh, etc.) must be in PATH
 # Define hyde scripts search paths (colon-separated, user configurable)
-HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME:-$HOME/.local/share}/waybar/scripts:${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts"
+HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/doorwayde/scripts:${LIB_DIR}/doorwayde}:${XDG_DATA_HOME:-$HOME/.local/share}/waybar/scripts:${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts"
 
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 #*--------------------------------------------------------------------------------
 
 # Prepare runtime directory for hyde
-[[ -d "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde" ]] || mkdir -p "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
+[[ -d "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/doorwayde" ]] || mkdir -p "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/doorwayde"
 
 # Priority commands
 case "$1" in
@@ -704,8 +704,8 @@ lock-session)
 esac
 
 # shellcheck disable=SC1091
-if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
-	echo "Error: Could not load HyDE, broken installation?"
+if ! source "${LIB_DIR}/doorwayde/globalcontrol.sh"; then
+	echo "Error: Could not load DOORwayDE, broken installation?"
 	exit 1
 fi
 

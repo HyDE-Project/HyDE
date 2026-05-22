@@ -73,6 +73,17 @@ $DOORWAYDE_THEME         # Current theme name
 $DOORWAYDE_HYPRLAND      # Marker variable in hyprland.lua
 ```
 
+### doorwayde-shell Path Architecture
+
+`doorwayde-shell` resolves `LIB_DIR` relative to its own Nix store path:
+- `BIN_DIR` → `<nix-store>/.local/bin/`
+- `LIB_DIR` → `<nix-store>/.local/lib/`
+- Scripts must live in `$LIB_DIR/doorwayde/` (NOT `hyde/` — which no longer exists)
+
+`env.lua` injects `~/.local/lib/doorwayde/` into PATH for Hyprland child processes.
+`home.sessionPath` in `flake.nix` covers all other session processes (XFCE, TTY).
+The `nix develop` shell also exports this PATH so `doorwayde-shell app` works directly.
+
 ### Adding New Features
 
 1. **Scripts** go in `Configs/.local/lib/doorwayde/`
@@ -120,6 +131,32 @@ Note: these `*.conf` sed commands no longer apply to the lua files in `Configs/.
 1. Add to `Configs/.config/<newdir>/`
 2. Add to `flake.nix` in `xdg.configFile`
 3. Add to `Scripts/setup-nixos.sh` in `config_dirs` array
+
+### Debugging a Hyprland Session (Empty Desktop)
+
+If Hyprland starts but shows only a cursor with no bar or wallpaper:
+
+1. **Hyprland log** — Lua config errors appear here (stdout is disabled after init):
+   ```bash
+   cat /run/user/$(id -u)/hypr/*/hyprland.log | grep -v "DEBUG from aquamarine"
+   ```
+
+2. **exec-once failures** — silent in the Hyprland log; check journalctl:
+   ```bash
+   journalctl --user -b -n 200 | grep -iE "(waybar|dunst|doorwayde|hypr)"
+   ```
+
+3. **Sanity-check app2unit.sh** without logging out (from XFCE Wayland or `nix develop`):
+   ```bash
+   export PATH="$HOME/.local/lib/doorwayde:$PATH"
+   export XDG_SESSION_DESKTOP=Hyprland
+   export XDG_CURRENT_DESKTOP=Hyprland
+   doorwayde-shell app -u test.scope -t scope -- echo "ok"
+   ```
+
+4. **Nested Hyprland** (`start-hyprland` inside a Wayland compositor) — visual checks only.
+   Keyboard is dead in nested mode: libseat's builtin backend cannot open `/dev/input/*`.
+   This is expected, not a DOORwayDE bug.
 
 ## Code Style
 

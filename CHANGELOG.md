@@ -7,6 +7,29 @@ DOORwayDE is forked from HyDE (https://github.com/HyDE-Project/HyDE).
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
+## v26.5.22 | Fix startup daemons (doorwayde-shell app path)
+
+### Fixed
+- **doorwayde-shell**: `app` subcommand now finds `app2unit.sh` — was building PATH from
+  `$LIB_DIR/hyde/` (does not exist post-rebrand) instead of `$LIB_DIR/doorwayde/`. All
+  exec-once startup daemons (waybar, dunst, wallpaper, hypridle, etc.) were silently failing
+  to launch, leaving every Hyprland session with an empty desktop.
+- **doorwayde-shell**: `globalcontrol.sh` source path corrected (`hyde/` → `doorwayde/`)
+- **doorwayde-shell**: Runtime dir corrected (`$XDG_RUNTIME_DIR/hyde` → `doorwayde`)
+
+### Changed
+- **flake.nix**: `home.sessionPath` now includes `~/.local/lib/doorwayde` so lib scripts are
+  in PATH session-wide, complementing env.lua's Hyprland-child-only PATH injection
+- **flake.nix (devShell)**: `shellHook` expanded with nested-Wayland testing notes, log
+  locations, and Hyprland env var exports; `nix develop` now gives a testing-ready shell
+
+### Note
+`doorwayde-shell` retains `hyde` references in non-critical paths (python env, lua env,
+version file, theme reload) — these features remain broken but are not needed for basic
+desktop startup. A full internal rebranding pass is deferred.
+
+---
+
 ## v26.5.20 | DOORwayDE Rebrand
 
 ### Changed

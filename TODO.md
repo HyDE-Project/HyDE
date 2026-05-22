@@ -228,3 +228,15 @@ require("themes/colors")
 - [x] Converted core `finale.conf` → `finale.lua` (`doorwayde:*` keywords via pcall'd `hl.keyword`)
 - [x] Created core entry `.local/share/doorwayde/hyprland.lua` (orchestrator with `package.path` setup)
 - [x] Updated user `.config/hypr/hyprland.lua`: `hl.source(.conf)` → `dofile(.lua)`, removed stale TODO block, fixed workflows load order
+
+### 2026-05-22
+- [x] **Fix doorwayde-shell app subcommand** — PATH was built from `$LIB_DIR/hyde` (non-existent
+  post-rebrand); updated to `$LIB_DIR/doorwayde`. Fixes all exec-once startup daemons (waybar,
+  dunst, wallpaper, hypridle, etc.) silently failing on every Hyprland session.
+- [x] **Fix doorwayde-shell globalcontrol.sh** — source path `hyde/` → `doorwayde/`
+- [x] **Fix doorwayde-shell runtime dir** — `$XDG_RUNTIME_DIR/hyde` → `doorwayde`
+- [x] **flake.nix home.sessionPath** — added `~/.local/lib/doorwayde` for session-wide coverage
+  (complements env.lua which only covers Hyprland child processes)
+- [x] **Dev shell shellHook** — documents start-hyprland Wayland-only limitation, log locations,
+  sanity-check commands; exports Hyprland env vars for XFCE/dev testing
+- [x] **Docs** — CLAUDE.md debugging + path architecture, TESTING.md replaced, CHANGELOG v26.5.22

@@ -307,11 +307,37 @@ ls /tmp/hypr/                                    # list instances
 HYPRLAND_INSTANCE_SIGNATURE=<sig> hyprctl reload
 ```
 
-**Via TTY** — full DRM backend, identical to a real login (useful for GPU-specific features):
+**Via TTY** — full DRM backend, identical to a real login. Required for testing keybindings
+and GPU-specific features (native KMS/DRM):
 
 ```
 Ctrl+Alt+F2  →  login  →  start-hyprland
 Ctrl+Alt+F7  →  back to XFCE (session stays live)
+```
+
+**Via nested Wayland** — for visual-only checks (bar renders, wallpaper appears) without
+logging out. `start-hyprland` requires a running Wayland compositor. Keyboard input is dead
+in nested mode (libseat cannot open `/dev/input/*`) — this is expected:
+
+```bash
+# From an XFCE Wayland terminal, or just run nix develop:
+export PATH="$HOME/.local/lib/doorwayde:$PATH"
+export XDG_SESSION_DESKTOP=Hyprland
+export XDG_CURRENT_DESKTOP=Hyprland
+start-hyprland
+```
+
+**Debugging startup failures** (empty desktop, no bar or wallpaper):
+
+```bash
+# Lua config errors (stdout disabled after init — check the log file):
+cat /run/user/$(id -u)/hypr/*/hyprland.log | grep -v "DEBUG from aquamarine"
+
+# Daemon crashes (exec-once failures are silent in the Hyprland log):
+journalctl --user -b -n 200 | grep -iE "(waybar|dunst|doorwayde|hypr)"
+
+# Sanity-check app2unit.sh is findable (run from the debug terminal above):
+doorwayde-shell app -u test.scope -t scope -- echo "ok"
 ```
 
 Inside DOORwayDE: `Super + F5` reloads the config live (see [Keybindings](#keybindings)).
