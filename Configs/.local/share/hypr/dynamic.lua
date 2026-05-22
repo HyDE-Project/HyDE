@@ -1,12 +1,18 @@
 --[[
-    DOORwayDE dynamic.lua — runtime theme/colour sourcing, groupbar config,
+    DOORwayDE dynamic.lua — runtime theme settings, groupbar config,
     post-load exec. Originally dynamic.conf (hyprlang).
 
-    Theme .conf files are still sourced as hyprlang because they're emitted
-    by the wallbash script and depend on hyprlang variable substitution
-    ($wallbash_*). The user's lua chain may not cover them in this load
-    order, so we re-source defensively. Missing files are tolerated via
-    pcall — equivalent to the original `# hyprlang noerror true` guards.
+    KNOWN GAP — wallbash integration: Hyprland 0.55.1's lua API has no
+    equivalent of hl.source(). Confirmed via `Hyprland --verify-config`:
+    none of hl.source / hl.include / hl.load / hl.parse exist. The
+    wallbash pipeline writes hyprlang colors.conf files, which means
+    the wallbash-driven theming cannot be re-applied from lua at this
+    time. The pcall-wrapped try_source(...) calls below are no-ops
+    that exist as placeholders until wallbash is refactored to emit a
+    colors.lua module (see TODO.md).
+
+    Groupbar therefore uses the Hyprland default color palette; visual
+    parity with the wallbash theme will return once wallbash-lua lands.
 --]]
 
 local vars = require("variables")
@@ -22,38 +28,23 @@ local hypr_config = xdg_config .. "/hypr"
 -- Screen shader compiled cache is handled by ~/.config/hypr/shaders.lua;
 -- the conditional `decoration:screen_shader` lives there now.
 
--- noerror equivalent: silently skip files that haven't been generated yet
+-- Placeholder for the future wallbash-lua sourcing call. Currently a no-op
+-- because hl.source is nil; the pcall keeps the line non-fatal so that
+-- a future drop-in replacement can re-enable theming without code changes.
 local function try_source(path)
-    pcall(function() hl.source(path) end)
+    if hl.source then pcall(function() hl.source(path) end) end
 end
 
-try_source(hypr_config .. "/themes/colors.conf")    -- wallbash colors
+try_source(hypr_config .. "/themes/colors.conf")    -- wallbash colors (no-op)
 
 -- // █▀▀ █▀█ █▀█ █░█ █▀█ █▄▄ ▄▀█ █▀█
 -- // █▄█ █▀▄ █▄█ █▄█ █▀▀ █▄█ █▀█ █▀▄
 
--- col.active values reference $wallbash_* vars defined in colors.conf above.
--- hl.keyword preserves the literal string so hyprlang resolves it at runtime.
-hl.keyword("group:groupbar:enabled", true)
-hl.keyword("group:groupbar:gradients", 1)
-hl.keyword("group:groupbar:render_titles", 1)
-hl.keyword("group:groupbar:font_weight_inactive", "normal")
-hl.keyword("group:groupbar:font_weight_active", "semibold")
-hl.keyword("group:groupbar:col.active",          "rgba($wallbash_pry3ee)")
-hl.keyword("group:groupbar:col.inactive",        "rgba($wallbash_pry1ee)")
-hl.keyword("group:groupbar:col.locked_active",   "rgba($wallbash_pry2ee)")
-hl.keyword("group:groupbar:col.locked_inactive", "rgba($wallbash_pry4ee)")
-hl.keyword("group:groupbar:text_color",          "rgba($wallbash_txt3ee)")
-hl.keyword("group:groupbar:text_color_inactive", "rgba($wallbash_txt1ee)")
-hl.keyword("group:groupbar:blur", true)
+try_source(hypr_config .. "/themes/theme.conf")     -- theme-specific (no-op)
+try_source(hypr_config .. "/themes/wallbash.conf")  -- post-sanitize (no-op)
 
-try_source(hypr_config .. "/themes/theme.conf")     -- theme-specific settings
-try_source(hypr_config .. "/themes/wallbash.conf")  -- post-sanitize fallbacks
-
--- Remaining legacy sources from dynamic.conf. nvidia/doorwayde-fallback and
--- the toml-parser state file have no lua equivalents yet, so source them.
--- animations.conf and shaders.conf are already covered by the user's
--- ~/.config/hypr/*.lua chain — sourcing them again is harmless (last write wins).
+-- Remaining legacy sources from dynamic.conf. Same no-op story until lua
+-- ports exist.
 try_source(hypr_config .. "/nvidia.conf")
 try_source(hypr_config .. "/doorwayde.conf")
 try_source(xdg_state    .. "/doorwayde/hyprland.conf")  -- from config.toml
@@ -61,11 +52,21 @@ try_source(xdg_state    .. "/doorwayde/hyprland.conf")  -- from config.toml
 -- // █▀▀ █▀█ █▄░█ ▀█▀
 -- // █▀░ █▄█ █░▀█ ░█░
 
--- Groupbar font is theme-driven (lives in variables.lua, not in colors.conf).
-hl.keyword("group:groupbar:font_size",   vars.FONT_SIZE)
-hl.keyword("group:groupbar:font_family", vars.GROUPBAR_FONT)
-
+-- Groupbar — structural config only; colors rely on Hyprland defaults
+-- until wallbash → lua port (see header comment + TODO.md).
 hl.config({
+    group = {
+        groupbar = {
+            enabled              = true,
+            gradients            = 1,
+            render_titles        = 1,
+            font_weight_inactive = "normal",
+            font_weight_active   = "semibold",
+            blur                 = true,
+            font_size            = vars.FONT_SIZE,
+            font_family          = vars.GROUPBAR_FONT,
+        },
+    },
     misc = {
         font_family = vars.FONT,
     },

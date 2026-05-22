@@ -121,8 +121,28 @@ Main entry:
 ### Phase 7 Deferred (low-priority follow-ups)
 
 - [ ] `workflows.sh:get_info` still reads `WORKFLOW_ICON` / `WORKFLOW_DESCRIPTION` from `workflows/*.conf` via `get_hyprConf`. Until we add lua-comment-based metadata parsing (or expose them as `_G.WORKFLOW_*` globals in the preset `.lua` files), we keep `workflows/*.conf` alongside `workflows/*.lua` purely as metadata sources.
-- [ ] `wallbash` / `theme.switch` still emit hyprlang `themes/{colors,theme,wallbash}.conf`. `dynamic.lua` sources them via `hl.source()`. Could be migrated to lua emission, but would require rewriting the wallbash colour-substitution layer to expose colours as `hl.keyword("$wallbash_pry1", ...)` keywords (status of which is untested in the lua bridge).
-- [ ] Runtime verification: `hl.keyword("group:groupbar:col.active", "rgba($wallbash_pry1ee)")` resolution; `hl.keyword("doorwayde:theme", ...)` acceptance of custom-namespace keywords; `hl.source()` of wallbash-generated `.conf` files.
+- [ ] `wallbash` / `theme.switch` still emit hyprlang `themes/{colors,theme,wallbash}.conf`. `dynamic.lua` was supposed to source them via `hl.source()` — but `hl.source` **does not exist** on Hyprland 0.55.1 (confirmed empirically — see Phase 8 below). Migration plan needs to change to "wallbash emits `colors.lua` returning a colour table that `hl.config()` consumes."
+- [x] ~~Runtime verification: `hl.keyword(...)` and `hl.source()` of wallbash-generated `.conf` files.~~ **Verified negative**: both APIs return nil on 0.55.1. Replaced `hl.keyword("gesture", ...)` with `hl.gesture({...})` and `hl.keyword("group:groupbar:*", ...)` with `hl.config({ group = { groupbar = {...} } })`. `hl.source()` has no equivalent — wallbash integration is on hold (see Phase 8).
+
+---
+
+## Phase 8: Post-migration follow-ups
+
+Items discovered after the initial lua migration landed, while shaking down `--verify-config` errors and writing the troubleshooting docs.
+
+### Documentation
+
+- [x] **Wiki seeded** — `Wiki/README.md` (landing page / IA) and `Wiki/Troubleshooting-Hyprland.md` (depth article) created. README now points at the wiki for deep troubleshooting; the README itself only carries a concise cheat-sheet (~25 lines).
+- [ ] **Write the remaining planned wiki articles** — `Architecture-Overview.md`, `Theming-and-Wallbash.md`, `Keybindings-Reference.md`, `Scripting-API.md`, `Lua-Migration-Notes.md`, `Hyprland-Lua-API-Cheatsheet.md`. See `Wiki/README.md` for one-line scopes.
+
+### Wallbash → lua port (blocked by missing upstream API)
+
+- [ ] **Refactor wallbash to emit lua.** The wallbash pipeline writes `~/.config/hypr/themes/colors.conf` (hyprlang format). `Configs/.local/share/hypr/dynamic.lua` was supposed to source it via `hl.source(...)`, but `hl.source` doesn't exist on 0.55.1 — `try_source(...)` calls in `dynamic.lua` are documented placeholder no-ops. Until `wallbash` is refactored to emit `themes/colors.lua` (a module returning a colour table that `hl.config({ general = { ["col.active_border"] = ... } })` consumes), dynamic wallbash-driven theming is on pause. Groupbar uses Hyprland defaults; window borders use the lua-side static values.
+- [ ] **Watch for upstream sourcing API.** If Hyprland later adds a way to source other `.conf` / `.lua` files from a lua config, the existing `try_source(...)` placeholder in `dynamic.lua` becomes a one-line change.
+
+### Config validation in CI
+
+- [ ] **Wire `Hyprland --verify-config` into GitHub Actions.** It exists, returns exit codes, and was the only reason we caught the `repeat = true` bug, the `hl.keyword` nils, and the windowrules type mismatches. Add a workflow that runs `XDG_DATA_HOME=$PWD/Configs/.local/share Hyprland --verify-config -c $PWD/Configs/.config/hypr/hyprland.lua` on every PR so we can't reintroduce parse-level regressions.
 
 ---
 

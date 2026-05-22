@@ -91,7 +91,6 @@ hl.config({
 })
 
 -- Touchpad gestures. See https://wiki.hypr.land/Configuring/Gestures/
--- Kept as keyword calls since `gesture` repeats with varying signatures.
-hl.keyword("gesture", "3, horizontal, workspace")
-hl.keyword("gesture", "3, pinchin, float, tile")
-hl.keyword("gesture", "3, pinchout, float, float")
+hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+hl.gesture({ fingers = 3, direction = "pinchin",    action = "float", action_modifier = "tile" })
+hl.gesture({ fingers = 3, direction = "pinchout",   action = "float", action_modifier = "float" })

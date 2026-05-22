@@ -183,11 +183,9 @@
               echo "  shellcheck Scripts/*.sh    - Lint shell scripts"
               echo "  nixfmt flake.nix           - Format Nix"
               echo ""
-              echo "Testing Hyprland changes without logging out:"
-              echo "  WLR_BACKENDS=x11 Hyprland  - Run nested in current X11/XFCE session"
-              echo "  WLR_BACKENDS=x11 Hyprland --config ./Configs/.config/hypr/hyprland.conf"
-              echo "  hyprctl reload             - Live-reload config (inside any Hyprland session)"
-              echo "  ls /tmp/hypr/              - List active Hyprland instances"
+              echo "Testing Hyprland changes:"
+              echo "  hyprctl reload   - Live-reload config (inside any Hyprland session)"
+              echo "  ls /tmp/hypr/    - List active Hyprland instances"
               echo ""
             '';
           };

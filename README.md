@@ -297,16 +297,6 @@ shellcheck Scripts/*.sh
 
 ### Testing Hyprland Changes
 
-**Without logging out** — run Hyprland nested inside your current X11/XFCE session:
-
-```bash
-# Uses wlroots' X11 backend — Hyprland opens as a window
-WLR_BACKENDS=x11 Hyprland
-
-# Point directly at the repo config
-WLR_BACKENDS=x11 Hyprland --config ./Configs/.config/hypr/hyprland.lua
-```
-
 **Live-reload** — once inside any Hyprland session, apply config changes without restarting:
 
 ```bash
@@ -320,11 +310,38 @@ HYPRLAND_INSTANCE_SIGNATURE=<sig> hyprctl reload
 **Via TTY** — full DRM backend, identical to a real login (useful for GPU-specific features):
 
 ```
-Ctrl+Alt+F2  →  login  →  Hyprland
+Ctrl+Alt+F2  →  login  →  start-hyprland
 Ctrl+Alt+F7  →  back to XFCE (session stays live)
 ```
 
 Inside DOORwayDE: `Super + F5` reloads the config live (see [Keybindings](#keybindings)).
+
+### Troubleshooting Hyprland
+
+If Hyprland loads the emergency fallback or refuses to start, validate the lua config first — this works even on hosts where the compositor itself can't launch (e.g. nested under X11):
+
+```bash
+Hyprland --verify-config        # exits 0 if clean, 1 + errors otherwise
+```
+
+On NixOS where `~/.config/hypr/` is a read-only nix-store symlink, point `--verify-config` at the working tree and let `XDG_DATA_HOME` override resolution of `require()`d modules so your unactivated edits are seen:
+
+```bash
+XDG_DATA_HOME=$PWD/Configs/.local/share \
+  Hyprland --verify-config -c $PWD/Configs/.config/hypr/hyprland.lua
+```
+
+Common errors and where to fix them:
+
+| Error pattern | What it means | Where to fix |
+|---|---|---|
+| `unexpected symbol near 'repeat'` | Lua reserved keyword as a bare table key | Use `repeating = true` (upstream renamed `repeat` → `repeating`) |
+| `attempt to call a nil value (field 'X')` | `hl.X` doesn't exist on this Hyprland version | Check the [upstream lua example](https://github.com/hyprwm/Hyprland/blob/main/example/hyprland.lua); note that `hl.source` does **not** exist in 0.55.1 |
+| `... expects string, got table` | Type mismatch in `hl.window_rule` / `hl.monitor` | Convert the table to the string form the API wants (e.g. `opacity = "0.9 0.9 1.0"`) |
+| `Unknown keysym: "X"` | The trailing key in a bind isn't a valid xkb keysym | Use xkb's name (e.g. `Control_R`, not Hyprland's modifier shorthand `CTRL_R`) |
+| `CBackend::create() failed!` | **Not a config issue** — backend / seat problem | Check `journalctl -u greetd`; this is a NixOS/HALLway concern, not DOORwayDE |
+
+For the full walkthrough — decision tree, log paths, worked examples, the wallbash-lua gap — see [`Wiki/Troubleshooting-Hyprland.md`](Wiki/Troubleshooting-Hyprland.md).
 
 ### Pull Request Process
 

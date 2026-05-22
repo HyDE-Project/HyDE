@@ -35,10 +35,12 @@ hl.window_rule({
 -- Picture-in-Picture
 --------------------------------------------------------------------------------
 
+local pip_match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" }
+
 hl.window_rule({
     name  = "doorwayde_picture_in_picture",
-    match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" },
-    tag   = { "+picture-in-picture", "+doorwayde_picture_in_picture" },
+    match = pip_match,
+    tag   = "+picture-in-picture",
     float = true,
     keep_aspect_ratio = true,
     move  = "(monitor_w*0.73) (monitor_h*0.72)",
@@ -46,13 +48,18 @@ hl.window_rule({
     pin   = true,
 })
 
+hl.window_rule({
+    match = pip_match,
+    tag   = "+doorwayde_picture_in_picture",
+})
+
 --------------------------------------------------------------------------------
 -- Opacity Rules
--- Format: { active_opacity, inactive_opacity, fullscreen_opacity }
+-- Format: "active inactive fullscreen" (space-separated string, parsed by Hyprland)
 --------------------------------------------------------------------------------
 
 -- Browsers (90% opacity)
-local browser_opacity = { 0.90, 0.90, 1.0 }
+local browser_opacity = "0.90 0.90 1.0"
 for _, class in ipairs({ "firefox", "zen", "brave-browser" }) do
     hl.window_rule({
         match = { class = "^(" .. class .. ")$" },
@@ -61,7 +68,7 @@ for _, class in ipairs({ "firefox", "zen", "brave-browser" }) do
 end
 
 -- Code editors (80% opacity)
-local editor_opacity = { 0.80, 0.80, 1.0 }
+local editor_opacity = "0.80 0.80 1.0"
 for _, class in ipairs({ "code-oss", "[Cc]ode", "code-url-handler", "code-insiders-url-handler" }) do
     hl.window_rule({
         match = { class = "^(" .. class .. ")$" },
@@ -86,7 +93,7 @@ for _, class in ipairs({ "nwg-look", "qt5ct", "qt6ct", "kvantummanager" }) do
 end
 
 -- System utilities (80% active, 70% inactive)
-local util_opacity = { 0.80, 0.70, 1.0 }
+local util_opacity = "0.80 0.70 1.0"
 for _, class in ipairs({
     "org.pulseaudio.pavucontrol", "blueman-manager", "nm-applet",
     "nm-connection-editor", "hyprpolkitagent",
@@ -100,7 +107,7 @@ for _, class in ipairs({
 end
 
 -- Steam and Spotify (70% opacity)
-local media_opacity = { 0.70, 0.70, 1.0 }
+local media_opacity = "0.70 0.70 1.0"
 for _, class in ipairs({ "[Ss]team", "steamwebhelper", "[Ss]potify" }) do
     hl.window_rule({
         match = { class = "^(" .. class .. ")$" },
@@ -121,11 +128,11 @@ hl.window_rule({
 -- Blender (full opacity)
 hl.window_rule({
     match = { class = "^(blender)$" },
-    opacity = { 1.0, 1.0, 1.0 },
+    opacity = "1.0 1.0 1.0",
 })
 
 -- Various GTK/Qt apps (80% opacity)
-local app_opacity_80 = { 0.80, 0.80, 1.0 }
+local app_opacity_80 = "0.80 0.80 1.0"
 local apps_80 = {
     "com.github.rafostar.Clapper", "com.github.tchx84.Flatseal",
     "hu.kramo.Cartridges", "com.obsproject.Studio", "gnome-boxes",
