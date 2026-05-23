@@ -6,6 +6,7 @@
     portal setup precedes any GUI client that talks to xdg-desktop-portal.
 --]]
 
+local home = os.getenv("HOME")
 local vars = require("variables")
 
 -- // █░░ ▄▀█ █░█ █▄░█ █▀▀ █░█
@@ -38,7 +39,7 @@ hl.config({
         vars.start.BLUE_LIGHT_FILTER_DAEMON,
 
         -- doorwayde/config.toml parser daemon
-        "doorwayde-shell app -t service doorwayde-config --no-startup",
+        home .. "/.local/bin/doorwayde-shell app -t service doorwayde-config --no-startup",
 
         -- Cursor must be set after the theme is resolved
         "hyprctl setcursor " .. vars.CURSOR_THEME .. " " .. tostring(vars.CURSOR_SIZE),

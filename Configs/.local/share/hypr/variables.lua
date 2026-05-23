@@ -21,8 +21,9 @@ local unt = "doorwayde-" .. session_desktop
 local list_environment = "WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"
 
 -- Unit helper: `app -u doorwayde-Hyprland-<name>.<type> -t <type> -- `
+-- Absolute path avoids PATH-resolution failures in Hyprland's exec-once environment.
 local function app(name, type)
-    return "doorwayde-shell app -u " .. unt .. "-" .. name .. "." .. type .. " -t " .. type .. " -- "
+    return home .. "/.local/bin/doorwayde-shell app -u " .. unt .. "-" .. name .. "." .. type .. " -t " .. type .. " -- "
 end
 
 local M = {
@@ -74,8 +75,8 @@ local M = {
     start = {
         DBUS_SHARE_PICKER    = "dbus-update-activation-environment --systemd " .. list_environment,
         SYSTEMD_SHARE_PICKER = "systemctl --user import-environment " .. list_environment,
-        XDG_PORTAL_RESET     = "doorwayde-shell resetxdgportal.sh",
-        AUTH_DIALOGUE        = "doorwayde-shell app -t service -- polkitkdeauth.sh",
+        XDG_PORTAL_RESET     = home .. "/.local/bin/doorwayde-shell resetxdgportal.sh",
+        AUTH_DIALOGUE        = home .. "/.local/bin/doorwayde-shell app -t service -- polkitkdeauth.sh",
 
         IDLE_DAEMON              = app("idle", "service") .. "hypridle",
         BLUE_LIGHT_FILTER_DAEMON = app("blue-light-filter", "service") .. "hyprsunset",

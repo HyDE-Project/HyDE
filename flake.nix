@@ -105,7 +105,24 @@
             home.packages = lib.mkIf cfg.installPackages (doorwaydeDeps pkgs);
 
             xdg.configFile = {
-              "hypr".source = "${configDir}/.config/hypr";
+              # Individual file links instead of a directory symlink, so the
+              # generated monitors.lua and userprefs.lua (below) can be placed
+              # alongside them — a directory symlink to the Nix store is immutable.
+              "hypr/hyprland.lua".source    = "${configDir}/.config/hypr/hyprland.lua";
+              "hypr/keybindings.lua".source = "${configDir}/.config/hypr/keybindings.lua";
+              "hypr/windowrules.lua".source = "${configDir}/.config/hypr/windowrules.lua";
+              "hypr/workflows.lua".source   = "${configDir}/.config/hypr/workflows.lua";
+              "hypr/animations.lua".source  = "${configDir}/.config/hypr/animations.lua";
+              "hypr/shaders.lua".source     = "${configDir}/.config/hypr/shaders.lua";
+              "hypr/hypridle.conf".source   = "${configDir}/.config/hypr/hypridle.conf";
+              "hypr/hyprlock.conf".source   = "${configDir}/.config/hypr/hyprlock.conf";
+              "hypr/hyprsunset.conf".source = "${configDir}/.config/hypr/hyprsunset.conf";
+              "hypr/nvidia.conf".source     = "${configDir}/.config/hypr/nvidia.conf";
+              "hypr/animations".source      = "${configDir}/.config/hypr/animations";
+              "hypr/shaders".source         = "${configDir}/.config/hypr/shaders";
+              "hypr/themes".source          = "${configDir}/.config/hypr/themes";
+              "hypr/workflows".source       = "${configDir}/.config/hypr/workflows";
+              "hypr/hyprlock".source        = "${configDir}/.config/hypr/hyprlock";
               "waybar".source = "${configDir}/.config/waybar";
               "rofi".source = "${configDir}/.config/rofi";
               "dunst".source = "${configDir}/.config/dunst";
@@ -138,6 +155,7 @@
             home.file = {
               ".local/lib/doorwayde".source = "${configDir}/.local/lib/doorwayde";
               ".local/share/doorwayde".source = "${configDir}/.local/share/doorwayde";
+              ".local/share/waybar".source = "${configDir}/.local/share/waybar";
               ".local/share/hypr".source = "${configDir}/.local/share/hypr";
               ".local/bin/doorwayde-shell" = {
                 source = "${configDir}/.local/bin/doorwayde-shell";
