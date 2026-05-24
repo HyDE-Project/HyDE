@@ -787,10 +787,9 @@ def backup_layout(layout_name):
         logger.debug("No config file to backup")
         return None
 
-    config_dir = CONFIG_JSONC.parent
-    layouts_dir = os.path.join(str(config_dir), "layouts")
-    os.makedirs(layouts_dir, exist_ok=True)
-    backup_dir = os.path.join(layouts_dir, "backup")
+    # Write backups to $XDG_DATA_HOME/waybar/layouts/backup — not inside
+    # $XDG_CONFIG_HOME which is a read-only Nix store symlink.
+    backup_dir = os.path.join(str(xdg_data_home()), "waybar", "layouts", "backup")
     os.makedirs(backup_dir, exist_ok=True)
 
     timestamp = time.strftime("%Y%m%d_%H%M%S")

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "git": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "/home/bittermang/Developments/DOORwayDE"
+      ],
+      "env": {}
+    }
+  }
+}
