@@ -61,6 +61,10 @@
         # General
         git
         direnv
+
+        # MCP server runtimes (Claude Code)
+        nodejs   # provides npx for @modelcontextprotocol/server-github
+        uv       # provides uvx for mcp-server-git
       ];
 
       # Home Manager module definition
