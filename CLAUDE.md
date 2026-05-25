@@ -52,6 +52,94 @@ DOORwayDE/
 | `flake.nix` | Nix flake with homeManagerModules.default |
 | `Scripts/setup-nixos.sh` | Manual setup script for NixOS |
 
+## Nix Store Workflow — CRITICAL
+
+### Never edit deployed paths directly
+
+Every file under `~/.config/`, `~/.local/bin/`, `~/.local/lib/doorwayde/`,
+`~/.local/share/doorwayde/`, etc. is either:
+
+- A **symlink into the Nix store** (`/nix/store/…`) — root-owned, epoch-timestamped,
+  `EROFS: read-only file system` on any write attempt, OR
+- A **generated file** produced by Home Manager at activation time.
+
+**Do not attempt to edit these paths.** The `EROFS` error is the signal, not a
+permissions problem to work around. Any tool call that tries to `Edit` or `Write`
+a `/nix/store/` path (or a path that symlinks there) will fail immediately.
+
+### Where to make changes
+
+Every deployed file has a 1:1 source in this repo under `Configs/` at the same
+relative path:
+
+| Deployed path | Source in this repo |
+|---|---|
+| `~/.config/hypr/hyprland.lua` | `Configs/.config/hypr/hyprland.lua` |
+| `~/.config/waybar/` | `Configs/.config/waybar/` |
+| `~/.local/lib/doorwayde/waybar.py` | `Configs/.local/lib/doorwayde/waybar.py` |
+| `~/.local/bin/doorwayde-shell` | `Configs/.local/bin/doorwayde-shell` |
+| `~/.local/share/doorwayde/hyprland.lua` | `Configs/.local/share/doorwayde/hyprland.lua` |
+
+**Rule**: When a file needs changing, always edit under `Configs/`, then rebuild.
+
+### Rebuilding after source changes
+
+```bash
+sudo nixos-rebuild switch --flake ~/Developments/HALLway/#2600AD
+```
+
+The git tree may be dirty — that is expected and harmless during development.
+
+### Identifying Nix store files
+
+```bash
+ls -la ~/.config/waybar        # symlink → /nix/store/... → read-only
+ls -la ~/.local/lib/doorwayde/waybar.py  # same pattern
+stat ~/.local/lib/doorwayde/waybar.py   # mtime = Dec 31 1969 (epoch 0) = Nix store
+```
+
+Signs a path is Nix-managed:
+- `ls -la` shows `-> /nix/store/...`
+- File timestamp is `Dec 31  1969` (epoch 0)
+- Owner is `root root` with `r--r--r--` permissions
+
+### Runtime writes into config directories
+
+If a script needs to **write data at runtime** (backups, caches, state), it must
+NOT write into `~/.config/<app>/` — that directory may be a read-only Nix store
+symlink. Use the correct XDG write location:
+
+| Data type | Correct path | Example |
+|---|---|---|
+| Persistent user data | `$XDG_DATA_HOME` (`~/.local/share/`) | layout backups |
+| Regeneratable/cache | `$XDG_CACHE_HOME` (`~/.cache/`) | wallbash output |
+| Runtime state | `$XDG_STATE_HOME` (`~/.local/state/`) | doorwayde staterc |
+| Temp/socket files | `$XDG_RUNTIME_DIR` (`/run/user/<uid>/`) | IPC sockets |
+
+### Whole-directory vs individual file links in the flake
+
+When `flake.nix` manages a config dir as a single entry:
+```nix
+"waybar".source = "${configDir}/.config/waybar";   # WHOLE-DIR SYMLINK
+```
+The entire `~/.config/waybar/` becomes a read-only Nix store symlink. No script
+can create files inside it at runtime.
+
+When it uses individual file links (like hypr was migrated to):
+```nix
+"hypr/hyprland.lua".source = "${configDir}/.config/hypr/hyprland.lua";
+"hypr/keybindings.lua".source = ...;
+```
+Home Manager creates a real `~/.config/hypr/` directory with individual symlinks
+inside it — and generated files (`monitors.lua`, `userprefs.lua`) can coexist.
+
+**If a script crashes with `EROFS` writing into `~/.config/<app>/`**, the fix is
+one of:
+1. Redirect the write to `$XDG_DATA_HOME` or `$XDG_CACHE_HOME` (preferred for
+   runtime-generated data that doesn't belong in config), OR
+2. Migrate `flake.nix` from whole-dir to individual file links for that app
+   (required when generated config files must live alongside source-controlled ones).
+
 ## Working with This Codebase
 
 ### Naming Conventions
@@ -146,7 +234,13 @@ If Hyprland starts but shows only a cursor with no bar or wallpaper:
    journalctl --user -b -n 200 | grep -iE "(waybar|dunst|doorwayde|hypr)"
    ```
 
-3. **Sanity-check app2unit.sh** without logging out (from XFCE Wayland or `nix develop`):
+3. **Check for EROFS crashes in startup scripts** — `waybar.py`, `wallpaper.sh`, etc.
+   may crash silently if they try to write inside a whole-dir Nix store symlink
+   (`~/.config/waybar/`, etc.). See **Nix Store Workflow** section above.
+   Quick test: `~/.local/bin/doorwayde-shell app -u doorwayde-Hyprland-bar.scope -t scope -- waybar.py --watch`
+   and check `/tmp/doorwayde-bar-launch.log` for a Python traceback.
+
+5. **Sanity-check app2unit.sh** without logging out (from XFCE Wayland or `nix develop`):
    ```bash
    export PATH="$HOME/.local/lib/doorwayde:$PATH"
    export XDG_SESSION_DESKTOP=Hyprland
@@ -154,7 +248,7 @@ If Hyprland starts but shows only a cursor with no bar or wallpaper:
    doorwayde-shell app -u test.scope -t scope -- echo "ok"
    ```
 
-4. **Nested Hyprland** (`start-hyprland` inside a Wayland compositor) — visual checks only.
+6. **Nested Hyprland** (`start-hyprland` inside a Wayland compositor) — visual checks only.
    Keyboard is dead in nested mode: libseat's builtin backend cannot open `/dev/input/*`.
    This is expected, not a DOORwayDE bug.
 

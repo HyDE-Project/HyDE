@@ -25,6 +25,11 @@ DOORWAYDE_HYPRLAND = true
 
 local home = os.getenv("HOME")
 local xdg_data = os.getenv("XDG_DATA_HOME") or (home .. "/.local/share")
+local xdg_config = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
+local hypr_config = xdg_config .. "/hypr"
+
+-- Ensure ~/.config/hypr/ is searchable even if Hyprland's default path changes
+package.path = hypr_config .. "/?.lua;" .. package.path
 
 --------------------------------------------------------------------------------
 -- User Configuration
@@ -33,7 +38,7 @@ local xdg_data = os.getenv("XDG_DATA_HOME") or (home .. "/.local/share")
 
 require("monitors")      -- Monitor configuration
 require("userprefs")     -- User preferences (keyboard, input settings)
-require("windowrules")   -- Custom window rules
+dofile(hypr_config .. "/windowrules.lua")   -- Custom window rules (dofile avoids module-cache conflict with orchestrator's windowrules)
 require("keybindings")   -- Keyboard shortcuts
 
 --------------------------------------------------------------------------------

@@ -91,6 +91,10 @@ hl.config({
 })
 
 -- Touchpad gestures. See https://wiki.hypr.land/Configuring/Gestures/
-hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
-hl.gesture({ fingers = 3, direction = "pinchin",    action = "float", action_modifier = "tile" })
-hl.gesture({ fingers = 3, direction = "pinchout",   action = "float", action_modifier = "float" })
+-- Guard: hl.gesture is a Lua-specific binding function; existence check follows the
+-- same pattern as hl.source in dynamic.lua — avoids a crash if not yet implemented.
+if hl.gesture then
+    hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+    hl.gesture({ fingers = 3, direction = "pinchin",    action = "float", action_modifier = "tile" })
+    hl.gesture({ fingers = 3, direction = "pinchout",   action = "float", action_modifier = "float" })
+end
