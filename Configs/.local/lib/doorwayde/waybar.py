@@ -787,9 +787,9 @@ def backup_layout(layout_name):
         logger.debug("No config file to backup")
         return None
 
-    # Write backups to $XDG_DATA_HOME/waybar/layouts/backup — not inside
-    # $XDG_CONFIG_HOME which is a read-only Nix store symlink.
-    backup_dir = os.path.join(str(xdg_data_home()), "waybar", "layouts", "backup")
+    # Write backups to $XDG_CACHE_HOME/doorwayde/waybar/layouts/backup —
+    # both $XDG_CONFIG_HOME/waybar and $XDG_DATA_HOME/waybar are Nix store symlinks.
+    backup_dir = os.path.join(str(xdg_cache_home()), "doorwayde", "waybar", "layouts", "backup")
     os.makedirs(backup_dir, exist_ok=True)
 
     timestamp = time.strftime("%Y%m%d_%H%M%S")
@@ -1260,6 +1260,7 @@ def watch_waybar():
     if is_waybar_running_for_current_user():
         logger.debug(f"Waybar unit already active: {UNIT_NAME}")
         return
+    generate_includes()
     subprocess.run(
         [
             "systemd-run",

@@ -127,7 +127,10 @@
               "hypr/themes".source          = "${configDir}/.config/hypr/themes";
               "hypr/workflows".source       = "${configDir}/.config/hypr/workflows";
               "hypr/hyprlock".source        = "${configDir}/.config/hypr/hyprlock";
-              "waybar".source = "${configDir}/.config/waybar";
+              # waybar split from whole-dir so runtime-generated files (config.jsonc,
+              # style.css, theme.css, user-style.css, includes/) can coexist alongside
+              # the Nix-managed read-only module templates in a writable ~/.config/waybar/.
+              "waybar/modules".source = "${configDir}/.config/waybar/modules";
               "rofi".source = "${configDir}/.config/rofi";
               "dunst".source = "${configDir}/.config/dunst";
               "doorwayde".source = "${configDir}/.config/doorwayde";
