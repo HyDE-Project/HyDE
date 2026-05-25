@@ -184,6 +184,18 @@ The `nix develop` shell also exports this PATH so `doorwayde-shell app` works di
 Configs in `Configs/.config/hypr/` use Hyprland 0.55+ lua format (`hl.config`, `hl.bind`, `hl.window_rule`). `hyprctl reload` works the same on lua configs as it did on hyprlang.
 
 ```bash
+# After nixos-rebuild switch — smoke-test the deployed config for type errors:
+Hyprland --verify-config
+
+# To verify SOURCE files before rebuilding (temporarily redirects system module symlinks):
+orig_hypr=$(readlink ~/.local/share/hypr)
+orig_dw=$(readlink ~/.local/share/doorwayde)
+ln -sfn "$HOME/Developments/DOORwayDE/Configs/.local/share/hypr" ~/.local/share/hypr
+ln -sfn "$HOME/Developments/DOORwayDE/Configs/.local/share/doorwayde" ~/.local/share/doorwayde
+Hyprland --verify-config 2>&1
+ln -sfn "$orig_hypr" ~/.local/share/hypr
+ln -sfn "$orig_dw" ~/.local/share/doorwayde
+
 # Quick test (symlink approach)
 ln -sf ~/DOORwayDE/Configs/.config/hypr ~/.config/hypr
 hyprctl reload
@@ -224,7 +236,17 @@ Note: these `*.conf` sed commands no longer apply to the lua files in `Configs/.
 
 If Hyprland starts but shows only a cursor with no bar or wallpaper:
 
-1. **Hyprland log** — Lua config errors appear here (stdout is disabled after init):
+0. **Parse the config first** — catches type errors and nil-function calls without a
+   running session. Prints to stdout; no Error Overlay required:
+   ```bash
+   Hyprland --verify-config
+   ```
+   Common migration errors: `"on"`/`"off"` where a `bool` is required, a Lua table
+   where a `string` is required, or calling a nil `hl.*` function (e.g. `hl.keyword`).
+
+1. **Hyprland log** — Lua config errors appear in the Error Overlay (on-screen) but
+   are NOT reliably written to the log file. The log is most useful for exec-once and
+   backend errors, not config parse errors. When in doubt, use step 0 instead.
    ```bash
    cat /run/user/$(id -u)/hypr/*/hyprland.log | grep -v "DEBUG from aquamarine"
    ```

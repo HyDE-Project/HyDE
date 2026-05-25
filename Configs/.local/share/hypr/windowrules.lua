@@ -23,7 +23,7 @@ hl.window_rule({
 })
 
 hl.window_rule({
-    center = "on",
+    center = true,
     match  = { tag = "portal-dialogs" },
 })
 
@@ -69,15 +69,21 @@ hl.window_rule({
 })
 
 -- Picture-in-Picture: floating, pinned, aspect-locked, anchored bottom-right.
+local pip_match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" }
+
 hl.window_rule({
     name  = "doorwayde_picture_in_picture",
-    match = { title = "^([Pp]icture[-\\s]?[Ii]n[-\\s]?[Pp]icture)(.*)$" },
-    tag   = { "+picture-in-picture", "+doorwayde_picture_in_picture" },
+    match = pip_match,
+    tag   = "+picture-in-picture",
     float = true,
     keep_aspect_ratio = true,
     move  = "(monitor_w*0.73) (monitor_h*0.72)",
     size  = "(monitor_w*0.25) (monitor_h*0.25)",
     pin   = true,
+})
+hl.window_rule({
+    match = pip_match,
+    tag   = "+doorwayde_picture_in_picture",
 })
 
 -- Apply float/center based on the tags above.
