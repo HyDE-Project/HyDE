@@ -111,10 +111,14 @@ symlink. Use the correct XDG write location:
 
 | Data type | Correct path | Example |
 |---|---|---|
-| Persistent user data | `$XDG_DATA_HOME` (`~/.local/share/`) | layout backups |
-| Regeneratable/cache | `$XDG_CACHE_HOME` (`~/.cache/`) | wallbash output |
+| Persistent user data | `$XDG_DATA_HOME` (`~/.local/share/`) | theme state |
+| Regeneratable/cache | `$XDG_CACHE_HOME` (`~/.cache/`) | wallbash output, layout backups |
 | Runtime state | `$XDG_STATE_HOME` (`~/.local/state/`) | doorwayde staterc |
 | Temp/socket files | `$XDG_RUNTIME_DIR` (`/run/user/<uid>/`) | IPC sockets |
+
+**Caveat:** `$XDG_DATA_HOME/<app>/` may also be a Nix-managed whole-dir symlink
+(e.g. `~/.local/share/waybar/` → Nix store). If redirecting from config to data
+still hits EROFS, redirect further to `$XDG_CACHE_HOME/doorwayde/<app>/`.
 
 ### Whole-directory vs individual file links in the flake
 
@@ -178,6 +182,23 @@ The `nix develop` shell also exports this PATH so `doorwayde-shell app` works di
 2. **Configs** go in `Configs/.config/<app>/`
 3. **Update flake.nix** if adding new config directories
 4. **Update setup-nixos.sh** if adding new symlink targets
+
+### Flake-based deploy workflow (DOORwayDE → HALLway)
+
+DOORwayDE is a flake input to HALLway. The Nix evaluator fetches the latest
+**pushed** commit — local uncommitted changes are completely invisible to it.
+
+```bash
+# In this repo (DOORwayDE):
+git commit && git push
+
+# In HALLway:
+nix flake update doorwayde   # updates flake.lock to latest pushed commit
+sudo nixos-rebuild switch --flake ~/Developments/HALLway/#2600AD
+```
+
+**Always commit and push before rebuilding in HALLway.** `nix flake update`
+without a prior push will silently reuse the previous commit.
 
 ### Testing Changes
 

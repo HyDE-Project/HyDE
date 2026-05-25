@@ -21,6 +21,7 @@ hl.config({
         vars.start.XDG_PORTAL_RESET,
 
         vars.start.AUTH_DIALOGUE,
+        vars.start.GNOME_KEYRING,
 
         vars.start.BAR,
         vars.start.NOTIFICATIONS,

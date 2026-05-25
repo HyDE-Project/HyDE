@@ -77,6 +77,8 @@ local M = {
         SYSTEMD_SHARE_PICKER = "systemctl --user import-environment " .. list_environment,
         XDG_PORTAL_RESET     = home .. "/.local/bin/doorwayde-shell resetxdgportal.sh",
         AUTH_DIALOGUE        = home .. "/.local/bin/doorwayde-shell app -t service -- polkitkdeauth.sh",
+        -- gnome-keyring: --daemonize forks immediately, so no app() wrapper (systemd-run Type=exec would see exit as failure)
+        GNOME_KEYRING        = "gnome-keyring-daemon --start --daemonize --components=secrets,pkcs11,ssh",
 
         IDLE_DAEMON              = app("idle", "service") .. "hypridle",
         BLUE_LIGHT_FILTER_DAEMON = app("blue-light-filter", "service") .. "hyprsunset",

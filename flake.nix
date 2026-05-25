@@ -36,6 +36,7 @@
         playerctl
         pamixer
         libnotify
+        gnome-keyring   # Secret Service API for VSCodium, Firefox, et al.
 
         # Terminal
         kitty
@@ -217,6 +218,13 @@
               echo "    NOTE: Requires a running Wayland compositor (e.g. XFCE Wayland session)."
               echo "    Keyboard is dead in nested mode (libseat cannot open /dev/input)."
               echo "    Use for visual checks only; native login required for keybinding tests."
+              echo ""
+              echo "Flake-based deploy workflow (DOORwayDE → HALLway):"
+              echo "  DOORwayDE is a flake input — changes must be committed AND pushed"
+              echo "  before HALLway can see them. Local uncommitted changes are invisible."
+              echo "  1. git commit && git push              (in this repo)"
+              echo "  2. nix flake update doorwayde          (in HALLway repo)"
+              echo "  3. sudo nixos-rebuild switch --flake ~/Developments/HALLway/#2600AD"
               echo ""
               echo "Debugging startup failures:"
               echo "  cat /run/user/\$(id -u)/hypr/*/hyprland.log | grep -v 'DEBUG from aquamarine'"
