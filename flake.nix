@@ -128,10 +128,10 @@
               "hypr/themes".source          = "${configDir}/.config/hypr/themes";
               "hypr/workflows".source       = "${configDir}/.config/hypr/workflows";
               "hypr/hyprlock".source        = "${configDir}/.config/hypr/hyprlock";
-              # waybar split from whole-dir so runtime-generated files (config.jsonc,
-              # style.css, theme.css, user-style.css, includes/) can coexist alongside
-              # the Nix-managed read-only module templates in a writable ~/.config/waybar/.
-              "waybar/modules".source = "${configDir}/.config/waybar/modules";
+              # ~/.config/waybar/ is NOT Nix-managed — waybar.py creates and owns it at
+              # runtime (config.jsonc, style.css, includes/, etc. are all session state).
+              # Read-only layout/style/module templates live in ~/.local/share/waybar/
+              # (managed via home.file below), which waybar.py reads as its source.
               "rofi".source = "${configDir}/.config/rofi";
               "dunst".source = "${configDir}/.config/dunst";
               "doorwayde".source = "${configDir}/.config/doorwayde";
