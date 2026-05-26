@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - dev
-      - master
+      - main
       - rc
   pull_request:
   workflow_dispatch:
@@ -140,8 +140,8 @@ jobs:
           echo "::notice::No new commits detected between rc and dev branches. Skipping PR creation."
           echo "The branches rc and dev are already in sync."
 
-  rc-to-master-pr:
-    name: Create PR from RC to Master
+  rc-to-main-pr:
+    name: Create PR from RC to main
     if: github.ref == 'refs/heads/rc' && github.repository == 'HyDE-Project/HyDE'
     runs-on: ubuntu-latest
     steps:
@@ -153,30 +153,30 @@ jobs:
       - name: Generate commit history and schedule
         id: generate-commits
         run: |
-          chmod +x .github/scripts/promote_to_master.sh
-          bash .github/scripts/promote_to_master.sh
+          chmod +x .github/scripts/promote_to_main.sh
+          bash .github/scripts/promote_to_main.sh
 
-      # Check if there are any commits between master and rc
+      # Check if there are any commits between main and rc
       - name: Check for commits between branches
         id: check-commits
         run: |
-          # Fetch master branch to make sure it exists locally
-          git fetch origin master:master || true
+          # Fetch main branch to make sure it exists locally
+          git fetch origin main:main || true
 
           # We're already on rc branch since the job runs when rc is pushed
-          # Compare rc to master to see if there are any differences
-          if git rev-parse --verify master >/dev/null 2>&1; then
-            COMMIT_COUNT=$(git rev-list --count master..rc)
+          # Compare rc to main to see if there are any differences
+          if git rev-parse --verify main >/dev/null 2>&1; then
+            COMMIT_COUNT=$(git rev-list --count main..rc)
             echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
             if [ "$COMMIT_COUNT" -gt 0 ]; then
-              echo "Detected $COMMIT_COUNT commit(s) between master and rc"
+              echo "Detected $COMMIT_COUNT commit(s) between main and rc"
               echo "has_commits=true" >> $GITHUB_OUTPUT
             else
-              echo "No commits detected between master and rc"
+              echo "No commits detected between main and rc"
               echo "has_commits=false" >> $GITHUB_OUTPUT
             fi
           else
-            echo "Master branch doesn't exist yet. Assuming changes need to be propagated."
+            echo "main branch doesn't exist yet. Assuming changes need to be propagated."
             echo "commit_count=999" >> $GITHUB_OUTPUT  # Use a high number to indicate there are changes
             echo "has_commits=true" >> $GITHUB_OUTPUT
           fi
@@ -197,7 +197,7 @@ jobs:
           script: |
             const { repo, owner } = context.repo;
             const prBranch = "rc";
-            const prTitle = "chore: Release - rc → master";
+            const prTitle = "chore: Release - rc → main";
             const prBody = process.env.PR_BODY;
 
             // Retry helper function
@@ -224,7 +224,7 @@ jobs:
                 owner,
                 repo,
                 head: `${owner}:${prBranch}`,
-                base: 'master',
+                base: 'main',
                 state: 'open'
               });
             });
@@ -252,14 +252,14 @@ jobs:
                     title: prTitle,
                     body: prBody,
                     head: prBranch,
-                    base: 'master'
+                    base: 'main'
                   });
                 });
                 console.log(`PR created: ${result.data.html_url}`);
               } catch (error) {
                 console.log(`All attempts to create PR failed: ${error.message}`);
                 // As a fallback, output command for manual PR creation
-                console.log(`To create the PR manually, visit: https://github.com/${owner}/${repo}/compare/master...${prBranch}`);
+                console.log(`To create the PR manually, visit: https://github.com/${owner}/${repo}/compare/main...${prBranch}`);
                 throw error;
               }
             }
@@ -268,12 +268,12 @@ jobs:
       - name: No Commits Message
         if: steps.check-commits.outputs.has_commits == 'false'
         run: |
-          echo "::notice::No new commits detected between master and rc branches. Skipping PR creation."
-          echo "The branches master and rc are already in sync."
+          echo "::notice::No new commits detected between main and rc branches. Skipping PR creation."
+          echo "The branches main and rc are already in sync."
 
   release:
     name: Quarterly Snapshot Release
-    if: github.ref == 'refs/heads/master' && github.repository == 'HyDE-Project/HyDE'
+    if: github.ref == 'refs/heads/main' && github.repository == 'HyDE-Project/HyDE'
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v3
@@ -284,7 +284,7 @@ jobs:
           package-name: hyde
           command: github-release
           token: ${{ secrets.GITHUB_TOKEN }}
-          default-branch: master
+          default-branch: main
           changelog-types: |
             [
               {"type":"feat","section":"Features","hidden":false},

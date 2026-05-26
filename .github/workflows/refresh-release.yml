@@ -39,7 +39,7 @@ jobs:
           VERSION_TAG="$YEAR.$MONTH.$Q"
           git commit --allow-empty -m "release: trigger quarterly refresh $VERSION_TAG"
           git tag -a "$VERSION_TAG" -m "Quarterly release $VERSION_TAG"
-          git push origin HEAD:master
+          git push origin HEAD:main
           git push origin "$VERSION_TAG"
 
       - name: Provide feedback
