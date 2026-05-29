@@ -86,8 +86,8 @@ local keybinds_hint_cmd = 'bash -c \'eval "$(doorwayde-shell init)" && '
                        .. '$LIB_DIR/doorwayde/keybinds/hint-hyprland.py '
                        .. '--format rofi > $XDG_RUNTIME_DIR/doorwayde/keybinds_hint.rofi\''
 
-hl.config({
-    exec = {
-        mkdir_cmd .. " & " .. keybinds_hint_cmd,
-    },
-})
+-- Runtime side-effects: `exec` is not an HL.ConfigKey, so call hl.exec_cmd
+-- directly. Re-fires on every config (re)load — matches hyprlang `exec`
+-- semantics; mkdir is idempotent and re-generating the keybinds hint on
+-- reload is the desired behaviour.
+hl.exec_cmd(mkdir_cmd .. " & " .. keybinds_hint_cmd)

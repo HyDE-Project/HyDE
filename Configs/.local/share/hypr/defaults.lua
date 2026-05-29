@@ -31,24 +31,10 @@ hl.config({
 
     -- // ▄▀█ █▄░█ █ █▀▄▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█
     -- // █▀█ █░▀█ █ █░▀░█ █▀█ ░█░ █ █▄█ █░▀█
+    -- Only `animations.enabled` is a valid HL.ConfigKey; bezier curves and
+    -- per-leaf animation specs use hl.curve / hl.animation below.
     animations = {
         enabled = true,
-        bezier = {
-            { "wind",   0.05, 0.9,  0.1, 1.05 },
-            { "winIn",  0.1,  1.1,  0.1, 1.1  },
-            { "winOut", 0.3, -0.3,  0,   1    },
-            { "liner",  1,    1,    1,   1    },
-        },
-        animation = {
-            { "windows",     1, 6,  "wind",    "slide" },
-            { "windowsIn",   1, 6,  "winIn",   "slide" },
-            { "windowsOut",  1, 5,  "winOut",  "slide" },
-            { "windowsMove", 1, 5,  "wind",    "slide" },
-            { "border",      1, 1,  "liner"            },
-            { "borderangle", 1, 30, "liner",   "once"  },
-            { "fade",        1, 10, "default"          },
-            { "workspaces",  1, 5,  "wind"             },
-        },
     },
 
     -- // █ █▄░█ █▀█ █░█ ▀█▀
@@ -89,6 +75,27 @@ hl.config({
         },
     },
 })
+
+-- // █▀▀ █░█ █▀█ █░█ █▀▀ █▀
+-- // █▄▄ █▄█ █▀▄ ▀▄▀ ██▄ ▄█
+-- Bezier curves: hyprlang `bezier = name, x0, y0, x1, y1` becomes
+-- hl.curve(name, {type="bezier", points={{x0,y0},{x1,y1}}}). See the
+-- vendored example at /nix/store/.../hyprland-0.55.2/share/hypr/hyprland.lua.
+hl.curve("wind",   { type = "bezier", points = { {0.05, 0.9 }, {0.1, 1.05} } })
+hl.curve("winIn",  { type = "bezier", points = { {0.1,  1.1 }, {0.1, 1.1 } } })
+hl.curve("winOut", { type = "bezier", points = { {0.3, -0.3 }, {0,   1   } } })
+hl.curve("liner",  { type = "bezier", points = { {1,    1   }, {1,   1   } } })
+
+-- Animations: hyprlang `animation = leaf, on, speed, curve, [style]` becomes
+-- hl.animation({leaf=..., enabled=..., speed=..., bezier=..., style=...}).
+hl.animation({ leaf = "windows",     enabled = true, speed = 6,  bezier = "wind",    style = "slide" })
+hl.animation({ leaf = "windowsIn",   enabled = true, speed = 6,  bezier = "winIn",   style = "slide" })
+hl.animation({ leaf = "windowsOut",  enabled = true, speed = 5,  bezier = "winOut",  style = "slide" })
+hl.animation({ leaf = "windowsMove", enabled = true, speed = 5,  bezier = "wind",    style = "slide" })
+hl.animation({ leaf = "border",      enabled = true, speed = 1,  bezier = "liner"                    })
+hl.animation({ leaf = "borderangle", enabled = true, speed = 30, bezier = "liner",   style = "once"  })
+hl.animation({ leaf = "fade",        enabled = true, speed = 10, bezier = "default"                  })
+hl.animation({ leaf = "workspaces",  enabled = true, speed = 5,  bezier = "wind"                     })
 
 -- Touchpad gestures. See https://wiki.hypr.land/Configuring/Gestures/
 -- Guard: hl.gesture is a Lua-specific binding function; existence check follows the
