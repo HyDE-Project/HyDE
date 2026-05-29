@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(journalctl *)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; if [[ \"$f\" == *.sh ]]; then result=$(shellcheck \"$f\" 2>&1) && exit 0; jq -n --arg out \"$result\" '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"shellcheck: \\($out)\"}}'; fi; } 2>/dev/null || true",
+            "timeout": 15,
+            "statusMessage": "shellcheck..."
+          },
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; if [[ \"$f\" == *.lua ]]; then result=$(XDG_DATA_HOME=\"$HOME/Developments/DOORwayDE/Configs/.local/share\" Hyprland --verify-config -c \"$HOME/Developments/DOORwayDE/Configs/.config/hypr/hyprland.lua\" 2>&1); filtered=$(echo \"$result\" | grep -E 'ERR|error:|nil|attempt to call' | head -20); [[ -z \"$filtered\" ]] && exit 0; jq -n --arg out \"$filtered\" '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"Hyprland --verify-config errors: \\($out)\"}}'; fi; } 2>/dev/null || true",
+            "timeout": 20,
+            "statusMessage": "Hyprland --verify-config..."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -32,6 +32,7 @@ DOORwayDE/
 │   └── .local/
 │       ├── bin/               # doorwayde-shell, doorwaydectl, doorwayde-ipc
 │       ├── lib/doorwayde/     # 100+ utility scripts
+│       ├── share/hypr/        # Session orchestrators (startup, variables, env, dynamic)
 │       └── share/doorwayde/   # Data files, schemas, templates
 ├── Scripts/                    # Installation and setup scripts
 │   └── setup-nixos.sh         # NixOS setup script
@@ -47,7 +48,10 @@ DOORwayDE/
 | `Configs/.config/hypr/monitors.lua` | Monitor configuration (user edits this — lua format) |
 | `Configs/.config/hypr/userprefs.lua` | User preferences (keyboard, etc.) |
 | `Configs/.config/hypr/keybindings.lua` | All keybindings |
-| `Configs/.local/share/doorwayde/hyprland.lua` | Core DOORwayDE orchestrator (env, variables, defaults, dynamic, startup, finale) |
+| `Configs/.local/share/hypr/startup.lua` | exec-once app launch sequence |
+| `Configs/.local/share/hypr/variables.lua` | App definitions and session variables |
+| `Configs/.local/share/hypr/env.lua` | Environment variable injection into Hyprland |
+| `Configs/.local/share/doorwayde/hyprland.lua` | Core DOORwayDE orchestrator (sources the share/hypr/ files) |
 | `Configs/.local/lib/doorwayde/globalcontrol.sh` | Core environment setup |
 | `flake.nix` | Nix flake with homeManagerModules.default |
 | `Scripts/setup-nixos.sh` | Manual setup script for NixOS |
@@ -75,7 +79,7 @@ relative path:
 | Deployed path | Source in this repo |
 |---|---|
 | `~/.config/hypr/hyprland.lua` | `Configs/.config/hypr/hyprland.lua` |
-| `~/.config/waybar/` | `Configs/.config/waybar/` |
+| `~/.local/share/waybar/` | `Configs/.local/share/waybar/` |
 | `~/.local/lib/doorwayde/waybar.py` | `Configs/.local/lib/doorwayde/waybar.py` |
 | `~/.local/bin/doorwayde-shell` | `Configs/.local/bin/doorwayde-shell` |
 | `~/.local/share/doorwayde/hyprland.lua` | `Configs/.local/share/doorwayde/hyprland.lua` |
@@ -217,10 +221,6 @@ Hyprland --verify-config 2>&1
 ln -sfn "$orig_hypr" ~/.local/share/hypr
 ln -sfn "$orig_dw" ~/.local/share/doorwayde
 
-# Quick test (symlink approach)
-ln -sf ~/DOORwayDE/Configs/.config/hypr ~/.config/hypr
-hyprctl reload
-
 # Full dev environment
 nix develop
 shellcheck Scripts/*.sh
@@ -283,7 +283,7 @@ If Hyprland starts but shows only a cursor with no bar or wallpaper:
    Quick test: `~/.local/bin/doorwayde-shell app -u doorwayde-Hyprland-bar.scope -t scope -- waybar.py --watch`
    and check `/tmp/doorwayde-bar-launch.log` for a Python traceback.
 
-5. **Sanity-check app2unit.sh** without logging out (from XFCE Wayland or `nix develop`):
+4. **Sanity-check app2unit.sh** without logging out (from XFCE Wayland or `nix develop`):
    ```bash
    export PATH="$HOME/.local/lib/doorwayde:$PATH"
    export XDG_SESSION_DESKTOP=Hyprland
@@ -291,14 +291,15 @@ If Hyprland starts but shows only a cursor with no bar or wallpaper:
    doorwayde-shell app -u test.scope -t scope -- echo "ok"
    ```
 
-6. **Nested Hyprland** (`start-hyprland` inside a Wayland compositor) — visual checks only.
+5. **Nested Hyprland** (`start-hyprland` inside a Wayland compositor) — visual checks only.
    Keyboard is dead in nested mode: libseat's builtin backend cannot open `/dev/input/*`.
    This is expected, not a DOORwayDE bug.
 
 ## Code Style
 
 - **Shell scripts**: Use `shellcheck`, prefer `[[ ]]` over `[ ]`
-- **Nix**: Use `nixfmt` or `alejandra`
+- **Nix**: Use `nixfmt` (`nixfmt flake.nix`)
+- **Python**: Use `ruff` (`ruff check --fix` or `ruff format`)
 - **Configs**: Follow upstream HyDE style for consistency
 - **Comments**: Explain *why*, not *what*
 

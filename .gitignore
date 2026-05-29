@@ -39,6 +39,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Claude Code — local overrides are machine-specific
+.claude/settings.local.json
+
 # Secrets (should never be here)
 *.age
 secrets/
