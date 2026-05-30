@@ -73,6 +73,7 @@ unzip                                                  # extracting zip files
 vim                                                    # terminal text editor
 code                                                   # ide text editor
 nwg-displays                                           # monitor management utility
+lact                                                   # control graphics cards and integrated
 fzf                                                    # Command-line fuzzy finder
 
 # --------------------------------------------------- // Shell
