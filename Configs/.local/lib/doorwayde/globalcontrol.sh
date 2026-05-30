@@ -231,6 +231,16 @@ WALLBASH_DIRS=(
     "/usr/share/doorwayde/wallbash")
 wallbashDirs=("${WALLBASH_DIRS[@]}")
 export DOORWAYDE_THEME DOORWAYDE_THEME_DIR WALLBASH_DIRS wallbashDirs enableWallDcol
+# Rofi's default theme search path includes $XDG_DATA_HOME/rofi/themes/ but
+# not $XDG_DATA_HOME/doorwayde/rofi/themes/, so `-theme style_1` fails to
+# resolve until the upstream wallpaper-cache run mirrors the symlinks. Bridge
+# them on every shell init so rofi works from a clean install.
+if command -v rofi &>/dev/null; then
+    if [[ ! $XDG_DATA_DIRS =~ share/doorwayde ]]; then
+        mkdir -p "$XDG_DATA_HOME/rofi/themes"
+        ln -snf "$XDG_DATA_HOME/doorwayde/rofi/themes"/* "$XDG_DATA_HOME/rofi/themes/"
+    fi
+fi
 if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
     hypr_border="$(hyprctl -j getoption decoration:rounding | jq '.int')"
     hypr_width="$(hyprctl -j getoption general:border_size | jq '.int')"

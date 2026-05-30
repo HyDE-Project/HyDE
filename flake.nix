@@ -38,6 +38,12 @@
         libnotify
         gnome-keyring   # Secret Service API for VSCodium, Firefox, et al.
 
+        # Applets (system tray daemons started by startup.lua)
+        wl-clipboard          # wl-paste for cliphist text/image clipboard watch
+        udiskie               # removable media tray applet
+        networkmanagerapplet  # nm-applet --indicator
+        blueman               # blueman-applet bluetooth tray
+
         # Terminal
         kitty
 

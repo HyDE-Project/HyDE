@@ -38,7 +38,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(vars.start.IDLE_DAEMON)
     hl.exec_cmd(vars.start.BLUE_LIGHT_FILTER_DAEMON)
 
-    hl.exec_cmd(home .. "/.local/bin/doorwayde-shell app -t service doorwayde-config --no-startup")
+    hl.exec_cmd(home .. "/.local/lib/doorwayde/launch-unit.sh -u " .. unt .. "-doorwayde-config.service -t service -- doorwayde-config --no-startup")
 
     -- Cursor: must run inside hyprland.start so hyprctl IPC is reachable
     hl.exec_cmd("hyprctl setcursor " .. vars.CURSOR_THEME .. " " .. tostring(vars.CURSOR_SIZE))

@@ -178,7 +178,7 @@ $DOORWAYDE_HYPRLAND      # Marker variable in hyprland.lua
 
 `env.lua` injects `~/.local/lib/doorwayde/` into PATH for Hyprland child processes.
 `home.sessionPath` in `flake.nix` covers all other session processes (XFCE, TTY).
-The `nix develop` shell also exports this PATH so `doorwayde-shell app` works directly.
+The `nix develop` shell also exports this PATH so `launch-unit.sh` works directly.
 
 ### Adding New Features
 
@@ -280,15 +280,15 @@ If Hyprland starts but shows only a cursor with no bar or wallpaper:
 3. **Check for EROFS crashes in startup scripts** — `waybar.py`, `wallpaper.sh`, etc.
    may crash silently if they try to write inside a whole-dir Nix store symlink
    (`~/.config/waybar/`, etc.). See **Nix Store Workflow** section above.
-   Quick test: `~/.local/bin/doorwayde-shell app -u doorwayde-Hyprland-bar.scope -t scope -- waybar.py --watch`
+   Quick test: `~/.local/lib/doorwayde/launch-unit.sh -u doorwayde-Hyprland-bar.scope -t scope -- waybar.py --watch`
    and check `/tmp/doorwayde-bar-launch.log` for a Python traceback.
 
-4. **Sanity-check app2unit.sh** without logging out (from XFCE Wayland or `nix develop`):
+4. **Sanity-check launch-unit.sh** without logging out (from XFCE Wayland or `nix develop`):
    ```bash
    export PATH="$HOME/.local/lib/doorwayde:$PATH"
    export XDG_SESSION_DESKTOP=Hyprland
    export XDG_CURRENT_DESKTOP=Hyprland
-   doorwayde-shell app -u test.scope -t scope -- echo "ok"
+   launch-unit.sh -u test.scope -t scope -- echo "ok"
    ```
 
 5. **Nested Hyprland** (`start-hyprland` inside a Wayland compositor) — visual checks only.

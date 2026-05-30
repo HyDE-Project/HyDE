@@ -23,7 +23,7 @@ local list_environment = "WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE X
 -- Unit helper: `app -u doorwayde-Hyprland-<name>.<type> -t <type> -- `
 -- Absolute path avoids PATH-resolution failures in Hyprland's exec-once environment.
 local function app(name, type)
-    return home .. "/.local/bin/doorwayde-shell app -u " .. unt .. "-" .. name .. "." .. type .. " -t " .. type .. " -- "
+    return home .. "/.local/lib/doorwayde/launch-unit.sh -u " .. unt .. "-" .. name .. "." .. type .. " -t " .. type .. " -- "
 end
 
 local M = {
