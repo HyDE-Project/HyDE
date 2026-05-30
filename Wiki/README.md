@@ -4,6 +4,12 @@ Long-form documentation for DOORwayDE. The repository [README](../README.md) cov
 
 ## Current Articles
 
+Listed in the order a new reader would consume them:
+
+- [**Introduction**](Introduction.md) — what DOORwayDE is, who it's for, what's in the box, how it relates to upstream HyDE and HALLway, the three load-bearing design ideas.
+- [**Using DOORwayDE with Nix**](Using-DOORwayDE-with-Nix.md) — a 60-second flakes intro, the full flake integration walkthrough, the module options reference, what gets deployed at activation, the manual setup script for non-flake users.
+- [**Interface Tour**](Interface-Tour.md) — what you see after first login: the waybar, rofi menus, dunst notifications, the logout menu, theme switching (with an honest note on the wallbash-lua gap), and where state files live.
+- [**Keybindings Primer**](Keybindings-Primer.md) — a by-use-case tour of the keyboard shortcuts: essentials, window management, workspaces, launchers, screenshots, media, theming, system control, and mouse bindings.
 - [**Troubleshooting Hyprland**](Troubleshooting-Hyprland.md) — diagnosing lua config errors, backend / seat crashes, distinguishing DOORwayDE bugs from HALLway / NixOS bugs, log paths, worked examples.
 
 ## Planned Articles
