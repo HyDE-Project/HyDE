@@ -204,6 +204,31 @@
             };
 
             home.sessionPath = [ "$HOME/.local/bin" "$HOME/.local/lib/doorwayde" ];
+
+            # Declarative replacement for the old waybar.py-driven imperative scope+service
+            # double-wrap. waybar.py --watch still runs as ExecStartPre to do the state-file
+            # / config.jsonc / position.json prep work; systemd owns the waybar lifecycle.
+            # See TODO.md Phase 9 (de-HyDE migration, Pass 2).
+            systemd.user.services.doorwayde-waybar = {
+              Unit = {
+                Description = "DOORwayDE Waybar status bar";
+                Documentation = "https://github.com/Alexays/Waybar";
+                After = [ "graphical-session.target" ];
+                PartOf = [ "graphical-session.target" ];
+              };
+              Service = {
+                Type = "exec";
+                ExitType = "cgroup";
+                Slice = "app-graphical.slice";
+                Restart = "always";
+                RestartSec = 1;
+                ExecStartPre = "%h/.local/lib/doorwayde/waybar.py --watch";
+                ExecStart = "${pkgs.waybar}/bin/waybar";
+              };
+              Install = {
+                WantedBy = [ "graphical-session.target" ];
+              };
+            };
           };
         };
 

@@ -87,7 +87,8 @@ local M = {
         CLIPBOARD_PERSIST        = app("clipboard-persist", "service") .. "wl-clip-persist --clipboard regular",
 
         WALLPAPER      = app("wallpaper", "service") .. "wallpaper.sh --start --global",
-        BAR            = app("bar", "scope") .. "waybar.py --watch",
+        -- BAR: handled declaratively by systemd.user.services.doorwayde-waybar
+        -- (flake.nix). See TODO.md Phase 9 Pass 2 for the migration rationale.
         NOTIFICATIONS  = app("notifications", "service") .. "dunst",
         BATTERY_NOTIFY = app("battery-notify", "service") .. "batterynotify.sh",
 

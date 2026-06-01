@@ -1233,29 +1233,10 @@ def update_style(style_path):
 
 
 def watch_waybar():
-    """Launch Waybar as a persistent systemd service with auto-restart. Exits immediately."""
-    if is_waybar_running_for_current_user():
-        logger.debug(f"Waybar unit already active: {UNIT_NAME}")
-        return
+    # Used as ExecStartPre for systemd.user.services.doorwayde-waybar (flake.nix).
+    # Waybar lifecycle is owned by systemd; this just preps the dynamic config delta.
+    # The state-file / config.jsonc setup already ran in main() before reaching here.
     generate_includes()
-    subprocess.run(
-        [
-            "systemd-run",
-            "--user",
-            f"--unit={UNIT_NAME}",
-            "--slice=app-graphical.slice",
-            "--property=Type=exec",
-            "--property=ExitType=cgroup",
-            "--property=Restart=always",
-            "--property=RestartSec=1",
-            "--property=After=graphical-session.target",
-            "--property=PartOf=graphical-session.target",
-            "--quiet",
-            "--",
-            "waybar",
-        ]
-    )
-    logger.debug(f"Launched {UNIT_NAME} with Restart=always")
 
 
 def main():

@@ -178,7 +178,7 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 ### Pass-by-pass plan
 
 - [x] **Pass 1 — Foundations** — khing hygiene + `includes.json` declarative + roadmap memory. Validates declarative-content pattern before touching the launch path.
-- [ ] **Pass 2 — Waybar declarative service** — add `systemd.user.services.doorwayde-waybar` (preserve `Slice=app.slice`, `CollectMode=inactive-or-failed`, `ExitType=cgroup`, `Restart=always`, `WantedBy=[hyprland-session.target]`); remove `BAR = ...` from `variables.lua` + the `vars.start.BAR` exec from `startup.lua`; gut `watch_waybar()` in `waybar.py`. Highest-visibility unit, smallest blast radius if it works.
+- [x] **Pass 2 — Waybar declarative service** — added `systemd.user.services.doorwayde-waybar` to flake.nix; `waybar.py --watch` repurposed as `ExecStartPre` (preps state-file / config.jsonc / position.json then exits); `waybar` itself runs as `ExecStart`. Removed `BAR` line from `variables.lua` and the `hl.exec_cmd(vars.start.BAR)` from `startup.lua`. `watch_waybar()` gutted to just `generate_includes()`. The double-wrap (`bar.scope` wrapping `bar.service`) is gone — there's now a single declarative `doorwayde-waybar.service`.
 - [ ] **Pass 3 — Low-risk daemons (5 services)** — text-clipboard, image-clipboard, nm-applet, udiskie, blueman-applet. Stateless watchers. Verification: tray icons appear, cliphist accumulates.
 - [ ] **Pass 4 — Notifications + battery + wallpaper (3 services)** — dunst, battery-notify, wallpaper. Wallpaper is trickiest (depends on theme state). Verify theme switching still works after.
 - [ ] **Pass 5 — Idle + blue-light (2 services)** — hypridle, hyprsunset.
@@ -193,6 +193,20 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 - [x] **Khing hygiene** — `dunstrc` (6 lines, `/home/khing/` → `~/`), `cava.sh` (shellcheck directive → `/dev/null`), `wallbash.conf` (drop user path from line 4 comment).
 - [x] **`includes.json` declarative** — flake.nix gains `xdg.configFile."waybar/includes/includes.json".text` generator using `builtins.readDir` over `${configDir}/.local/share/waybar/modules`. Source file at `Configs/.config/waybar/includes/includes.json` deleted. `waybar.py::generate_includes()` rewritten to write only `~/.config/waybar/includes/position.json` (the dynamic position delta). Every layout under `Configs/.local/share/waybar/layouts/` gets `$XDG_CONFIG_HOME/waybar/includes/position.json` added to its include array so the dynamic file gets picked up alongside the static Nix-managed one.
 - [x] **Memory** — audit closed; `feedback_startup_debugging.md` tightened (absolute-paths rule scoped to `hl.exec_cmd()` startup context only — does NOT apply to keybinding dispatch or `setkw`-style metadata; counter-example: `variables.lua:39-42`); new memories for the roadmap pointer and the declarative-includes pattern; `MEMORY.md` index updated.
+
+### Pass 2 — completed work
+
+- [x] **Declarative `systemd.user.services.doorwayde-waybar`** in `flake.nix` with the full property set preserved from the imperative `systemd-run` call: `Type=exec`, `ExitType=cgroup`, `Slice=app-graphical.slice`, `Restart=always`, `RestartSec=1`, `After=PartOf=WantedBy=graphical-session.target`. `ExecStartPre=%h/.local/lib/doorwayde/waybar.py --watch` runs the state-file / `config.jsonc` / `position.json` prep; `ExecStart=${pkgs.waybar}/bin/waybar` runs the actual bar. The `%h` specifier and `${pkgs.waybar}` reference make the unit portable across users and tied to the flake's pinned waybar version.
+- [x] **Removed imperative entry points** — `BAR = app("bar", "scope") .. "waybar.py --watch"` deleted from `Configs/.local/share/hypr/variables.lua`; `hl.exec_cmd(vars.start.BAR)` deleted from `Configs/.local/share/hypr/startup.lua`. Both replaced with `-- BAR: declarative (flake.nix)` breadcrumbs so future readers know where waybar lives now.
+- [x] **`waybar.py::watch_waybar()` gutted** — was 24 lines doing `systemd-run` + duplicate-unit detection; now 4 lines doing just `generate_includes()`. Function kept so `waybar.py --watch` remains a valid invocation (it's the `ExecStartPre` command).
+- [x] **The scope/service double-wrap is gone**: was `doorwayde-Hyprland-bar.scope` (Python supervisor) wrapping `doorwayde-Hyprland-bar.service` (waybar); now a single `doorwayde-waybar.service`.
+
+### Pass 2 — design decisions inherited by future passes
+
+- **Slice choice is per-service, not one-size-fits-all.** The old `launch-unit.sh` defaulted to `app.slice`; the old imperative `systemd-run` inside `waybar.py` used `app-graphical.slice`. The right answer depends on whether the service is genuinely graphical-session-dependent. Bar, notifications, wallpaper, tray applets → `app-graphical.slice`. Clipboard watchers, battery-notify → `app.slice` (no graphical dependency). When designing units in Passes 3-6, check whether the service needs the X/Wayland session for anything beyond `dbus` env import.
+- **`%h` over hardcoded `/home/$user/`.** systemd's `%h` specifier resolves per-user at activation time. Use it everywhere in declarative units that reference home-dir paths.
+- **`${pkgs.X}/bin/X` for ExecStart binaries.** Pins the executable to the flake-evaluated package version and pulls it into the unit's Nix store closure. Don't rely on `home.packages` putting it on PATH and then PATH-resolving — that's the HyDE-runtime pattern we're moving away from.
+- **`ExitType=cgroup` is load-bearing for forking processes.** Waybar, dunst, network-manager-applet all fork helpers. `ExitType=main` would treat "main pid exited but cgroup populated" as failure → restart loop. Preserve `cgroup`.
 
 ### Caveats / risk-control
 

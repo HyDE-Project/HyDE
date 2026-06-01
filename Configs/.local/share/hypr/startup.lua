@@ -22,7 +22,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(vars.start.AUTH_DIALOGUE)
     hl.exec_cmd(vars.start.GNOME_KEYRING)
 
-    hl.exec_cmd(vars.start.BAR)
+    -- BAR: declarative systemd.user.services.doorwayde-waybar (flake.nix)
     hl.exec_cmd(vars.start.NOTIFICATIONS)
     hl.exec_cmd(vars.start.WALLPAPER)
 
