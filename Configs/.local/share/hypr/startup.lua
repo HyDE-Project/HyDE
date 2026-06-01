@@ -26,13 +26,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(vars.start.NOTIFICATIONS)
     hl.exec_cmd(vars.start.WALLPAPER)
 
-    hl.exec_cmd(vars.start.TEXT_CLIPBOARD)
-    hl.exec_cmd(vars.start.IMAGE_CLIPBOARD)
+    -- TEXT_CLIPBOARD, IMAGE_CLIPBOARD, APPLET_*: declarative (flake.nix)
     -- hl.exec_cmd(vars.start.CLIPBOARD_PERSIST)  -- Tends to hang wl-clipboard
-
-    hl.exec_cmd(vars.start.APPLET_NETWORK_MANAGER)
-    hl.exec_cmd(vars.start.APPLET_REMOVABLE_MEDIA)
-    hl.exec_cmd(vars.start.APPLET_BLUETOOTH)
     hl.exec_cmd(vars.start.BATTERY_NOTIFY)
 
     hl.exec_cmd(vars.start.IDLE_DAEMON)

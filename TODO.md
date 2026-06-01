@@ -179,7 +179,7 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 
 - [x] **Pass 1 — Foundations** — khing hygiene + `includes.json` declarative + roadmap memory. Validates declarative-content pattern before touching the launch path.
 - [x] **Pass 2 — Waybar declarative service** — added `systemd.user.services.doorwayde-waybar` to flake.nix; `waybar.py --watch` repurposed as `ExecStartPre` (preps state-file / config.jsonc / position.json then exits); `waybar` itself runs as `ExecStart`. Removed `BAR` line from `variables.lua` and the `hl.exec_cmd(vars.start.BAR)` from `startup.lua`. `watch_waybar()` gutted to just `generate_includes()`. The double-wrap (`bar.scope` wrapping `bar.service`) is gone — there's now a single declarative `doorwayde-waybar.service`.
-- [ ] **Pass 3 — Low-risk daemons (5 services)** — text-clipboard, image-clipboard, nm-applet, udiskie, blueman-applet. Stateless watchers. Verification: tray icons appear, cliphist accumulates.
+- [x] **Pass 3 — Low-risk daemons (5 services)** — text-clipboard, image-clipboard, network-manager-applet, removable-media-applet, bluetooth-applet all declarative via the new `mkDoorwaydeService` helper in `flake.nix`. waybar refactored to use the helper too (the entire "DOORwayDE service template" now lives in one place). Slice corrected from `app.slice` (launch-unit.sh default) to `app-graphical.slice` for all 5 (per the Pass 2 lesson — these are graphical-session-dependent).
 - [ ] **Pass 4 — Notifications + battery + wallpaper (3 services)** — dunst, battery-notify, wallpaper. Wallpaper is trickiest (depends on theme state). Verify theme switching still works after.
 - [ ] **Pass 5 — Idle + blue-light (2 services)** — hypridle, hyprsunset.
 - [ ] **Pass 6 — One-shot setup units (cross-flake)** — `doorwayde-config --no-startup`, `polkitkdeauth.sh`, `resetxdgportal.sh`, dbus+systemd env import as oneshot services. **gnome-keyring**: DOORwayDE removes the runtime daemon launch from `variables.lua:81` + `startup.lua`; HALLway adds `services.gnome.gnome-keyring.enable = true` (system-level NixOS option for PAM auto-unlock). Both changes must land in one rebuild window.
@@ -203,10 +203,24 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 
 ### Pass 2 — design decisions inherited by future passes
 
-- **Slice choice is per-service, not one-size-fits-all.** The old `launch-unit.sh` defaulted to `app.slice`; the old imperative `systemd-run` inside `waybar.py` used `app-graphical.slice`. The right answer depends on whether the service is genuinely graphical-session-dependent. Bar, notifications, wallpaper, tray applets → `app-graphical.slice`. Clipboard watchers, battery-notify → `app.slice` (no graphical dependency). When designing units in Passes 3-6, check whether the service needs the X/Wayland session for anything beyond `dbus` env import.
+- **Slice choice is per-service, not one-size-fits-all.** The old `launch-unit.sh` defaulted to `app.slice`; the old imperative `systemd-run` inside `waybar.py` used `app-graphical.slice`. The right answer depends on whether the service is genuinely graphical-session-dependent. Bar, notifications, wallpaper, tray applets → `app-graphical.slice`. Clipboard watchers, battery-notify → `app.slice` (no graphical dependency). When designing units in Passes 3-6, check whether the service needs the X/Wayland session for anything beyond `dbus` env import. *(Refined in Pass 3: clipboard watchers are graphical-session-dependent too — they consume Wayland clipboard data. Battery-notify and idle daemons are the remaining `app.slice` candidates.)*
 - **`%h` over hardcoded `/home/$user/`.** systemd's `%h` specifier resolves per-user at activation time. Use it everywhere in declarative units that reference home-dir paths.
 - **`${pkgs.X}/bin/X` for ExecStart binaries.** Pins the executable to the flake-evaluated package version and pulls it into the unit's Nix store closure. Don't rely on `home.packages` putting it on PATH and then PATH-resolving — that's the HyDE-runtime pattern we're moving away from.
 - **`ExitType=cgroup` is load-bearing for forking processes.** Waybar, dunst, network-manager-applet all fork helpers. `ExitType=main` would treat "main pid exited but cgroup populated" as failure → restart loop. Preserve `cgroup`.
+
+### Pass 3 — completed work
+
+- [x] **`mkDoorwaydeService` helper** in `flake.nix`'s `let` block. Takes `{ description, execStart, execStartPre ? null, documentation ? null }`. Emits the full service definition with all Pass 2 design properties baked in (Type, ExitType, Slice, Restart, RestartSec, After, PartOf, WantedBy). Uses `lib.optionalAttrs` to omit `ExecStartPre`/`Documentation` when not supplied.
+- [x] **5 new declarative services** via the helper: `doorwayde-text-clipboard`, `doorwayde-image-clipboard`, `doorwayde-network-manager-applet`, `doorwayde-removable-media-applet`, `doorwayde-bluetooth-applet`. ExecStart paths all use `${pkgs.X}/bin/X` form so the unit closure pins the binary versions.
+- [x] **Existing `doorwayde-waybar` refactored** to use `mkDoorwaydeService` (was ~20 inline lines, now 5). Single source of truth for the service template.
+- [x] **Removed imperative entries** — `TEXT_CLIPBOARD`, `IMAGE_CLIPBOARD`, `APPLET_NETWORK_MANAGER`, `APPLET_REMOVABLE_MEDIA`, `APPLET_BLUETOOTH` deleted from `variables.lua`'s `start` table; their `hl.exec_cmd` calls deleted from `startup.lua`. The disabled `CLIPBOARD_PERSIST` line stayed (not migrated; commented out in startup anyway).
+- [x] **Hyprland exec-once chain shrunk further** — was 6 lines of `hl.exec_cmd(vars.start.X)` for the 5 daemons (plus battery-notify); now just `BATTERY_NOTIFY` remains in that block.
+
+### Pass 3 — design decisions inherited by future passes
+
+- **DRY threshold met at the helper.** Pre-Pass 3 there was 1 declarative service (waybar); Pass 3 added 5 more. Per CLAUDE.md "three similar lines is better than a premature abstraction" — once 6 services share the template, the abstraction earned its keep. Future passes (4, 5, 6) just call `mkDoorwaydeService` with description + execStart.
+- **`lib.optionalAttrs` for optional unit properties.** When a service doesn't need `ExecStartPre` or `Documentation`, omit the attribute entirely rather than passing `null` or empty strings. systemd treats absent properties differently from empty ones (especially `Documentation`, which systemd parses for `systemctl status` output). Use `lib.optionalAttrs (cond) { Key = val; }`.
+- **`wl-paste --watch <cmd>` works with absolute Nix store paths.** wl-paste `exec`s the command argument; passing `${pkgs.cliphist}/bin/cliphist` works regardless of the service's runtime PATH. Same pattern applies to anything `xargs`/`exec`-style that takes a command as an argument.
 
 ### Caveats / risk-control
 

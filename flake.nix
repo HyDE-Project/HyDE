@@ -79,6 +79,37 @@
         let
           cfg = config.doorwayde;
           configDir = "${self}/Configs";
+
+          # Shared template for DOORwayDE systemd user services. All graphical-
+          # session-dependent services use Type=exec, ExitType=cgroup, the
+          # app-graphical.slice, and the graphical-session.target lifecycle.
+          # Callers supply description + execStart (and optionally execStartPre,
+          # documentation). See TODO.md Phase 9 Pass 2 design decisions.
+          mkDoorwaydeService = {
+            description, execStart,
+            execStartPre ? null, documentation ? null,
+          }: {
+            Unit = {
+              Description = description;
+              After = [ "graphical-session.target" ];
+              PartOf = [ "graphical-session.target" ];
+            } // lib.optionalAttrs (documentation != null) {
+              Documentation = documentation;
+            };
+            Service = {
+              Type = "exec";
+              ExitType = "cgroup";
+              Slice = "app-graphical.slice";
+              Restart = "always";
+              RestartSec = 1;
+              ExecStart = execStart;
+            } // lib.optionalAttrs (execStartPre != null) {
+              ExecStartPre = execStartPre;
+            };
+            Install = {
+              WantedBy = [ "graphical-session.target" ];
+            };
+          };
         in {
           options.doorwayde = {
             enable = lib.mkEnableOption "DOORwayDE Hyprland configuration";
@@ -205,28 +236,42 @@
 
             home.sessionPath = [ "$HOME/.local/bin" "$HOME/.local/lib/doorwayde" ];
 
-            # Declarative replacement for the old waybar.py-driven imperative scope+service
-            # double-wrap. waybar.py --watch still runs as ExecStartPre to do the state-file
-            # / config.jsonc / position.json prep work; systemd owns the waybar lifecycle.
-            # See TODO.md Phase 9 (de-HyDE migration, Pass 2).
-            systemd.user.services.doorwayde-waybar = {
-              Unit = {
-                Description = "DOORwayDE Waybar status bar";
-                Documentation = "https://github.com/Alexays/Waybar";
-                After = [ "graphical-session.target" ];
-                PartOf = [ "graphical-session.target" ];
+            # Declarative replacement for the HyDE runtime-imperative pattern where
+            # launch-unit.sh + waybar.py + variables.lua's `app()` helper birthed
+            # systemd units at session start. See TODO.md Phase 9.
+            systemd.user.services = {
+              doorwayde-waybar = mkDoorwaydeService {
+                description = "DOORwayDE Waybar status bar";
+                documentation = "https://github.com/Alexays/Waybar";
+                # ExecStartPre handles state-file / config.jsonc / position.json prep
+                # via waybar.py's gutted --watch mode. ExecStart runs waybar itself.
+                execStartPre = "%h/.local/lib/doorwayde/waybar.py --watch";
+                execStart = "${pkgs.waybar}/bin/waybar";
               };
-              Service = {
-                Type = "exec";
-                ExitType = "cgroup";
-                Slice = "app-graphical.slice";
-                Restart = "always";
-                RestartSec = 1;
-                ExecStartPre = "%h/.local/lib/doorwayde/waybar.py --watch";
-                ExecStart = "${pkgs.waybar}/bin/waybar";
+
+              doorwayde-text-clipboard = mkDoorwaydeService {
+                description = "DOORwayDE clipboard text watcher (cliphist)";
+                execStart = "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store";
               };
-              Install = {
-                WantedBy = [ "graphical-session.target" ];
+
+              doorwayde-image-clipboard = mkDoorwaydeService {
+                description = "DOORwayDE clipboard image watcher (cliphist)";
+                execStart = "${pkgs.wl-clipboard}/bin/wl-paste --type image --watch ${pkgs.cliphist}/bin/cliphist store";
+              };
+
+              doorwayde-network-manager-applet = mkDoorwaydeService {
+                description = "DOORwayDE NetworkManager tray applet";
+                execStart = "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator";
+              };
+
+              doorwayde-removable-media-applet = mkDoorwaydeService {
+                description = "DOORwayDE removable-media tray applet (udiskie)";
+                execStart = "${pkgs.udiskie}/bin/udiskie --no-automount --smart-tray";
+              };
+
+              doorwayde-bluetooth-applet = mkDoorwaydeService {
+                description = "DOORwayDE Bluetooth tray applet (blueman)";
+                execStart = "${pkgs.blueman}/bin/blueman-applet";
               };
             };
           };

@@ -82,8 +82,8 @@ local M = {
 
         IDLE_DAEMON              = app("idle", "service") .. "hypridle",
         BLUE_LIGHT_FILTER_DAEMON = app("blue-light-filter", "service") .. "hyprsunset",
-        TEXT_CLIPBOARD           = app("text-clipboard", "service") .. "wl-paste --type text --watch cliphist store",
-        IMAGE_CLIPBOARD          = app("image-clipboard", "service") .. "wl-paste --type image --watch cliphist store",
+        -- TEXT_CLIPBOARD, IMAGE_CLIPBOARD: declarative
+        -- (systemd.user.services.doorwayde-{text,image}-clipboard in flake.nix)
         CLIPBOARD_PERSIST        = app("clipboard-persist", "service") .. "wl-clip-persist --clipboard regular",
 
         WALLPAPER      = app("wallpaper", "service") .. "wallpaper.sh --start --global",
@@ -92,9 +92,8 @@ local M = {
         NOTIFICATIONS  = app("notifications", "service") .. "dunst",
         BATTERY_NOTIFY = app("battery-notify", "service") .. "batterynotify.sh",
 
-        APPLET_NETWORK_MANAGER  = app("network-manager-applet", "service") .. "nm-applet --indicator",
-        APPLET_REMOVABLE_MEDIA  = app("removable-media-applet", "service") .. "udiskie --no-automount --smart-tray",
-        APPLET_BLUETOOTH        = app("bluetooth-applet", "service") .. "blueman-applet",
+        -- APPLET_NETWORK_MANAGER, APPLET_REMOVABLE_MEDIA, APPLET_BLUETOOTH:
+        -- declarative (systemd.user.services.doorwayde-{network-manager,removable-media,bluetooth}-applet)
     },
 }
 
