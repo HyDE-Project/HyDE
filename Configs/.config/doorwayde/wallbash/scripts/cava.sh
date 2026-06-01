@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# shellcheck source=/home/khing/.local/bin/doorwayde-shell
+# shellcheck source=/dev/null
 # shellcheck disable=SC1091
 if ! source "$(which doorwayde-shell)"; then
     echo "[wallbash] code :: Error: doorwayde-shell not found."

@@ -134,10 +134,10 @@
               "hypr/themes".source          = "${configDir}/.config/hypr/themes";
               "hypr/workflows".source       = "${configDir}/.config/hypr/workflows";
               "hypr/hyprlock".source        = "${configDir}/.config/hypr/hyprlock";
-              # ~/.config/waybar/ is NOT Nix-managed — waybar.py creates and owns it at
-              # runtime (config.jsonc, style.css, includes/, etc. are all session state).
-              # Read-only layout/style/module templates live in ~/.local/share/waybar/
-              # (managed via home.file below), which waybar.py reads as its source.
+              # ~/.config/waybar/ is mostly runtime-owned by waybar.py (config.jsonc,
+              # style.css, theme.css, global.css, user-style.css = theme/session state).
+              # The module-include list is static and lifted to Nix-eval-time below.
+              # Template sources (layouts/styles/modules) live in ~/.local/share/waybar/.
               "rofi".source = "${configDir}/.config/rofi";
               "dunst".source = "${configDir}/.config/dunst";
               "doorwayde".source = "${configDir}/.config/doorwayde";
@@ -167,6 +167,21 @@
                     },
                 })
               '';
+
+              # Waybar module-include list: enumerated at Nix-eval time from the
+              # template modules dir. Replaces waybar.py's runtime generate_includes()
+              # glob. The dynamic position state lives in includes/position.json,
+              # which waybar.py still writes; layout files include both.
+              "waybar/includes/includes.json".text = let
+                modulesDir = "${configDir}/.local/share/waybar/modules";
+                isModule = name: type:
+                  type == "regular"
+                  && (lib.hasSuffix ".json" name || lib.hasSuffix ".jsonc" name);
+                moduleFiles = lib.sort (a: b: a < b)
+                  (lib.attrNames (lib.filterAttrs isModule (builtins.readDir modulesDir)));
+              in builtins.toJSON {
+                include = map (m: "${modulesDir}/${m}") moduleFiles;
+              };
             };
 
             home.file = {

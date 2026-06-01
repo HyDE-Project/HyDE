@@ -146,6 +146,61 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 
 ---
 
+## Phase 9: De-HyDE migration (runtime → declarative)
+
+> **Goal**: Now that Hyprland-on-NixOS is working, systematically replace HyDE's runtime-imperative patterns (Python/Bash scripts owning files and systemd units at session start) with declarative NixOS equivalents (flake.nix owns files via `xdg.configFile.X.text` and units via `systemd.user.services.X`).
+>
+> **Approach**: Small bursts, each leaves a working desktop. Rebuild + smoke-test between passes. Roadmap captured durably so work survives across sessions.
+
+### Inventory: runtime-born systemd units (born by `launch-unit.sh` → `systemd-run --user`)
+
+| Unit | Type | Command | Pass |
+|---|---|---|---|
+| `doorwayde-Hyprland-bar.scope` | scope | `waybar.py --watch` | 2 |
+| `doorwayde-Hyprland-notifications.service` | service | `dunst` | 4 |
+| `doorwayde-Hyprland-wallpaper.service` | service | `wallpaper.sh --start --global` | 4 |
+| `doorwayde-Hyprland-text-clipboard.service` | service | `wl-paste --type text --watch cliphist store` | 3 |
+| `doorwayde-Hyprland-image-clipboard.service` | service | `wl-paste --type image --watch cliphist store` | 3 |
+| `doorwayde-Hyprland-clipboard-persist.service` | service | `wl-clip-persist --clipboard regular` | 3 |
+| `doorwayde-Hyprland-network-manager-applet.service` | service | `nm-applet --indicator` | 3 |
+| `doorwayde-Hyprland-removable-media-applet.service` | service | `udiskie --no-automount --smart-tray` | 3 |
+| `doorwayde-Hyprland-bluetooth-applet.service` | service | `blueman-applet` | 3 |
+| `doorwayde-Hyprland-battery-notify.service` | service | `batterynotify.sh` | 4 |
+| `doorwayde-Hyprland-idle.service` | service | `hypridle` | 5 |
+| `doorwayde-Hyprland-blue-light-filter.service` | service | `hyprsunset` | 5 |
+| `doorwayde-Hyprland-doorwayde-config.service` | service | `doorwayde-config --no-startup` | 6 |
+| (auth dialogue) | service | `polkitkdeauth.sh` | 6 |
+| (XDG portal reset) | exec | `doorwayde-shell resetxdgportal.sh` | 6 |
+| (gnome-keyring) | daemon | `gnome-keyring-daemon --daemonize` | 6 (cross-flake) |
+| (dbus + systemd env import) | exec | `dbus-update-activation-environment` + `systemctl import-environment` | 6 |
+| (cursor) | exec | `hyprctl setcursor` | stays (needs Hyprland IPC) |
+
+### Pass-by-pass plan
+
+- [x] **Pass 1 — Foundations** — khing hygiene + `includes.json` declarative + roadmap memory. Validates declarative-content pattern before touching the launch path.
+- [ ] **Pass 2 — Waybar declarative service** — add `systemd.user.services.doorwayde-waybar` (preserve `Slice=app.slice`, `CollectMode=inactive-or-failed`, `ExitType=cgroup`, `Restart=always`, `WantedBy=[hyprland-session.target]`); remove `BAR = ...` from `variables.lua` + the `vars.start.BAR` exec from `startup.lua`; gut `watch_waybar()` in `waybar.py`. Highest-visibility unit, smallest blast radius if it works.
+- [ ] **Pass 3 — Low-risk daemons (5 services)** — text-clipboard, image-clipboard, nm-applet, udiskie, blueman-applet. Stateless watchers. Verification: tray icons appear, cliphist accumulates.
+- [ ] **Pass 4 — Notifications + battery + wallpaper (3 services)** — dunst, battery-notify, wallpaper. Wallpaper is trickiest (depends on theme state). Verify theme switching still works after.
+- [ ] **Pass 5 — Idle + blue-light (2 services)** — hypridle, hyprsunset.
+- [ ] **Pass 6 — One-shot setup units (cross-flake)** — `doorwayde-config --no-startup`, `polkitkdeauth.sh`, `resetxdgportal.sh`, dbus+systemd env import as oneshot services. **gnome-keyring**: DOORwayDE removes the runtime daemon launch from `variables.lua:81` + `startup.lua`; HALLway adds `services.gnome.gnome-keyring.enable = true` (system-level NixOS option for PAM auto-unlock). Both changes must land in one rebuild window.
+- [ ] **Pass 7 — Delete `launch-unit.sh` and `app()` helper** — once all units are declarative, the wrapper has zero callers. Remove `Configs/.local/lib/doorwayde/launch-unit.sh`, the `app()` function, and the `start` table from `variables.lua`. Strip `startup.lua`'s `hl.on("hyprland.start", ...)` to just `hyprctl setcursor` (the IPC-dependent call that genuinely needs to run from Hyprland's lifecycle).
+- [ ] **Pass 8 — waybar.py runtime writes audit + lift** — audit each runtime write (`config.jsonc`, `style.css`, `theme.css`, `global.css`, `user-style.css`, `staterc`). Categorize lift-able (Nix-eval-time) vs runtime (theme-state-derived). Result: waybar.py shrinks to theme-delta-only responsibilities.
+- [ ] **Pass 9 — `doorwayde-shell` audit** — document current Nix-store-resolving wrapper shape; identify load-bearing vs vestigial HyDE inheritance. Mostly documentation pass.
+- [ ] **Pass 10 — Final sweep** — update README + CLAUDE.md to reflect declarative model; remove vestigial HyDE references in docs; archive the Phase 9 entry.
+
+### Pass 1 — completed work
+
+- [x] **Khing hygiene** — `dunstrc` (6 lines, `/home/khing/` → `~/`), `cava.sh` (shellcheck directive → `/dev/null`), `wallbash.conf` (drop user path from line 4 comment).
+- [x] **`includes.json` declarative** — flake.nix gains `xdg.configFile."waybar/includes/includes.json".text` generator using `builtins.readDir` over `${configDir}/.local/share/waybar/modules`. Source file at `Configs/.config/waybar/includes/includes.json` deleted. `waybar.py::generate_includes()` rewritten to write only `~/.config/waybar/includes/position.json` (the dynamic position delta). Every layout under `Configs/.local/share/waybar/layouts/` gets `$XDG_CONFIG_HOME/waybar/includes/position.json` added to its include array so the dynamic file gets picked up alongside the static Nix-managed one.
+- [x] **Memory** — audit closed; `feedback_startup_debugging.md` tightened (absolute-paths rule scoped to `hl.exec_cmd()` startup context only — does NOT apply to keybinding dispatch or `setkw`-style metadata; counter-example: `variables.lua:39-42`); new memories for the roadmap pointer and the declarative-includes pattern; `MEMORY.md` index updated.
+
+### Caveats / risk-control
+
+- The desktop must be left working between passes. Any pass that breaks it gets reverted, root-caused, and re-attempted with tighter scope. Hyprland working is the load-bearing baseline.
+- DOORwayDE → HALLway deploy is non-negotiable: `git commit && git push` in DOORwayDE *first*, then `nix flake update doorwayde` in HALLway, then `sudo nixos-rebuild switch`. Local DOORwayDE changes are invisible to the Nix evaluator. (See `feedback-flake-deploy-workflow` memory.)
+
+---
+
 ## Files to Keep as hyprlang
 
 These tools have their own config format (not Hyprland's):

@@ -1185,38 +1185,15 @@ def update_border_radius():
 
 
 def generate_includes():
-    includes_file = os.path.join(str(xdg_config_home()), "waybar", "includes", "includes.json")
-
-    ensure_directory_exists(includes_file)
-
-    if os.path.exists(includes_file):
-        with open(includes_file, "r") as file:
-            includes_data = json.load(file)
-    else:
-        includes_data = {"include": []}
-
-    includes = []
-    for directory in MODULE_DIRS:
-        if not os.path.isdir(directory):
-            logger.debug(f"Directory '{directory}' does not exist, skipping...")
-            continue
-        includes.extend(glob.glob(os.path.join(directory, "*.json")))
-        includes.extend(glob.glob(os.path.join(directory, "*.jsonc")))
-
-    includes_data["include"] = list(dict.fromkeys(includes))
-
-    position = get_config_value("WAYBAR_POSITION")
-    if position:
-        position = position.strip().strip('"').strip("'")
-    else:
-        position = "top"
-    includes_data["position"] = position
-
-    with open(includes_file, "w") as file:
-        json.dump(includes_data, file, indent=4)
-    logger.debug(
-        f"Successfully updated '{includes_file}' with {len(includes)} entries and position '{position}'."
-    )
+    # Module list is Nix-eval-time (see flake.nix xdg.configFile."waybar/includes/includes.json").
+    # This function now writes only the dynamic position delta to a sibling file;
+    # layouts include both files.
+    position_file = os.path.join(str(xdg_config_home()), "waybar", "includes", "position.json")
+    ensure_directory_exists(position_file)
+    position = (get_config_value("WAYBAR_POSITION") or "top").strip().strip('"').strip("'")
+    with open(position_file, "w") as file:
+        json.dump({"position": position}, file, indent=4)
+    logger.debug(f"Wrote position '{position}' to '{position_file}'.")
 
 
 def update_config(config_path):

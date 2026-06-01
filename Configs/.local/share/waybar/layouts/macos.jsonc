@@ -6,7 +6,7 @@
   "spacing": 10,
   "border-size": 1,
   "padding": 1,
-  "include": ["$XDG_CONFIG_HOME/waybar/includes/includes.json"],
+  "include": ["$XDG_CONFIG_HOME/waybar/includes/includes.json", "$XDG_CONFIG_HOME/waybar/includes/position.json"],
   // Modules configuration
   "modules-left": [
     "custom/launcher",
