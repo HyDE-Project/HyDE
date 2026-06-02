@@ -182,7 +182,7 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 - [x] **Pass 3 — Low-risk daemons (5 services)** — text-clipboard, image-clipboard, network-manager-applet, removable-media-applet, bluetooth-applet all declarative via the new `mkDoorwaydeService` helper in `flake.nix`. waybar refactored to use the helper too (the entire "DOORwayDE service template" now lives in one place). Slice corrected from `app.slice` (launch-unit.sh default) to `app-graphical.slice` for all 5 (per the Pass 2 lesson — these are graphical-session-dependent).
 - [x] **Pass 4 — Notifications + battery + wallpaper (3 services)** — `doorwayde-notifications` (dunst), `doorwayde-battery-notify` (batterynotify.sh), `doorwayde-wallpaper` (wallpaper.sh --start --global) all declarative via `mkDoorwaydeService`. battery-notify reclassified into `app-graphical.slice` (Pass 2/3 reflection was wrong to call it non-graphical — it routes through notify-send → dunst). dunst uses `${pkgs.dunst}/bin/dunst`; the two DOORwayDE scripts use `%h/.local/lib/doorwayde/*.sh` absolute paths.
 - [x] **Pass 5 — Idle + blue-light (2 services)** — `doorwayde-idle` (hypridle), `doorwayde-blue-light-filter` (hyprsunset). Cleanest pass yet: no scripts, no PATH dependencies, vanilla daemons with `${pkgs.X}/bin/X` ExecStart. Both `app-graphical.slice` via `mkDoorwaydeService` defaults. **Latent bug flagged for Pass 6**: `startup.lua:30` references `unt` which is `local` in variables.lua (not exported), so the doorwayde-config service unit name has been `nil-doorwayde-config.service` at runtime. Pass 6's declarative-oneshot migration removes this line entirely.
-- [ ] **Pass 6 — One-shot setup units (cross-flake)** — `doorwayde-config --no-startup`, `polkitkdeauth.sh`, `resetxdgportal.sh`, dbus+systemd env import as oneshot services. **gnome-keyring**: DOORwayDE removes the runtime daemon launch from `variables.lua:81` + `startup.lua`; HALLway adds `services.gnome.gnome-keyring.enable = true` (system-level NixOS option for PAM auto-unlock). Both changes must land in one rebuild window.
+- [x] **Pass 6 — Session-bootstrap units (declarative oneshots + polkit daemon)** — 3 new units: `doorwayde-xdg-portal-reset` (oneshot, restarts xdg-desktop-portal services via `systemctl --user restart`), `doorwayde-polkit-auth` (daemon, `${pkgs.polkit_gnome}/libexec/...`), `doorwayde-config-bootstrap` (oneshot, runs `doorwayde-config --no-startup`). New `mkDoorwaydeOneshot` helper sibling to `mkDoorwaydeService`. `polkit_gnome` added to `doorwaydeDeps`. Latent `unt`-undefined bug from Pass 5 deleted with its containing line. **gnome-keyring deferred** to a future cross-flake step (see end of Phase 9). **Env imports stay in startup.lua** because UWSM (which HALLway uses) also performs them — they're defensive duplication; can be removed in a future cleanup pass after UWSM-only confidence builds.
 - [ ] **Pass 7 — Delete `launch-unit.sh` and `app()` helper** — once all units are declarative, the wrapper has zero callers. Remove `Configs/.local/lib/doorwayde/launch-unit.sh`, the `app()` function, and the `start` table from `variables.lua`. Strip `startup.lua`'s `hl.on("hyprland.start", ...)` to just `hyprctl setcursor` (the IPC-dependent call that genuinely needs to run from Hyprland's lifecycle).
 - [ ] **Pass 8 — waybar.py runtime writes audit + lift** — audit each runtime write (`config.jsonc`, `style.css`, `theme.css`, `global.css`, `user-style.css`, `staterc`). Categorize lift-able (Nix-eval-time) vs runtime (theme-state-derived). Result: waybar.py shrinks to theme-delta-only responsibilities.
 - [ ] **Pass 9 — `doorwayde-shell` audit** — document current Nix-store-resolving wrapper shape; identify load-bearing vs vestigial HyDE inheritance. Mostly documentation pass.
@@ -232,7 +232,46 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 ### Pass 4 — design decisions inherited by future passes
 
 - **"Graphical-session-dependent" includes anything that talks to a graphical-session-only daemon.** battery-notify never opens a window, but it sends notifications through dbus to dunst, which is graphical-session-only. The dependency is transitive. Same logic applies to anything that uses `notify-send`, `dbus-send` (to UI services), `xdg-open`, etc.
-- **PATH propagation chain is load-bearing fragility.** Both `batterynotify.sh` (sources globalcontrol.sh) and `wallpaper.sh` (does `eval $(doorwayde-shell init)`) require `~/.local/bin` on PATH. The current chain: `env.lua` sets Hyprland-child PATH → `systemctl --user import-environment PATH WAYLAND_DISPLAY XDG_*` (from `SYSTEMD_SHARE_PICKER`, line 19 of startup.lua) propagates it to the user manager → declarative services inherit it. If the env-import line ever silently fails or is removed, all post-Pass-3 services break. **Pass 6 robustness target**: convert the env-import into a declarative `Type=oneshot` service that `graphical-session.target` depends on, so the propagation isn't a side-effect of a fire-and-forget exec_cmd.
+- **PATH propagation chain is load-bearing fragility.** Both `batterynotify.sh` (sources globalcontrol.sh) and `wallpaper.sh` (does `eval $(doorwayde-shell init)`) require `~/.local/bin` on PATH. The current chain: `env.lua` sets Hyprland-child PATH → `systemctl --user import-environment PATH WAYLAND_DISPLAY XDG_*` (from `SYSTEMD_SHARE_PICKER`, line 19 of startup.lua) propagates it to the user manager → declarative services inherit it. **Updated 2026-06-02 (Pass 6)**: HALLway uses UWSM to launch Hyprland. UWSM activates `graphical-session.target` from the session script *with Hyprland's env*, so it already performs env-import before Hyprland starts. The `SYSTEMD_SHARE_PICKER` call in startup.lua is now defensive duplication, not load-bearing. Future cleanup pass can remove it once UWSM-only confidence is high.
+
+### Pass 6 — completed work
+
+- [x] **`mkDoorwaydeOneshot` helper** in flake.nix's `let` block — sibling to `mkDoorwaydeService`. `Type=oneshot`, `RemainAfterExit=true` (so graphical-session.target sees the unit as "active" after completion), `After/PartOf/WantedBy=graphical-session.target`, optional extra `after` deps. Used by all 2 new oneshots.
+- [x] **3 new declarative units**: `doorwayde-polkit-auth` (daemon, `${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1` — replaces the polkitkdeauth.sh path-iteration script), `doorwayde-xdg-portal-reset` (oneshot, restarts xdg-desktop-portal-hyprland.service + xdg-desktop-portal.service after env propagation), `doorwayde-config-bootstrap` (oneshot, runs `~/.local/lib/doorwayde/doorwayde-config --no-startup`).
+- [x] **`polkit_gnome` added to `doorwaydeDeps`** for closure self-containment. Previously it was being pulled in transitively from HALLway's system packages — now DOORwayDE declares its own.
+- [x] **Removed imperative entries**: `DBUS_SHARE_PICKER` (redundant with `dbus-update-activation-environment --all` on the line above), `XDG_PORTAL_RESET`, `AUTH_DIALOGUE` deleted from variables.lua. Their `hl.exec_cmd` calls and the broken `unt`-referencing `launch-unit.sh doorwayde-config` line deleted from startup.lua. The `unt` latent bug from Pass 5 is resolved by deletion.
+- [x] **`hl.on("hyprland.start", ...)` block now contains only 4 calls**: the broad `dbus-update-activation-environment --systemd --all`, `SYSTEMD_SHARE_PICKER` (env imports — can't be declarative), `GNOME_KEYRING` (cross-flake deferred), and `hyprctl setcursor`. From 13 lines down to 4 effective ones.
+
+### Pass 6 — design decisions inherited by future passes
+
+- **HALLway already uses UWSM.** This was discovered mid-Pass-6 and changes the picture: UWSM activates `graphical-session.target` from the session script (with Hyprland's env), which means it ALREADY performs `dbus-update-activation-environment` and `systemctl --user import-environment` before Hyprland is even running. The env-import calls in startup.lua are now **defensive duplication, not load-bearing**. They were left in place for this pass to avoid an aggressive change in a chunky migration — a future cleanup pass can remove them once we're confident UWSM is reliably the session entry point. This also explains why all prior passes' declarative `WantedBy=graphical-session.target` services started cleanly: UWSM is the missing piece that makes the target lifecycle work correctly.
+- **`After=graphical-session.target` for oneshots** (not `Before=`). The env imports happen during target activation; oneshots that depend on them run after the target is "active." `Before=` would deadlock with `WantedBy=`. The current pattern is correct.
+- **`%h/.local/lib/doorwayde/*` for repo-shipped scripts/binaries**; `${pkgs.X}/bin/X` for nixpkgs-provided binaries. Both forms appear in unit ExecStart lines; the distinction is "is this our code or upstream code?"
+
+### Pass 6 → 7 deferred: gnome-keyring cross-flake migration
+
+**Status**: DOORwayDE-side keyring launch is still imperative (variables.lua + startup.lua) because the declarative replacement requires a coordinated HALLway change.
+
+**HALLway-side change needed** (add to HALLway's NixOS config):
+
+```nix
+{
+  services.gnome.gnome-keyring.enable = true;
+  # PAM auto-unlock through greetd (or whichever DM you use):
+  security.pam.services.greetd.enableGnomeKeyring = true;
+  # If using TUI login as well:
+  security.pam.services.login.enableGnomeKeyring = true;
+}
+```
+
+This enables the system-level gnome-keyring user service AND wires it into PAM so the keyring unlocks with your login password (functional improvement, not just a refactor — the current daemonized-launch pattern starts the keyring locked).
+
+**Once HALLway has this**, DOORwayDE-side cleanup (~Pass 6.5 or fold into Pass 7):
+1. Remove `GNOME_KEYRING = ...` line from `variables.lua`
+2. Remove `hl.exec_cmd(vars.start.GNOME_KEYRING)` from `startup.lua`
+3. Optionally remove `gnome-keyring` from `doorwaydeDeps` (HALLway provides it system-level)
+
+**Critical**: HALLway change must land FIRST. Otherwise there's a window where keyring isn't running.
 
 ### Caveats / risk-control
 

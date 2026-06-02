@@ -13,22 +13,21 @@ local home = os.getenv("HOME")
 local vars = require("variables")
 
 hl.on("hyprland.start", function()
-    -- Portal/dbus handoff must run before any GUI client opens
+    -- Env propagation: defensive duplication. UWSM (HALLway's session entry)
+    -- already does this before Hyprland starts; keeping these calls covers
+    -- non-UWSM session entry (TTY login, debugging). See TODO.md Pass 6.
     hl.exec_cmd("dbus-update-activation-environment --systemd --all")
-    hl.exec_cmd(vars.start.DBUS_SHARE_PICKER)
     hl.exec_cmd(vars.start.SYSTEMD_SHARE_PICKER)
-    hl.exec_cmd(vars.start.XDG_PORTAL_RESET)
 
-    hl.exec_cmd(vars.start.AUTH_DIALOGUE)
+    -- gnome-keyring cross-flake migration deferred — HALLway must provide
+    -- services.gnome.gnome-keyring.enable for PAM auto-unlock before this
+    -- runtime daemon launch can be removed safely.
     hl.exec_cmd(vars.start.GNOME_KEYRING)
 
-    -- All daemons declarative (flake.nix systemd.user.services.*) — Passes 2-5.
-    -- Remaining hl.exec_cmd calls in this block are for Hyprland-IPC-dependent
-    -- bootstrapping that can't easily be Pass-6'd into a systemd oneshot.
-    -- hl.exec_cmd(vars.start.CLIPBOARD_PERSIST)  -- Tends to hang wl-clipboard
-
-    hl.exec_cmd(home .. "/.local/lib/doorwayde/launch-unit.sh -u " .. unt .. "-doorwayde-config.service -t service -- doorwayde-config --no-startup")
-
-    -- Cursor: must run inside hyprland.start so hyprctl IPC is reachable
+    -- Cursor: must run inside hyprland.start so hyprctl IPC is reachable.
     hl.exec_cmd("hyprctl setcursor " .. vars.CURSOR_THEME .. " " .. tostring(vars.CURSOR_SIZE))
+
+    -- Everything else (bar, daemons, applets, polkit, portal-reset, config
+    -- bootstrap, idle, blue-light, etc.) is declarative — see flake.nix
+    -- systemd.user.services.* and TODO.md Phase 9.
 end)

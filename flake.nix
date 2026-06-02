@@ -37,6 +37,7 @@
         pamixer
         libnotify
         gnome-keyring   # Secret Service API for VSCodium, Firefox, et al.
+        polkit_gnome    # Polkit auth agent (declarative in Pass 6)
 
         # Applets (system tray daemons started by startup.lua)
         wl-clipboard          # wl-paste for cliphist text/image clipboard watch
@@ -80,7 +81,7 @@
           cfg = config.doorwayde;
           configDir = "${self}/Configs";
 
-          # Shared template for DOORwayDE systemd user services. All graphical-
+          # Shared template for DOORwayDE long-running services. All graphical-
           # session-dependent services use Type=exec, ExitType=cgroup, the
           # app-graphical.slice, and the graphical-session.target lifecycle.
           # Callers supply description + execStart (and optionally execStartPre,
@@ -105,6 +106,29 @@
               ExecStart = execStart;
             } // lib.optionalAttrs (execStartPre != null) {
               ExecStartPre = execStartPre;
+            };
+            Install = {
+              WantedBy = [ "graphical-session.target" ];
+            };
+          };
+
+          # Oneshot variant for session-bootstrap actions: portal restart,
+          # config initialization, etc. RemainAfterExit=true so graphical-
+          # session.target sees them as "active" not "exited" after completion.
+          mkDoorwaydeOneshot = {
+            description, execStart, after ? [], documentation ? null,
+          }: {
+            Unit = {
+              Description = description;
+              After = [ "graphical-session.target" ] ++ after;
+              PartOf = [ "graphical-session.target" ];
+            } // lib.optionalAttrs (documentation != null) {
+              Documentation = documentation;
+            };
+            Service = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              ExecStart = execStart;
             };
             Install = {
               WantedBy = [ "graphical-session.target" ];
@@ -305,6 +329,26 @@
                 description = "DOORwayDE blue-light filter (hyprsunset)";
                 documentation = "https://wiki.hypr.land/Hypr-Ecosystem/hyprsunset/";
                 execStart = "${pkgs.hyprsunset}/bin/hyprsunset";
+              };
+
+              doorwayde-polkit-auth = mkDoorwaydeService {
+                description = "DOORwayDE polkit authentication agent (polkit-gnome)";
+                execStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+              };
+
+              # Workaround for the env-propagation race: xdg-desktop-portal-*
+              # services start before WAYLAND_DISPLAY is propagated to the user
+              # manager. Restart them after graphical-session.target activates so
+              # they inherit the imported env. (Long-term fix is system-side in
+              # HALLway, making the portals After=graphical-session.target.)
+              doorwayde-xdg-portal-reset = mkDoorwaydeOneshot {
+                description = "Restart xdg-desktop-portal services with current Wayland env";
+                execStart = "${pkgs.systemd}/bin/systemctl --user restart xdg-desktop-portal-hyprland.service xdg-desktop-portal.service";
+              };
+
+              doorwayde-config-bootstrap = mkDoorwaydeOneshot {
+                description = "DOORwayDE config initialization (oneshot at session start)";
+                execStart = "%h/.local/lib/doorwayde/doorwayde-config --no-startup";
               };
             };
           };

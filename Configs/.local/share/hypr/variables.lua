@@ -73,11 +73,15 @@ local M = {
 
     -- Startup commands (used by startup.lua)
     start = {
-        DBUS_SHARE_PICKER    = "dbus-update-activation-environment --systemd " .. list_environment,
+        -- Env propagation: defensive duplication. UWSM (HALLway's session entry)
+        -- already does this before Hyprland starts; keeping this call covers
+        -- non-UWSM session entry (TTY login, debugging). See TODO.md Pass 6.
         SYSTEMD_SHARE_PICKER = "systemctl --user import-environment " .. list_environment,
-        XDG_PORTAL_RESET     = home .. "/.local/bin/doorwayde-shell resetxdgportal.sh",
-        AUTH_DIALOGUE        = home .. "/.local/bin/doorwayde-shell app -t service -- polkitkdeauth.sh",
-        -- gnome-keyring: --daemonize forks immediately, so no app() wrapper (systemd-run Type=exec would see exit as failure)
+        -- XDG_PORTAL_RESET, AUTH_DIALOGUE: declarative
+        -- (systemd.user.services.doorwayde-{xdg-portal-reset,polkit-auth})
+        -- TODO Pass 6.5/7: gnome-keyring → cross-flake migration. HALLway needs
+        -- `services.gnome.gnome-keyring.enable = true` (system-level for PAM
+        -- auto-unlock). Until that lands, keep this runtime daemon launch.
         GNOME_KEYRING        = "gnome-keyring-daemon --start --daemonize --components=secrets,pkcs11,ssh",
 
         -- IDLE_DAEMON, BLUE_LIGHT_FILTER_DAEMON: declarative
