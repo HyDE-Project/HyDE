@@ -26,12 +26,12 @@ local M = {
 
     -- GTK / colour scheme
     GTK_THEME     = "Wallbash-Gtk",
-    ICON_THEME    = "Tela-circle-dracula",
+    ICON_THEME    = "Tela-dracula",
     COLOR_SCHEME  = "prefer-dark",
     BUTTON_LAYOUT = "",
 
     -- Cursor
-    CURSOR_THEME = "Bibata-Modern-Ice",
+    CURSOR_THEME = "oreo_spark_pink_cursors",
     CURSOR_SIZE  = 24,
 
     -- Fonts

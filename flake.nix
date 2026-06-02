@@ -286,7 +286,7 @@
             gtk = {
               enable = true;
               theme.name     = lib.mkDefault "Wallbash-Gtk";
-              iconTheme.name = lib.mkDefault "Tela-circle-dracula";
+              iconTheme = { name = lib.mkDefault "Tela-dracula"; package = lib.mkDefault pkgs.tela-icon-theme; };
               # cursorTheme is managed by home.pointerCursor.gtk.enable below.
               font = { name = lib.mkDefault "Cantarell"; size = lib.mkDefault 10; };
               # HM 26.05 changed the gtk4.theme default from config.gtk.theme to null.
@@ -298,9 +298,9 @@
             # ~/.local/share/icons/default/index.theme, and syncs gtk.cursorTheme.
             # Replaces the manual Xresources + icon-symlink writes in theme.switch.sh.
             home.pointerCursor = {
-              name    = lib.mkDefault "Bibata-Modern-Ice";
+              name    = lib.mkDefault "oreo_spark_pink_cursors";
               size    = lib.mkDefault 24;
-              package = lib.mkDefault pkgs.bibata-cursors;
+              package = lib.mkDefault pkgs.oreo-cursors-plus;
               gtk.enable = true;
             };
 
