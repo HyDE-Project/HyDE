@@ -187,7 +187,7 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 - [x] **Pass 7 — Delete `launch-unit.sh` and `app()` helper** — `Configs/.local/lib/doorwayde/launch-unit.sh` deleted (zero callers after Passes 2-6 declarative migrations). `app()` function, supporting locals (`session_desktop`, `unt`, `home`, `scrPath`), and the orphaned `scrPath` export in the M table all removed from `variables.lua`. `CLIPBOARD_PERSIST` entry deleted (was commented-out in startup.lua anyway; last remaining `app()` consumer). The `start` table now contains only `GNOME_KEYRING` (cross-flake deferred — see Pass 7+ section). Bonus: `variables.lua` shrunk from 95 lines to ~70 lines.
 - [x] **Pass 8 — waybar.py runtime writes audit + icon-sizes regression fix** — full audit of runtime writes in `waybar.py`. `update_icon_size()` was writing icon-size-enriched data back to `includes.json` (now a Nix store symlink → EROFS regression introduced in Pass 1). Fixed: output redirected to new `icon-sizes.json`; all 19 layout files updated to include `icon-sizes.json` alongside `includes.json` + `position.json`. All other writes (`config.jsonc`, `style.css`, `theme.css`, `global.css`, `global.css`, `staterc`, `user-style.css` stub, `position.json`) confirmed correctly runtime-owned.
 - [x] **Pass 9 — `doorwayde-shell` audit + HyDE-naming cleanup** — audited wrapper; renamed `HYDE_SCRIPTS_PATH` → `DOORWAYDE_SCRIPTS_PATH` (self-contained in `doorwayde-shell`; 0 external consumers); updated `hyprshutdown` label from HyDE branding to DOORwayDE. Documented Nix-store-resolving mechanism and the `DOORWAYDE_SHELL_INIT` guard pattern.
-- [ ] **Pass 10 — Final sweep** — update README + CLAUDE.md to reflect declarative model; remove vestigial HyDE references in docs; archive the Phase 9 entry.
+- [ ] **Pass 10 — Final sweep** — update README + CLAUDE.md to reflect declarative model; remove vestigial HyDE references in docs; archive the Phase 9 entry. *(In progress — see Pass 10 section below.)*
 
 ### Pass 1 — completed work
 
@@ -322,6 +322,21 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 **Vestigial HyDE references cleaned:**
 - [x] `HYDE_SCRIPTS_PATH` → `DOORWAYDE_SCRIPTS_PATH` (rename_all; 7 occurrences, all within `doorwayde-shell` itself — no external consumers in lib scripts).
 - [x] `hyprshutdown --top-label "Stay HyDErated!🫧"` → `"Stay DOORway-ready! 🚪"` (cosmetic; `hyprshutdown` is a HyDE-era binary, behind an `if command -v hyprshutdown` guard, with `hyprctl dispatch exit 0` fallback).
+
+### Pass 10 — in progress (2026-06-02)
+
+**Script cleanup (done):**
+- [x] `theme.import.py` deleted — dead code; pointed to `HyDE-Project/doorwayde-gallery.git` (URL clobbered by batch rename; no callers; not a DOORwayDE priority).
+- [x] `dontkillsteam.sh` deleted — deprecated; referenced only in legacy hyprlang template files (`Configs/.local/share/doorwayde/keybindings.conf`, `templates/hypr/keybindings.conf`) which predate the Lua migration and are no longer the active config.
+- [x] `doorwayde-launch.sh` deleted — deprecated wrapper whose only content was a `notify-send` telling callers to use `doorwayde-shell open` instead. No external callers.
+
+**Remaining HyDE references found during audit (not yet fixed):**
+- `Configs/.local/share/waybar/layouts/macos.jsonc` + `Configs/.local/share/waybar/modules/custom-doorwayde-menu.jsonc` — both contain `"theme-import": "hyde-shell app -T -- hydectl theme import"`. Neither `hyde-shell` nor `hydectl` exist in DOORwayDE; the menu button is already broken.
+- `Configs/.local/share/doorwayde/keybindings.conf` + `templates/hypr/keybindings.conf` — legacy hyprlang format, reference `doorwayde-shell dontkillsteam` (now deleted). These files are vestigial (superseded by `Configs/.config/hypr/keybindings.lua`).
+
+**Deferred to a future quality pass:**
+- ~170 lib scripts audited for purpose (see script inventory above). Multiple duplicate name pairs found (`themeselect.sh`/`theme.select.sh`, `themeswitch.sh`/`theme.switch.sh`, `systemupdate.sh`/`system.update.sh`) — deferring pending a broader quality and intention review of the lib layer.
+- README and CLAUDE.md updates for the declarative model (docs sweep proper).
 
 ### Caveats / risk-control
 
