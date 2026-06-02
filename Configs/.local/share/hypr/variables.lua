@@ -86,11 +86,9 @@ local M = {
         -- (systemd.user.services.doorwayde-{text,image}-clipboard in flake.nix)
         CLIPBOARD_PERSIST        = app("clipboard-persist", "service") .. "wl-clip-persist --clipboard regular",
 
-        WALLPAPER      = app("wallpaper", "service") .. "wallpaper.sh --start --global",
-        -- BAR: handled declaratively by systemd.user.services.doorwayde-waybar
-        -- (flake.nix). See TODO.md Phase 9 Pass 2 for the migration rationale.
-        NOTIFICATIONS  = app("notifications", "service") .. "dunst",
-        BATTERY_NOTIFY = app("battery-notify", "service") .. "batterynotify.sh",
+        -- BAR, WALLPAPER, NOTIFICATIONS, BATTERY_NOTIFY: all declarative
+        -- (systemd.user.services.doorwayde-{waybar,wallpaper,notifications,battery-notify})
+        -- See TODO.md Phase 9 Passes 2 & 4 for the migration rationale.
 
         -- APPLET_NETWORK_MANAGER, APPLET_REMOVABLE_MEDIA, APPLET_BLUETOOTH:
         -- declarative (systemd.user.services.doorwayde-{network-manager,removable-media,bluetooth}-applet)

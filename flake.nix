@@ -273,6 +273,27 @@
                 description = "DOORwayDE Bluetooth tray applet (blueman)";
                 execStart = "${pkgs.blueman}/bin/blueman-applet";
               };
+
+              doorwayde-notifications = mkDoorwaydeService {
+                description = "DOORwayDE notification daemon (dunst)";
+                documentation = "https://dunst-project.org/";
+                execStart = "${pkgs.dunst}/bin/dunst";
+              };
+
+              # battery-notify reclassified to app-graphical.slice in Pass 4: it
+              # uses notify-send → dunst, which is graphical-session-only.
+              doorwayde-battery-notify = mkDoorwaydeService {
+                description = "DOORwayDE low-battery notification watcher";
+                execStart = "%h/.local/lib/doorwayde/batterynotify.sh";
+              };
+
+              # wallpaper.sh bootstraps via `eval $(doorwayde-shell init)` — needs
+              # PATH to include ~/.local/bin (propagated via systemctl --user
+              # import-environment from startup.lua's SYSTEMD_SHARE_PICKER).
+              doorwayde-wallpaper = mkDoorwaydeService {
+                description = "DOORwayDE wallpaper daemon";
+                execStart = "%h/.local/lib/doorwayde/wallpaper.sh --start --global";
+              };
             };
           };
         };

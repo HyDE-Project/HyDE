@@ -22,13 +22,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(vars.start.AUTH_DIALOGUE)
     hl.exec_cmd(vars.start.GNOME_KEYRING)
 
-    -- BAR: declarative systemd.user.services.doorwayde-waybar (flake.nix)
-    hl.exec_cmd(vars.start.NOTIFICATIONS)
-    hl.exec_cmd(vars.start.WALLPAPER)
-
-    -- TEXT_CLIPBOARD, IMAGE_CLIPBOARD, APPLET_*: declarative (flake.nix)
+    -- BAR, NOTIFICATIONS, WALLPAPER, TEXT/IMAGE_CLIPBOARD, APPLET_*, BATTERY_NOTIFY:
+    -- all declarative (flake.nix systemd.user.services.*).
     -- hl.exec_cmd(vars.start.CLIPBOARD_PERSIST)  -- Tends to hang wl-clipboard
-    hl.exec_cmd(vars.start.BATTERY_NOTIFY)
 
     hl.exec_cmd(vars.start.IDLE_DAEMON)
     hl.exec_cmd(vars.start.BLUE_LIGHT_FILTER_DAEMON)
