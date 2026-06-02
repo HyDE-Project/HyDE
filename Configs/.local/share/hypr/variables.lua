@@ -80,8 +80,8 @@ local M = {
         -- gnome-keyring: --daemonize forks immediately, so no app() wrapper (systemd-run Type=exec would see exit as failure)
         GNOME_KEYRING        = "gnome-keyring-daemon --start --daemonize --components=secrets,pkcs11,ssh",
 
-        IDLE_DAEMON              = app("idle", "service") .. "hypridle",
-        BLUE_LIGHT_FILTER_DAEMON = app("blue-light-filter", "service") .. "hyprsunset",
+        -- IDLE_DAEMON, BLUE_LIGHT_FILTER_DAEMON: declarative
+        -- (systemd.user.services.doorwayde-{idle,blue-light-filter} in flake.nix)
         -- TEXT_CLIPBOARD, IMAGE_CLIPBOARD: declarative
         -- (systemd.user.services.doorwayde-{text,image}-clipboard in flake.nix)
         CLIPBOARD_PERSIST        = app("clipboard-persist", "service") .. "wl-clip-persist --clipboard regular",

@@ -22,12 +22,10 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(vars.start.AUTH_DIALOGUE)
     hl.exec_cmd(vars.start.GNOME_KEYRING)
 
-    -- BAR, NOTIFICATIONS, WALLPAPER, TEXT/IMAGE_CLIPBOARD, APPLET_*, BATTERY_NOTIFY:
-    -- all declarative (flake.nix systemd.user.services.*).
+    -- All daemons declarative (flake.nix systemd.user.services.*) — Passes 2-5.
+    -- Remaining hl.exec_cmd calls in this block are for Hyprland-IPC-dependent
+    -- bootstrapping that can't easily be Pass-6'd into a systemd oneshot.
     -- hl.exec_cmd(vars.start.CLIPBOARD_PERSIST)  -- Tends to hang wl-clipboard
-
-    hl.exec_cmd(vars.start.IDLE_DAEMON)
-    hl.exec_cmd(vars.start.BLUE_LIGHT_FILTER_DAEMON)
 
     hl.exec_cmd(home .. "/.local/lib/doorwayde/launch-unit.sh -u " .. unt .. "-doorwayde-config.service -t service -- doorwayde-config --no-startup")
 

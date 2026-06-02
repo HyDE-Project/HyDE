@@ -294,6 +294,18 @@
                 description = "DOORwayDE wallpaper daemon";
                 execStart = "%h/.local/lib/doorwayde/wallpaper.sh --start --global";
               };
+
+              doorwayde-idle = mkDoorwaydeService {
+                description = "DOORwayDE idle daemon (hypridle)";
+                documentation = "https://wiki.hypr.land/Hypr-Ecosystem/hypridle/";
+                execStart = "${pkgs.hypridle}/bin/hypridle";
+              };
+
+              doorwayde-blue-light-filter = mkDoorwaydeService {
+                description = "DOORwayDE blue-light filter (hyprsunset)";
+                documentation = "https://wiki.hypr.land/Hypr-Ecosystem/hyprsunset/";
+                execStart = "${pkgs.hyprsunset}/bin/hyprsunset";
+              };
             };
           };
         };
