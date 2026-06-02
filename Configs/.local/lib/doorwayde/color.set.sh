@@ -6,7 +6,8 @@
 }
 load_dconf_kdeglobals() {
     source "$LIB_DIR/doorwayde/color/hypr.sh"
-    source "$LIB_DIR/doorwayde/color/dconf.sh"
+    # color/dconf.sh removed in Pass 11: GTK/cursor/font/color-scheme settings
+    # are now declared in flake.nix (home.gtk, home.pointerCursor, dconf.settings).
     toml_write "$XDG_CONFIG_HOME/kdeglobals" "Colors:View" "BackgroundNormal" "#${dcol_pry1:-000000}FF"
     toml_write "$XDG_CONFIG_HOME/Kvantum/wallbash/wallbash.kvconfig" '%General' 'reduce_menu_opacity' 0
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && shaders.sh reload

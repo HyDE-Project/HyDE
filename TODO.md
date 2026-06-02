@@ -187,7 +187,8 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 - [x] **Pass 7 — Delete `launch-unit.sh` and `app()` helper** — `Configs/.local/lib/doorwayde/launch-unit.sh` deleted (zero callers after Passes 2-6 declarative migrations). `app()` function, supporting locals (`session_desktop`, `unt`, `home`, `scrPath`), and the orphaned `scrPath` export in the M table all removed from `variables.lua`. `CLIPBOARD_PERSIST` entry deleted (was commented-out in startup.lua anyway; last remaining `app()` consumer). The `start` table now contains only `GNOME_KEYRING` (cross-flake deferred — see Pass 7+ section). Bonus: `variables.lua` shrunk from 95 lines to ~70 lines.
 - [x] **Pass 8 — waybar.py runtime writes audit + icon-sizes regression fix** — full audit of runtime writes in `waybar.py`. `update_icon_size()` was writing icon-size-enriched data back to `includes.json` (now a Nix store symlink → EROFS regression introduced in Pass 1). Fixed: output redirected to new `icon-sizes.json`; all 19 layout files updated to include `icon-sizes.json` alongside `includes.json` + `position.json`. All other writes (`config.jsonc`, `style.css`, `theme.css`, `global.css`, `global.css`, `staterc`, `user-style.css` stub, `position.json`) confirmed correctly runtime-owned.
 - [x] **Pass 9 — `doorwayde-shell` audit + HyDE-naming cleanup** — audited wrapper; renamed `HYDE_SCRIPTS_PATH` → `DOORWAYDE_SCRIPTS_PATH` (self-contained in `doorwayde-shell`; 0 external consumers); updated `hyprshutdown` label from HyDE branding to DOORwayDE. Documented Nix-store-resolving mechanism and the `DOORWAYDE_SHELL_INIT` guard pattern.
-- [ ] **Pass 10 — Final sweep** — update README + CLAUDE.md to reflect declarative model; remove vestigial HyDE references in docs; archive the Phase 9 entry. *(In progress — see Pass 10 section below.)*
+- [ ] **Pass 10 — Final sweep** — update README + CLAUDE.md to reflect declarative model; remove vestigial HyDE references in docs; archive the Phase 9 entry. *(Partial — script cleanup done; HyDE refs in macos.jsonc + custom-doorwayde-menu.jsonc + legacy hyprlang templates + docs sweep deferred.)*
+- [x] **Pass 11 — Declarative GTK/cursor/font/env lift** — lifted static theme settings (GTK theme name, icon theme, cursor, fonts) from `theme.switch.sh` + `color/dconf.sh` (imperative HyDE pipeline) to `flake.nix` Home Manager declarations. Moved Qt/Wayland toolkit env vars from `env.lua` to `home.sessionVariables`. Deleted `color/dconf.sh` (its dconf nuclear-reset workflow was incompatible with `dconf.settings`; its `hyprctl setcursor` call was already in `startup.lua`). *(See Pass 11 section below.)*
 
 ### Pass 1 — completed work
 
@@ -337,6 +338,35 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 **Deferred to a future quality pass:**
 - ~170 lib scripts audited for purpose (see script inventory above). Multiple duplicate name pairs found (`themeselect.sh`/`theme.select.sh`, `themeswitch.sh`/`theme.switch.sh`, `systemupdate.sh`/`system.update.sh`) — deferring pending a broader quality and intention review of the lib layer.
 - README and CLAUDE.md updates for the declarative model (docs sweep proper).
+
+### Pass 11 — completed (2026-06-02)
+
+**Context:** DOORwayDE ships exactly one theme (Wallbash). The multi-theme gallery (`~/.config/doorwayde/themes/`) never existed in the repo — the HyDE imperative pipeline (`theme.switch.sh` + `color/dconf.sh`) was running on an empty directory. Pass 11 separates static settings (GTK theme name, icon theme, cursor, fonts — same on every session) from the genuinely runtime-dynamic part (wallbash colors extracted from the current wallpaper → CSS/Hyprland config).
+
+**Static → declarative (flake.nix additions):**
+- `home.sessionVariables` — Qt/Wayland toolkit vars (`QT_QPA_PLATFORM`, `QT_AUTO_SCREEN_SCALE_FACTOR`, `QT_WAYLAND_DISABLE_WINDOWDECORATION`, `QT_QPA_PLATFORMTHEME`, `MOZ_ENABLE_WAYLAND`, `GDK_SCALE`, `ELECTRON_OZONE_PLATFORM_HINT`). These were duplicated across `env.lua` (Hyprland-scoped) and the UWSM `env-hyprland.d` script; now single-source at session level.
+- `gtk.enable = true` + `gtk.theme.name = "Wallbash-Gtk"` + `gtk.iconTheme.name = "Tela-circle-dracula"` + `gtk.font.*` — Home Manager generates `~/.config/gtk-3.0/settings.ini`, `~/.config/gtk-4.0/settings.ini`, and `~/.gtkrc-2.0` automatically. Replaces `theme.switch.sh`'s manual sed-writes to these files.
+- `home.pointerCursor` (`Bibata-Modern-Ice`, size 24, `pkgs.bibata-cursors`) — sets `XCURSOR_THEME`/`XCURSOR_SIZE` session-wide, writes `~/.local/share/icons/default/index.theme`. Replaces the icon-symlink + Xresources cursor writes in `theme.switch.sh`.
+- `dconf.settings."org/gnome/desktop/interface".color-scheme = "prefer-dark"` — static default. Previously `dconf.sh` computed `prefer-$dcol_mode` dynamically; that behavior is deferred (single-theme focus).
+
+**Removed:**
+- `color/dconf.sh` — deleted. The `dconf reset -f /` → `dconf load -f /` nuclear workflow was incompatible with `dconf.settings` (would overwrite HM-managed keys on every wallpaper change). Its `hyprctl setcursor` call was already in `startup.lua`. Its GTK/cursor/font variable exports were `env-theme` defaults anyway (hyq queries to the non-existent theme gallery were failing silently).
+- `source "$LIB_DIR/doorwayde/color/dconf.sh"` call in `color.set.sh` — removed.
+
+**Trimmed:**
+- `env.lua` — Qt/Wayland toolkit vars removed (now in `home.sessionVariables`). XDG desktop identity vars + PATH kept as defensive layer for Hyprland-child processes.
+
+**What stays runtime (NOT changed by Pass 11):**
+- `wallpaper.sh` — wallpaper selection and swww backend.
+- `color.set.sh` → `color/hypr.sh` — wallbash color extraction (dcol files) → CSS template substitution → `wallbash.conf` (Hyprland border colors). These are genuinely runtime (depend on the live wallpaper's color palette).
+- `hyprctl setcursor` in `startup.lua` — requires a running Hyprland session; stays.
+- `variables.lua` — still read by `color/hypr.sh` and other runtime scripts via `get_hyprConf()`. Untouched.
+- `globalcontrol.sh` — still load-bearing for 30+ lib scripts. Untouched.
+
+**Deprecated (target deletion in Pass 12, after soak):**
+- `theme.switch.sh` — multi-theme orchestrator; dead for single Wallbash theme.
+- `theme.select.sh` / `themeselect.sh` — rofi theme selector UI; dead (no theme gallery).
+- `themeswitch.sh` — deprecated wrapper calling `theme.switch.sh`.
 
 ### Caveats / risk-control
 

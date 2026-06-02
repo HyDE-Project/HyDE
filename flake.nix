@@ -264,6 +264,52 @@
 
             home.sessionPath = [ "$HOME/.local/bin" "$HOME/.local/lib/doorwayde" ];
 
+            # Static toolkit/Wayland env vars — session-wide (all processes, not
+            # just Hyprland children). Centralises what was duplicated across env.lua
+            # and the UWSM env-hyprland.d script. XCURSOR_* are omitted here;
+            # home.pointerCursor below sets them automatically.
+            home.sessionVariables = {
+              QT_QPA_PLATFORM                     = "wayland;xcb";
+              QT_AUTO_SCREEN_SCALE_FACTOR         = "1";
+              QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+              QT_QPA_PLATFORMTHEME                = "qt6ct";
+              MOZ_ENABLE_WAYLAND                  = "1";
+              GDK_SCALE                           = "1";
+              ELECTRON_OZONE_PLATFORM_HINT        = "auto";
+            };
+
+            # DOORwayDE ships one theme: Wallbash (dynamic colors from wallpaper).
+            # The static aspects — GTK theme name, icon theme, cursor, UI font — are
+            # declared here. Wallbash generates the actual Wallbash-Gtk theme content
+            # at runtime into ~/.local/share/themes/Wallbash-Gtk/ (writable path).
+            # Use lib.mkDefault so these can be overridden in the user's flake.
+            gtk = {
+              enable = true;
+              theme.name     = lib.mkDefault "Wallbash-Gtk";
+              iconTheme.name = lib.mkDefault "Tela-circle-dracula";
+              # cursorTheme is managed by home.pointerCursor.gtk.enable below.
+              font = { name = lib.mkDefault "Cantarell"; size = lib.mkDefault 10; };
+            };
+
+            # Cursor: sets XCURSOR_THEME + XCURSOR_SIZE session-wide, writes
+            # ~/.local/share/icons/default/index.theme, and syncs gtk.cursorTheme.
+            # Replaces the manual Xresources + icon-symlink writes in theme.switch.sh.
+            home.pointerCursor = {
+              name    = lib.mkDefault "Bibata-Modern-Ice";
+              size    = lib.mkDefault 24;
+              package = lib.mkDefault pkgs.bibata-cursors;
+              gtk.enable = true;
+            };
+
+            # Static GNOME interface settings not already covered by gtk.enable.
+            # color-scheme is declared as prefer-dark (single Wallbash theme default).
+            # Dynamic dark/light from wallpaper lightness can be revisited in Pass 12.
+            dconf.settings = {
+              "org/gnome/desktop/interface" = {
+                color-scheme = lib.mkDefault "prefer-dark";
+              };
+            };
+
             # All DOORwayDE long-running services and session-bootstrap oneshots.
             # Replaced the HyDE-era runtime-imperative pattern (launch-unit.sh +
             # variables.lua's app() helper birthing units at session start, both
