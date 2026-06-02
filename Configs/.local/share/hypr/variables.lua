@@ -17,9 +17,6 @@ local scrPath = home .. "/.local/lib/doorwayde"
 local session_desktop = os.getenv("XDG_SESSION_DESKTOP") or "Hyprland"
 local unt = "doorwayde-" .. session_desktop
 
--- Environment list propagated to dbus/systemd for XDG portal handoff
-local list_environment = "WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"
-
 -- Unit helper: `app -u doorwayde-Hyprland-<name>.<type> -t <type> -- `
 -- Absolute path avoids PATH-resolution failures in Hyprland's exec-once environment.
 local function app(name, type)
@@ -73,13 +70,8 @@ local M = {
 
     -- Startup commands (used by startup.lua)
     start = {
-        -- Env propagation: defensive duplication. UWSM (HALLway's session entry)
-        -- already does this before Hyprland starts; keeping this call covers
-        -- non-UWSM session entry (TTY login, debugging). See TODO.md Pass 6.
-        SYSTEMD_SHARE_PICKER = "systemctl --user import-environment " .. list_environment,
-        -- XDG_PORTAL_RESET, AUTH_DIALOGUE: declarative
-        -- (systemd.user.services.doorwayde-{xdg-portal-reset,polkit-auth})
-        -- TODO Pass 6.5/7: gnome-keyring → cross-flake migration. HALLway needs
+        -- AUTH_DIALOGUE: declarative (systemd.user.services.doorwayde-polkit-auth).
+        -- TODO Pass 7+: gnome-keyring → cross-flake migration. HALLway needs
         -- `services.gnome.gnome-keyring.enable = true` (system-level for PAM
         -- auto-unlock). Until that lands, keep this runtime daemon launch.
         GNOME_KEYRING        = "gnome-keyring-daemon --start --daemonize --components=secrets,pkcs11,ssh",

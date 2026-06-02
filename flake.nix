@@ -336,16 +336,6 @@
                 execStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
               };
 
-              # Workaround for the env-propagation race: xdg-desktop-portal-*
-              # services start before WAYLAND_DISPLAY is propagated to the user
-              # manager. Restart them after graphical-session.target activates so
-              # they inherit the imported env. (Long-term fix is system-side in
-              # HALLway, making the portals After=graphical-session.target.)
-              doorwayde-xdg-portal-reset = mkDoorwaydeOneshot {
-                description = "Restart xdg-desktop-portal services with current Wayland env";
-                execStart = "${pkgs.systemd}/bin/systemctl --user restart xdg-desktop-portal-hyprland.service xdg-desktop-portal.service";
-              };
-
               doorwayde-config-bootstrap = mkDoorwaydeOneshot {
                 description = "DOORwayDE config initialization (oneshot at session start)";
                 execStart = "%h/.local/lib/doorwayde/doorwayde-config --no-startup";
