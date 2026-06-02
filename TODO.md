@@ -186,7 +186,7 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 - [x] **Pass 6.5 — UWSM-redundancy cleanup (audit-driven removal pass)** — Explore-agent audit (2026-06-02) confirmed UWSM performs env-import before Hyprland starts. Four removals landed, all reversible: (1) deleted `doorwayde-xdg-portal-reset` oneshot from `flake.nix` — portals already start with correct env via `After=graphical-session.target` + `ConditionEnvironment=WAYLAND_DISPLAY`; (2) deleted `dbus-update-activation-environment --systemd --all` and `hl.exec_cmd(vars.start.SYSTEMD_SHARE_PICKER)` from `startup.lua`; (3) deleted `SYSTEMD_SHARE_PICKER` from `variables.lua`'s `start` table plus the now-unused `list_environment` local; (4) deleted the stale "Workaround for env-propagation race" comment in `flake.nix`. Bonus cleanup: deleted dead-code `local home = os.getenv("HOME")` in `startup.lua` (unused since Pass 6 removed its consumer).
 - [x] **Pass 7 — Delete `launch-unit.sh` and `app()` helper** — `Configs/.local/lib/doorwayde/launch-unit.sh` deleted (zero callers after Passes 2-6 declarative migrations). `app()` function, supporting locals (`session_desktop`, `unt`, `home`, `scrPath`), and the orphaned `scrPath` export in the M table all removed from `variables.lua`. `CLIPBOARD_PERSIST` entry deleted (was commented-out in startup.lua anyway; last remaining `app()` consumer). The `start` table now contains only `GNOME_KEYRING` (cross-flake deferred — see Pass 7+ section). Bonus: `variables.lua` shrunk from 95 lines to ~70 lines.
 - [x] **Pass 8 — waybar.py runtime writes audit + icon-sizes regression fix** — full audit of runtime writes in `waybar.py`. `update_icon_size()` was writing icon-size-enriched data back to `includes.json` (now a Nix store symlink → EROFS regression introduced in Pass 1). Fixed: output redirected to new `icon-sizes.json`; all 19 layout files updated to include `icon-sizes.json` alongside `includes.json` + `position.json`. All other writes (`config.jsonc`, `style.css`, `theme.css`, `global.css`, `global.css`, `staterc`, `user-style.css` stub, `position.json`) confirmed correctly runtime-owned.
-- [ ] **Pass 9 — `doorwayde-shell` audit** — document current Nix-store-resolving wrapper shape; identify load-bearing vs vestigial HyDE inheritance. Mostly documentation pass.
+- [x] **Pass 9 — `doorwayde-shell` audit + HyDE-naming cleanup** — audited wrapper; renamed `HYDE_SCRIPTS_PATH` → `DOORWAYDE_SCRIPTS_PATH` (self-contained in `doorwayde-shell`; 0 external consumers); updated `hyprshutdown` label from HyDE branding to DOORwayDE. Documented Nix-store-resolving mechanism and the `DOORWAYDE_SHELL_INIT` guard pattern.
 - [ ] **Pass 10 — Final sweep** — update README + CLAUDE.md to reflect declarative model; remove vestigial HyDE references in docs; archive the Phase 9 entry.
 
 ### Pass 1 — completed work
@@ -309,6 +309,19 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 - [x] `waybar.py::update_icon_size()` redirected from `includes.json` (Nix store symlink) to `icon-sizes.json` (new writable file).
 - [x] All 19 layout files under `Configs/.local/share/waybar/layouts/` updated with `$XDG_CONFIG_HOME/waybar/includes/icon-sizes.json` in their include arrays.
 - [x] `flake.nix` comment updated: waybar runtime-owned files list now correctly names `icon-sizes.json` and `position.json` as dynamic deltas; `user-style.css` correctly described as user-editable seed.
+
+### Pass 9 — completed work (2026-06-02)
+
+**`doorwayde-shell` audit findings:**
+
+**Load-bearing mechanisms (keep):**
+- Nix-store-resolving path: `BIN_DIR=$(dirname "$(which "${EXECUTABLE:-doorwayde-shell}")")` + `realpath ../lib` — `which` resolves through PATH to the actual Nix store path; `realpath` then navigates `../lib` and `../share` within the closure. Works without hardcoded paths.
+- `DOORWAYDE_SHELL_INIT=1` guard — set on init, tested by 30+ lib scripts via `[[ $DOORWAYDE_SHELL_INIT -ne 1 ]] && eval "$(doorwayde-shell init)"`. Prevents double-sourcing of globalcontrol.sh.
+- `DOORWAYDE_SCRIPTS_PATH` (formerly `HYDE_SCRIPTS_PATH`) — colon-separated search path for script dispatch in `run_command()`, `list_script*()`, and `list_scripts_pretty()`.
+
+**Vestigial HyDE references cleaned:**
+- [x] `HYDE_SCRIPTS_PATH` → `DOORWAYDE_SCRIPTS_PATH` (rename_all; 7 occurrences, all within `doorwayde-shell` itself — no external consumers in lib scripts).
+- [x] `hyprshutdown --top-label "Stay HyDErated!🫧"` → `"Stay DOORway-ready! 🚪"` (cosmetic; `hyprshutdown` is a HyDE-era binary, behind an `if command -v hyprshutdown` guard, with `hyprctl dispatch exit 0` fallback).
 
 ### Caveats / risk-control
 
