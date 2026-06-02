@@ -839,18 +839,11 @@ def handle_backup_display():
 
 
 def update_icon_size():
-    includes_file = os.path.join(str(xdg_config_home()), "waybar", "includes", "includes.json")
+    # includes.json is Nix-eval-time (read-only Nix store symlink); write icon-size
+    # overrides to a sibling file so the Nix-managed module list is not touched.
+    icon_sizes_file = os.path.join(str(xdg_config_home()), "waybar", "includes", "icon-sizes.json")
 
-    ensure_directory_exists(includes_file)
-
-    if os.path.exists(includes_file):
-        try:
-            with open(includes_file, "r") as file:
-                includes_data = json.load(file)
-        except (json.JSONDecodeError, FileNotFoundError):
-            includes_data = {"include": []}
-    else:
-        includes_data = {"include": []}
+    ensure_directory_exists(icon_sizes_file)
 
     icon_size = get_waybar_icon_size()
 
@@ -871,12 +864,10 @@ def update_icon_size():
 
             updated_entries.update(data)
 
-    includes_data.update(updated_entries)
-
-    with open(includes_file, "w") as file:
-        json.dump(includes_data, file, indent=4)
+    with open(icon_sizes_file, "w") as file:
+        json.dump(updated_entries, file, indent=4)
     logger.debug(
-        f"Successfully updated icon sizes and appended to '{includes_file}' with {len(updated_entries)} entries."
+        f"Successfully wrote icon sizes to '{icon_sizes_file}' with {len(updated_entries)} entries."
     )
 
 

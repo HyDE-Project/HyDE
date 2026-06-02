@@ -185,7 +185,7 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 - [x] **Pass 6 — Session-bootstrap units (declarative oneshots + polkit daemon)** — 3 new units: `doorwayde-xdg-portal-reset` (oneshot, restarts xdg-desktop-portal services via `systemctl --user restart`), `doorwayde-polkit-auth` (daemon, `${pkgs.polkit_gnome}/libexec/...`), `doorwayde-config-bootstrap` (oneshot, runs `doorwayde-config --no-startup`). New `mkDoorwaydeOneshot` helper sibling to `mkDoorwaydeService`. `polkit_gnome` added to `doorwaydeDeps`. Latent `unt`-undefined bug from Pass 5 deleted with its containing line. **gnome-keyring deferred** to a future cross-flake step (see end of Phase 9). **Env imports stay in startup.lua** because UWSM (which HALLway uses) also performs them — they're defensive duplication, scheduled for removal in Pass 6.5.
 - [x] **Pass 6.5 — UWSM-redundancy cleanup (audit-driven removal pass)** — Explore-agent audit (2026-06-02) confirmed UWSM performs env-import before Hyprland starts. Four removals landed, all reversible: (1) deleted `doorwayde-xdg-portal-reset` oneshot from `flake.nix` — portals already start with correct env via `After=graphical-session.target` + `ConditionEnvironment=WAYLAND_DISPLAY`; (2) deleted `dbus-update-activation-environment --systemd --all` and `hl.exec_cmd(vars.start.SYSTEMD_SHARE_PICKER)` from `startup.lua`; (3) deleted `SYSTEMD_SHARE_PICKER` from `variables.lua`'s `start` table plus the now-unused `list_environment` local; (4) deleted the stale "Workaround for env-propagation race" comment in `flake.nix`. Bonus cleanup: deleted dead-code `local home = os.getenv("HOME")` in `startup.lua` (unused since Pass 6 removed its consumer).
 - [x] **Pass 7 — Delete `launch-unit.sh` and `app()` helper** — `Configs/.local/lib/doorwayde/launch-unit.sh` deleted (zero callers after Passes 2-6 declarative migrations). `app()` function, supporting locals (`session_desktop`, `unt`, `home`, `scrPath`), and the orphaned `scrPath` export in the M table all removed from `variables.lua`. `CLIPBOARD_PERSIST` entry deleted (was commented-out in startup.lua anyway; last remaining `app()` consumer). The `start` table now contains only `GNOME_KEYRING` (cross-flake deferred — see Pass 7+ section). Bonus: `variables.lua` shrunk from 95 lines to ~70 lines.
-- [ ] **Pass 8 — waybar.py runtime writes audit + lift** — audit each runtime write (`config.jsonc`, `style.css`, `theme.css`, `global.css`, `user-style.css`, `staterc`). Categorize lift-able (Nix-eval-time) vs runtime (theme-state-derived). Result: waybar.py shrinks to theme-delta-only responsibilities.
+- [x] **Pass 8 — waybar.py runtime writes audit + icon-sizes regression fix** — full audit of runtime writes in `waybar.py`. `update_icon_size()` was writing icon-size-enriched data back to `includes.json` (now a Nix store symlink → EROFS regression introduced in Pass 1). Fixed: output redirected to new `icon-sizes.json`; all 19 layout files updated to include `icon-sizes.json` alongside `includes.json` + `position.json`. All other writes (`config.jsonc`, `style.css`, `theme.css`, `global.css`, `global.css`, `staterc`, `user-style.css` stub, `position.json`) confirmed correctly runtime-owned.
 - [ ] **Pass 9 — `doorwayde-shell` audit** — document current Nix-store-resolving wrapper shape; identify load-bearing vs vestigial HyDE inheritance. Mostly documentation pass.
 - [ ] **Pass 10 — Final sweep** — update README + CLAUDE.md to reflect declarative model; remove vestigial HyDE references in docs; archive the Phase 9 entry.
 
@@ -288,6 +288,27 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 `hl.on("hyprland.start", ...)` body is now exactly **1 call**: `hl.exec_cmd("hyprctl setcursor ...")`. The genuinely-IPC-dependent cursor theme set is the only remaining runtime-imperative entry in the entire Hyprland-side startup chain. Migration ledger is functionally complete for the unit/exec surface — only documentation work (Passes 8-10) remains.
 
 **Critical**: HALLway change must land FIRST. Otherwise there's a window where keyring isn't running.
+
+### Pass 8 — completed work (2026-06-02)
+
+**Audit findings**: `waybar.py` makes 8 distinct file writes at runtime.
+
+| File | Location | Category | Rationale |
+|---|---|---|---|
+| `config.jsonc` | `~/.config/waybar/` | runtime | layout-derived; copied from user-selected layout file |
+| `style.css` | `~/.config/waybar/` | runtime | theme/layout-derived; `write_style_file()` embeds @imports + wallbash colors |
+| `theme.css` | `~/.config/waybar/` | runtime | wallbash-generated with live color values |
+| `global.css` | `~/.config/waybar/includes/` | runtime | font family/size from user config + theme + state |
+| `border-radius.css` | `~/.config/waybar/includes/` | runtime | Hyprland decoration:rounding via IPC or theme |
+| `user-style.css` | `~/.config/waybar/` | runtime / seed | "create if absent" guard — user-editable stub, must NOT be Nix-managed |
+| `position.json` | `~/.config/waybar/includes/` | runtime | waybar position from user config (`WAYBAR_POSITION`) |
+| `icon-sizes.json` | `~/.config/waybar/includes/` | runtime (**NEW**) | icon-size overrides from module JSON files; was incorrectly targeting `includes.json` |
+
+**Regression identified and fixed**: `update_icon_size()` was reading `includes.json` (now a Nix store symlink since Pass 1's declarative lift) and writing the icon-size-enriched data back to that same path → silent EROFS failure; icon sizes were never applied. Fixed by redirecting output to `icon-sizes.json` (new writable file). All 19 layout `.jsonc` files updated to `@include` it alongside `includes.json` and `position.json`.
+
+- [x] `waybar.py::update_icon_size()` redirected from `includes.json` (Nix store symlink) to `icon-sizes.json` (new writable file).
+- [x] All 19 layout files under `Configs/.local/share/waybar/layouts/` updated with `$XDG_CONFIG_HOME/waybar/includes/icon-sizes.json` in their include arrays.
+- [x] `flake.nix` comment updated: waybar runtime-owned files list now correctly names `icon-sizes.json` and `position.json` as dynamic deltas; `user-style.css` correctly described as user-editable seed.
 
 ### Caveats / risk-control
 

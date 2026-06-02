@@ -20,7 +20,6 @@ local terminal = os.getenv("TERMINAL") or "kitty"
 local editor   = os.getenv("EDITOR")   or "code"
 local explorer = os.getenv("EXPLORER") or "dolphin"
 local browser  = os.getenv("BROWSER")  or "firefox"
-local killactive = 'hyprctl dispatch killactive ""'
 local rofiLaunch = "doorwayde-shell rofilaunch"
 
 local moveactivewindow = 'grep -q "true" <<< $(hyprctl activewindow -j | jq -r .floating) && hyprctl dispatch moveactive'
@@ -30,13 +29,13 @@ local moveactivewindow = 'grep -q "true" <<< $(hyprctl activewindow -j | jq -r .
 --------------------------------------------------------------------------------
 
 -- [Window Management]
-hl.bind(mainMod .. " + Q",       hl.dsp.exec_cmd(killactive),                          { description = "[Window Management] close focused window" })
-hl.bind("ALT + F4",              hl.dsp.exec_cmd(killactive),                          { description = "[Window Management] close focused window" })
+hl.bind(mainMod .. " + Q",       hl.dsp.window.close(),                                { description = "[Window Management] close focused window" })
+hl.bind("ALT + F4",              hl.dsp.window.close(),                                { description = "[Window Management] close focused window" })
 hl.bind(mainMod .. " + Delete",  hl.dsp.exec_cmd("doorwayde-shell logout"),            { description = "[Window Management] kill hyprland session" })
 hl.bind(mainMod .. " + W",       hl.dsp.window.float({ action = "toggle" }),           { description = "[Window Management] toggle floating" })
 hl.bind(mainMod .. " + G",       hl.dsp.group.toggle(),                                { description = "[Window Management] toggle group" })
 hl.bind("SHIFT + F11",           hl.dsp.window.fullscreen({ action = "toggle" }),      { description = "[Window Management] toggle fullscreen" })
-hl.bind(mainMod .. " + L",       hl.dsp.exec_cmd("doorwayde-shell lock-session"),      { description = "[Window Management] lock screen" })
+hl.bind(mainMod .. " + L",       hl.dsp.exec_cmd("lockscreen.sh"),                     { description = "[Window Management] lock screen" })
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.exec_cmd("doorwayde-shell window.pin"),        { description = "[Window Management] toggle pin on focused window" })
 hl.bind("CTRL + ALT + Delete",     hl.dsp.exec_cmd("doorwayde-shell logoutlaunch"),      { description = "[Window Management] logout menu" })
 hl.bind("ALT_R + Control_R",     hl.dsp.exec_cmd("doorwayde-shell waybar --hide"),     { description = "[Window Management] toggle waybar and reload config" })
@@ -188,7 +187,7 @@ hl.bind(mainMod .. " + SHIFT + 9", hl.dsp.window.move({ workspace = 9 }),  { des
 hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }), { description = "[Workspaces] move to workspace 10" })
 
 -- [Workspaces]
-hl.bind(mainMod .. " + CTRL + ALT + Right", hl.dsp.window.move({ workspace = "r+ 1" }), { description = "[Workspaces] move window to next relative workspace" })
+hl.bind(mainMod .. " + CTRL + ALT + Right", hl.dsp.window.move({ workspace = "r+1" }), { description = "[Workspaces] move window to next relative workspace" })
 hl.bind(mainMod .. " + CTRL + ALT + Left",  hl.dsp.window.move({ workspace = "r-1" }), { description = "[Workspaces] move window to previous relative workspace" })
 
 -- [Workspaces|Navigation]

@@ -7,7 +7,7 @@
   "include": [
     // "$XDG_CONFIG_HOME/waybar/modules/*json*", 
     // "$XDG_DATA_HOME/waybar/modules/*json*" 
-    "$XDG_CONFIG_HOME/waybar/includes/includes.json", "$XDG_CONFIG_HOME/waybar/includes/position.json" 
+    "$XDG_CONFIG_HOME/waybar/includes/includes.json", "$XDG_CONFIG_HOME/waybar/includes/position.json", "$XDG_CONFIG_HOME/waybar/includes/icon-sizes.json" 
   ],
   // ? Groups per side
   "modules-left": ["group/leaf-inverse"],
