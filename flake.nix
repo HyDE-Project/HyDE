@@ -36,7 +36,9 @@
         playerctl
         pamixer
         libnotify
-        gnome-keyring   # Secret Service API for VSCodium, Firefox, et al.
+        # gnome-keyring: provided by HALLway system-level via
+        #   services.gnome.gnome-keyring.enable = true
+        # + PAM auto-unlock via security.pam.services.greetd.enableGnomeKeyring
         polkit_gnome    # Polkit auth agent (declarative in Pass 6)
 
         # Applets (system tray daemons started by startup.lua)

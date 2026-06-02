@@ -276,28 +276,16 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 
 Pass 7+ (gnome-keyring cross-flake) is the only remaining task on the de-HyDE migration ledger. After it lands, startup.lua becomes a 4-line file: just the cursor call inside the `hl.on` hook.
 
-### Pass 7+ deferred: gnome-keyring cross-flake migration
+### Pass 7+ — CLOSED 2026-06-02: gnome-keyring cross-flake migration completed
 
-**Status**: DOORwayDE-side keyring launch is still imperative (variables.lua + startup.lua) because the declarative replacement requires a coordinated HALLway change.
+User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `security.pam.services.greetd.enableGnomeKeyring = true`. With the system-side declarative keyring + PAM auto-unlock in place, DOORwayDE removed:
 
-**HALLway-side change needed** (add to HALLway's NixOS config):
+- [x] `GNOME_KEYRING` entry from `variables.lua` `start` table.
+- [x] **The entire `start` table** — now had zero remaining entries (last commented-out vestige removed). `variables.lua` is now a pure data module.
+- [x] `hl.exec_cmd(vars.start.GNOME_KEYRING)` call from `startup.lua`.
+- [x] `gnome-keyring` from `doorwaydeDeps` in `flake.nix` (HALLway provides it system-level; closure self-containment principle inverted here — keyring is a system concern, not a per-user-DE concern).
 
-```nix
-{
-  services.gnome.gnome-keyring.enable = true;
-  # PAM auto-unlock through greetd (or whichever DM you use):
-  security.pam.services.greetd.enableGnomeKeyring = true;
-  # If using TUI login as well:
-  security.pam.services.login.enableGnomeKeyring = true;
-}
-```
-
-This enables the system-level gnome-keyring user service AND wires it into PAM so the keyring unlocks with your login password (functional improvement, not just a refactor — the current daemonized-launch pattern starts the keyring locked).
-
-**Once HALLway has this**, DOORwayDE-side cleanup (fold into Pass 7 or later):
-1. Remove `GNOME_KEYRING = ...` line from `variables.lua`
-2. Remove `hl.exec_cmd(vars.start.GNOME_KEYRING)` from `startup.lua`
-3. Optionally remove `gnome-keyring` from `doorwaydeDeps` (HALLway provides it system-level)
+`hl.on("hyprland.start", ...)` body is now exactly **1 call**: `hl.exec_cmd("hyprctl setcursor ...")`. The genuinely-IPC-dependent cursor theme set is the only remaining runtime-imperative entry in the entire Hyprland-side startup chain. Migration ledger is functionally complete for the unit/exec surface — only documentation work (Passes 8-10) remains.
 
 **Critical**: HALLway change must land FIRST. Otherwise there's a window where keyring isn't running.
 

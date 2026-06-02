@@ -52,19 +52,11 @@ local M = {
     CODE_THEME = "",
     SDDM_THEME = "",
 
-    -- Startup commands (used by startup.lua)
-    start = {
-        -- AUTH_DIALOGUE: declarative (systemd.user.services.doorwayde-polkit-auth).
-        -- TODO Pass 7+: gnome-keyring → cross-flake migration. HALLway needs
-        -- `services.gnome.gnome-keyring.enable = true` (system-level for PAM
-        -- auto-unlock). Until that lands, keep this runtime daemon launch.
-        GNOME_KEYRING        = "gnome-keyring-daemon --start --daemonize --components=secrets,pkcs11,ssh",
-
-        -- All other historical entries (BAR, NOTIFICATIONS, WALLPAPER, BATTERY_NOTIFY,
-        -- TEXT/IMAGE_CLIPBOARD, APPLET_*, IDLE_DAEMON, BLUE_LIGHT_FILTER, XDG_PORTAL_RESET,
-        -- AUTH_DIALOGUE, CLIPBOARD_PERSIST) are now declarative systemd.user.services in
-        -- flake.nix or removed. See TODO.md Phase 9 Passes 2-7 for the audit trail.
-    },
+    -- Note: the historical `start` table (per-service exec strings for the HyDE-era
+    -- launch-unit.sh + app() pattern) was removed in Pass 7+ once every entry was
+    -- migrated to declarative systemd.user.services in flake.nix (Passes 2-6.5) or
+    -- to system-level NixOS modules (gnome-keyring → services.gnome.gnome-keyring
+    -- in HALLway). See TODO.md Phase 9 for the migration history.
 }
 
 return M

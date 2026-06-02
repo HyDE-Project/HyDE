@@ -12,14 +12,9 @@
 local vars = require("variables")
 
 hl.on("hyprland.start", function()
-    -- gnome-keyring cross-flake migration deferred — HALLway must provide
-    -- services.gnome.gnome-keyring.enable for PAM auto-unlock before this
-    -- runtime daemon launch can be removed safely.
-    hl.exec_cmd(vars.start.GNOME_KEYRING)
-
     -- Cursor: must run inside hyprland.start so hyprctl IPC is reachable.
+    -- Everything else is declarative (flake.nix systemd.user.services.*);
+    -- UWSM handles env propagation before Hyprland starts; HALLway-side
+    -- services.gnome.gnome-keyring.enable handles the keyring daemon + PAM.
     hl.exec_cmd("hyprctl setcursor " .. vars.CURSOR_THEME .. " " .. tostring(vars.CURSOR_SIZE))
-
-    -- Everything else is declarative — see flake.nix systemd.user.services.*
-    -- and TODO.md Phase 9. UWSM handles env propagation before Hyprland starts.
 end)
