@@ -289,6 +289,9 @@
               iconTheme.name = lib.mkDefault "Tela-circle-dracula";
               # cursorTheme is managed by home.pointerCursor.gtk.enable below.
               font = { name = lib.mkDefault "Cantarell"; size = lib.mkDefault 10; };
+              # HM 26.05 changed the gtk4.theme default from config.gtk.theme to null.
+              # Explicitly keep the legacy inherit so GTK4 apps use Wallbash-Gtk too.
+              gtk4.theme = config.gtk.theme;
             };
 
             # Cursor: sets XCURSOR_THEME + XCURSOR_SIZE session-wide, writes
