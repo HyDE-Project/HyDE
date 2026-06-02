@@ -260,9 +260,10 @@
 
             home.sessionPath = [ "$HOME/.local/bin" "$HOME/.local/lib/doorwayde" ];
 
-            # Declarative replacement for the HyDE runtime-imperative pattern where
-            # launch-unit.sh + waybar.py + variables.lua's `app()` helper birthed
-            # systemd units at session start. See TODO.md Phase 9.
+            # All DOORwayDE long-running services and session-bootstrap oneshots.
+            # Replaced the HyDE-era runtime-imperative pattern (launch-unit.sh +
+            # variables.lua's app() helper birthing units at session start, both
+            # deleted in Pass 7). See TODO.md Phase 9 for the migration history.
             systemd.user.services = {
               doorwayde-waybar = mkDoorwaydeService {
                 description = "DOORwayDE Waybar status bar";

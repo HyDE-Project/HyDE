@@ -10,26 +10,10 @@
     Originally `variables.conf` (hyprlang). Hyprland 0.55+ lua migration.
 --]]
 
-local home = os.getenv("HOME")
-local scrPath = home .. "/.local/lib/doorwayde"
-
--- Session desktop is used to build systemd unit names (doorwayde-Hyprland-*)
-local session_desktop = os.getenv("XDG_SESSION_DESKTOP") or "Hyprland"
-local unt = "doorwayde-" .. session_desktop
-
--- Unit helper: `app -u doorwayde-Hyprland-<name>.<type> -t <type> -- `
--- Absolute path avoids PATH-resolution failures in Hyprland's exec-once environment.
-local function app(name, type)
-    return home .. "/.local/lib/doorwayde/launch-unit.sh -u " .. unt .. "-" .. name .. "." .. type .. " -t " .. type .. " -- "
-end
-
 local M = {
     -- Modifier
     mainMod = "SUPER",
     MOD     = "SUPER",
-
-    -- Script path
-    scrPath = scrPath,
 
     -- App commands (mirror hyprlang $VAR names so keybindings.lua can read them)
     QUICKAPPS  = "",
@@ -76,18 +60,10 @@ local M = {
         -- auto-unlock). Until that lands, keep this runtime daemon launch.
         GNOME_KEYRING        = "gnome-keyring-daemon --start --daemonize --components=secrets,pkcs11,ssh",
 
-        -- IDLE_DAEMON, BLUE_LIGHT_FILTER_DAEMON: declarative
-        -- (systemd.user.services.doorwayde-{idle,blue-light-filter} in flake.nix)
-        -- TEXT_CLIPBOARD, IMAGE_CLIPBOARD: declarative
-        -- (systemd.user.services.doorwayde-{text,image}-clipboard in flake.nix)
-        CLIPBOARD_PERSIST        = app("clipboard-persist", "service") .. "wl-clip-persist --clipboard regular",
-
-        -- BAR, WALLPAPER, NOTIFICATIONS, BATTERY_NOTIFY: all declarative
-        -- (systemd.user.services.doorwayde-{waybar,wallpaper,notifications,battery-notify})
-        -- See TODO.md Phase 9 Passes 2 & 4 for the migration rationale.
-
-        -- APPLET_NETWORK_MANAGER, APPLET_REMOVABLE_MEDIA, APPLET_BLUETOOTH:
-        -- declarative (systemd.user.services.doorwayde-{network-manager,removable-media,bluetooth}-applet)
+        -- All other historical entries (BAR, NOTIFICATIONS, WALLPAPER, BATTERY_NOTIFY,
+        -- TEXT/IMAGE_CLIPBOARD, APPLET_*, IDLE_DAEMON, BLUE_LIGHT_FILTER, XDG_PORTAL_RESET,
+        -- AUTH_DIALOGUE, CLIPBOARD_PERSIST) are now declarative systemd.user.services in
+        -- flake.nix or removed. See TODO.md Phase 9 Passes 2-7 for the audit trail.
     },
 }
 
