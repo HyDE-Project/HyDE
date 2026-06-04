@@ -146,8 +146,10 @@ hl.bind(mainMod .. " + ALT + Left",  hl.dsp.exec_cmd("doorwayde-shell wallpaper 
 hl.bind(mainMod .. " + SHIFT + W",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell wallpaper -SG"),       { description = "[Theming] select a global wallpaper" })
 hl.bind(mainMod .. " + ALT + Up",    hl.dsp.exec_cmd("doorwayde-shell wbarconfgen n"),                        { description = "[Theming] next waybar layout" })
 hl.bind(mainMod .. " + ALT + Down",  hl.dsp.exec_cmd("doorwayde-shell wbarconfgen p"),                        { description = "[Theming] previous waybar layout" })
-hl.bind(mainMod .. " + SHIFT + R",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell wallbashtoggle -m"),   { description = "[Theming] wallbash mode selector" })
-hl.bind(mainMod .. " + SHIFT + T",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell themeselect"),         { description = "[Theming] select a theme" })
+-- SUPER+SHIFT+R (wallbash mode) and SUPER+SHIFT+T (theme select) removed:
+-- wallbashtoggle.sh depended on theme.switch.sh (deleted Phase 10); color mode
+-- selection moves to QuickShell right sidebar in Phase 13. themeselect had no
+-- theme gallery in DOORwayDE (single Wallbash theme); Phase 14 brings a new UI.
 hl.bind(mainMod .. " + SHIFT + Y",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell animations --select"), { description = "[Theming] select animations" })
 hl.bind(mainMod .. " + SHIFT + U",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell hyprlock --select"),   { description = "[Theming] select hyprlock layout" })
 

@@ -135,10 +135,12 @@ Items discovered after the initial lua migration landed, while shaking down `--v
 - [x] **Wiki seeded** — `Wiki/README.md` (landing page / IA) and `Wiki/Troubleshooting-Hyprland.md` (depth article) created. README now points at the wiki for deep troubleshooting; the README itself only carries a concise cheat-sheet (~25 lines).
 - [ ] **Write the remaining planned wiki articles** — `Architecture-Overview.md`, `Theming-and-Wallbash.md`, `Keybindings-Reference.md`, `Scripting-API.md`, `Lua-Migration-Notes.md`, `Hyprland-Lua-API-Cheatsheet.md`. See `Wiki/README.md` for one-line scopes.
 
-### Wallbash → lua port (blocked by missing upstream API)
+### Wallbash → lua port — **SUPERSEDED by Phase 11 (matugen)**
 
-- [ ] **Refactor wallbash to emit lua.** The wallbash pipeline writes `~/.config/hypr/themes/colors.conf` (hyprlang format). `Configs/.local/share/hypr/dynamic.lua` was supposed to source it via `hl.source(...)`, but `hl.source` doesn't exist on 0.55.1 — `try_source(...)` calls in `dynamic.lua` are documented placeholder no-ops. Until `wallbash` is refactored to emit `themes/colors.lua` (a module returning a colour table that `hl.config({ general = { ["col.active_border"] = ... } })` consumes), dynamic wallbash-driven theming is on pause. Groupbar uses Hyprland defaults; window borders use the lua-side static values.
-- [ ] **Watch for upstream sourcing API.** If Hyprland later adds a way to source other `.conf` / `.lua` files from a lua config, the existing `try_source(...)` placeholder in `dynamic.lua` becomes a one-line change.
+After surveying the Hyprland dotfiles landscape (2026-06-04 planning session), this work has been recoded from "blocked" to "superseded." The Phase 10-16 initiative replaces the wallbash → `hl.source()` pipeline with matugen → QuickShell `FileView` reactive subscription. Hyprland no longer needs to re-read color files at runtime — QuickShell will own all the colored UI surfaces (top bar, sidebars, OSD, notifications). The wallbash color extraction code (`Configs/.local/lib/doorwayde/color/hypr.sh`) is targeted for deletion in Phase 16.
+
+- ~~Refactor wallbash to emit lua.~~ — Won't do. Matugen emits the formats QuickShell + GTK + Hyprland border colors consume directly via its template engine.
+- ~~Watch for upstream sourcing API.~~ — Won't do. Architecture no longer depends on `hl.source()`.
 
 ### Config validation in CI
 
@@ -375,6 +377,258 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
+# Initiative II: DOORwayDE Shell & Visual Redesign (Phases 10–16)
+
+> **Goal**: Replace the inherited HyDE UI surface (waybar + dunst + wlogout) with a single coherent **QuickShell**-based shell. Drive theming declaratively via **matugen** (Material You from wallpaper). Build a productivity left sidebar (notes, workspace overview, todo/pomodoro, scratchpad-window manager) and a system-controls right sidebar (sliders, toggles, calendar, notifications, session). Visually stunning, readable, minimal — and finally *ours* rather than inherited-and-broken.
+
+**Strategic decisions** (from 2026-06-04 planning session — full plan in `.claude/plans/https-github-com-richen604-hydenix-today-adaptive-turing.md`):
+
+| Question | Choice |
+|---|---|
+| Widget framework | **QuickShell** (QML/Qt6, `pkgs.quickshell` 0.2.1) over AGS/eww/waybar-extension. Future-proof, Wayland-native, what end-4 migrated to. |
+| Color theming | **matugen** (`pkgs.matugen` 3.1.0) — Material You from wallpaper, replaces blocked wallbash → Hyprland path. |
+| AI tool | **Deferred to Phase 17+** — left sidebar focuses on productivity first. |
+| Left sidebar | 4 tabs: Notes / Workspace Overview / Tasks (todo + pomodoro) / Scratchpad-Window Manager. |
+| Waybar fate | **Replaced entirely** — QuickShell owns the top bar. waybar source tree deleted in Phase 16. |
+| Reference architecture | **Fork end-4** `dots/.config/quickshell/ii/` (GPLv3, attribution); strip AI/weeb/anime; rebrand to `doorwaydeShell`. |
+
+**Hydenix learning to adopt**: their `mutable.nix` Home Manager extension solves the EROFS-on-runtime-writes class once. Files marked `mutable = true; force = true;` are *copied* instead of symlinked, becoming writable. Inline in Phase 11 as `lib.mkMutableHomeFile`.
+
+---
+
+## Phase 10: De-HyDE Final Cleanup
+
+> **Goal**: Clear the last cosmetic / dead-code remnants from the HyDE inheritance before the QuickShell work lands. Low-risk; blocks nothing.
+
+- [x] Delete `Configs/.local/lib/doorwayde/theme.switch.sh` (Pass 11 marked dead post-soak)
+- [x] Delete `Configs/.local/lib/doorwayde/theme.select.sh`
+- [x] Delete `Configs/.local/lib/doorwayde/themeselect.sh` (duplicate name pair)
+- [x] Delete `Configs/.local/lib/doorwayde/themeswitch.sh` (duplicate name pair)
+- [x] Delete broken waybar files: `layouts/macos.jsonc` (not active layout; full of hyde-shell refs) + `modules/custom-doorwayde-menu.jsonc` (only referenced by macos.jsonc + khing.jsonc — both inactive). Whole waybar tree gone in Phase 16 anyway.
+- [x] Delete legacy hyprlang `Configs/.local/share/doorwayde/keybindings.conf` (superseded by `Configs/.config/hypr/keybindings.lua`)
+- [x] `templates/hypr/keybindings.conf` — already absent; no action needed
+- [x] Bonus: delete `Configs/.local/lib/doorwayde/theme.patch.sh` (no callers; called deleted theme.switch.sh)
+- [x] Bonus: remove `SUPER+SHIFT+T` (themeselect) + `SUPER+SHIFT+R` (wallbashtoggle) keybinds from `keybindings.lua` — both depended on deleted scripts; themeselect had no theme gallery; wallbash mode selector moves to QuickShell Phase 13.
+- [x] `Hyprland --verify-config` post-deletions — **config ok** (verified twice)
+
+---
+
+## Phase 11: Foundation (matugen + mutable.nix + QuickShell scaffold)
+
+> **Goal**: Stand up the runway. After this phase, all subsequent phases have a working substrate: matugen converts the current wallpaper to a Material You palette and writes it to durable paths; QuickShell starts as a systemd user service and renders an empty session; `mutable.nix` is available for any future runtime-writable file.
+
+### flake.nix additions
+
+- [ ] Add `pkgs.matugen` and `pkgs.quickshell` to `doorwaydeDeps`
+- [ ] New `options.doorwayde.shell.enable` (default `false` until Phase 12 cutover)
+- [ ] `systemd.user.services.matugen-watcher` — `pkgs.writeShellScript` that runs `matugen image $WALLPAPER` whenever `$XDG_STATE_HOME/doorwayde/wallpaper.current` changes (inotifywait)
+- [ ] `systemd.user.services.doorwayde-shell` — `ExecStart = "${pkgs.quickshell}/bin/quickshell -c %h/.config/quickshell/doorwayde"`, `Wants = "graphical-session.target"`, `After = "graphical-session.target"`, `gated by config.doorwayde.shell.enable`
+- [ ] Inline hydenix's `mutable.nix` extension (~50 lines, search hydenix repo) into the flake as `lib.mkMutableHomeFile` — keeps a useful tool available for future passes without making it a load-bearing dependency
+
+### Source tree
+
+- [ ] Create `Configs/.config/quickshell/doorwayde/` (QML shell root — empty `shell.qml` is fine for the scaffold check)
+- [ ] Wire in flake: `xdg.configFile."quickshell/doorwayde".source = "${configDir}/.config/quickshell/doorwayde"` (whole-dir; QML is config, not state)
+- [ ] Create `Configs/.config/matugen/config.toml` declaring output templates for: QuickShell color resource (QML import path), GTK4 colors css, Hyprland border colors snippet (a small `.conf` whose values flow into the lua-side `windowrules.lua` via env vars or a one-line `dofile()`)
+- [ ] Wire matugen config in flake: `xdg.configFile."matugen/config.toml".source = "${configDir}/.config/matugen/config.toml"`
+
+### Verification
+
+- [ ] `systemctl --user status matugen-watcher` returns `active`
+- [ ] `nix run nixpkgs#quickshell -- --help` returns
+- [ ] Empty `quickshell -c ~/.config/quickshell/doorwayde` exits cleanly (no QML parse errors)
+- [ ] Changing wallpaper via `wallpaper.sh` triggers matugen run; `~/.local/share/matugen/colors.json` updated
+
+---
+
+## Phase 12: Top Bar (the waybar replacement)
+
+> **Goal**: Achieve module parity with the current waybar's top-bar functionality in QuickShell, then disable the waybar service. Soft cutover: source files stay for rollback during soak.
+
+### Fork & rebrand
+
+- [ ] `git remote add upstream https://github.com/end-4/dots-hyprland.git` in a scratch clone; cherry-pick the `dots/.config/quickshell/ii/bar/` subtree
+- [ ] Copy into `Configs/.config/quickshell/doorwayde/bar/`, rebrand string occurrences of `illogical-impulse` / `ii` → `doorwaydeShell`
+- [ ] Copy `dots/.config/quickshell/ii/modules/common/` (Appearance, GlobalStates, Loader patterns) and `dots/.config/quickshell/ii/modules/services/` (Network, Bluetooth, MPRIS, Brightness reactive state)
+
+### Module parity (priority order — daily-driver modules first)
+
+- [ ] Workspaces (Hyprland IPC subscribe to workspace events)
+- [ ] Active window title
+- [ ] Clock + calendar pop-out
+- [ ] System tray (StatusNotifierItem — must show nm-applet, blueman-applet, udiskie, clipboard watchers)
+- [ ] Volume indicator (PipeWire / WirePlumber via QuickShell `PwAudio`)
+- [ ] Battery + power profile (`powerprofilesctl`)
+- [ ] Network indicator (NetworkManager via D-Bus)
+- [ ] Bluetooth indicator
+- [ ] CPU / GPU / temp (lower priority — implement only if missed)
+
+### Cutover
+
+- [ ] `config.doorwayde.shell.enable = true` in flake.nix
+- [ ] Disable `systemd.user.services.doorwayde-waybar` in flake.nix (do NOT delete waybar source files yet — rollback safety for soak window)
+- [ ] Update `Configs/.config/hypr/keybindings.lua` — remove waybar-toggle binds; redirect to QuickShell bar toggle if any user keybind used it
+- [ ] Reduce `Configs/.local/share/hypr/variables.lua` waybar references; do not delete (Phase 16)
+
+### Verification
+
+- [ ] Top bar renders on each monitor
+- [ ] Workspaces update on Hyprland workspace change
+- [ ] Tray icons appear (all five applet services)
+- [ ] Volume slider responds to media keys; mute toggle works
+- [ ] `systemctl --user stop doorwayde-waybar` (or `pkill waybar`) does not break desktop
+- [ ] Battery percentage matches `upower -i $(upower -e | grep BAT)`
+
+---
+
+## Phase 13: Right Sidebar (system controls)
+
+> **Goal**: Build the persistent system-controls surface. Hotkey-toggled (Super+SPACE) slide-in panel from the right edge with sliders for volume/brightness/mic, toggles + list dialogs for network/bluetooth, calendar, notification history, session menu.
+
+### Fork
+
+- [ ] Copy `dots/.config/quickshell/ii/sidebarRight/` into `Configs/.config/quickshell/doorwayde/sidebarRight/`; rebrand
+- [ ] Drop any `AiChat.qml` / `Anime.qml` / `Translator.qml` imports if present in the sidebarRight tree (they live in sidebarLeft in end-4's structure; just confirm the right-side tree is AI-free)
+
+### Components (port from end-4 fork)
+
+- [ ] Volume slider + per-stream mixer + device picker (PipeWire)
+- [ ] Brightness slider (`brightnessctl`)
+- [ ] Mic slider (PipeWire input)
+- [ ] Network toggle + WiFi list dialog (NetworkManager)
+- [ ] Bluetooth toggle + device list dialog
+- [ ] Night light toggle — wraps existing `hyprsunset` (already a declarative service in flake.nix)
+- [ ] Power profile selector (`powerprofilesctl`)
+- [ ] Calendar widget
+- [ ] Notification history (panel placeholder; Phase 15 backs it with QuickShell `NotificationServer`)
+- [ ] Session/power menu — **replaces wlogout** at Phase 16 cutover
+
+### Wiring
+
+- [ ] Add layer rule in `Configs/.config/hypr/windowrules.lua`:
+  ```lua
+  hl.layer_rule({ namespace = "^(quickshell:sidebarRight)$", rules = {"blur", "ignorezero"} })
+  ```
+- [ ] Slide-in/out via Hyprland layer animation curve (`layer = slide` style)
+- [ ] Add keybind in `Configs/.config/hypr/keybindings.lua`:
+  ```lua
+  hl.bind("SUPER", "SPACE", hl.dsp.exec_cmd("qs-ipc doorwayde sidebarRight.toggle"))
+  ```
+  (or whatever IPC convention QuickShell offers — check the `qs ipc` docs)
+
+### Verification
+
+- [ ] Super+SPACE toggles sidebar in <100ms
+- [ ] Volume slider change verified with `wpctl get-volume @DEFAULT_AUDIO_SINK@`
+- [ ] Brightness slider change verified with `brightnessctl get`
+- [ ] WiFi list shows real APs; click connects
+- [ ] Bluetooth list shows paired devices; toggle connects
+- [ ] Power profile change verified with `powerprofilesctl get`
+- [ ] Calendar correctly shows current date
+
+---
+
+## Phase 14: Left Sidebar (productivity)
+
+> **Goal**: Build the greenfield productivity panel. Tabbed: Notes / Overview / Tasks / Scratchpads. Hotkey-toggled (Super+Shift+SPACE) slide-in panel from the left edge. All four tabs new QML code (no end-4 equivalents we're keeping).
+
+### Container
+
+- [ ] `Configs/.config/quickshell/doorwayde/sidebarLeft/SidebarLeft.qml` — tab container; persist last-active tab to `$XDG_STATE_HOME/doorwayde/sidebar.json`
+
+### Notes tab
+
+- [ ] `Notes.qml` — QML `TextEdit` with markdown preview pane (Qt RichText is sufficient; cmark-gfm subprocess only if RichText quality lacks)
+- [ ] Persist to `$XDG_DATA_HOME/doorwayde/notes/scratchpad.md` (debounced 500ms save)
+- [ ] "Save as…" button → `$XDG_DATA_HOME/doorwayde/notes/<timestamp>.md`
+
+### Overview tab
+
+- [ ] `Overview.qml` — possibly reuse end-4's `overview/` tree if it adapts cleanly (live window previews via Wayland screencopy + Hyprland IPC)
+- [ ] Search bar filters by window title/class; Enter focuses the matching window via `hyprctl dispatch focuswindow address:0x...`
+
+### Tasks tab
+
+- [ ] `Tasks.qml` — todo list with text input + scrollable list of checkboxes
+- [ ] Persist to `$XDG_DATA_HOME/doorwayde/tasks/tasks.json`
+- [ ] Pomodoro: 25/5/15 timer; transition fires `notify-send` (or in-shell notification once Phase 15 lands)
+
+### Scratchpads tab
+
+- [ ] `Scratchpads.qml` — lists Hyprland `special:` workspace windows (`hyprctl clients -j` filtered)
+- [ ] Row click → `hyprctl dispatch togglespecialworkspace <name>` to focus
+- [ ] "Add focused window to scratchpad" button → `hyprctl dispatch movetoworkspacesilent special:<name>`
+
+### Wiring
+
+- [ ] Layer rule in `Configs/.config/hypr/windowrules.lua`:
+  ```lua
+  hl.layer_rule({ namespace = "^(quickshell:sidebarLeft)$", rules = {"blur"} })
+  ```
+- [ ] Keybind in `keybindings.lua`:
+  ```lua
+  hl.bind("SUPER SHIFT", "SPACE", hl.dsp.exec_cmd("qs-ipc doorwayde sidebarLeft.toggle"))
+  ```
+- [ ] Per-tab quick-jump binds (optional): `SUPER+N` notes, `SUPER+O` overview, `SUPER+CTRL+T` tasks
+
+### Verification
+
+- [ ] All four tabs render without QML errors
+- [ ] Notes content survives a logout/login cycle (file written on close)
+- [ ] Overview matches `hyprctl clients -j | jq '.[].title'`
+- [ ] Pomodoro timer fires notification at 25-min mark
+- [ ] Scratchpads list matches `hyprctl clients -j | jq '[.[] | select(.workspace.name | startswith("special:"))]'`
+
+---
+
+## Phase 15: OSD & Notification Daemon
+
+> **Goal**: Replace dunst with a QuickShell notification daemon. Add an OSD overlay for volume/brightness feedback. Surface notification history in the right sidebar widget from Phase 13.
+
+- [ ] Fork end-4's `osd/` subtree for volume/brightness on-screen indicators
+- [ ] Register a QuickShell `NotificationServer` on the session bus (`org.freedesktop.Notifications`)
+- [ ] Wire notification history into the right sidebar's notification panel (Phase 13 placeholder)
+- [ ] Disable `systemd.user.services.dunst` in flake.nix (keep `Configs/.config/dunst/` for rollback)
+- [ ] Layer rules in `windowrules.lua`:
+  ```lua
+  hl.layer_rule({ namespace = "^(quickshell:osd)$", rules = {"blur"} })
+  hl.layer_rule({ namespace = "^(quickshell:notification)$", rules = {"blur"} })
+  ```
+- [ ] Verify: `notify-send "test"` produces a QuickShell notification (not dunst), `notify-send -u critical "test"` is styled distinctly, volume keys produce OSD, brightness keys produce OSD
+- [ ] Verify: notifications accumulate in the right sidebar history pane
+
+---
+
+## Phase 16: Polish & Decommission
+
+> **Goal**: Final cleanup after the new shell has soaked for ~1–2 weeks of daily-driver use. Delete the waybar / dunst / wlogout source trees. Final visual polish.
+
+### Delete (after soak)
+
+- [ ] `Configs/.local/share/waybar/` (whole tree)
+- [ ] `Configs/.config/waybar/` (whole tree)
+- [ ] `Configs/.local/lib/doorwayde/waybar.py`
+- [ ] `Configs/.config/dunst/` (whole tree)
+- [ ] `Configs/.config/wlogout/` (whole tree)
+- [ ] `Configs/.local/lib/doorwayde/color/hypr.sh` (wallbash → Hyprland border colors — matugen owns this now)
+- [ ] Remove `systemd.user.services.doorwayde-waybar`, `dunst`, `wlogout` entries from `flake.nix`
+- [ ] Drop `pkgs.waybar`, `pkgs.dunst`, `pkgs.wlogout` from `doorwaydeDeps` (verify no other consumer)
+
+### Polish
+
+- [ ] Slide-in animation curve tuning (Hyprland layer animation params)
+- [ ] Final blur strength + rounding values across all `quickshell:*` layers
+- [ ] Sidebar widget spacing audit — make the "minimal/readable" promise concrete
+
+### Documentation
+
+- [ ] Update `CLAUDE.md` — add a "QuickShell shell architecture" section: what QML tree owns what surface, how matugen feeds colors, where runtime writes go, the `mutable.nix` pattern
+- [ ] Update `README.md` with new screenshots, revised feature list
+- [ ] Mark Phases 10–16 done in this TODO.md
+- [ ] Add Phase 17 placeholder for stretch goals: AI integration in left sidebar, QuickShell lockscreen (replaces hyprlock), theme variants (Tokyo Night / Catppuccin switcher overrides matugen)
+
+---
+
 ## Files to Keep as hyprlang
 
 These tools have their own config format (not Hyprland's):
@@ -469,3 +723,9 @@ require("themes/colors")
 - [x] **Dev shell shellHook** — documents start-hyprland Wayland-only limitation, log locations,
   sanity-check commands; exports Hyprland env vars for XFCE/dev testing
 - [x] **Docs** — CLAUDE.md debugging + path architecture, TESTING.md replaced, CHANGELOG v26.5.22
+
+### 2026-06-04
+- [x] **Hyprdots inspiration survey** — examined hydenix (Nix port), end-4/dots-hyprland (QuickShell gold standard), ArchEclipse, Caelestia, JaKooLit, Colorshell, sh1zicus, R7rainz. Identified three-zone layout + matugen color sync + QuickShell as the modern Hyprland convention. Full notes in `.claude/plans/https-github-com-richen604-hydenix-today-adaptive-turing.md`.
+- [x] **Phase 8 recoded** — wallbash → Hyprland Lua port moved from "blocked on missing upstream API" to "superseded by Phase 11 matugen." Architecture no longer depends on `hl.source()`; QuickShell `FileView` will own color subscription.
+- [x] **Initiative II added** — Phases 10–16 (DOORwayDE Shell & Visual Redesign) inserted between Phase 9's "Caveats / risk-control" and "Files to Keep as hyprlang." Design decisions: QuickShell (QML/Qt6) over AGS/eww; matugen Material You over wallbash port; AI tool deferred to Phase 17+; left sidebar = Notes / Overview / Tasks / Scratchpads; waybar replaced entirely; end-4's `ii` shell as fork target (GPLv3, attribution).
+- [x] **Hydenix's `mutable.nix`** — flagged for adoption in Phase 11 as `lib.mkMutableHomeFile`; resolves the EROFS-on-runtime-writes class once for all future passes.
