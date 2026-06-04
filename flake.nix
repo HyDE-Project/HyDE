@@ -216,7 +216,7 @@
             shell = {
               enable = lib.mkOption {
                 type = lib.types.bool;
-                default = false;
+                default = true;
                 description = ''
                   Enable the DOORwayDE QuickShell UI shell.
                   Leave false until Phase 12 cutover (top bar parity with waybar).
@@ -385,14 +385,17 @@
             # variables.lua's app() helper birthing units at session start, both
             # deleted in Pass 7). See TODO.md Phase 9 for the migration history.
             systemd.user.services = {
-              doorwayde-waybar = mkDoorwaydeService {
-                description = "DOORwayDE Waybar status bar";
-                documentation = "https://github.com/Alexays/Waybar";
-                # ExecStartPre handles state-file / config.jsonc / position.json prep
-                # via waybar.py's gutted --watch mode. ExecStart runs waybar itself.
-                execStartPre = "%h/.local/lib/doorwayde/waybar.py --watch";
-                execStart = "${pkgs.waybar}/bin/waybar";
-              };
+              doorwayde-waybar = lib.mkMerge [
+                (mkDoorwaydeService {
+                  description = "DOORwayDE Waybar status bar (disabled — QuickShell cutover Phase 12)";
+                  documentation = "https://github.com/Alexays/Waybar";
+                  execStartPre = "%h/.local/lib/doorwayde/waybar.py --watch";
+                  execStart = "${pkgs.waybar}/bin/waybar";
+                })
+                # Disable auto-start; service remains available for manual rollback.
+                # Delete from flake entirely in Phase 16 after soak.
+                { Install.WantedBy = lib.mkForce []; }
+              ];
 
               doorwayde-text-clipboard = mkDoorwaydeService {
                 description = "DOORwayDE clipboard text watcher (cliphist)";
