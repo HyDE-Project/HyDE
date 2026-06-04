@@ -21,10 +21,10 @@ reload_apps = false
 [templates.hyprland-colors]
 input_path  = "~/.config/matugen/templates/hyprland-colors.lua"
 output_path = "~/.local/share/matugen/hyprland-colors.lua"
-mode = "dark"
+mode = "Dark"
 
 # QuickShell color singleton — imported by the QML shell in Phase 12+.
 [templates.quickshell-colors]
 input_path  = "~/.config/matugen/templates/Colors.qml"
 output_path = "~/.local/share/matugen/Colors.qml"
-mode = "dark"
+mode = "Dark"

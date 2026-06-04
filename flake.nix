@@ -135,7 +135,7 @@
               local wp
               wp="$(readlink -f "$WALL")" || return
               [[ -f "$wp" ]] || return
-              ${pkgs.matugen}/bin/matugen image "$wp"
+              ${pkgs.matugen}/bin/matugen image --source-color-index 0 "$wp"
               # Reload Hyprland so dynamic.lua re-dofiles hyprland-colors.lua.
               # Fails silently outside a live session (e.g. on first nixos-rebuild).
               ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true
