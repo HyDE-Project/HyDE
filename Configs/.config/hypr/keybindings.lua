@@ -93,7 +93,8 @@ hl.bind(mainMod .. " + slash",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-she
 hl.bind(mainMod .. " + comma",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell emoji-picker"),     { description = "[Launcher|Rofi] emoji picker" })
 
 -- [QuickShell panels]
-hl.bind(mainMod .. " + SPACE", hl.dsp.exec_cmd("qs ipc call sidebarRight toggle"), { description = "[QuickShell] toggle right sidebar" })
+hl.bind(mainMod .. " + SPACE",         hl.dsp.exec_cmd("qs ipc call sidebarRight toggle"), { description = "[QuickShell] toggle right sidebar" })
+hl.bind(mainMod .. " + SHIFT + SPACE", hl.dsp.exec_cmd("qs ipc call sidebarLeft toggle"),  { description = "[QuickShell] toggle left sidebar" })
 hl.bind(mainMod .. " + period",  hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell glyph-picker"),     { description = "[Launcher|Rofi] glyph picker" })
 hl.bind(mainMod .. " + V",       hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell cliphist -c"),      { description = "[Launcher|Rofi] clipboard" })
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell cliphist"),         { description = "[Launcher|Rofi] clipboard manager" })
