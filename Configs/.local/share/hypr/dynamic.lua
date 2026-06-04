@@ -2,17 +2,10 @@
     DOORwayDE dynamic.lua — runtime theme settings, groupbar config,
     post-load exec. Originally dynamic.conf (hyprlang).
 
-    KNOWN GAP — wallbash integration: Hyprland 0.55.1's lua API has no
-    equivalent of hl.source(). Confirmed via `Hyprland --verify-config`:
-    none of hl.source / hl.include / hl.load / hl.parse exist. The
-    wallbash pipeline writes hyprlang colors.conf files, which means
-    the wallbash-driven theming cannot be re-applied from lua at this
-    time. The pcall-wrapped try_source(...) calls below are no-ops
-    that exist as placeholders until wallbash is refactored to emit a
-    colors.lua module (see TODO.md).
-
-    Groupbar therefore uses the Hyprland default color palette; visual
-    parity with the wallbash theme will return once wallbash-lua lands.
+    Colors: matugen writes ~/.local/share/matugen/hyprland-colors.lua
+    on every wallpaper change (doorwayde-matugen-watcher.service).
+    dynamic.lua dofiles it if present; hyprctl reload propagates the change.
+    Groupbar colors follow suit once the file exists.
 --]]
 
 local vars = require("variables")
@@ -20,34 +13,28 @@ local vars = require("variables")
 -- // █▀ █▀█ █░█ █▀█ █▀▀ █▀▀
 -- // ▄█ █▄█ █▄█ █▀▄ █▄▄ ██▄
 
-local home        = os.getenv("HOME")
-local xdg_config  = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
-local xdg_state   = os.getenv("XDG_STATE_HOME")  or (home .. "/.local/state")
-local hypr_config = xdg_config .. "/hypr"
+local home = os.getenv("HOME")
 
 -- Screen shader compiled cache is handled by ~/.config/hypr/shaders.lua;
 -- the conditional `decoration:screen_shader` lives there now.
 
--- Placeholder for the future wallbash-lua sourcing call. Currently a no-op
--- because hl.source is nil; the pcall keeps the line non-fatal so that
--- a future drop-in replacement can re-enable theming without code changes.
-local function try_source(path)
-    if hl.source then pcall(function() hl.source(path) end) end
+-- Matugen-generated colors (Material You palette from current wallpaper).
+-- Written to XDG_DATA_HOME/matugen/ by doorwayde-matugen-watcher.service
+-- on every wallpaper change; hyprctl reload picks them up from here.
+-- pcall swallows both "file missing" (first boot before matugen ran) and
+-- any future hl.config() key changes in the generated output.
+do
+    local xdg_data = os.getenv("XDG_DATA_HOME") or (home .. "/.local/share")
+    local colors_file = xdg_data .. "/matugen/hyprland-colors.lua"
+    local f = io.open(colors_file, "r")
+    if f then
+        f:close()
+        pcall(dofile, colors_file)
+    end
 end
-
-try_source(hypr_config .. "/themes/colors.conf")    -- wallbash colors (no-op)
 
 -- // █▀▀ █▀█ █▀█ █░█ █▀█ █▄▄ ▄▀█ █▀█
 -- // █▄█ █▀▄ █▄█ █▄█ █▀▀ █▄█ █▀█ █▀▄
-
-try_source(hypr_config .. "/themes/theme.conf")     -- theme-specific (no-op)
-try_source(hypr_config .. "/themes/wallbash.conf")  -- post-sanitize (no-op)
-
--- Remaining legacy sources from dynamic.conf. Same no-op story until lua
--- ports exist.
-try_source(hypr_config .. "/nvidia.conf")
-try_source(hypr_config .. "/doorwayde.conf")
-try_source(xdg_state    .. "/doorwayde/hyprland.conf")  -- from config.toml
 
 -- // █▀▀ █▀█ █▄░█ ▀█▀
 -- // █▀░ █▄█ █░▀█ ░█░

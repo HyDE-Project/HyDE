@@ -419,25 +419,30 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ### flake.nix additions
 
-- [ ] Add `pkgs.matugen` and `pkgs.quickshell` to `doorwaydeDeps`
-- [ ] New `options.doorwayde.shell.enable` (default `false` until Phase 12 cutover)
-- [ ] `systemd.user.services.matugen-watcher` — `pkgs.writeShellScript` that runs `matugen image $WALLPAPER` whenever `$XDG_STATE_HOME/doorwayde/wallpaper.current` changes (inotifywait)
-- [ ] `systemd.user.services.doorwayde-shell` — `ExecStart = "${pkgs.quickshell}/bin/quickshell -c %h/.config/quickshell/doorwayde"`, `Wants = "graphical-session.target"`, `After = "graphical-session.target"`, `gated by config.doorwayde.shell.enable`
-- [ ] Inline hydenix's `mutable.nix` extension (~50 lines, search hydenix repo) into the flake as `lib.mkMutableHomeFile` — keeps a useful tool available for future passes without making it a load-bearing dependency
+- [x] Add `pkgs.matugen`, `pkgs.quickshell`, `pkgs.inotify-tools` to `doorwaydeDeps`
+- [x] New `options.doorwayde.shell.enable` (default `false` until Phase 12 cutover)
+- [x] `systemd.user.services.doorwayde-matugen-watcher` — `pkgs.writeShellScript` watches `~/.cache/doorwayde/wall.set` via `inotifywait -e moved_to,create`; runs `matugen image <wallpaper>` + `hyprctl reload` on each change; initial run at service start
+- [x] `systemd.user.services.doorwayde-quickshell` — `ExecStart = "${pkgs.quickshell}/bin/quickshell -c %h/.config/quickshell/doorwayde"`, gated by `lib.mkIf cfg.shell.enable`, uses `mkDoorwaydeService`
+- [x] `mkMutableHomeFile` helper inlined into flake `let` block — takes `{ path, source, mode }`, returns `home.activation` entry that `install -Dm` copies (not symlinks) the file, making it writable at runtime
 
 ### Source tree
 
-- [ ] Create `Configs/.config/quickshell/doorwayde/` (QML shell root — empty `shell.qml` is fine for the scaffold check)
-- [ ] Wire in flake: `xdg.configFile."quickshell/doorwayde".source = "${configDir}/.config/quickshell/doorwayde"` (whole-dir; QML is config, not state)
-- [ ] Create `Configs/.config/matugen/config.toml` declaring output templates for: QuickShell color resource (QML import path), GTK4 colors css, Hyprland border colors snippet (a small `.conf` whose values flow into the lua-side `windowrules.lua` via env vars or a one-line `dofile()`)
-- [ ] Wire matugen config in flake: `xdg.configFile."matugen/config.toml".source = "${configDir}/.config/matugen/config.toml"`
+- [x] Create `Configs/.config/quickshell/doorwayde/shell.qml` (Phase 11 scaffold — empty `ShellRoot {}`)
+- [x] Wire in flake: `xdg.configFile."quickshell/doorwayde".source = ...` (whole-dir)
+- [x] Create `Configs/.config/matugen/config.toml` — templates for `hyprland-colors.lua` (border colors via `dofile()`) and `Colors.qml` (QuickShell singleton, Phase 12)
+- [x] Create `Configs/.config/matugen/templates/hyprland-colors.lua` — Tera template writing `hl.config({ general = { col = { active_border = "rgba({{hex_stripped}}ee)", ... } } })`
+- [x] Create `Configs/.config/matugen/templates/Colors.qml` — Tera template writing a `pragma Singleton QtObject` with 26 Material You color properties
+- [x] Wire matugen config in flake: `xdg.configFile."matugen/config.toml"` + `"matugen/templates"`
+- [x] `dynamic.lua` updated: replaced no-op `try_source` placeholder block with live `io.open` + `pcall(dofile, ...)` for `~/.local/share/matugen/hyprland-colors.lua`; removed 3 dead `.conf` sourcing calls + stale header comment + 2 now-unused locals (`xdg_state`, `hypr_config`)
 
 ### Verification
 
-- [ ] `systemctl --user status matugen-watcher` returns `active`
-- [ ] `nix run nixpkgs#quickshell -- --help` returns
-- [ ] Empty `quickshell -c ~/.config/quickshell/doorwayde` exits cleanly (no QML parse errors)
-- [ ] Changing wallpaper via `wallpaper.sh` triggers matugen run; `~/.local/share/matugen/colors.json` updated
+- [ ] `systemctl --user status doorwayde-matugen-watcher` returns `active` (post nixos-rebuild)
+- [ ] Changing wallpaper via `wallpaper.sh` triggers matugen run; `~/.local/share/matugen/hyprland-colors.lua` updated and border colors change
+- [ ] `systemctl --user status doorwayde-quickshell` is inactive/disabled (shell.enable = false)
+- [ ] `nix run nixpkgs#quickshell -- --help` returns (smoke-test the binary exists)
+
+**Note**: template variable syntax (`{{colors.primary.default.hex_stripped}}`) should be verified against the installed matugen 4.0.0 with `matugen --dry-run` or by inspecting the first generated output. The 3.x format may differ from 4.x.
 
 ---
 

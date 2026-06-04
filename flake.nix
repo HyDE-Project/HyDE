@@ -52,6 +52,11 @@
 
         # Optional
         hyprsunset
+
+        # Initiative II — QuickShell shell + matugen color theming
+        quickshell      # QML/Qt6 desktop shell toolkit
+        matugen         # Material You color generation from wallpaper
+        inotify-tools   # inotifywait for doorwayde-matugen-watcher
       ];
 
       # Development dependencies
@@ -117,6 +122,48 @@
           # Oneshot variant for session-bootstrap actions: portal restart,
           # config initialization, etc. RemainAfterExit=true so graphical-
           # session.target sees them as "active" not "exited" after completion.
+          # Watches ~/.cache/doorwayde/wall.set for symlink replacement (ln -fs
+          # uses rename(2) → inotify fires moved_to). Runs matugen to generate
+          # Material You color files, then signals Hyprland to reload so
+          # dynamic.lua picks up the new hyprland-colors.lua via dofile().
+          matugenWatcherScript = pkgs.writeShellScript "matugen-watcher" ''
+            set -euo pipefail
+            WALL="''${XDG_CACHE_HOME:-$HOME/.cache}/doorwayde/wall.set"
+            WATCH_DIR="$(dirname "$WALL")"
+
+            run_matugen() {
+              local wp
+              wp="$(readlink -f "$WALL")" || return
+              [[ -f "$wp" ]] || return
+              ${pkgs.matugen}/bin/matugen image "$wp"
+              # Reload Hyprland so dynamic.lua re-dofiles hyprland-colors.lua.
+              # Fails silently outside a live session (e.g. on first nixos-rebuild).
+              ${pkgs.hyprland}/bin/hyprctl reload 2>/dev/null || true
+            }
+
+            # Run once at service start for the already-set wallpaper.
+            run_matugen || true
+
+            # ln -fs fires moved_to on the parent dir; watch for wall.set.
+            ${pkgs.inotify-tools}/bin/inotifywait \
+              -m -q -e moved_to,create --format '%f' "$WATCH_DIR" |
+            while IFS= read -r fname; do
+              [[ "$fname" == "wall.set" ]] || continue
+              run_matugen || true
+            done
+          '';
+
+          # Returns a home.activation entry that copies (not symlinks) a file,
+          # making it writable at runtime. Merge the result into home.activation.
+          # Example: home.activation = mkMutableHomeFile { path = ".config/foo/bar"; source = ./bar; };
+          mkMutableHomeFile = { path, source, mode ? "0644" }: let
+            name = "mkMutable-" + builtins.replaceStrings ["/" "."] ["-" "_"] path;
+          in {
+            "${name}" = lib.hm.dag.entryAfter ["writeBoundary"] ''
+              install -Dm${mode} "${source}" "$HOME/${path}"
+            '';
+          };
+
           mkDoorwaydeOneshot = {
             description, execStart, after ? [], documentation ? null,
           }: {
@@ -165,6 +212,18 @@
               default = true;
               description = "Install DOORwayDE dependencies";
             };
+
+            shell = {
+              enable = lib.mkOption {
+                type = lib.types.bool;
+                default = false;
+                description = ''
+                  Enable the DOORwayDE QuickShell UI shell.
+                  Leave false until Phase 12 cutover (top bar parity with waybar).
+                  When true, starts doorwayde-quickshell.service after graphical-session.target.
+                '';
+              };
+            };
           };
 
           config = lib.mkIf cfg.enable {
@@ -202,6 +261,14 @@
               "doorwayde".source = "${configDir}/.config/doorwayde";
               "kitty".source = "${configDir}/.config/kitty";
               "wlogout".source = "${configDir}/.config/wlogout";
+
+              # Initiative II: QuickShell shell and matugen color theming.
+              # quickshell/doorwayde is whole-dir (QML is source-controlled config).
+              # matugen templates are Nix-managed; outputs go to ~/.local/share/matugen/
+              # (writable, not Nix-managed) via doorwayde-matugen-watcher.service.
+              "quickshell/doorwayde".source   = "${configDir}/.config/quickshell/doorwayde";
+              "matugen/config.toml".source    = "${configDir}/.config/matugen/config.toml";
+              "matugen/templates".source      = "${configDir}/.config/matugen/templates";
 
               "hypr/monitors.lua".text = let
                 parseMon = m: let p = lib.splitString "," m;
@@ -394,6 +461,34 @@
                 description = "DOORwayDE config initialization (oneshot at session start)";
                 execStart = "%h/.local/lib/doorwayde/doorwayde-config --no-startup";
               };
+
+              # Watches ~/.cache/doorwayde/wall.set for changes and runs matugen
+              # to regenerate Material You color files for Hyprland + QuickShell.
+              # Starts alongside all other graphical-session services; the initial
+              # run on service start handles the wallpaper set before first change.
+              doorwayde-matugen-watcher = {
+                Unit = {
+                  Description = "DOORwayDE matugen wallpaper color watcher";
+                  After = [ "graphical-session.target" ];
+                  PartOf = [ "graphical-session.target" ];
+                };
+                Service = {
+                  Type = "exec";
+                  ExecStart = "${matugenWatcherScript}";
+                  Restart = "on-failure";
+                  RestartSec = 5;
+                };
+                Install = {
+                  WantedBy = [ "graphical-session.target" ];
+                };
+              };
+
+              # QuickShell UI shell — gated by doorwayde.shell.enable.
+              # Leave false until Phase 12 achieves waybar parity.
+              doorwayde-quickshell = lib.mkIf cfg.shell.enable (mkDoorwaydeService {
+                description = "DOORwayDE QuickShell (QML-based UI shell)";
+                execStart = "${pkgs.quickshell}/bin/quickshell -c %h/.config/quickshell/doorwayde";
+              });
             };
           };
         };

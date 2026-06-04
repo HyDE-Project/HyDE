@@ -1,0 +1,30 @@
+# DOORwayDE matugen configuration
+# Generates Material You color palettes from the current wallpaper.
+# Triggered by doorwayde-matugen-watcher.service on wallpaper change.
+#
+# Template variable reference (verify against installed matugen --help):
+#   {{colors.primary.default.hex}}           → #rrggbb
+#   {{colors.primary.default.hex_stripped}}  → rrggbb (no #)
+#   Key names: primary, on_primary, primary_container, on_primary_container,
+#              secondary, on_secondary, secondary_container,
+#              tertiary, on_tertiary, tertiary_container,
+#              background, on_background, surface, on_surface,
+#              surface_variant, on_surface_variant,
+#              outline, outline_variant, shadow, error, on_error,
+#              error_container, on_error_container
+
+[config]
+# DOORwayDE manages its own reload cycle (hyprctl reload after generation).
+reload_apps = false
+
+# Hyprland border colors — loaded via pcall(dofile, ...) in dynamic.lua.
+[templates.hyprland-colors]
+input_path  = "~/.config/matugen/templates/hyprland-colors.lua"
+output_path = "~/.local/share/matugen/hyprland-colors.lua"
+mode = "dark"
+
+# QuickShell color singleton — imported by the QML shell in Phase 12+.
+[templates.quickshell-colors]
+input_path  = "~/.config/matugen/templates/Colors.qml"
+output_path = "~/.local/share/matugen/Colors.qml"
+mode = "dark"
