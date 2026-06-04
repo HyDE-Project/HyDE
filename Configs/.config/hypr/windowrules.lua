@@ -227,3 +227,10 @@ hl.layer_rule({
     match = { namespace = "logout_dialog" },
     blur = true,
 })
+
+-- QuickShell sidebars
+hl.layer_rule({
+    match = { namespace = "^quickshell:sidebarRight$" },
+    blur = true,
+    ignore_alpha = 0,
+})
