@@ -69,11 +69,11 @@
         },
         {
           "label": "  󰃛  ",
-          "command": " hyde-shell hyprsunset --toggle"
+          "command": "doorwayde-shell hyprsunset --toggle"
         },
         {
           "label": "  ⏻  ",
-          "command": "hyde-shell logoutlaunch"
+          "command": "qs -c doorwayde ipc --any-display call sessionScreen open"
         }
       ]
     }

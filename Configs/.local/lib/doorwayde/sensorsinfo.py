@@ -249,10 +249,8 @@ def main():
         page = get_current_page(total_pages)
         if args.next:
             page = (page + 1) % total_pages
-            subprocess.run(["pkill", "-RTMIN+19", "waybar"], check=False)
         elif args.prev:
             page = (page - 1 + total_pages) % total_pages
-            subprocess.run(["pkill", "-RTMIN+19", "waybar"], check=False)
         save_current_page(page)
         sensor_info = get_sensor_data(result_sensors, page)
         print(json.dumps(sensor_info, separators=(",", ":")))

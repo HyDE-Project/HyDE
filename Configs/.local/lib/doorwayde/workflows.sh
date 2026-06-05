@@ -76,14 +76,6 @@ EOF
     printf "%s %s: %s\n" "$current_icon" "$current_workflow" "$current_description"
     notify-send -r 9 -i "preferences-desktop-display" "Workflow: $current_icon $current_workflow" "$current_description"
 }
-handle_waybar() {
-    get_info
-    text="$current_icon"
-    tooltip="Mode: $current_icon $current_workflow \n$current_description"
-    class="custom-workflows"
-    echo "{\"text\": \"$text\", \"tooltip\": \"$tooltip\", \"class\": \"$class\"}"
-}
-
 # Initialize argparse
 argparse_init "$@"
 
@@ -94,7 +86,6 @@ argparse_header "DOORwayDE Workflow Selector"
 # Define arguments
 argparse "--set" "WORKFLOW_NAME" "Set the given workflow" "parameter"
 argparse "--select,-S" "" "Select a workflow from the available options"
-argparse "--waybar" "" "Get workflow info for Waybar"
 argparse "--help,-h" "" "Show this help message"
 
 # Finalize parsing
@@ -106,9 +97,6 @@ argparse_finalize
 case "$ARGPARSE_ACTION" in
 select)
     fn_select
-    if pgrep -x waybar >/dev/null; then
-        pkill -RTMIN+7 waybar
-    fi
     ;;
 set)
     if [ -z "$WORKFLOW_NAME" ]; then
@@ -117,11 +105,7 @@ set)
     fi
     set_conf "HYPR_WORKFLOW" "$WORKFLOW_NAME"
     fn_update
-    if pgrep -x waybar >/dev/null; then
-        pkill -RTMIN+7 waybar
-    fi
     ;;
-waybar) handle_waybar ;;
 help) argparse_help ;;
 *) argparse_help ;;
 esac

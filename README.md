@@ -51,17 +51,10 @@ DOORwayDE is designed to integrate with the [HALLway](https://github.com/MarkusB
 
 **Prerequisites**: Hyprland and dependencies installed via NixOS/Home Manager
 
-```bash
-# Clone DOORwayDE
-git clone https://github.com/MarkusBitterman/DOORwayDE.git ~/DOORwayDE
-
-# Run the setup script
-cd ~/DOORwayDE/Scripts
-./setup-nixos.sh
-
-# Or use the flake (in your HALLway config):
-# imports = [ inputs.doorwayde.homeManagerModules.default ];
-# doorwayde.enable = true;
+```nix
+# In your HALLway (or any NixOS home-manager) config:
+imports = [ inputs.doorwayde.homeManagerModules.default ];
+doorwayde.enable = true;
 ```
 
 ### Required NixOS Packages
@@ -257,7 +250,7 @@ cd DOORwayDE
 nix develop
 
 # Validate before committing
-shellcheck Scripts/*.sh
+shellcheck Configs/.local/lib/doorwayde/*.sh
 ```
 
 ### Testing Hyprland Changes

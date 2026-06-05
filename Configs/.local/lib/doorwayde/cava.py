@@ -771,10 +771,6 @@ def create_client_parser(subparsers, name, help_text):
         default=None,
         help='Standby mode (0-3 or string): 0=clean (totally hides the module), 1=blank (makes module expand as spaces), 2=full (occupies the module with full bar), 3=low (makes the module display the lowest set bar), ""=displays nothing and compresses the module, string=displays the custom string',
     )
-    if name == "waybar":
-        parser.add_argument(
-            "--json", action="store_true", help="Output JSON format for waybar tooltips"
-        )
     return parser
 
 
@@ -800,7 +796,6 @@ def main():
         help="Reverse frequency order: 0=normal, 1=reverse",
     )
 
-    create_client_parser(subparsers, "waybar", "Waybar client")
     create_client_parser(subparsers, "stdout", "Stdout client")
     create_client_parser(subparsers, "hyprlock", "Hyprlock client")
 
@@ -817,7 +812,7 @@ def main():
 
         server.start(args.bars, args.range, args.channels, args.reverse)
 
-    elif args.command in ["waybar", "stdout", "hyprlock"]:
+    elif args.command in ["stdout", "hyprlock"]:
         doorwayde_config = DoorwaydeConfig()
 
         bar_chars, width, standby_mode = CavaClient.parse_command_config(
@@ -827,7 +822,7 @@ def main():
         bars = width
         range_val = int(doorwayde_config.get_value("CAVA_RANGE", "15"))
 
-        json_output = args.command == "waybar" and hasattr(args, "json") and args.json
+        json_output = False
 
         client = CavaClient()
         client.start(

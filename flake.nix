@@ -504,7 +504,7 @@
               echo "DOORwayDE Development Shell"
               echo "All Hyprland packages available."
               echo ""
-              echo "  shellcheck Scripts/*.sh    - Lint shell scripts"
+              echo "  shellcheck Configs/.local/lib/doorwayde/*.sh  - Lint shell scripts"
               echo "  nixfmt flake.nix           - Format Nix"
               echo ""
               echo "Testing Hyprland:"

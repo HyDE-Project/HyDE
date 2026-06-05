@@ -37,8 +37,7 @@ hl.bind(mainMod .. " + G",       hl.dsp.group.toggle(),                         
 hl.bind("SHIFT + F11",           hl.dsp.window.fullscreen({ action = "toggle" }),      { description = "[Window Management] toggle fullscreen" })
 hl.bind(mainMod .. " + L",       hl.dsp.exec_cmd("lockscreen.sh"),                     { description = "[Window Management] lock screen" })
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.exec_cmd("doorwayde-shell window.pin"),        { description = "[Window Management] toggle pin on focused window" })
-hl.bind("CTRL + ALT + Delete",     hl.dsp.exec_cmd("doorwayde-shell logoutlaunch"),      { description = "[Window Management] logout menu" })
-hl.bind("ALT_R + Control_R",     hl.dsp.exec_cmd("doorwayde-shell waybar --hide"),     { description = "[Window Management] toggle waybar and reload config" })
+hl.bind("CTRL + ALT + Delete",     hl.dsp.exec_cmd("qs -c doorwayde ipc --any-display call sessionScreen open"), { description = "[Session] open session screen (lock/suspend/logout/shutdown)" })
 hl.bind(mainMod .. " + F5",      hl.dsp.exec_cmd("hyprctl reload"),                    { description = "[Window Management] reload Hyprland config" })
 
 -- [Window Management|Group Navigation]
@@ -148,8 +147,6 @@ hl.bind("Print",                  hl.dsp.exec_cmd("doorwayde-shell screenshot p"
 hl.bind(mainMod .. " + ALT + Right", hl.dsp.exec_cmd("doorwayde-shell wallpaper -Gn"),                        { description = "[Theming] next global wallpaper" })
 hl.bind(mainMod .. " + ALT + Left",  hl.dsp.exec_cmd("doorwayde-shell wallpaper -Gp"),                        { description = "[Theming] previous global wallpaper" })
 hl.bind(mainMod .. " + SHIFT + W",   hl.dsp.exec_cmd("pkill -x rofi || doorwayde-shell wallpaper -SG"),       { description = "[Theming] select a global wallpaper" })
-hl.bind(mainMod .. " + ALT + Up",    hl.dsp.exec_cmd("doorwayde-shell wbarconfgen n"),                        { description = "[Theming] next waybar layout" })
-hl.bind(mainMod .. " + ALT + Down",  hl.dsp.exec_cmd("doorwayde-shell wbarconfgen p"),                        { description = "[Theming] previous waybar layout" })
 -- SUPER+SHIFT+R (wallbash mode) and SUPER+SHIFT+T (theme select) removed:
 -- wallbashtoggle.sh depended on theme.switch.sh (deleted Phase 10); color mode
 -- selection moves to QuickShell right sidebar in Phase 13. themeselect had no

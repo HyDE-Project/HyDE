@@ -11,7 +11,6 @@ temp_file="$XDG_RUNTIME_DIR/doorwayde/update_info"
 [ -f "$temp_file" ] && source "$temp_file"
 if [ "$1" == "up" ]; then
     if [ -f "$temp_file" ]; then
-        trap 'pkill -RTMIN+20 waybar' EXIT
         while IFS="=" read -r key value; do
             case "$key" in
                 OFFICIAL_UPDATES) official=$value ;;

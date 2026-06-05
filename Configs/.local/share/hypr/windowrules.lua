@@ -114,13 +114,13 @@ hl.window_rule({
 
 hl.layer_rule({
     name  = "doorwayde_layer_blur",
-    match = { namespace = "^(rofi|notifications|swaync-(notification-window|control-center)|waybar|logout_dialog)$" },
+    match = { namespace = "^(rofi|quickshell:notificationPopups|swaync-(notification-window|control-center)|quickshell:bar|quickshell:session)$" },
     blur  = true,
 })
 
 hl.layer_rule({
     name  = "doorwayde_layer_ignore_alpha",
-    match = { namespace = "^(rofi|notifications|swaync-(notification-window|control-center)|logout_dialog|waybar|selection)$" },
+    match = { namespace = "^(rofi|quickshell:notificationPopups|swaync-(notification-window|control-center)|quickshell:session|quickshell:bar|selection)$" },
     ignore_alpha = true,
 })
 

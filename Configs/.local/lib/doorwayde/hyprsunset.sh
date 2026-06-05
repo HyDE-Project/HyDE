@@ -13,7 +13,7 @@ min_temp=1000
 max_temp=20000
 min_gamma=20
 max_gamma=100
-notify="${waybar_temperature_notification:-true}"
+notify="${HYPRSUNSET_NOTIFY:-true}"
 if [ ! -f "$sunsetConf" ]; then
     printf "%d|%d|%d|%d\n" "$default_temp" "$default_gamma" 1 "$default_temp" >"$sunsetConf"
 fi
@@ -109,7 +109,7 @@ Options:
     -r, --read                  Read current screen temperature and gamma
     -t, --toggle                Toggle hyprsunset (on/off)
     -q, --quiet                 Disable notifications
-    -P, --sigproc PROC,SIGNAL   Send signal to process (e.g., --sigproc waybar,19)
+    -P, --sigproc PROC,SIGNAL   Send signal to process (e.g., --sigproc myscript,10)
     -h, --help                  Show this help message
 
 Examples:
@@ -121,7 +121,7 @@ Examples:
     $(basename "$0") --cm gamma -d 10       # Decrease gamma by 10
     $(basename "$0") --cm gamma -s 80       # Set gamma to 80
     $(basename "$0") -t --quiet             # Toggle mode quietly
-    $(basename "$0") --sigproc waybar,19    # Send SIGUSR1 to waybar
+    $(basename "$0") --sigproc myscript,10  # Send signal 10 to process
 EOF
 }
 if [ -z "$*" ]; then

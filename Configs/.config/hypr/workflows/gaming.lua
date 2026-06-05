@@ -33,7 +33,7 @@ hl.window_rule({
 
 hl.layer_rule({
     name = "workflows_gaming",
-    match = { namespace = "^(rofi|notifications|swaync-(notification-window|control-center)|logout_dialog|waybar|.*www-daemon)$" },
+    match = { namespace = "^(rofi|quickshell:notificationPopups|swaync-(notification-window|control-center)|quickshell:session|quickshell:bar|.*www-daemon)$" },
     blur = false,
     no_anim = true,
 })

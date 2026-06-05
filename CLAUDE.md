@@ -32,9 +32,7 @@ DOORwayDE/
 │       ├── bin/               # doorwayde-shell, doorwaydectl, doorwayde-ipc
 │       ├── lib/doorwayde/     # 100+ utility scripts
 │       ├── share/hypr/        # Session orchestrators (startup, variables, env, dynamic)
-│       └── share/doorwayde/   # Data files, schemas, templates
-├── Scripts/                    # Installation and setup scripts
-│   └── setup-nixos.sh         # NixOS setup script
+│       └── share/doorwayde/   # Data files, templates
 ├── flake.nix                  # Nix flake with Home Manager module
 └── README.md                  # User documentation
 ```
@@ -90,7 +88,6 @@ QuickShell itself never writes files. All runtime output goes through matugen's 
 | `Configs/.local/share/doorwayde/hyprland.lua` | Core DOORwayDE orchestrator (sources the share/hypr/ files) |
 | `Configs/.local/lib/doorwayde/globalcontrol.sh` | Core environment setup |
 | `flake.nix` | Nix flake with homeManagerModules.default |
-| `Scripts/setup-nixos.sh` | Manual setup script for NixOS |
 
 ## Nix Store Workflow — CRITICAL
 
@@ -221,7 +218,6 @@ The `nix develop` shell also exports this PATH so `launch-unit.sh` works directl
 1. **Scripts** go in `Configs/.local/lib/doorwayde/`
 2. **Configs** go in `Configs/.config/<app>/`
 3. **Update flake.nix** if adding new config directories
-4. **Update setup-nixos.sh** if adding new symlink targets
 
 ### Flake-based deploy workflow (DOORwayDE → HALLway)
 
@@ -259,7 +255,7 @@ ln -sfn "$orig_dw" ~/.local/share/doorwayde
 
 # Full dev environment
 nix develop
-shellcheck Scripts/*.sh
+shellcheck Configs/.local/lib/doorwayde/*.sh
 ```
 
 ## Upstream Relationship
@@ -287,7 +283,6 @@ Note: these `*.conf` sed commands no longer apply to the lua files in `Configs/.
 
 1. Add to `Configs/.config/<newdir>/`
 2. Add to `flake.nix` in `xdg.configFile`
-3. Add to `Scripts/setup-nixos.sh` in `config_dirs` array
 
 ### Debugging a Hyprland Session (Empty Desktop)
 
