@@ -482,11 +482,19 @@
               };
 
               # QuickShell UI shell — gated by doorwayde.shell.enable.
-              # Leave false until Phase 12 achieves waybar parity.
-              doorwayde-quickshell = lib.mkIf cfg.shell.enable (mkDoorwaydeService {
-                description = "DOORwayDE QuickShell (QML-based UI shell)";
-                execStart = "${pkgs.quickshell}/bin/quickshell -c %h/.config/quickshell/doorwayde";
-              });
+              # QML_IMPORT_PATH exposes qt5compat (Qt5Compat.GraphicalEffects) which
+              # quickshell 0.3.0 does not bundle in its own store path.
+              doorwayde-quickshell = lib.mkIf cfg.shell.enable (lib.mkMerge [
+                (mkDoorwaydeService {
+                  description = "DOORwayDE QuickShell (QML-based UI shell)";
+                  execStart = "${pkgs.quickshell}/bin/quickshell -c %h/.config/quickshell/doorwayde";
+                })
+                {
+                  Service.Environment = [
+                    "QML_IMPORT_PATH=${pkgs.qt6.qt5compat}/lib/qt-6/qml"
+                  ];
+                }
+              ]);
             };
           };
         };

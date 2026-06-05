@@ -1,0 +1,2 @@
+module qs.modules.common.widgets.shapes
+ShapeCanvas 0.1 ShapeCanvas.qml

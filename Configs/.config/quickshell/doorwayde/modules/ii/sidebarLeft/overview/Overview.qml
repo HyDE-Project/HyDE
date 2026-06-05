@@ -84,7 +84,7 @@ Item {
                         spacing: 8
                         CustomIcon {
                             implicitWidth: 24; implicitHeight: 24
-                            iconName: modelData.class?.toLowerCase() ?? ""
+                            source: modelData.class?.toLowerCase() ?? ""
                         }
                         ColumnLayout {
                             spacing: 2
