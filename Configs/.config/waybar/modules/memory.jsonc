@@ -1,7 +1,0 @@
-/*
-To use updated module, please delete this file. 
-To modify the module, 
-    copy the content from xdg_share/waybar/modules/*.jsonc to ~/.config/waybar/modules/*.jsonc
-See https://man.archlinux.org/man/extra/waybar/waybar-memory.5
-*/
-{}

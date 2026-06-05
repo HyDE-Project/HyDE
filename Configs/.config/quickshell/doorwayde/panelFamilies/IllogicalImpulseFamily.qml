@@ -8,6 +8,7 @@ import qs.modules.ii.sidebarLeft
 import qs.modules.ii.sidebarRight
 import qs.modules.ii.osd
 import qs.modules.ii.notifications
+import qs.modules.ii.session
 
 Scope {
     PanelLoader { extraCondition: !Config.options.bar.vertical; component: Bar {} }
@@ -15,6 +16,5 @@ Scope {
     PanelLoader { component: SidebarRight {} }
     PanelLoader { component: Osd {} }
     PanelLoader { component: NotificationPopups {} }
-
-    // Phase 16: session screen (replaces wlogout)
+    PanelLoader { component: SessionScreen {} }
 }

@@ -1,5 +1,0 @@
-{
-    "image#profile": {
-	"exec": "realpath $HOME/.cache/hyde/wall.set"
-}
-}

@@ -1,8 +1,0 @@
-{
-    "custom/keybindhint": {
-        "format": " ",
-        "tooltip-format": "  Keybinds",
-        "rotate": 0,
-        "on-click": "hyde-shell keybinds_hint" 
-    }
-}

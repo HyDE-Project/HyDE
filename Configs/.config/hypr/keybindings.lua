@@ -31,7 +31,7 @@ local moveactivewindow = 'grep -q "true" <<< $(hyprctl activewindow -j | jq -r .
 -- [Window Management]
 hl.bind(mainMod .. " + Q",       hl.dsp.window.close(),                                { description = "[Window Management] close focused window" })
 hl.bind("ALT + F4",              hl.dsp.window.close(),                                { description = "[Window Management] close focused window" })
-hl.bind(mainMod .. " + Delete",  hl.dsp.exec_cmd("doorwayde-shell logout"),            { description = "[Window Management] kill hyprland session" })
+hl.bind(mainMod .. " + Delete",  hl.dsp.exec_cmd("qs -c doorwayde ipc --any-display call sessionScreen open"), { description = "[Session] open session screen (lock/suspend/logout/shutdown)" })
 hl.bind(mainMod .. " + W",       hl.dsp.window.float({ action = "toggle" }),           { description = "[Window Management] toggle floating" })
 hl.bind(mainMod .. " + G",       hl.dsp.group.toggle(),                                { description = "[Window Management] toggle group" })
 hl.bind("SHIFT + F11",           hl.dsp.window.fullscreen({ action = "toggle" }),      { description = "[Window Management] toggle fullscreen" })

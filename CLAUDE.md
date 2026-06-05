@@ -23,12 +23,11 @@ DOORwayDE/
 ├── Configs/                    # All dotfiles (the payload)
 │   ├── .config/
 │   │   ├── hypr/              # Hyprland config (main entry point)
-│   │   ├── waybar/            # Status bar
+│   │   ├── quickshell/        # QuickShell shell (bar, sidebars, OSD, notifications, session)
+│   │   ├── matugen/           # Color template engine (Material You from wallpaper)
 │   │   ├── rofi/              # App launcher
-│   │   ├── dunst/             # Notifications
 │   │   ├── doorwayde/         # DOORwayDE-specific settings
-│   │   ├── kitty/             # Terminal
-│   │   └── wlogout/           # Logout menu
+│   │   └── kitty/             # Terminal
 │   └── .local/
 │       ├── bin/               # doorwayde-shell, doorwaydectl, doorwayde-ipc
 │       ├── lib/doorwayde/     # 100+ utility scripts
@@ -39,6 +38,43 @@ DOORwayDE/
 ├── flake.nix                  # Nix flake with Home Manager module
 └── README.md                  # User documentation
 ```
+
+## QuickShell Shell Architecture
+
+DOORwayDE's shell surface (Initiative II, Phases 12–16) is a single QuickShell process forked from [end-4/dots-hyprland](https://github.com/end-4/dots-hyprland) `ii/` (GPLv3, attribution preserved).
+
+### Surface ownership
+
+| Surface | QML entry point | Wayland layer | Namespace |
+|---------|----------------|---------------|-----------|
+| Top bar | `modules/ii/bar/Bar.qml` | Top | `quickshell:bar` |
+| Right sidebar | `modules/ii/sidebarRight/SidebarRight.qml` | Overlay | `quickshell:sidebarRight` |
+| Left sidebar | `modules/ii/sidebarLeft/SidebarLeft.qml` | Overlay | `quickshell:sidebarLeft` |
+| OSD | `modules/ii/osd/Osd.qml` | Overlay | `quickshell:osd` |
+| Notification popups | `modules/ii/notifications/NotificationPopups.qml` | Overlay | `quickshell:notificationPopups` |
+| Session screen | `modules/ii/session/SessionScreen.qml` | Overlay | `quickshell:session` |
+
+All surfaces are loaded by `panelFamilies/IllogicalImpulseFamily.qml` via `PanelLoader`.
+
+### Color theming (matugen)
+
+`doorwayde-matugen-watcher.service` calls `matugen image <wallpaper>` whenever the wallpaper changes (inotifywait). Matugen renders two templates:
+
+- `~/.local/share/matugen/colors/hyprland-colors.lua` — Hyprland border accent colors (dofile'd by hyprland.lua)
+- `~/.local/share/matugen/colors/Colors.qml` — QuickShell `Colors` singleton with all Material You tokens
+
+`Colors.qml` is watched by QuickShell via `FileView`; changes trigger a live theme reload with no restart.
+
+### IPC keybindings
+
+Sidebar/session toggles use `qs ipc`. Two workarounds are required for QS 0.3.0:
+- `-c doorwayde` — selects the named config instance (not the "default")
+- `--any-display` — bypasses a display-filter bug caused by an empty `instance.lock` file
+- `ExecStartPost` in `doorwayde-quickshell.service` creates `by-id/ipc.sock` → live socket symlink that `qs ipc` resolves to
+
+### Runtime writes
+
+QuickShell itself never writes files. All runtime output goes through matugen's template engine to `~/.local/share/matugen/colors/` (writable, not Nix-managed).
 
 ## Key Files
 

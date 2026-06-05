@@ -251,3 +251,10 @@ hl.layer_rule({
     blur = true,
     ignore_alpha = 0,
 })
+
+-- QuickShell session screen (fullscreen overlay; blur enhances the scrim frosted look)
+hl.layer_rule({
+    match = { namespace = "^quickshell:session$" },
+    blur = true,
+    ignore_alpha = 0,
+})
