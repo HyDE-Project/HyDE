@@ -28,12 +28,11 @@ DOORwayDE is the desktop environment layer of HALLway OS. It provides:
 | Component | Purpose |
 |-----------|---------|
 | **Hyprland** | Wayland compositor with animations and tiling |
-| **Waybar** | Highly customizable status bar |
+| **QuickShell** | QML/Qt6 shell: top bar, sidebars, OSD, notifications, session screen |
+| **matugen** | Material You color theming from the active wallpaper |
 | **Rofi** | Application launcher and menu system |
-| **Dunst** | Notification daemon |
 | **Hyprlock** | Lock screen |
-| **Wlogout** | Logout/power menu |
-| **Wallbash** | Dynamic theming from wallpapers |
+| **swww** | Animated wallpaper backend |
 
 **Why DOORwayDE exists:**
 
@@ -67,34 +66,29 @@ cd ~/DOORwayDE/Scripts
 
 ### Required NixOS Packages
 
-Add these to your NixOS or Home Manager configuration:
+When using the flake (`homeManagerModules.default`), all packages are declared in `doorwaydeDeps` and managed automatically — no manual package list needed.
+
+For manual setups, core dependencies include:
 
 ```nix
-# Core (required)
-hyprland
-waybar
-rofi-wayland
-dunst
-hyprlock
-hypridle
-wlogout
-hyprpaper  # or swww
+hyprland          # compositor
+quickshell        # shell (bar, sidebars, OSD, notifications)
+matugen           # Material You color theming
+rofi-wayland      # launcher
+hyprlock          # lock screen
+hypridle          # idle daemon
+swww              # wallpaper backend
+material-symbols  # icon font for QuickShell surfaces
+polkit_gnome      # authentication agent
 
 # Screenshots & clipboard
-grim
-slurp
-cliphist
+grim  slurp  cliphist
 
 # Utilities
-kitty          # terminal
-brightnessctl  # brightness control
-playerctl      # media controls
-pamixer        # volume control
+kitty  brightnessctl  playerctl  wireplumber
 
 # Optional
-hyprsunset     # blue light filter
-satty          # screenshot annotation
-dolphin        # file manager
+hyprsunset  satty  dolphin
 ```
 
 ---
@@ -116,14 +110,13 @@ Located in `~/.local/lib/doorwayde/`:
 | Script | Function |
 |--------|----------|
 | `animations.sh` | Animation preset switching |
-| `brightnesscontrol.sh` | Screen brightness with notifications |
-| `volumecontrol.sh` | Audio volume with visual feedback |
+| `brightnesscontrol.sh` | Screen brightness with OSD feedback |
+| `volumecontrol.sh` | Audio volume with OSD feedback |
 | `screenshot.sh` | Screenshot capture (area, window, full) |
 | `cliphist.sh` | Clipboard history manager |
 | `lockscreen.sh` | Hyprlock launcher |
 | `rofilaunch.sh` | Rofi menu launcher |
-| `wallpaper.sh` | Wallpaper management |
-| `theme.switch.sh` | Theme switching |
+| `wallpaper.sh` | Wallpaper management + matugen trigger |
 
 ---
 
@@ -139,10 +132,11 @@ Located in `~/.local/lib/doorwayde/`:
 │   ├── windowrules.lua    # Window-specific rules
 │   ├── monitors.lua       # Display configuration ← EDIT THIS
 │   ├── userprefs.lua      # Your personal preferences ← EDIT THIS
-│   ├── animations.lua     # Animation settings
-│   └── themes/            # Theme colors (wallbash still emits .conf
-│                          #   colour files which dynamic.lua sources)
-├── waybar/                # Status bar config
+│   └── animations.lua     # Animation settings
+├── quickshell/doorwayde/  # QuickShell shell (bar, sidebars, OSD, notifications)
+│   ├── shell.qml          # Entry point
+│   └── modules/ii/        # IllogicalImpulse-derived panels
+├── matugen/               # Material You color templates
 ├── rofi/                  # Launcher themes
 └── doorwayde/
     └── config.toml        # DOORwayDE settings
@@ -185,38 +179,22 @@ hl.config({
 
 ## Themes
 
-DOORwayDE supports dynamic theming via Wallbash — colors are extracted from your wallpaper.
+DOORwayDE uses **matugen** (Material You) for dynamic theming — colors are extracted from your active wallpaper and applied to the QuickShell surfaces and Hyprland border colors in real time.
 
-### Available Themes
+### How it works
 
-Compatible with themes from [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes):
+1. `wallpaper.sh` sets the wallpaper and writes a trigger file to `~/.cache/doorwayde/wall.set`
+2. `doorwayde-matugen-watcher` (systemd user service) detects the change via `inotifywait`
+3. `matugen image <wallpaper>` generates a Material You palette and writes:
+   - `~/.local/share/matugen/hyprland-colors.lua` — Hyprland border colors (sourced by `dynamic.lua`)
+   - `~/.config/quickshell/doorwayde/modules/common/Colors.qml` — QuickShell color singleton
+4. Hyprland reloads automatically; QuickShell picks up the new `Colors.qml` values
 
-<div align="center">
-  <table><tr><td>
-
-[![Catppuccin-Latte](https://placehold.co/130x30/dd7878/eff1f5?text=Catppuccin-Latte&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Latte)
-[![Catppuccin-Mocha](https://placehold.co/130x30/b4befe/11111b?text=Catppuccin-Mocha&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Catppuccin-Mocha)
-[![Decay-Green](https://placehold.co/130x30/90ceaa/151720?text=Decay-Green&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Decay-Green)
-[![Tokyo-Night](https://placehold.co/130x30/7aa2f7/24283b?text=Tokyo-Night&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Tokyo-Night)
-[![Gruvbox-Retro](https://placehold.co/130x30/475437/B5CC97?text=Gruvbox-Retro&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Gruvbox-Retro)
-[![Rosé-Pine](https://placehold.co/130x30/c4a7e7/191724?text=Rosé-Pine&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Rose-Pine)
-[![Nordic-Blue](https://placehold.co/130x30/D9D9D9/476A84?text=Nordic-Blue&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Nordic-Blue)
-[![Synth-Wave](https://placehold.co/130x30/495495/ff7edb?text=Synth-Wave&font=Oswald)](https://github.com/HyDE-Project/hyde-themes/tree/Synth-Wave)
-
-  </td></tr></table>
-</div>
-
-### Theme Commands
+### Wallpaper commands
 
 ```bash
-# Switch theme
-doorwayde-shell theme.switch.sh
-
-# Set wallpaper
+# Set wallpaper (triggers matugen automatically)
 doorwayde-shell wallpaper.sh /path/to/wallpaper.jpg
-
-# Keybinding
-Super + T  # Theme selector
 ```
 
 ---
@@ -236,7 +214,9 @@ See [KEYBINDINGS.md](KEYBINDINGS.md) for the complete reference.
 | `Super + F` | Fullscreen |
 | `Super + /` | Show all keybindings |
 | `Super + L` | Lock screen |
-| `Super + Shift + E` | Logout menu |
+| `Super + Delete` | Session screen (lock / suspend / reboot / shutdown) |
+| `Super + SPACE` | Toggle right sidebar (system controls) |
+| `Super + Shift + SPACE` | Toggle left sidebar (productivity) |
 
 ### Window Management
 
@@ -259,22 +239,7 @@ See [KEYBINDINGS.md](KEYBINDINGS.md) for the complete reference.
 
 ## Styles
 
-<div align="center"><table><tr>Theme Select</tr><tr><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_1.png"/></td><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/theme_select_2.png"/></td></tr></table></div>
-
-<div align="center"><table><tr><td>Wallpaper Select</td><td>Launcher Select</td></tr><tr><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/walls_select.png"/></td><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_sel.png"/></td></tr></table></div>
-
-<div align="center"><table><tr>Rofi Launcher</tr><tr><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_1.png"/></td><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_2.png"/></td><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_3.png"/></td></tr></table></div>
-
-<div align="center"><table><tr>Wlogout Menu</tr><tr><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_1.png"/></td><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_2.png"/></td></tr></table></div>
+> Screenshots coming soon — DOORwayDE is under active development as of 2026-06.
 
 ---
 
@@ -334,7 +299,7 @@ start-hyprland
 cat /run/user/$(id -u)/hypr/*/hyprland.log | grep -v "DEBUG from aquamarine"
 
 # Daemon crashes (exec-once failures are silent in the Hyprland log):
-journalctl --user -b -n 200 | grep -iE "(waybar|dunst|doorwayde|hypr)"
+journalctl --user -b -n 200 | grep -iE "(quickshell|doorwayde|hypr)"
 
 # Sanity-check app2unit.sh is findable (run from the debug terminal above):
 doorwayde-shell app -u test.scope -t scope -- echo "ok"

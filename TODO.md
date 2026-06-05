@@ -396,7 +396,7 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
-## Phase 10: De-HyDE Final Cleanup
+## Phase 10: De-HyDE Final Cleanup ✓ DONE (2026-06-04)
 
 > **Goal**: Clear the last cosmetic / dead-code remnants from the HyDE inheritance before the QuickShell work lands. Low-risk; blocks nothing.
 
@@ -413,7 +413,7 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
-## Phase 11: Foundation (matugen + mutable.nix + QuickShell scaffold)
+## Phase 11: Foundation (matugen + mutable.nix + QuickShell scaffold) ✓ DONE (2026-06-04)
 
 > **Goal**: Stand up the runway. After this phase, all subsequent phases have a working substrate: matugen converts the current wallpaper to a Material You palette and writes it to durable paths; QuickShell starts as a systemd user service and renders an empty session; `mutable.nix` is available for any future runtime-writable file.
 
@@ -446,7 +446,7 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
-## Phase 12: Top Bar (the waybar replacement)
+## Phase 12: Top Bar (the waybar replacement) ✓ DONE (2026-06-04)
 
 > **Goal**: Achieve module parity with the current waybar's top-bar functionality in QuickShell, then disable the waybar service. Soft cutover: source files stay for rollback during soak.
 
@@ -486,7 +486,7 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
-## Phase 13: Right Sidebar (system controls)
+## Phase 13: Right Sidebar (system controls) ✓ DONE (2026-06-04)
 
 > **Goal**: Build the persistent system-controls surface. Hotkey-toggled (Super+SPACE) slide-in panel from the right edge with sliders for volume/brightness/mic, toggles + list dialogs for network/bluetooth, calendar, notification history, session menu.
 
@@ -533,7 +533,7 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
-## Phase 14: Left Sidebar (productivity)
+## Phase 14: Left Sidebar (productivity) ✓ DONE (2026-06-04)
 
 > **Goal**: Build the greenfield productivity panel. Tabbed: Notes / Overview / Tasks / Scratchpads. Hotkey-toggled (Super+Shift+SPACE) slide-in panel from the left edge. All four tabs new QML code (no end-4 equivalents we're keeping).
 
@@ -586,7 +586,7 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
-## Phase 15: OSD & Notification Daemon
+## Phase 15: OSD & Notification Daemon ✓ DONE (2026-06-04)
 
 > **Goal**: Replace dunst with a QuickShell notification daemon. Add an OSD overlay for volume/brightness feedback. Surface notification history in the right sidebar widget from Phase 13.
 
@@ -604,33 +604,56 @@ User confirmed HALLway has `services.gnome.gnome-keyring.enable = true` and `sec
 
 ---
 
-## Phase 16: Polish & Decommission
+## Phase 16: Polish & Decommission ✓ DONE (2026-06-04)
 
 > **Goal**: Final cleanup after the new shell has soaked for ~1–2 weeks of daily-driver use. Delete the waybar / dunst / wlogout source trees. Final visual polish.
 
-### Delete (after soak)
+### Delete (after soak) — DONE
 
-- [ ] `Configs/.local/share/waybar/` (whole tree)
-- [ ] `Configs/.config/waybar/` (whole tree)
-- [ ] `Configs/.local/lib/doorwayde/waybar.py`
-- [ ] `Configs/.config/dunst/` (whole tree)
-- [ ] `Configs/.config/wlogout/` (whole tree)
-- [ ] `Configs/.local/lib/doorwayde/color/hypr.sh` (wallbash → Hyprland border colors — matugen owns this now)
-- [ ] Remove `systemd.user.services.doorwayde-waybar`, `dunst`, `wlogout` entries from `flake.nix`
-- [ ] Drop `pkgs.waybar`, `pkgs.dunst`, `pkgs.wlogout` from `doorwaydeDeps` (verify no other consumer)
+- [x] `Configs/.local/share/waybar/` (whole tree)
+- [x] `Configs/.config/waybar/` (whole tree)
+- [x] `Configs/.local/lib/doorwayde/waybar.py`
+- [x] `Configs/.config/dunst/` (whole tree)
+- [x] `Configs/.config/wlogout/` (whole tree)
+- [x] `Configs/.local/lib/doorwayde/color/hypr.sh` (wallbash → Hyprland border colors — matugen owns this now)
+- [x] Remove `systemd.user.services.doorwayde-waybar`, dunst, wlogout entries from `flake.nix`
+- [x] Drop `pkgs.waybar`, `pkgs.wlogout` from `doorwaydeDeps` (dunst removed in Phase 15; waybar + wlogout removed in Phase 16)
 
-### Polish
+### Polish — DEFERRED to Phase 17 soak window
 
 - [ ] Slide-in animation curve tuning (Hyprland layer animation params)
 - [ ] Final blur strength + rounding values across all `quickshell:*` layers
 - [ ] Sidebar widget spacing audit — make the "minimal/readable" promise concrete
 
-### Documentation
+### Documentation — DONE
 
-- [ ] Update `CLAUDE.md` — add a "QuickShell shell architecture" section: what QML tree owns what surface, how matugen feeds colors, where runtime writes go, the `mutable.nix` pattern
-- [ ] Update `README.md` with new screenshots, revised feature list
-- [ ] Mark Phases 10–16 done in this TODO.md
-- [ ] Add Phase 17 placeholder for stretch goals: AI integration in left sidebar, QuickShell lockscreen (replaces hyprlock), theme variants (Tokyo Night / Catppuccin switcher overrides matugen)
+- [x] Update `CLAUDE.md` — "QuickShell shell architecture" section added (surface ownership, matugen flow, IPC workaround, runtime writes)
+- [x] Update `README.md` — component table updated; waybar/dunst/wlogout removed; QuickShell/matugen described; keybindings updated; old HyDE screenshots replaced with placeholder
+- [x] Mark Phases 10–16 done in this TODO.md
+- [x] Add Phase 17 placeholder below
+
+---
+
+## Phase 17: Stretch Goals (post-soak)
+
+> **Goal**: Enhancements after the Phase 16 shell has proven stable in daily-driver use. No timeline — add to this list as ideas crystallize.
+
+### Visual polish (carried from Phase 16 deferred)
+
+- [ ] Slide-in animation curve tuning — evaluate `Easing.BezierSpline` with `expressiveEffects` curve for sidebar slide vs. Hyprland layer animation override
+- [ ] Final blur strength + rounding values per `quickshell:*` namespace — audit in motion vs. static screenshots
+- [ ] Sidebar widget spacing audit — verify `minimal/readable` promise on a 1080p display
+
+### Shell extensions
+
+- [ ] QuickShell lockscreen — replace hyprlock with a QML lockscreen surface (`WlrLayershell.layer: WlrLayer.Overlay`, `WlrKeyboardFocus.Exclusive`); hyprlock config stays as fallback
+- [ ] AI integration in left sidebar — deferred since Phase 14 planning; revisit once productivity tabs have had soak time
+- [ ] Theme variant switcher — `matugen` owns the base palette; a secondary accent override (Tokyo Night / Catppuccin tones) could be applied as a CSS filter or color matrix on top without abandoning Material You structure
+
+### Infrastructure
+
+- [ ] GitHub Actions CI for `Hyprland --verify-config` (Phase 8 open item) — run on every PR touching `Configs/.config/hypr/` or `Configs/.local/share/hypr/`
+- [ ] Wiki articles (Phase 8 open item): Architecture-Overview, Theming-and-Wallbash, Keybindings-Reference, Scripting-API, Lua-Migration-Notes
 
 ---
 
