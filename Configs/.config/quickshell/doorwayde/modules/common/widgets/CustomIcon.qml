@@ -16,13 +16,8 @@ Item {
     IconImage {
         id: iconImage
         anchors.fill: parent
-        source: {
-            const fullPathWhenSourceIsIconName = iconFolder + "/" + root.source;
-            if (iconFolder && fullPathWhenSourceIsIconName) {
-                return fullPathWhenSourceIsIconName
-            }
-            return root.source
-        }
+        // Try system icon theme first (Tela etc.), fall back to assets/icons/.
+        source: Quickshell.iconPath(root.source, iconFolder + "/" + root.source)
         implicitSize: root.height
     }
 

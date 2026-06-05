@@ -56,6 +56,7 @@
         quickshell      # QML/Qt6 desktop shell toolkit
         matugen         # Material You color generation from wallpaper
         inotify-tools   # inotifywait for doorwayde-matugen-watcher
+        material-symbols  # Google Material Symbols variable font (used by MaterialSymbol.qml)
       ];
 
       # Development dependencies
