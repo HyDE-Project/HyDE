@@ -484,16 +484,33 @@
               # QuickShell UI shell — gated by doorwayde.shell.enable.
               # QML_IMPORT_PATH exposes qt5compat (Qt5Compat.GraphicalEffects) which
               # quickshell 0.3.0 does not bundle in its own store path.
+              # ExecStartPost creates by-id/ipc.sock → the live instance socket.
+              # Workaround: qs ipc resolves the instance ID from lock file content,
+              # but QS 0.3.0 uses raw fcntl locks on an empty file, so the ID reads
+              # as "" and the client looks for by-id/ipc.sock (missing the subdir).
               doorwayde-quickshell = lib.mkIf cfg.shell.enable (lib.mkMerge [
                 (mkDoorwaydeService {
                   description = "DOORwayDE QuickShell (QML-based UI shell)";
                   execStart = "${pkgs.quickshell}/bin/quickshell -c %h/.config/quickshell/doorwayde";
                 })
-                {
+                (let
+                  qsIpcSymlink = pkgs.writeShellScript "qs-ipc-symlink" ''
+                    QS=/run/user/$(id -u)/quickshell
+                    for _ in $(seq 30); do
+                      sock=$(ls -t "$QS"/by-id/*/ipc.sock 2>/dev/null | head -1)
+                      if [ -n "$sock" ]; then
+                        ln -sfn "$sock" "$QS/by-id/ipc.sock"
+                        exit 0
+                      fi
+                      sleep 0.5
+                    done
+                  '';
+                in {
                   Service.Environment = [
                     "QML_IMPORT_PATH=${pkgs.qt6.qt5compat}/lib/qt-6/qml"
                   ];
-                }
+                  Service.ExecStartPost = "${qsIpcSymlink}";
+                })
               ]);
             };
           };
