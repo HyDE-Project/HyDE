@@ -239,3 +239,15 @@ hl.layer_rule({
     blur = true,
     ignore_alpha = 0,
 })
+
+-- QuickShell OSD + notification popups (overlay layer, transparent areas pass input through)
+hl.layer_rule({
+    match = { namespace = "^quickshell:osd$" },
+    blur = true,
+    ignore_alpha = 0,
+})
+hl.layer_rule({
+    match = { namespace = "^quickshell:notificationPopups$" },
+    blur = true,
+    ignore_alpha = 0,
+})

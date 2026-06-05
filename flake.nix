@@ -21,7 +21,6 @@
         # UI components
         waybar
         rofi
-        dunst
         wlogout
 
         # Utilities
@@ -257,7 +256,6 @@
               # The module-include list (includes.json) is static — lifted to Nix-eval-time below.
               # Template sources (layouts/styles/modules) live in ~/.local/share/waybar/.
               "rofi".source = "${configDir}/.config/rofi";
-              "dunst".source = "${configDir}/.config/dunst";
               "doorwayde".source = "${configDir}/.config/doorwayde";
               "kitty".source = "${configDir}/.config/kitty";
               "wlogout".source = "${configDir}/.config/wlogout";
@@ -422,14 +420,11 @@
                 execStart = "${pkgs.blueman}/bin/blueman-applet";
               };
 
-              doorwayde-notifications = mkDoorwaydeService {
-                description = "DOORwayDE notification daemon (dunst)";
-                documentation = "https://dunst-project.org/";
-                execStart = "${pkgs.dunst}/bin/dunst";
-              };
+              # doorwayde-notifications (dunst) removed in Phase 15 — QuickShell's
+              # NotificationServer (Notifications.qml) registers on org.freedesktop.Notifications.
 
               # battery-notify reclassified to app-graphical.slice in Pass 4: it
-              # uses notify-send → dunst, which is graphical-session-only.
+              # uses notify-send → quickshell, which is graphical-session-only.
               doorwayde-battery-notify = mkDoorwaydeService {
                 description = "DOORwayDE low-battery notification watcher";
                 execStart = "%h/.local/lib/doorwayde/batterynotify.sh";
@@ -539,7 +534,7 @@
               echo "Debugging startup failures:"
               echo "  cat /run/user/\$(id -u)/hypr/*/hyprland.log | grep -v 'DEBUG from aquamarine'"
               echo "    Lua config errors appear here; exec_once failures do NOT."
-              echo "  journalctl --user -b -n 200 | grep -iE '(waybar|dunst|doorwayde|hypr)'"
+              echo "  journalctl --user -b -n 200 | grep -iE '(waybar|quickshell|doorwayde|hypr)'"
               echo "    Daemon crashes from exec_once land here."
               echo "  doorwayde-shell app -u test.scope -t scope -- echo ok"
               echo "    Sanity check: verifies app2unit.sh is findable in PATH."

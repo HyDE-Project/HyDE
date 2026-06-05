@@ -274,7 +274,7 @@ If Hyprland starts but shows only a cursor with no bar or wallpaper:
 
 2. **exec-once failures** — silent in the Hyprland log; check journalctl:
    ```bash
-   journalctl --user -b -n 200 | grep -iE "(waybar|dunst|doorwayde|hypr)"
+   journalctl --user -b -n 200 | grep -iE "(waybar|quickshell|doorwayde|hypr)"
    ```
 
 3. **Check for EROFS crashes in startup scripts** — `waybar.py`, `wallpaper.sh`, etc.
