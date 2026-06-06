@@ -29,7 +29,7 @@ Multi-language README support
 <a href="#更新"><kbd> <br> 更新 <br> </kbd></a>&ensp;&ensp;
 <a href="#主题"><kbd> <br>  主题  <br> </kbd></a>&ensp;&ensp;
 <a href="#风格"><kbd> <br>  风格  <br> </kbd></a>&ensp;&ensp;
-<a href="KEYBINDINGS.zh.md"><kbd> <br>  按键映射  <br> </kbd></a>&ensp;&ensp;
+<a href="../assets/keybinds/KEYBINDINGS.zh.md"><kbd> <br>  快捷键  <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
 <a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>
@@ -72,6 +72,7 @@ HyDE 是一个高度自定义的预设，在其他[桌面环境](https://wiki.ar
 
 > [!IMPORTANT]
 > 安装脚本会自动检测英伟达显卡并安装 nvidia-open-dkms 内核驱动。
+> 旧款显卡请先查看[此说明](../../Scripts/nvidia-db/)。
 > 请确保您的英伟达显卡支持 dkms 驱动，支持的具体型号可以查看[这个列表](https://wiki.archlinux.org/title/NVIDIA)。
 
 > [!CAUTION]
@@ -80,7 +81,7 @@ HyDE 是一个高度自定义的预设，在其他[桌面环境](https://wiki.ar
 若要安装，请执行以下命令：
 
 ```shell
-pacman -S --needed git base-devel
+sudo pacman -S --needed git base-devel
 git clone --depth 1 https://github.com/HyDE-Project/HyDE ~/HyDE
 cd ~/HyDE/Scripts
 ./install.sh
@@ -118,9 +119,13 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 
 要更新 HyDE, 您需要从 GitHub 中拉取最新更改并通过运行以下命令恢复配置：
 
+> [!WARNING]
+> 以下命令会丢弃仓库中所有未提交的本地更改。
+
 ```shell
 cd ~/HyDE/Scripts
-git pull origin master
+git fetch --update-shallow --depth 1 origin master
+git reset --hard origin/master
 ./install.sh -r
 ```
 

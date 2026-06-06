@@ -6,19 +6,18 @@
 
 ###### _<div align="right"><a id=-design-by-t2></a><sub>// 由 t2 设计</sub></div>_
 
-![hyde_banner](Source/assets/hyde_banner.png)
+![hyde_banner](../hyde_banner.png)
 
 <!--
 Multi-language KEYBINDINGS support
 -->
 
-<!-- [![en](https://img.shields.io/badge/lang-en-red.svg)](KEYBINDINGS.md) -->
-
-[![es](https://img.shields.io/badge/lang-es-yellow.svg)](Source/assets/keybinds/KEYBINDINGS.es.md)
-[![de](https://img.shields.io/badge/lang-de-black.svg)](Source/assets/keybinds/KEYBINDINGS.de.md)
-[![nl](https://img.shields.io/badge/lang-nl-green.svg)](Source/assets/keybinds/KEYBINDINGS.nl.md)
-[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/assets/keybinds/KEYBINDINGS.fr.md)
-[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](Source/assets/keybinds/KEYBINDINGS.ar.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](../../../KEYBINDINGS.md)
+[![es](https://img.shields.io/badge/lang-es-yellow.svg)](KEYBINDINGS.es.md)
+[![de](https://img.shields.io/badge/lang-de-black.svg)](KEYBINDINGS.de.md)
+[![nl](https://img.shields.io/badge/lang-nl-green.svg)](KEYBINDINGS.nl.md)
+[![fr](https://img.shields.io/badge/lang-fr-blue.svg)](KEYBINDINGS.fr.md)
+[![ar](https://img.shields.io/badge/lang-AR-orange.svg)](KEYBINDINGS.ar.md)
 
 <div align="center">
 
@@ -38,21 +37,21 @@ Multi-language KEYBINDINGS support
 
 <div align="center">
   <div style="display: flex; flex-wrap: nowrap; justify-content: center;">
-    <img src="Source/assets/archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
-    <img src="Source/assets/nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
+    <img src="../archlinux.png" alt="Arch Linux" style="width: 10%; margin: 10px;"/>
+    <img src="../cachyos.png" alt="CachyOS" style="width: 10%; margin: 10px;"/>
+    <img src="../endeavouros.png" alt="EndeavourOS" style="width: 10%; margin: 10px;"/>
+    <img src="../garuda.png" alt="Garuda" style="width: 10%; margin: 10px;"/>
+    <img src="../nixos.png" alt="NixOS" style="width: 10%; margin: 10px;"/>
   </div>
 </div>
 
 <!-- # <a id=hyde-keybindings>HyDE Keybindings</a> -->
 <!-- # <a id=hyde-keybindings></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&width=435&lines=HyDE%20Keybindings" width="450"/> -->
 
-以下列出了所有 HyDE 特有的键盘快捷键。
+以下列出了所有 HyDE 特有的快捷键。
 
 > [!TIP]
-> <kbd>Super</kbd> + <kbd>/</kbd> 显示键盘快捷键。
+> <kbd>Super</kbd> + <kbd>/</kbd> 显示快捷键。
 
 <!-- ## <a id=window-management>Window Management</a> -->
 
