@@ -7,23 +7,23 @@ import argparse
 
 def generate_default_config(toml_file_path):
     """Generate a default config.toml file from the schema."""
-    
+
     def extract_defaults(properties, prefix=""):
         """Recursively extract default values from the schema."""
         config_lines = []
-        
+
         for key, value in properties.items():
             if key.startswith("$") or key == "type":
                 continue
-                
+
             current_key = f"{prefix}.{key}" if prefix else key
-            
+
             if isinstance(value, dict):
                 if "default" in value:
                     # This is a leaf node with a default value
                     default_val = value["default"]
-                    description = value.get("description", "")
-                    
+                    description = value.get("description", "").strip()
+
                     # Format the default value appropriately
                     if isinstance(default_val, str):
                         if '"' in default_val:
@@ -49,22 +49,22 @@ def generate_default_config(toml_file_path):
                         formatted_val = str(default_val).lower()
                     else:
                         formatted_val = str(default_val)
-                    
+
                     config_lines.append(f"{key} = {formatted_val}  # {description}")
-                    
+
                 elif "properties" in value:
                     # This is a section with subsections
                     if "description" in value:
-                        config_lines.append(f"# {value['description']}")
+                        config_lines.append(f"# {value['description'].strip()}")
                     config_lines.append(f"[{current_key}]")
                     config_lines.extend(extract_defaults(value["properties"], current_key))
                     config_lines.append("")  # Add empty line after each section
-        
+
         return config_lines
 
     with open(toml_file_path, "rb") as toml_file:
         toml_content = toml.load(toml_file)
-    
+
     # Start with header
     config_lines = [
         "# HyDE Configuration File",
@@ -74,12 +74,12 @@ def generate_default_config(toml_file_path):
         "\"$schema\" = \"https://raw.githubusercontent.com/HyDE-Project/HyDE/refs/heads/master/Configs/.local/share/hyde/schema/config.toml.json\"",
         "",
     ]
-    
+
     # Extract properties
     if "properties" in toml_content:
         config_lines.extend(extract_defaults(toml_content["properties"]))
-    
-    return "\n".join(config_lines)
+
+    return "\n".join(config_lines).rstrip()
 
 
 def main():

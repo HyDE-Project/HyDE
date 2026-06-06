@@ -1,10 +1,70 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC1091
 # shellcheck disable=SC2034
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+
+for arg in "$@"; do
+    case "$arg" in
+    -h | --help | help)
+        LIB_DIR="${LIB_DIR:-$(dirname "$script_dir")}"
+        if ! declare -F _t >/dev/null; then
+            if [[ -r "$LIB_DIR/hyde/i18n.sh" ]]; then
+                source "$LIB_DIR/hyde/i18n.sh"
+            else
+                _t() {
+                    local key="${1:-}"
+                    local default="${2:-$key}"
+                    if (( $# >= 2 )); then
+                        shift 2
+                    else
+                        shift "$#"
+                    fi
+                    if (( $# > 0 )); then
+                        printf "$default" "$@"
+                    else
+                        printf '%s' "$default"
+                    fi
+                }
+                _tn() { _t "$@"; printf '\n'; }
+            fi
+        fi
+        source "$LIB_DIR/hyde/wallpaper/help.sh"
+        show_help
+        exit 0
+        ;;
+    esac
+done
+
 if [[ $HYDE_SHELL_INIT -ne 1 ]]; then
     eval "$(hyde-shell init)"
 else
     export_hyde_config
+fi
+
+if ! declare -F _t >/dev/null; then
+    # shellcheck source=/dev/null
+    if [[ -r "$LIB_DIR/hyde/i18n.sh" ]]; then
+        source "$LIB_DIR/hyde/i18n.sh"
+    else
+        _t() {
+            local key="${1:-}"
+            local default="${2:-$key}"
+            if (( $# >= 2 )); then
+                shift 2
+            else
+                shift "$#"
+            fi
+            if (( $# > 0 )); then
+                printf "$default" "$@"
+            else
+                printf '%s' "$default"
+            fi
+        }
+        _tn() {
+            _t "$@"
+            printf '\n'
+        }
+    fi
 fi
 
 source "$LIB_DIR/hyde/wallpaper/help.sh"
@@ -30,14 +90,14 @@ run_cache_command() {
         ;;
     w | wall)
         if [ -z "$cache_arg" ] || [ ! -f "$cache_arg" ]; then
-            print_log -err "wallpaper" "--cache wall requires a valid file path"
+            print_log -err "wallpaper" "$(_t "wallpaper.error.cache_wall_requires_file" "--cache wall requires a valid file path")"
             return 1
         fi
         "$LIB_DIR/hyde/wallpaper/cache.sh" commence -w "$cache_arg"
         ;;
     t | theme)
         if [ -z "$cache_arg" ]; then
-            print_log -err "wallpaper" "--cache theme requires a theme name"
+            print_log -err "wallpaper" "$(_t "wallpaper.error.cache_theme_requires_name" "--cache theme requires a theme name")"
             return 1
         fi
         "$LIB_DIR/hyde/wallpaper/cache.sh" commence -t "$cache_arg"
@@ -46,8 +106,8 @@ run_cache_command() {
         "$LIB_DIR/hyde/wallpaper/cache.sh" commence -f
         ;;
     *)
-        print_log -err "wallpaper" "Invalid cache mode: $cache_mode"
-        print_log -sec "wallpaper" "Use: --cache <current|wall|theme|full> [value]"
+        print_log -err "wallpaper" "$(_t "wallpaper.error.invalid_cache_mode" "Invalid cache mode: %s" "$cache_mode")"
+        print_log -sec "wallpaper" "$(_t "wallpaper.log.cache_use" "Use: --cache <current|wall|theme|full> [value]")"
         return 1
         ;;
     esac
@@ -55,7 +115,7 @@ run_cache_command() {
 
 validate_multi_select_flags() {
     if [ "$multi_select" == "true" ] && [ "$output_flag" != "true" ]; then
-        print_log -err "wallpaper" "--multi-select requires --output"
+        print_log -err "wallpaper" "$(_t "wallpaper.error.multi_select_output" "--multi-select requires --output")"
         return 1
     fi
 }
@@ -67,9 +127,9 @@ setup_wallpaper_targets() {
     g | select | start) requires_backend=false ;;
     esac
     if [ -z "$wallpaper_backend" ] && [ "$requires_backend" = true ]; then
-        print_log -sec "wallpaper" -err "No backend specified"
-        print_log -sec "wallpaper" " Please specify a backend, try '--backend awww'"
-        print_log -sec "wallpaper" " See available commands: '--help | -h'"
+        print_log -sec "wallpaper" -err "$(_t "wallpaper.error.backend_missing" "No backend specified")"
+        print_log -sec "wallpaper" " $(_t "wallpaper.log.select_backend" "Please specify a backend, try '--backend awww'")"
+        print_log -sec "wallpaper" " $(_t "wallpaper.log.see_help" "See available commands: '--help | -h'")"
         return 1
     fi
     if [ "$set_as_global" == "true" ]; then
@@ -103,12 +163,12 @@ handle_output_mode() {
             else
                 source_path="$wallSet"
             fi
-            print_log -sec "wallpaper" "Copied $(basename "$source_path") to: $out"
+            print_log -sec "wallpaper" "$(_t "wallpaper.log.copied" "Copied %s to: %s" "$(basename "$source_path")" "$out")"
             cp -f "$source_path" "$out"
         done
         return 0
     elif [ "$multi_select" == "true" ] && [ ${#wallpaper_outputs[@]} -eq 0 ]; then
-        print_log -err "wallpaper" "--multi-select requires at least one --output"
+        print_log -err "wallpaper" "$(_t "wallpaper.error.multi_select_output_value" "--multi-select requires at least one --output")"
         return 2
     fi
     if [ "$wallpaper_setter_flag" == "select" ]; then
@@ -126,7 +186,7 @@ handle_output_mode() {
     fi
     wallpaper_name="$(basename "$source_path")"
     for out in "${wallpaper_outputs[@]}"; do
-        print_log -sec "wallpaper" "Copied $wallpaper_name to: $out"
+        print_log -sec "wallpaper" "$(_t "wallpaper.log.copied" "Copied %s to: %s" "$wallpaper_name" "$out")"
         cp -f "$source_path" "$out"
     done
     return 0
@@ -167,7 +227,7 @@ main() {
             ;;
         s)
             if [ -z "$wallpaper_path" ] && [ ! -f "$wallpaper_path" ]; then
-                print_log -err "wallpaper" "Wallpaper not found: $wallpaper_path"
+                print_log -err "wallpaper" "$(_t "wallpaper.error.wallpaper_not_found" "Wallpaper not found: %s" "$wallpaper_path")"
                 exit 1
             fi
             get_hashmap "$wallpaper_path"
@@ -175,7 +235,7 @@ main() {
             ;;
         start)
             if [ ! -e "$wallSet" ]; then
-                print_log -err "wallpaper" "No current wallpaper found: $wallSet"
+                print_log -err "wallpaper" "$(_t "wallpaper.error.no_current_wallpaper" "No current wallpaper found: %s" "$wallSet")"
                 exit 1
             fi
             export WALLPAPER_RELOAD_ALL=0 WALLBASH_STARTUP=1
@@ -185,7 +245,7 @@ main() {
             ;;
         g)
             if [ ! -e "$wallSet" ]; then
-                print_log -err "wallpaper" "Wallpaper not found: $wallSet"
+                print_log -err "wallpaper" "$(_t "wallpaper.error.wallpaper_not_found" "Wallpaper not found: %s" "$wallSet")"
                 exit 1
             fi
             realpath "$wallSet"
@@ -193,7 +253,7 @@ main() {
             ;;
         o)
             if [ -n "$wallpaper_output" ]; then
-                print_log -sec "wallpaper" "Current wallpaper copied to: $wallpaper_output"
+                print_log -sec "wallpaper" "$(_t "wallpaper.log.current_copied" "Current wallpaper copied to: %s" "$wallpaper_output")"
                 cp -f "$wallSet" "$wallpaper_output"
             fi
             # Output-only: do not proceed to backend apply
@@ -216,32 +276,39 @@ main() {
         esac
     fi
     if [ -f "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" ] && [ -n "$wallpaper_backend" ]; then
-        print_log -sec "wallpaper" "Using backend: $wallpaper_backend"
+        print_log -sec "wallpaper" "$(_t "wallpaper.log.using_backend" "Using backend: %s" "$wallpaper_backend")"
         "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" "$wallSet"
     else
         if command -v "wallpaper.$wallpaper_backend.sh" >/dev/null; then
             "wallpaper.$wallpaper_backend.sh" "$wallSet"
         else
-            print_log -warn "wallpaper" "No backend script found for $wallpaper_backend"
-            print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/$wallpaper_backend.png instead"
+            print_log -warn "wallpaper" "$(_t "wallpaper.error.no_backend_script" "No backend script found for %s" "$wallpaper_backend")"
+            print_log -warn "wallpaper" "$(_t "wallpaper.log.created_instead" "Created: %s instead" "$HYDE_CACHE_HOME/wallpapers/$wallpaper_backend.png")"
         fi
     fi
     if [ "$wallpaper_setter_flag" == "select" ]; then
         if [ -e "$(readlink -f "$wallSet")" ]; then
             if [ "$set_as_global" == "true" ]; then
-                notify-send -a "HyDE Alert" -i "$selected_thumbnail" "$selected_wallpaper"
+                notify-send -a "$(_t "common.hyde_alert" "HyDE Alert")" -i "$selected_thumbnail" "$selected_wallpaper"
             else
-                notify-send -a "HyDE Alert" -i "$selected_thumbnail" "$selected_wallpaper set for $wallpaper_backend"
+                notify-send -a "$(_t "common.hyde_alert" "HyDE Alert")" -i "$selected_thumbnail" "$(_t "wallpaper.log.set_for_backend" "%s set for %s" "$selected_wallpaper" "$wallpaper_backend")"
             fi
         else
-            notify-send -a "HyDE Alert" "Wallpaper not found"
+            notify-send -a "$(_t "common.hyde_alert" "HyDE Alert")" "$(_t "wallpaper.error.wallpaper_not_found_short" "Wallpaper not found")"
         fi
     fi
 }
 if [ -z "$*" ]; then
-    echo "No arguments provided"
+    _tn "wallpaper.error.no_arguments" "No arguments provided"
     show_help
 fi
+for arg in "$@"; do
+    case "$arg" in
+    -h | --help)
+        show_help
+        ;;
+    esac
+done
 LONGOPTS="link,global,select,multi-select,json,next,previous,random,set:,start,backend:,get,output:,help,filetypes:,cache:"
 PARSED=$(getopt --options GSjnprb:s:t:go:h --longoptions "$LONGOPTS" --name "$0" -- "$@") || exit 2
 WALLPAPER_OVERRIDE_FILETYPES=()
@@ -315,7 +382,7 @@ while true; do
         IFS=':' read -r -a WALLPAPER_OVERRIDE_FILETYPES <<<"$2"
         if [ "$LOG_LEVEL" == "debug" ]; then
             for i in "${WALLPAPER_OVERRIDE_FILETYPES[@]}"; do
-                print_log -g "DEBUG:" -b "filetype overrides : " "'$i'"
+                print_log -g "DEBUG:" -b "$(_t "wallpaper.log.debug_filetype" "filetype overrides : ")" "'$i'"
             done
         fi
         export WALLPAPER_OVERRIDE_FILETYPES
@@ -334,8 +401,8 @@ while true; do
         break
         ;;
     *)
-        echo "Invalid option: $1"
-        echo "Try '$(basename "$0") --help' for more information."
+        _tn "wallpaper.error.invalid_option" "Invalid option: %s" "$1"
+        _tn "common.try_help" "Try '%s --help' for more information." "$(basename "$0")"
         exit 1
         ;;
     esac

@@ -4,6 +4,10 @@
 
 "$schema" = "https://raw.githubusercontent.com/HyDE-Project/HyDE/refs/heads/master/Configs/.local/share/hyde/schema/config.toml.json"
 
+# Internationalization configuration.
+[i18n]
+language = ""  # Language override for HyDE runtime strings. Leave empty to auto-detect from the environment.
+
 # Wallpaper configuration.
 [wallpaper]
 custom_paths = []  # List of paths to search for wallpapers.
@@ -15,6 +19,20 @@ duration = 1  # Transition duration.
 transition_next = "grow"  # Transition type for next wallpaper.
 transition_prev = "outer"  # Transition type for previous wallpaper.
 transition_default = "grow"  # Transition type for default wallpaper.
+
+# waydeeper 3D parallax wallpaper configuration.
+[wallpaper.waydeeper]
+strength = 0.02  # Sets both X & Y parallax strength.
+strength_x = 0.02  # X-axis parallax strength.
+strength_y = 0.02  # Y-axis parallax strength.
+smooth_animation = true  # Enables smooth easing for animation.
+animation_speed = 0.05  # Animation speed multiplier.
+fps = 60  # Frame rate (30 or 60).
+active_delay = 150  # Delay (ms) before animation starts after mouse enters wallpaper surface.
+idle_timeout = 5000  # Stops animation (ms) after mouse idle.
+invert_depth = false  # Inverts depth interpretation.
+model = "depth-anything-v3-base"  # ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4.
+regenerate = false  # Forces regeneration of depth maps & meshes.
 
 
 # Global rofi configuration.
@@ -139,7 +157,7 @@ skip_template = [""]  # Templates to skip when using wallbash.
 font = "JetBrainsMono Nerd Font"  # Font for waybar.
 scale = 10  # Total scaling for waybar.
 icon_size = 10  # Icon size for waybar.
-position = "top"  # A fallback position of the waybar.  
+position = "top"  # A fallback position of the waybar.
 
 # Weather configuration.
 [weather]
@@ -329,4 +347,3 @@ prefix_paused = "  "  # Prefix for paused media.
 max_length = 70  # Max length of song and artist string.
 standby_text = "  Music"  # To display on standby.
 artist_track_separator = "  "  # Separator symbols to display between artist and track.
-

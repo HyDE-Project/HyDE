@@ -163,7 +163,6 @@ Hyprland configuration.
 | --- | ----------- | ------- |
 | background_path | LockScreen's Background path. |  |
 | bar | Bar. | waybar |
-| blue_light_filter | Blue-light filter. | hyprsunset |
 | browser | Browser. | firefox |
 | button_layout | Button layout. (gtk only) |  |
 | color_scheme | Color scheme. | prefer-dark |
@@ -220,6 +219,14 @@ hyprlock configuration.
 | immediate_render | Makes hyprlock immediately start to draw widgets. | false |
 | screencopy_mode | Selects screencopy mode: 0 gpu accelerated, 1 cpu based (slow). | 0 |
 | text_trim | Sets if the text should be trimmed, useful to avoid trailing newline in commands output. | true |
+
+### [i18n]
+
+Internationalization configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| language | Language override for HyDE runtime strings. Leave empty to auto-detect from the environment. |  |
 
 ### [mediaplayer]
 
@@ -476,7 +483,7 @@ waybar configuration.
 | --- | ----------- | ------- |
 | font | Font for waybar. | JetBrainsMono Nerd Font |
 | icon_size | Icon size for waybar. | 10 |
-| position | A fallback position of the waybar.   | top |
+| position | A fallback position of the waybar. | top |
 | scale | Total scaling for waybar. | 10 |
 
 ### [weather]
@@ -501,4 +508,3 @@ wlogout configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | style | Style for wlogout. | 2 |
-

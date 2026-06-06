@@ -23,6 +23,29 @@ export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
+# shellcheck source=/dev/null
+[[ -r "$scrDir/i18n.sh" ]] && source "$scrDir/i18n.sh"
+if ! declare -F _t >/dev/null; then
+    _t() {
+        local key="${1:-}"
+        local default="${2:-$key}"
+        if (( $# >= 2 )); then
+            shift 2
+        else
+            shift "$#"
+        fi
+        if (( $# > 0 )); then
+            printf "$default" "$@"
+        else
+            printf '%s' "$default"
+        fi
+    }
+    _tn() {
+        _t "$@"
+        printf '\n'
+    }
+fi
+
 send_notifs() {
     local args=("$@")
     notify-send "${args[@]}" &
@@ -72,7 +95,7 @@ print_log() {
             shift 2
             ;;
         -warn)
-            echo -ne "WARNING :: \e[30;43m $2 \e[0m :: " >&2
+            echo -ne "$(_t common.warning 'WARNING') :: \e[30;43m $2 \e[0m :: " >&2
             shift 2
             ;;
         +)
@@ -84,7 +107,7 @@ print_log() {
             shift 2
             ;;
         -err)
-            echo -ne "ERROR :: \e[4;31m$2 \e[0m" >&2
+            echo -ne "$(_t common.error 'ERROR') :: \e[4;31m$2 \e[0m" >&2
             shift 2
             ;;
         *)
@@ -449,3 +472,9 @@ dconf_write() {
     fi
 }
 export -f get_hyprConf get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config
+if declare -F _t >/dev/null; then
+    export -f _t _tn
+    for i18n_fn in _hyde_i18n_normalize_locale _hyde_i18n_base_dir _hyde_i18n_file _hyde_i18n_lookup; do
+        declare -F "$i18n_fn" >/dev/null && export -f "$i18n_fn"
+    done
+fi

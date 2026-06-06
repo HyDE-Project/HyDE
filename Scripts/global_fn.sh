@@ -14,12 +14,37 @@ cacheDir="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
 aurList=("yay" "paru")
 shlList=("zsh" "fish")
 pacmanCmd=${cloneDir}/Configs/.local/lib/hyde/pm.sh
+SHARE_DIR="${SHARE_DIR:-${cloneDir}/Configs/.local/share}"
 
 export cloneDir
 export confDir
 export cacheDir
 export aurList
 export shlList
+export SHARE_DIR
+
+# shellcheck source=/dev/null
+[[ -r "${cloneDir}/Configs/.local/lib/hyde/i18n.sh" ]] && source "${cloneDir}/Configs/.local/lib/hyde/i18n.sh"
+if ! declare -F _t >/dev/null; then
+    _t() {
+        local key="${1:-}"
+        local default="${2:-$key}"
+        if (( $# >= 2 )); then
+            shift 2
+        else
+            shift "$#"
+        fi
+        if (( $# > 0 )); then
+            printf "$default" "$@"
+        else
+            printf '%s' "$default"
+        fi
+    }
+    _tn() {
+        _t "$@"
+        printf '\n'
+    }
+fi
 
 pkg_installed() {
     local PkgIn=$1
@@ -152,7 +177,7 @@ print_log() {
                 shift 2
                 ;; # critical
             -warn)
-                echo -ne "WARNING :: \e[30;43m $2 \e[0m :: "
+                echo -ne "$(_t common.warning 'WARNING') :: \e[30;43m $2 \e[0m :: "
                 shift 2
                 ;; # warning
             +)
@@ -164,7 +189,7 @@ print_log() {
                 shift 2
                 ;; # section use for logs
             -err)
-                echo -ne "ERROR :: \e[4;31m$2 \e[0m"
+                echo -ne "$(_t common.error 'ERROR') :: \e[4;31m$2 \e[0m"
                 shift 2
                 ;; #error
             *)

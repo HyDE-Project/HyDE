@@ -25,6 +25,15 @@
 type      = "object"
 
 
+[properties.i18n]
+    description = "Internationalization configuration."
+    type        = "object"
+
+[properties.i18n.properties.language]
+    default     = ""
+    description = "Language override for HyDE runtime strings. Leave empty to auto-detect from the environment."
+    type        = "string"
+
 [properties.wallpaper]
     description = "Wallpaper configuration."
     type        = "object"
@@ -1333,5 +1342,3 @@ type      = "object"
     default     = "  "
     description = "Separator symbols to display between artist and track."
     type        = "string"
-
-

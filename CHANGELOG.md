@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hypr: removed 'hypr.altab.py' as it is too slow and and use 'hypr.altab.lua' instead. Test using 'hyde-shell altab' to see if it works!
 
 ### Added
+- i18n: Added shared shell and Python language pack loaders so runtime scripts can adopt localized user-facing strings.
+- Docs: Aligned the Chinese README and keybindings entry points with the current install, update, and asset paths.
 - Core: Use 'rsync' for file copy operations. Only recommended if users already have 'rsync' installed.
 - Package Manager: Added --no-confirm flag to 'hyde-shell pm.py' commands.
 - Lua: Added 'hyde-shell luainit' to initialize the Lua runtime. It is slow and should be optional for now.

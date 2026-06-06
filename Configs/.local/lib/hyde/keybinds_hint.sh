@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
 pkill -x rofi && exit
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+hyde_i18n="${LIB_DIR:-$HOME/.local/lib}/hyde/i18n.sh"
+if [[ -r "$hyde_i18n" ]]; then
+    source "$hyde_i18n"
+else
+    _t() { printf '%s' "${2:-$1}"; }
+    _tn() { _t "$@"; printf '\n'; }
+fi
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 keyconfDir="$confDir/hypr"
 kb_hint_conf=("$keyconfDir/hyprland.conf" "$keyconfDir/keybindings.conf" "$keyconfDir/userprefs.conf")
 kb_hint_conf+=("${ROFI_KEYBIND_HINT_CONFIG[@]}")
 kb_cache="$XDG_RUNTIME_DIR/hyde/keybinds_hint.rofi"
 [ -f "$kb_cache" ] && {
-    trap '${LIB_DIR}/hyde/keybinds/hint-hyprland.py --format rofi > "$kb_cache" && echo "Keybind cache updated" ' EXIT
+    trap '${LIB_DIR}/hyde/keybinds/hint-hyprland.py --format rofi > "$kb_cache" && _tn "keybind_hint.cache_updated" "Keybind cache updated" ' EXIT
 }
 output="$(if
     ! cat "$kb_cache" 2> /dev/null
@@ -16,12 +23,12 @@ then
 fi)"
 wait
 if [ -z "$output" ]; then
-    notify-send "Keybind Hint" "Initialization failed."
+    notify-send "$(_t "keybind_hint.title" "Keybind Hint")" "$(_t "common.initialization_failed" "Initialization failed.")"
     exit 0
 fi
 if ! command -v rofi &> /dev/null; then
     echo "$output"
-    echo "rofi not detected. Displaying on terminal instead"
+    _tn "keybind_hint.no_rofi" "rofi not detected. Displaying on terminal instead"
     exit 0
 fi
 hypr_border=${hypr_border:-$(hyprctl -j getoption decoration:rounding | jq '.int')}
@@ -43,9 +50,13 @@ font_name=${font_name:-$(get_hyprConf "FONT")}
 font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} $font_scale\";}"
 icon_override=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'//g")
 icon_override="configuration {icon-theme: \"$icon_override\";}"
+rofi_placeholder="$(_t "rofi.keybindings.placeholder" "\t⌨️ Keybindings ")"
+rofi_header="$(_t "rofi.keybindings.header" " Keybinds \t\tﴕ Description")"
+rofi_repeat="$(_t "rofi.keybindings.repeat" "Repeat")"
+rofi_repeat_hint="$(_t "rofi.keybindings.repeat_hint" "[Enter] repeat; [ESC] exit")"
 selected=$(echo -e "$output" | rofi -dmenu -p \
-    -theme-str "entry { placeholder: \"\t⌨️ Keybindings \";}" \
-    " Keybinds \t\tﴕ Description" \
+    -theme-str "entry { placeholder: \"$rofi_placeholder\";}" \
+    "$rofi_header" \
     -p -i \
     -display-columns 1 \
     -display-column-separator ":::" \
@@ -63,8 +74,8 @@ RUN() {
 if [ -n "$dispatch" ] && [ "$(echo "$dispatch" | wc -l)" -eq 1 ]; then
     if [ "$repeat" = repeat ]; then
         while true; do
-            repeat_command=$(echo -e "Repeat" | rofi -dmenu -no-custom -p - "[Enter] repeat; [ESC] exit" -theme "notification")
-            if [ "$repeat_command" = "Repeat" ]; then
+            repeat_command=$(echo -e "$rofi_repeat" | rofi -dmenu -no-custom -p - "$rofi_repeat_hint" -theme "notification")
+            if [ "$repeat_command" = "$rofi_repeat" ]; then
                 RUN
             else
                 exit 0

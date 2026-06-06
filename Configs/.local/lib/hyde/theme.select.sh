@@ -1,6 +1,59 @@
 #!/usr/bin/env bash
 
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+
+setup_i18n() {
+    LIB_DIR="${LIB_DIR:-$(dirname "$script_dir")}"
+    if ! declare -F _t >/dev/null; then
+        # shellcheck source=/dev/null
+        if [[ -r "$LIB_DIR/hyde/i18n.sh" ]]; then
+            source "$LIB_DIR/hyde/i18n.sh"
+        else
+            _t() {
+                local key="${1:-}"
+                local default="${2:-$key}"
+                if (( $# >= 2 )); then
+                    shift 2
+                else
+                    shift "$#"
+                fi
+                if (( $# > 0 )); then
+                    printf "$default" "$@"
+                else
+                    printf '%s' "$default"
+                fi
+            }
+            _tn() {
+                _t "$@"
+                printf '\n'
+            }
+        fi
+    fi
+}
+
+help_message() {
+    _tn "theme.help.usage" "Usage: %s --select-menu|-s [style]" "$(basename "$0")"
+    printf '\n'
+    _tn "theme.help.menu_style" "menu style:"
+    printf '%-24s %s\n' "--select-menu|-s" "$(_t "theme.help.select_menu" "Select a menu style for this program")"
+    printf '\n'
+    _tn "theme.help.selector_style" "selector style:"
+    printf '%-12s %s\n' "quad|2" "$(_t "theme.help.quad_style" "quad style")"
+    printf '%-12s %s\n' "square|1" "$(_t "theme.help.square_style" "square style")"
+    printf '\n'
+    exit 0
+}
+
+case "${1:-}" in
+    -m | -s | --select-menu) ;;
+    -h | --help | help | -*)
+        setup_i18n
+        help_message
+        ;;
+esac
+
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+setup_i18n
 rofiAssetDir="$SHARE_DIR/hyde/rofi/assets"
 hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
 hypr_border=${hypr_border:-2}
@@ -42,26 +95,11 @@ selector_menu() {
         -theme "${ROFI_THEME_MENU_STYLE:-selector}")
     if [ -n "$RofiSel" ]; then
         selectedStyle=$(echo "$RofiSel" | awk -F '\x00' '{print $1}' | sed 's/Style //')
-        notify-send -a "HyDe Alert" -i "$rofiAssetDir/theme_style_$selectedStyle.png" "Style $selectedStyle applied..."
+        notify-send -a "$(_t "common.hyde_alert" "HyDE Alert")" -i "$rofiAssetDir/theme_style_$selectedStyle.png" "$(_t "theme.style_applied" "Style %s applied..." "$selectedStyle")"
         set_conf "ROFI_THEME_STYLE" "$selectedStyle"
     fi
     exit 0
 }
-help_message() {
-    cat << HELP
-Usage: $(basename "$0") --select-menu|-s  [style]
-
-menu style:
---select-menu|-s        Select a menu style for this program
-
-selector style:
-quad|2      quad style
-square|1    square style
-
-HELP
-    exit 0
-}
-
 case "$1" in
     -m | -s | --select-menu)
         selector_menu
@@ -119,5 +157,5 @@ rofiSel=$(
 )
 if [ -n "$rofiSel" ]; then
     "$LIB_DIR/hyde/theme.switch.sh" -s "$rofiSel"
-    notify-send -a "HyDE Alert" -i "$iconsDir/Wallbash-Icon/hyde.png" " $rofiSel"
+    notify-send -a "$(_t "common.hyde_alert" "HyDE Alert")" -i "$iconsDir/Wallbash-Icon/hyde.png" " $rofiSel"
 fi

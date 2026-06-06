@@ -2,6 +2,17 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "properties": {
+        "i18n": {
+            "description": "Internationalization configuration.",
+            "type": "object",
+            "properties": {
+                "language": {
+                    "default": "",
+                    "description": "Language override for HyDE runtime strings. Leave empty to auto-detect from the environment.",
+                    "type": "string"
+                }
+            }
+        },
         "wallpaper": {
             "description": "Wallpaper configuration.",
             "type": "object",
