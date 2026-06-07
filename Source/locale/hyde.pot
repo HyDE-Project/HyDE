@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the HyDE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: HyDE\n"
+"Report-Msgid-Bugs-To: https://github.com/HyDE-Project/HyDE/issues\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: Configs/.local/lib/hyde/notifications.py:20
+msgid "Notifications"
+msgstr ""
+
+#: Configs/.local/lib/hyde/notifications.py:21
+msgid "scroll-down: history pop"
+msgstr ""
+
+#: Configs/.local/lib/hyde/notifications.py:22
+msgid "click-left: Enable & Disable DND"
+msgstr ""
+
+#: Configs/.local/lib/hyde/notifications.py:23
+msgid "click-middle: clear history"
+msgstr ""
+
+#: Configs/.local/lib/hyde/notifications.py:24
+msgid "click-right: close all"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:14
+msgid "Keybind cache updated"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:29
+msgid "Keybind Hint"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:29
+msgid "Initialization failed."
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:34
+msgid "rofi not detected. Displaying on terminal instead"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:57
+msgid "Keybindings"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:58
+msgid "Keybinds"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:59
+msgid "Description"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:80
+msgid "Repeat"
+msgstr ""
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:81
+msgid "[Enter] repeat; [ESC] exit"
+msgstr ""

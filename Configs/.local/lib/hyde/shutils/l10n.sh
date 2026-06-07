@@ -1,17 +1,57 @@
 #!/usr/bin/env bash
-# Source this file in any script that needs localization support. It sets up the _T associative array with translations based on the user's locale.
+# Source this file in scripts that need lightweight gettext-style localization.
 
-# Extract the system locale and set DESKTOP_LANG to the first two characters (language code)
-_raw_sys_lang="${LC_ALL:-${LANG:-en}}"
-export DESKTOP_LANG="${DESKTOP_LANG:-${_raw_sys_lang:0:2}}"
-export DESKTOP_LANG="${DESKTOP_LANG,,}"
-#? Handles edge cases where locale is set to "C" or "POSIX" which are not actual languages
-[[ "$DESKTOP_LANG" == "c" || "$DESKTOP_LANG" == "po" ]] && export DESKTOP_LANG="en"
+_hyde_l10n_normalize_locale() {
+    local lang="${1:-${HYDE_LANG:-${I18N_LANGUAGE:-${LC_MESSAGES:-${LANG:-en}}}}}"
+    lang="${lang%%:*}"
+    lang="${lang%%.*}"
+    lang="${lang%%@*}"
+    lang="${lang//-/_}"
 
-# Initialize the _T associative array for translations
-declare -A _T 2>/dev/null || : # Localization support
-[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${DESKTOP_LANG}.sh" ]] && source "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${DESKTOP_LANG}.sh"
-[[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.sh"
+    case "${lang,,}" in
+        "" | c | posix)
+            printf '%s\n' "en"
+            ;;
+        zh | zh_cn | zh_sg)
+            printf '%s\n' "zh_CN"
+            ;;
+        *)
+            printf '%s\n' "$lang"
+            ;;
+    esac
+}
+
+_hyde_l10n_locale_dir() {
+    if [[ -n "${SHARE_DIR:-}" ]]; then
+        printf '%s\n' "${SHARE_DIR%/}/hyde/locale"
+        return
+    fi
+
+    printf '%s\n' "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale"
+}
+
+_hyde_l10n_source_map() {
+    local map_file="$1"
+    [[ -r "$map_file" ]] || return 0
+    # shellcheck source=/dev/null
+    source "$map_file"
+}
+
+DESKTOP_LANG="$(_hyde_l10n_normalize_locale)"
+export DESKTOP_LANG
+
+declare -gA _T 2>/dev/null || declare -A _T 2>/dev/null || :
+_hyde_l10n_source_map "$(_hyde_l10n_locale_dir)/${DESKTOP_LANG}.sh"
+_hyde_l10n_source_map "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.sh"
+
+hyde_gettext() {
+    local msg="${1:-}"
+    if [[ -n "$msg" && -n "${_T[$msg]+_}" ]]; then
+        printf '%s' "${_T[$msg]}"
+        return
+    fi
+    printf '%s' "$msg"
+}
 
 # method overrides for localization
 
@@ -21,7 +61,7 @@ send_notifs() {
     for arg in "$@"; do
         # If it's not a flag (starts with -), try to translate it
         if [[ ! "$arg" =~ ^- ]]; then
-            args+=("${_T[$arg]:-$arg}")
+            args+=("$(hyde_gettext "$arg")")
         else
             args+=("$arg")
         fi
@@ -35,7 +75,8 @@ print_log_L() {
         case "$1" in
         -r | +r | -g | +g | -y | +y | -b | +b | -m | +m | -c | +c | -wt | +w | -n | +n | -stat | -crit | -warn | -sec | -err)
             # $2 is the message. Translate it or use original.
-            local msg="${_T[$2]:-$2}"
+            local msg
+            msg="$(hyde_gettext "$2")"
             case "$1" in
             -r | +r) echo -ne "\e[31m$msg\e[0m" >&2 ;;
             -g | +g) echo -ne "\e[32m$msg\e[0m" >&2 ;;
@@ -55,13 +96,14 @@ print_log_L() {
             ;;
         +)
             # Custom color: $3 is the message
-            local msg="${_T[$3]:-$3}"
+            local msg
+            msg="$(hyde_gettext "$3")"
             echo -ne "\e[38;5;$2m$msg\e[0m" >&2
             shift 3
             ;;
         *)
             # Standard text
-            echo -ne "${_T[$1]:-$1}" >&2
+            echo -ne "$(hyde_gettext "$1")" >&2
             shift
             ;;
         esac
@@ -69,4 +111,4 @@ print_log_L() {
     echo "" >&2
 }
 
-export -f send_notifs print_log_L
+export -f hyde_gettext send_notifs print_log_L

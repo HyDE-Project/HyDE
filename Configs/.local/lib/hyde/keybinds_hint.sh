@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 pkill -x rofi && exit
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+# shellcheck source=/dev/null
+source "${LIB_DIR}/hyde/shutils/l10n.sh"
 confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
 keyconfDir="$confDir/hypr"
 kb_hint_conf=("$keyconfDir/hyprland.conf" "$keyconfDir/keybindings.conf" "$keyconfDir/userprefs.conf")
 kb_hint_conf+=("${ROFI_KEYBIND_HINT_CONFIG[@]}")
 kb_cache="$XDG_RUNTIME_DIR/hyde/keybinds_hint.rofi"
+
+update_keybind_cache() {
+    "${LIB_DIR}/hyde/keybinds/hint-hyprland.py" --format rofi > "$kb_cache" && {
+        hyde_gettext "Keybind cache updated"
+        printf '\n'
+    }
+}
+
 [ -f "$kb_cache" ] && {
-    trap '${LIB_DIR}/hyde/keybinds/hint-hyprland.py --format rofi > "$kb_cache" && echo "Keybind cache updated" ' EXIT
+    trap update_keybind_cache EXIT
 }
 output="$(if
     ! cat "$kb_cache" 2> /dev/null
@@ -16,12 +26,13 @@ then
 fi)"
 wait
 if [ -z "$output" ]; then
-    notify-send "Keybind Hint" "Initialization failed."
+    notify-send "$(hyde_gettext "Keybind Hint")" "$(hyde_gettext "Initialization failed.")"
     exit 0
 fi
 if ! command -v rofi &> /dev/null; then
     echo "$output"
-    echo "rofi not detected. Displaying on terminal instead"
+    hyde_gettext "rofi not detected. Displaying on terminal instead"
+    printf '\n'
     exit 0
 fi
 hypr_border=${hypr_border:-$(hyprctl -j getoption decoration:rounding | jq '.int')}
@@ -43,9 +54,12 @@ font_name=${font_name:-$(get_hyprConf "FONT")}
 font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} $font_scale\";}"
 icon_override=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'//g")
 icon_override="configuration {icon-theme: \"$icon_override\";}"
+keybindings_label="$(hyde_gettext "Keybindings")"
+keybinds_label="$(hyde_gettext "Keybinds")"
+description_label="$(hyde_gettext "Description")"
 selected=$(echo -e "$output" | rofi -dmenu -p \
-    -theme-str "entry { placeholder: \"\t⌨️ Keybindings \";}" \
-    " Keybinds \t\tﴕ Description" \
+    -theme-str "entry { placeholder: \"\t⌨️ ${keybindings_label} \";}" \
+    " ${keybinds_label} \t\tﴕ ${description_label}" \
     -p -i \
     -display-columns 1 \
     -display-column-separator ":::" \
@@ -63,8 +77,9 @@ RUN() {
 if [ -n "$dispatch" ] && [ "$(echo "$dispatch" | wc -l)" -eq 1 ]; then
     if [ "$repeat" = repeat ]; then
         while true; do
-            repeat_command=$(echo -e "Repeat" | rofi -dmenu -no-custom -p - "[Enter] repeat; [ESC] exit" -theme "notification")
-            if [ "$repeat_command" = "Repeat" ]; then
+            repeat_label="$(hyde_gettext "Repeat")"
+            repeat_command=$(echo -e "$repeat_label" | rofi -dmenu -no-custom -p - "$(hyde_gettext "[Enter] repeat; [ESC] exit")" -theme "notification")
+            if [ "$repeat_command" = "$repeat_label" ]; then
                 RUN
             else
                 exit 0

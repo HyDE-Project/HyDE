@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Package Manager: Added --no-confirm flag to 'hyde-shell pm.py' commands.
 - Lua: Added 'hyde-shell luainit' to initialize the Lua runtime. It is slow and should be optional for now.
 - Python: 'hyde-shell pyinit' will now sync like pip to preserve user packages.
+- i18n: Added a gettext-based zh_CN runtime localization POC for notifications and keybinding hints.
 
 ## v26.4.3 | 3rd week of April 2026 Release!
 

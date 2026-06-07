@@ -1,0 +1,72 @@
+# Simplified Chinese translations for HyDE runtime strings.
+# Copyright (C) 2026 HyDE contributors
+# This file is distributed under the same license as the HyDE package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: HyDE\n"
+"Report-Msgid-Bugs-To: https://github.com/HyDE-Project/HyDE/issues\n"
+"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2026-06-07 00:00+0000\n"
+"Last-Translator: HyDE contributors\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: Configs/.local/lib/hyde/notifications.py:20
+msgid "Notifications"
+msgstr "通知"
+
+#: Configs/.local/lib/hyde/notifications.py:21
+msgid "scroll-down: history pop"
+msgstr "向下滚动：弹出历史通知"
+
+#: Configs/.local/lib/hyde/notifications.py:22
+msgid "click-left: Enable & Disable DND"
+msgstr "左键：启用/关闭免打扰"
+
+#: Configs/.local/lib/hyde/notifications.py:23
+msgid "click-middle: clear history"
+msgstr "中键：清空历史记录"
+
+#: Configs/.local/lib/hyde/notifications.py:24
+msgid "click-right: close all"
+msgstr "右键：关闭全部通知"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:14
+msgid "Keybind cache updated"
+msgstr "快捷键缓存已更新"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:29
+msgid "Keybind Hint"
+msgstr "快捷键提示"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:29
+msgid "Initialization failed."
+msgstr "初始化失败。"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:34
+msgid "rofi not detected. Displaying on terminal instead"
+msgstr "未检测到 rofi，改为在终端中显示"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:57
+msgid "Keybindings"
+msgstr "快捷键"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:58
+msgid "Keybinds"
+msgstr "快捷键"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:59
+msgid "Description"
+msgstr "说明"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:80
+msgid "Repeat"
+msgstr "重复执行"
+
+#: Configs/.local/lib/hyde/keybinds_hint.sh:81
+msgid "[Enter] repeat; [ESC] exit"
+msgstr "[Enter] 重复；[ESC] 退出"
