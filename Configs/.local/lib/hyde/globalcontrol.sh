@@ -333,7 +333,7 @@ get_hyprConf() {
         "CODE_THEME") echo "Wallbash" ;;
         "SDDM_THEME") echo "" ;;
         *) grep "^[[:space:]]*\$default.$hyVar\s*=" \
-            "XDG_DATA_HOME/hyde/hyde.conf" \
+            "$XDG_DATA_HOME/hyde/hyde.conf" \
             "$XDG_DATA_HOME/hyde/hyprland.conf" \
             "/usr/local/share/hyde/hyde.conf" \
             "/usr/local/share/hyde/hyprland.conf" \
