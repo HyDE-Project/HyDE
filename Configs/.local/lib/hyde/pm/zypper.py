@@ -1,14 +1,3 @@
-def count_updates(ctx) -> int:
-    # zypper list-updates returns a table, skip header lines
-    output = ctx.capture(["zypper", "list-updates"])
-    count = 0
-    for line in output.splitlines():
-        if line.strip() and not line.startswith("#") and not line.startswith("Loading") and not line.startswith("Repository") and not line.startswith("S |"):
-            count += 1
-    return count
-
-def list_updates(ctx) -> None:
-    ctx.run(["zypper", "list-updates"])
 """Zypper manager implementation for pm.py."""
 
 from __future__ import annotations
@@ -80,3 +69,15 @@ def is_installed(ctx, package: str) -> bool:
 
 def file_query(ctx, target: str) -> None:
     ctx.run(["zypper", "wp", target])
+
+def count_updates(ctx) -> int:
+    # zypper list-updates returns a table, skip header lines
+    output = ctx.capture(["zypper", "list-updates"])
+    count = 0
+    for line in output.splitlines():
+        if line.strip() and not line.startswith("#") and not line.startswith("Loading") and not line.startswith("Repository") and not line.startswith("S |"):
+            count += 1
+    return count
+
+def list_updates(ctx) -> None:
+    ctx.run(["zypper", "list-updates"])
