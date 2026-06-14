@@ -416,7 +416,13 @@ toml_write() {
     if ! kwriteconfig6 --file "$config_file" --group "$group" --key "$key" "$value" 2>/dev/null; then
         if ! grep -q "^\[$group\]" "$config_file"; then
             echo -e "\n[$group]\n$key=$value" >>"$config_file"
-        elif ! grep -q "^$key=" "$config_file"; then
+        elif ! awk -v g="[$group]" -v k="$key" '
+            $0 == g {in_s=1; next}
+            /^\[/   {in_s=0}
+            in_s && index($0, k"=") == 1 {found=1; exit}
+            END {exit !found}' "$config_file"; then
+            # key absent from this section (scoped check; the same key may exist
+            # in other sections, so a global grep would wrongly skip it here)
             sed -i "/^\[$group\]/a $key=$value" "$config_file"
         fi
     fi
