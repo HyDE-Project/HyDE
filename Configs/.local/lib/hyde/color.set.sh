@@ -7,7 +7,46 @@
 load_dconf_kdeglobals() {
     source "$LIB_DIR/hyde/color/hypr.sh"
     source "$LIB_DIR/hyde/color/dconf.sh"
-    toml_write "$XDG_CONFIG_HOME/kdeglobals" "Colors:View" "BackgroundNormal" "#${dcol_pry1:-000000}FF"
+    # Give non-Plasma Qt apps (kdeconnect, dolphin, ...) the wallbash palette:
+    # outside Plasma they read these inline color sections from kdeglobals.
+    # Derive decimal "R,G,B" (KDE's format) from the sourced hex dcol_* values.
+    local kdeglobals="$XDG_CONFIG_HOME/kdeglobals"
+    _hex2rgb() {
+        local h=${1//\#/}
+        [ "${#h}" -lt 6 ] && { printf '%s' "$2"; return; }
+        printf '%d,%d,%d' "0x${h:0:2}" "0x${h:2:2}" "0x${h:4:2}"
+    }
+    # Follow the same inversion decision used when applying templates, so the
+    # kdeglobals palette matches the desktop's actual light/dark state. When
+    # inverted, primary/text shades swap ends (pry1<->pry4, txt1<->txt4).
+    local bg_hex fg_hex accent_hex on_accent_hex
+    if [[ ${revert_colors:-0} -eq 1 ]] \
+        || [[ ${enableWallDcol:-0} -eq 2 && ${dcol_mode:-} == "light" ]] \
+        || [[ ${enableWallDcol:-0} -eq 3 && ${dcol_mode:-} == "dark" ]]; then
+        bg_hex=${dcol_pry4} fg_hex=${dcol_txt4} accent_hex=${dcol_pry1} on_accent_hex=${dcol_txt1}
+    else
+        bg_hex=${dcol_pry1} fg_hex=${dcol_txt1} accent_hex=${dcol_pry4} on_accent_hex=${dcol_txt4}
+    fi
+    local bg fg accent on_accent
+    bg=$(_hex2rgb "${bg_hex:-1e1e2e}" "30,30,46")
+    fg=$(_hex2rgb "${fg_hex:-cdd6f4}" "205,214,244")
+    accent=$(_hex2rgb "${accent_hex:-89b4fa}" "$bg")
+    on_accent=$(_hex2rgb "${on_accent_hex:-11111b}" "$fg")
+    local section
+    for section in Window View Button Selection; do
+        # Selection uses the accent color as its background.
+        if [ "$section" = "Selection" ]; then
+            toml_write "$kdeglobals" "Colors:$section" "BackgroundNormal" "$accent"
+            toml_write "$kdeglobals" "Colors:$section" "ForegroundNormal" "$on_accent"
+        else
+            toml_write "$kdeglobals" "Colors:$section" "BackgroundNormal" "$bg"
+            toml_write "$kdeglobals" "Colors:$section" "ForegroundNormal" "$fg"
+        fi
+        toml_write "$kdeglobals" "Colors:$section" "DecorationFocus" "$accent"
+        toml_write "$kdeglobals" "Colors:$section" "DecorationHover" "$accent"
+    done
+    toml_write "$kdeglobals" "WM" "activeBackground" "$accent"
+    toml_write "$kdeglobals" "WM" "inactiveBackground" "$bg"
     toml_write "$XDG_CONFIG_HOME/Kvantum/wallbash/wallbash.kvconfig" '%General' 'reduce_menu_opacity' 0
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && shaders.sh reload
 }
