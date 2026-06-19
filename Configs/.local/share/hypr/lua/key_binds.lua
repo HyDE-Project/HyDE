@@ -221,7 +221,7 @@ hl.bind(MOD .. " + SHIFT + S", hl.dsp.exec_cmd(hyde.sh.screenshot.freeze()), _F)
 _F = {description = "[Utilities] print monitor", locked = true}
 hl.bind(MOD .. " + ALT + S", hl.dsp.exec_cmd(hyde.sh.screenshot.monitor()), _F)
 _F = {description = "[Utilities] print all monitors", locked = true}
-hl.bind(MOD .. " + CONTROL + S", hl.dsp.exec_cmd(hyde.sh.screenshot.monitor()), _F)
+hl.bind(MOD .. " + CONTROL + A", hl.dsp.exec_cmd(hyde.sh.screenshot.monitor()), _F)
 _F = {description = "[Utilities] OCR scanner", locked = true}
 hl.bind(MOD .. " + CONTROL + S", hl.dsp.exec_cmd(hyde.sh.screenshot.ocr()), _F)
 
