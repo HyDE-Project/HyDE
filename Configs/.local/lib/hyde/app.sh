@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
-# Wrapper to make our scripts work both with and without systemd.
+# @name: app
+# @ver: 0.1.0
+# @short: Wrapper for scripts to optionally use systemd
+# @cmd: service
+# @cmd.desc: Run a script as a systemd service
 
 if [ -d "/run/systemd/system" ]; then
     exec app2unit "$@"
