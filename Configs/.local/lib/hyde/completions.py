@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #@name: completions
 #@desc: provide completion interface
-
+#todo translate them to the above format
 
 """
 HyDE Shell Completions Engine — universal metadata parser.
