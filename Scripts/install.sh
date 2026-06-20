@@ -98,6 +98,42 @@ elif [ $OPTIND -eq 1 ]; then
 	flg_Service=1
 fi
 
+#------------------------------------------#
+# ensure deez (deez-dots) is available     #
+#------------------------------------------#
+ensure_deez() {
+	if command -v deez >/dev/null 2>&1; then
+		return 0
+	fi
+
+	print_log -y "[deez] " -b ":: " "'deez' not found, installing via uv..."
+
+	if ! command -v uv >/dev/null 2>&1; then
+		if [[ -x "${pacmanCmd}" ]]; then
+			"${pacmanCmd}" install --no-confirm uv || true
+		elif command -v pacman >/dev/null 2>&1; then
+			sudo pacman -S --noconfirm uv || true
+		else
+			curl -LsSf https://astral.sh/uv/install.sh | sh
+			# shellcheck disable=SC1091
+			source "$HOME/.local/bin/env" 2>/dev/null || true
+			export PATH="$HOME/.local/bin:${PATH}"
+		fi
+	fi
+
+	if command -v uv >/dev/null 2>&1; then
+		uv tool install "git+https://github.com/HyDE-Project/deez-dots.git" || true
+		export PATH="$HOME/.local/bin:${PATH}"
+	fi
+
+	if command -v deez >/dev/null 2>&1; then
+		return 0
+	fi
+
+	print_log -r "[deez] " -b ":: " "Unable to install 'deez'."
+	return 1
+}
+
 #--------------------#
 # pre-install script #
 #--------------------#
@@ -249,8 +285,17 @@ EOF
 		hyprctl keyword misc:disable_autoreload 1 -q
 	fi
 
-	"${scrDir}/restore_fnt.sh"
-	"${scrDir}/restore_cfg.sh"
+	if ensure_deez; then
+		deezArgs=(--skip-git --no-deps-checks)
+		[ "${flg_DryRun}" -eq 1 ] && deezArgs+=(--dry-run)
+
+		deez --source "${cloneDir}" --config "${scrDir}/dots-core.toml" dots "${deezArgs[@]}" --deploy all
+		deez --source "${cloneDir}" --config "${scrDir}/dots-extra.toml" dots "${deezArgs[@]}" --deploy
+	else
+		print_log -warn "deez" "falling back to restore_fnt.sh and restore_cfg.sh"
+		"${scrDir}/restore_fnt.sh"
+		"${scrDir}/restore_cfg.sh"
+	fi
 	"${scrDir}/restore_thm.sh"
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
