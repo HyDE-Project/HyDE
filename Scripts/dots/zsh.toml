@@ -1,49 +1,50 @@
 [zsh]
+    description = "A very advanced and programmable command interpreter (shell) for UNIX"
 
 [[zsh.dependency]]
-yay = ["zsh", "starship", "fastfetch"]
-paru = ["zsh", "starship", "fastfetch"]
-dnf = ["zsh", "starship", "fastfetch"]
+    dnf  = [ "zsh", "starship", "fastfetch" ]
+    paru = [ "zsh", "starship", "fastfetch" ]
+    yay  = [ "zsh", "starship", "fastfetch" ]
 
 [[zsh.files]]
-action = "sync"
-source_root = "Configs"
-target_root = "${HOME}"
-paths = ".zshenv"
+    action      = "sync"
+    paths       = ".zshenv"
+    source_root = "Configs"
+    target_root = "${HOME}"
 
 [[zsh.files]]
-action = "sync"
-source_root = "Configs/.config/zsh"
-target_root = "${XDG_CONFIG_HOME}/zsh"
-paths = [".zshenv"]
+    action      = "sync"
+    paths       = [ ".zshenv" ]
+    source_root = "Configs/.config/zsh"
+    target_root = "${XDG_CONFIG_HOME}/zsh"
 
 [[zsh.files]]
-action = "sync"
-source_root = "Configs/.config/zsh/conf.d"
-target_root = "${XDG_CONFIG_HOME}/zsh/conf.d"
-paths = ["hyde", "00-hyde.zsh"]
+    action      = "sync"
+    paths       = [ "hyde", "00-hyde.zsh" ]
+    source_root = "Configs/.config/zsh/conf.d"
+    target_root = "${XDG_CONFIG_HOME}/zsh/conf.d"
 
 [[zsh.files]]
-action = "sync"
-source_root = "Configs/.config/zsh/functions"
-target_root = "${XDG_CONFIG_HOME}/zsh/functions"
-paths = ["error-handlers.zsh", "fzf.zsh", "duf.zsh", "eza.zsh", "bat.zsh"]
+    action      = "sync"
+    paths       = [ "error-handlers.zsh", "fzf.zsh", "duf.zsh", "eza.zsh", "bat.zsh" ]
+    source_root = "Configs/.config/zsh/functions"
+    target_root = "${XDG_CONFIG_HOME}/zsh/functions"
 
 [[zsh.files]]
-action = "sync"
-source_root = "Configs/.config/zsh/completions"
-target_root = "${XDG_CONFIG_HOME}/zsh/completions"
-paths = "hydectl.zsh"
+    action      = "sync"
+    paths       = "hydectl.zsh"
+    source_root = "Configs/.config/zsh/completions"
+    target_root = "${XDG_CONFIG_HOME}/zsh/completions"
 
 [[zsh.files]]
-action = "preserve"
-source_root = "Configs/.config/zsh"
-target_root = "${XDG_CONFIG_HOME}/zsh"
-paths = [
-    ".p10k.zsh",
-    "user.zsh",
-    "prompt.zsh",
-    "plugin.zsh",
-    ".zshrc",
-    "conf.d/binds"
-]
+    action = "preserve"
+    paths = [
+        ".p10k.zsh",
+        "user.zsh",
+        "prompt.zsh",
+        "plugin.zsh",
+        ".zshrc",
+        "conf.d/binds",
+    ]
+    source_root = "Configs/.config/zsh"
+    target_root = "${XDG_CONFIG_HOME}/zsh"

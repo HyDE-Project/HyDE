@@ -107,6 +107,16 @@ hydevm abc123def
 hydevm --persist
 hydevm --persist dev-branch
 
+# Run headless (SSH-only, no display window)
+hydevm --ssh-only
+hydevm --ssh-only --persist dev-branch
+
+# Clone an existing snapshot as a new branch for testing
+hydevm --snapshot-from master my-test-branch
+
+# Clone and run headless
+hydevm --ssh-only --snapshot-from master my-test-branch
+
 # List cached snapshots
 hydevm --list
 

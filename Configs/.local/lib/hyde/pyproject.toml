@@ -14,6 +14,8 @@ dependencies = [
     "hererocks>=0.25.1",
     "websockets>=16.0",
     "xdg-prefs",
+    "uv>=0.1.0",
+    "deez-dots",
 ]
 
 [project.optional-dependencies]
@@ -26,3 +28,4 @@ indent-width = 4
 
 [tool.uv.sources]
 xdg-prefs = { git = "https://github.com/rchaput/xdg-prefs" }
+deez-dots = { git = "https://github.com/HyDE-Project/deez-dots.git" }

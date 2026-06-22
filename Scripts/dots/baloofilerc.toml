@@ -1,9 +1,9 @@
 
 [baloofilerc]
-pre_command = "echo 'Preserve baloo configuration'"
+    description = "A framework for searching and managing metadata"
 
 [[baloofilerc.files]]
-action = "preserve"
-source_root = "Configs/.config"
-target_root = "${XDG_CONFIG_HOME}"
-paths = "baloofilerc"
+    action      = "preserve"
+    paths       = "baloofilerc"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"

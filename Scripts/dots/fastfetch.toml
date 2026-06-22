@@ -1,14 +1,15 @@
 
 [fastfetch]
+    description = "A feature-rich and performance oriented neofetch like system information tool"
 
 [[fastfetch.files]]
-action = "preserve"
-source_root = "Configs/.config"
-target_root = "${XDG_CONFIG_HOME}"
-paths = "fastfetch"
+    action      = "preserve"
+    paths       = "fastfetch"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"
 
 [[fastfetch.files]]
-action = "sync"
-source_root = "Configs/.local/share/fastfetch/presets"
-target_root = "${HOME}/.local/share/fastfetch/presets"
-paths = "hyde"
+    action      = "sync"
+    paths       = "hyde"
+    source_root = "Configs/.local/share/fastfetch/presets"
+    target_root = "${HOME}/.local/share/fastfetch/presets"

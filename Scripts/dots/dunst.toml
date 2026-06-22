@@ -1,13 +1,12 @@
 
 [dunst]
-pre_command = "echo 'Pre commands '" # Pre commands
-post_command = "echo 'HyDE backed up!'" # Post commands
+    description = " Customizable and lightweight notification-daemon"
 
 [[dunst.dependency]]
-pacman = ["dunst"]
+    pacman = [ "dunst" ]
 
 [[dunst.files]]
-action = "sync"
-source_root = "Configs/.config"
-target_root = "${XDG_CONFIG_HOME}"
-paths = "dunst"
+    action      = "sync"
+    paths       = "dunst"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"

@@ -1,0 +1,17 @@
+
+[swaync]
+    description = " A simple notification daemon with a GTK panel for checking previous notifications like other DEs"
+[[swaync.dependency]]
+    pacman = [ "swaync" ]
+
+[[swaync.files]]
+    action      = "sync"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"
+
+    paths = [
+        "swaync",
+        "waybar/menus/swaync.xml",
+        "hyde/wallbash/theme/swaync.dcol",
+        "hyde/wallbash/scripts/swaync.dcol",
+    ]

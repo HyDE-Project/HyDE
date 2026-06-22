@@ -52,6 +52,10 @@ function print_usage() {
     echo ""
     echo "Options:"
     echo "  --persist               Make VM changes persistent"
+    echo "  --ssh-only              Run VM headless (no display window, SSH-only access)"
+    echo "  --snapshot-from <ref>   Clone an existing snapshot as a new branch for testing"
+    echo "  --snapshot-as <name>    Save current VM state as a named snapshot (use with --persist)"
+    echo "  --mount <path>          Share a host directory live into the VM via 9p (e.g., --mount \$PWD)"
     echo "  --list                  List available snapshots"
     echo "  --clean                 Clean all cached data"
     echo "  --install-deps          Install required dependencies (Arch only)"
@@ -65,11 +69,21 @@ function print_usage() {
     echo "  VM_QEMU_OVERRIDE=\"cmd\"   Override entire QEMU command (\$VM_DISK substituted)"
     echo ""
     echo "Examples:"
-    echo "  hydevm                  # Run master branch"
-    echo "  hydevm --persist        # Run master branch (persistent)"
-    echo "  hydevm feature-branch   # Run specific branch"
-    echo "  hydevm abc123           # Run specific commit"
-    echo "  hydevm --persist dev    # Run dev branch with persistence"
+    echo "  hydevm                               # Run master branch"
+    echo "  hydevm --persist                     # Run master branch (persistent)"
+    echo "  hydevm --ssh-only                    # Run master headless (SSH-only)"
+    echo "  hydevm --persist dev                 # Run dev branch with persistence"
+    echo "  hydevm --mount ~/HyDE                # Share local HyDE folder live into the VM"
+    echo "  hydevm --mount ~/HyDE --ssh-only     # Headless with live folder sharing"
+    echo "  hydevm --ssh-only --persist          # Run master headless with persistence"
+    echo "  hydevm --snapshot-from master my-test # Clone master snapshot as my-test"
+    echo ""
+    echo "Live Folder Sharing (--mount):"
+    echo "  Mounts a host directory inside the VM at /mnt/host via 9p virtio."
+    echo "  Changes on the host appear instantly in the VM — no sync or copy needed."
+    echo "  Inside the VM:"
+    echo "    mount -t 9p host_share /mnt/host"
+    echo "    cd /mnt/host   # your live files are here"
     echo ""
     echo "OS-specific notes:"
     echo "  Arch Linux: Missing packages will be auto-detected and offered for install"
@@ -262,6 +276,8 @@ function run_qemu_vm() {
     local memory="${2:-4G}"
     local cpus="${3:-2}"
     local extra_args="${4:-}"
+    local ssh_only="${5:-false}"
+    local mount_path="${6:-}"
     local qemu_cmd
     qemu_cmd=$(get_qemu_command)
 
@@ -278,10 +294,17 @@ function run_qemu_vm() {
             -m "$memory"
             -smp "$cpus"
             -drive "file=$vm_disk,format=qcow2,if=virtio"
-            -device virtio-vga-gl
-            -display "gtk,gl=on,grab-on-hover=on"
             -boot "menu=on"
         )
+
+        if [ "$ssh_only" = "true" ]; then
+            # Headless mode: no display, no GPU device
+            qemu_args+=(-display none -vga none)
+            echo "🖥️  Running headless (SSH-only mode)"
+        else
+            # Normal mode with GPU acceleration
+            qemu_args+=(-device virtio-vga-gl -display "gtk,gl=on,grab-on-hover=on")
+        fi
 
         # Add KVM-specific arguments
         if [ -r /dev/kvm ]; then
@@ -290,9 +313,22 @@ function run_qemu_vm() {
             qemu_args+=(-cpu qemu64)
         fi
 
-        # Add network arguments if extra_args are provided
-        if [ -n "$extra_args" ]; then
-            qemu_args+=(-device "virtio-net,netdev=net0" -netdev "user,id=net0,$extra_args")
+        # Always add network adapter for SSH access and HTTP server reachability
+        # Use extra_args if provided (e.g. for SSH forwarding), otherwise default to SSH forwarding
+        local net_args="${extra_args:-hostfwd=tcp::2222-:22}"
+        qemu_args+=(-device virtio-net,netdev=net0 -netdev "user,id=net0,$net_args")
+
+        # Add 9p shared folder mount if --mount was specified
+        if [ -n "$mount_path" ]; then
+            if [ -d "$mount_path" ]; then
+                local mount_tag="host_share"
+                echo "📁 Sharing host directory: $mount_path"
+                echo "   Mount inside VM: mount -t 9p $mount_tag /mnt/host"
+                qemu_args+=(-fsdev "local,id=fsdev0,path=$mount_path,security_model=mapped-xattr")
+                qemu_args+=(-device "virtio-9p-pci,fsdev=fsdev0,mount_tag=$mount_tag")
+            else
+                echo "⚠️  Mount path '$mount_path' does not exist or is not a directory. Skipping."
+            fi
         fi
 
         # Add any extra VM arguments
@@ -333,6 +369,8 @@ function get_snapshot_name() {
 
 function create_hyde_snapshot() {
     local ref="${1:-master}"
+    local ssh_only="${2:-false}"
+    local mount_path="${3:-}"
     local snapshot_name
     snapshot_name=$(get_snapshot_name "$ref")
     local snapshot_path="$SNAPSHOTS_DIR/hyde-$snapshot_name.qcow2"
@@ -348,6 +386,13 @@ function create_hyde_snapshot() {
     fi
 
     echo "🔨 Creating HyDE snapshot for '$ref'..."
+
+    # If --mount is provided, symlink the local HyDE repo so setup.sh can use it
+    local local_repo=""
+    if [ -n "$mount_path" ] && [ -d "$mount_path" ]; then
+        local_repo="$mount_path"
+        echo "📁 Will use local HyDE repo from mount: $local_repo"
+    fi
 
     # Create temporary VM image for setup
     local temp_image="$CACHE_DIR/temp-setup.qcow2"
@@ -414,6 +459,30 @@ fi
 echo ""
 echo "🎨 HyDE repository ready!"
 
+# Set up auto-mount for 9p shared folder via systemd (persists across boots)
+sudo mkdir -p /mnt/host
+sudo tee /etc/systemd/system/mnt-host.mount > /dev/null <<'MOUNT_EOF'
+[Unit]
+Description=HyDE host 9p mount
+[Mount]
+What=host_share
+Where=/mnt/host
+Type=9p
+Options=trans=virtio,version=9p2000.L
+[Install]
+WantedBy=local-fs.target
+MOUNT_EOF
+sudo systemctl enable mnt-host.mount 2>/dev/null || true
+sudo mount -t 9p host_share /mnt/host 2>/dev/null || true
+
+echo "   Checking for 9p host share..."
+if mountpoint -q /mnt/host 2>/dev/null; then
+    echo "🔗 Host mount detected at /mnt/host — using local HyDE repo!"
+    echo "   This gives you live updates as you edit files on the host."
+    rm -rf /home/arch/HyDE
+    ln -sf /mnt/host /home/arch/HyDE
+fi
+
 # Check if HyDE is already installed
 if [ -f "/home/arch/.config/hypr/hyprland.conf" ] && [ -f "/home/arch/.config/hyde/hyde.conf" ]; then
     echo "⚠️  HyDE appears to already be installed."
@@ -450,16 +519,21 @@ SETUP_EOF
     echo "      - If you end up missing the password check, you can rerun the install script './setup.sh'"
     echo "   7. Run: sudo poweroff"
     echo ""
+    if [ -n "$mount_path" ]; then
+        echo "📁 You used --mount, so after step 2 you can also:"
+        echo "   sudo mkdir -p /mnt/host && sudo mount -t 9p host_share /mnt/host"
+        echo "   Then your host files are live at /mnt/host"
+    fi
     echo "Starting simple HTTP server for script delivery..."
 
     # Start simple HTTP server in background to serve the setup script
     cd "$CACHE_DIR"
     # TODO: feat(hydevm) migrate from the python http server to a pure ssh solution, no setup script needed
-    $python_cmd -m http.server 8000 --bind 127.0.0.1 &
+    $python_cmd -m http.server 8000 --bind 0.0.0.0 &
     local server_pid=$!
 
     # Start VM for setup
-    run_qemu_vm "$temp_image" "${VM_MEMORY:-4G}" "${VM_CPUS:-2}"
+    run_qemu_vm "$temp_image" "${VM_MEMORY:-4G}" "${VM_CPUS:-2}" "" "$ssh_only" "$mount_path"
 
     # Kill the HTTP server
     kill $server_pid 2>/dev/null || true
@@ -477,9 +551,52 @@ SETUP_EOF
     echo "🚀 You can now run: hydevm $ref"
 }
 
+function duplicate_snapshot() {
+    local source_ref="$1"
+    local target_ref="$2"
+
+    if [ -z "$source_ref" ] || [ -z "$target_ref" ]; then
+        echo "❌ Usage: hydevm --snapshot-from <source> <target>"
+        return 1
+    fi
+
+    local source_snap
+    source_snap=$(get_snapshot_name "$source_ref")
+    local target_snap
+    target_snap=$(get_snapshot_name "$target_ref")
+
+    local source_path="$SNAPSHOTS_DIR/hyde-$source_snap.qcow2"
+    local target_path="$SNAPSHOTS_DIR/hyde-$target_snap.qcow2"
+
+    if [ ! -f "$source_path" ]; then
+        echo "❌ Source snapshot for '$source_ref' not found."
+        echo "   Run 'hydevm --list' to see available snapshots."
+        return 1
+    fi
+
+    if [ -f "$target_path" ]; then
+        echo "⚠️  Snapshot for '$target_ref' already exists."
+        read -p "   Overwrite? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "❌ Aborted."
+            return 1
+        fi
+    fi
+
+    echo "📋 Cloning snapshot '$source_ref' → '$target_ref'..."
+    qemu-img create -f qcow2 -F qcow2 -b "$source_path" "$target_path"
+    echo "✅ Snapshot cloned: hyde-$target_snap"
+    echo "   Run: hydevm $target_ref"
+    echo "   Or:  hydevm --ssh-only $target_ref"
+    echo "   Or:  hydevm --persist $target_ref"
+}
+
 function run_vm() {
     local ref="${1:-master}"
     local persistent="${2:-false}"
+    local ssh_only="${3:-false}"
+    local mount_path="${4:-}"
     local snapshot_name
     snapshot_name=$(get_snapshot_name "$ref")
     local snapshot_path="$SNAPSHOTS_DIR/hyde-$snapshot_name.qcow2"
@@ -489,7 +606,7 @@ function run_vm() {
     # Ensure snapshot exists
     if [ ! -f "$snapshot_path" ]; then
         echo "📸 Snapshot for '$ref' not found, creating it..."
-        create_hyde_snapshot "$ref"
+        create_hyde_snapshot "$ref" "$ssh_only" "$mount_path"
     fi
 
     local vm_disk
@@ -507,18 +624,75 @@ function run_vm() {
     echo "   Login: arch / arch"
     echo "   SSH: ssh arch@localhost -p 2222"
 
+    if [ -n "$mount_path" ]; then
+        echo "📁 Host folder shared at /mnt/host (mount -t 9p host_share /mnt/host)"
+    fi
+
     # Run VM with SSH port forwarding
-    run_qemu_vm "$vm_disk" "${VM_MEMORY:-4G}" "${VM_CPUS:-2}" "hostfwd=tcp::2222-:22"
+    run_qemu_vm "$vm_disk" "${VM_MEMORY:-4G}" "${VM_CPUS:-2}" "hostfwd=tcp::2222-:22" "$ssh_only" "$mount_path"
 }
 
 function list_snapshots() {
     echo "📸 Available HyDE snapshots:"
     if [ -d "$SNAPSHOTS_DIR" ]; then
-        find "$SNAPSHOTS_DIR" -name "hyde-*.qcow2" -exec basename {} \; | \
-            sed 's/^hyde-//' | sed 's/\.qcow2$//' | sort
+        local count=0
+        while IFS= read -r snap; do
+            echo "   - $snap"
+            count=$((count + 1))
+        done < <(find "$SNAPSHOTS_DIR" -name "hyde-*.qcow2" -exec basename {} \; | \
+            sed 's/^hyde-//' | sed 's/\.qcow2$//' | sort)
+        if [ "$count" -eq 0 ]; then
+            echo "   (no snapshots found)"
+        fi
     else
-        echo "No snapshots found"
+        echo "   (no snapshots found)"
     fi
+}
+
+function snapshot_as() {
+    local source_ref="${1:-master}"
+    local target_name="$2"
+
+    if [ -z "$target_name" ]; then
+        list_snapshots
+        echo ""
+        read -p "📝 Name for the new snapshot: " -r target_name
+        if [ -z "$target_name" ]; then
+            echo "❌ No name provided. Aborted."
+            return 1
+        fi
+    fi
+
+    local source_snap
+    source_snap=$(get_snapshot_name "$source_ref")
+    local target_snap
+    target_snap=$(get_snapshot_name "$target_name")
+
+    local source_path="$SNAPSHOTS_DIR/hyde-$source_snap.qcow2"
+    local target_path="$SNAPSHOTS_DIR/hyde-$target_snap.qcow2"
+
+    if [ ! -f "$source_path" ]; then
+        echo "❌ Snapshot for '$source_ref' not found."
+        echo "   Run 'hydevm --list' to see available snapshots."
+        return 1
+    fi
+
+    if [ -f "$target_path" ]; then
+        echo "⚠️  Snapshot '$target_name' already exists."
+        read -p "   Overwrite? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "❌ Aborted."
+            return 1
+        fi
+    fi
+
+    echo "💾 Saving snapshot '$source_ref' → '$target_name'..."
+    qemu-img create -f qcow2 -F qcow2 -b "$source_path" "$target_path"
+    echo "✅ Snapshot saved as: hyde-$target_snap"
+    echo "   Run: hydevm $target_name"
+    echo "   Or:  hydevm --persist $target_name"
+    echo "   Or:  hydevm --ssh-only $target_name"
 }
 
 function clean_cache() {
@@ -531,13 +705,50 @@ function clean_cache() {
 check_root
 
 persistent="false"
+ssh_only="false"
 ref="master"
+snapshot_from=""
+snapshot_as_name=""
+mount_path=""
 
 # Parse arguments
 while [ $# -gt 0 ]; do
     case "$1" in
         --persist)
             persistent="true"
+            shift
+            ;;
+        --ssh-only)
+            ssh_only="true"
+            shift
+            ;;
+        --mount)
+            shift
+            mount_path="$1"
+            if [ -z "$mount_path" ]; then
+                echo "❌ --mount requires a path (e.g., --mount \$PWD)"
+                exit 1
+            fi
+            # Resolve to absolute path
+            mount_path="$(realpath -m "$mount_path" 2>/dev/null || echo "$mount_path")"
+            shift
+            ;;
+        --snapshot-from)
+            shift
+            snapshot_from="$1"
+            if [ -z "$snapshot_from" ]; then
+                echo "❌ --snapshot-from requires a source ref (e.g., master)"
+                exit 1
+            fi
+            shift
+            ;;
+        --snapshot-as)
+            shift
+            snapshot_as_name="$1"
+            if [ -z "$snapshot_as_name" ]; then
+                echo "❌ --snapshot-as requires a name (e.g., --snapshot-as my-saved-state)"
+                exit 1
+            fi
             shift
             ;;
         --list)
@@ -572,6 +783,17 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+# Handle snapshot from/save operations
+if [ -n "$snapshot_from" ]; then
+    duplicate_snapshot "$snapshot_from" "$ref"
+    exit $?
+fi
+
+if [ -n "$snapshot_as_name" ]; then
+    snapshot_as "$ref" "$snapshot_as_name"
+    exit $?
+fi
+
 # Check dependencies before running
 if ! check_dependencies; then
     exit 1
@@ -581,4 +803,4 @@ fi
 download_archbox
 
 # Run VM
-run_vm "$ref" "$persistent"
+run_vm "$ref" "$persistent" "$ssh_only" "$mount_path"
