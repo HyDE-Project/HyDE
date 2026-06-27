@@ -81,6 +81,9 @@ For NixOS support there is a separate project being maintained @ [Hydenix](https
 > [!CAUTION]
 > The script modifies your `grub` or `systemd-boot` config to enable NVIDIA DRM.
 
+> [!TIP]
+> BigLinux / Manjaro users may want to take a snapshot with Timeshift before running the installer, especially when HyDE is being installed alongside an existing desktop environment. On older NVIDIA cards, review the legacy driver list in [`Scripts/nvidia-db/`](./Scripts/nvidia-db/) before continuing.
+
 To install, execute the following commands:
 
 ```shell
@@ -109,6 +112,13 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 
 Please reboot after the install script completes and takes you to the SDDM login screen (or black screen) for the first time.
 For more details, please refer to the [installation wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
+
+Quick checklist for Arch-based distros such as BigLinux / Manjaro:
+
+- Create a restore point (for example with Timeshift) before running `install.sh`.
+- Expect changes to GRUB, SDDM, and `/etc/pacman.conf` during installation.
+- If your GPU is an older NVIDIA model, verify whether it belongs to a legacy dkms series before accepting the default driver path.
+- Reboot after the installer finishes, then select the Hyprland / HyDE session from the display manager.
 
 <div align="right">
   <br>
