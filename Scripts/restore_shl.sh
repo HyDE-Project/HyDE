@@ -93,7 +93,11 @@ fi
 # set shell
 if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]]; then
     print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
-    [ ${flg_DryRun} -eq 1 ] || chsh -s "$(which "${myShell}")"
+    if [ ${flg_DryRun} -ne 1 ]; then
+        if ! chsh -s "$(which "${myShell}")"; then
+            print_log -sec "SHELL" -warn "skipped" "could not change login shell automatically; continue install and run 'chsh -s $(which "${myShell}")' later if you want ${myShell} as default shell..."
+        fi
+    fi
 else
     print_log -sec "SHELL" -stat "exist" "${myShell} is already set as shell..."
 fi
