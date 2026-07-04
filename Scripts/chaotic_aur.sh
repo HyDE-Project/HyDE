@@ -3,15 +3,30 @@
 #! REQUIRED ROOT
 execName="$0 $*"
 rootOpts=("--install" "--purge" "--revert" "fresh") #? List Of Flags that needs to be in sudo
-vertL="$(printf '=%.0s' $(seq 1 "$(tput cols)"))"
+
+# Gracefully handle unknown terminals (e.g. xterm-ghostty)
+_tput() {
+    if tput "$@" 2>/dev/null; then
+        return 0
+    fi
+    return 0
+}
+
+_term_cols() {
+    local cols
+    cols=$(tput cols 2>/dev/null)
+    echo "${cols:-80}"
+}
+
+vertL="$(printf '=%.0s' $(seq 1 "$(_term_cols)"))"
 
 box_me() {
     local s="Hyde: $*"
-    tput setaf 3
+    _tput setaf 3
     echo " ═${s//?/═}"
     echo "║$s ║"
     echo " ═${s//?/═}"
-    tput sgr0
+    _tput sgr0
 }
 
 check_Root() {
@@ -85,9 +100,9 @@ check_Integrity() {
 
 install() {
     handle_error() {
-        tput setaf 1
+        _tput setaf 1
         echo "ERROR :: Failed to install Chaotic AUR"
-        tput sgr0
+        _tput sgr0
         echo "WARNING :: Reverting changes..."
         { purge && echo "Reverted successfully"; } || echo "Failed to revert"
         exit 1
@@ -191,14 +206,17 @@ revertAUR() {
 fresh() {
     clear
     echo "Detected: Arch Linux"
+    title_green="$(_tput setaf 2 2>&1)Would you like to add Chaotic AUR to your mirror list?$(_tput sgr0)"
+    title_cyan="$(_tput setaf 6 2>&1)About Chaotic AUR:$(_tput sgr0)"
+    title_red="$(_tput setaf 1 2>&1) Skipping Chaotic AUR$(_tput sgr0)"
     cat <<CHAOS
 
-$(tput setaf 2)Would you like to add Chaotic AUR to your mirror list?$(tput sgr0)
+${title_green}
 Chaotic AUR provides prebuilt and precompiled packages,
 which can make installing packages from Arch faster.
 
 $vertL
-$(tput setaf 6)About Chaotic AUR:$(tput sgr0)
+${title_cyan}
 Most packages available in this repo are automatically built from their respective AUR source package. However there are a few exceptions, check github.com/chaotic-aur/packages to find out which ones.
 The primary building cluster is a node in UFSCars datacenter which is hosted in São Carlos, São Paulo, Brazil.
 
@@ -217,7 +235,7 @@ CHAOS
 
     read -p "Type 'yes' to continue [default] No : " add_chaotic
     if [ ! "${add_chaotic}" == "yes" ]; then
-        echo -e "$(tput setaf 1) Skipping Chaotic AUR$(tput sgr0)"
+        echo -e "${title_red}"
         exit 0
     fi
 }

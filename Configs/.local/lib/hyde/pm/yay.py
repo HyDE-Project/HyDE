@@ -22,9 +22,8 @@ def remove(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
     args.extend(packages)
     ctx.run(args)
 
-
 def upgrade(ctx, no_confirm: bool = False) -> None:
-    args = ["yay", "-Su"]
+    args = ["yay", "-Syu", "--aur"]
     if no_confirm:
         args.append("--noconfirm")
     ctx.run(args)

@@ -450,10 +450,6 @@ dependencies = [
     { name = "inotify-simple" },
     { name = "loguru" },
     { name = "pulsectl" },
-    { name = "pygobject" },
-    { name = "pyprland" },
-    { name = "pyqt6" },
-    { name = "pywayland" },
     { name = "requests" },
     { name = "uv" },
     { name = "websockets" },
@@ -467,6 +463,12 @@ amd = [
 dev = [
     { name = "prek" },
 ]
+wayland = [
+    { name = "pygobject" },
+    { name = "pyprland" },
+    { name = "pyqt6" },
+    { name = "pywayland" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -477,16 +479,16 @@ requires-dist = [
     { name = "prek", marker = "extra == 'dev'", specifier = ">=0.4.1" },
     { name = "pulsectl", specifier = "==24.12.0" },
     { name = "pyamdgpuinfo", marker = "extra == 'amd'" },
-    { name = "pygobject" },
-    { name = "pyprland", specifier = "==3.3.1" },
-    { name = "pyqt6" },
-    { name = "pywayland" },
+    { name = "pygobject", marker = "extra == 'wayland'" },
+    { name = "pyprland", marker = "extra == 'wayland'", specifier = "==3.3.1" },
+    { name = "pyqt6", marker = "extra == 'wayland'" },
+    { name = "pywayland", marker = "extra == 'wayland'" },
     { name = "requests", specifier = "==2.33.0" },
     { name = "uv", specifier = ">=0.1.0" },
     { name = "websockets", specifier = ">=16.0" },
     { name = "xdg-prefs", git = "https://github.com/rchaput/xdg-prefs" },
 ]
-provides-extras = ["amd", "dev"]
+provides-extras = ["amd", "wayland", "dev"]
 
 [[package]]
 name = "idna"
