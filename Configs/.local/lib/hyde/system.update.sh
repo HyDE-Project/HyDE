@@ -26,7 +26,15 @@ if [ "$1" == "up" ]; then
         $fpk_exup
         read -n 1 -p 'Press any key to continue...'
         "
-        kitty --title systemupdate sh -c "$command"
+	read -r -a terminal_cmd <<< "${TERMINAL:-kitty}"
+	case "$(basename "${terminal_cmd[0]}")" in
+		ghostty)
+			"${terminal_cmd[@]}" --title=systemupdate -e sh -c "$command"
+			;;
+		*)
+			"${terminal_cmd[@]}" --title systemupdate sh -c "$command"
+			;;
+	esac
     else
         echo "No upgrade info found. Please run the script without parameters first."
     fi
