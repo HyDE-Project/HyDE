@@ -10,8 +10,8 @@
 # Hyde's Shell Environment Initialization Script
 # If users used UWSM, uwsm will override any variables set anywhere in your shell configurations
 
-# Basic PATH prepending (user local bin)
-PATH="$HOME/.local/bin:$PATH"
+# Basic PATH prepending (user local bin) - only if not already present
+[[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && PATH="$HOME/.local/bin:$PATH"
 
 # XDG Base Directory Specification variables with defaults
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -45,6 +45,9 @@ PYTHON_HISTORY="$XDG_STATE_HOME/python_history"
 
 # HyDEs Compositor Configuration
 export HYPRLAND_CONFIG="${XDG_DATA_HOME:-$HOME/.local/share}/hypr/hyprland.conf"
+
+# Deduplicate PATH while preserving order
+typeset -U PATH
 
 # Export all variables
 export PATH \
