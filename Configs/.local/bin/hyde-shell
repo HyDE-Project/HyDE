@@ -672,7 +672,7 @@ BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
 LIB_DIR=$(realpath "${BIN_DIR}/../lib")
 SHARE_DIR=$(realpath "${BIN_DIR}/../share")
 # Prepend hyde paths to PATH only if not already present
-for _p in "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts" "$BIN_DIR" "$LIB_DIR/hyde"; do
+for _p in "$LIB_DIR/hyde" "$BIN_DIR" "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts"; do
     [[ ":$PATH:" != *":$_p:"* ]] && PATH="$_p:$PATH"
 done
 unset _p
