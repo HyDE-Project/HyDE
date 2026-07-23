@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+import re
 import subprocess
 import json
 import argparse
@@ -13,16 +14,12 @@ def get_hyprctl_binds():
             result = subprocess.run(
                 ["hyprctl", "binds", "-j"], capture_output=True, text=True, check=True
             )
-            while result.returncode != 0:
-                print("Waiting for hyprctl command to succeed...")
-                time.sleep(1)
-                result = subprocess.run(
-                    ["hyprctl", "binds", "-j"],
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-            binds = json.loads(result.stdout)
+
+            clean_json = result.stdout
+            clean_json = re.sub(r'("keycode":\s*)([^"\s,\}]+)(\s*[,}])', r'\1"\2"\3', clean_json)
+            clean_json = re.sub(r'("allow_input_capture":\s*)([^"\n]+?)(,\s*\n)', r'\1"\2"\3', clean_json)
+
+            binds = json.loads(clean_json)
             return binds
         except subprocess.CalledProcessError as e:
             print(f"Error executing hyprctl: {e}")
@@ -72,7 +69,7 @@ def map_codeDisplay(keycode, key):
         81: "KP_9",
         90: "KP_0",
     }
-    return code_map.get(keycode, key)
+    return code_map.get(keycode, keycode)
 
 
 def map_modDisplay(modmask):
@@ -353,7 +350,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--format",
         choices=["json", "md", "dmenu", "rofi"],
-        default="json",
+        default="rofi",
         help="Output format",
     )
     args = parser.parse_args()
