@@ -58,7 +58,7 @@ dispatch=$(awk -F ':::' '{print $2}' <<< "$selected" | xargs)
 arg=$(awk -F ':::' '{print $3}' <<< "$selected" | xargs)
 repeat=$(awk -F ':::' '{print $4}' <<< "$selected" | xargs)
 RUN() {
-    case "$(eval "hyprctl dispatch '$dispatch' '$arg'")" in *"Not enough arguments"*) exec $0 ;; esac
+    case "$(eval "hyprctl dispatch '$dispatch' '$arg'")" in *"Not enough arguments"*) exit 0 ;; esac
 }
 if [ -n "$dispatch" ] && [ "$(echo "$dispatch" | wc -l)" -eq 1 ]; then
     if [ "$repeat" = repeat ]; then
@@ -74,5 +74,5 @@ if [ -n "$dispatch" ] && [ "$(echo "$dispatch" | wc -l)" -eq 1 ]; then
         RUN
     fi
 else
-    exec $0
+    exit 0
 fi
