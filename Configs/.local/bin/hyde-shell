@@ -671,7 +671,11 @@ fi
 BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
 LIB_DIR=$(realpath "${BIN_DIR}/../lib")
 SHARE_DIR=$(realpath "${BIN_DIR}/../share")
-PATH="${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:$BIN_DIR:$LIB_DIR/hyde:$PATH" #! I added this to the PATH to make sure that the hyde commands are available in the shell
+# Prepend hyde paths to PATH only if not already present
+for _p in "$LIB_DIR/hyde" "$BIN_DIR" "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts"; do
+    [[ ":$PATH:" != *":$_p:"* ]] && PATH="$_p:$PATH"
+done
+unset _p
 # Define hyde scripts search paths (colon-separated, user configurable)
 HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME:-$HOME/.local/share}/waybar/scripts:${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts"
 
