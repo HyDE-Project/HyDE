@@ -8,27 +8,69 @@ import time
 
 
 def get_hyprctl_binds():
-    while True:
+    try:
+        result = subprocess.run(
+            ["hyprctl", "binds", "-j"], capture_output=True, text=True, check=True, timeout=5
+        )
         try:
-            result = subprocess.run(
-                ["hyprctl", "binds", "-j"], capture_output=True, text=True, check=True
-            )
-            while result.returncode != 0:
-                print("Waiting for hyprctl command to succeed...")
-                time.sleep(1)
-                result = subprocess.run(
-                    ["hyprctl", "binds", "-j"],
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
             binds = json.loads(result.stdout)
             return binds
-        except subprocess.CalledProcessError as e:
-            print(f"Error executing hyprctl: {e}")
-            return None
         except json.JSONDecodeError:
-            time.sleep(1)
+            pass
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        pass
+
+    try:
+        result = subprocess.run(
+            ["hyprctl", "binds"], capture_output=True, text=True, check=True, timeout=5
+        )
+        binds = []
+        current = {}
+        for line in result.stdout.strip().split("\n"):
+            line = line.strip()
+            if line == "bindd" or line == "bind":
+                if current:
+                    binds.append(current)
+                current = {}
+            elif ":" in line:
+                key, _, value = line.partition(":")
+                key = key.strip()
+                value = value.strip()
+                if key == "modmask":
+                    current["modmask"] = int(value) if value.isdigit() else 0
+                elif key == "submap":
+                    current["submap"] = value
+                elif key == "key":
+                    current["key"] = value
+                elif key == "keycode":
+                    current["keycode"] = int(value) if value.isdigit() else 0
+                elif key == "catchall":
+                    current["catch_all"] = value.lower() == "true"
+                elif key == "description":
+                    current["description"] = value
+                    current["has_description"] = bool(value)
+                elif key == "dispatcher":
+                    current["dispatcher"] = value
+                elif key == "arg":
+                    current["arg"] = value
+                elif key == "repeat":
+                    current["repeat"] = value.lower() == "true"
+                elif key == "locked":
+                    current["locked"] = value.lower() == "true"
+                elif key == "mouse":
+                    current["mouse"] = value.lower() == "true"
+                elif key == "release":
+                    current["release"] = value.lower() == "true"
+                elif key == "non_consuming":
+                    current["non_consuming"] = value.lower() == "true"
+                elif key == "allow_input_capture":
+                    current["allow_input_capture"] = value.lower() == "true"
+        if current:
+            binds.append(current)
+        return binds if binds else None
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+        print(f"Error executing hyprctl: {e}")
+        return None
 
 
 def parse_description(description):
