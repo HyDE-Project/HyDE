@@ -57,6 +57,7 @@ duf|fish                                                 # prettier version of d
 
 # --------------------------------------------------- // Backends
 #electron                                              # electron backend
+# matugen-bin                                          # Material You color generation (optional alternative to imagemagick for dcol)
 
 # --------------------------------------------------- // Lockscreen
 #swaylock-effects-git                                   # swaylock with effects // very minimal lockscreen

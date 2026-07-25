@@ -160,11 +160,19 @@ if [ -z "$wallbash_image" ] || [ ! -f "$wallbash_image" ]; then
     exit 1
 fi
 dcol_file="$dcolDir/$(set_hash "$wallbash_image").dcol"
-if [ ! -f "$dcol_file" ]; then
+mcol_file="$dcolDir/$(set_hash "$wallbash_image").mcol"
+if [ ! -f "$dcol_file" ] || { [[ "${DCOL_BACKEND}" == "matugen" ]] && [ ! -f "$mcol_file" ]; }; then
     "$scrDir/wallpaper/cache.sh" commence -w "$wallbash_image" &> /dev/null
 fi
+# Source color file based on backend preference
+# DCOL_BACKEND=matugen -> prefer .mcol, fallback to .dcol
+# DCOL_BACKEND=imagemagick or unset -> use .dcol (default)
 set -a
-source "$dcol_file"
+if [[ "${DCOL_BACKEND}" == "matugen" ]] && [[ -f "$mcol_file" ]]; then
+    source "$mcol_file"
+else
+    source "$dcol_file"
+fi
 if [ -f "$HYDE_THEME_DIR/theme.dcol" ] && [ "$enableWallDcol" -eq 0 ]; then
     source "$HYDE_THEME_DIR/theme.dcol"
     print_log -sec "wallbash" -stat "override" "dominant colors from $HYDE_THEME theme"
