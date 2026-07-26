@@ -12,6 +12,8 @@ typeset -gx XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 typeset -gx XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 typeset -gx XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 typeset -gx XDG_DATA_DIRS="${XDG_DATA_DIRS:-$XDG_DATA_HOME:/usr/local/share:/usr/share}"
+# Basic PATH prepending (user local bin) - only if not already present
+[[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && PATH="$HOME/.local/bin:$PATH"
 
 function set_xdg_user_dir() {
   [[ -n "$2" ]] && typeset -gx "$1=$2"
@@ -42,3 +44,5 @@ if [[ -z "$HYDE_ACTIVATED" ]]; then
   done
   unset _hyde_activate
 fi
+
+typeset -U PATH
