@@ -2,8 +2,7 @@
 [hypridle]
 
 [[hypridle.dependency]]
-yay = ["hypridle"]
-paru = ["hypridle"]
+pacman = ["hypridle"]
 dnf = ["hypridle"]
 
 [[hypridle.files]]

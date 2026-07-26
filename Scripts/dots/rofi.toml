@@ -3,7 +3,7 @@
 pre_command = "echo 'Preserve rofi config'"
 
 [[rofi.dependency]]
-yay = ["rofi"]
+pacman = ["rofi"]
 
 [[rofi.files]]
 action = "preserve"

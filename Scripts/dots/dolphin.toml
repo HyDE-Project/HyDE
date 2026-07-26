@@ -6,8 +6,7 @@
 
 [[dolphin.dependency]]
     dnf  = [ "dolphin" ]
-    paru = [ "dolphin" ]
-    yay  = [ "dolphin" ]
+    pacman = [ "dolphin" ]
 
 [[dolphin.files]]
     paths = [

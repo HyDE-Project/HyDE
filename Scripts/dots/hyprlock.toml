@@ -3,8 +3,7 @@
 
 [[hyprlock.dependency]]
     dnf  = [ "hyprlock" ]
-    paru = [ "hyprlock" ]
-    yay  = [ "hyprlock" ]
+    pacman = [ "hyprlock" ]
 
 [[hyprlock.files]]
     action      = "preserve"

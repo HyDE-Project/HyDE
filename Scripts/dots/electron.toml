@@ -3,7 +3,7 @@
 
 
 [[electron-flags.dependency]]
-    yay = [ "electron" ]
+    pacman = [ "electron" ]
 
 [[electron-flags.files]]
     action      = "preserve"

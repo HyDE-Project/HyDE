@@ -26,16 +26,23 @@
 # This helps support custom package managers
 # and add custom flags for each manager
 [[global.package_managers]]
+    install   = "sudo pacman -S"
+    name      = "pacman"
+    query     = "pacman -Q"
+    uninstall = "sudo pacman -R"
+    update    = "sudo pacman -Syu"
+
+[[global.package_managers]]
     install   = "yay -S"
     name      = "yay"
-    query     = "yay -Qs"
+    query     = "yay -Q"
     uninstall = "yay -R"
     update    = "yay -Syu"
 
 [[global.package_managers]]
     install   = "paru -S"
     name      = "paru"
-    query     = "paru -Qs"
+    query     = "paru -Q"
     uninstall = "paru -R"
     update    = "paru -Syu"
 

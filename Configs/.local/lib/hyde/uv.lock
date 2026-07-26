@@ -145,6 +145,15 @@ wheels = [
 ]
 
 [[package]]
+name = "blinker"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/21/28/9b3f50ce0e048515135495f198351908d99540d69bfdc8c1d15b73dc55ce/blinker-1.9.0.tar.gz", hash = "sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf", size = 22460, upload-time = "2024-11-08T17:25:47.436Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/10/cb/f2ad4230dc2eb1a74edf38f1a38b9b52277f75bef262d8908e60d957e13c/blinker-1.9.0-py3-none-any.whl", hash = "sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc", size = 8458, upload-time = "2024-11-08T17:25:46.184Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2026.2.25"
 source = { registry = "https://pypi.org/simple" }
@@ -322,6 +331,18 @@ wheels = [
 ]
 
 [[package]]
+name = "deez"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "blinker" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/75/6e12027867117b684c80753854301001d87c328f9d8cd38a918d144cbb13/deez-1.0.4.tar.gz", hash = "sha256:991246fee7e645ae44f9583cfb9d883cdd3888135c4d4906b705dc03db6028eb", size = 11616, upload-time = "2023-08-23T19:07:38.809Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d3/e1/bb811064ae61b588d1dd8d16131a3042e278099ac4171dd5c39369692739/deez-1.0.4-py3-none-any.whl", hash = "sha256:f7c434f9b5b218d274265f274b0da81f61ee0e2dba2ed52dedb0f4570fadb9b4", size = 16600, upload-time = "2023-08-23T19:07:37.147Z" },
+]
+
+[[package]]
 name = "deez-dots"
 version = "0.1.0"
 source = { git = "https://github.com/HyDE-Project/deez-dots.git#406d5602cd60600bd05e9d1139bc5ec0dd5eaa44" }
@@ -445,11 +466,13 @@ name = "hyde-pyutils"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "deez" },
     { name = "deez-dots" },
     { name = "hererocks" },
     { name = "inotify-simple" },
     { name = "loguru" },
     { name = "pulsectl" },
+    { name = "pyprland" },
     { name = "requests" },
     { name = "uv" },
     { name = "websockets" },
@@ -465,13 +488,13 @@ dev = [
 ]
 wayland = [
     { name = "pygobject" },
-    { name = "pyprland" },
     { name = "pyqt6" },
     { name = "pywayland" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "deez", specifier = ">=1.0.4" },
     { name = "deez-dots", git = "https://github.com/HyDE-Project/deez-dots.git" },
     { name = "hererocks", specifier = ">=0.25.1" },
     { name = "inotify-simple" },
@@ -480,7 +503,7 @@ requires-dist = [
     { name = "pulsectl", specifier = "==24.12.0" },
     { name = "pyamdgpuinfo", marker = "extra == 'amd'" },
     { name = "pygobject", marker = "extra == 'wayland'" },
-    { name = "pyprland", marker = "extra == 'wayland'", specifier = "==3.3.1" },
+    { name = "pyprland", specifier = "==3.3.1" },
     { name = "pyqt6", marker = "extra == 'wayland'" },
     { name = "pywayland", marker = "extra == 'wayland'" },
     { name = "requests", specifier = "==2.33.0" },

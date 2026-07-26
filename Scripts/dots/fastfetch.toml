@@ -2,6 +2,10 @@
 [fastfetch]
     description = "A feature-rich and performance oriented neofetch like system information tool"
 
+[[fastfetch.dependency]]
+    dnf  = [ "fastfetch" ]
+    pacman = [ "fastfetch" ]
+
 [[fastfetch.files]]
     action      = "preserve"
     paths       = "fastfetch"

@@ -2,9 +2,8 @@
     description = "A very advanced and programmable command interpreter (shell) for UNIX"
 
 [[zsh.dependency]]
-    dnf  = [ "zsh", "starship", "fastfetch" ]
-    paru = [ "zsh", "starship", "fastfetch" ]
-    yay  = [ "zsh", "starship", "fastfetch" ]
+    dnf  = [ "zsh", "starship" ]
+    pacman = [ "zsh", "starship" ]
 
 [[zsh.files]]
     action      = "sync"

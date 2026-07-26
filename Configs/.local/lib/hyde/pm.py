@@ -17,7 +17,7 @@ from pathlib import Path
 from types import ModuleType
 from typing import Callable, Iterable, Sequence
 
-PMS = ["pacman", "paru","yay", "apt", "dnf", "zypper", "flatpak"]
+PMS = ["pacman", "yay", "paru", "apt", "dnf", "zypper", "flatpak"]
 CONFLICT_GROUPS: list[tuple[str, ...]] = [
     ("paru", "yay"),
 ]
@@ -198,14 +198,19 @@ def main(argv: Sequence[str] | None = None) -> None:
 
 
 def resolve_conflicted_managers(available: Sequence[str]) -> list[str]:
-    # Filter the master list to what's actually installed
-    ordered = [p for p in PMS if p in available]
+    winners: list[str] = []
+    # For each conflict group, keep the first available manager according to PMS priority.
+    for group in CONFLICT_GROUPS:
+        for name in available:
+            if name in group:
+                winners.append(name)
+                break
+    for name in available:
+        if any(name in group for group in CONFLICT_GROUPS):
+            continue
+        winners.append(name)
+    return winners
 
-    # Identify which losers to drop from conflict groups
-    losers = {g[1] for g in CONFLICT_GROUPS if g[0] in ordered and g[1] in ordered}
-
-    # Return everything else in the correct order
-    return [p for p in ordered if p not in losers]
 
 def list_available_managers() -> list[str]:
     available = [name for name in PMS if shutil.which(name)]

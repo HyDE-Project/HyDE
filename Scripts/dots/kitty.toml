@@ -2,7 +2,7 @@
     description = "A modern, hackable, featureful, OpenGL-based terminal emulator"
 
 [[kitty.dependency]]
-    yay = [ "kitty" ] # Dependency for kitty
+    pacman = [ "kitty" ] # Dependency for kitty
 
 [[kitty.files]]
     action      = "sync"
@@ -15,6 +15,3 @@
     paths       = "kitty/theme.conf"
     source_root = "Configs/.config/"
     target_root = "${XDG_CONFIG_HOME}"
-
-[[kitty.files.dependency]]
-    yay = [ "imagemagick", "hyprland" ]

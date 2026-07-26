@@ -15,6 +15,43 @@ flg_DryRun=${flg_DryRun:-0}
 flg_Grub=${flg_Grub:-1}
 flg_Nvidia=${flg_Nvidia:-1}
 
+# Python environment setup
+if [ "${flg_DryRun}" -eq 1 ]; then
+    print_log -y "[PYTHON] " -b "dry-run :: " "Would setup Python environment"
+else
+    python_env_dir="${HOME}/.local/state/hyde/python_env"
+
+    # Create venv using system python3
+    if ! python3 "${cloneDir}/Configs/.local/lib/hyde/pyutils/python_env.py" create; then
+        print_log -err "[PYTHON] " -crit "ERROR" "Failed to create Python environment"
+        print_log -err "[PYTHON] " -crit "ERROR" "Did you you forgot to install base-devel?"
+        exit 1
+    fi
+
+    # Sync dependencies using venv python
+    python_exe="${python_env_dir}/bin/python"
+    if ! "${python_exe}" "${cloneDir}/Configs/.local/lib/hyde/pyutils/python_env.py" sync; then
+        print_log -err "[PYTHON] " -crit "ERROR" "Failed to install dependencies"
+        exit 1
+    fi
+
+    print_log -g "[PYTHON] " -b "complete :: " "Environment setup complete"
+fi
+
+# TODO: Disable this for now as this should be in post
+# # Lua environment setup
+# if [ "${flg_DryRun}" -eq 1 ]; then
+#     print_log -y "[LUA] " -b "dry-run :: " "Would setup Lua environment"
+# else
+#     # Create Lua environment using system luarocks
+#     if ! python3 "${cloneDir}/Configs/.local/lib/hyde/pyutils/lua_env.py" create; then
+#         print_log -err "[LUA] " -crit "ERROR" "Failed to create Lua environment"
+#         exit 1
+#     fi
+
+#     print_log -g "[LUA] " -b "complete :: " "Environment setup complete"
+# fi
+
 # grub
 if [ "${flg_Grub}" -eq 1 ] && pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
     print_log -sec "bootloader" -b "detected :: " "grub..."

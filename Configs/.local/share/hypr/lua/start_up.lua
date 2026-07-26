@@ -1,25 +1,31 @@
 local hs = hyde.config.start or {}
 
+local function check_exec(cmd)
+	if type(cmd) == "string" and cmd ~= "" then
+		hl.exec_cmd(cmd)
+	end
+end
+
 hl.on(
 	"hyprland.start",
 	function()
-		hl.exec_cmd(hs.dbus_share_picker)
-		hl.exec_cmd(hs.systemd_share_picker)
-		hl.exec_cmd("uwsm finalize") -- * optional
-		hl.exec_cmd(hs.wallpaper)
-		hl.exec_cmd(hs.bar)
-		hl.exec_cmd(hs.blue_light_filter_daemon)
-		hl.exec_cmd(hs.notifications)
-		hl.exec_cmd(hs.auth_dialogue)
-		hl.exec_cmd("hyprctl setcursor " .. hyde.config.ui.cursor_theme .. " " .. hyde.config.ui.cursor_size)
-		hl.exec_cmd(hs.text_clipboard)
-		hl.exec_cmd(hs.image_clipboard)
-		hl.exec_cmd(hs.clipboard_persist)
-		hl.exec_cmd(hs.idle_daemon)
-		hl.exec_cmd(hs.battery_notify)
-		hl.exec_cmd(hs.applet_network_manager)
-		hl.exec_cmd(hs.applet_removable_media)
-		hl.exec_cmd(hs.applet_bluetooth)
-		hl.exec_cmd(hs.hyde_config)
+		check_exec(hs.dbus_share_picker)
+		check_exec(hs.systemd_share_picker)
+		check_exec("uwsm finalize") -- * optional
+		check_exec(hs.wallpaper)
+		check_exec(hs.bar)
+		check_exec(hs.blue_light_filter_daemon)
+		check_exec(hs.notifications)
+		check_exec(hs.auth_dialogue)
+		check_exec("hyprctl setcursor " .. hyde.config.ui.cursor_theme .. " " .. hyde.config.ui.cursor_size)
+		check_exec(hs.text_clipboard)
+		check_exec(hs.image_clipboard)
+		check_exec(hs.clipboard_persist)
+		check_exec(hs.idle_daemon)
+		check_exec(hs.battery_notify)
+		check_exec(hs.applet_network_manager)
+		check_exec(hs.applet_removable_media)
+		check_exec(hs.applet_bluetooth)
+		check_exec(hs.hyde_config)
 	end
 )

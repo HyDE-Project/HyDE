@@ -21,7 +21,7 @@ import wrapper.libnotify as notify  # noqa: E402
 
 def get_venv_path() -> str:
     """Returns the path to the virtual environment directory."""
-7    return os.path.join(str(xdg_base_dirs.xdg_state_home()), "hyde", "python_env")
+    return os.path.join(str(xdg_base_dirs.xdg_state_home()), "hyde", "python_env")
 
 
 def get_project_dir() -> str:

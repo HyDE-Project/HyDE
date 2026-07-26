@@ -31,77 +31,121 @@ fi
 
 #------------------#
 # evaluate options #
-#------------------#
-flg_Install=0
-flg_Restore=0
-flg_Service=0
-flg_DryRun=0
-flg_Shell=0
-flg_Nvidia=1
-flg_ThemeInstall=1
+#------------------
 
-while getopts idrstmnh RunStep; do
-	case $RunStep in
-	i) flg_Install=1 ;;
-	d)
-		flg_Install=1
-		export use_default="--noconfirm"
-		;;
-	r) flg_Restore=1 ;;
-	s) flg_Service=1 ;;
-	n)
-		# shellcheck disable=SC2034
-		export flg_Nvidia=0
-		print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
-		;;
-	h)
-		# shellcheck disable=SC2034
-		export flg_Shell=1
-		print_log -r "[shell] " -b "Reevaluate :: " "shell options"
-		;;
-	t) flg_DryRun=1 ;;
-	m) flg_ThemeInstall=0 ;;
-	*)
-		cat <<EOF
-Usage: $0 [options]
-            i : [i]nstall hyprland without configs
-            d : install hyprland [d]efaults without configs --noconfirm
-            r : [r]estore config files
-            s : enable system [s]ervices
-            n : ignore/[n]o [n]vidia actions (-irsn to ignore nvidia)
-            h : re-evaluate S[h]ell
-            m : no the[m]e reinstallations
-            t : [t]est run without executing (-irst to dry run all)
+show_help() {
+	cat <<EOF
+Usage: $0 [OPTIONS]
+
+Options:
+    -i, --install          Install packages only
+    -d, --defaults         Install packages with defaults (noconfirm)
+    -r, --restore          Restore configs and dotfiles
+    -s, --services         Enable system services
+    -p, --pre              Run pre-install only (Python environment setup)
+    -n, --no-nvidia        Ignore nvidia actions
+    -h, --shell            Re-evaluate shell configuration
+    -m, --no-theme         Skip theme installation
+    -t, --test             Test run (dry-run)
+    --help                 Show this help message
+
+Common combinations:
+    ./install.sh              # Full installation (default)
+    ./install.sh -p           # Pre-install only (run first if restore fails)
+    ./install.sh -r           # Restore configs and dotfiles only
+    ./install.sh -irs         # Install, restore, and services
+    ./install.sh -irsn       # Full install without nvidia
 
 NOTE:
-        running without args is equivalent to -irs
-        to ignore nvidia, run -irsn
-
-WRONG:
-        install.sh -n # This will not work
+    If restore fails with "deez-dots not found", run: ./install.sh -p
+    The -p flag sets up Python environment and deez-dots
 
 EOF
-		exit 1
-		;;
+	exit 0
+}
+
+operations=()
+dry_run=0
+nvidia=1
+theme_install=1
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		-i|--install)
+			operations+=("install")
+			shift
+			;;
+		-d|--defaults)
+			operations+=("install")
+			export use_default="--noconfirm"
+			shift
+			;;
+		-r|--restore)
+			operations+=("restore")
+			shift
+			;;
+		-s|--services)
+			operations+=("services")
+			shift
+			;;
+		-p|--pre)
+			operations+=("pre")
+			shift
+			;;
+		-n|--no-nvidia)
+			nvidia=0
+			print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
+			shift
+			;;
+		-h|--shell)
+			export flg_Shell=1
+			print_log -r "[shell] " -b "Reevaluate :: " "shell options"
+			shift
+			;;
+		-m|--no-theme)
+			theme_install=0
+			shift
+			;;
+		-t|--test)
+			dry_run=1
+			shift
+			;;
+		--help)
+			show_help
+			;;
+		*)
+			echo "Unknown option: $1"
+			show_help
+			;;
 	esac
 done
 
-# Only export that are used outside this script
-HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
-export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall HYDE_LOG
+if [ ${#operations[@]} -eq 0 ]; then
+	operations=("install" "restore" "services")
+fi
 
-if [ "${flg_DryRun}" -eq 1 ]; then
+export flg_DryRun=$dry_run
+export flg_Nvidia=$nvidia
+export flg_ThemeInstall=$theme_install
+HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
+export HYDE_LOG
+
+if [ $dry_run -eq 1 ]; then
 	print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
-elif [ $OPTIND -eq 1 ]; then
-	flg_Install=1
-	flg_Restore=1
-	flg_Service=1
 fi
 
 #--------------------#
-# pre-install script #
+# Helper functions #
+#--------------------
+has_operation() {
+	local op="$1"
+	[[ " ${operations[*]} " =~ " ${op} " ]]
+}
+
 #--------------------#
-if [ ${flg_Install} -eq 1 ] && [ ${flg_Restore} -eq 1 ]; then
+# pre-install script #
+#--------------------
+if has_operation "pre"; then
 	cat <<"EOF"
                 _         _       _ _
  ___ ___ ___   |_|___ ___| |_ ___| | |
@@ -112,12 +156,17 @@ if [ ${flg_Install} -eq 1 ] && [ ${flg_Restore} -eq 1 ]; then
 EOF
 
 	"${scrDir}/install_pre.sh"
+	exit 0
+fi
+
+if has_operation "install" && has_operation "restore"; then
+	"${scrDir}/install_pre.sh"
 fi
 
 #------------#
 # installing #
-#------------#
-if [ ${flg_Install} -eq 1 ]; then
+#------------
+if has_operation "install"; then
 	cat <<"EOF"
 
  _         _       _ _ _
@@ -131,7 +180,6 @@ EOF
 	#----------------------#
 	# prepare package list #
 	#----------------------#
-	shift $((OPTIND - 1))
 	custom_pkg=$1
 	cp "${scrDir}/pkg_core.lst" "${scrDir}/install_pkg.lst"
 	trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${HYDE_LOG}/install_pkg.lst"' EXIT
@@ -190,35 +238,35 @@ EOF
 		fi
 	fi
 
-	if ! chk_list "myShell" "${shlList[@]}"; then
-		print_log -c "Shell :: "
-		for i in "${!shlList[@]}"; do
-			print_log -sec "$((i + 1))" " ${shlList[$i]} "
-		done
-		prompt_timer 120 "Enter option number [default: zsh] | q to quit "
+	# if ! chk_list "myShell" "${shlList[@]}"; then
+	# 	print_log -c "Shell :: "
+	# 	for i in "${!shlList[@]}"; do
+	# 		print_log -sec "$((i + 1))" " ${shlList[$i]} "
+	# 	done
+	# 	prompt_timer 120 "Enter option number [default: zsh] | q to quit "
 
-		case "${PROMPT_INPUT}" in
-		1) export myShell="zsh" ;;
-		2) export myShell="fish" ;;
-		q)
-			print_log -sec "shell" -crit "Quit" "Exiting..."
-			exit 1
-			;;
-		*)
-			print_log -sec "shell" -warn "Defaulting to zsh"
-			export myShell="zsh"
-			;;
-		esac
-		print_log -sec "shell" -stat "Added as shell" "${myShell}"
-		echo "${myShell}" >>"${scrDir}/install_pkg.lst"
+	# 	case "${PROMPT_INPUT}" in
+	# 	1) export myShell="zsh" ;;
+	# 	2) export myShell="fish" ;;
+	# 	q)
+	# 		print_log -sec "shell" -crit "Quit" "Exiting..."
+	# 		exit 1
+	# 		;;
+	# 	*)
+	# 		print_log -sec "shell" -warn "Defaulting to zsh"
+	# 		export myShell="zsh"
+	# 		;;
+	# 	esac
+	# 	print_log -sec "shell" -stat "Added as shell" "${myShell}"
+	# 	echo "${myShell}" >>"${scrDir}/install_pkg.lst"
 
-		if [[ -z "$myShell" ]]; then
-			print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
-			exit 1
-		else
-			print_log -sec "shell" -stat "detected :: " "${myShell}"
-		fi
-	fi
+	# 	if [[ -z "$myShell" ]]; then
+	# 		print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+	# 		exit 1
+	# 	else
+	# 		print_log -sec "shell" -stat "detected :: " "${myShell}"
+	# 	fi
+	# fi
 
 	if ! grep -q "^#user packages" "${scrDir}/install_pkg.lst"; then
 		print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}/install.sh"
@@ -233,8 +281,8 @@ fi
 
 #---------------------------#
 # restore my custom configs #
-#---------------------------#
-if [ ${flg_Restore} -eq 1 ]; then
+#---------------------------
+if has_operation "restore"; then
 	cat <<"EOF"
 
              _           _
@@ -249,8 +297,28 @@ EOF
 		hyprctl keyword misc:disable_autoreload 1 -q
 	fi
 
-	"${scrDir}/restore_fnt.sh"
-	"${scrDir}/restore_cfg.sh"
+	# Deploy dotfiles using deez-dots
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[DEEZ-DOTS] " -b "dry-run :: " "Would deploy dotfiles"
+	else
+		python_env_dir="${HOME}/.local/state/hyde/python_env"
+		deez_exe="${python_env_dir}/bin/deez"
+
+		[ ! -f "${deez_exe}" ] && {
+			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "deez-dots not found in Python environment"
+			print_log -err "[DEEZ-DOTS] " -crit "FIX" "Run: ./install.sh -p (pre-install only)"
+			exit 1
+		}
+
+		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing core dotfiles..."
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/core.toml" dots --skip-git --deploy all || exit 1
+
+		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing extra dotfiles..."
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/extra.toml" dots --skip-git --deploy || exit 1
+
+		print_log -g "[DEEZ-DOTS] " -b "complete :: " "Dotfiles deployed"
+	fi
+
 	"${scrDir}/restore_thm.sh"
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
@@ -266,7 +334,7 @@ fi
 #---------------------#
 # post-install script #
 #---------------------#
-if [ ${flg_Install} -eq 1 ] && [ ${flg_Restore} -eq 1 ]; then
+if has_operation "install" && has_operation "restore"; then
 	cat <<"EOF"
 
              _      _         _       _ _
@@ -283,7 +351,7 @@ fi
 #---------------------------#
 # run migrations            #
 #---------------------------#
-if [ ${flg_Restore} -eq 1 ]; then
+if has_operation "restore"; then
 
 	# migrationDir="$(realpath "$(dirname "$(realpath "$0")")/../migrations")"
 	migrationDir="${scrDir}/migrations"
@@ -310,7 +378,7 @@ fi
 #------------------------#
 # enable system services #
 #------------------------#
-if [ ${flg_Service} -eq 1 ]; then
+if has_operation "services"; then
 	cat <<"EOF"
 
                  _
@@ -323,15 +391,15 @@ EOF
 	"${scrDir}/restore_svc.sh"
 fi
 
-if [ $flg_Install -eq 1 ]; then
+if has_operation "install"; then
 	echo ""
 	print_log -g "Installation" " :: " "COMPLETED!"
 fi
 print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
-if [ $flg_Install -eq 1 ] ||
-	[ $flg_Restore -eq 1 ] ||
-	[ $flg_Service -eq 1 ] &&
-	[ $flg_DryRun -ne 1 ]; then
+if has_operation "install" ||
+	has_operation "restore" ||
+	has_operation "services" &&
+	[ $dry_run -ne 1 ]; then
 
 	if [[ -z "${HYPRLAND_CONFIG:-}" ]] || [[ ! -f "${HYPRLAND_CONFIG}" ]]; then
 		print_log -warn "Hyprland config not found! Might be a new install or upgrade."

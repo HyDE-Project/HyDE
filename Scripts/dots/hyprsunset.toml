@@ -3,8 +3,7 @@
 
 [[hyprsunset.dependency]]
     dnf  = [ "hyprsunset" ]
-    paru = [ "hyprsunset" ]
-    yay  = [ "hyprsunset" ]
+    pacman = [ "hyprsunset" ]
 
 [[hyprsunset.files]]
     action      = "preserve"

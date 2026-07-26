@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-# TODO try to contain luarocks.
 """
-HyDE's Lua environment manager using system luarocks
+HyDE's system Lua environment manager using system luarocks
 usage: lua_env.py [command] <options>
 
 
@@ -15,7 +14,6 @@ Commands:
     luarocks   Run a raw luarocks command
     help       Show this help message
 """
-
 import os
 import sys
 import subprocess
@@ -26,23 +24,12 @@ import json
 XDG_STATE_HOME = os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state"))
 HYDE_STATE_DIR = os.path.join(XDG_STATE_HOME, "hyde")
 LUA_ENV_DIR = os.path.join(HYDE_STATE_DIR, "lua_env")
-LUA_BIN = (
-    os.environ.get("LUA")
-    or shutil.which("lua")
-    or shutil.which("lua5.5")
-    or shutil.which("lua5.4")
-    or shutil.which("lua5.3")
-)
-LUAROCKS_BIN = (
-    os.environ.get("LUAROCKS")
-    or shutil.which("luarocks")
-    or shutil.which("luarocks-5.5")
-    or shutil.which("luarocks-5.4")
-    or shutil.which("luarocks-5.3")
-)
+LUA_BIN = os.environ.get("LUA") or shutil.which("lua") or shutil.which("lua5.5") or shutil.which("lua5.4") or shutil.which("lua5.3")
+LUAROCKS_BIN = os.environ.get("LUAROCKS") or shutil.which("luarocks") or shutil.which("luarocks-5.5") or shutil.which("luarocks-5.4") or shutil.which("luarocks-5.3")
 ROCKS_SNAPSHOT = os.path.join(HYDE_STATE_DIR, "luarocks_env.json")
 BOOTSTRAP_CONFIG = os.path.join(os.path.dirname(__file__), "lua_env.json")
 LUA_ENV_ARGS = ["--tree", LUA_ENV_DIR]
+
 
 
 def run(cmd, check=True, env=None):
@@ -54,9 +41,7 @@ def run(cmd, check=True, env=None):
         if result.stderr:
             print(result.stderr, end="", file=sys.stderr)
         if check:
-            raise subprocess.CalledProcessError(
-                result.returncode, cmd, output=result.stdout, stderr=result.stderr
-            )
+            raise subprocess.CalledProcessError(result.returncode, cmd, output=result.stdout, stderr=result.stderr)
     return result
 
 
@@ -75,9 +60,7 @@ def load_bootstrap_config():
         try:
             config = json.load(handle)
         except ValueError:
-            print(
-                f"[lua_env] Warning: invalid bootstrap config at {BOOTSTRAP_CONFIG}, using defaults"
-            )
+            print(f"[lua_env] Warning: invalid bootstrap config at {BOOTSTRAP_CONFIG}, using defaults")
             return install, snapshot_exclude
 
     def _parse_pkg_entry(entry):
@@ -152,11 +135,7 @@ def load_saved_rocks():
     if not isinstance(rocks, list):
         return []
 
-    return [
-        rock
-        for rock in rocks
-        if isinstance(rock, dict) and rock.get("name") and rock.get("version")
-    ]
+    return [rock for rock in rocks if isinstance(rock, dict) and rock.get("name") and rock.get("version")]
 
 
 def save_saved_rocks(rocks):
@@ -197,14 +176,10 @@ def restore_saved_rocks(force=False):
 
 def ensure_system_tools():
     if not LUA_BIN:
-        print(
-            "[lua_env] error: system Lua interpreter not found. Install lua or set LUA environment variable."
-        )
+        print("[lua_env] error: system Lua interpreter not found. Install lua or set LUA environment variable.")
         sys.exit(1)
     if not LUAROCKS_BIN:
-        print(
-            "[lua_env] error: system luarocks not found. Install luarocks or set LUAROCKS environment variable."
-        )
+        print("[lua_env] error: system luarocks not found. Install luarocks or set LUAROCKS environment variable.")
         sys.exit(1)
 
 
@@ -299,9 +274,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     subparsers = parser.add_subparsers(dest="command", metavar="[command]")
-    subparsers.add_parser(
-        "create", help="Ensure system luarocks is available and install bootstrap packages"
-    )
+    subparsers.add_parser("create", help="Ensure system luarocks is available and install bootstrap packages")
     subparsers.add_parser("destroy", help="Remove the Hyde Lua rocks tree")
     subparsers.add_parser("rebuild", help="Recreate the Hyde Lua rocks tree and reinstall packages")
     subparsers.add_parser("sync", help="Reinstall bootstrap packages and snapshot installed rocks")
@@ -332,7 +305,6 @@ def main():
         luarocks_cmd(args.args)
     else:
         usage()
-
 
 if __name__ == "__main__":
     main()
