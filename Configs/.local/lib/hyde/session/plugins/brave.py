@@ -31,7 +31,8 @@ def _ipc_eval(code: str) -> str:
 
 
 def _apply_window_rule(rule_name: str, client: dict, ws_target: str) -> None:
-    rule = HyprlandBackend._lua_window_rule(rule_name, client, ws_target)
+    backend = HyprlandBackend()
+    rule = backend._lua_window_rule(rule_name, client, ws_target)
     _ipc_eval(f"hl.window_rule({HyprlandBackend._lua_table(rule)})")
 
 
