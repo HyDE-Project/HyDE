@@ -44,7 +44,8 @@ local function remove_extension(name)
     if type(name) ~= "string" then
         return name
     end
-    return name:gsub("%.(sh|py|lua)$", "")
+    local result = name:gsub("%.sh$", ""):gsub("%.py$", ""):gsub("%.lua$", "")
+    return result
 end
 
 local function split_whitespace(str)
