@@ -42,22 +42,6 @@ find_hyde_lua() {
     return 1
 }
 
-find_legacy_config() {
-    for path in \
-        "$XDG_DATA_HOME/hypr/hyprland.conf" \
-        /usr/local/share/hypr/hyprland.conf \
-        /usr/share/hypr/hyprland.conf \
-        "$XDG_CONFIG_HOME/hypr/hyprland.conf" \
-        /etc/xdg/hypr/hyprland.conf; do
-        [ -f "$path" ] && {
-            printf '%s\n' "$path"
-            return 0
-        }
-    done
-
-    return 1
-}
-
 find_hyprland_bin() {
     for bin in \
         Hyprland \
@@ -91,7 +75,7 @@ check_lua_runtime() {
 }
 
 setup_lua_mode() {
-    HYPRLAND_CONFIG=$(find_hyde_lua) || return 1
+    HYPRLAND_CONFIG=$(find_hyde_lua)
 
     check_lua_runtime || {
         printf 'Lua runtime incomplete\n' >&2
@@ -111,17 +95,6 @@ setup_lua_mode() {
     return 0
 }
 
-setup_legacy_mode() {
-    HYPRLAND_CONFIG=$(find_legacy_config) || return 1
-
-    HYDE_MODE="legacy"
-    HYDE_FEATURE_LUA=0
-
-    export HYDE_FEATURE_LUA
-
-    return 0
-}
-
 setup_session() {
     : "${XDG_CURRENT_DESKTOP:=HyDE}"
     : "${XDG_SESSION_DESKTOP:=HyDE}"
@@ -135,8 +108,6 @@ hyde_activate() {
     setup_session
 
     if setup_lua_mode; then
-        :
-    elif setup_legacy_mode; then
         :
     else
         hyde_die 'No valid HyDE configuration found'

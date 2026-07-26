@@ -2,7 +2,7 @@
 
 # Prevent re‑activation
 if set -q HYDE_ACTIVATED
-    return 0
+    exit 0
 end
 
 set -x HYDE_ACTIVATED 1
@@ -39,20 +39,6 @@ function find_hyde_lua
     return 1
 end
 
-function find_legacy_config
-    for path in \
-        "$XDG_DATA_HOME/hypr/hyprland.conf" \
-        "/usr/local/share/hypr/hyprland.conf" \
-        "/usr/share/hypr/hyprland.conf" \
-        "$XDG_CONFIG_HOME/hypr/hyprland.conf" \
-        "/etc/xdg/hypr/hyprland.conf"
-        if test -f $path
-            echo $path
-            return 0
-        end
-    end
-    return 1
-end
 
 function find_hyprland_bin
     for bin in Hyprland hyprland
@@ -81,7 +67,8 @@ function check_lua_runtime
 end
 
 function setup_lua_mode
-    set HYPRLAND_CONFIG (find_hyde_lua); or return 1
+    set -l cfg (find_hyde_lua)
+    and set -gx HYPRLAND_CONFIG $cfg
     check_lua_runtime; or begin
         echo "Lua runtime incomplete" >&2
         return 1
@@ -90,14 +77,8 @@ function setup_lua_mode
         echo "Hyprland lacks Lua support" >&2
         return 1
     end
-    set -x HYDE_MODE "lua"
-    set -x HYDE_FEATURE_LUA 1
-end
-
-function setup_legacy_mode
-    set HYPRLAND_CONFIG (find_legacy_config); or return 1
-    set -x HYDE_MODE "legacy"
-    set -x HYDE_FEATURE_LUA 0
+    set -gx HYDE_MODE "lua"
+    set -gx HYDE_FEATURE_LUA 1
 end
 
 function setup_session
@@ -111,15 +92,10 @@ function hyde_activate
     setup_session
     if setup_lua_mode
         :
-    else if setup_legacy_mode
-        :
     else
         hyde_die "No valid HyDE configuration found"
         return 1
     end
-    set -x HYDE_ACTIVATED $HYDE_ACTIVATED
-    set -x HYDE_MODE $HYDE_MODE
-    set -x HYPRLAND_CONFIG $HYPRLAND_CONFIG
 end
 
 hyde_activate
