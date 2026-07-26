@@ -298,19 +298,11 @@ run_command() {
     local l_env="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env"
 
     for dir in "${SCRIPT_DIRS[@]}"; do
-        if [[ -f "$dir/${1}.lua" ]] &&
-            [[ -d "${l_env}/lib/lua" ]] &&
-            [[ -d "${l_env}/lib/luarocks" ]] &&
-            [[ -d "${l_env}/share/lua" ]]; then
-            exec lua "$dir/${1}.lua" "${@:2}"
-            exit 0
-        fi
-
         if [[ -f "$dir/${1}.sh" ]]; then
             exec bash "$dir/${1}.sh" "${@:2}"
         elif [[ -f "$dir/${1}.lua" ]]; then
-            lua_runtime="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/lua"
-            activate_script="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/activate_posix"
+            lua_runtime="${l_env}/bin/lua"
+            activate_script="${l_env}/bin/activate_posix"
             if [[ -f "$activate_script" ]] && [[ -x "$lua_runtime" ]]; then
                 source "$activate_script"
             else
@@ -318,7 +310,7 @@ run_command() {
                 send_notifs "Lua environment not found!" "Please run 'hyde-shell luainit' to set up the environment."
                 exit 1
             fi
-            exec "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/lua" "$dir/${1}.lua" "${@:2}"
+            exec "$lua_runtime" "$dir/${1}.lua" "${@:2}"
         elif [[ -f "$dir/${1}.py" ]]; then
             exec "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env/bin/python" "$dir/${1}.py" "${@:2}"
         elif [[ -f "$dir/${1}" && -x "$dir/${1}" ]]; then
