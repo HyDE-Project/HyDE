@@ -123,9 +123,9 @@ function M.select(items, opts)
 
     local lines = {}
     for _, item in ipairs(items) do
-        lines[`#lines` + 1] = (item.icon or "") .. "\t" .. (item.name or "")
+        lines[#lines + 1] = (item.icon or "") .. "\t" .. (item.name or "")
     end
-    local input = `#lines` > 0 and table.concat(lines, "\n") or ""
+    local input = #lines > 0 and table.concat(lines, "\n") or ""
 
     local current_select = ""
     if opts.current_name then
