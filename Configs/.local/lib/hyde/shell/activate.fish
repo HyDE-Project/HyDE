@@ -2,7 +2,7 @@
 
 # Prevent re‑activation
 if set -q HYDE_ACTIVATED
-    exit 0
+    return 0
 end
 
 set -x HYDE_ACTIVATED 1
