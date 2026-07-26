@@ -162,12 +162,14 @@ end
 
 local function write_state(tbl)
     os.execute("mkdir -p " .. shell_escape(state_dir))
-    local f = io.open(state_file, "w")
+    local tmp = state_file .. ".tmp"
+    local f = io.open(tmp, "w")
     if not f then
         return
     end
     f:write(json.encode(tbl))
     f:close()
+    os.rename(tmp, state_file)
 end
 
 local function write_state_entry(id, stableId)
@@ -181,9 +183,10 @@ local function read_state()
     end
     local content = f:read("*a")
     f:close()
-    local obj, _, err = json.decode(content)
-    if not obj and err then
-        log("state decode failed: " .. tostring(err))
+    local ok, obj = pcall(json.decode, content)
+    if not ok then
+        log("state decode failed: " .. tostring(obj))
+        return nil
     end
     return obj
 end
