@@ -10,9 +10,9 @@ from pyutils.compositor import HyprctlWrapper
 
 
 class HyprlandBackend:
-    @staticmethod
+    `@staticmethod`
     def _lua_quote(value: str) -> str:
-        return json.dumps(str(value))
+        return json.dumps(str(value), ensure_ascii=False)
 
     @classmethod
     def _lua_value(cls, value) -> str:
