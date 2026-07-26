@@ -110,7 +110,7 @@ function M.select(items, opts)
     local prompt = opts.prompt or getenv(prefix, "PROMPT", "Select")
     local placeholder = opts.placeholder or getenv(prefix, "PLACEHOLDER", "Type to filter...")
 
-    local font_override = string.format([[ * { font: "%s %d"; } ]], font, scale)
+    local font_override = string.format([[ * { font: "%s %d"; } ]], (font:gsub('"', '\\"')), scale)
     local r_override =
         string.format(
         "window{border:%spx;border-radius:%spx;} wallbox{border-radius:%spx;} element{border-radius:%spx;}",
@@ -119,12 +119,13 @@ function M.select(items, opts)
         hypr.elem_border,
         hypr.elem_border
     )
+    local placeholder_theme = string.format('entry { placeholder: "%s"; }', (placeholder:gsub('"', '\\"')))
 
     local lines = {}
     for _, item in ipairs(items) do
-        lines[#lines + 1] = (item.icon or "") .. "\t" .. (item.name or "")
+        lines[`#lines` + 1] = (item.icon or "") .. "\t" .. (item.name or "")
     end
-    local input = #lines > 0 and table.concat(lines, "\n") or ""
+    local input = `#lines` > 0 and table.concat(lines, "\n") or ""
 
     local current_select = ""
     if opts.current_name then
@@ -151,23 +152,23 @@ function M.select(items, opts)
         string.format(
         [[printf %s | rofi -dmenu -i %s \
             %s%s \
-            -p "%s" \
-            -theme-str 'entry { placeholder: "%s"; }' \
-            -theme-str '%s' \
-            -theme-str '%s' \
+            -p %s \
+            -theme-str %s \
+            -theme-str %s \
+            -theme-str %s \
             %s \
-            -theme "%s"
+            -theme %s
         ]],
         shell_quote(input),
         selected_row and string.format("-selected-row %s", tostring(selected_row)) or "",
         selected_row and "" or string.format("-select %s", shell_quote(current_select)),
         selected_row and "" or "",
-        prompt,
-        placeholder,
-        font_override,
-        r_override,
+        shell_quote(prompt),
+        shell_quote(placeholder_theme),
+        shell_quote(font_override),
+        shell_quote(r_override),
         pos_override,
-        theme
+        shell_quote(theme)
     )
 
     local handle = io.popen(rofi_cmd)
