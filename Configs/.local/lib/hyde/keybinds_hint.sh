@@ -60,11 +60,12 @@ selected=$(echo -e "$output" | rofi -dmenu -markup -markup-rows -p \
     -theme-str "$icon_override" \
     -theme "${ROFI_KEYBIND_HINT_STYLE:-clipboard}" | sed 's/.*\s*//')
 if [ -z "$selected" ]; then exit 0; fi
-dispatch=$(awk -F ':::' '{print $2}' <<<"$selected" | xargs)
-arg=$(awk -F ':::' '{print $3}' <<<"$selected" | xargs)
-repeat=$(awk -F ':::' '{print $4}' <<<"$selected" | xargs)
+read_field() { awk -F ':::' -v f="$1" '{gsub(/^[[:space:]]+|[[:space:]]+$/, "", $f); print $f}' <<<"$selected"; }
+dispatch=$(read_field 2)
+arg=$(read_field 3)
+repeat=$(read_field 4)
 RUN() {
-    case "$(eval "hyprctl dispatch '$dispatch' '$arg'")" in *"Not enough arguments"*) exec $0 ;; esac
+    case "$(hyprctl dispatch "$dispatch" "$arg")" in *"Not enough arguments"*) exec "$0" ;; esac
 }
 if [ -n "$dispatch" ] && [ "$(echo "$dispatch" | wc -l)" -eq 1 ]; then
     if [ "$repeat" = repeat ]; then
