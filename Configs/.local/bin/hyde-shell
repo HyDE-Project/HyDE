@@ -146,7 +146,6 @@ USAGE() {
     printf '  %sCOMMANDS%s\n' "$_BOLD" "$_R"
     local cmds=(
         'help, -h [topic]' 'Show help (or topic-specific help)'
-        'man [topic]' 'Render metadata in man-style format'
         '-r, reload' 'Reload HyDE'
         '-s, scripts' 'List available scripts (formatted)'
         'wallbash <script>' 'Execute a wallbash script'

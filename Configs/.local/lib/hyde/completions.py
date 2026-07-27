@@ -37,7 +37,7 @@ COMPLETIONS_DIR = HERE / "completions"
 # ──────────────────────────────────────────────────────────────
 # Built-in command list (parsed from hyde-shell annotations)
 # ──────────────────────────────────────────────────────────────
-HYDE_SHELL_PATH = (HERE.parent / "bin" / "hyde-shell").resolve()
+HYDE_SHELL_PATH = (HERE.parent.parent / "bin" / "hyde-shell").resolve()
 if not HYDE_SHELL_PATH.is_file():
     HYDE_SHELL_PATH = Path("/usr/local/bin/hyde-shell")
 
