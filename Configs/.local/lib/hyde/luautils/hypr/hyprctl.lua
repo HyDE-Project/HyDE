@@ -76,9 +76,9 @@ local function hyprctl_json(cmd)
     if raw == "" then
         return nil, "empty response"
     end
-    local decoded, _, decode_err = json.decode(raw)
-    if not decoded then
-        return nil, decode_err or "failed to parse json"
+    local ok, decoded = pcall(json.decode, raw)
+    if not ok then
+        return nil, tostring(decoded)
     end
     return decoded
 end
