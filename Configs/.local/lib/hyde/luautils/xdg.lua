@@ -11,7 +11,11 @@ local function env(var, fallback)
 end
 local function dirs(var, default, home)
    local t = {}
-   for e in (os.getenv(var) or default):gmatch("([^:]+)") do
+   local value = os.getenv(var)
+   if value == nil or value == "" then
+      value = default
+   end
+   for e in value:gmatch("([^:]+)") do
       t[#t + 1] = e
    end
    if home then
