@@ -9,7 +9,7 @@
 # if a local change is still needed.
 
 lib_dir="${HOME}/.local/lib/hyde"
-backup_dir="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/v26.7.28"
+backup_dir="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/v26.7.4"
 
 superseded="
 animations.sh
