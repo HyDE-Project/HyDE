@@ -42,19 +42,41 @@ workflows.sh
 [ -d "${lib_dir}" ] || exit 0
 
 moved=0
+failed=0
 for rel in ${superseded}; do
     src="${lib_dir}/${rel}"
     [ -f "${src}" ] || continue
 
     dst="${backup_dir}/${rel}"
-    mkdir -p "$(dirname "${dst}")" || continue
+
+    # A rerun after the file was restored would otherwise destroy the copy kept
+    # by the first run, so an occupied destination is reported and left alone.
+    if [ -e "${dst}" ] || [ -L "${dst}" ]; then
+        echo "  skipped ${rel}, a backup already exists at ${dst}" >&2
+        failed=$((failed + 1))
+        continue
+    fi
+
+    if ! mkdir -p "$(dirname "${dst}")"; then
+        echo "  failed to create the backup directory for ${rel}" >&2
+        failed=$((failed + 1))
+        continue
+    fi
 
     if mv "${src}" "${dst}"; then
         echo "  moved ${rel}"
         moved=$((moved + 1))
+    else
+        echo "  failed to move ${rel}" >&2
+        failed=$((failed + 1))
     fi
 done
 
 if [ "${moved}" -gt 0 ]; then
     echo "Moved ${moved} superseded script(s) to ${backup_dir}"
+fi
+
+if [ "${failed}" -gt 0 ]; then
+    echo "Left ${failed} superseded script(s) in place; they still shadow their replacements" >&2
+    exit 1
 fi
