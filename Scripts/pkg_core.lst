@@ -85,3 +85,4 @@ fastfetch                                              # system information fetc
 # --------------------------------------------------- // HyDE
 hyprquery                                              # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
 hypridle                                               # idle daemon
+luarocks                                               # lua package manager
