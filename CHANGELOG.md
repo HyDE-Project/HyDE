@@ -6,6 +6,11 @@ All notable changes to 'HyDE' will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
+## Unreleased
+
+### Fixed
+- Waybar `hyprland/workspaces` module adapted to use lua dispatchers
+
 ## v26.7.28 | End of April Release
 
 **Alright** Looks like hyprland 0.56.1 warns user to use lua so here you go!
@@ -36,7 +41,7 @@ Life is tight as of the moment. Any help will do. 💓
     mangle with QT. But KDE apps uses ~/.config/kdeglobals which might break KDE apps for multi DE. (No fix for now)
 
 
-## Fixed
+### Fixed
 - Fix cantarell font
 - Some minor bugs
 
