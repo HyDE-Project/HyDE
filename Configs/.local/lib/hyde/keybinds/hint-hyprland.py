@@ -7,6 +7,11 @@ from collections import defaultdict
 import time
 
 
+def parse_bool(value):
+    """Parse boolean values accepting both string ('true'/'false') and numeric (1/0) forms."""
+    return value.lower() in {"1", "true"}
+
+
 def get_hyprctl_binds():
     try:
         result = subprocess.run(
@@ -28,7 +33,7 @@ def get_hyprctl_binds():
         current = {}
         for line in result.stdout.strip().split("\n"):
             line = line.strip()
-            if line == "bindd" or line == "bind":
+            if line.startswith("bind"):
                 if current:
                     binds.append(current)
                 current = {}
@@ -43,9 +48,12 @@ def get_hyprctl_binds():
                 elif key == "key":
                     current["key"] = value
                 elif key == "keycode":
-                    current["keycode"] = int(value) if value.isdigit() else 0
+                    try:
+                        current["keycode"] = int(value)
+                    except ValueError:
+                        current["keycode"] = 0
                 elif key == "catchall":
-                    current["catch_all"] = value.lower() == "true"
+                    current["catch_all"] = parse_bool(value)
                 elif key == "description":
                     current["description"] = value
                     current["has_description"] = bool(value)
@@ -54,17 +62,17 @@ def get_hyprctl_binds():
                 elif key == "arg":
                     current["arg"] = value
                 elif key == "repeat":
-                    current["repeat"] = value.lower() == "true"
+                    current["repeat"] = parse_bool(value)
                 elif key == "locked":
-                    current["locked"] = value.lower() == "true"
+                    current["locked"] = parse_bool(value)
                 elif key == "mouse":
-                    current["mouse"] = value.lower() == "true"
+                    current["mouse"] = parse_bool(value)
                 elif key == "release":
-                    current["release"] = value.lower() == "true"
+                    current["release"] = parse_bool(value)
                 elif key == "non_consuming":
-                    current["non_consuming"] = value.lower() == "true"
+                    current["non_consuming"] = parse_bool(value)
                 elif key == "allow_input_capture":
-                    current["allow_input_capture"] = value.lower() == "true"
+                    current["allow_input_capture"] = parse_bool(value)
         if current:
             binds.append(current)
         return binds if binds else None
