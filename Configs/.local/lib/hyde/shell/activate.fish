@@ -10,11 +10,11 @@ set -x HYDE_MODE ""
 set -x HYPRLAND_CONFIG ""
 
 function setup_xdg
-    set -q XDG_CONFIG_HOME; or set -x XDG_CONFIG_HOME "$HOME/.config"
-    set -q XDG_CACHE_HOME; or set -x XDG_CACHE_HOME "$HOME/.cache"
-    set -q XDG_DATA_HOME; or set -x XDG_DATA_HOME "$HOME/.local/share"
-    set -q XDG_STATE_HOME; or set -x XDG_STATE_HOME "$HOME/.local/state"
-    set -q XDG_RUNTIME_DIR; or set -x XDG_RUNTIME_DIR "/tmp"
+    set -q XDG_CONFIG_HOME; or set -gx XDG_CONFIG_HOME "$HOME/.config"
+    set -q XDG_CACHE_HOME; or set -gx XDG_CACHE_HOME "$HOME/.cache"
+    set -q XDG_DATA_HOME; or set -gx XDG_DATA_HOME "$HOME/.local/share"
+    set -q XDG_STATE_HOME; or set -gx XDG_STATE_HOME "$HOME/.local/state"
+    set -q XDG_RUNTIME_DIR; or set -gx XDG_RUNTIME_DIR "/tmp"
 end
 
 function hyde_die
@@ -62,17 +62,19 @@ function hyprland_has_lua
 end
 
 function check_lua_runtime
-    hyde_has lua; or return 1
-    hyde_has luarocks; or return 1
+    set -l missing
+    hyde_has lua; or set -a missing lua
+    hyde_has luarocks; or set -a missing luarocks
+    if test (count $missing) -gt 0
+        echo "Lua runtime incomplete, missing: $missing" >&2
+        return 1
+    end
 end
 
 function setup_lua_mode
     set -l cfg (find_hyde_lua)
     and set -gx HYPRLAND_CONFIG $cfg
-    check_lua_runtime; or begin
-        echo "Lua runtime incomplete" >&2
-        return 1
-    end
+    check_lua_runtime; or return 1
     hyprland_has_lua; or begin
         echo "Hyprland lacks Lua support" >&2
         return 1
@@ -82,9 +84,9 @@ function setup_lua_mode
 end
 
 function setup_session
-    set -q XDG_CURRENT_DESKTOP; or set -x XDG_CURRENT_DESKTOP "HyDE"
-    set -q XDG_SESSION_DESKTOP; or set -x XDG_SESSION_DESKTOP "HyDE"
-    set -q XDG_SESSION_TYPE; or set -x XDG_SESSION_TYPE "wayland"
+    set -q XDG_CURRENT_DESKTOP; or set -gx XDG_CURRENT_DESKTOP "HyDE"
+    set -q XDG_SESSION_DESKTOP; or set -gx XDG_SESSION_DESKTOP "HyDE"
+    set -q XDG_SESSION_TYPE; or set -gx XDG_SESSION_TYPE "wayland"
 end
 
 function hyde_activate

@@ -41,6 +41,7 @@ wl-clip-persist                                        # Keep Wayland clipboard 
 hyprsunset                                             # blue light filter
 
 # --------------------------------------------------- // Dependencies
+lua                                                    # lua interpreter, required by the hyprland configuration
 hyprpolkitagent                                        # authentication agent
 xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland
 xdg-desktop-portal-gtk                                 # file picker and dbus  integration
