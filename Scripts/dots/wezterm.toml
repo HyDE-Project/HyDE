@@ -1,5 +1,13 @@
+# Configuration and wallbash template live in HyDE-Project/terminal-emulators,
+# alongside the other terminals. This mirrors the dot declared there, consumed
+# over the branch archive since the installer takes one git remote per run.
+#
+# The archive holds a single top-level directory, which the installer strips,
+# so every path below is relative to the repository root.
+
 [wezterm]
     description = "A GPU-accelerated cross-platform terminal emulator and multiplexer"
+    source      = "https://github.com/HyDE-Project/terminal-emulators/archive/refs/heads/main.zip"
 
 [[wezterm.dependency]]
     dnf    = [ "wezterm" ]
@@ -7,16 +15,18 @@
 
 [[wezterm.files]]
     action      = "sync"
-    paths       = "wezterm/hyde.lua"
-    source_root = "Configs/.config/"
-    target_root = "${XDG_CONFIG_HOME}"
+    paths       = "hyde.lua"
+    source_root = "wezterm"
+    target_root = "${XDG_CONFIG_HOME}/wezterm"
 
 [[wezterm.files]]
     action      = "preserve"
-    paths       = "wezterm/wezterm.lua"
-    source_root = "Configs/.config/"
-    target_root = "${XDG_CONFIG_HOME}"
+    paths       = "wezterm.lua"
+    source_root = "wezterm"
+    target_root = "${XDG_CONFIG_HOME}/wezterm"
 
-# The colour template ships with the wallbash tree that hyde.toml already syncs,
-# so it needs no entry here. There is no apply hook: WezTerm reloads on its own
-# through the watch list in hyde.lua.
+[[wezterm.files]]
+    action      = "sync"
+    paths       = "wezterm.dcol"
+    source_root = "wezterm"
+    target_root = "${XDG_DATA_HOME}/wallbash/theme"
