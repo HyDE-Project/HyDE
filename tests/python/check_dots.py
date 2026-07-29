@@ -20,9 +20,17 @@ DOTS_DIR = REPO_ROOT / "Scripts" / "dots"
 
 
 def declared_paths(table: dict) -> list:
-    """`paths` is a single string or a list of them."""
+    """`paths` is a single string or a list of them.
+
+    Anything else is wrapped rather than iterated, so a malformed value is
+    reported as a wrong type instead of crashing the checker.
+    """
     paths = table.get("paths", [])
-    return [paths] if isinstance(paths, str) else list(paths)
+    if isinstance(paths, str):
+        return [paths]
+    if isinstance(paths, list):
+        return list(paths)
+    return [paths]
 
 
 def has_glob(relative: str) -> bool:
@@ -30,22 +38,34 @@ def has_glob(relative: str) -> bool:
     return any(character in relative for character in "*?[")
 
 
-def inside_repo(relative: str) -> bool:
-    """A source path has to stay in the checkout, absolute or `..` included."""
-    root = REPO_ROOT.resolve()
+def inside(root: pathlib.Path, relative: str) -> bool:
+    """A declared path has to stay under `root`, absolute or `..` included."""
     try:
         return (root / relative).resolve().is_relative_to(root)
     except (OSError, ValueError):
         return False
 
 
-def entries(document: dict) -> list[tuple[str, dict]]:
-    """Yields (component, table) for every files table in a metafile."""
+def inside_repo(relative: str) -> bool:
+    """A source root has to stay in the checkout."""
+    return inside(REPO_ROOT.resolve(), relative)
+
+
+def entries(document: dict) -> list[tuple[str, dict, bool]]:
+    """Yields (component, table, remote) for every files table in a metafile.
+
+    `remote` is true when the component or the entry declares a `source`. Those
+    files come from an archive the installer downloads, so their paths resolve
+    against the extracted tree rather than this checkout and cannot be checked
+    for existence here.
+    """
     found = []
     for component, body in document.items():
         if isinstance(body, dict):
+            component_remote = "source" in body
             for table in body.get("files", []) or []:
-                found.append((component, table))
+                remote = component_remote or "source" in table
+                found.append((component, table, remote))
     return found
 
 
@@ -80,7 +100,7 @@ def main() -> int:
             fail(f"{name} is not valid TOML: {error}")
             continue
 
-        for component, table in entries(document):
+        for component, table, remote in entries(document):
             where = f"{name} [{component}.files]"
 
             if "paths" not in table:
@@ -92,19 +112,26 @@ def main() -> int:
             if action is not None and action not in ACTIONS:
                 fail(f"{where} has an unknown action {action!r}")
 
+            for relative in declared_paths(table):
+                if not isinstance(relative, str):
+                    fail(f"{where} declares a path as {type(relative).__name__}, expected a string")
+
             source_root = table.get("source_root")
-            if source_root is not None:
-                if not isinstance(source_root, str):
-                    fail(f"{where} declares source_root as {type(source_root).__name__}, expected a string")
-                elif not inside_repo(source_root):
+            if source_root is not None and not isinstance(source_root, str):
+                fail(f"{where} declares source_root as {type(source_root).__name__}, expected a string")
+            elif isinstance(source_root, str) and not remote:
+                if not inside_repo(source_root):
                     fail(f"{where} points outside the repository with source_root {source_root!r}")
                 elif not (REPO_ROOT / source_root).is_dir():
                     fail(f"{where} points at a missing source_root {source_root!r}")
                 else:
+                    root = (REPO_ROOT / source_root).resolve()
                     for relative in declared_paths(table):
                         if not isinstance(relative, str):
-                            fail(f"{where} declares a path as {type(relative).__name__}, expected a string")
-                        elif not has_glob(relative) and not (REPO_ROOT / source_root / relative).exists():
+                            continue
+                        if not inside(root, relative):
+                            fail(f"{where} points outside its source_root with path {relative!r}")
+                        elif not has_glob(relative) and not (root / relative).exists():
                             fail(f"{where} points at a missing path {relative!r}")
 
         for component, table in dependencies(document):
