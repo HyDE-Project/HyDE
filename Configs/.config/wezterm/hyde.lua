@@ -17,15 +17,7 @@ local wezterm = require("wezterm")
 
 local M = {}
 
--- Written by wallbash on every theme change. Absent until the first one runs,
--- so a missing file is not an error.
-local function wallbash_colors()
-    local ok, colors = pcall(require, "colors")
-    if ok and type(colors) == "table" then
-        return colors
-    end
-    return nil
-end
+local config_dir = (os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")) .. "/wezterm"
 
 --- Returns HyDE's defaults as a config table.
 ---
@@ -37,7 +29,22 @@ end
 function M.config()
     local config = wezterm.config_builder()
 
-    config.colors = wallbash_colors()
+    -- wallbash writes hyde.toml here as a native colour scheme named
+    -- "wallbash". Watching that file means a theme switch reloads WezTerm on
+    -- its own, with nothing to signal and no need to touch the entry point.
+    --
+    -- The scheme is only selected once the file exists: naming a scheme that is
+    -- not there makes WezTerm log an error on every start, which is what a
+    -- fresh install looks like before the first theme switch runs.
+    local palette = config_dir .. "/hyde.toml"
+    wezterm.add_to_config_reload_watch_list(palette)
+
+    local handle = io.open(palette, "r")
+    if handle then
+        handle:close()
+        config.color_scheme_dirs = {config_dir}
+        config.color_scheme = "wallbash"
+    end
 
     config.font = wezterm.font_with_fallback({
         "JetBrainsMono Nerd Font",
@@ -59,10 +66,6 @@ function M.config()
 
     config.audible_bell = "Disabled"
     config.check_for_updates = false
-
-    -- The session already runs under Wayland, and letting WezTerm pick keeps
-    -- it working when it is started from an X11 session instead.
-    config.enable_wayland = true
 
     return config
 end
