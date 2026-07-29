@@ -240,6 +240,12 @@ end
 -- KEYBINDINGS.md. Structural checks alone cannot catch a valid bind moving to
 -- an unexpected key or pointing at the wrong helper.
 local required_defaults = {
+    "SUPER + SHIFT + G",
+    "SUPER + SHIFT + P",
+    "SUPER + CTRL + S",
+    "SUPER + SHIFT + W",
+    "SUPER + SHIFT + R",
+    "SUPER + SHIFT + T",
     "SUPER + ALT + T",
     "ALT + F4",
     "SUPER + DELETE",
@@ -273,6 +279,7 @@ for _, combo in ipairs(required_defaults) do
 end
 
 local screenshot_commands = {
+    ["SUPER + CTRL + S"] = "hyde-shell screenshot sc",
     ["SUPER + P"] = "hyde-shell screenshot s",
     ["SUPER + CTRL + P"] = "hyde-shell screenshot sf",
     ["SUPER + ALT + P"] = "hyde-shell screenshot m",
