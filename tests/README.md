@@ -24,6 +24,7 @@ is adding a file.
 | `test_git.sh` | The tree holds no gitlink without a matching `.gitmodules` entry, which would break `git submodule` and anything walking submodules |
 | `test_dots.sh` | Every installer metafile under `Scripts/dots` parses, declares the keys the installer needs, uses a known action, and points at a source directory that exists |
 | `test_lua_syntax.sh` | Every shipped Lua file parses |
+| `test_schema.sh` | Generated schema artifacts use the current Lua battery notification daemon rather than the removed shell implementation |
 | `test_shell.sh` | Every shipped shell script parses, and shellcheck finds no error-severity problem |
 
 ## Dependencies
