@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
 
-## v26.7.28 | End of April Release
+## v26.7.4 | 4th Week of July 2026 Release
 
 **Alright** Looks like hyprland 0.56.1 warns user to use lua so here you go!
 
