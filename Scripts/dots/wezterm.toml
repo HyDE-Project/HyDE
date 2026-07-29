@@ -17,5 +17,6 @@
     source_root = "Configs/.config/"
     target_root = "${XDG_CONFIG_HOME}"
 
-# The colour template and its apply hook ship with the wallbash tree that
-# hyde.toml already syncs, so they need no entry here.
+# The colour template ships with the wallbash tree that hyde.toml already syncs,
+# so it needs no entry here. There is no apply hook: WezTerm reloads on its own
+# through the watch list in hyde.lua.
