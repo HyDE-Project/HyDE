@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## Unreleased
 
+### Added
+- Nushell: shell configuration, environment and aliases, selectable alongside zsh and fish
+
 ### Fixed
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
 - Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
