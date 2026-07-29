@@ -50,8 +50,8 @@ end
 -- Loads the theme config from lua_state.
 -- Note this is translated by hyprquery from hyprlang to lua
 local theme_config = check_require("lua_state.hypr_theme") or {}
-if theme_config then
-	hl.config(theme_config)
+if type(theme_config) == "table" then
+    hl.config(theme_config)
 end
 
 -- Load the HyDE's ui config
