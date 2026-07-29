@@ -10,6 +10,8 @@
     # dots = ["kitty", "hyprland"] # List of dots to be used in the configuration file
     # We can call it core packages!
     include = [
+        "../dots/zsh.toml",
+        "../dots/fish.toml",
         "../dots/deps.toml",
         "../dots/electron.toml",
         "../dots/baloofilerc.toml",
@@ -19,7 +21,6 @@
         "../dots/hypridle.toml",
         "../dots/hyprsunset.toml",
         "../dots/fastfetch.toml",
-        "../dots/zsh.toml",
     ]
 
 # Loads an array of package manager commands

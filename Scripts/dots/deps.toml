@@ -2,6 +2,8 @@
 # Core pacman dependencies imported from Scripts/pkg_core.lst
 pacman = [
   # System
+  "lua", # for lua runtime
+  "luarocks", # Core scripts lib
   "uwsm", # A standalone Wayland session manager
   "pipewire", # audio/video server
   "pipewire-alsa", # pipewire alsa client

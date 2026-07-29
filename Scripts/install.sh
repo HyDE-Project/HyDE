@@ -71,52 +71,52 @@ theme_install=1
 
 while [[ $# -gt 0 ]]; do
 	case $1 in
-		-i|--install)
-			operations+=("install")
-			shift
-			;;
-		-d|--defaults)
-			operations+=("install")
-			export use_default="--noconfirm"
-			shift
-			;;
-		-r|--restore)
-			operations+=("restore")
-			shift
-			;;
-		-s|--services)
-			operations+=("services")
-			shift
-			;;
-		-p|--pre)
-			operations+=("pre")
-			shift
-			;;
-		-n|--no-nvidia)
-			nvidia=0
-			print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
-			shift
-			;;
-		-h|--shell)
-			export flg_Shell=1
-			print_log -r "[shell] " -b "Reevaluate :: " "shell options"
-			shift
-			;;
-		-m|--no-theme)
-			theme_install=0
-			shift
-			;;
-		-t|--test)
-			dry_run=1
-			shift
-			;;
-		--help)
-			show_help
-			;;
-		*)
-			echo "Unknown option: $1"
-			show_help
-			;;
+	-i | --install)
+		operations+=("install")
+		shift
+		;;
+	-d | --defaults)
+		operations+=("install")
+		export use_default="--noconfirm"
+		shift
+		;;
+	-r | --restore)
+		operations+=("restore")
+		shift
+		;;
+	-s | --services)
+		operations+=("services")
+		shift
+		;;
+	-p | --pre)
+		operations+=("pre")
+		shift
+		;;
+	-n | --no-nvidia)
+		nvidia=0
+		print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
+		shift
+		;;
+	-h | --shell)
+		export flg_Shell=1
+		print_log -r "[shell] " -b "Reevaluate :: " "shell options"
+		shift
+		;;
+	-m | --no-theme)
+		theme_install=0
+		shift
+		;;
+	-t | --test)
+		dry_run=1
+		shift
+		;;
+	--help)
+		show_help
+		;;
+	*)
+		echo "Unknown option: $1"
+		show_help
+		;;
 	esac
 done
 
@@ -177,40 +177,14 @@ if has_operation "install"; then
 
 EOF
 
-	#----------------------#
-	# prepare package list #
-	#----------------------#
-	custom_pkg=$1
-	cp "${scrDir}/pkg_core.lst" "${scrDir}/install_pkg.lst"
-	trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${HYDE_LOG}/install_pkg.lst"' EXIT
-
-	echo -e "\n#user packages" >>"${scrDir}/install_pkg.lst" # Add a marker for user packages
-	if [ -f "${custom_pkg}" ] && [ -n "${custom_pkg}" ]; then
-		cat "${custom_pkg}" >>"${scrDir}/install_pkg.lst"
-	fi
-
-	#--------------------------------#
-	# add nvidia drivers to the list #
-	#--------------------------------#
-	if nvidia_detect; then
-		if [ ${flg_Nvidia} -eq 1 ]; then
-			cat /usr/lib/modules/*/pkgbase | while read -r kernel; do
-				echo "${kernel}-headers" >>"${scrDir}/install_pkg.lst"
-			done
-			nvidia_detect --drivers >>"${scrDir}/install_pkg.lst"
-		else
-			print_log -warn "Nvidia" "Nvidia GPU detected but ignored..."
-		fi
-	fi
-	nvidia_detect --verbose
-
 	#----------------#
 	# get user prefs #
 	#----------------#
 	echo ""
+
 	if ! chk_list "aurhlpr" "${aurList[@]}"; then
 		print_log -c "\nAUR Helpers :: "
-		aurList+=("yay-bin" "paru-bin") # Add this here instead of in global_fn.sh
+		aurList+=("yay-bin" "paru-bin")
 		for i in "${!aurList[@]}"; do
 			print_log -sec "$((i + 1))" " ${aurList[$i]} "
 		done
@@ -238,45 +212,80 @@ EOF
 		fi
 	fi
 
-	# if ! chk_list "myShell" "${shlList[@]}"; then
-	# 	print_log -c "Shell :: "
-	# 	for i in "${!shlList[@]}"; do
-	# 		print_log -sec "$((i + 1))" " ${shlList[$i]} "
-	# 	done
-	# 	prompt_timer 120 "Enter option number [default: zsh] | q to quit "
+	if ! chk_list "myShell" "${shlList[@]}"; then
+		print_log -c "Shell :: "
+		for i in "${!shlList[@]}"; do
+			print_log -sec "$((i + 1))" " ${shlList[$i]} "
+		done
+		prompt_timer 120 "Enter option number [default: zsh] | q to quit "
 
-	# 	case "${PROMPT_INPUT}" in
-	# 	1) export myShell="zsh" ;;
-	# 	2) export myShell="fish" ;;
-	# 	q)
-	# 		print_log -sec "shell" -crit "Quit" "Exiting..."
-	# 		exit 1
-	# 		;;
-	# 	*)
-	# 		print_log -sec "shell" -warn "Defaulting to zsh"
-	# 		export myShell="zsh"
-	# 		;;
-	# 	esac
-	# 	print_log -sec "shell" -stat "Added as shell" "${myShell}"
-	# 	echo "${myShell}" >>"${scrDir}/install_pkg.lst"
-
-	# 	if [[ -z "$myShell" ]]; then
-	# 		print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
-	# 		exit 1
-	# 	else
-	# 		print_log -sec "shell" -stat "detected :: " "${myShell}"
-	# 	fi
-	# fi
-
-	if ! grep -q "^#user packages" "${scrDir}/install_pkg.lst"; then
-		print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}/install.sh"
-		exit 1
+		case "${PROMPT_INPUT}" in
+		1) export myShell="zsh" ;;
+		2) export myShell="fish" ;;
+		q)
+			print_log -sec "shell" -crit "Quit" "Exiting..."
+			exit 1
+			;;
+		*)
+			print_log -sec "shell" -warn "Defaulting to zsh"
+			export myShell="zsh"
+			;;
+		esac
+		print_log -sec "shell" -stat "detected" "${myShell}"
 	fi
 
+	#------------------------------------#
+	# install AUR helper via pacman first #
+	#------------------------------------#
+	"${scrDir}/install_aur.sh" "${getAur}" 2>&1
+
+	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
+
+	#------------------------------------------#
+	# build transient TOML: core deps + nvidia  #
+	#------------------------------------------#
+	core_toml="$(mktemp --suffix=-core.toml)"
+	trap 'rm -f "${core_toml}"' RETURN EXIT
+
+	cat > "${core_toml}" <<-TOML
+		# Auto-generated by install.sh — core deps
+		include = [
+		    "${scrDir}/dots-groups/core.toml",
+		]
+
+		[[global.dependency]]
+		pacman = [
+	TOML
+
+# TODO: This is arch specific; A separate install script should be written
+	if nvidia_detect; then
+		if [ "${flg_Nvidia}" -eq 1 ]; then
+			cat /usr/lib/modules/*/pkgbase 2>/dev/null | while read -r kernel; do
+				echo "\"${kernel}-headers\","
+			done >> "${core_toml}"
+			nvidia_detect --drivers | while read -r pkg; do
+				[ -n "${pkg}" ] && echo "\"${pkg}\","
+			done >> "${core_toml}"
+		else
+			print_log -warn "Nvidia" "Nvidia GPU detected but ignored..."
+		fi
+	fi
+	nvidia_detect --verbose
+	echo "]" >> "${core_toml}"
+
 	#--------------------------------#
-	# install packages from the list #
+	# install core deps (+ nvidia)   #
 	#--------------------------------#
-	"${scrDir}/install_pkg.sh" "${scrDir}/install_pkg.lst"
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[CORE] " -b "dry-run :: " "Would install core packages"
+	else
+		print_log -g "[CORE] " -b "install :: " "Core system packages..."
+		"${deez_exe}" deps --install --config "${core_toml}" --source "${cloneDir}" || {
+			print_log -err "[CORE] " -crit "ERROR" "Core package installation failed"
+			exit 1
+		}
+		print_log -g "[CORE] " -b "complete :: " "Core packages installed"
+	fi
 fi
 
 #---------------------------#
@@ -292,6 +301,88 @@ if has_operation "restore"; then
                               |___|
 
 EOF
+
+	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
+
+	#------------------------------------------#
+	# rebuild transient TOML: core deps+nvidia  #
+	#------------------------------------------#
+	core_toml="$(mktemp --suffix=-core.toml)"
+	trap 'rm -f "${core_toml}"' RETURN EXIT
+
+	cat > "${core_toml}" <<-TOML
+		include = [
+		    "${scrDir}/dots-groups/core.toml",
+		]
+
+		[[global.dependency]]
+		pacman = [
+	TOML
+	if nvidia_detect && [ "${flg_Nvidia}" -eq 1 ]; then
+		cat /usr/lib/modules/*/pkgbase 2>/dev/null | while read -r kernel; do
+			echo "\"${kernel}-headers\","
+		done >> "${core_toml}"
+		nvidia_detect --drivers | while read -r pkg; do
+			[ -n "${pkg}" ] && echo "\"${pkg}\","
+		done >> "${core_toml}"
+	fi
+	echo "]" >> "${core_toml}"
+
+	#------------------------------------------#
+	# rebuild transient TOML: extra deps+shell  #
+	#------------------------------------------#
+	extra_toml="$(mktemp --suffix=-extra.toml)"
+	trap 'rm -f "${extra_toml}"' RETURN EXIT
+
+	cat > "${extra_toml}" <<-TOML
+		include = [
+		    "${scrDir}/dots-groups/extra.toml",
+		]
+
+		[[global.dependency]]
+		pacman = [
+	TOML
+	# starship is needed for both zsh and fish prompts
+	echo "\"starship\"," >> "${extra_toml}"
+	echo "]" >> "${extra_toml}"
+
+	#-------------------------------#
+	# re-check / install core deps  #
+	#-------------------------------#
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[CORE] " -b "dry-run :: " "Would re-check core deps"
+	else
+		print_log -g "[CORE] " -b "verify :: " "Verifying core packages..."
+		"${deez_exe}" deps --install --config "${core_toml}" --source "${cloneDir}" || {
+			print_log -err "[CORE] " -crit "ERROR" "Core package verification failed"
+			exit 1
+		}
+	fi
+
+	#-------------------------------#
+	# re-check / install extra deps #
+	#-------------------------------#
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[EXTRA] " -b "dry-run :: " "Would re-check extra deps"
+	else
+		print_log -g "[EXTRA] " -b "verify :: " "Verifying extra packages..."
+		"${deez_exe}" deps --install --config "${extra_toml}" --source "${cloneDir}" || {
+			print_log -err "[EXTRA] " -crit "ERROR" "Extra package verification failed"
+			exit 1
+		}
+		print_log -g "[DEPS] " -b "verify :: " "All packages verified"
+	fi
+
+	# Lua environment setup
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[LUA] " -b "dry-run :: " "Would setup Lua environment"
+	else
+		if ! python3 "${cloneDir}/Configs/.local/lib/hyde/pyutils/lua_env.py" create; then
+			print_log -err "[LUA] " -crit "ERROR" "Failed to create Lua environment"
+			exit 1
+		fi
+		print_log -g "[LUA] " -b "complete :: " "Environment setup complete"
+	fi
 
 	if [ "${flg_DryRun}" -ne 1 ] && [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
 		hyprctl keyword misc:disable_autoreload 1 -q
