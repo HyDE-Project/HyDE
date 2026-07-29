@@ -12,9 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Nushell: shell configuration, environment and aliases, selectable alongside zsh and fish
 
 ### Fixed
+- Core: app launchers no longer show a false error when an unrelated `DEBUG` variable contains a non-boolean value such as `release`
+- Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
+- Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad
+- Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice
+- Screenshot: Satty defaults to the compatible GTK GL renderer when no explicit `GSK_RENDERER` is configured
+- Screenshot: the "print all monitors" keybind now invokes a full-output capture instead of capturing only the focused monitor
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
 - Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
-  Group navigation stays on `Super + Alt + arrows`
+  Group navigation uses `Super + Ctrl + H/L`
 - Hyprland: the right Control key no longer hides Waybar on its own. Hiding moved to `Super + Ctrl + B`
 - Hyprland: workspaces 11-20 on the numpad respond again
 - OCR: the language list in the result notification is no longer split across arguments

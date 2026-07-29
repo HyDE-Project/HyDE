@@ -20,3 +20,8 @@ repos:
         name: markdownlint-strict
         args: [--config, .markdownlint-strict.yaml]
         stages: [manual]
+ 
+  - repo: https://github.com/Calinou/pre-commit-luacheck
+    rev: v1.0.0
+    hooks:
+      - id: luacheck

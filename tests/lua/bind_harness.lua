@@ -203,6 +203,7 @@ local function check(condition, message)
 end
 
 local seen = {}
+local by_combo = {}
 for _, bind in ipairs(binds) do
     local id = canonical(bind.combo)
     local previous = seen[id]
@@ -212,6 +213,7 @@ for _, bind in ipairs(binds) do
         string.format("combo %s is bound twice, as %q and %q", id, tostring(previous), bind.combo)
     )
     seen[id] = bind.combo
+    by_combo[id] = bind
 
     local tokens = split(bind.combo)
     local key = table.remove(tokens)
@@ -232,6 +234,70 @@ for _, bind in ipairs(binds) do
         type(bind.opts) == "table" and type(bind.opts.description) == "string" and bind.opts.description ~= "",
         string.format("%q has no description", bind.combo)
     )
+end
+
+-- The Lua migration must preserve the public keymap documented in
+-- KEYBINDINGS.md. Structural checks alone cannot catch a valid bind moving to
+-- an unexpected key or pointing at the wrong helper.
+local required_defaults = {
+    "SUPER + SHIFT + G",
+    "SUPER + SHIFT + P",
+    "SUPER + CTRL + S",
+    "SUPER + SHIFT + W",
+    "SUPER + SHIFT + R",
+    "SUPER + SHIFT + T",
+    "SUPER + ALT + T",
+    "ALT + F4",
+    "SUPER + DELETE",
+    "SHIFT + F11",
+    "SUPER + SHIFT + F",
+    "SUPER + CTRL + H",
+    "SUPER + CTRL + L",
+    "SUPER + SHIFT + RIGHT",
+    "SUPER + SHIFT + LEFT",
+    "SUPER + SHIFT + UP",
+    "SUPER + SHIFT + DOWN",
+    "SUPER + J",
+    "F10",
+    "F11",
+    "F12",
+    "SUPER + ALT + RIGHT",
+    "SUPER + ALT + LEFT",
+    "SUPER + ALT + UP",
+    "SUPER + ALT + DOWN",
+    "SUPER + SHIFT + Y",
+    "SUPER + SHIFT + U",
+    "SUPER + mouse_down",
+    "SUPER + mouse_up",
+    "SUPER + S",
+    "SUPER + SHIFT + S",
+    "SUPER + ALT + S"
+}
+
+for _, combo in ipairs(required_defaults) do
+    check(by_combo[canonical(combo)] ~= nil, string.format("documented combo %s is missing", combo))
+end
+
+local screenshot_commands = {
+    ["SUPER + CTRL + S"] = "hyde-shell screenshot sc",
+    ["SUPER + P"] = "hyde-shell screenshot s",
+    ["SUPER + CTRL + P"] = "hyde-shell screenshot sf",
+    ["SUPER + ALT + P"] = "hyde-shell screenshot m",
+    ["Print"] = "hyde-shell screenshot p"
+}
+
+for combo, expected in pairs(screenshot_commands) do
+    local bind = by_combo[canonical(combo)]
+    check(bind ~= nil, string.format("documented screenshot combo %s is missing", combo))
+
+    if bind then
+        local args = type(bind.action) == "table" and bind.action.args or nil
+        local command = args and args[1]
+        check(
+            command == expected,
+            string.format("%s runs %q, expected %q", combo, tostring(command), expected)
+        )
+    end
 end
 
 -- Every hyde-shell command reachable from a bind has to exist in the tree.
