@@ -57,4 +57,21 @@ if [ -z "$export_line" ] || [ -z "$systemd_line" ] || [ "$export_line" -ge "$sys
     fail "scoped debug defaults are not exported before the execution-path branch"
 fi
 
+override_output=$(
+    export DEBUG=release
+    export APP2UNIT_DEBUG=1
+    export XTE_DEBUG=yes
+    PATH="$fixture:$PATH" "$wrapper" -- xdg-terminal-exec 2>&1
+)
+override_status=$?
+
+if [ "$override_status" -ne 0 ]; then
+    fail "app wrapper with explicit debug values exited with $override_status"
+fi
+
+printf '%s\n' "$override_output" | grep -qx 'APP2UNIT_CONSUMER_DEBUG=1' ||
+    fail "app wrapper did not preserve APP2UNIT_DEBUG"
+printf '%s\n' "$override_output" | grep -qx 'XTE_CONSUMER_DEBUG=yes' ||
+    fail "app wrapper did not preserve XTE_DEBUG"
+
 finish
