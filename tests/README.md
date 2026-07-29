@@ -25,6 +25,7 @@ is adding a file.
 | `test_dots.sh` | Every installer metafile under `Scripts/dots` parses, declares the keys the installer needs, uses a known action, and points at a source directory that exists. It also keeps Grimblast on the fixed official source |
 | `test_lua_syntax.sh` | Every shipped Lua file parses |
 | `test_schema.sh` | Generated schema artifacts use the current Lua battery notification daemon rather than the removed shell implementation |
+| `test_screenshot_wrapper.sh` | Satty receives a compatible default GTK renderer while preserving explicit renderer overrides |
 | `test_shell.sh` | Every shipped shell script parses, and shellcheck finds no error-severity problem |
 
 ## Dependencies

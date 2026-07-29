@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
 - Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad
 - Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice
+- Screenshot: Satty defaults to the compatible GTK GL renderer when no explicit `GSK_RENDERER` is configured
 - Screenshot: the "print all monitors" keybind now invokes a full-output capture instead of capturing only the focused monitor
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
 - Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
