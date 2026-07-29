@@ -19,7 +19,7 @@ is adding a file.
 
 | Case | Checks |
 | --- | --- |
-| `test_binds.sh` | Loads the Lua keybinds against a stubbed Hyprland API: no two binds share a combination once modifiers are folded to what Hyprland matches on, no keysym sits in a modifier position, no bind uses the `code:NN` form the Lua parser rejects, every bind has a description, every `hyde-shell` command it runs exists |
+| `test_binds.sh` | Loads the Lua keybinds against a stubbed Hyprland API: no two binds share a combination once modifiers are folded to what Hyprland matches on, no keysym sits in a modifier position, no bind uses the `code:NN` form the Lua parser rejects, every bind has a description, every `hyde-shell` command it runs exists. Touchpad gestures are checked in the same pass: a valid finger count, a direction and action Hyprland accepts, and no two gestures on the same finger count and direction |
 | `test_git.sh` | The tree holds no gitlink without a matching `.gitmodules` entry, which would break `git submodule` and anything walking submodules |
 | `test_dots.sh` | Every installer metafile under `Scripts/dots` parses, declares the keys the installer needs, uses a known action, and points at a source directory that exists |
 | `test_lua_syntax.sh` | Every shipped Lua file parses |

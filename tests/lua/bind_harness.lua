@@ -106,6 +106,32 @@ local function command_resolves(name)
 end
 
 local binds = {}
+local gestures = {}
+
+-- Values Hyprland accepts, taken from what it rejects at config load:
+-- an unknown direction or action is reported as a config error, but a
+-- duplicate pair is not, and that is the one that silently wins or loses.
+local GESTURE_DIRECTIONS = {
+    horizontal = true,
+    vertical = true,
+    left = true,
+    right = true,
+    up = true,
+    down = true,
+    pinchin = true,
+    pinchout = true,
+    swipe = true
+}
+
+local GESTURE_ACTIONS = {
+    workspace = true,
+    move = true,
+    close = true,
+    fullscreen = true,
+    float = true,
+    special = true,
+    resize = true
+}
 
 local function dsp_proxy(prefix)
     return setmetatable(
@@ -136,6 +162,10 @@ _G.hl = {
 
 _G.hl.bind = function(combo, action, opts)
     binds[#binds + 1] = {combo = combo, action = action, opts = opts}
+end
+
+_G.hl.gesture = function(spec)
+    gestures[#gestures + 1] = spec
 end
 
 _G.hl.unbind = function(combo)
@@ -217,5 +247,39 @@ for _, bind in ipairs(binds) do
     end
 end
 
-print(string.format("    %d bind(s) checked", #binds))
+local gesture_seen = {}
+for index, gesture in ipairs(gestures) do
+    local where = string.format("gesture %d", index)
+
+    if type(gesture) ~= "table" then
+        check(false, where .. " is not a table")
+    else
+        local fingers = tonumber(gesture.fingers)
+        check(fingers ~= nil and fingers >= 3, where .. " needs a finger count of 3 or more")
+
+        local direction = tostring(gesture.direction or "")
+        check(
+            GESTURE_DIRECTIONS[direction] ~= nil,
+            string.format("%s has direction %q, which Hyprland does not accept", where, direction)
+        )
+
+        local action = tostring(gesture.action or "")
+        check(
+            GESTURE_ACTIONS[action] ~= nil,
+            string.format("%s has action %q, which Hyprland does not accept", where, action)
+        )
+
+        -- One swipe cannot carry two meanings, and Hyprland says nothing when
+        -- it does: the second declaration simply shadows the first.
+        local id = tostring(fingers) .. "|" .. direction
+        check(
+            gesture_seen[id] == nil,
+            string.format("%d fingers %s is declared twice, as %q and %q", fingers or 0, direction,
+                tostring(gesture_seen[id]), action)
+        )
+        gesture_seen[id] = action
+    end
+end
+
+print(string.format("    %d bind(s) and %d gesture(s) checked", #binds, #gestures))
 os.exit(failures == 0 and 0 or 1)
