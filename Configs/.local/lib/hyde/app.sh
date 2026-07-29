@@ -6,6 +6,13 @@
 # @cmd.desc: Run a script as a systemd service
 
 if [ -d "/run/systemd/system" ]; then
+    # app2unit and xdg-terminal-exec fall back to the generic DEBUG variable,
+    # which may contain non-boolean build modes such as "release".
+    # Give both helpers an explicit, scoped default while preserving any
+    # user-provided values.
+    APP2UNIT_DEBUG=${APP2UNIT_DEBUG:-0}
+    XTE_DEBUG=${XTE_DEBUG:-0}
+    export APP2UNIT_DEBUG XTE_DEBUG
     exec app2unit "$@"
 fi
 # no systemd: drop args before -- and run only the command after --
