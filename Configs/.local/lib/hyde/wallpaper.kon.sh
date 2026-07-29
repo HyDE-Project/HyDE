@@ -36,7 +36,7 @@ done
 if [ ! -z "$setTheme" ] && [ ! -z "$setWall" ]; then
     inwallHash="$(set_hash "$setWall")"
     get_hashmap "$tgtPath/$setTheme"
-    if [[ ${wallHash[@]} == *"$inwallHash"* ]]; then
+    if [[ ${wallHash[*]} == *"$inwallHash"* ]]; then
         notify-send -a "HyDE Notify" -i "$thmbDir/$inwallHash.sqre" "Error" "Hash matched in $setTheme"
         exit 0
     fi
