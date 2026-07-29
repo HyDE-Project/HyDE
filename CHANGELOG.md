@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
+- Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
+  Group navigation stays on `Super + Alt + arrows`
+- Hyprland: the right Control key no longer hides Waybar on its own. Hiding moved to `Super + Ctrl + B`
+- Hyprland: workspaces 11-20 on the numpad respond again
 
 ## v26.7.28 | End of April Release
 

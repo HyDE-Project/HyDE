@@ -1,3 +1,11 @@
+-- * Enable bind deduplication so repeated key combos don't conflict.
+-- * This has to run before the first bind below, otherwise the binds in this
+-- * file are registered unchecked and only user overrides get deduplicated.
+-- * For multiple dispatcher actions, wrap them in one function and bind that.
+-- * If you set `hyde.binds.dedup = false`, unbind duplicates manually.
+hyde.binds.dedup = true
+-- hyde.binds.dedup_fields = {}
+
 -- vars for easy access
 local _apps = hyde.config.app
 local MOD = hyde.config.modifiers.main
@@ -73,15 +81,15 @@ _F = {description = "[Window Management] toggle pin"}
 hl.bind(MOD .. " + F", hl.dsp.exec_cmd(hyde.sh.window.pin()), _F)
 _F = {description = "[Window Management] logout menu"}
 hl.bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd(hyde.sh.session.logout.launcher()), _F)
+-- ALT_R is a keysym, not a modifier: "ALT_R + CONTROL_R" resolves to a bare
+-- right Control, so every press of that key hid the bar.
 _F = {description = "[Window Management] hide waybar"}
-hl.bind("ALT_R + CONTROL_R", hl.dsp.exec_cmd(hyde.sh.waybar("--hide")), _F)
+hl.bind(MOD .. " + CTRL + B", hl.dsp.exec_cmd(hyde.sh.waybar("--hide")), _F)
 _F = {description = "[Window Management] lock session"}
 hl.bind(MOD .. " + L", hl.dsp.exec_cmd(hyde.sh.session.lock()), _F)
 
-_F = {description = "[Window Management|Group Navigation] change active group backwards"}
-hl.bind(MOD .. " + CTRL + Left", hl.dsp.group.prev(), _F)
-_F = {description = "[Window Management|Group Navigation] change active group forwards"}
-hl.bind(MOD .. " + CTRL + Right", hl.dsp.group.next(), _F)
+-- Group navigation lives on ALT only. The CTRL variant collided with relative
+-- workspace navigation further down, which binds the same combo.
 _F = {description = "[Window Management|Group Navigation] change active group backwards"}
 hl.bind(MOD .. " + ALT + Left", hl.dsp.group.prev(), _F)
 _F = {description = "[Window Management|Group Navigation] change active group forwards"}
@@ -250,17 +258,20 @@ hl.bind(MOD .. "+ SHIFT + T", hl.dsp.exec_cmd(hyde.sh.menu.themes()), _F)
 -- bindd = $mainMod SHIFT, R, $d wallbash mode selector , exec, pkill -x rofi || hyde-shell wallbashtoggle.sh -m # launch wallbash mode select menu
 -- bindd = $mainMod SHIFT, T, $d select a theme, exec, pkill -x rofi || hyde-shell themeselect.sh # launch theme select menu
 
+-- Numpad keys for workspaces 11-20. The Lua bind parser has no keycode form,
+-- so each key is bound under both keysyms it can emit: the digit while Num
+-- Lock is on, the navigation name while it is off.
 local kp = {
-    [1] = 87,
-    [2] = 88,
-    [3] = 89,
-    [4] = 83,
-    [5] = 84,
-    [6] = 85,
-    [7] = 79,
-    [8] = 80,
-    [9] = 81,
-    [0] = 90
+    [1] = {"KP_1", "KP_End"},
+    [2] = {"KP_2", "KP_Down"},
+    [3] = {"KP_3", "KP_Next"},
+    [4] = {"KP_4", "KP_Left"},
+    [5] = {"KP_5", "KP_Begin"},
+    [6] = {"KP_6", "KP_Right"},
+    [7] = {"KP_7", "KP_Home"},
+    [8] = {"KP_8", "KP_Up"},
+    [9] = {"KP_9", "KP_Prior"},
+    [10] = {"KP_0", "KP_Insert"}
 }
 
 for i = 1, 10 do
@@ -269,8 +280,13 @@ for i = 1, 10 do
 end
 
 for i = 1, 10 do
-    local key = (i == 10) and 90 or kp[i]
-    hl.bind(MOD .. "+code:" .. key, hl.dsp.focus({workspace = tostring(i + 10)}), {description = "WS " .. (i + 10)})
+    for _, key in ipairs(kp[i]) do
+        hl.bind(
+            MOD .. " + " .. key,
+            hl.dsp.focus({workspace = tostring(i + 10)}),
+            {description = "[Workspaces|Navigation] navigate to workspace " .. (i + 10)}
+        )
+    end
 end
 
 _F = {description = "[Workspaces|Navigation|Relative workspace] change active workspace forwards"}
@@ -287,12 +303,13 @@ for i = 1, 10 do
 end
 
 for i = 1, 10 do
-    local key = (i == 10) and 90 or kp[i]
-    hl.bind(
-        MOD .. "+SHIFT+code:" .. key,
-        hl.dsp.window.move({workspace = tostring(i + 10)}),
-        {description = "WS " .. (i + 10)}
-    )
+    for _, key in ipairs(kp[i]) do
+        hl.bind(
+            MOD .. " + SHIFT + " .. key,
+            hl.dsp.window.move({workspace = tostring(i + 10)}),
+            {description = "[Workspaces|Move window to workspace] move focused window to workspace " .. (i + 10)}
+        )
+    end
 end
 
 _F = {description = "[Workspaces|Move window to workspace|Relative workspace] move focused window to next workspace"}
@@ -372,9 +389,3 @@ end
 -- bindk = Super     ALT, F ,test device, exec , notify-send "Hyprland" "You just pressed Super + F again!2"
 
 -- # bindd = Alt, D , [Utilities] Enable Wayscriber ,exec, wayscriber --active
-
--- * Enable bind deduplication so repeated key combos don't conflict.
--- * For multiple dispatcher actions, wrap them in one function and bind that.
--- * If you set `hyde.bind.dedup = false`, unbind duplicates manually.
-hyde.binds.dedup = true
--- hyde.binds.dedup_fields = {}
