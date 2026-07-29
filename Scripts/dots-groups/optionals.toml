@@ -12,6 +12,7 @@
         "../dots/fish.toml",
         "../dots/wallbash-vim.toml",
         "../dots/spotify.toml",
+        "../dots/wezterm.toml",
 
     ]
     owner = "The HyDE Project" #

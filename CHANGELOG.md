@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## Unreleased
 
+### Added
+- WezTerm: configuration and wallbash theming, selectable as an optional dot and as a session terminal
+
 ### Fixed
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
 - Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
