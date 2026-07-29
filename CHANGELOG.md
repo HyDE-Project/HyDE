@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: the right Control key no longer hides Waybar on its own. Hiding moved to `Super + Ctrl + B`
 - Hyprland: workspaces 11-20 on the numpad respond again
 
-## v26.7.28 | End of April Release
+## v26.7.4 | 4th Week of July 2026 Release
 
 **Alright** Looks like hyprland 0.56.1 warns user to use lua so here you go!
 

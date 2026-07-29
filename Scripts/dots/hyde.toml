@@ -1,7 +1,7 @@
 [hyde]
 description = "Hyde core configuration"
 pre_command = "echo 'HyDE Is the Best!'"
-version = "v26.7.28"
+version = "v26.7.4"
 
 #? Core configuration
 [[hyde.files]]
