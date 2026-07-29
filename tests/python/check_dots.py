@@ -42,7 +42,8 @@ def inside(root: pathlib.Path, relative: str) -> bool:
     """A declared path has to stay under `root`, absolute or `..` included."""
     try:
         return (root / relative).resolve().is_relative_to(root)
-    except (OSError, ValueError):
+    except (OSError, RuntimeError, ValueError):
+        # Older Python raises RuntimeError rather than OSError on a symlink loop.
         return False
 
 
@@ -51,20 +52,38 @@ def inside_repo(relative: str) -> bool:
     return inside(REPO_ROOT.resolve(), relative)
 
 
+def declared_sources(document: dict) -> list[tuple[str, object]]:
+    """Yields (where, source) for every source declared in a metafile."""
+    found = []
+    for component, body in document.items():
+        if isinstance(body, dict):
+            if "source" in body:
+                found.append((component, body["source"]))
+            for index, table in enumerate(body.get("files", []) or []):
+                if isinstance(table, dict) and "source" in table:
+                    found.append((f"{component}.files[{index}]", table["source"]))
+    return found
+
+
+def is_remote_source(source: object) -> bool:
+    """Only a non-empty string names something the installer can fetch."""
+    return isinstance(source, str) and bool(source.strip())
+
+
 def entries(document: dict) -> list[tuple[str, dict, bool]]:
     """Yields (component, table, remote) for every files table in a metafile.
 
-    `remote` is true when the component or the entry declares a `source`. Those
-    files come from an archive the installer downloads, so their paths resolve
-    against the extracted tree rather than this checkout and cannot be checked
-    for existence here.
+    `remote` is true when the component or the entry declares a usable `source`.
+    Those files come from an archive the installer downloads, so their paths
+    resolve against the extracted tree rather than this checkout and cannot be
+    validated here. A malformed `source` does not earn that exemption.
     """
     found = []
     for component, body in document.items():
         if isinstance(body, dict):
-            component_remote = "source" in body
+            component_remote = is_remote_source(body.get("source"))
             for table in body.get("files", []) or []:
-                remote = component_remote or "source" in table
+                remote = component_remote or is_remote_source(table.get("source"))
                 found.append((component, table, remote))
     return found
 
@@ -99,6 +118,10 @@ def main() -> int:
         except tomllib.TOMLDecodeError as error:
             fail(f"{name} is not valid TOML: {error}")
             continue
+
+        for where_source, source in declared_sources(document):
+            if not is_remote_source(source):
+                fail(f"{name} [{where_source}] declares an unusable source {source!r}")
 
         for component, table, remote in entries(document):
             where = f"{name} [{component}.files]"
