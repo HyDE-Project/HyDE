@@ -38,20 +38,6 @@ else
     print_log -g "[PYTHON] " -b "complete :: " "Environment setup complete"
 fi
 
-# TODO: Disable this for now as this should be in post
-# # Lua environment setup
-# if [ "${flg_DryRun}" -eq 1 ]; then
-#     print_log -y "[LUA] " -b "dry-run :: " "Would setup Lua environment"
-# else
-#     # Create Lua environment using system luarocks
-#     if ! python3 "${cloneDir}/Configs/.local/lib/hyde/pyutils/lua_env.py" create; then
-#         print_log -err "[LUA] " -crit "ERROR" "Failed to create Lua environment"
-#         exit 1
-#     fi
-
-#     print_log -g "[LUA] " -b "complete :: " "Environment setup complete"
-# fi
-
 # grub
 if [ "${flg_Grub}" -eq 1 ] && pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
     print_log -sec "bootloader" -b "detected :: " "grub..."
