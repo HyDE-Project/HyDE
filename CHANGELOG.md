@@ -6,7 +6,19 @@ All notable changes to 'HyDE' will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
-## v26.7.28 | End of April Release
+## Unreleased
+
+### Fixed
+- Waybar `hyprland/workspaces` module adapted to use lua dispatchers
+- Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
+  Group navigation stays on `Super + Alt + arrows`
+- Hyprland: the right Control key no longer hides Waybar on its own. Hiding moved to `Super + Ctrl + B`
+- Hyprland: workspaces 11-20 on the numpad respond again
+- OCR: the language list in the result notification is no longer split across arguments
+- Wallpaper: the duplicate check in the kon backend compares against the whole hash list again
+- Repo: dropped two stray gitlinks that made `git submodule` fail on a fresh clone
+
+## v26.7.4 | 4th Week of July 2026 Release
 
 **Alright** Looks like hyprland 0.56.1 warns user to use lua so here you go!
 
@@ -36,7 +48,7 @@ Life is tight as of the moment. Any help will do. 💓
     mangle with QT. But KDE apps uses ~/.config/kdeglobals which might break KDE apps for multi DE. (No fix for now)
 
 
-## Fixed
+### Fixed
 - Fix cantarell font
 - Some minor bugs
 

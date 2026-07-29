@@ -35,6 +35,32 @@ local function find_include(base)
     return nil
 end
 
+-- Falls back to the XDG defaults when a variable is not exported, so a shader
+-- referencing "$XDG_CACHE_HOME" still resolves outside of a HyDE session.
+local ENV_FALLBACK = {
+    XDG_DATA_HOME = xdg.data,
+    XDG_CONFIG_HOME = xdg.config,
+    XDG_CACHE_HOME = xdg.cache,
+    XDG_STATE_HOME = xdg.state,
+    XDG_RUNTIME_DIR = xdg.runtime,
+    HOME = os.getenv("HOME")
+}
+
+-- Expands "$VAR" and "${VAR}" occurrences in a path. A variable that is set but
+-- empty counts as unset, so the fallback still applies.
+local function expand_env(str)
+    local function lookup(name)
+        local value = os.getenv(name)
+        if value == nil or value == "" then
+            value = ENV_FALLBACK[name]
+        end
+        return value or ""
+    end
+    str = str:gsub("%${([%w_]+)}", lookup)
+    str = str:gsub("%$([%w_]+)", lookup)
+    return str
+end
+
 local function parse_source_include(path)
     local source_include
     local shader_dir = path:match("^(.*)/") or "."
@@ -45,6 +71,7 @@ local function parse_source_include(path)
     for line in f:lines() do
         local source = line:match("^%s*//%s*!source%s*=%s*(.-)%s*$")
         if source and source ~= "" then
+            source = expand_env(source)
             if source:sub(1, 1) ~= "/" then
                 source = shader_dir .. "/" .. source
             end
@@ -89,7 +116,10 @@ local function compile_shader(item)
     local source_include = parse_source_include(src)
 
     local files = {}
-    if source_include and lfs.attributes(source_include, "mode") == "file" then
+    if source_include then
+        if lfs.attributes(source_include, "mode") ~= "file" then
+            return nil, "source include not found: " .. source_include
+        end
         files[#files + 1] = source_include
     end
     if inc_path then
