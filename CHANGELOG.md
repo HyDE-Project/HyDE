@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   Group navigation stays on `Super + Alt + arrows`
 - Hyprland: the right Control key no longer hides Waybar on its own. Hiding moved to `Super + Ctrl + B`
 - Hyprland: workspaces 11-20 on the numpad respond again
+- OCR: the language list in the result notification is no longer split across arguments
+- Wallpaper: the duplicate check in the kon backend compares against the whole hash list again
+- Repo: dropped two stray gitlinks that made `git submodule` fail on a fresh clone
 
 ## v26.7.4 | 4th Week of July 2026 Release
 

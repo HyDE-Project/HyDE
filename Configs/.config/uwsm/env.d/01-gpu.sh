@@ -1,3 +1,5 @@
+#!/usr/bin/env sh
+
 # 00-gpu.sh - GPU detection
 # This env script will detect the presence of various GPUs on the system
 # and set environment variables accordingly.
