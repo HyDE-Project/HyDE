@@ -1,12 +1,21 @@
 --- @module luautils.xdg
 -- XDG Base Directory Specification https://specifications.freedesktop.org/basedir-spec/latest/
 local HOME = os.getenv("HOME")
+--- Per the spec, a variable that is set but empty is treated as unset.
 local function env(var, fallback)
-   return os.getenv(var) or (HOME and HOME .. fallback)
+   local value = os.getenv(var)
+   if value == nil or value == "" then
+      return HOME and HOME .. fallback
+   end
+   return value
 end
 local function dirs(var, default, home)
    local t = {}
-   for e in (os.getenv(var) or default):gmatch("([^:]+)") do
+   local value = os.getenv(var)
+   if value == nil or value == "" then
+      value = default
+   end
+   for e in value:gmatch("([^:]+)") do
       t[#t + 1] = e
    end
    if home then
