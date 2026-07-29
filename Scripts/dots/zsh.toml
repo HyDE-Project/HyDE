@@ -43,7 +43,7 @@
         "prompt.zsh",
         "plugin.zsh",
         ".zshrc",
-        "conf.d/binds",
+        "conf.d/binds.zsh",
     ]
     source_root = "Configs/.config/zsh"
     target_root = "${XDG_CONFIG_HOME}/zsh"
