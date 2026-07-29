@@ -19,6 +19,17 @@ REPO_ROOT = pathlib.Path(os.environ.get("REPO_ROOT", "."))
 DOTS_DIR = REPO_ROOT / "Scripts" / "dots"
 
 
+def declared_paths(table: dict) -> list:
+    """`paths` is a single string or a list of them."""
+    paths = table.get("paths", [])
+    return [paths] if isinstance(paths, str) else list(paths)
+
+
+def has_glob(relative: str) -> bool:
+    """A pattern is resolved at deploy time, so it cannot be checked here."""
+    return any(character in relative for character in "*?[")
+
+
 def inside_repo(relative: str) -> bool:
     """A source path has to stay in the checkout, absolute or `..` included."""
     root = REPO_ROOT.resolve()
@@ -89,6 +100,12 @@ def main() -> int:
                     fail(f"{where} points outside the repository with source_root {source_root!r}")
                 elif not (REPO_ROOT / source_root).is_dir():
                     fail(f"{where} points at a missing source_root {source_root!r}")
+                else:
+                    for relative in declared_paths(table):
+                        if not isinstance(relative, str):
+                            fail(f"{where} declares a path as {type(relative).__name__}, expected a string")
+                        elif not has_glob(relative) and not (REPO_ROOT / source_root / relative).exists():
+                            fail(f"{where} points at a missing path {relative!r}")
 
         for component, table in dependencies(document):
             where = f"{name} [{component}.dependency]"

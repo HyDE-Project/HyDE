@@ -7,7 +7,7 @@ pacman = ["fish", "starship", "fastfetch"]
 action = "sync"
 source_root = "Configs/.config/fish"
 target_root = "${XDG_CONFIG_HOME}/fish"
-paths = ["conf.d", "functions", "completions"]
+paths = ["conf.d", "functions"]
 
 [[fish.files]]
 action = "preserve"
