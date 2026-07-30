@@ -1,7 +1,7 @@
 [hyde]
 description = "Hyde core configuration"
 pre_command = "echo 'HyDE Is the Best!'"
-version = "v26.7.28"
+version = "v26.7.4"
 
 #? Core configuration
 [[hyde.files]]
@@ -95,8 +95,7 @@ target_root = "${HOME}/.local/bin"
 paths = ["hyde-shell", "hydectl"]
 
 [grimblast]
-# source = "blob+https://raw.githubusercontent.com/hyprwm/contrib/refs/heads/main/grimblast/grimblast"
-source = "blob+https://raw.githubusercontent.com/zspher/contrib/refs/heads/feature-grimblast-toplevel-handle/grimblast/grimblast"
+source = "blob+https://raw.githubusercontent.com/hyprwm/contrib/refs/heads/main/grimblast/grimblast"
 action = "sync"
 target_root = "${HOME}/.local/lib/hyde/screenshot"
 paths = "grimblast"

@@ -8,7 +8,7 @@ Users are encouraged to use an editor that support schema validation to ensure t
 ---
 ### [battery.notify]
 
-batterynotify.sh configuration.
+Battery notification configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -155,7 +155,7 @@ Generic desktop autostart configuration. Use this header instead of hyprland-sta
 | applet_removable_media | Removable media applet. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray |
 | auth_dialogue | Authentication dialogue. | hyde-shell app -t service -- polkitkdeauth.sh |
 | bar | Bar. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch |
-| battery_notify | Battery notification script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh |
+| battery_notify | Battery notification script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua |
 | blue_light_filter_daemon | Blue-light filter daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-blue-light-filter.service -t service -- hyprsunset |
 | clipboard_persist | Clipboard persist daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persist.service -t service wl-clip-persist --clipboard regular |
 | dbus_share_picker | DBus share picker (for XDG portal / XDPH). | dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME |

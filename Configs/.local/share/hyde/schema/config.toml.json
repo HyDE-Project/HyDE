@@ -402,7 +402,7 @@
             }
         },
         "battery.notify": {
-            "description": "batterynotify.sh configuration.",
+            "description": "Battery notification configuration.",
             "type": "object",
             "properties": {
                 "timer": {
@@ -1345,7 +1345,7 @@
                     "type": "string"
                 },
                 "battery_notify": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh",
+                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua",
                     "description": "Battery notification script.",
                     "type": "string"
                 },

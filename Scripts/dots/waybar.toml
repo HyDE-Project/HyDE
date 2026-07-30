@@ -25,4 +25,4 @@ paths = ["config.jsonc", "theme.css", "style.css"]
 action = "sync"
 source_root = "Configs/.local/share/waybar"
 target_root = "${XDG_DATA_HOME}/waybar"
-paths = ["includes", "scripts", "modules", "styles", "layouts", "menus"]
+paths = ["includes", "modules", "styles", "layouts", "menus"]

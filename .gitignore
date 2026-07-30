@@ -11,3 +11,6 @@ Scripts/pkg_user.lst
 Configs/.config/uwsm/*
 ./.*
 build
+
+# Local agent worktrees, never part of the tree
+.claude/

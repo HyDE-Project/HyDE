@@ -7,6 +7,24 @@ HYDE_ACTIVATED=1
 HYDE_MODE=""
 HYPRLAND_CONFIG=""
 
+# A per-user runtime directory. Falling back to a shared directory would put
+# sockets from every session into one namespace, so the fallback is private and
+# only readable by its owner.
+hyde_runtime_dir() {
+    _uid=$(id -u 2>/dev/null) || _uid=''
+
+    if [ -n "$_uid" ] && [ -d "/run/user/$_uid" ] && [ -w "/run/user/$_uid" ]; then
+        printf '%s\n' "/run/user/$_uid"
+        unset _uid
+        return 0
+    fi
+
+    _dir="${TMPDIR:-/tmp}/hyde-${_uid:-$$}"
+    mkdir -p "$_dir" 2>/dev/null && chmod 700 "$_dir" 2>/dev/null
+    printf '%s\n' "$_dir"
+    unset _uid _dir
+}
+
 setup_xdg() {
     : "${XDG_CONFIG_HOME:=$HOME/.config}"
     : "${XDG_CACHE_HOME:=$HOME/.cache}"
@@ -14,7 +32,7 @@ setup_xdg() {
     : "${XDG_STATE_HOME:=$HOME/.local/state}"
 
     # fallback only
-    : "${XDG_RUNTIME_DIR:=/tmp}"
+    [ -n "${XDG_RUNTIME_DIR:-}" ] || XDG_RUNTIME_DIR=$(hyde_runtime_dir)
 
     export XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_RUNTIME_DIR
 }
@@ -69,18 +87,49 @@ hyprland_has_lua() {
     return 1
 }
 
+# Mirrors the resolution order in pyutils/lua_env.py, so a runtime that is good
+# enough to provision the environment is not rejected here.
+hyde_find_bin() {
+    for _candidate in "$@"; do
+        [ -n "$_candidate" ] || continue
+        if command -v "$_candidate" >/dev/null 2>&1; then
+            printf '%s\n' "$_candidate"
+            unset _candidate
+            return 0
+        fi
+    done
+
+    unset _candidate
+    return 1
+}
+
+hyde_find_lua() {
+    hyde_find_bin "${LUA:-}" lua lua5.5 lua5.4 lua5.3
+}
+
+hyde_find_luarocks() {
+    hyde_find_bin "${LUAROCKS:-}" luarocks luarocks-5.5 luarocks-5.4 luarocks-5.3
+}
+
 check_lua_runtime() {
-    hyde_has lua || return 1
-    hyde_has luarocks || return 1
+    _missing=''
+    hyde_find_lua >/dev/null || _missing='lua'
+    hyde_find_luarocks >/dev/null || _missing="${_missing:+$_missing }luarocks"
+
+    [ -z "$_missing" ] || {
+        printf 'Lua runtime incomplete, missing: %s\n' "$_missing" >&2
+        unset _missing
+        return 1
+    }
+
+    unset _missing
+    return 0
 }
 
 setup_lua_mode() {
     HYPRLAND_CONFIG=$(find_hyde_lua)
 
-    check_lua_runtime || {
-        printf 'Lua runtime incomplete\n' >&2
-        return 1
-    }
+    check_lua_runtime || return 1
 
     hyprland_has_lua || {
         printf 'Hyprland lacks Lua support\n' >&2

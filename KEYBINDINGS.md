@@ -52,7 +52,7 @@ Multi-language KEYBINDINGS support
 
 Here are all HyDE specific keybindings listed.
 
-> [!TIP]  
+> [!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> shows the keybindings.
 
 <!-- ## <a id=window-management>Window Management</a> -->
@@ -61,7 +61,7 @@ Here are all HyDE specific keybindings listed.
 
 | Keys                                                 | Action                          |
 | :--------------------------------------------------- | :------------------------------ |
-| <kbd>CTRL</kbd> + <kbd>Q</kbd>                       | close focused window            |
+| <kbd>SUPER</kbd> + <kbd>Q</kbd>                      | close focused window            |
 | <kbd>ALT</kbd> + <kbd>F4</kbd>                       | close focused window            |
 | <kbd>SUPER</kbd> + <kbd>Delete</kbd>                 | kill hyprland session           |
 | <kbd>SUPER</kbd> + <kbd>W</kbd>                      | toggle float                    |
@@ -70,7 +70,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>L</kbd>                      | lock screen                     |
 | <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>F</kbd>   | toggle pin on focused window    |
 | <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Delete</kbd> | logout menu                     |
-| <kbd>ALT</kbd> + <kbd>Control_R</kbd>                | toggle waybar and reload config |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>B</kbd>    | toggle waybar and reload config |
 | <kbd>SUPER</kbd> + <kbd>J</kbd>                      | toggle split                    |
 
 ### Group Navigation
@@ -301,7 +301,7 @@ For example, to create a keybinding that launches the **HyDE Game Launcher**, ad
 bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
 ```
 
-This will bind the **Game Launcher** to <kbd>SUPER</kbd> + <kbd>Space</kbd>.  
+This will bind the **Game Launcher** to <kbd>SUPER</kbd> + <kbd>Space</kbd>.
 You can replace `SPACE` with any other key you prefer.
 
 The `gamelauncher.sh` script is included by default and lives at:

@@ -1,3 +1,11 @@
+-- * Enable bind deduplication so repeated key combos don't conflict.
+-- * This has to run before the first bind below, otherwise the binds in this
+-- * file are registered unchecked and only user overrides get deduplicated.
+-- * For multiple dispatcher actions, wrap them in one function and bind that.
+-- * If you set `hyde.binds.dedup = false`, unbind duplicates manually.
+hyde.binds.dedup = true
+-- hyde.binds.dedup_fields = {}
+
 -- vars for easy access
 local _apps = hyde.config.app
 local MOD = hyde.config.modifiers.main
@@ -42,7 +50,7 @@ end
 _F = {description = "[Launcher|Apps] terminal emulator"}
 hl.bind(MOD .. " + T", hl.dsp.exec_cmd(_apps.terminal), _F)
 _F = {description = "[Launcher|Apps] dropdown terminal"}
-hl.bind(MOD .. " + grave", hl.dsp.exec_cmd("hyde-shell pypr toggle console"), _F)
+hl.bind(MOD .. " + ALT + T", hl.dsp.exec_cmd("hyde-shell pypr toggle console"), _F)
 _F = {description = "[Launcher|Apps] file explorer"}
 hl.bind(MOD .. " + E", hl.dsp.exec_cmd(_apps.explorer), _F)
 _F = {description = "[Launcher|Apps] browser"}
@@ -55,10 +63,12 @@ hl.bind("CTRL + SHIFT + ESCAPE", hl.dsp.exec_cmd("hyde-shell system.monitor.sh")
 local _wm = "Window Management"
 _F = {description = "[Window Management] close focused window"}
 hl.bind(MOD .. " + Q", hl.dsp.window.close(), _F)
+_F = {description = "[Window Management] close focused window"}
+hl.bind("ALT + F4", hl.dsp.window.close(), _F)
 _F = {description = "[Window Management] kill focused window"}
 hl.bind(MOD .. "+ ALT  + F4", hl.dsp.window.kill(), _F)
 _F = {description = "[Window Management] exit hyprland session"}
-hl.bind("CTRL + Delete", hl.dsp.exit(), _F)
+hl.bind(MOD .. " + Delete", hl.dsp.exit(), _F)
 _F = {description = "[Window Management] toggle float true"}
 hl.bind(MOD .. " + W", hl.dsp.window.float({action = "toggle"}), _F)
 _F = {description = "[Window Management] toggle group"}
@@ -68,24 +78,22 @@ hl.bind("ALT + P", hl.dsp.window.pseudo(), _F)
 
 -- bindd = $mainMod, G, $d toggle group,exec, hydectl tabs
 _F = {description = "[Window Management] cycle fullscreen"}
-hl.bind(MOD .. " + F11", cycle_fullscreen, _F)
+hl.bind("SHIFT + F11", cycle_fullscreen, _F)
 _F = {description = "[Window Management] toggle pin"}
-hl.bind(MOD .. " + F", hl.dsp.exec_cmd(hyde.sh.window.pin()), _F)
+hl.bind(MOD .. " + SHIFT + F", hl.dsp.exec_cmd(hyde.sh.window.pin()), _F)
 _F = {description = "[Window Management] logout menu"}
 hl.bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd(hyde.sh.session.logout.launcher()), _F)
+-- ALT_R is a keysym, not a modifier: "ALT_R + CONTROL_R" resolves to a bare
+-- right Control, so every press of that key hid the bar.
 _F = {description = "[Window Management] hide waybar"}
-hl.bind("ALT_R + CONTROL_R", hl.dsp.exec_cmd(hyde.sh.waybar("--hide")), _F)
+hl.bind(MOD .. " + CTRL + B", hl.dsp.exec_cmd(hyde.sh.waybar("--hide")), _F)
 _F = {description = "[Window Management] lock session"}
 hl.bind(MOD .. " + L", hl.dsp.exec_cmd(hyde.sh.session.lock()), _F)
 
 _F = {description = "[Window Management|Group Navigation] change active group backwards"}
-hl.bind(MOD .. " + CTRL + Left", hl.dsp.group.prev(), _F)
+hl.bind(MOD .. " + CTRL + H", hl.dsp.group.prev(), _F)
 _F = {description = "[Window Management|Group Navigation] change active group forwards"}
-hl.bind(MOD .. " + CTRL + Right", hl.dsp.group.next(), _F)
-_F = {description = "[Window Management|Group Navigation] change active group backwards"}
-hl.bind(MOD .. " + ALT + Left", hl.dsp.group.prev(), _F)
-_F = {description = "[Window Management|Group Navigation] change active group forwards"}
-hl.bind(MOD .. " + ALT + Right", hl.dsp.group.next(), _F)
+hl.bind(MOD .. " + CTRL + L", hl.dsp.group.next(), _F)
 
 -- $d=[$wm|Change focus]
 
@@ -114,15 +122,15 @@ hl.bind("ALT + ALT_L", hl.dsp.exec_cmd(hyde.sh.altab("--apply")), _F)
 -- # Resize kwindows
 
 _F = {description = "[Window Management|Resize Active Window] resize window right", repeating = true}
-hl.bind(MOD .. " + EQUAL", hl.dsp.window.resize({x = 30, y = 0, relative = true}), _F)
+hl.bind(MOD .. " + SHIFT + RIGHT", hl.dsp.window.resize({x = 30, y = 0, relative = true}), _F)
 
 _F = {description = "[Window Management|Resize Active Window] resize window left", repeating = true}
-hl.bind(MOD .. " + MINUS", hl.dsp.window.resize({x = -30, y = 0, relative = true}), _F)
+hl.bind(MOD .. " + SHIFT + LEFT", hl.dsp.window.resize({x = -30, y = 0, relative = true}), _F)
 
 _F = {description = "[Window Management|Resize Active Window] resize window up", repeating = true}
-hl.bind(MOD .. " + SHIFT + EQUAL", hl.dsp.window.resize({x = 0, y = -30, relative = true}), _F)
+hl.bind(MOD .. " + SHIFT + UP", hl.dsp.window.resize({x = 0, y = -30, relative = true}), _F)
 _F = {description = "[Window Management|Resize Active Window] resize window down", repeating = true}
-hl.bind(MOD .. " + SHIFT + MINUS", hl.dsp.window.resize({x = 0, y = 30, relative = true}), _F)
+hl.bind(MOD .. " + SHIFT + DOWN", hl.dsp.window.resize({x = 0, y = 30, relative = true}), _F)
 
 -- TEXT = hl.get_active_window().floating
 
@@ -150,7 +158,7 @@ hl.bind(MOD .. " + X", hl.dsp.window.resize(), _F)
 -- $d=[$wm]
 
 _F = {description = "[Layout Management|Dwindle] toggle split"}
-_F = {description = "[Layout Management|Scrolling] toggle fit"}
+hl.bind(MOD .. " + J", hl.dsp.layout("togglesplit"), _F)
 
 _F = {description = "[Launcher|Rofi menus] application finder"}
 hl.bind(MOD .. " + A", hl.dsp.exec_cmd(hyde.sh.menu.apps()), _F)
@@ -182,6 +190,12 @@ hl.bind(MOD .. " + SHIFT + slash", hl.dsp.exec_cmd(hyde.sh.menu.search()), _F)
 -- # binddel = , F11, $d decrease volume , exec, hyde-shell volumecontrol.sh -o d # decrease volume
 -- # binddel = , F12, $d increase volume , exec, hyde-shell volumecontrol.sh -o i # increase volume
 
+_F = {description = "[Hardware Controls|Audio] un/mute output", locked = true}
+hl.bind("F10", hl.dsp.exec_cmd(hyde.sh.volumecontrol("-o", "m")), _F)
+_F = {description = "[Hardware Controls|Audio] decrease volume", locked = true, repeating = true}
+hl.bind("F11", hl.dsp.exec_cmd(hyde.sh.volumecontrol("-o", "d")), _F)
+_F = {description = "[Hardware Controls|Audio] increase volume", locked = true, repeating = true}
+hl.bind("F12", hl.dsp.exec_cmd(hyde.sh.volumecontrol("-o", "i")), _F)
 _F = {description = "[Hardware Controls|Audio] un/mmute output", locked = true}
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd(hyde.sh.volumecontrol("-o", "m")), _F)
 _F = {description = "[Hardware Controls|Audio] un/mute microphone", locked = true}
@@ -211,26 +225,30 @@ _F = {description = "[Utilities] toggle keyboard layout", locked = true}
 hl.bind(MOD .. " + K", hl.dsp.exec_cmd(hyde.sh.kb.switch()), _F)
 _F = {description = "[Utilities] game mode", locked = true}
 hl.bind(MOD .. " + ALT + G", hl.dsp.exec_cmd(hyde.sh.gamemode()), _F) -- TODO
+_F = {description = "[Utilities] game launcher"}
+hl.bind(MOD .. " + SHIFT + G", hl.dsp.exec_cmd("hyde-shell gamelauncher"), _F)
 
 _F = {description = "[Utilities] screen capture] color picker", locked = true}
 hl.bind(MOD .. " + SHIFT + P", hl.dsp.exec_cmd("hyprpicker -an"), _F)
 _F = {description = "[Utilities] partial screenshot capture", locked = true}
-hl.bind(MOD .. " + S", hl.dsp.exec_cmd(hyde.sh.screenshot.snip()), _F)
+hl.bind(MOD .. " + P", hl.dsp.exec_cmd(hyde.sh.screenshot.snip()), _F)
 _F = {description = "[Utilities] freeze and snip screen", locked = true}
-hl.bind(MOD .. " + SHIFT + S", hl.dsp.exec_cmd(hyde.sh.screenshot.freeze()), _F)
+hl.bind(MOD .. " + CONTROL + P", hl.dsp.exec_cmd(hyde.sh.screenshot.freeze()), _F)
 _F = {description = "[Utilities] print monitor", locked = true}
-hl.bind(MOD .. " + ALT + S", hl.dsp.exec_cmd(hyde.sh.screenshot.monitor()), _F)
+hl.bind(MOD .. " + ALT + P", hl.dsp.exec_cmd(hyde.sh.screenshot.monitor()), _F)
 _F = {description = "[Utilities] print all monitors", locked = true}
-hl.bind(MOD .. " + CONTROL + A", hl.dsp.exec_cmd(hyde.sh.screenshot.monitor()), _F)
+hl.bind("Print", hl.dsp.exec_cmd(hyde.sh.screenshot.full()), _F)
 _F = {description = "[Utilities] OCR scanner", locked = true}
 hl.bind(MOD .. " + CONTROL + S", hl.dsp.exec_cmd(hyde.sh.screenshot.ocr()), _F)
 
--- _F = { description = "[Theming and Wallpaper] next global wallpaper"}
--- hl.bind(MOD .. "+ ALT + Right", hl.dsp.exec_cmd(hyde.sh.wallpaper("--next")), _F)
--- _F = { description = "[Theming and Wallpaper] previous global wallpaper"}
--- hl.bind(MOD .. "+ ALT + Left", hl.dsp.exec_cmd(hyde.sh.wallpaper("--prev")), _F)
--- _F = { description = "[Theming and Wallpaper] next waybar layout"}
--- hl.bind(MOD .. "+ CONTROL + ALT + Right", hl.dsp.exec_cmd(hyde.sh.waybar("--next")), _F)
+_F = {description = "[Theming and Wallpaper] next global wallpaper"}
+hl.bind(MOD .. "+ ALT + Right", hl.dsp.exec_cmd(hyde.sh.wallpaper("--next")), _F)
+_F = {description = "[Theming and Wallpaper] previous global wallpaper"}
+hl.bind(MOD .. "+ ALT + Left", hl.dsp.exec_cmd(hyde.sh.wallpaper("--prev")), _F)
+_F = {description = "[Theming and Wallpaper] next Waybar layout"}
+hl.bind(MOD .. "+ ALT + Up", hl.dsp.exec_cmd("hyde-shell waybar --next"), _F)
+_F = {description = "[Theming and Wallpaper] previous Waybar layout"}
+hl.bind(MOD .. "+ ALT + Down", hl.dsp.exec_cmd("hyde-shell waybar --prev"), _F)
 
 _F = {description = "[Theming and Wallpaper] select a global wallpaper"}
 hl.bind(MOD .. "+ SHIFT + W", hl.dsp.exec_cmd(hyde.sh.menu.wallpapers()), _F)
@@ -238,6 +256,10 @@ _F = {description = "[Theming and Wallpaper] wallbash mode selector"}
 hl.bind(MOD .. "+ SHIFT + R", hl.dsp.exec_cmd(hyde.sh.menu.wallbash()), _F)
 _F = {description = "[Theming and Wallpaper] select a theme"}
 hl.bind(MOD .. "+ SHIFT + T", hl.dsp.exec_cmd(hyde.sh.menu.themes()), _F)
+_F = {description = "[Theming and Wallpaper] select animations"}
+hl.bind(MOD .. "+ SHIFT + Y", hl.dsp.exec_cmd("hyde-shell animations --select"), _F)
+_F = {description = "[Theming and Wallpaper] select Hyprlock layout"}
+hl.bind(MOD .. "+ SHIFT + U", hl.dsp.exec_cmd("hyde-shell hyprlock --select"), _F)
 
 -- # TODO Make a main rofi menu for these selectors
 -- $rice=Theming and Wallpaper
@@ -250,17 +272,20 @@ hl.bind(MOD .. "+ SHIFT + T", hl.dsp.exec_cmd(hyde.sh.menu.themes()), _F)
 -- bindd = $mainMod SHIFT, R, $d wallbash mode selector , exec, pkill -x rofi || hyde-shell wallbashtoggle.sh -m # launch wallbash mode select menu
 -- bindd = $mainMod SHIFT, T, $d select a theme, exec, pkill -x rofi || hyde-shell themeselect.sh # launch theme select menu
 
+-- Numpad keys for workspaces 11-20. The Lua bind parser has no keycode form,
+-- so each key is bound under both keysyms it can emit: the digit while Num
+-- Lock is on, the navigation name while it is off.
 local kp = {
-    [1] = 87,
-    [2] = 88,
-    [3] = 89,
-    [4] = 83,
-    [5] = 84,
-    [6] = 85,
-    [7] = 79,
-    [8] = 80,
-    [9] = 81,
-    [0] = 90
+    [1] = {"KP_1", "KP_End"},
+    [2] = {"KP_2", "KP_Down"},
+    [3] = {"KP_3", "KP_Next"},
+    [4] = {"KP_4", "KP_Left"},
+    [5] = {"KP_5", "KP_Begin"},
+    [6] = {"KP_6", "KP_Right"},
+    [7] = {"KP_7", "KP_Home"},
+    [8] = {"KP_8", "KP_Up"},
+    [9] = {"KP_9", "KP_Prior"},
+    [10] = {"KP_0", "KP_Insert"}
 }
 
 for i = 1, 10 do
@@ -269,8 +294,13 @@ for i = 1, 10 do
 end
 
 for i = 1, 10 do
-    local key = (i == 10) and 90 or kp[i]
-    hl.bind(MOD .. "+code:" .. key, hl.dsp.focus({workspace = tostring(i + 10)}), {description = "WS " .. (i + 10)})
+    for _, key in ipairs(kp[i]) do
+        hl.bind(
+            MOD .. " + " .. key,
+            hl.dsp.focus({workspace = tostring(i + 10)}),
+            {description = "[Workspaces|Navigation] navigate to workspace " .. (i + 10)}
+        )
+    end
 end
 
 _F = {description = "[Workspaces|Navigation|Relative workspace] change active workspace forwards"}
@@ -287,12 +317,13 @@ for i = 1, 10 do
 end
 
 for i = 1, 10 do
-    local key = (i == 10) and 90 or kp[i]
-    hl.bind(
-        MOD .. "+SHIFT+code:" .. key,
-        hl.dsp.window.move({workspace = tostring(i + 10)}),
-        {description = "WS " .. (i + 10)}
-    )
+    for _, key in ipairs(kp[i]) do
+        hl.bind(
+            MOD .. " + SHIFT + " .. key,
+            hl.dsp.window.move({workspace = tostring(i + 10)}),
+            {description = "[Workspaces|Move window to workspace] move focused window to workspace " .. (i + 10)}
+        )
+    end
 end
 
 _F = {description = "[Workspaces|Move window to workspace|Relative workspace] move focused window to next workspace"}
@@ -303,15 +334,17 @@ _F = {
 hl.bind(MOD .. " + CONTROL + ALT + LEFT", hl.dsp.window.move({workspace = "r-1"}), _F)
 
 _F = {description = "[Workspaces|Navigation|Mouse] next workspace"}
-hl.bind(MOD .. " + SHIFT + mouse_down", hl.dsp.focus({workspace = "r+1"}), _F)
+hl.bind(MOD .. " + mouse_down", hl.dsp.focus({workspace = "e+1"}), _F)
 _F = {description = "[Workspaces|Navigation|Mouse] previous workspace"}
-hl.bind(MOD .. " + SHIFT + mouse_up", hl.dsp.focus({workspace = "r-1"}), _F)
+hl.bind(MOD .. " + mouse_up", hl.dsp.focus({workspace = "e-1"}), _F)
 
 -- # Move/Switch to special workspace (scratchpad)
--- $d=[$ws|Navigation|Special workspace]
--- # bindd = $mainMod, grave, $d toggle scratchpad ,  togglespecialworkspace
--- # bindd = $mainMod SHIFT, grave, $d move to scratchpad  , movetoworkspace, special
--- # bindd = $mainMod Alt, grave, $d move to scratchpad (silent) , movetoworkspacesilent, special
+_F = {description = "[Workspaces|Navigation|Special workspace] toggle scratchpad"}
+hl.bind(MOD .. " + S", hl.dsp.workspace.toggle_special(), _F)
+_F = {description = "[Workspaces|Navigation|Special workspace] move focused window to scratchpad"}
+hl.bind(MOD .. " + SHIFT + S", hl.dsp.window.move({workspace = "special"}), _F)
+_F = {description = "[Workspaces|Navigation|Special workspace] move focused window silently to scratchpad"}
+hl.bind(MOD .. " + ALT + S", hl.dsp.window.move({workspace = "special", follow = false}), _F)
 
 --- Move silent
 ---
@@ -372,9 +405,3 @@ end
 -- bindk = Super     ALT, F ,test device, exec , notify-send "Hyprland" "You just pressed Super + F again!2"
 
 -- # bindd = Alt, D , [Utilities] Enable Wayscriber ,exec, wayscriber --active
-
--- * Enable bind deduplication so repeated key combos don't conflict.
--- * For multiple dispatcher actions, wrap them in one function and bind that.
--- * If you set `hyde.bind.dedup = false`, unbind duplicates manually.
-hyde.binds.dedup = true
--- hyde.binds.dedup_fields = {}
