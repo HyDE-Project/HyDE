@@ -22,10 +22,14 @@ state_file="$work_dir/state/applied"
 order_log="$work_dir/order.log"
 mkdir -p "$migration_dir"
 
-for version in v25.9.1 v26.4.3 v26.10.1; do
+for version in v25.9.1 v26.10.1; do
     printf '#!/usr/bin/env sh\nprintf "%%s\\n" "%s" >>"%s"\n' "$version" "$order_log" \
         >"$migration_dir/$version.sh"
 done
+# Reads stdin: inheriting the runner's stdin would let it swallow the names of
+# the migrations queued after it.
+printf '#!/usr/bin/env sh\ncat >/dev/null\nprintf "%%s\\n" "v26.4.3" >>"%s"\n' "$order_log" \
+    >"$migration_dir/v26.4.3.sh"
 printf '#!/usr/bin/env sh\nexit 1\n' >"$migration_dir/v26.11.0.sh"
 chmod +x "$migration_dir"/*.sh
 
@@ -34,7 +38,7 @@ run_pending_migrations "$migration_dir" "$state_file" >/dev/null 2>&1
 expected_order='v25.9.1
 v26.4.3
 v26.10.1'
-actual_order=$(cat "$order_log" 2>/dev/null)
+actual_order=$(cat "$order_log" 2>/dev/null || true)
 [ "$actual_order" = "$expected_order" ] ||
     fail "migrations ran out of version order: $(echo "$actual_order" | tr '\n' ' ')"
 
@@ -51,6 +55,16 @@ run_pending_migrations "$migration_dir" "$state_file" >/dev/null 2>&1
 
 [ -s "$order_log" ] &&
     fail "already applied migrations ran a second time: $(tr '\n' ' ' <"$order_log")"
+
+second_pass=$(run_pending_migrations "$migration_dir" "$state_file" 2>&1 || true)
+case $second_pass in
+*"No outstanding migrations"*)
+    fail "a migration was still pending but the run reported none outstanding"
+    ;;
+esac
+
+grep -q 'run_pending_migrations' "$REPO_ROOT/Scripts/install.sh" ||
+    fail "install.sh does not call run_pending_migrations"
 
 missing_dir_output=$(run_pending_migrations "$work_dir/absent" "$state_file" 2>&1)
 [ -z "$missing_dir_output" ] ||

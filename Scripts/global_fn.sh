@@ -189,6 +189,7 @@ run_pending_migrations() {
     local stateFile="$2"
     local migrationFile
     local applied=0
+    local pending=0
 
     [ -d "${migrationDir}" ] || return 0
     find "${migrationDir}" -maxdepth 1 -type f | grep -q . || return 0
@@ -199,8 +200,11 @@ run_pending_migrations() {
     while read -r migrationFile; do
         [ -n "${migrationFile}" ] || continue
         grep -qxF "${migrationFile}" "${stateFile}" && continue
+        pending=$((pending + 1))
         echo "Found migration file: ${migrationFile}"
-        if sh "${migrationDir}/${migrationFile}"; then
+        # stdin is closed for the migration: inheriting the loop's stdin let one
+        # that reads input swallow the names of every migration after it.
+        if sh "${migrationDir}/${migrationFile}" </dev/null; then
             printf '%s\n' "${migrationFile}" >>"${stateFile}"
             applied=$((applied + 1))
         else
@@ -208,6 +212,6 @@ run_pending_migrations() {
         fi
     done < <(find "${migrationDir}" -maxdepth 1 -type f -printf '%f\n' | sort -V)
 
-    [ "${applied}" -gt 0 ] || echo "No outstanding migrations in ${migrationDir}."
+    [ "${pending}" -gt 0 ] || echo "No outstanding migrations in ${migrationDir}."
     return 0
 }
