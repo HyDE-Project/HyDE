@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Waybar: the theme module and the HyDE menu call `theme.switch` again; `themeswitch` was removed and the calls failed outright
+- Dolphin: the "Set As Wallpaper" service menu switches the theme again
+- Fish: `HYPRLAND_CONFIG` points at the deployed `hypr/hyde.lua` instead of a config the Lua release deleted, so a session started outside uwsm no longer comes up without a config
+- Hyprland: the config editor offers the user's `hypr/hyprland.lua` instead of four files nothing reads, which it used to create empty on save
+- System monitor: a console monitor no longer launches with no terminal attached, and `[sysmonitor] terminal` is a real setting
 - Core: app launchers no longer show a false error when an unrelated `DEBUG` variable contains a non-boolean value such as `release`
 - Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
 - Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad

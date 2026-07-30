@@ -215,6 +215,7 @@ steps = 5  # Number of steps to increase/decrease brightness.
 [sysmonitor]
 execute = ""  # Default command to execute.
 commands = [""]  # Fallback command options.
+terminal = ""  # Terminal used to launch a console monitor. Falls back to TERMINAL.
 
 # hyprlock configuration.
 [hyprlock]
