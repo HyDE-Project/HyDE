@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Hyprland: a session started without `XDG_CONFIG_HOME`, such as one launched from a TTY, no longer dies with a Lua error before the first window; the unset variable is treated as unset instead of being pasted into a path
 - Waybar: the theme module and the HyDE menu call `theme.switch` again; `themeswitch` was removed and the calls failed outright
 - Dolphin: the "Set As Wallpaper" service menu switches the theme again
 - Fish: `HYPRLAND_CONFIG` points at the deployed `hypr/hyde.lua` instead of a config the Lua release deleted, so a session started outside uwsm no longer comes up without a config
