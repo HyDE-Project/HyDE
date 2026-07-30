@@ -67,9 +67,12 @@ Who are the $USER?
 
 ---
 
-Here's how we can update HyDE-specific Hyprland settings without changing user preferences. We don't need the "userprefs" file. Instead, we can source HyDE's `hyprland.conf` and make $USER preferred changes directly in the config. With this approach, you won't potentially break hyde and hyde won't break your own dots.
-
-![Hyprland structure](https://github.com/user-attachments/assets/91b35c2e-0003-458f-ab58-18fc29541268)
+Here's how we keep HyDE's Hyprland settings separate from yours. HyDE's own
+configuration lives in `~/.local/share/hypr/`, which it overwrites on every
+update, and yours goes in `~/.config/hypr/hyprland.lua`, which loads after it
+and is never touched. Anything else HyDE puts in `~/.config/hypr/` — the lock
+screen, idle and sunset configs — is left alone once it exists, so with this
+split you can't break HyDE, and HyDE can't break your dots.
 
 # Why name it HyDE?
 
