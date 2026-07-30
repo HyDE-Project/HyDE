@@ -69,24 +69,9 @@ description = "Hyprland Window Manager"
 icon = "🪟"
 
 [hyprland.files.main]
-description = "Main Hyprland Configuration"
-path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/userprefs.conf"
-pre_hook = ["bash", "-c", "echo 'Editing Hyprland main config...'"]
-
-[hyprland.files.keybinds]
-description = "Hyprland Keybindings"
-path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/keybindings.conf"
-pre_hook = ["bash", "-c", "echo 'Editing Hyprland keybinds...'"]
-
-[hyprland.files.windowrules]
-description = "Hyprland Window Rules"
-path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/windowrules.conf"
-pre_hook = ["bash", "-c", "echo 'Editing Hyprland window rules...'"]
-
-[hyprland.files.nvidia]
-description = "Hyprland NVIDIA Settings"
-path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/nvidia.conf"
-pre_hook = ["bash", "-c", "echo 'Editing Hyprland NVIDIA settings...'"]
+description = "User Hyprland Configuration - binds, rules and settings"
+path = "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"
+pre_hook = ["bash", "-c", "echo 'Editing Hyprland user config...'"]
 
 
 

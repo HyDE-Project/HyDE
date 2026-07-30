@@ -271,7 +271,15 @@ local required_defaults = {
     "SUPER + mouse_up",
     "SUPER + S",
     "SUPER + SHIFT + S",
-    "SUPER + ALT + S"
+    "SUPER + ALT + S",
+    "SUPER + ALT + F4",
+    "ALT + P",
+    "ALT + SHIFT + TAB",
+    "SUPER + SHIFT + K",
+    "SUPER + SHIFT + slash",
+    "SUPER + CONTROL + M",
+    "SUPER + KP_1",
+    "SUPER + SHIFT + KP_1"
 }
 
 for _, combo in ipairs(required_defaults) do
