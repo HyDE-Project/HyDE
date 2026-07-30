@@ -91,6 +91,11 @@ for migration in "$REPO_ROOT"/Scripts/migrations/*.sh; do
     esac
 done
 
+# Without this the check passes on an empty directory, reporting zero problems
+# because it looked at nothing.
+[ "$shipped_count" -gt 0 ] ||
+    fail "no migrations found in Scripts/migrations, the shebang check inspected nothing"
+
 printf '    %d shipped migration(s) checked\n' "$shipped_count"
 
 finish
