@@ -4,6 +4,7 @@
 # whole config down, so the resolver has to survive a missing or empty variable
 # rather than error on a nil concatenation.
 
+# shellcheck source=tests/lib/common.sh
 . "$(dirname -- "$0")/lib/common.sh"
 
 if ! command -v lua >/dev/null 2>&1; then
@@ -33,7 +34,7 @@ resolve() {
     " 2>&1
 }
 
-config=$(HOME="$work_dir/home" XDG_CONFIG_HOME= resolve config)
+config=$(HOME="$work_dir/home" XDG_CONFIG_HOME='' resolve config)
 [ "$config" = "$work_dir/home/.config" ] ||
     fail "an empty XDG_CONFIG_HOME did not fall back to HOME: $config"
 
