@@ -77,4 +77,20 @@ missing_dir_output=$(run_pending_migrations "$work_dir/absent" "$state_file" 2>&
 [ -z "$missing_dir_output" ] ||
     fail "a missing migration directory produced output: $missing_dir_output"
 
+# The runner invokes each migration with sh, so the shebang decides nothing.
+# A migration that promises bash and then uses a bashism breaks under dash;
+# declaring sh also puts it under the dialect pass in test_shell.
+shipped_count=0
+for migration in "$REPO_ROOT"/Scripts/migrations/*.sh; do
+    [ -f "$migration" ] || continue
+    shipped_count=$((shipped_count + 1))
+
+    case $(head -n 1 "$migration") in
+    '#!'*[!a-z]sh | '#!'*[!a-z]sh' '*) ;;
+    *) fail "${migration#"$REPO_ROOT"/} is run with sh but does not declare it" ;;
+    esac
+done
+
+printf '    %d shipped migration(s) checked\n' "$shipped_count"
+
 finish
