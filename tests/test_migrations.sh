@@ -30,7 +30,9 @@ done
 # the migrations queued after it.
 printf '#!/usr/bin/env sh\ncat >/dev/null\nprintf "%%s\\n" "v26.4.3" >>"%s"\n' "$order_log" \
     >"$migration_dir/v26.4.3.sh"
-printf '#!/usr/bin/env sh\nexit 1\n' >"$migration_dir/v26.11.0.sh"
+failure_log="$work_dir/failures.log"
+printf '#!/usr/bin/env sh\nprintf "%%s\\n" "ran" >>"%s"\nexit 1\n' "$failure_log" \
+    >"$migration_dir/v26.11.0.sh"
 chmod +x "$migration_dir"/*.sh
 
 run_pending_migrations "$migration_dir" "$state_file" >/dev/null 2>&1
@@ -56,6 +58,10 @@ run_pending_migrations "$migration_dir" "$state_file" >/dev/null 2>&1
 [ -s "$order_log" ] &&
     fail "already applied migrations ran a second time: $(tr '\n' ' ' <"$order_log")"
 
+failure_runs=$(wc -l <"$failure_log" 2>/dev/null || echo 0)
+[ "$failure_runs" -eq 2 ] ||
+    fail "a failed migration ran $failure_runs time(s) across two passes, expected 2"
+
 second_pass=$(run_pending_migrations "$migration_dir" "$state_file" 2>&1 || true)
 case $second_pass in
 *"No outstanding migrations"*)
@@ -63,8 +69,9 @@ case $second_pass in
     ;;
 esac
 
-grep -q 'run_pending_migrations' "$REPO_ROOT/Scripts/install.sh" ||
-    fail "install.sh does not call run_pending_migrations"
+# A mention in a comment is not a call: the name has to sit where a command goes.
+grep -qE '^[[:space:]]*run_pending_migrations[[:space:]]+' "$REPO_ROOT/Scripts/install.sh" ||
+    fail "install.sh does not invoke run_pending_migrations as a command"
 
 missing_dir_output=$(run_pending_migrations "$work_dir/absent" "$state_file" 2>&1)
 [ -z "$missing_dir_output" ] ||
