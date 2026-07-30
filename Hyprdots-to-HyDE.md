@@ -71,8 +71,10 @@ Here's how we keep HyDE's Hyprland settings separate from yours. HyDE's own
 configuration lives in `~/.local/share/hypr/`, which it overwrites on every
 update, and yours goes in `~/.config/hypr/hyprland.lua`, which loads after it
 and is never touched. Anything else HyDE puts in `~/.config/hypr/` — the lock
-screen, idle and sunset configs — is left alone once it exists, so with this
-split you can't break HyDE, and HyDE can't break your dots.
+screen, idle and sunset configs — is left alone once it exists. So an update
+cannot overwrite your settings, and your settings cannot be lost with one.
+Your own file is still yours to get wrong: a Lua error in it will stop the
+session from starting, and a HyDE change may need a matching change there.
 
 # Why name it HyDE?
 

@@ -15,9 +15,9 @@ this page covers what changed, what breaks, and what to do about it.
 | `~/.config/hypr/animations.conf`, `workflows.conf` | `hyde-shell animations --select`, `hyde-shell workflows --select` |
 
 Hyprland is started against `~/.local/share/hypr/hyde.lua`. That file loads
-HyDE's modules, then HyDE's own keybinds, and then yours. Everything under
-`~/.local/share/hypr/` is replaced on every update; `~/.config/hypr/hyprland.lua`
-is never touched.
+HyDE's modules, then HyDE's own keybinds, then yours, and last the workflow you
+selected. Everything under `~/.local/share/hypr/` is overwritten on every
+update; `~/.config/hypr/hyprland.lua` is never touched.
 
 **None of the old `.conf` files are read any more.** They are not parsed, not
 sourced, and not migrated. Whatever you had in `userprefs.conf` has to be
@@ -46,7 +46,7 @@ so match your symptom here rather than looking for an error.
 
 | What you see | What it is |
 | :--- | :--- |
-| A bare session or a black screen with just a cursor when starting from a TTY | You are pointing Hyprland at the wrong file. Use `Hyprland -c $XDG_DATA_HOME/hypr/hyde.lua`, or start through `start-hyprland`. `~/.config/hypr/hyprland.lua` is loaded *by* HyDE, it is not the entry point |
+| A bare session or a black screen with just a cursor when starting from a TTY | You are pointing Hyprland at the wrong file. Use `Hyprland -c ${XDG_DATA_HOME:-$HOME/.local/share}/hypr/hyde.lua`, or start through `start-hyprland`. `~/.config/hypr/hyprland.lua` is loaded *by* HyDE, it is not the entry point |
 | The session refuses to start, `No valid HyDE configuration found` | The Lua runtime is missing. Install `lua` and `luarocks` |
 | A red overlay: `Hyprland does not detect colors! Run: hyde-shell reload` | Theme colours were never generated for the Lua state. Run `hyde-shell reload` |
 | Shader, animation, workflow or theme selectors report success and change nothing | An old shell script from the previous release is still answering in place of its replacement. The migration in `install.sh -r` moves those aside; if it warned that it left some in place, deal with the named files and run `install.sh -r` again |
@@ -101,7 +101,7 @@ hl.window_rule({
 })
 
 hl.bind("SUPER + SPACE", hl.dsp.exec_cmd(hyde.sh.gamelauncher()), {
-    description = "[Launcher|Apps] game launcher",
+    description = "[Utilities] game launcher",
 })
 ```
 

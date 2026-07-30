@@ -1,8 +1,9 @@
 -- Your Hyprland configuration. HyDE never overwrites this file.
 --
--- It loads after HyDE's own binds, so anything here wins over them. HyDE's
--- defaults live in ~/.local/share/hypr/lua/ and are overwritten on every
--- update, so edits there do not survive.
+-- It loads after HyDE's own binds, so settings here take precedence. Replacing
+-- a bind needs more than that: see below. HyDE's defaults live in
+-- ~/.local/share/hypr/lua/ and are overwritten on every update, so edits there
+-- do not survive.
 --
 -- Adding a keybind:
 --
