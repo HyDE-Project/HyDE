@@ -22,15 +22,18 @@ local HOME = os.getenv("HOME")
 --- the fallback is derived from `HOME`.
 ---
 --- @param name string Environment variable holding the directory.
---- @param fallback string Path appended to `HOME` when the variable is unset.
---- @return string|nil path The directory, or nil when `HOME` is absent too.
+--- @param fallback string|nil Path appended to `HOME` when the variable is
+--- unset. Omit it for a directory that has no meaningful default.
+--- @return string|nil path The directory, or nil when there is no fallback to
+--- derive.
 ---
 --- Example:
 ---   env("XDG_CONFIG_HOME", "/.config") --> "/home/user/.config"
+---   env("XDG_RUNTIME_DIR")             --> nil when the session set nothing
 local function env(name, fallback)
     local value = os.getenv(name)
     if value == nil or value == "" then
-        return HOME and HOME .. fallback
+        return fallback and HOME and HOME .. fallback
     end
 
     return value
@@ -50,8 +53,24 @@ P.data = env("XDG_DATA_HOME", "/.local/share")
 
 --- @field runtime string|nil Runtime directory. It has no fallback: the spec
 --- requires the session to provide one, and inventing a path would put runtime
---- state somewhere that outlives the session.
-P.runtime = os.getenv("XDG_RUNTIME_DIR")
+--- state somewhere that outlives the session. An empty value is still unset,
+--- so it reads as nil rather than as the working directory.
+P.runtime = env("XDG_RUNTIME_DIR")
+
+--- Wraps a value so the shell reads it as one literal word.
+---
+--- Single quotes protect everything except a single quote itself, which has to
+--- leave the quoted run, contribute an escaped quote and open a new run. Values
+--- here are derived from HOME, and a home directory is free to contain one.
+---
+--- @param value string Value to pass to the shell.
+--- @return string quoted The value as a single quoted shell word.
+---
+--- Example:
+---   shell_quote("/home/o'brien") --> "'/home/o'\\''brien'"
+local function shell_quote(value)
+    return "'" .. value:gsub("'", "'\\''") .. "'"
+end
 
 --- Reports whether a path is a directory.
 ---
@@ -62,7 +81,7 @@ P.runtime = os.getenv("XDG_RUNTIME_DIR")
 --- @param path string Absolute path to test.
 --- @return boolean exists True when the path is a directory.
 local function is_directory(path)
-    local pipe = io.popen("[ -d '" .. path .. "' ] && echo 1 || echo 0")
+    local pipe = io.popen("[ -d " .. shell_quote(path) .. " ] && echo 1 || echo 0")
     if not pipe then
         return false
     end

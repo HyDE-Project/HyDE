@@ -58,6 +58,30 @@ nil) ;;
 *) fail "an absent HOME resolved a path out of nowhere: $config" ;;
 esac
 
+# An empty value is unset, and a directory with no meaningful default stays
+# unresolved rather than becoming "" — paths built on that resolve against the
+# working directory instead of failing where they can be seen.
+runtime=$(HOME="$work_dir/home" XDG_RUNTIME_DIR='' resolve runtime)
+[ "$runtime" = "nil" ] ||
+    fail "an empty XDG_RUNTIME_DIR did not read as unset: [$runtime]"
+
+runtime=$(HOME="$work_dir/home" XDG_RUNTIME_DIR="$work_dir/run" resolve runtime)
+[ "$runtime" = "$work_dir/run" ] ||
+    fail "a set XDG_RUNTIME_DIR was not honoured: $runtime"
+
+# The directory probe shells out, so a home directory is allowed to contain a
+# quote: it has to be found, and it must not be able to run anything.
+quoted_home="$work_dir/qu'ote"
+mkdir -p "$quoted_home/.local/lib"
+lib=$(HOME="$quoted_home" resolve lib)
+[ "$lib" = "$quoted_home/.local/lib" ] ||
+    fail "a home directory containing a quote was skipped: $lib"
+
+marker="$work_dir/executed"
+HOME="$work_dir/x'; touch \"$marker\"; echo '" resolve lib >/dev/null 2>&1
+[ -e "$marker" ] &&
+    fail "a crafted HOME executed a command through the directory probe"
+
 # The consumer has to be prepared for that, otherwise the guard above buys
 # nothing: dynamic.lua must not concatenate the config path unconditionally.
 dynamic="$REPO_ROOT/Configs/.local/share/hypr/lua/dynamic.lua"
@@ -69,6 +93,6 @@ grep -q 'os.getenv("XDG_CONFIG_HOME") \.\.' "$dynamic" &&
 grep -qE '^[[:space:]]*if io\.open\(' "$dynamic" &&
     fail "dynamic.lua tests a file with io.open without closing the handle"
 
-printf '    %d path field(s) checked\n' 3
+printf '    %d path field(s) checked\n' 5
 
 finish
