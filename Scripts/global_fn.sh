@@ -180,3 +180,34 @@ print_log() {
         cat
     fi
 }
+
+# Runs each migration in "$1" missing from the record in "$2", in version order,
+# and records the ones that exit zero. Migrations must therefore be safe to run
+# on a machine that has no record yet, which replays all of them once.
+run_pending_migrations() {
+    local migrationDir="$1"
+    local stateFile="$2"
+    local migrationFile
+    local applied=0
+
+    [ -d "${migrationDir}" ] || return 0
+    find "${migrationDir}" -maxdepth 1 -type f | grep -q . || return 0
+
+    mkdir -p "$(dirname "${stateFile}")"
+    [ -f "${stateFile}" ] || : >"${stateFile}"
+
+    while read -r migrationFile; do
+        [ -n "${migrationFile}" ] || continue
+        grep -qxF "${migrationFile}" "${stateFile}" && continue
+        echo "Found migration file: ${migrationFile}"
+        if sh "${migrationDir}/${migrationFile}"; then
+            printf '%s\n' "${migrationFile}" >>"${stateFile}"
+            applied=$((applied + 1))
+        else
+            print_log -warn "Migration" "Failed to execute ${migrationFile}"
+        fi
+    done < <(find "${migrationDir}" -maxdepth 1 -type f -printf '%f\n' | sort -V)
+
+    [ "${applied}" -gt 0 ] || echo "No outstanding migrations in ${migrationDir}."
+    return 0
+}
