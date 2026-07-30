@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # The Lua release replaced a set of shell helpers with Lua and Python
 # equivalents. Deployment overwrites files but does not delete the ones that
