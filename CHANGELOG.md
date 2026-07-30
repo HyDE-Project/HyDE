@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Docs: the keybinding reference describes the Lua configuration instead of the removed `userprefs.conf`, documents binds that were missing from it, corrects four descriptions that no longer matched the code, and explains why an override needs the original bind's flags
 - Docs: the shipped `hypr/hyprland.lua` stub shows a working bind instead of pointing at a wiki that does not exist
 - Docs: the keybinding links in the German, Arabic, French, Dutch and Turkish readmes resolve again
+- Core: every migration that has not been applied yet now runs in version order and is recorded, instead of only the newest one running and retiring the rest unseen
 - Core: app launchers no longer show a false error when an unrelated `DEBUG` variable contains a non-boolean value such as `release`
 - Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
 - Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad
