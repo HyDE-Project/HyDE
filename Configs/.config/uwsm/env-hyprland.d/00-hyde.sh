@@ -25,7 +25,7 @@ if [ -z "$HYDE_ACTIVATED" ]; then
     unset _hyde_activate
 fi
 
-HYPRLAND_CONFIG="${HYPRLAND_CONFIG:-${XDG_DATA_HOME:-$HOME/.local/share}/hypr/hyprland.lua}"
+HYPRLAND_CONFIG="${HYPRLAND_CONFIG:-${XDG_DATA_HOME:-$HOME/.local/share}/hypr/hyde.lua}"
 HYPRLAND_NO_SD_NOTIFY=1 # If systemd, disables the sd_notify calls.
 HYPRLAND_NO_SD_VARS=1   # Disables management of variables in systemd and dbus activation environments.
 
