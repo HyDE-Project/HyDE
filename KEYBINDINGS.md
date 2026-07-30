@@ -20,6 +20,7 @@ Multi-language KEYBINDINGS support
 [![中文](https://img.shields.io/badge/lang-中文-orange.svg)](Source/assets/keybinds/KEYBINDINGS.zh.md)
 [![fr](https://img.shields.io/badge/lang-fr-blue.svg)](Source/assets/keybinds/KEYBINDINGS.fr.md)
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](Source/assets/keybinds/KEYBINDINGS.ar.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-brightgreen.svg)](Source/assets/keybinds/KEYBINDINGS.pt-br.md)
 
 <div align="center">
 
@@ -59,19 +60,21 @@ Here are all HyDE specific keybindings listed.
 
 ## <a id=window-management></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Window%20Management" width="450"/>
 
-| Keys                                                 | Action                          |
-| :--------------------------------------------------- | :------------------------------ |
-| <kbd>SUPER</kbd> + <kbd>Q</kbd>                      | close focused window            |
-| <kbd>ALT</kbd> + <kbd>F4</kbd>                       | close focused window            |
-| <kbd>SUPER</kbd> + <kbd>Delete</kbd>                 | kill hyprland session           |
-| <kbd>SUPER</kbd> + <kbd>W</kbd>                      | toggle float                    |
-| <kbd>SUPER</kbd> + <kbd>G</kbd>                      | toggle group                    |
-| <kbd>Shift</kbd> + <kbd>F11</kbd>                    | toggle fullscreen               |
-| <kbd>SUPER</kbd> + <kbd>L</kbd>                      | lock screen                     |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>F</kbd>   | toggle pin on focused window    |
-| <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Delete</kbd> | logout menu                     |
-| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>B</kbd>    | toggle waybar and reload config |
-| <kbd>SUPER</kbd> + <kbd>J</kbd>                      | toggle split                    |
+| Keys                                                 | Action                       |
+| :--------------------------------------------------- | :--------------------------- |
+| <kbd>SUPER</kbd> + <kbd>Q</kbd>                      | close focused window         |
+| <kbd>ALT</kbd> + <kbd>F4</kbd>                       | close focused window         |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>F4</kbd>    | kill focused window          |
+| <kbd>SUPER</kbd> + <kbd>Delete</kbd>                 | exit hyprland session        |
+| <kbd>SUPER</kbd> + <kbd>W</kbd>                      | toggle float                 |
+| <kbd>SUPER</kbd> + <kbd>G</kbd>                      | toggle group                 |
+| <kbd>ALT</kbd> + <kbd>P</kbd>                        | toggle pseudotile            |
+| <kbd>Shift</kbd> + <kbd>F11</kbd>                    | cycle fullscreen states      |
+| <kbd>SUPER</kbd> + <kbd>L</kbd>                      | lock screen                  |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>F</kbd>   | toggle pin on focused window |
+| <kbd>ALT</kbd> + <kbd>CTRL</kbd> + <kbd>Delete</kbd> | logout menu                  |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>B</kbd>    | toggle waybar                |
+| <kbd>SUPER</kbd> + <kbd>J</kbd>                      | toggle split                 |
 
 ### Group Navigation
 
@@ -88,7 +91,15 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>Right</kbd> | focus right |
 | <kbd>SUPER</kbd> + <kbd>Up</kbd>    | focus up    |
 | <kbd>SUPER</kbd> + <kbd>Down</kbd>  | focus down  |
-| <kbd>ALT</kbd> + <kbd>Tab</kbd>     | cycle focus |
+
+### Alt-tab switcher
+
+Holding <kbd>ALT</kbd> keeps the switcher open; releasing it applies the selection.
+
+| Keys                                               | Action          |
+| :------------------------------------------------- | :-------------- |
+| <kbd>ALT</kbd> + <kbd>Tab</kbd>                    | next window     |
+| <kbd>ALT</kbd> + <kbd>SHIFT</kbd> + <kbd>Tab</kbd> | previous window |
 
 ### Resize Active Window
 
@@ -136,17 +147,19 @@ Here are all HyDE specific keybindings listed.
 
 ### Rofi menus
 
-| Keys                                               | Action               |
-| :------------------------------------------------- | :------------------- |
-| <kbd>SUPER</kbd> + <kbd>A</kbd>                    | application finder   |
-| <kbd>SUPER</kbd> + <kbd>TAB</kbd>                  | window switcher      |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>E</kbd> | file finder          |
-| <kbd>SUPER</kbd> + <kbd>slash</kbd>                | keybindings hint     |
-| <kbd>SUPER</kbd> + <kbd>comma</kbd>                | emoji picker         |
-| <kbd>SUPER</kbd> + <kbd>period</kbd>               | glyph picker         |
-| <kbd>SUPER</kbd> + <kbd>V</kbd>                    | clipboard            |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>V</kbd> | clipboard manager    |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>A</kbd> | select rofi launcher |
+| Keys                                                   | Action               |
+| :----------------------------------------------------- | :------------------- |
+| <kbd>SUPER</kbd> + <kbd>A</kbd>                        | application finder   |
+| <kbd>SUPER</kbd> + <kbd>TAB</kbd>                      | window switcher      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>E</kbd>     | file finder          |
+| <kbd>SUPER</kbd> + <kbd>slash</kbd>                    | keybindings hint     |
+| <kbd>SUPER</kbd> + <kbd>comma</kbd>                    | emoji picker         |
+| <kbd>SUPER</kbd> + <kbd>period</kbd>                   | glyph picker         |
+| <kbd>SUPER</kbd> + <kbd>V</kbd>                        | clipboard            |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>V</kbd>     | clipboard manager    |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>A</kbd>     | select rofi launcher |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>K</kbd>     | calculator           |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>slash</kbd> | web search           |
 
 <!-- ## <a id="hardware-controls">Hardware Controls</a> -->
 
@@ -166,12 +179,13 @@ Here are all HyDE specific keybindings listed.
 
 ### Media
 
-| Keys                                        | Action         |
-| :------------------------------------------ | :------------- |
-| <kbd>None</kbd> + <kbd>XF86AudioPlay</kbd>  | play media     |
-| <kbd>None</kbd> + <kbd>XF86AudioPause</kbd> | pause media    |
-| <kbd>None</kbd> + <kbd>XF86AudioNext</kbd>  | next media     |
-| <kbd>None</kbd> + <kbd>XF86AudioPrev</kbd>  | previous media |
+| Keys                                              | Action                     |
+| :------------------------------------------------ | :------------------------- |
+| <kbd>None</kbd> + <kbd>XF86AudioPlay</kbd>        | play media                 |
+| <kbd>None</kbd> + <kbd>XF86AudioPause</kbd>       | pause media                |
+| <kbd>None</kbd> + <kbd>XF86AudioNext</kbd>        | next media                 |
+| <kbd>None</kbd> + <kbd>XF86AudioPrev</kbd>        | previous media             |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>M</kbd> | un/mute the focused window |
 
 ### Brightness
 
@@ -184,10 +198,11 @@ Here are all HyDE specific keybindings listed.
 
 ## <a id=utilities></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Utilities" width="450"/>
 
-| Keys                                             | Action                 |
-| :----------------------------------------------- | :--------------------- |
-| <kbd>SUPER</kbd> + <kbd>K</kbd>                  | toggle keyboard layout |
-| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>G</kbd> | game mode              |
+| Keys                                               | Action                 |
+| :------------------------------------------------- | :--------------------- |
+| <kbd>SUPER</kbd> + <kbd>K</kbd>                    | toggle keyboard layout |
+| <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>G</kbd>   | game mode              |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>G</kbd> | game launcher          |
 
 ### Screen Capture
 
@@ -198,6 +213,7 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>P</kbd>  | freeze and snip screen |
 | <kbd>SUPER</kbd> + <kbd>ALT</kbd> + <kbd>P</kbd>   | print monitor          |
 | <kbd>None</kbd> + <kbd>Print</kbd>                 | print all monitors     |
+| <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>S</kbd>  | scan text on screen    |
 
 <!-- ## <a id=theming-and-wallpaper>Theming and Wallpaper</a> -->
 
@@ -233,9 +249,13 @@ Here are all HyDE specific keybindings listed.
 | <kbd>SUPER</kbd> + <kbd>8</kbd>                      | navigate to workspace 8                 |
 | <kbd>SUPER</kbd> + <kbd>9</kbd>                      | navigate to workspace 9                 |
 | <kbd>SUPER</kbd> + <kbd>0</kbd>                      | navigate to workspace 10                |
+| <kbd>SUPER</kbd> + <kbd>KP_1</kbd> … <kbd>KP_0</kbd> | navigate to workspaces 11-20            |
 | <kbd>SUPER</kbd> + <kbd>CTRL</kbd> + <kbd>Down</kbd> | navigate to the nearest empty workspace |
 | <kbd>SUPER</kbd> + <kbd>mouse_down</kbd>             | next workspace                          |
 | <kbd>SUPER</kbd> + <kbd>mouse_up</kbd>               | previous workspace                      |
+
+The numpad binds work with Num Lock on or off: each key is bound under both
+keysyms it can emit.
 
 #### Relative workspace
 
@@ -269,18 +289,19 @@ Here are all HyDE specific keybindings listed.
 
 ### Move window to workspace
 
-| Keys                                               | Action               |
-| :------------------------------------------------- | :------------------- |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>1</kbd> | move to workspace 1  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>2</kbd> | move to workspace 2  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>3</kbd> | move to workspace 3  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>4</kbd> | move to workspace 4  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>5</kbd> | move to workspace 5  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>6</kbd> | move to workspace 6  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>7</kbd> | move to workspace 7  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>8</kbd> | move to workspace 8  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>9</kbd> | move to workspace 9  |
-| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>0</kbd> | move to workspace 10 |
+| Keys                                                                    | Action                   |
+| :---------------------------------------------------------------------- | :----------------------- |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>1</kbd>                      | move to workspace 1      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>2</kbd>                      | move to workspace 2      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>3</kbd>                      | move to workspace 3      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>4</kbd>                      | move to workspace 4      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>5</kbd>                      | move to workspace 5      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>6</kbd>                      | move to workspace 6      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>7</kbd>                      | move to workspace 7      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>8</kbd>                      | move to workspace 8      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>9</kbd>                      | move to workspace 9      |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>0</kbd>                      | move to workspace 10     |
+| <kbd>SUPER</kbd> + <kbd>SHIFT</kbd> + <kbd>KP_1</kbd> … <kbd>KP_0</kbd> | move to workspaces 11-20 |
 
 | Keys                                                                   | Action                                     |
 | :--------------------------------------------------------------------- | :----------------------------------------- |
@@ -289,26 +310,77 @@ Here are all HyDE specific keybindings listed.
 
 ## <a id="custom-keybindings"></a><img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=23&pause=1000&color=CCA9DD&width=435&lines=Custom%20Keybindings" width="450"/>
 
-You can define your own keybindings by editing your preferences file at:
+Your own keybindings go in:
 
 ```bash
-~/.config/hypr/userprefs.conf
+~/.config/hypr/hyprland.lua
 ```
 
-For example, to create a keybinding that launches the **HyDE Game Launcher**, add the following line:
+That file is yours — updates never overwrite it. HyDE's own binds live in
+`~/.local/share/hypr/lua/key_binds.lua`, which **is** overwritten on every
+update, so edits there are lost. Your file loads after HyDE's binds, which is
+why anything you write there wins. The one thing loaded after it is your
+selected workflow, which can override compositor settings.
 
-```ini
-bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
+For example, to bind the **HyDE Game Launcher** to <kbd>SUPER</kbd> + <kbd>Space</kbd>:
+
+```lua
+hl.bind("SUPER + SPACE", hl.dsp.exec_cmd(hyde.sh.gamelauncher()), {
+    description = "[Utilities] game launcher",
+})
 ```
 
-This will bind the **Game Launcher** to <kbd>SUPER</kbd> + <kbd>Space</kbd>.
-You can replace `SPACE` with any other key you prefer.
+Add a `description` in the `[Group|Subgroup] text` shape and your bind shows up
+in the keybinding hint under that group. Without one it appears as a raw
+dispatcher call under "Misc".
 
-The `gamelauncher.sh` script is included by default and lives at:
+`hyde.sh.<name>()` builds a `hyde-shell` command — here `hyde-shell
+gamelauncher`, the same thing you can run from a terminal. Some names are
+shortcuts for something longer: `hyde.sh.screenshot.snip()` is `hyde-shell
+screenshot s`, `hyde.sh.menu.binds()` is `hyde-shell keybinds_hint`. The full
+list is `hyde.command_map` in `~/.local/share/hypr/lua/hyde/dispatcher.lua`.
 
-```bash
-~/.local/lib/hyde/gamelauncher.sh
+### Rebinding something HyDE already uses
+
+Bind the same combination again and yours replaces it — but **copy the flags
+too**. A bind counts as the same one only when its flags match, and
+`description` is not a flag. Thirty-three of HyDE's binds carry one:
+
+| Flags                                          | Binds                                                                                    |
+| :--------------------------------------------- | :--------------------------------------------------------------------------------------- |
+| `locked`                                       | media keys, mute, keyboard layout, game mode, and every screen-capture bind              |
+| `locked` and `repeating`                       | volume up and down, brightness up and down — on both the function row and the media keys |
+| `repeating`                                    | resize active window, move active window                                                 |
+| `transparent`, and `release` on the apply step | the alt-tab switcher                                                                     |
+
+Miss one and you end up with **both** binds firing on that combination.
+
+So to move the mute key from <kbd>F10</kbd> to <kbd>F9</kbd>, carry `locked`
+across:
+
+```lua
+hl.unbind("F10")
+hl.bind("F9", hl.dsp.exec_cmd(hyde.sh.volumecontrol("-o", "m")), {
+    locked = true,
+    description = "[Hardware Controls|Audio] un/mute output",
+})
 ```
+
+`hl.unbind` takes the combination exactly as the bind was registered, with
+single spaces around each `+`. Copy the spelling from `key_binds.lua` rather
+than guessing: several binds are written there with `CONTROL` where you might
+expect `CTRL`. Rebinding is the safer route — HyDE replaces the old bind for
+you, so you never have to match a string.
+
+### Seeing your live keybindings
+
+<kbd>SUPER</kbd> + <kbd>/</kbd> reads the binds from the compositor itself, so
+it shows your own alongside HyDE's and reflects whatever replaced a default.
+This table describes the shipped defaults only.
+
+The list is cached, and the cache is refreshed when you close it — so right
+after adding a bind, the first press may still show the previous list. Press it
+twice, or run `hyde-shell keybinds_hint --reload`.
 
 <!--
 <div align="right">
@@ -327,5 +399,5 @@ The `gamelauncher.sh` script is included by default and lives at:
 </div>
 
 <div align="right">
-  <sub>Last edited on: 02/01/2025<span id="last-edited"></span></sub>
+  <sub>Last edited on: 30/07/2026<span id="last-edited"></span></sub>
 </div>
