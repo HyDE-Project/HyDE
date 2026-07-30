@@ -26,7 +26,7 @@ Multi-language README support
   <a href="#updaten"><kbd> <br> Updaten <br> </kbd></a>&ensp;&ensp;
   <a href="#thema's"><kbd> <br> Thema's <br> </kbd></a>&ensp;&ensp;
   <a href="#stijlen"><kbd> <br> Stijlen <br> </kbd></a>&ensp;&ensp;
-  <a href="KEYBINDINGS.nl.md"><kbd> <br> Toetscombinaties <br> </kbd></a>&ensp;&ensp;
+  <a href="../assets/keybinds/KEYBINDINGS.nl.md"><kbd> <br> Toetscombinaties <br> </kbd></a>&ensp;&ensp;
   <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> Youtube <br> </kbd></a>&ensp;&ensp;
   <a href="https://hydeproject.pages.dev/"><kbd> <br> Wiki <br> </kbd></a>&ensp;&ensp;
   <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> Discord <br> </kbd></a>

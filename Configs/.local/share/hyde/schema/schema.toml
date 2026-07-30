@@ -787,6 +787,11 @@ type = "array"
 [properties.sysmonitor.properties.commands.items]
 type = "string"
 
+[properties.sysmonitor.properties.terminal]
+default = ""
+description = "Terminal used to launch a console monitor. Falls back to TERMINAL."
+type = "string"
+
 [properties.hyprlock]
 description = "hyprlock configuration."
 type = "object"

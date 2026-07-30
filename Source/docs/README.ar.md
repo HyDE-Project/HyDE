@@ -28,7 +28,7 @@ Multi-language README support
 <a href="#التحديث"><kbd> <br> تحديث <br> </kbd></a>&ensp;&ensp;
 <a href="#السمات"><kbd> <br> السمات <br> </kbd></a>&ensp;&ensp;
 <a href="#الأنماط"><kbd> <br> الأنماط <br> </kbd></a>&ensp;&ensp;
-<a href="KEYBINDINGS.ar.md"><kbd> <br> المفاتيح <br> </kbd></a>&ensp;&ensp;
+<a href="../assets/keybinds/KEYBINDINGS.ar.md"><kbd> <br> المفاتيح <br> </kbd></a>&ensp;&ensp;
 <a href="https://www.youtube.com/watch?v=2rWqdKU1vu8&list=PLt8rU_ebLsc5yEHUVsAQTqokIBMtx3RFY&index=1"><kbd> <br> يوتيوب <br> </kbd></a>&ensp;&ensp;
 <a href="https://hydeproject.pages.dev/"><kbd> <br> ويكي <br> </kbd></a>&ensp;&ensp;
 <a href="https://discord.gg/qWehcFJxPa"><kbd> <br> ديسكورد <br> </kbd></a>
