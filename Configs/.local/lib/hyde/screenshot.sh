@@ -13,11 +13,15 @@ USAGE() {
 
 	Usage: $(basename "$0") [option]
 	Options:
-		p     Print all outputs
-		s     Select area or window to screenshot
-		sf    Select area or window with frozen screen
-		m     Screenshot focused monitor
-		sc    Use tesseract to scan image, then add to clipboard
+		p             Print all outputs
+		s             Select area or window to screenshot
+		sf            Select area or window with frozen screen
+		m             Screenshot focused monitor
+		sc            Use tesseract to scan image, then add to clipboard
+
+    Flags:
+	    --no-notify  Disable the save notification
+        --help       Show this help message
 
 USAGE
 }
@@ -34,6 +38,28 @@ post_cmd() {
         eval "$cmd"
     done
 }
+
+SCREENSHOT_NOTIFY=${SCREENSHOT_NOTIFY:-true}
+SCREENSHOT_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --no-notify)
+        SCREENSHOT_NOTIFY=false
+        shift
+        ;;
+    -h | --help)
+        USAGE
+        exit 0
+        ;;
+    *)
+        SCREENSHOT_ARGS+=("$1")
+        shift
+        ;;
+    esac
+done
+
+set -- "${SCREENSHOT_ARGS[@]}"
 
 temp_screenshot=${XDG_RUNTIME_DIR:-/tmp}/hyde_screenshot.png
 if [ -z "$XDG_PICTURES_DIR" ]; then
@@ -64,13 +90,27 @@ fi
 
 [[ -n ${SCREENSHOT_ANNOTATION_ARGS[*]} ]] && annotation_args+=("${SCREENSHOT_ANNOTATION_ARGS[@]}")
 
+run_annotation_tool() {
+    if [[ $annotation_tool == "satty" ]]; then
+        GSK_RENDERER="${GSK_RENDERER:-gl}" "$annotation_tool" "${annotation_args[@]}"
+    else
+        "$annotation_tool" "${annotation_args[@]}"
+    fi
+}
+
 take_screenshot() {
     local mode=$1
     shift
     local extra_args=("$@")
-    if "$LIB_DIR/hyde/screenshot/grimblast" "${extra_args[@]}" copysave "$mode" "$temp_screenshot"; then
+    local target_file="$temp_screenshot"
+
+    [[ ${SCREENSHOT_ANNOTATION_ENABLED} == false ]] && target_file="$save_dir/$save_file"
+
+    command=("$LIB_DIR/hyde/screenshot/grimblast" "${extra_args[@]}" "copysave" "${mode}" "${target_file}")
+    print_log -g "Executing screenshot command: ${command[*]}"
+    if eval "${command[*]}"; then
         [[ ${SCREENSHOT_ANNOTATION_ENABLED} == false ]] && return 0
-        if ! "$annotation_tool" "${annotation_args[@]}"; then
+        if ! run_annotation_tool; then
             send_notifs -r 9 -a "HyDE Alert" "Screenshot Error" "Failed to open annotation tool"
             return 1
         fi
@@ -96,6 +136,7 @@ ocr_screenshot() {
         send_notifs -a "HyDE Alert" "OCR: screenshot error" -e -i "dialog-error"
         return 1
     fi
+    exit 0
 }
 qr_screenshot() {
     local mode=$1
@@ -118,16 +159,17 @@ qr_screenshot() {
 pre_cmd
 
 case $1 in
-p) take_screenshot "screen" ;;
-s) take_screenshot "area" ;;
-sf) take_screenshot "area" "--freeze" ;;
-m) take_screenshot "output" ;;
-sc) ocr_screenshot "area" "--freeze" ;;
-sq) qr_screenshot "area" "--freeze" ;;
+p | printscreen) take_screenshot "screen" ;;
+s | snip) take_screenshot "area" ;;
+sf | snapfreeze) take_screenshot "area" "--freeze" ;;
+m | monitor) take_screenshot "output" ;;
+sc | scan) ocr_screenshot "area" "--freeze" ;;
+sq | qr) qr_screenshot "area" "--freeze" ;;
 *) USAGE ;;
 esac
 
 [ -f "$temp_screenshot" ] && rm "$temp_screenshot"
-if [ -f "$save_dir/$save_file" ]; then
+if [ -f "$save_dir/$save_file" ] && [[ "${SCREENSHOT_NOTIFY}" != false ]]; then
     send_notifs -r 9 -a "HyDE Alert" -i "$save_dir/$save_file" "saved in $save_dir"
+    exit 0
 fi

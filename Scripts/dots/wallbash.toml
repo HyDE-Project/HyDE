@@ -1,0 +1,8 @@
+[wallbash-gtk]
+source = "https://github.com/HyDE-Project/wallbash-gtk/releases/download/latest/Wallbash-Gtk.tar.xz"
+version = "0.1.0"
+target_root = "${XDG_DATA_HOME}/themes/Wallbash-Gtk"
+paths = "."
+owner = "The Hyde Project"
+description = "Wallbash theme for GTK"
+action = "sync"

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-HyDE's LuaJIT environment manager
+HyDE's system Lua environment manager using system luarocks
 usage: lua_env.py [command] <options>
 
+
 Commands:
-  create     Create the LuaJIT environment
-  destroy    Destroy the LuaJIT environment
-  rebuild    Rebuild the LuaJIT environment (destroy + create)
-    sync       Save currently installed user rocks for later restore
-  install    Install a luarocks package
-  uninstall  Uninstall a luarocks package
-  luarocks   Run a raw luarocks command
-  help       Show this help message
+    create     Ensure system luarocks is available and install bootstrap packages
+    destroy    Remove the Hyde Lua rocks tree
+    rebuild    Recreate the Hyde Lua rocks tree and reinstall packages
+    sync       Reinstall bootstrap packages and snapshot installed rocks
+    install    Install a luarocks package
+    uninstall  Uninstall a luarocks package
+    luarocks   Run a raw luarocks command
+    help       Show this help message
 """
 import os
 import sys
@@ -22,23 +23,30 @@ import json
 
 XDG_STATE_HOME = os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state"))
 HYDE_STATE_DIR = os.path.join(XDG_STATE_HOME, "hyde")
-LUA_ENV_DIR = os.path.join(XDG_STATE_HOME, "hyde", "lua_env")
-ACTIVATE_SCRIPT = os.path.join(LUA_ENV_DIR, "bin", "activate")
-LUAROCKS_BIN = os.path.join(LUA_ENV_DIR, "bin", "luarocks")
-HEREROCKS_ARGS = ["-r", "@v3.13.0", "-j", "@v2.1"]
+LUA_ENV_DIR = os.path.join(HYDE_STATE_DIR, "lua_env")
+LUA_BIN = os.environ.get("LUA") or shutil.which("lua") or shutil.which("lua5.5") or shutil.which("lua5.4") or shutil.which("lua5.3")
+LUAROCKS_BIN = os.environ.get("LUAROCKS") or shutil.which("luarocks") or shutil.which("luarocks-5.5") or shutil.which("luarocks-5.4") or shutil.which("luarocks-5.3")
 ROCKS_SNAPSHOT = os.path.join(HYDE_STATE_DIR, "luarocks_env.json")
 BOOTSTRAP_CONFIG = os.path.join(os.path.dirname(__file__), "lua_env.json")
+LUA_ENV_ARGS = ["--tree", LUA_ENV_DIR]
 
 
 
 def run(cmd, check=True, env=None):
-    print(f"[lua_env] $ {' '.join(cmd)}")
-    result = subprocess.run(cmd, check=check, env=env)
+    result = subprocess.run(cmd, check=False, env=env, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"[lua_env] $ {' '.join(cmd)}")
+        if result.stdout:
+            print(result.stdout, end="")
+        if result.stderr:
+            print(result.stderr, end="", file=sys.stderr)
+        if check:
+            raise subprocess.CalledProcessError(result.returncode, cmd, output=result.stdout, stderr=result.stderr)
     return result
 
 
 def ensure_state_dir():
-    os.makedirs(HYDE_STATE_DIR, exist_ok=True)
+    os.makedirs(LUA_ENV_DIR, exist_ok=True)
 
 
 def load_bootstrap_config():
@@ -140,11 +148,11 @@ def save_saved_rocks(rocks):
 
 
 def snapshot_installed_rocks():
-    if not os.path.exists(LUAROCKS_BIN):
+    if not LUAROCKS_BIN:
         return []
 
     result = subprocess.run(
-        [LUAROCKS_BIN, "list", "--porcelain"],
+        [LUAROCKS_BIN] + LUA_ENV_ARGS + ["list", "--porcelain"],
         check=True,
         capture_output=True,
         text=True,
@@ -155,7 +163,7 @@ def snapshot_installed_rocks():
     return rocks
 
 
-def restore_saved_rocks():
+def restore_saved_rocks(force=False):
     rocks = load_saved_rocks()
 
     if not rocks:
@@ -163,76 +171,95 @@ def restore_saved_rocks():
 
     print(f"Restoring {len(rocks)} saved Lua rock(s).")
     for rock in rocks:
-        run([LUAROCKS_BIN, "install", rock["name"], rock["version"]])
+        install_rock(rock["name"], rock["version"], force=force)
 
 
-def create_env():
-    if os.path.exists(LUA_ENV_DIR):
-        print(f"LuaJIT environment already exists at {LUA_ENV_DIR}")
-        return
-    run(["python3", "-m", "hererocks", LUA_ENV_DIR] + HEREROCKS_ARGS)
-    print("LuaJIT environment created.")
+def ensure_system_tools():
+    if not LUA_BIN:
+        print("[lua_env] error: system Lua interpreter not found. Install lua or set LUA environment variable.")
+        sys.exit(1)
+    if not LUAROCKS_BIN:
+        print("[lua_env] error: system luarocks not found. Install luarocks or set LUAROCKS environment variable.")
+        sys.exit(1)
+
+
+def install_rock(name, version=None, force=False):
+    args = [LUAROCKS_BIN] + LUA_ENV_ARGS + ["install", name]
+    if version:
+        args.append(version)
+    if force:
+        args.append("--force")
+
+    action = "Installing"
+    if force:
+        action = "Reinstalling"
+    if version:
+        print(f"[lua_env] {action} {name} {version}")
+    else:
+        print(f"[lua_env] {action} {name}")
+
+    run(args)
+
+
+def create_env(force=False):
+    ensure_system_tools()
+    print(f"[lua_env] Using system Lua: {LUA_BIN}")
+    print(f"[lua_env] Using system luarocks: {LUAROCKS_BIN}")
+    print("System luarocks is active; no local LuaJIT environment is created.")
 
     bootstrap_install, _ = load_bootstrap_config()
+    ensure_state_dir()
     for name, version in bootstrap_install:
-        if version:
-            run([LUAROCKS_BIN, "install", name, version])
-        else:
-            run([LUAROCKS_BIN, "install", name])
+        install_rock(name, version, force=force)
 
-    restore_saved_rocks()
+    restore_saved_rocks(force=force)
 
 
 def destroy_env():
     if os.path.exists(LUA_ENV_DIR):
         shutil.rmtree(LUA_ENV_DIR)
-        print("LuaJIT environment removed.")
+        print(f"Removed Lua rocks tree at {LUA_ENV_DIR}.")
     else:
-        print(f"LuaJIT environment not found at {LUA_ENV_DIR}")
+        print(f"Lua rocks tree not found at {LUA_ENV_DIR}.")
 
 
 def rebuild_env():
+    ensure_system_tools()
     snapshot_installed_rocks()
     destroy_env()
+    print("Rebuild: recreating the Lua rocks tree and reinstalling bootstrap packages.")
     create_env()
 
 
 def sync_env():
-    if not os.path.exists(LUAROCKS_BIN):
-        print("luarocks not found. Run create or rebuild first.")
-        sys.exit(1)
+    ensure_system_tools()
+    ensure_state_dir()
     # Reinstall all bootstrap_install packages to latest or pinned version
     bootstrap_install, _ = load_bootstrap_config()
     for name, version in bootstrap_install:
-        if version:
-            run([LUAROCKS_BIN, "install", name, version, "--force"])
-        else:
-            run([LUAROCKS_BIN, "install", name, "--force"])
+        install_rock(name, version, force=True)
     # Now snapshot only user-installed rocks
     snapshot_installed_rocks()
 
 
 def install_pkg(pkg):
-    if not os.path.exists(LUAROCKS_BIN):
-        print("luarocks not found. Run create or rebuild first.")
-        sys.exit(1)
-    run([LUAROCKS_BIN, "install", pkg])
+    ensure_system_tools()
+    ensure_state_dir()
+    run([LUAROCKS_BIN] + LUA_ENV_ARGS + ["install", pkg])
     snapshot_installed_rocks()
 
 
 def uninstall_pkg(pkg):
-    if not os.path.exists(LUAROCKS_BIN):
-        print("luarocks not found. Run create or rebuild first.")
-        sys.exit(1)
-    run([LUAROCKS_BIN, "remove", pkg])
+    ensure_system_tools()
+    ensure_state_dir()
+    run([LUAROCKS_BIN] + LUA_ENV_ARGS + ["remove", pkg])
     snapshot_installed_rocks()
 
 
 def luarocks_cmd(args):
-    if not os.path.exists(LUAROCKS_BIN):
-        print("luarocks not found. Run create or rebuild first.")
-        sys.exit(1)
-    run([LUAROCKS_BIN] + args)
+    ensure_system_tools()
+    ensure_state_dir()
+    run([LUAROCKS_BIN] + LUA_ENV_ARGS + args)
 
 
 def usage():
@@ -243,14 +270,14 @@ def main():
     parser = argparse.ArgumentParser(
         prog="lua_env",
         usage="lua_env.py [command] <options>",
-        description="HyDE's LuaJIT environment manager",
+        description="HyDE's system Lua environment manager",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     subparsers = parser.add_subparsers(dest="command", metavar="[command]")
-    subparsers.add_parser("create", help="Create the LuaJIT environment")
-    subparsers.add_parser("destroy", help="Destroy the LuaJIT environment")
-    subparsers.add_parser("rebuild", help="Rebuild the LuaJIT environment (destroy + create)")
-    subparsers.add_parser("sync", help="Save currently installed user rocks for later restore")
+    subparsers.add_parser("create", help="Ensure system luarocks is available and install bootstrap packages")
+    subparsers.add_parser("destroy", help="Remove the Hyde Lua rocks tree")
+    subparsers.add_parser("rebuild", help="Recreate the Hyde Lua rocks tree and reinstall packages")
+    subparsers.add_parser("sync", help="Reinstall bootstrap packages and snapshot installed rocks")
     install_p = subparsers.add_parser("install", help="Install a luarocks package")
     install_p.add_argument("package", metavar="package")
     uninstall_p = subparsers.add_parser("uninstall", help="Uninstall a luarocks package")

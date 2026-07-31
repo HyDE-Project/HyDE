@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import os
+import shutil
+from contextlib import contextmanager
 from pathlib import Path
-from tempfile import TemporaryDirectory
-from typing import Sequence
+from tempfile import TemporaryDirectory, mktemp
+from typing import Iterator, Sequence
 
 AUR_HELPERS = ("paru", "paru-bin", "yay", "yay-bin")
 PackageEntry = tuple[str, str | None, str | None, str | None]
@@ -33,7 +36,7 @@ def remove(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
 
 
 def upgrade(ctx, no_confirm: bool = False) -> None:
-    args = ["sudo", "pacman", "-Su"]
+    args = ["sudo", "pacman", "-Syu"]
     if no_confirm:
         args.append("--noconfirm")
     ctx.run(args)
@@ -88,12 +91,42 @@ def file_query(ctx, target: str) -> None:
 
 
 def count_updates(ctx) -> int:
-    output = ctx.capture(["pacman", "-Qu"], check=False)
-    return sum(1 for line in output.splitlines() if line.strip())
+    with _checkupdates_env() as env:
+        output = ctx.capture(["checkupdates"], check=False, env=env)
+        return sum(1 for line in output.splitlines() if line.strip())
 
 
 def list_updates(ctx) -> None:
-    ctx.run(["pacman", "-Qu"], check=False)
+    with _checkupdates_env() as env:
+        ctx.run(["checkupdates"], check=False, env=env)
+
+
+@contextmanager
+def _checkupdates_env() -> Iterator[dict[str, str]]:
+    temp_db = mktemp(
+        dir=os.environ.get("XDG_RUNTIME_DIR", "/tmp"),
+        prefix="checkupdates_db_",
+    )
+    env = os.environ.copy()
+    env["CHECKUPDATES_DB"] = temp_db
+    try:
+        yield env
+    finally:
+        _cleanup_checkupdates_db(temp_db)
+
+
+def _cleanup_checkupdates_db(path: str) -> None:
+    try:
+        p = Path(path)
+    except (TypeError, ValueError):
+        return
+    try:
+        if p.is_dir() and not p.is_symlink():
+            shutil.rmtree(p)
+        elif p.exists() or p.is_symlink():
+            p.unlink()
+    except FileNotFoundError:
+        pass
 
 
 def _install_aur_helper(ctx, helper: str, no_confirm: bool = False) -> None:
@@ -103,7 +136,7 @@ def _install_aur_helper(ctx, helper: str, no_confirm: bool = False) -> None:
         repo_path = Path(tmp) / helper
         ctx.run(["git", "clone", f"https://aur.archlinux.org/{helper}.git", str(repo_path)])
         mk_args = ["makepkg", "-si"]
-        if no_confirm or getattr(ctx, 'no_confirm', False):
+        if no_confirm or getattr(ctx, "no_confirm", False):
             mk_args.append("--noconfirm")
         ctx.run(mk_args, cwd=repo_path)
 

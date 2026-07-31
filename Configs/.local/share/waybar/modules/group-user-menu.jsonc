@@ -1,0 +1,15 @@
+{
+    "group/user-menu": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": "0.5",
+            "children-class": "user-menu-drawer",
+            "transition-left-to-right": false,
+            "click-to-reveal": false
+        },
+        "modules": [
+            "user",
+            "custom/hyde-menu"
+        ]
+    }
+}

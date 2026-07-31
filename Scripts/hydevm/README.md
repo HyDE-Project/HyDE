@@ -11,6 +11,7 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
   - [First-Time Setup](#first-time-setup)
   - [Usage](#usage)
     - [Basic Commands](#basic-commands)
+    - [Checkpoint Workflow (Save/Restore)](#checkpoint-workflow-saverestore)
     - [Environment Variables](#environment-variables)
   - [VM Details](#vm-details)
   - [Troubleshooting](#troubleshooting)
@@ -49,6 +50,8 @@ HydeVM is a streamlined development tool that automatically sets up HyDE in a vi
 - **Branch Testing**: Easily test any HyDE branch or commit hash
 - **Smart Caching**: Creates cached snapshots for faster subsequent runs (uses XDG cache directory)
 - **Optional Persistence**: Choose whether changes should be saved or discarded
+- **Checkpoint (Save/Restore)**: Save and restore full VM state (disk + RAM) at any point using QEMU's internal snapshot mechanism
+- **QEMU Monitor Protocol**: Uses QMP over a Unix socket for live VM introspection and control
 - **OS Detection**: Automatically detects your OS and handles dependencies appropriately
 
 ## Quick Start
@@ -107,6 +110,16 @@ hydevm abc123def
 hydevm --persist
 hydevm --persist dev-branch
 
+# Run headless (SSH-only, no display window)
+hydevm --ssh-only
+hydevm --ssh-only --persist dev-branch
+
+# Clone an existing snapshot as a new branch for testing
+hydevm --clone master my-test-branch
+
+# Clone and run headless
+hydevm --ssh-only --clone master my-test-branch
+
 # List cached snapshots
 hydevm --list
 
@@ -119,6 +132,46 @@ hydevm --check-deps
 # Install dependencies (Arch only)
 hydevm --install-deps
 ```
+
+### Checkpoint Workflow (Save/Restore)
+
+HydeVM supports saving and restoring the **full live VM state** (disk + RAM + device state) using QEMU's internal snapshot mechanism. This is perfect for testing where you need to return to exact checkpoints.
+
+```bash
+# Terminal 1: Start a VM (works with or without --persist)
+hydevm my-branch
+# or: hydevm --persist my-branch  (for permanent checkpoints)
+
+# Terminal 2: Save a checkpoint while the VM is running
+hydevm --snapshot-as before-test my-branch
+# (Saves disk + RAM instantly - no VM pause)
+
+# Do your testing inside the VM...
+# - Modify files, run commands, break things
+
+# Terminal 2: Restore to saved checkpoint
+hydevm --checkpoint before-test my-branch
+# (Restores exact disk + RAM state - back to square one)
+
+# List checkpoints in a snapshot
+hydevm --list-snapshots my-branch
+```
+
+**How it works:**
+
+- Every running VM exposes a QMP Unix socket at `~/.cache/hydevm/qmp-<branch>.sock`
+- `--snapshot-as <name>` sends a `savevm` command via QMP, saving the full VM state (disk, RAM, CPU, devices) as an **internal checkpoint** inside the qcow2 disk image
+- `--checkpoint <name>` sends a `loadvm` command to restore that state
+- Internal checkpoints are stored **inside** the qcow2 file itself
+- When starting from cold with `--checkpoint`, the VM boots in a frozen state (`-S` flag), restores the checkpoint, then resumes
+
+**Important notes:**
+
+- `--snapshot-as` works on **any** running VM — both persistent (`--persist`) and non-persistent (default)
+- On **persistent** VMs: checkpoints save directly into the snapshot disk and persist permanently
+- On **non-persistent** VMs: checkpoints save in the temp overlay disk (deleted on exit). The script asks if you want to commit to a permanent snapshot
+- `--checkpoint` works on a running VM (instant restore) or from cold start
+- Use `--list-snapshots` to see all saved checkpoints
 
 ### Environment Variables
 

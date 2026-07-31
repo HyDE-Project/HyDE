@@ -1,0 +1,28 @@
+# end converted restore_cfg.psv entries
+[waybar]
+pre_command = "echo 'Pre commands '"
+post_command = "echo 'HyDE backed up!'"
+
+[[waybar.dependency]]
+pacman = ["waybar"]
+yay = ["waybar"]
+paru = ["waybar"]
+dnf = ["waybar"]
+
+[[waybar.files]]
+action = "preserve"
+source_root = "Configs/.config/waybar"
+target_root = "${XDG_CONFIG_HOME}/waybar"
+paths = ["config.jsonc", "theme.css", "style.css"]
+
+# [[waybar.files]]
+# action = "preserve"
+# source_root = "Configs/.config/waybar"
+# target_root = "${XDG_CONFIG_HOME}/waybar"
+# paths = ["modules", "styles", "layouts", "menus"]
+
+[[waybar.files]]
+action = "sync"
+source_root = "Configs/.local/share/waybar"
+target_root = "${XDG_DATA_HOME}/waybar"
+paths = ["includes", "modules", "styles", "layouts", "menus"]

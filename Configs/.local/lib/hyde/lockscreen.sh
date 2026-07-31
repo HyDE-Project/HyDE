@@ -18,8 +18,8 @@ unit_name="hyde-lockscreen.service"
 args=(-u "$unit_name" -t service)
 if which "$lockscreen.sh" 2> /dev/null 1>&2; then
     printf "Executing $lockscreen wrapper script : %s\n" "$lockscreen.sh"
-    app2unit.sh "${args[@]}" -- "$lockscreen.sh" "$@"
+    app.sh "${args[@]}" -- "$lockscreen.sh" "$@"
 else
     printf "Executing raw command: %s\n" "$lockscreen"
-    app2unit.sh "${args[@]}" -- "$lockscreen" "$@"
+    app.sh "${args[@]}" -- "$lockscreen" "$@"
 fi

@@ -1,0 +1,22 @@
+[fish]
+
+[[fish.dependency]]
+pacman = ["fish", "starship", "fastfetch"]
+
+[[fish.files]]
+action = "sync"
+source_root = "Configs/.config/fish"
+target_root = "${XDG_CONFIG_HOME}/fish"
+paths = ["conf.d", "functions"]
+
+[[fish.files]]
+action = "preserve"
+source_root = "Configs/.config/fish"
+target_root = "${XDG_CONFIG_HOME}/fish"
+paths = "config.fish"
+
+[[fish.files]]
+action = "preserve"
+source_root = "Configs/.config/starship"
+target_root = "${XDG_CONFIG_HOME}/starship"
+paths = "starship.toml"

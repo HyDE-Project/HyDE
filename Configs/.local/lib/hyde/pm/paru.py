@@ -73,12 +73,12 @@ def file_query(ctx, target: str) -> None:
 
 
 def count_updates(ctx) -> int:
-    output = ctx.capture(["paru", "-Qu"], check=False)
+    output = ctx.capture(["paru", "-Qua"], check=False)
     return sum(1 for line in output.splitlines() if line.strip())
 
 
 def list_updates(ctx) -> None:
-    ctx.run(["paru", "-Qu"], check=False)
+    ctx.run(["paru", "-Qua"], check=False)
 
 
 def _color_flag(ctx) -> str:

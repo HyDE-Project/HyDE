@@ -17,7 +17,17 @@ from pathlib import Path
 from types import ModuleType
 from typing import Callable, Iterable, Sequence
 
-PMS = ["yay", "paru",  "pacman", "apt", "dnf", "zypper", "flatpak"]
+PMS = ["pacman", "yay", "paru", "apt", "dnf", "zypper", "flatpak"]
+CONFLICT_GROUPS: list[tuple[str, ...]] = [
+    ("paru", "yay"),
+]
+__all__ = [
+    "main",
+    "determine_pm",
+    "list_available_managers",
+    "print_available_managers",
+    "load_manager",
+]
 PACKAGE_ENTRY = tuple[str, str | None, str | None, str | None]
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 _MANAGER_CACHE: dict[str, ModuleType] = {}
@@ -100,8 +110,9 @@ def build_parser() -> argparse.ArgumentParser:
         description="Package manager wrapper over multiple backends.",
     )
     parser.add_argument("--pm", dest="force_pm", help="Force package manager to use a specific backend.")
+    parser.add_argument("--available", dest="available", action="store_true", help="List available package managers and exit.")
     parser.add_argument("--no-confirm", dest="no_confirm", action="store_true", help="Do not ask for confirmation when installing/removing packages.")
-    subparsers = parser.add_subparsers(dest="action", required=True)
+    subparsers = parser.add_subparsers(dest="action", required=False)
 
     def add_cmd(name: str, action: str, *, aliases: Sequence[str] = (), help_text: str) -> argparse.ArgumentParser:
         cmd = subparsers.add_parser(
@@ -154,9 +165,16 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
 
+    if getattr(args, "available", False):
+        print_available_managers()
+        return
+
     # Check PACKAGE_MANAGER_NO_CONFIRM env variable
     env_no_confirm = os.environ.get("PACKAGE_MANAGER_NO_CONFIRM", "").lower() in ("1", "true", "yes", "on")
     no_confirm = args.no_confirm or env_no_confirm
+
+    if args.action is None:
+        parser.error("the following arguments are required: action")
 
     pm_name = determine_pm(args.force_pm)
     color_mode = os.environ.get("PM_COLOR")
@@ -179,6 +197,31 @@ def main(argv: Sequence[str] | None = None) -> None:
     handler(state, args)
 
 
+def resolve_conflicted_managers(available: Sequence[str]) -> list[str]:
+    winners: list[str] = []
+    # For each conflict group, keep the first available manager according to PMS priority.
+    for group in CONFLICT_GROUPS:
+        for name in available:
+            if name in group:
+                winners.append(name)
+                break
+    for name in available:
+        if any(name in group for group in CONFLICT_GROUPS):
+            continue
+        winners.append(name)
+    return winners
+
+
+def list_available_managers() -> list[str]:
+    available = [name for name in PMS if shutil.which(name)]
+    return resolve_conflicted_managers(available)
+
+
+def print_available_managers() -> None:
+    for manager in list_available_managers():
+        print(manager)
+
+
 def determine_pm(forced: str | None) -> str:
     if forced:
         if forced not in PMS:
@@ -188,9 +231,8 @@ def determine_pm(forced: str | None) -> str:
     env_pm = os.environ.get("PM")
     if env_pm and env_pm in PMS and shutil.which(env_pm):
         return env_pm
-    for name in PMS:
-        if shutil.which(name):
-            return name
+    for name in list_available_managers():
+        return name
     die("no supported package manager found (%s)" % " ".join(PMS))
 
 

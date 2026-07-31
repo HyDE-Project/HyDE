@@ -9,6 +9,6 @@ if [ -d /run/current-system/sw/libexec ]; then
 else
     libDir=/usr/lib
 fi
-app2unit.sh -t service $libDir/xdg-desktop-portal-hyprland
+app.sh -t service $libDir/xdg-desktop-portal-hyprland
 sleep 1
-app2unit.sh -t service $libDir/xdg-desktop-portal &
+app.sh -t service $libDir/xdg-desktop-portal &

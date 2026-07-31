@@ -342,6 +342,7 @@ def signal_handler(sig, frame):
     logger.debug("Received signal to stop, exiting")
     sys.stdout.write("\n")
     sys.stdout.flush()
+    logging.shutdown()
     sys.exit(0)
 
 

@@ -1,0 +1,79 @@
+[[global.dependency]]
+# Core pacman dependencies imported from Scripts/pkg_core.lst
+pacman = [
+  # System
+  "lua", # for lua runtime
+  "luarocks", # Core scripts lib
+  "uwsm", # A standalone Wayland session manager
+  "pipewire", # audio/video server
+  "pipewire-alsa", # pipewire alsa client
+  "pipewire-audio", # pipewire audio client
+  "pipewire-jack", # pipewire jack client
+  "pipewire-pulse", # pipewire pulseaudio client
+  "gst-plugin-pipewire", # pipewire gstreamer client
+  "wireplumber", # pipewire session manager
+  "pavucontrol", # pulseaudio volume control
+  "pamixer", # pulseaudio cli mixer
+  "networkmanager", # network manager
+  "network-manager-applet", # network manager system tray utility
+  "bluez", # bluetooth protocol stack
+  "bluez-utils", # bluetooth utility cli
+  "blueman", # bluetooth manager gui
+  "brightnessctl", # screen brightness control
+  "playerctl", # media controls
+  "udiskie", # manage removable media
+  # Display Manager
+  "sddm", # display manager for KDE plasma
+  "qt5-quickcontrols", # for sddm theme ui elements
+  "qt5-quickcontrols2", # for sddm theme ui elements
+  "qt5-graphicaleffects", # for sddm theme effects
+  # Window Manager
+  "awww", # wallpaper
+  "wlogout", # logout menu
+  "grim", # screenshot tool
+  "hyprpicker", # color picker
+  "slurp", # region select for screenshot/screenshare
+  "satty", # Modern Screenshot Annotation
+  "cliphist", # clipboard manager
+  "wl-clip-persist", # Keep Wayland clipboard even after programs close (avoids crashes)
+  # Dependencies
+  "hyprpolkitagent", # authentication agent
+  "xdg-desktop-portal-hyprland", # xdg desktop portal for hyprland
+  "xdg-desktop-portal-gtk", # file picker and dbus  integration
+  "xdg-user-dirs", # Manage user directories like ~/Desktop and ~/Music
+  "pacman-contrib", # for system update check
+  "parallel", # for parallel processing
+  "jq", # for json processing
+  "imagemagick", # for image processing
+  "qt5-imageformats", # for dolphin image thumbnails
+  "ffmpegthumbs", # for dolphin video thumbnails
+  "kde-cli-tools", # for dolphin file type defaults
+  "libnotify", # for notifications
+  "noto-fonts-emoji", # emoji font
+  # Theming
+  "nwg-look", # gtk configuration tool
+  "qt5ct", # qt5 configuration tool
+  "qt6ct", # qt6 configuration tool
+  "kvantum", # svg based qt6 theme engine
+  "kvantum-qt5", # svg based qt5 theme engine
+  "qt5-wayland", # wayland support in qt5
+  "qt6-wayland", # wayland support in qt6
+  # Applications
+  "firefox", # browser
+  "ark", # kde file archiver
+  "unzip", # extracting zip files
+  "vim", # terminal text editor
+  # * "code", # ide text editor
+  "nwg-displays", # monitor management utility
+  "fzf", # Command-line fuzzy finder
+  # HyDE
+
+]
+yay = [
+  "hyprquery", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
+
+]
+paru = [
+  "hyprquery", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
+
+]

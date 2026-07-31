@@ -95,6 +95,24 @@
 
 
         <child>
+            <object class="GtkMenuItem" id="layouts_menu">
+                <property name="label"> Layouts</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="layouts-select">
+                                <property name="label"> Select Layout</property>
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
             <object class="GtkMenuItem" id="waybar-menu">
                 <property name="label"> Waybar</property>
                 <child type="submenu">

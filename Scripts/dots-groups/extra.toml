@@ -1,0 +1,69 @@
+# Use for instalation script until we refactor the whole installation stack
+[global]
+    action       = "preserve"                                 #
+    git          = "https://github.com/HyDE-Project/HyDE.git"
+    git_branch   = "lua"
+    owner        = "The HyDE Project"                         #
+    post_command = "hyprctl reload"
+    pre_command  = "echo 'HyDE Core Configurations'"
+    version      = "0.1.0"
+    # dots = ["kitty", "hyprland"] # List of dots to be used in the configuration file
+    # We can call it core packages!
+    include = [
+        "../dots/zsh.toml",
+        "../dots/fish.toml",
+        "../dots/deps.toml",
+        "../dots/electron.toml",
+        "../dots/baloofilerc.toml",
+        "../dots/dolphin.toml",
+        "../dots/kitty.toml",
+        "../dots/hyprlock.toml",
+        "../dots/hypridle.toml",
+        "../dots/hyprsunset.toml",
+        "../dots/fastfetch.toml",
+    ]
+
+# Loads an array of package manager commands
+# This helps support custom package managers
+# and add custom flags for each manager
+[[global.package_managers]]
+    install   = "sudo pacman -S"
+    name      = "pacman"
+    query     = "pacman -Q"
+    uninstall = "sudo pacman -R"
+    update    = "sudo pacman -Syu"
+
+[[global.package_managers]]
+    install   = "yay -S"
+    name      = "yay"
+    query     = "yay -Q"
+    uninstall = "yay -R"
+    update    = "yay -Syu"
+
+[[global.package_managers]]
+    install   = "paru -S"
+    name      = "paru"
+    query     = "paru -Q"
+    uninstall = "paru -R"
+    update    = "paru -Syu"
+
+[[global.package_managers]]
+    install   = "sudo dnf install"
+    name      = "dnf"
+    query     = "dnf list installed"
+    uninstall = "sudo dnf remove"
+    update    = "sudo dnf upgrade --refresh"
+
+[[global.package_managers]]
+    install   = "sudo apt install -y"
+    name      = "apt"
+    query     = "apt list --installed"
+    uninstall = "sudo apt remove -y"
+    update    = "sudo apt update && sudo apt upgrade -y"
+
+[[global.package_managers]]
+    install   = "flatpak install -y"
+    name      = "flatpak"
+    query     = "flatpak list --app --columns application | grep "
+    uninstall = "flatpak uninstall -y"                             # TODO: add --unused
+    update    = "flatpak update -y"

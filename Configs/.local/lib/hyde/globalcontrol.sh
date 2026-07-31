@@ -96,7 +96,6 @@ print_log() {
     echo "" >&2
 }
 
-
 get_hashmap() {
     unset wallHash
     unset wallList
@@ -413,11 +412,13 @@ toml_write() {
     local group=$2
     local key=$3
     local value=$4
-    if ! kwriteconfig6 --file "$config_file" --group "$group" --key "$key" "$value" 2>/dev/null; then
+    if ! kwriteconfig6 --file "$config_file" --group "$group" --key "$key" "$value" >/dev/null; then
         if ! grep -q "^\[$group\]" "$config_file"; then
             echo -e "\n[$group]\n$key=$value" >>"$config_file"
         elif ! grep -q "^$key=" "$config_file"; then
             sed -i "/^\[$group\]/a $key=$value" "$config_file"
+        else
+            sed -i "/^\[$group\]/,/^\[.*\]/s/^$key=.*/$key=$value/" "$config_file"
         fi
     fi
 }

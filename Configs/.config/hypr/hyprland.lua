@@ -1,0 +1,28 @@
+-- Your Hyprland configuration. HyDE never overwrites this file.
+--
+-- It loads after HyDE's own binds, so settings here take precedence. Replacing
+-- a bind needs more than that: see below. HyDE's defaults live in
+-- ~/.local/share/hypr/lua/ and are overwritten on every update, so edits there
+-- do not survive.
+--
+-- Adding a keybind:
+--
+--     hl.bind("SUPER + SPACE", hl.dsp.exec_cmd(hyde.sh.gamelauncher()), {
+--         description = "[Utilities] game launcher",
+--     })
+--
+-- Replacing one of HyDE's: bind the same combination again and yours takes
+-- over, but copy its flags across as well. A bind counts as the same one only
+-- when its flags match, and `description` is not a flag — miss one and both
+-- binds stay live on that combination. Copy the whole options table from
+-- ~/.local/share/hypr/lua/key_binds.lua and change only what you need:
+--
+--     hl.bind("F9", hl.dsp.exec_cmd(hyde.sh.volumecontrol("-o", "m")), {
+--         locked = true,
+--         description = "[Hardware Controls|Audio] un/mute output",
+--     })
+--
+-- Press SUPER + / to see what is actually loaded, your own binds included.
+-- The full reference is KEYBINDINGS.md in the HyDE repository.
+--
+-- Other Lua files next to this one can be pulled in with require("name").

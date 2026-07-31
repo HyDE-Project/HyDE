@@ -16,6 +16,20 @@ transition_next = "grow"  # Transition type for next wallpaper.
 transition_prev = "outer"  # Transition type for previous wallpaper.
 transition_default = "grow"  # Transition type for default wallpaper.
 
+# waydeeper 3D parallax wallpaper configuration.
+[wallpaper.waydeeper]
+strength = 0.02  # Sets both X & Y parallax strength.
+strength_x = 0.02  # X-axis parallax strength.
+strength_y = 0.02  # Y-axis parallax strength.
+smooth_animation = true  # Enables smooth easing for animation.
+animation_speed = 0.05  # Animation speed multiplier.
+fps = 60  # Frame rate (30 or 60).
+active_delay = 150  # Delay (ms) before animation starts after mouse enters wallpaper surface.
+idle_timeout = 5000  # Stops animation (ms) after mouse idle.
+invert_depth = false  # Inverts depth interpretation.
+model = "depth-anything-v3-base"  # ONNX depth model: depth-anything-v3-base, midas-small, depth-pro-q4.
+regenerate = false  # Forces regeneration of depth maps & meshes.
+
 
 # Global rofi configuration.
 [rofi]
@@ -84,7 +98,7 @@ font = "JetBrainsMono Nerd Font"  # Font for bookmarks.
 [wlogout]
 style = 2  # Style for wlogout.
 
-# batterynotify.sh configuration.
+# Battery notification configuration.
 [battery.notify]
 timer = 120  # Timer for battery notifications.
 notify = 1140  # Notification threshold.
@@ -139,7 +153,7 @@ skip_template = [""]  # Templates to skip when using wallbash.
 font = "JetBrainsMono Nerd Font"  # Font for waybar.
 scale = 10  # Total scaling for waybar.
 icon_size = 10  # Icon size for waybar.
-position = "top"  # A fallback position of the waybar.  
+position = "top"  # A fallback position of the waybar.
 
 # Weather configuration.
 [weather]
@@ -201,6 +215,7 @@ steps = 5  # Number of steps to increase/decrease brightness.
 [sysmonitor]
 execute = ""  # Default command to execute.
 commands = [""]  # Fallback command options.
+terminal = ""  # Terminal used to launch a console monitor. Falls back to TERMINAL.
 
 # hyprlock configuration.
 [hyprlock]
@@ -219,51 +234,60 @@ font_size = 10  # Font size for notifications.
 
 # Hyprland configuration.
 [hyprland]
-browser = "firefox"  # Browser.
-editor = "code"  # Editor.
-explorer = "dolphin"  # File manager.
-lockscreen = "lockscreen.sh"  # Lockscreen.
-terminal = "kitty"  # Terminal.
-quickapps = "kitty"  # Quick apps.
-bar = "waybar"  # Bar.
-color_scheme = "prefer-dark"  # Color scheme.
-gtk_theme = "Wallbash-Gtk"  # GTK theme.
-icon_theme = "Tela-circle-dracula"  # Icon theme.
-cursor_size = 24  # Cursor size.
-cursor_theme = "Bibata-Modern-Ice"  # Cursor theme.
-button_layout = ""  # Button layout. (gtk only)
-document_font_size = 10  # Document font size.
-font = "Canterell"  # Font.
-font_antialiasing = "rgba"  # Font antialiasing.
-font_hinting = "full"  # Font hinting.
-font_size = 10  # Font size.
-monospace_font = "CaskaydiaCove Nerd Font Mono"  # Monospace font.
-monospace_font_size = 9  # Monospace font size.
-background_path = ""  # LockScreen's Background path.
+# Animation settings for HyDE.
+[hyprland.anim]
+duration_scale = 0.5  # Animation duration scale.
+
+# Hyprland window configuration.
+[hyprland.window]
+# Floating window configuration.
+[hyprland.window.float]
+# Float window rules that skip size bounding.
+[hyprland.window.float.no_bounds]
+initial_title = []  # Initial window titles excluded from float bounds.
+title = []  # Window titles excluded from float bounds.
+class = []  # Window classes excluded from float bounds.
+initial_class = []  # Initial window classes excluded from float bounds.
+
+
+
 
 # Generic desktop/compositor configuration. Compositor-agnostic counterpart to [hyprland]; use this for cross-compositor support (Hyprland, Sway, niri, etc.).
 [desktop]
-browser = "firefox"  # Default browser.
-editor = "code"  # Default editor.
-explorer = "dolphin"  # Default file manager.
-lockscreen = "lockscreen.sh"  # Lockscreen command.
-terminal = "kitty"  # Default terminal.
-quickapps = "kitty"  # Quick apps command.
 bar = "waybar"  # Status bar.
-color_scheme = "prefer-dark"  # Color scheme.
-gtk_theme = "Wallbash-Gtk"  # GTK theme.
-icon_theme = "Tela-circle-dracula"  # Icon theme.
-cursor_size = 24  # Cursor size.
-cursor_theme = "Bibata-Modern-Ice"  # Cursor theme.
-button_layout = ""  # Button layout. (gtk only)
-document_font_size = 10  # Document font size.
-font = "Canterell"  # Default font.
-font_antialiasing = "rgba"  # Font antialiasing.
-font_hinting = "full"  # Font hinting.
-font_size = 10  # Font size.
-monospace_font = "CaskaydiaCove Nerd Font Mono"  # Monospace font.
-monospace_font_size = 9  # Monospace font size.
 background_path = ""  # Lockscreen background path.
+# Desktop UI settings for HyDE and cross-compositor support.
+[desktop.ui]
+hyde_theme = "HyDE"  # HyDE theme name.
+gtk_theme = "Wallbash-Gtk"  # GTK theme for HyDE UI elements.
+icon_theme = "Tela-circle-dracula"  # Icon theme for HyDE UI.
+color_scheme = "prefer-dark"  # Color scheme for HyDE UI.
+button_layout = ""  # Button layout string for UI controls.
+cursor_theme = "Bibata-Modern-Ice"  # Cursor theme used by HyDE.
+cursor_size = 24  # Cursor size used by HyDE.
+font = "Cantarell"  # Default font for HyDE UI.
+font_size = 10  # Font size for HyDE UI.
+document_font = "Cantarell"  # Document font used by HyDE UI.
+document_font_size = 10  # Document font size for HyDE UI.
+monospace_font = "CaskaydiaCove Nerd Font Mono"  # Monospace font for HyDE UI.
+monospace_font_size = 9  # Monospace font size for HyDE UI.
+notification_font = "Mononoki Nerd Font Mono"  # Notification font used by HyDE.
+bar_font = "JetBrainsMono Nerd Font"  # Bar font used by HyDE.
+menu_font = "JetBrainsMono Nerd Font"  # Menu font used by HyDE.
+font_antialiasing = "rgba"  # Font antialiasing mode for HyDE UI.
+font_hinting = ""  # Font hinting mode for HyDE UI.
+code_theme = ""  # Code theme used by HyDE.
+sddm_theme = ""  # sddm theme used by HyDE.
+
+# Desktop application launcher defaults.
+[desktop.app]
+quickapps = "kitty"  # Command used for quickapps.
+browser = "hyde-shell open --fall firefox web-browser"  # Browser launcher command.
+editor = "hyde-shell open --fall code-oss code-editor"  # Editor launcher command.
+explorer = "hyde-shell open --fall dolphin file-manager"  # File manager launcher command.
+terminal = "hyde-shell app -T"  # Terminal launcher command.
+lockscreen = "hyde-shell lock-session"  # Lockscreen command.
+
 
 # Qt5 configuration.
 [qt5]
@@ -284,26 +308,7 @@ monospace_font_size = 9  # Qt6 monospace font size.
 font = "Canterell"  # GTK3 font.
 font_size = 10  # GTK3 font size.
 
-# Hyprland start configuration.
-[hyprland-start]
-dbus_share_picker = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"  # DBus share picker.
-systemd_share_picker = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"  # Systemd share picker.
-xdg_portal_reset = "hyde-shell resetxdgportal.sh"  # XDG portal reset script.
-auth_dialogue = "hyde-shell app -t service -- polkitkdeauth.sh"  # Authentication dialogue.
-idle_daemon = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-idle.service -t service -- hypridle"  # Idle daemon.
-blue_light_filter_daemon = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-blue-light-filter.service -t service -- hyprsunset"  # Blue-light filter daemon.
-text_clipboard = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-text-clipboard.service -t service wl-paste --type text --watch cliphist store"  # Text clipboard.
-image_clipboard = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-image-clipboard.service -t service wl-paste --type image --watch cliphist store"  # Image clipboard.
-clipboard_persist = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persist.service -t service wl-clip-persist --clipboard regular"  # Clipboard persist daemon.
-wallpaper = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global"  # Wallpaper script.
-bar = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch"  # Bar.
-notifications = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- dunst"  # Notifications.
-battery_notify = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh"  # Battery notification script.
-applet_network_manager = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-network-manager-applet.service -t service -- nm-applet --indicator"  # Network manager.
-applet_removable_media = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray"  # Removable media manager.
-applet_bluetooth = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet"  # Bluetooth applet.
-
-# Generic desktop autostart configuration. Compositor-agnostic counterpart to [hyprland-start]; use this for cross-compositor support (Hyprland, Sway, niri, etc.).
+# Generic desktop autostart configuration. Use this header instead of hyprland-start for cross-compositor support (Hyprland, Sway, niri, etc.).
 [desktop.start]
 dbus_share_picker = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"  # DBus share picker (for XDG portal / XDPH).
 systemd_share_picker = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"  # Systemd share picker (for XDG portal / XDPH).
@@ -317,7 +322,7 @@ clipboard_persist = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persi
 wallpaper = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global"  # Wallpaper script.
 bar = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch"  # Bar.
 notifications = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- dunst"  # Notification daemon.
-battery_notify = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh"  # Battery notification script.
+battery_notify = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua"  # Battery notification script.
 applet_network_manager = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-network-manager-applet.service -t service -- nm-applet --indicator"  # Network manager applet.
 applet_removable_media = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray"  # Removable media applet.
 applet_bluetooth = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet"  # Bluetooth applet.
@@ -329,4 +334,3 @@ prefix_paused = "  "  # Prefix for paused media.
 max_length = 70  # Max length of song and artist string.
 standby_text = "  Music"  # To display on standby.
 artist_track_separator = "  "  # Separator symbols to display between artist and track.
-

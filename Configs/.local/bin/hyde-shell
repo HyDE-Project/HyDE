@@ -1,55 +1,123 @@
 #!/usr/bin/env bash
-# This script will soon be used to resolve $PATHS and LIB_DIR specific to hyde
-# wallbash script can source this script to resolve the paths cleanly on a separate shell
+# This script resolves $PATHS and LIB_DIR specific to hyde.
+# @name: hyde-shell
+# @short: HyDE Command-Line Interface and Script Runner
+# @ver: 1.1.0
+# @usage: hyde-shell [command] [args]
+# @global.flag: -h,--help | Show this help message
+# @global.flag: -v,--version | Show version information
+# @cmd: help
+# @cmd.alias: -h
+# @cmd.desc: Show help for hyde-shell commands and scripts
+# @cmd.opt: <topic> | Show detailed help for a command or script
+# @cmd: man
+# @cmd.desc: Render metadata in man-style format
+# @cmd.opt: <topic> | Render a man-style page for a command or script
+# @cmd: reload
+# @cmd.alias: -r
+# @cmd.desc: Reload HyDE assets or environment
+# @cmd.opt: all | Reload all components
+# @cmd.opt: cache | Clear and rebuild asset cache
+# @cmd.opt: theme | Apply new color scheme
+# @cmd.opt: python | Reload Python environment
+# @cmd.opt: lua | Reload Lua environment
+# @cmd: scripts
+# @cmd.alias: -s
+# @cmd.desc: List available scripts
+# @cmd: wallbash
+# @cmd.desc: Execute a wallbash script by name
+# @cmd: version
+# @cmd.alias: -v
+# @cmd.desc: Show version information
+# @cmd: release-notes
+# @cmd.desc: Show latest release notes
+# @cmd: completion
+# @cmd.alias: completions
+# @cmd.desc: Shell completion helper utilities
+# @cmd.opt: --list-builtins | List built-in completions
+# @cmd.opt: --list-script | List script completions
+# @cmd.opt: --list-script-path | List script paths
+# @cmd.opt: --list-all | List all autocomplete options
+# @cmd.opt: bash | Generate bash completion
+# @cmd.opt: zsh | Generate zsh completion
+# @cmd.opt: fish | Generate fish completion
+# @cmd.opt: --help | Show completion help
+# @cmd: validate
+# @cmd.desc: Validate HyDE configuration files
+# @cmd: pyinit
+# @cmd.desc: Initialize Python virtual environment
+# @cmd: uv
+# @cmd.desc: Manage Python packages via uv
+# @cmd.opt: install | Install a package
+# @cmd.opt: uninstall | Uninstall a package
+# @cmd.opt: remove | Remove a package
+# @cmd.opt: list | List installed packages
+# @cmd: init
+# @cmd.desc: Source shell initialization environment
+# @cmd: logout
+# @cmd.desc: Log out of the current desktop session
+# @cmd: lock-session
+# @cmd.desc: Lock the current session
+# @cmd: pypr
+# @cmd.desc: PyPR / Pyprland helper utilities
+# @cmd.opt: help | Show pypr help
+# @cmd.opt: reload | Reload pypr config
+# @cmd.opt: toggle | Toggle pypr window
+# @cmd.opt: hide | Hide pypr window
+# @cmd.opt: show | Show pypr window
+# @cmd.opt: expose | Expose pypr windows
+# @cmd: luainit
+# @cmd.desc: Initialize Lua virtual environment
+# @cmd: luarocks
+# @cmd.desc: Manage Lua packages via luarocks
+# @cmd.opt: install | Install a rock
+# @cmd.opt: remove | Remove a rock
+# @cmd.opt: list | List installed rocks
+# @cmd.opt: search | Search for rocks
+# @cmd.opt: show | Show rock info
+# @cmd.opt: help | Show luarocks help
+
 # shellcheck disable=SC1091
 # shellcheck disable=SC2086
 # shellcheck disable=SC1090
 
-
 python_initialized() {
+    local python_script="${LIB_DIR}/hyde/pyutils/python_env.py"
+    local venv="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env"
 
-	local python_script="${LIB_DIR}/hyde/pyutils/python_env.py"
-	local venv="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env"
+    if [[ -x "${venv}/bin/python" ]]; then
+        source "${venv}/bin/activate"
+        "${venv}/bin/python" "${python_script}" sync >/dev/null 2>&1 && return 0
+        echo "Sync failed; rebuilding Python environment..."
+        "${venv}/bin/python" "${python_script}" rebuild
+        return $?
+    fi
 
-	if [[ -x "${venv}/bin/python" ]]; then
-		# shellcheck disable=SC1091
-		source "${venv}/bin/activate"
-		"${venv}/bin/python" "${python_script}" sync >/dev/null 2>&1 && return 0
-		echo "Sync failed; rebuilding Python environment..."
-		"${venv}/bin/python" "${python_script}" rebuild
-		return $?
-	fi
-
-	echo "Python environment not found; creating..."
-	python3 "${python_script}" create >/dev/null 2>&1 && return 0
-	echo "Create failed; attempting rebuild..."
-	python3 "${python_script}" rebuild
-
+    echo "Python environment not found; creating..."
+    python3 "${python_script}" create >/dev/null 2>&1 && return 0
+    echo "Create failed; attempting rebuild..."
+    python3 "${python_script}" rebuild
 }
 
 python_activate() {
-
-	local python_env="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env/bin/activate"
-	if [[ -r "${python_env}" ]]; then
-		# shellcheck disable=SC1090
-		source "${python_env}"
-	else
-		printf "Warning: Python virtual environment not found at %s\n" "${python_env}"
-		printf "You may need to run 'hyde-shell pyinit' to set it up.\n"
-		python_initialized
-	fi
-
+    local python_env="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env/bin/activate"
+    if [[ -r "${python_env}" ]]; then
+        source "${python_env}"
+    else
+        printf "Warning: Python virtual environment not found at %s\n" "${python_env}"
+        printf "You may need to run 'hyde-shell pyinit' to set it up.\n"
+        python_initialized
+    fi
 }
 
 lua_initialized() {
-python_activate
-python3 "${LIB_DIR}/hyde/pyutils/lua_env.py" sync || \
-python3 "${LIB_DIR}/hyde/pyutils/lua_env.py" rebuild
+    python_activate
+    python3 "${LIB_DIR}/hyde/pyutils/lua_env.py" sync ||
+        python3 "${LIB_DIR}/hyde/pyutils/lua_env.py" rebuild
 }
 
-
 initialized() {
-	cat <<EOF
+    cat <<EOF
 HYDE_SHELL_INIT=1
 BIN_DIR="${BIN_DIR}"
 LIB_DIR="${LIB_DIR}"
@@ -58,123 +126,120 @@ PATH=${PATH}
 HYDE_SCRIPTS_PATH=${HYDE_SCRIPTS_PATH}
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH HYDE_SHELL_INIT
 EOF
-	#? Use sed to remove any shebang hints to avoid conflicts with "eval"
-	command cat "${LIB_DIR}/hyde/globalcontrol.sh"
+    command cat "${LIB_DIR}/hyde/globalcontrol.sh"
 }
 
 USAGE() {
-	local cols
-	cols=$(tput cols 2>/dev/null || echo 80)
-	local sep
-	sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
+    local cols
+    cols=$(tput cols 2>/dev/null || echo 80)
+    local sep
+    sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
 
-	local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m' _CYAN=$'\e[36m'
+    local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m' _CYAN=$'\e[36m'
 
-	printf '\n%s  HyDE Shell%s\n' "$_BOLD" "$_R"
-	printf '  %s%s%s\n\n' "$_DIM" "$sep" "$_R"
+    printf '\n%s  HyDE Shell%s\n' "$_BOLD" "$_R"
+    printf '  %s%s%s\n\n' "$_DIM" "$sep" "$_R"
 
-	printf '  %sUSAGE%s\n' "$_BOLD" "$_R"
-	printf '    hyde-shell %s[command]%s %s[args]%s\n\n' "$_CYAN" "$_R" "$_DIM" "$_R"
+    printf '  %sUSAGE%s\n' "$_BOLD" "$_R"
+    printf '    hyde-shell %s[command]%s %s[args]%s\n\n' "$_CYAN" "$_R" "$_DIM" "$_R"
 
-	printf '  %sCOMMANDS%s\n' "$_BOLD" "$_R"
-	local cmds=(
-		'help, -h' 'Show this help message'
-		'-r, reload' 'Reload HyDE'
-		'-s, scripts' 'List available scripts (formatted)'
-		'wallbash <script>' 'Execute a wallbash script'
-		'version, -v' 'Show version information'
-		'release-notes' 'Show release notes'
-		'completions [shell]' 'Generate completions (bash|zsh|fish)'
-		'validate [args]' 'Validate HyDE configuration'
-		'pyinit' 'Initialize Python virtual environment'
-		'uv <cmd> [pkg]' 'Manage packages (install|uninstall|list)'
-		'init' 'Source initialization script'
-		'logout' 'Log out of the current session'
-		'lock-session' 'Lock the current session'
-	)
-	for ((i = 0; i < ${#cmds[@]}; i += 2)); do
-		printf '    %s%-26s%s %s\n' "$_CYAN" "${cmds[i]}" "$_R" "${cmds[i + 1]}"
-	done
-	printf '\n'
+    printf '  %sCOMMANDS%s\n' "$_BOLD" "$_R"
+    local cmds=(
+        'help, -h [topic]' 'Show help (or topic-specific help)'
+        '-r, reload' 'Reload HyDE'
+        '-s, scripts' 'List available scripts (formatted)'
+        'wallbash <script>' 'Execute a wallbash script'
+        'version, -v' 'Show version information'
+        'release-notes' 'Show release notes'
+        'completion <subcmd>' 'Completion utilities (--list-builtins|--list-script|--list-script-path|bash|zsh|fish)'
+        'validate [args]' 'Validate HyDE configuration'
+        'pyinit' 'Initialize Python virtual environment'
+        'uv <cmd> [pkg]' 'Manage packages (install|uninstall|list)'
+        'init' 'Source initialization script'
+        'logout' 'Log out of the current session'
+        'lock-session' 'Lock the current session'
+    )
+    for ((i = 0; i < ${#cmds[@]}; i += 2)); do
+        printf '    %s%-26s%s %s\n' "$_CYAN" "${cmds[i]}" "$_R" "${cmds[i + 1]}"
+    done
+    printf '\n'
 
-	printf '  %sSCRIPTS%s\n' "$_BOLD" "$_R"
-	printf '    Run any script by name (without extension):\n'
-	printf '      %shyde-shell theme.switch%s\n' "$_DIM" "$_R"
-	printf '      %shyde-shell wallpaper%s\n\n' "$_DIM" "$_R"
-	printf '    Use %shyde-shell -s%s to list all available scripts.\n\n' "$_CYAN" "$_R"
+    printf '  %sSCRIPTS%s\n' "$_BOLD" "$_R"
+    printf '    Run any script by name (without extension):\n'
+    printf '      %shyde-shell theme.switch%s\n' "$_DIM" "$_R"
+    printf '      %shyde-shell wallpaper%s\n\n' "$_DIM" "$_R"
+    printf '    Use %shyde-shell -s%s to list all available scripts.\n\n' "$_CYAN" "$_R"
 
-	printf '  %s%s%s\n\n' "$_DIM" "$sep" "$_R"
+    printf '  %s%s%s\n\n' "$_DIM" "$sep" "$_R"
 }
 
 call_wallbashScript() {
-	local scriptName=$1
-	shift
-	local args=("${@}")
-	local dirs=("${WALLBASH_DIRS[@]}")
-	sanitized_dirs=()
-	for dir in "${dirs[@]}"; do
-		if [[ -d "$dir" ]]; then
-			sanitized_dirs+=("$dir")
-		fi
-	done
-	dirs=("${sanitized_dirs[@]}")
-	script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    local scriptName=$1
+    shift
+    local args=("${@}")
+    local dirs=("${WALLBASH_DIRS[@]}")
+    sanitized_dirs=()
+    for dir in "${dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            sanitized_dirs+=("$dir")
+        fi
+    done
+    dirs=("${sanitized_dirs[@]}")
+    script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
 
-	for func in $(compgen -A function); do
-		export -f "${func?}"
-	done
+    for func in $(compgen -A function); do
+        export -f "${func?}"
+    done
 
-	if [[ -n "$script_path" ]]; then
-		"$script_path" "${args[@]}"
-	else
-		echo "Usage: wallbash [script-name] [args]"
-		echo "Executes the specified wallbash script with the provided arguments."
-		echo "Available scripts:"
-		for dir in "${dirs[@]}"; do
-			if [[ -d "$dir" ]]; then
-				echo -e "\n[ $dir ]"
-				find -L "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
-			fi
-		done
-	fi
-
+    if [[ -n "$script_path" ]]; then
+        "$script_path" "${args[@]}"
+    else
+        echo "Usage: wallbash [script-name] [args]"
+        echo "Executes the specified wallbash script with the provided arguments."
+        echo "Available scripts:"
+        for dir in "${dirs[@]}"; do
+            if [[ -d "$dir" ]]; then
+                echo -e "\n[ $dir ]"
+                find -L "$dir" -type f -path "*/scripts/*" -name "*.sh" -exec basename {} \;
+            fi
+        done
+    fi
 }
 
 hyde_reload() {
-
-	print_log -sec "hyde" "Reloading HyDE"
-	python_initialized
-	"$LIB_DIR/hyde/wallpaper/cache.sh" commence -t ""
-	"$LIB_DIR/hyde/theme.switch.sh"
+    python_activate
+    python3 "${LIB_DIR}/hyde/reload.py" "${@}"
 }
 
 list_script_path() {
-	IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
-	declare -A _seen_dirs
-	for dir in "${RAW_DIRS[@]}"; do
-		[[ -z "$dir" ]] && continue
-		[[ -n "${_seen_dirs[$dir]}" ]] && continue
-		_seen_dirs["$dir"]=1
-		[[ -d "$dir" ]] && find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec echo {} \;
-	done
+    IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
+    declare -A _seen_dirs
+    for dir in "${RAW_DIRS[@]}"; do
+        [[ -z "$dir" ]] && continue
+        [[ -n "${_seen_dirs[$dir]}" ]] && continue
+        _seen_dirs["$dir"]=1
+        # Added -name "*.lua" to discoverable scripts
+        [[ -d "$dir" ]] && find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" -o -name "*.lua" \) -exec echo {} \;
+    done
 }
 
 list_script() {
-	# Plain newline-delimited script filenames (with extension) for completion consumers.
-	list_script_path | xargs -I{} basename {} | sort -u
+    list_script_path | while IFS= read -r script_path; do
+        [[ -z "$script_path" ]] && continue
+        # Only include scripts that have @name: metadata (public scripts)
+        if head -n 50 "$script_path" | grep -qE '^#\s*@name:\s'; then
+            basename "$script_path"
+        fi
+    done | sort -u
 }
 
 get_version() {
-	# shellcheck source=/dev/null
-	if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
-		echo "HyDE version file not found. Please update HyDE."
-		exit 1
-	fi
-	# shellcheck source=/dev/null
-	source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
-	# Extract only the date part from HYDE_VERSION using Bash parameter expansion
-	# HYDE_VERSION_DATE="${HYDE_VERSION%%-*}"
-	cat <<VERSION
+    if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
+        echo "HyDE version file not found. Please update HyDE."
+        exit 1
+    fi
+    source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
+    cat <<VERSION
 HyDE, your Development Environment
 
 Version: $HYDE_VERSION
@@ -190,482 +255,246 @@ $(hyprland -v 2>/dev/null | head -n1 || echo "hyprland not found")
 $(if hyprctl_output=$(hyprctl version 2>/dev/null | head -n1); then echo "$hyprctl_output (Running Instance)"; else echo "hyprctl not found or not running"; fi)
 $(hyde-ipc --version 2>/dev/null || echo "hyde-ipc not found")
 
-
-HyDE updates every friday, so please check for updates regularly.
+HyDE updates every Friday, so please check for updates regularly.
 Run 'hyde-shell release-notes' to see the latest changes.
 HyDE is a community-driven project, and contributions are welcome.
-
 VERSION
-
 }
 
 get_release_notes() {
-	# shellcheck source=/dev/null
-	if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
-		echo "HyDE version file not found. Please update HyDE."
-		exit 1
-	fi
-	#shellcheck source=/dev/null
-	source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
-	echo "HyDE Release Notes:"
-	echo "$HYDE_RELEASE_NOTES"
-}
-
-get_completion_data() {
-	# Get all available commands and scripts
-	local built_in_commands=("--help" "help" "-h" "-r" "reload" "-s" "scripts" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions" "completions" "uv")
-	export HYDE_BUILT_IN_COMMANDS="${built_in_commands[*]}"
-}
-
-gen_bash_completion() {
-	get_completion_data
-
-	cat <<'BASH_COMPLETION'
-# Bash completion for hyde-shell
-_hyde_shell_completion() {
-    local cur prev words cword
-    _init_completion 2>/dev/null || {
-        COMPREPLY=()
-        cur="${COMP_WORDS[COMP_CWORD]}"
-        prev="${COMP_WORDS[COMP_CWORD-1]}"
-    }
-
-    local built_in_commands hyde_scripts wallbash_scripts
-    built_in_commands="--help help -h -r reload -s scripts wallbash --version version -v --release-notes release-notes --list-script --list-script-path --completions uv"
-
-    # Get dynamic completions from hyde-shell
-    if command -v hyde-shell >/dev/null 2>&1; then
-        hyde_scripts=$(hyde-shell --list-script 2>/dev/null | sed 's/\.[^.]*$//' | tr '\n' ' ')
-
-        # Get wallbash scripts - just --help for now
-        wallbash_scripts="--help"
+    if [[ ! -f "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version" ]]; then
+        echo "HyDE version file not found. Please update HyDE."
+        exit 1
     fi
-
-    # Only provide completions for the first argument
-    if [[ $COMP_CWORD -eq 1 ]]; then
-        # First argument: complete with all available commands
-        local all_commands="$built_in_commands $hyde_scripts"
-        COMPREPLY=($(compgen -W "$all_commands" -- "$cur"))
-    elif [[ $COMP_CWORD -eq 2 ]]; then
-        # Second argument: only for specific commands that take arguments
-        case $prev in
-            wallbash)
-                COMPREPLY=($(compgen -W "$wallbash_scripts" -- "$cur"))
-                return 0
-                ;;
-            --completions)
-                COMPREPLY=($(compgen -W "bash zsh fish" -- "$cur"))
-                return 0
-                ;;
-            *)
-                # No completion for other commands
-                COMPREPLY=()
-                return 0
-                ;;
-        esac
-    else
-        # No completion for 3rd argument and beyond
-        COMPREPLY=()
-        return 0
-    fi
-}
-
-complete -F _hyde_shell_completion hyde-shell
-BASH_COMPLETION
-}
-
-gen_zsh_completion() {
-	get_completion_data
-
-	cat <<'ZSH_COMPLETION'
-#compdef hyde-shell
-
-_hyde_shell() {
-    local cur prev words
-    cur="${words[CURRENT]}"
-    prev="${words[CURRENT-1]}"
-
-    local built_in_commands hyde_scripts wallbash_scripts
-    built_in_commands=("--help" "help" "-h" "-r" "reload" "-s" "scripts" "wallbash" "--version" "version" "-v" "--release-notes" "release-notes" "--list-script" "--list-script-path" "--completions" "uv")
-
-    # Get dynamic completions
-    if (( $+commands[hyde-shell] )); then
-        local scripts_raw
-        scripts_raw=(${(f)"$(hyde-shell --list-script 2>/dev/null)"})
-        hyde_scripts=(${scripts_raw[@]%.*})  # Remove extensions
-
-        # Get wallbash scripts - just --help for now
-        wallbash_scripts=("--help")
-    fi
-
-    # Only complete for first two arguments max
-    if [[ $CURRENT -eq 2 ]]; then
-        # First argument: all commands
-        local all_commands=($built_in_commands $hyde_scripts)
-        compadd -a all_commands
-    elif [[ $CURRENT -eq 3 ]]; then
-        # Second argument: only for specific commands
-        case $words[2] in
-            wallbash)
-                compadd -a wallbash_scripts
-                return 0
-                ;;
-            --completions)
-                compadd "bash" "zsh" "fish"
-                return 0
-                ;;
-            *)
-                # No completion for other commands
-                return 0
-                ;;
-        esac
-    else
-        # No completion for 3rd argument and beyond
-        return 0
-    fi
-}
-
-compdef _hyde_shell hyde-shell
-ZSH_COMPLETION
-}
-
-gen_fish_completion() {
-	get_completion_data
-
-	cat <<'FISH_COMPLETION'
-# Fish completion for hyde-shell
-
-function __hyde_shell_get_commands
-    echo "--help
-help
--h
--r
-reload
--s
-scripts
-wallbash
---version
-version
--v
---release-notes
-release-notes
---list-script
---list-script-path
---completions"
-
-    # Get hyde scripts
-    if command -v hyde-shell >/dev/null 2>&1
-        hyde-shell --list-script 2>/dev/null | sed 's/\.[^.]*$//'
-    end
-end
-
-function __hyde_shell_get_wallbash_scripts
-    # Just --help for now
-    echo "--help"
-end
-
-# Main completions
-complete -c hyde-shell -f
-
-# First argument completions
-complete -c hyde-shell -n "not __fish_seen_subcommand_from (__hyde_shell_get_commands)" -a "(__hyde_shell_get_commands)" -d "Hyde shell commands"
-
-# Wallbash subcommand completions
-complete -c hyde-shell -n "__fish_seen_subcommand_from wallbash" -a "(__hyde_shell_get_wallbash_scripts)" -d "Wallbash scripts"
-
-# Completions subcommand
-complete -c hyde-shell -n "__fish_seen_subcommand_from --completions" -a "bash zsh fish" -d "Shell completion types"
-
-# Option descriptions
-complete -c hyde-shell -s h -l help -d "Display help message"
-complete -c hyde-shell -s r -d "Reload HyDE"
-complete -c hyde-shell -s s -l scripts -d "List available scripts (formatted)"
-complete -c hyde-shell -s v -l version -d "Show version information"
-complete -c hyde-shell -l release-notes -d "Show release notes"
-complete -c hyde-shell -l list-script -d "List available scripts"
-complete -c hyde-shell -l list-script-path -d "List scripts with full paths"
-complete -c hyde-shell -l completions -d "Generate shell completions"
-FISH_COMPLETION
-}
-
-generate_completions() {
-	local shell_type="$1"
-
-	case "$shell_type" in
-	bash)
-		gen_bash_completion
-		;;
-	zsh)
-		gen_zsh_completion
-		;;
-	fish)
-		gen_fish_completion
-		;;
-	*)
-		echo "Usage: hyde-shell --completions [bash|zsh|fish]"
-		echo "Generate shell completions for the specified shell"
-		return 1
-		;;
-	esac
+    source "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/version"
+    echo "HyDE Release Notes:"
+    echo "$HYDE_RELEASE_NOTES"
 }
 
 hyde-logout() {
-	if uwsm check is-active; then
-		uwsm stop
-	elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE}" ]]; then
-		if command -v hyprshutdown >/dev/null 2>&1; then
-			hyprshutdown --top-label "Stay HyDErated!🫧"
-		else
-			hyprctl dispatch exit 0
-		fi
-	fi
+    if uwsm check is-active; then
+        uwsm stop
+    elif [[ -n "${HYPRLAND_INSTANCE_SIGNATURE}" ]]; then
+        if command -v hyprshutdown >/dev/null 2>&1; then
+            hyprshutdown --top-label "Stay HyDErated!🫧"
+        else
+            hyprctl dispatch exit 0
+        fi
+    fi
 }
 
 run_command() {
-	# Convert to array, deduplicate, and filter out empty entries
-	IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
-	declare -A seen_dirs
-	SCRIPT_DIRS=()
-	for dir in "${RAW_DIRS[@]}"; do
-		# Skip empty entries (handles multiple colons like :::)
-		[[ -z "$dir" ]] && continue
-		# Deduplicate directories
-		[[ -n "${seen_dirs[$dir]}" ]] && continue
-		seen_dirs["$dir"]=1
-		# Only add existing directories
-		[[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
-	done
+    IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
+    declare -A seen_dirs
+    SCRIPT_DIRS=()
+    for dir in "${RAW_DIRS[@]}"; do
+        [[ -z "$dir" ]] && continue
+        [[ -n "${seen_dirs[$dir]}" ]] && continue
+        seen_dirs["$dir"]=1
+        [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
+    done
 
-	# Try to find and execute the command in priority order
-	for dir in "${SCRIPT_DIRS[@]}"; do
-		# Try .sh extension first
-		if [[ -f "$dir/${1}.sh" ]]; then
-			exec bash "$dir/${1}.sh" "${@:2}"
-		# Try .lua extension second
-		elif [[ -f "$dir/${1}.lua" 	]]; then
-			lua_runtime="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/lua"
-			activate_script="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/activate_posix"
-			if [[ -f "$activate_script" ]] && [[ -x "$lua_runtime" ]]; then
-			source "$activate_script"
-			else
-			# I hate automating this as building the environment is slow and should be optional for now.
-			# Calling for lua gods to speed up the process 🙏
-				print_log -warn "Lua environment not found!" " Please run 'hyde-shell luainit' to set up the environment."
-				send_notifs "Lua environment not found!" "Please run 'hyde-shell luainit' to set up the environment."
-				exit 1
-			fi
-			exec "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/lua" "$dir/${1}.lua" "${@:2}"
-		# Try .py extension third
-		elif [[ -f "$dir/${1}.py" ]]; then
-			exec "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env/bin/python" "$dir/${1}.py" "${@:2}"
-		# Try exact name (executable)
-		elif [[ -f "$dir/${1}" && -x "$dir/${1}" ]]; then
-			exec "$dir/${1}" "${@:2}"
-		fi
-	done
+    # Lua is resolved before shell, so a script left behind by an older release
+    # cannot shadow the implementation that replaced it.
+    for dir in "${SCRIPT_DIRS[@]}"; do
+        if [[ -f "$dir/${1}.lua" ]]; then
+            l_env="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env"
+            if [[ ! -d "$l_env" ]]; then
+                print_log -warn "Lua environment not found!" " Please run 'hyde-shell luainit' to set up the environment."
+                send_notifs "Lua environment not found!" "Please run 'hyde-shell luainit' to set up the environment."
+                exit 1
+            fi
+            __hyde_lua_ver_file="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde/lua_ver"
+            if [[ -f "$__hyde_lua_ver_file" ]]; then
+                read -r lua_ver _ <"$__hyde_lua_ver_file"
+            elif command -v lua &>/dev/null; then
+                read -r lua_ver _ < <(lua -e 'io.write(_VERSION:match("%d+%.%d+"))')
+                echo "$lua_ver" >"$__hyde_lua_ver_file"
+            fi
+            unset __hyde_lua_ver_file
+            export LUA_PATH="$l_env/share/lua/$lua_ver/?.lua;$l_env/share/lua/$lua_ver/?/init.lua;$LUA_PATH"
+            export LUA_CPATH="$l_env/lib/lua/$lua_ver/?.so;$LUA_CPATH"
+            exec lua "$dir/${1}.lua" "${@:2}"
+        elif [[ -f "$dir/${1}.sh" ]]; then
+            exec bash "$dir/${1}.sh" "${@:2}"
+        elif [[ -f "$dir/${1}.py" ]]; then
+            exec "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env/bin/python" "$dir/${1}.py" "${@:2}"
+        elif [[ -f "$dir/${1}" && -x "$dir/${1}" ]]; then
+            exec "$dir/${1}" "${@:2}"
+        fi
+    done
 
-	# Finally try as a direct file path
-	if [[ -f "$1" && -x "$1" ]]; then
-		exec "$1" "${@:2}"
-	else
-		echo "Command not found: $1"
-		echo "Available commands:"
-		list_scripts_pretty
-	fi
+    if [[ -f "$1" && -x "$1" ]]; then
+        exec "$1" "${@:2}"
+    else
+        echo "Command not found: $1"
+        echo "Available commands:"
+        list_scripts_pretty
+    fi
 }
 
 run_uv() {
-	local project_dir="${LIB_DIR}/hyde"
-	local venv_path="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env"
-	shift
-	local subcmd="${1:-help}"
-	shift 2>/dev/null || true
-	case "$subcmd" in
-	install)
-		UV_PROJECT_ENVIRONMENT="$venv_path" uv add "$@" --project "$project_dir"
-		;;
-	uninstall | remove)
-		UV_PROJECT_ENVIRONMENT="$venv_path" uv remove "$@" --project "$project_dir"
-		;;
-	list)
-		UV_PROJECT_ENVIRONMENT="$venv_path" uv pip list --python "${venv_path}/bin/python"
-		;;
-	*)
-		echo "Usage: hyde-shell uv [install|uninstall|list] [packages...]"
-		echo "  install   <pkg>  → runs: uv add"
-		echo "  uninstall <pkg>  → runs: uv remove"
-		echo "  list             → list installed packages"
-		;;
-	esac
+    local project_dir="${LIB_DIR}/hyde"
+    local venv_path="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env"
+    shift
+    local subcmd="${1:-help}"
+    shift 2>/dev/null || true
+    case "$subcmd" in
+    install)
+        UV_PROJECT_ENVIRONMENT="$venv_path" uv add "$@" --project "$project_dir"
+        ;;
+    uninstall | remove)
+        UV_PROJECT_ENVIRONMENT="$venv_path" uv remove "$@" --project "$project_dir"
+        ;;
+    list)
+        UV_PROJECT_ENVIRONMENT="$venv_path" uv pip list --python "${venv_path}/bin/python"
+        ;;
+    *)
+        echo "Usage: hyde-shell uv [install|uninstall|list] [packages...]"
+        ;;
+    esac
 }
 
-# Run luarocks inside the LuaJIT environment
 run_luarocks() {
-	shift
-	local luarocks_bin="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/luarocks"
-	if [[ -x "$luarocks_bin" ]]; then
-		source ${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env/bin/activate_posix
-		"$luarocks_bin" "$@"
-	else
-		echo "luarocks not found in LuaJIT environment."
-		echo "You may need to run 'python ${LIB_DIR}/hyde/lua_env.py rebuild' to set up the environment."
-	fi
+    shift
+    local lua_env_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/lua_env"
+    if command -v luarocks >/dev/null 2>&1; then
+        luarocks --tree "${lua_env_dir}" "$@"
+    else
+        echo "luarocks not found in your system."
+    fi
 }
 
 run_pypr() {
+    python_activate
+    shift
 
-	python_activate
-	shift
+    if command -v pypr >/dev/null 2>&1; then
+        socket_path="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.pyprland.sock"
+        if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/pypr/config.toml" ]]; then
+            send_notifs "Missing config.toml" "Please create a config.toml in config dir."
+            exit 1
+        fi
 
-	if command -v pypr >/dev/null 2>&1; then
-
-		socket_path="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.pyprland.sock"
-		if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/pypr/config.toml" ]]; then
-			send_notifs "Missing config.toml" "Please create a config.toml file in ${XDG_CONFIG_HOME:-$HOME/.config}/pypr/ to configure PyPR."
-			exit 1
-		fi
-
-		if [[ -S "$socket_path" ]] && pgrep -u "$USER" pypr >/dev/null 2>&1; then
-			local -a msg=("$@")
-			((${#msg[@]} == 0)) && msg=("help")
-			if ! printf '%s\n' "${msg[*]}" | nc -N -U "$socket_path" 2>/dev/null; then #! openbsd netcat only
-				if ! printf '%s\n' "${msg[*]}" | socat - UNIX-CONNECT:"$socket_path" 2>/dev/null; then
-					if ! printf '%s\n' "${msg[*]}" | ncat -U "$socket_path" 2>/dev/null; then
-						if ! pypr "${msg[@]}"; then
-							print_log -sec "pypr" "Error communicating with socket: $socket_path"
-							exit 1
-						fi
-					fi
-				fi
-			fi
-
-		else
-			print_log -sec "pypr" "PyPR is not running properly, starting fresh"
-			[[ -S "$socket_path" ]] && print_log -y "Removing stale socket: $socket_path"
-			pgrep -u "$USER" pypr >/dev/null && print_log -y "Killing existing pypr process"
-			rm -f "$socket_path"
-
-			exec app2unit.sh -t service pypr
-		fi
-
-	else
-		UV_PROJECT_ENVIRONMENT="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env" uv add "pyprland==3.3.1" --project "${LIB_DIR}/hyde"
-	fi
+        if [[ -S "$socket_path" ]] && pgrep -u "$USER" pypr >/dev/null 2>&1; then
+            message="${*:-"help"}"
+            if ! printf "%s" "${message[@]}" | nc -N -U "$socket_path" 2>/dev/null; then
+                if ! printf "%s" "${message[@]}" | socat - UNIX-CONNECT:"$socket_path" 2>/dev/null; then
+                    if ! printf "%s" "${message[@]}" | ncat -U "$socket_path" 2>/dev/null; then
+                        if ! pypr "${message[@]}"; then
+                            print_log -sec "pypr" "Error communicating with socket: $socket_path"
+                            exit 1
+                        fi
+                    fi
+                fi
+            fi
+        else
+            print_log -sec "pypr" "PyPR is not running properly, starting fresh"
+            rm -f "$socket_path"
+            exec app.sh -t service pypr
+        fi
+    else
+        UV_PROJECT_ENVIRONMENT="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env" uv add "pyprland==3.3.1" --project "${LIB_DIR}/hyde"
+    fi
 }
 
 list_scripts_pretty() {
-	local cols
-	cols=$(tput cols 2>/dev/null || echo 80)
-	local sep
-	sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
+    local cols
+    cols=$(tput cols 2>/dev/null || echo 80)
+    local sep
+    sep=$(printf '─%.0s' $(seq 1 "$((cols - 2))"))
 
-	local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m'
-	local _VIOLET=$'\e[35m' _GREEN=$'\e[92m'
+    local _R=$'\e[0m' _BOLD=$'\e[1m' _DIM=$'\e[2m'
+    local _VIOLET=$'\e[35m' _GREEN=$'\e[92m'
 
-	IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
-	declare -A seen_dirs
-	local SCRIPT_DIRS=()
+    IFS=':' read -ra RAW_DIRS <<<"$HYDE_SCRIPTS_PATH"
+    declare -A seen_dirs
+    local SCRIPT_DIRS=()
 
-	for dir in "${RAW_DIRS[@]}"; do
-		[[ -z "$dir" ]] && continue
-		[[ -n "${seen_dirs[$dir]}" ]] && continue
-		seen_dirs["$dir"]=1
-		[[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
-	done
+    for dir in "${RAW_DIRS[@]}"; do
+        [[ -z "$dir" ]] && continue
+        [[ -n "${seen_dirs[$dir]}" ]] && continue
+        seen_dirs["$dir"]=1
+        [[ -d "$dir" ]] && SCRIPT_DIRS+=("$dir")
+    done
 
-	local total=0
+    local total=0
+    printf '\n%s  Available Scripts%s\n' "$_BOLD" "$_R"
+    printf '  %s%s%s\n' "$_DIM" "$sep" "$_R"
 
-	printf '\n%s  Available Scripts%s\n' "$_BOLD" "$_R"
-	printf '  %s%s%s\n' "$_DIM" "$sep" "$_R"
+    for dir in "${SCRIPT_DIRS[@]}"; do
+        local scripts=()
+        while IFS= read -r f; do
+            [[ -n "$f" ]] && scripts+=("$f")
+        done < <(find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null | sort)
 
-	for dir in "${SCRIPT_DIRS[@]}"; do
-		local scripts=()
-		while IFS= read -r f; do
-			[[ -n "$f" ]] && scripts+=("$f")
-		done < <(find -L "$dir" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.py" \) -exec basename {} \; 2>/dev/null | sort)
+        [[ ${#scripts[@]} -eq 0 ]] && continue
+        printf '\n  %s%s%s\n' "$_VIOLET" "$dir" "$_R"
 
-		[[ ${#scripts[@]} -eq 0 ]] && continue
+        unset groups roots
+        declare -A groups roots
 
-		printf '\n  %s%s%s\n' "$_VIOLET" "$dir" "$_R"
+        for s in "${scripts[@]}"; do
+            local name="${s%.*}"
+            if [[ "$name" == *.* ]]; then
+                local root="${name%%.*}"
+                roots["$root"]=1
+            fi
+        done
 
-		unset groups roots
-		declare -A groups roots
+        for s in "${scripts[@]}"; do
+            local name="${s%.*}"
+            if [[ "$name" == *.* ]]; then
+                local root="${name%%.*}"
+                groups["$root"]+="$name "
+            else
+                if [[ -n "${roots[$name]}" ]]; then
+                    groups["$name"]="$name ${groups[$name]}"
+                else
+                    groups["$name"]="$name"
+                fi
+            fi
+        done
 
-		# --- detectar raíces ---
-		for s in "${scripts[@]}"; do
-			local name="${s%.*}"
-			if [[ "$name" == *.* ]]; then
-				local root="${name%%.*}"
-				roots["$root"]=1
-			fi
-		done
+        for key in $(printf "%s\n" "${!groups[@]}" | sort); do
+            read -ra items <<<"${groups[$key]}"
+            if [[ ${#items[@]} -gt 1 ]]; then
+                printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
+                for item in "${items[@]}"; do
+                    if [[ "$item" != "$key" ]]; then
+                        printf "      %s%s%s\n" "$_DIM" "$item" "$_R"
+                    fi
+                    ((total++))
+                done
+            else
+                printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
+                ((total++))
+            fi
+        done
+    done
 
-		# --- agrupar correctamente ---
-		for s in "${scripts[@]}"; do
-			local name="${s%.*}"
+    local dir_word="directories"
+    ((${#SCRIPT_DIRS[@]} == 1)) && dir_word="directory"
 
-			if [[ "$name" == *.* ]]; then
-				local root="${name%%.*}"
-				groups["$root"]+="$name "
-			else
-				if [[ -n "${roots[$name]}" ]]; then
-					# es raíz de un grupo
-					groups["$name"]="$name ${groups[$name]}"
-				else
-					# standalone
-					groups["$name"]="$name"
-				fi
-			fi
-		done
-
-		# --- imprimir ---
-		for key in $(printf "%s\n" "${!groups[@]}" | sort); do
-			read -ra items <<<"${groups[$key]}"
-
-			if [[ ${#items[@]} -gt 1 ]]; then
-				printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
-
-				for item in "${items[@]}"; do
-					if [[ "$item" != "$key" ]]; then
-						printf "      %s%s%s\n" "$_DIM" "$item" "$_R"
-					fi
-					((total++))
-				done
-			else
-				printf "    %s%s%s\n" "$_GREEN" "$key" "$_R"
-				((total++))
-			fi
-		done
-	done
-
-	local dir_word="directories"
-	((${#SCRIPT_DIRS[@]} == 1)) && dir_word="directory"
-
-	printf '\n  %s%s%s\n' "$_DIM" "$sep" "$_R"
-	printf '  %s%d scripts across %d %s%s\n\n' "$_DIM" "$total" "${#SCRIPT_DIRS[@]}" "$dir_word" "$_R"
+    printf '\n  %s%s%s\n' "$_DIM" "$sep" "$_R"
+    printf '  %s%d scripts across %d %s%s\n\n' "$_DIM" "$total" "${#SCRIPT_DIRS[@]}" "$dir_word" "$_R"
 }
 
 lock_session() {
-	#? hyde-shell lock-session wraps around the lockscreen.sh script
-	#? lockscreen.sh activates the set lockscreen blindly
-	#? however, lock-session will check if the lockscreen is set FD's ScreenSaver
-	#? if it is, it will use loginctl lock-session
-	#? otherwise, it will use lockscreen.sh
-	if busctl --user list | grep -q "org.freedesktop.ScreenSaver"; then
-		echo "Using org.freedesktop.ScreenSaver for locking"
-		loginctl lock-session
-	else
-		lockscreen.sh
-	fi
-
+    if busctl --user list | grep -q "org.freedesktop.ScreenSaver"; then
+        echo "Using org.freedesktop.ScreenSaver for locking"
+        loginctl lock-session
+    else
+        lockscreen.sh
+    fi
 }
 
-#*--------------------------------------------------------------------------------
+# -----------------------------------------------------------------
 
 if [[ -z "${BASH_SOURCE[0]}" ]]; then
-	EXECUTABLE="${0}"
+    EXECUTABLE="${0}"
 else
-	EXECUTABLE="${BASH_SOURCE[0]}"
+    EXECUTABLE="${BASH_SOURCE[0]}"
 fi
 
 BIN_DIR=$(dirname "$(which "${EXECUTABLE:-hyde-shell}")")
@@ -678,116 +507,118 @@ done
 unset _p
 # Define hyde scripts search paths (colon-separated, user configurable)
 HYDE_SCRIPTS_PATH="${HYDE_SCRIPTS_PATH:-${XDG_CONFIG_HOME:-$HOME/.config}/hyde/scripts:${LIB_DIR}/hyde}:${XDG_DATA_HOME:-$HOME/.local/share}/waybar/scripts:${XDG_CONFIG_HOME:-$HOME/.config}/waybar/scripts"
-
 export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
-#*--------------------------------------------------------------------------------
+# -----------------------------------------------------------------
 
-# Prepare runtime directory for hyde
 [[ -d "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde" ]] || mkdir -p "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
 
-# Priority commands
 case "$1" in
 app)
-	export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
-	[[ "${HYDEPY}" -eq 1 ]] && python_activate
-	shift
-	exec app2unit.sh "$@"
-	;;
+    export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
+    [[ "${HYDEPY}" -eq 1 ]] && python_activate
+    shift
+    exec app.sh "$@"
+    ;;
 init | --init)
-	initialized
-	exit 0
-	;;
+    initialized
+    exit 0
+    ;;
 lock-session)
-	lock_session
-	exit 0
-	;;
+    lock_session
+    exit 0
+    ;;
 *)
-	export HYDE_SHELL_INIT=1
-	;;
+    export HYDE_SHELL_INIT=1
+    ;;
 esac
 
-# shellcheck disable=SC1091
 if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
-	echo "Error: Could not load HyDE, broken installation?"
-	exit 1
+    echo "Error: Could not load HyDE, broken installation?"
+    exit 1
 fi
 
-#*--------------------------------------------------------------------------------
+# -----------------------------------------------------------------
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    case $1 in
+    logout)
+        hyde-logout
+        ;;
+    pypr)
+        run_pypr "${@}"
+        exit 0
+        ;;
+    uv)
+        run_uv "${@}"
+        exit 0
+        ;;
+    luarocks)
+        run_luarocks "${@}"
+        exit 0
+        ;;
+    -r | reload)
+        shift
+        hyde_reload "${@}"
+        ;;
+    wallbash)
+        shift
+        call_wallbashScript "$@"
+        ;;
 
-	case $1 in
-	logout)
-		hyde-logout
-		;;
-
-	pypr)
-		run_pypr "${@}"
-		exit 0
-		;;
-
-	uv)
-		run_uv "${@}"
-		exit 0
-		;;
-	luarocks)
-		run_luarocks "${@}"
-		exit 0
-		;;
-	-r | reload)
-		hyde_reload
-		;;
-
-	wallbash)
-		shift
-		call_wallbashScript "$@"
-		;;
-	--release-notes | release-notes)
-		get_release_notes
-		;;
-	--version | version | -v)
-		get_version
-		;;
-	--help | help | -h)
-		USAGE
-		;;
-	-s | scripts)
-		list_scripts_pretty
-		;;
-	--list-script)
-		list_script
-		;;
-	--list-script-path)
-		list_script_path
-		;;
-	--completions | completions)
-		shift
-		generate_completions "$1"
-		;;
-	validate)
-		shift
-		if command -v hyde-config >/dev/null 2>&1; then
-			hyde-config -no-daemon "${@}"
-		else
-			echo "hyde-config not found. Please make sure it is in \$PATH."
-		fi
-		exit 0
-		;;
-	pyinit)
-		python_initialized
-		;;
-	luainit)
-		lua_initialized
-		;;
-	"")
-		for func in $(compgen -A function); do
-			export -f "${func?}"
-		done
-		;;
-	*)
-		run_command "$@"
-		;;
-	esac
-
+    completion | completions)
+        # Delegate all completion operations to the Python backend
+        python_activate
+        python3 "${LIB_DIR}/hyde/completions.py" "${@:2}"
+        exit $?
+        ;;
+    --release-notes | release-notes)
+        get_release_notes
+        ;;
+    --version | version | -v)
+        get_version
+        ;;
+    help)
+        shift
+        if [[ $# -gt 0 ]]; then
+            python3 "${LIB_DIR}/hyde/help.py" "$@"
+            exit $?
+        fi
+        USAGE
+        ;;
+    man)
+        shift
+        python3 "${LIB_DIR}/hyde/man.py" "$@"
+        exit $?
+        ;;
+    --help | -h)
+        USAGE
+        ;;
+    -s | scripts)
+        list_scripts_pretty
+        ;;
+    validate)
+        shift
+        if command -v hyde-config >/dev/null 2>&1; then
+            hyde-config -no-daemon "${@}"
+        else
+            echo "hyde-config not found."
+        fi
+        exit 0
+        ;;
+    pyinit)
+        python_initialized
+        ;;
+    luainit)
+        lua_initialized
+        ;;
+    "")
+        for func in $(compgen -A function); do
+            export -f "${func?}"
+        done
+        ;;
+    *)
+        run_command "$@"
+        ;;
+    esac
 fi

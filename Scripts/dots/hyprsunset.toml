@@ -1,0 +1,12 @@
+[hyprsunset]
+    description = "An application to enable a blue-light filter on Hyprland"
+
+[[hyprsunset.dependency]]
+    dnf  = [ "hyprsunset" ]
+    pacman = [ "hyprsunset" ]
+
+[[hyprsunset.files]]
+    action      = "preserve"
+    paths       = "hyprsunset.conf"
+    source_root = "Configs/.config/hypr"
+    target_root = "${XDG_CONFIG_HOME}/hypr"

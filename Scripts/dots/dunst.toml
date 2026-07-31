@@ -1,0 +1,12 @@
+
+[dunst]
+    description = " Customizable and lightweight notification-daemon"
+
+[[dunst.dependency]]
+    pacman = [ "dunst" ]
+
+[[dunst.files]]
+    action      = "sync"
+    paths       = "dunst"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"

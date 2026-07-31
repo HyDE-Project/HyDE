@@ -74,12 +74,12 @@ def file_query(ctx, target: str) -> None:
 
 
 def count_updates(ctx) -> int:
-    output = ctx.capture(["yay", "-Qu"], check=False)
+    output = ctx.capture(["yay", "-Qua"], check=False)
     return sum(1 for line in output.splitlines() if line.strip())
 
 
 def list_updates(ctx) -> None:
-    ctx.run(["yay", "-Qu"], check=False)
+    ctx.run(["yay", "-Qua"], check=False)
 
 
 def _color_flag(ctx) -> str:
