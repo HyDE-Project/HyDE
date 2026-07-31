@@ -58,10 +58,18 @@ end
 local state_ui = check_require("lua_state.ui") or {}
 hyde.config({ui = state_ui.ui or state_ui, wallbash = state_ui.wallbash or {}}, {skip_empty = true}) -- Merge the config safely and ignore blank strings from state UI
 
--- Loads user config if exists
-local user_config_path = os.getenv("XDG_CONFIG_HOME") .. "/hyde/config.toml"
-if io.open(user_config_path) then
-	hyde.config.load_toml(user_config_path)
+-- Loads the user config if there is one. The directory comes from hyde.path,
+-- which leaves it nil rather than building a path out of an unset variable, so
+-- a session without XDG_CONFIG_HOME skips the optional file instead of dying
+-- on a nil concatenation. The probe closes the handle it opens: this runs on
+-- every reload, and a leaked one accumulates for the life of the session.
+local user_config_path = hyde.path.config and (hyde.path.config .. "/hyde/config.toml")
+if user_config_path then
+	local user_config = io.open(user_config_path)
+	if user_config then
+		user_config:close()
+		hyde.config.load_toml(user_config_path)
+	end
 end
 
 check_require("lua_state.animations")

@@ -8,10 +8,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## Unreleased
 
+### Added
+- Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
+
+### Removed
+- Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
+
 ### Fixed
+- Hyprland: a session started without `XDG_CONFIG_HOME`, such as one launched from a TTY, no longer dies with a Lua error before the first window; the unset variable is treated as unset instead of being pasted into a path
+- Hyprland: a home directory containing an apostrophe no longer makes the session load its libraries from the system directory instead of the user's own, and an empty `XDG_RUNTIME_DIR` reads as unset rather than resolving against the working directory
+- Waybar: the theme module and the HyDE menu call `theme.switch` again; `themeswitch` was removed and the calls failed outright
+- Dolphin: the "Set As Wallpaper" service menu switches the theme again
+- Fish: `HYPRLAND_CONFIG` points at the deployed `hypr/hyde.lua` instead of a config the Lua release deleted, so a session started outside uwsm no longer comes up without a config
+- Hyprland: the config editor offers the user's `hypr/hyprland.lua` instead of four files nothing reads, which it used to create empty on save
+- System monitor: a console monitor no longer launches with no terminal attached, and `[sysmonitor] terminal` is a real setting
+- Docs: the keybinding reference describes the Lua configuration instead of the removed `userprefs.conf`, documents binds that were missing from it, corrects four descriptions that no longer matched the code, and explains why an override needs the original bind's flags
+- Docs: the shipped `hypr/hyprland.lua` stub shows a working bind instead of pointing at a wiki that does not exist
+- Docs: the keybinding links in the German, Arabic, French, Dutch and Turkish readmes resolve again
+- Core: every migration that has not been applied yet now runs in version order and is recorded, instead of only the newest one running and retiring the rest unseen
+- Core: app launchers no longer show a false error when an unrelated `DEBUG` variable contains a non-boolean value such as `release`
+- Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
+- Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad
+- Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice
+- Screenshot: Satty defaults to the compatible GTK GL renderer when no explicit `GSK_RENDERER` is configured
+- Screenshot: the "print all monitors" keybind now invokes a full-output capture instead of capturing only the focused monitor
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
 - Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
-  Group navigation stays on `Super + Alt + arrows`
+  Group navigation uses `Super + Ctrl + H/L`
 - Hyprland: the right Control key no longer hides Waybar on its own. Hiding moved to `Super + Ctrl + B`
 - Hyprland: workspaces 11-20 on the numpad respond again
 - OCR: the language list in the result notification is no longer split across arguments

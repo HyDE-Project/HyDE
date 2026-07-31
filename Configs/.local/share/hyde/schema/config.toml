@@ -98,7 +98,7 @@ font = "JetBrainsMono Nerd Font"  # Font for bookmarks.
 [wlogout]
 style = 2  # Style for wlogout.
 
-# batterynotify.sh configuration.
+# Battery notification configuration.
 [battery.notify]
 timer = 120  # Timer for battery notifications.
 notify = 1140  # Notification threshold.
@@ -215,6 +215,7 @@ steps = 5  # Number of steps to increase/decrease brightness.
 [sysmonitor]
 execute = ""  # Default command to execute.
 commands = [""]  # Fallback command options.
+terminal = ""  # Terminal used to launch a console monitor. Falls back to TERMINAL.
 
 # hyprlock configuration.
 [hyprlock]
@@ -321,7 +322,7 @@ clipboard_persist = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persi
 wallpaper = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global"  # Wallpaper script.
 bar = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch"  # Bar.
 notifications = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- dunst"  # Notification daemon.
-battery_notify = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh"  # Battery notification script.
+battery_notify = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua"  # Battery notification script.
 applet_network_manager = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-network-manager-applet.service -t service -- nm-applet --indicator"  # Network manager applet.
 applet_removable_media = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray"  # Removable media applet.
 applet_bluetooth = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet"  # Bluetooth applet.

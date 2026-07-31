@@ -1,6 +1,5 @@
 [hyprland]
 description = "hyprland with lua"
-conflicts = ["hyprland_legacy", "hyprland-legacy"]
 version = "0.56.1"
 pre_command = "hyprctl eval 'hl.config({misc={disable_autoreload=true}})' || true" # Make sure the global run hyprctl reload
 post_command = "echo 'Please run 'hyprctl reload' Just incase for errors and to apply the new configuration'"

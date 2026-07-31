@@ -13,4 +13,5 @@
         "swaync",
         "waybar/menus/swaync.xml",
         "hyde/wallbash/theme/swaync.dcol",
+        "hyde/wallbash/scripts/swaync.sh",
     ]

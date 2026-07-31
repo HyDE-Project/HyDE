@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 pkill -x rofi && exit
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
-confDir="${XDG_CONFIG_HOME:-$HOME/.config}"
-keyconfDir="$confDir/hypr"
-kb_hint_conf=("$keyconfDir/hyprland.conf" "$keyconfDir/keybindings.conf" "$keyconfDir/userprefs.conf")
-kb_hint_conf+=("${ROFI_KEYBIND_HINT_CONFIG[@]}")
 kb_cache="$XDG_RUNTIME_DIR/hyde/keybinds_hint.rofi"
 
 if [[ $1 == "--reload" ]]; then
