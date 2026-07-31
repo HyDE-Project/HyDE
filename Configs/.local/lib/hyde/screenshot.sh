@@ -90,6 +90,14 @@ fi
 
 [[ -n ${SCREENSHOT_ANNOTATION_ARGS[*]} ]] && annotation_args+=("${SCREENSHOT_ANNOTATION_ARGS[@]}")
 
+run_annotation_tool() {
+    if [[ $annotation_tool == "satty" ]]; then
+        GSK_RENDERER="${GSK_RENDERER:-gl}" "$annotation_tool" "${annotation_args[@]}"
+    else
+        "$annotation_tool" "${annotation_args[@]}"
+    fi
+}
+
 take_screenshot() {
     local mode=$1
     shift
@@ -102,7 +110,7 @@ take_screenshot() {
     print_log -g "Executing screenshot command: ${command[*]}"
     if eval "${command[*]}"; then
         [[ ${SCREENSHOT_ANNOTATION_ENABLED} == false ]] && return 0
-        if ! "$annotation_tool" "${annotation_args[@]}"; then
+        if ! run_annotation_tool; then
             send_notifs -r 9 -a "HyDE Alert" "Screenshot Error" "Failed to open annotation tool"
             return 1
         fi

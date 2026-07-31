@@ -362,7 +362,7 @@ options = [1, 2]
 type = "integer"
 
 [properties."battery.notify"]
-description = "batterynotify.sh configuration."
+description = "Battery notification configuration."
 type = "object"
 
 [properties."battery.notify".properties.timer]
@@ -787,6 +787,11 @@ type = "array"
 [properties.sysmonitor.properties.commands.items]
 type = "string"
 
+[properties.sysmonitor.properties.terminal]
+default = ""
+description = "Terminal used to launch a console monitor. Falls back to TERMINAL."
+type = "string"
+
 [properties.hyprlock]
 description = "hyprlock configuration."
 type = "object"
@@ -1186,7 +1191,7 @@ description = "Notification daemon."
 type = "string"
 
 [properties."desktop.start".properties.battery_notify]
-default = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh"
+default = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua"
 description = "Battery notification script."
 type = "string"
 

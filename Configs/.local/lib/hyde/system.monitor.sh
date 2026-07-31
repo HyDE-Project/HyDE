@@ -60,9 +60,11 @@ for sysMon in "${!pkgChk[@]}"; do
         break
     fi
     if pkg_installed "${pkgChk[sysMon]}"; then
-        term=$(grep -E '^\s*'"$term" "$HOME/.config/hypr/keybindings.conf" | cut -d '=' -f2 | xargs)
-        term=${TERMINAL:-$term}
-        term=${SYSMONITOR_TERMINAL:-$term}
+        term=${SYSMONITOR_TERMINAL:-${TERMINAL}}
+        if [ -z "${term}" ]; then
+            print_log -warn "system.monitor" "no terminal configured, set [sysmonitor] terminal or TERMINAL"
+            continue
+        fi
         if $term "${pkgChk[sysMon]}"; then
             pid="$!"
             echo "$pid:::${pkgChk[sysMon]}" > "$pidFile"

@@ -453,16 +453,9 @@ if has_operation "restore"; then
 
 	echo "Running migrations from: ${migrationDir}"
 
-	if [ -d "${migrationDir}" ] && find "${migrationDir}" -type f | grep -q .; then
-		migrationFile=$(find "${migrationDir}" -maxdepth 1 -type f -printf '%f\n' | sort -r | head -n 1)
+	migrationStateFile="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/applied"
 
-		if [[ -n "${migrationFile}" && -f "${migrationDir}/${migrationFile}" ]]; then
-			echo "Found migration file: ${migrationFile}"
-			sh "${migrationDir}/${migrationFile}" || { true && print_log -warn "Migration" "Failed to execute ${migrationFile}"; }
-		else
-			echo "No migration file found in ${migrationDir}. Skipping migrations."
-		fi
-	fi
+	run_pending_migrations "${migrationDir}" "${migrationStateFile}"
 
 fi
 

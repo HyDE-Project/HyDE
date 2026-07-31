@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - dev
+      - rc
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Configuration and script checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends lua5.4 shellcheck
+          sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
+          sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
+
+      - name: Report tool versions
+        run: |
+          lua -v
+          shellcheck --version
+          python3 --version
+
+      - name: Run the test suite
+        run: sh tests/run.sh

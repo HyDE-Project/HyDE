@@ -5,14 +5,14 @@ requires-python = ">=3.11"
 dependencies = [
     "loguru==0.7.3",
     "pulsectl==24.12.0",
-    "requests==2.33.0",
+    "requests==2.34.2",
     "inotify_simple",
     "hererocks>=0.25.1",
     "websockets>=16.0",
     "xdg-prefs",
     "uv>=0.1.0",
     "deez-dots",
-    "pyprland==3.3.1",
+    "pyprland==3.4.3",
 ]
 
 [project.optional-dependencies]
