@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - Hyprland: a session on a machine with a discrete NVIDIA GPU no longer comes up with a timed-out configuration; driver detection reads `/proc` and `/sys`, and the library directories are found by opening the candidate paths, so the budget Hyprland allows the whole configuration is no longer spent waiting on a subprocess
+- Core: an install deploys the cursor dots again instead of aborting on an existing theme file; the locked `deez-dots` revision predated the extraction fix, so every install kept running the defect the fix had already closed
 - Core: Pyprland commands keep their arguments when `nc`, `socat`, and `ncat` are unavailable, so commands such as `hyde-shell pypr toggle console` work through the CLI fallback again
 - Hyprland: a session started without `XDG_CONFIG_HOME`, such as one launched from a TTY, no longer dies with a Lua error before the first window; the unset variable is treated as unset instead of being pasted into a path
 - Hyprland: a home directory containing an apostrophe no longer makes the session load its libraries from the system directory instead of the user's own, and an empty `XDG_RUNTIME_DIR` reads as unset rather than resolving against the working directory
