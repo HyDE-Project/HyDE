@@ -3,7 +3,17 @@
 from __future__ import annotations
 from typing import Sequence
 
+from ..package_managers.meta import PMMetadata
+
 PackageEntry = tuple[str, str | None, str | None, str | None]
+
+# Metadata: zypper is a base package manager
+META = PMMetadata(
+    name="zypper",
+    priority=10,
+    is_base=True,
+)
+
 
 def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
     args = ["sudo", "zypper", "install"]

@@ -9,8 +9,25 @@ from pathlib import Path
 from tempfile import TemporaryDirectory, mktemp
 from typing import Iterator, Sequence
 
+import sys
+from pathlib import Path as _Path
+_BASE_DIR = _Path(__file__).resolve().parent
+if str(_BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(_BASE_DIR))
+
+from meta import PMMetadata
+
 AUR_HELPERS = ("paru", "paru-bin", "yay", "yay-bin")
 PackageEntry = tuple[str, str | None, str | None, str | None]
+
+# Metadata: pacman is a base package manager with high priority
+META = PMMetadata(
+    name="pacman",
+    priority=10,
+    is_base=True,
+    conflicts=("paru", "paru-bin", "yay", "yay-bin"),
+    overrides=("paru", "paru-bin", "yay", "yay-bin"),
+)
 
 
 def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:

@@ -1,14 +1,33 @@
-"""Paru manager implementation."""
+"""Yay manager implementation."""
 
 from __future__ import annotations
 
 from typing import Sequence
 
+import sys
+from pathlib import Path as _Path
+_BASE_DIR = _Path(__file__).resolve().parent
+if str(_BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(_BASE_DIR))
+
+from meta import PMMetadata
+
 PackageEntry = tuple[str, str | None, str | None, str | None]
+
+# Metadata: yay is an AUR helper with lower priority than pacman
+# It conflicts with paru (both are AUR helpers)
+META = PMMetadata(
+    name="yay",
+    priority=20,
+    conflicts=("paru", "paru-bin"),
+    overrides=(),
+)
+
+# pacman.py will declare it overrides yay/paru
 
 
 def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
-    args = ["paru", "-S", "--needed"]
+    args = ["yay", "-S", "--needed"]
     if no_confirm:
         args.append("--noconfirm")
     args.extend(packages)
@@ -16,7 +35,7 @@ def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
 
 
 def remove(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
-    args = ["paru", "-Rsc"]
+    args = ["yay", "-Rsc"]
     if no_confirm:
         args.append("--noconfirm")
     args.extend(packages)
@@ -24,27 +43,28 @@ def remove(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
 
 
 def upgrade(ctx, no_confirm: bool = False) -> None:
-    args = ["paru", "-Su"]
+    args = ["yay", "-Su"]
     if no_confirm:
         args.append("--noconfirm")
     ctx.run(args)
 
 
 def fetch(ctx, no_confirm: bool = False) -> None:
-    args = ["paru", "-Sy"]
+    args = ["yay", "-Sy"]
     if no_confirm:
         args.append("--noconfirm")
     ctx.run(args)
 
 
 def info(ctx, package: str) -> None:
-    ctx.run(["paru", "-Si", f"--color={_color_flag(ctx)}", package])
+    ctx.run(["yay", "-Si", f"--color={_color_flag(ctx)}", package])
 
 
 def list_all(ctx) -> list[PackageEntry]:
     entries: list[PackageEntry] = []
-    output = ctx.capture(["paru", "-Sl", "--color=never"])
-    for line in output.splitlines():
+    pacman_output = ctx.capture(["pacman", "-Sl", "--color=never"])
+    yay_output = ctx.capture(["yay", "-Sla", "--color=never"])
+    for line in (pacman_output + "\n" + yay_output).splitlines():
         parts = line.split()
         if len(parts) < 3:
             continue
@@ -55,7 +75,7 @@ def list_all(ctx) -> list[PackageEntry]:
 
 
 def list_installed(ctx) -> list[PackageEntry]:
-    output = ctx.capture(["paru", "-Q", "--color=never"])
+    output = ctx.capture(["yay", "-Q", "--color=never"])
     entries: list[PackageEntry] = []
     for line in output.splitlines():
         parts = line.split()
@@ -65,20 +85,20 @@ def list_installed(ctx) -> list[PackageEntry]:
 
 
 def is_installed(ctx, package: str) -> bool:
-    return ctx.run(["paru", "-Q", package], check=False).returncode == 0
+    return ctx.run(["yay", "-Q", package], check=False).returncode == 0
 
 
 def file_query(ctx, target: str) -> None:
-    ctx.run(["paru", "-F", "--", target])
+    ctx.run(["yay", "-F", "--", target])
 
 
 def count_updates(ctx) -> int:
-    output = ctx.capture(["paru", "-Qua"], check=False)
+    output = ctx.capture(["yay", "-Qua"], check=False)
     return sum(1 for line in output.splitlines() if line.strip())
 
 
 def list_updates(ctx) -> None:
-    ctx.run(["paru", "-Qua"], check=False)
+    ctx.run(["yay", "-Qua"], check=False)
 
 
 def _color_flag(ctx) -> str:

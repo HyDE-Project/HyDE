@@ -4,7 +4,22 @@ from __future__ import annotations
 
 from typing import Sequence
 
+import sys
+from pathlib import Path as _Path
+_BASE_DIR = _Path(__file__).resolve().parent
+if str(_BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(_BASE_DIR))
+
+from meta import PMMetadata
+
 PackageEntry = tuple[str, str | None, str | None, str | None]
+
+# Metadata: flatpak is a universal package manager (not base, not AUR)
+META = PMMetadata(
+    name="flatpak",
+    priority=30,
+    is_base=False,
+)
 
 
 def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:

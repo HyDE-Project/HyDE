@@ -17,17 +17,13 @@ from pathlib import Path
 from types import ModuleType
 from typing import Callable, Iterable, Sequence
 
-PMS = ["pacman", "yay", "paru", "apt", "dnf", "zypper", "flatpak"]
-CONFLICT_GROUPS: list[tuple[str, ...]] = [
-    ("paru", "yay"),
-]
-__all__ = [
-    "main",
-    "determine_pm",
-    "list_available_managers",
-    "print_available_managers",
-    "load_manager",
-]
+# Add parent directory to path for absolute imports
+_BASE_DIR = Path(__file__).resolve().parent
+if str(_BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(_BASE_DIR))
+
+from package_managers.meta import PMMetadata, DEFAULT_META
+
 PACKAGE_ENTRY = tuple[str, str | None, str | None, str | None]
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 _MANAGER_CACHE: dict[str, ModuleType] = {}
@@ -63,7 +59,7 @@ class ManagerContext:
         # Always force LANG and LC_ALL to C for predictable output
         env["LANG"] = "C"
         env["LC_ALL"] = "C"
-        # Support PACKAGE_MANAGER_NO_CONFIRM for all backends
+        # Support PACKAGE_MANAGER_NO_CONFIRM for all package_managers
         if self.no_confirm:
             env["PACKAGE_MANAGER_NO_CONFIRM"] = "1"
         # Sanitize environment: remove any variable containing NUL bytes
@@ -104,10 +100,11 @@ class PMState:
     script_path: Path
     no_confirm: bool = False
 
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=Path(sys.argv[0]).name,
-        description="Package manager wrapper over multiple backends.",
+        description="Package manager wrapper over multiple package_managers.",
     )
     parser.add_argument("--pm", dest="force_pm", help="Force package manager to use a specific backend.")
     parser.add_argument("--available", dest="available", action="store_true", help="List available package managers and exit.")
@@ -197,24 +194,65 @@ def main(argv: Sequence[str] | None = None) -> None:
     handler(state, args)
 
 
-def resolve_conflicted_managers(available: Sequence[str]) -> list[str]:
-    winners: list[str] = []
-    # For each conflict group, keep the first available manager according to PMS priority.
-    for group in CONFLICT_GROUPS:
-        for name in available:
-            if name in group:
-                winners.append(name)
-                break
-    for name in available:
-        if any(name in group for group in CONFLICT_GROUPS):
+def _discover_managers() -> list[tuple[str, PMMetadata]]:
+    """Discover all available package manager modules and their metadata."""
+    managers = []
+    pm_dir = Path(__file__).parent / "package_managers"
+    for py_file in pm_dir.glob("*.py"):
+        if py_file.name == "__init__.py":
             continue
-        winners.append(name)
-    return winners
+        name = py_file.stem
+        if not shutil.which(name):
+            continue
+        module = load_manager(name)
+        meta = getattr(module, "META", DEFAULT_META)
+        if not meta.name:
+            meta.name = name
+        managers.append((name, meta))
+    return managers
 
 
 def list_available_managers() -> list[str]:
-    available = [name for name in PMS if shutil.which(name)]
-    return resolve_conflicted_managers(available)
+    """Return available managers sorted by priority."""
+    managers = _discover_managers()
+
+    # Sort by priority (lower = higher priority), then by name for stability
+    managers.sort(key=lambda m: (m[1].priority, m[0]))
+
+    # Group by priority level and resolve conflicts within each group
+    selected = []
+    current_priority = None
+    group = []
+
+    for name, meta in managers:
+        if current_priority is None or meta.priority == current_priority:
+            group.append((name, meta))
+            current_priority = meta.priority
+        else:
+            # Process the previous group
+            selected.extend(_resolve_conflicts_in_group(group))
+            group = [(name, meta)]
+            current_priority = meta.priority
+
+    # Process the last group
+    if group:
+        selected.extend(_resolve_conflicts_in_group(group))
+
+    return [name for name, _ in selected]
+
+
+def _resolve_conflicts_in_group(group: list[tuple[str, PMMetadata]]) -> list[tuple[str, PMMetadata]]:
+    """Resolve conflicts within a priority group - keep highest priority (which is same for all)."""
+    selected = []
+    for name, meta in group:
+        overridden = False
+        for sel_name, sel_meta in selected:
+            if name in sel_meta.conflicts:
+                overridden = True
+                break
+        if not overridden:
+            selected.append((name, meta))
+    return selected
 
 
 def print_available_managers() -> None:
@@ -224,22 +262,21 @@ def print_available_managers() -> None:
 
 def determine_pm(forced: str | None) -> str:
     if forced:
-        if forced not in PMS:
-            die(f"forced package manager '{forced}' is not supported")
         ensure_command(forced)
         return forced
     env_pm = os.environ.get("PM")
-    if env_pm and env_pm in PMS and shutil.which(env_pm):
+    if env_pm and shutil.which(env_pm):
         return env_pm
+    # Use the first available manager (highest priority after conflict resolution)
     for name in list_available_managers():
         return name
-    die("no supported package manager found (%s)" % " ".join(PMS))
+    die("no supported package manager found")
 
 
 def load_manager(name: str) -> ModuleType:
     if name in _MANAGER_CACHE:
         return _MANAGER_CACHE[name]
-    module_path = Path(__file__).with_name("pm") / f"{name}.py"
+    module_path = Path(__file__).parent / "package_managers" / f"{name}.py"
     if not module_path.is_file():
         die(f"missing manager module for '{name}'")
     spec = spec_from_file_location(f"pm_handlers.{name}", module_path)

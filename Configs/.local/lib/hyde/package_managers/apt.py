@@ -4,7 +4,16 @@ from __future__ import annotations
 
 from typing import Sequence
 
+from ..package_managers.meta import PMMetadata
+
 PackageEntry = tuple[str, str | None, str | None, str | None]
+
+# Metadata: apt is a base package manager
+META = PMMetadata(
+    name="apt",
+    priority=10,
+    is_base=True,
+)
 
 
 def install(ctx, packages: Sequence[str], no_confirm: bool = False) -> None:
