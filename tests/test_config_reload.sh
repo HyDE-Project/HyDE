@@ -50,6 +50,11 @@ while IFS= read -r file; do
     fail "${file#"$REPO_ROOT"/} blocks the configuration on a subprocess"
 done < "$list"
 
+# A guard that scans nothing passes for the wrong reason, and would keep doing
+# so if the tree moved out from under it.
+[ "$count" -gt 0 ] ||
+    fail "no Lua file was scanned, the configuration tree is not where this expects it"
+
 printf '    %d file(s) checked\n' "$count"
 
 finish
