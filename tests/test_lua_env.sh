@@ -43,23 +43,33 @@ chmod +x "$work_dir/luarocks"
 printf '#!/usr/bin/env sh\nexit 0\n' > "$work_dir/lua"
 chmod +x "$work_dir/lua"
 
-# Runs `create` against a bootstrap list written for the case at hand.
-create_with() {
-    printf '%s\n' "$1" > "$work_dir/lua_env.json"
+# Runs one command against a bootstrap list written for the case at hand.
+run_with() {
+    printf '%s\n' "$2" > "$work_dir/lua_env.json"
     XDG_STATE_HOME="$work_dir/state" \
         LUA="$work_dir/lua" \
         LUAROCKS="$work_dir/luarocks" \
-        python3 "$work_dir/lua_env.py" create >"$work_dir/out" 2>&1
+        python3 "$work_dir/lua_env.py" "$1" >"$work_dir/out" 2>&1
 }
 
-create_with '{"bootstrap_install": [{"name": "dkjson", "version": "2.11-1"}, {"name": "unbuildable", "optional": true}]}' ||
+run_with create '{"bootstrap_install": [{"name": "dkjson", "version": "2.11-1"}, {"name": "unbuildable", "optional": true}]}' ||
     fail "an optional package that failed to build ended the run: $(cat "$work_dir/out")"
 
 grep -q 'unbuildable' "$work_dir/out" ||
     fail "the skipped optional package was not reported"
 
-create_with '{"bootstrap_install": [{"name": "unbuildable"}]}' &&
+run_with create '{"bootstrap_install": [{"name": "unbuildable"}]}' &&
     fail "a required package that failed to build did not end the run"
+
+# `hyde-shell luainit` reinstalls through sync rather than create, and falls
+# back to a full rebuild when it fails. Without the same tolerance there, an
+# unbuildable optional rock would tear the rocks tree down on every routine
+# refresh of the environment.
+run_with sync '{"bootstrap_install": [{"name": "dkjson", "version": "2.11-1"}, {"name": "unbuildable", "optional": true}]}' ||
+    fail "sync ended the run over an optional package: $(cat "$work_dir/out")"
+
+run_with sync '{"bootstrap_install": [{"name": "unbuildable"}]}' &&
+    fail "sync did not end the run over a required package"
 
 # The shipped list has to mark lgi optional, otherwise the guard above protects
 # nothing on a real installation.
@@ -75,6 +85,6 @@ lgi = [e for e in entries if isinstance(e, dict) and "lgi" in e.get("name", "")]
 sys.exit(0 if lgi and lgi[0].get("optional") else 1)
 CHECK
 
-printf '    %d bootstrap case(s) checked\n' 3
+printf "    %d bootstrap case(s) checked\n" 5
 
 finish
