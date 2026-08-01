@@ -22,15 +22,18 @@ work_dir=$(mktemp -d)
 trap 'rm -rf "$work_dir"' EXIT
 mkdir -p "$work_dir/home/.config"
 
-# Prints the resolved value of one field, or "error" when loading blew up.
+# Prints the resolved value of one field, or "error" when loading blew up. A
+# module that fails to load exits non-zero as well: a case that expects a path
+# not to be chosen would otherwise be satisfied by the module never running.
 resolve() {
     lua -e "
         local ok, err = pcall(dofile, [[$path_module]])
         if not ok then
             io.write('error: ', tostring(err))
-        else
-            io.write(tostring(hyde.path.$1))
+            os.exit(1)
         end
+
+        io.write(tostring(hyde.path.$1))
     " 2>&1
 }
 
@@ -94,11 +97,19 @@ if command -v mkfifo >/dev/null 2>&1 && command -v timeout >/dev/null 2>&1; then
     mkfifo "$fifo_home/.local/lib"
 
     lib=$(HOME="$fifo_home" timeout 5 lua -e "
-        local ok = pcall(dofile, [[$path_module]])
-        io.write(ok and tostring(hyde.path.lib) or 'error')
+        local ok, err = pcall(dofile, [[$path_module]])
+        if not ok then
+            io.write('error: ', tostring(err))
+            os.exit(1)
+        end
+
+        io.write(tostring(hyde.path.lib))
     " 2>&1)
-    [ "$?" -eq 124 ] &&
-        fail "a FIFO in place of a candidate directory hung the resolver"
+    case $? in
+    0) ;;
+    124) fail "a FIFO in place of a candidate directory hung the resolver" ;;
+    *) fail "the resolver raised on a FIFO candidate instead of skipping it: $lib" ;;
+    esac
     [ "$lib" = "$fifo_home/.local/lib" ] &&
         fail "a FIFO was resolved as a directory: $lib"
 else
@@ -110,7 +121,8 @@ fi
 file_home="$work_dir/file"
 mkdir -p "$file_home/.local"
 : > "$file_home/.local/lib"
-lib=$(HOME="$file_home" resolve lib)
+lib=$(HOME="$file_home" resolve lib) ||
+    fail "the resolver raised on a regular file candidate: $lib"
 [ "$lib" = "$file_home/.local/lib" ] &&
     fail "a regular file was resolved as a directory: $lib"
 
