@@ -64,10 +64,16 @@ def load_bootstrap_config():
             return install, snapshot_exclude
 
     def _parse_pkg_entry(entry):
+        """Reads one package entry as (name, version, optional).
+
+        An entry may mark itself optional, which decides what happens when the
+        rock refuses to build: a required one stops the caller, an optional one
+        is reported and skipped.
+        """
         if isinstance(entry, dict) and "name" in entry:
-            return (entry["name"], entry.get("version"))
+            return (entry["name"], entry.get("version"), bool(entry.get("optional")))
         elif isinstance(entry, str):
-            return (entry, None)
+            return (entry, None, False)
         return None
 
     if isinstance(config, dict):
@@ -79,7 +85,7 @@ def load_bootstrap_config():
         if exclude_cfg is None:
             exclude_cfg = config.get("exclude")
 
-        # install: list of (name, version) tuples
+        # install: list of (name, version, optional) tuples
         if isinstance(install_cfg, list):
             install = []
             for item in install_cfg:
@@ -97,7 +103,7 @@ def load_bootstrap_config():
         else:
             snapshot_exclude = set()
         # Always exclude bootstrap_install names
-        snapshot_exclude = set([name for name, _ in install]) | snapshot_exclude
+        snapshot_exclude = set([entry[0] for entry in install]) | snapshot_exclude
 
     return install, snapshot_exclude
 
@@ -201,6 +207,33 @@ def install_rock(name, version=None, force=False):
     run(args)
 
 
+def install_bootstrap(bootstrap_install, force=False):
+    """Installs the bootstrap rocks, skipping the optional ones that fail.
+
+    A rock that refuses to build stops the caller only when the bootstrap
+    config declares it required. lgi is the reason this distinction exists: it
+    is compiled against the GObject introspection headers, and a system without
+    them used to take the whole installation down at the Lua step, before a
+    single dotfile had been deployed.
+    """
+    skipped = []
+
+    for name, version, optional in bootstrap_install:
+        try:
+            install_rock(name, version, force=force)
+        except subprocess.CalledProcessError:
+            if not optional:
+                raise
+            skipped.append(name)
+            print(f"[lua_env] {name} did not build; it is optional, continuing without it")
+
+    if skipped:
+        print(f"[lua_env] {len(skipped)} optional package(s) skipped: {', '.join(skipped)}")
+        print("[lua_env] install their build dependencies and run 'hyde-shell luainit' to retry")
+
+    return skipped
+
+
 def create_env(force=False):
     ensure_system_tools()
     print(f"[lua_env] Using system Lua: {LUA_BIN}")
@@ -209,8 +242,7 @@ def create_env(force=False):
 
     bootstrap_install, _ = load_bootstrap_config()
     ensure_state_dir()
-    for name, version in bootstrap_install:
-        install_rock(name, version, force=force)
+    install_bootstrap(bootstrap_install, force=force)
 
     restore_saved_rocks(force=force)
 
@@ -236,8 +268,7 @@ def sync_env():
     ensure_state_dir()
     # Reinstall all bootstrap_install packages to latest or pinned version
     bootstrap_install, _ = load_bootstrap_config()
-    for name, version in bootstrap_install:
-        install_rock(name, version, force=True)
+    install_bootstrap(bootstrap_install, force=True)
     # Now snapshot only user-installed rocks
     snapshot_installed_rocks()
 

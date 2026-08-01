@@ -4,6 +4,7 @@ pacman = [
   # System
   "lua", # for lua runtime
   "luarocks", # Core scripts lib
+  "libgirepository", # headers and pkg-config data the lgi rock is built against
   "uwsm", # A standalone Wayland session manager
   "pipewire", # audio/video server
   "pipewire-alsa", # pipewire alsa client
