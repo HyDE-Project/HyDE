@@ -57,6 +57,9 @@ P.data = env("XDG_DATA_HOME", "/.local/share")
 --- so it reads as nil rather than as the working directory.
 P.runtime = env("XDG_RUNTIME_DIR")
 
+--- Errno the open reports when the path exists but may not be read.
+local EACCES = 13
+
 --- Reports whether a path is a directory.
 ---
 --- Plain Lua cannot stat, so this asks the path itself, and asks for the entry
@@ -72,12 +75,17 @@ P.runtime = env("XDG_RUNTIME_DIR")
 --- counts VM instructions, so time spent waiting on a subprocess is time no
 --- part of the configuration can account for.
 ---
+--- A refusal on permission grounds counts as a directory. A directory that
+--- grants search but not read cannot be listed and cannot be opened this way,
+--- yet a file inside it still loads by name — which is all `package.path` ever
+--- does with it, and what `test -d` reported here before.
+---
 --- @param path string Absolute path to test.
 --- @return boolean exists True when the path is a directory.
 local function is_directory(path)
-    local handle = io.open(path .. "/.", "r")
+    local handle, _, code = io.open(path .. "/.", "r")
     if not handle then
-        return false
+        return code == EACCES
     end
 
     handle:close()

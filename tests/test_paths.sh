@@ -105,6 +105,26 @@ else
     skip "mkfifo or timeout is not available, FIFO case not run"
 fi
 
+# A regular file where a directory is expected is the same question without the
+# hazard, and the answer has to be the same.
+file_home="$work_dir/file"
+mkdir -p "$file_home/.local"
+: > "$file_home/.local/lib"
+lib=$(HOME="$file_home" resolve lib)
+[ "$lib" = "$file_home/.local/lib" ] &&
+    fail "a regular file was resolved as a directory: $lib"
+
+# A directory that grants search but not read still serves files by name, which
+# is all package.path asks of it, so it counts. Running as root makes the
+# distinction disappear, and the case then only asserts the ordinary answer.
+xonly_home="$work_dir/xonly"
+mkdir -p "$xonly_home/.local/lib"
+chmod 111 "$xonly_home/.local/lib"
+lib=$(HOME="$xonly_home" resolve lib)
+chmod 755 "$xonly_home/.local/lib"
+[ "$lib" = "$xonly_home/.local/lib" ] ||
+    fail "an unreadable candidate directory was skipped: $lib"
+
 # The consumer has to be prepared for that, otherwise the guard above buys
 # nothing: dynamic.lua must not concatenate the config path unconditionally.
 dynamic="$REPO_ROOT/Configs/.local/share/hypr/lua/dynamic.lua"

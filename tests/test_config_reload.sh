@@ -22,6 +22,12 @@ list=$(mktemp)
 trap 'rm -f "$list"' EXIT
 find "$config_dir" -name '*.lua' -type f | sort > "$list"
 
+# The TOML parser is the one library outside that tree the configuration pulls
+# in — hyde/config.lua requires it, and it requires nothing further. The rest of
+# luautils is shared with command line tools, where a subprocess is legitimate.
+toml="$REPO_ROOT/Configs/.local/lib/hyde/luautils/toml.lua"
+[ -f "$toml" ] && printf '%s\n' "$toml" >> "$list"
+
 count=0
 while IFS= read -r file; do
     count=$((count + 1))
