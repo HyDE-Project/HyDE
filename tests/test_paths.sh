@@ -69,8 +69,10 @@ runtime=$(HOME="$work_dir/home" XDG_RUNTIME_DIR="$work_dir/run" resolve runtime)
 [ "$runtime" = "$work_dir/run" ] ||
     fail "a set XDG_RUNTIME_DIR was not honoured: $runtime"
 
-# The directory probe shells out, so a home directory is allowed to contain a
-# quote: it has to be found, and it must not be able to run anything.
+# A home directory is allowed to contain a quote: it has to be found, and it
+# must not be able to run anything. The probe no longer goes through a shell,
+# which is what makes the second half of that hold; the case stays as the guard
+# that says so.
 quoted_home="$work_dir/qu'ote"
 mkdir -p "$quoted_home/.local/lib"
 lib=$(HOME="$quoted_home" resolve lib)

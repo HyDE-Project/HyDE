@@ -57,39 +57,34 @@ P.data = env("XDG_DATA_HOME", "/.local/share")
 --- so it reads as nil rather than as the working directory.
 P.runtime = env("XDG_RUNTIME_DIR")
 
---- Wraps a value so the shell reads it as one literal word.
----
---- Single quotes protect everything except a single quote itself, which has to
---- leave the quoted run, contribute an escaped quote and open a new run. Values
---- here are derived from HOME, and a home directory is free to contain one.
----
---- @param value string Value to pass to the shell.
---- @return string quoted The value as a single quoted shell word.
----
---- Example:
----   shell_quote("/home/o'brien") --> "'/home/o'\\''brien'"
-local function shell_quote(value)
-    return "'" .. value:gsub("'", "'\\''") .. "'"
-end
+--- Errno a read on an open directory fails with.
+local EISDIR = 21
 
 --- Reports whether a path is a directory.
 ---
---- Plain Lua cannot stat, so this asks the shell. The pipe is closed on every
---- outcome — leaving it open leaks a handle per probe, and this module runs on
---- every configuration reload.
+--- Plain Lua cannot stat, so this asks the path itself: opening a directory
+--- succeeds and reading a byte from it fails with EISDIR, a regular file hands
+--- the byte over, and a path that is not there does not open at all. The handle
+--- is closed on every outcome — leaving it open leaks one per probe, and this
+--- module runs on every configuration reload.
+---
+--- Asking the shell instead, as this used to, costs a fork per probe. Hyprland
+--- gives the whole configuration a single 1500 ms budget and its watchdog
+--- counts VM instructions, so time spent waiting on a subprocess is time no
+--- part of the configuration can account for.
 ---
 --- @param path string Absolute path to test.
 --- @return boolean exists True when the path is a directory.
 local function is_directory(path)
-    local pipe = io.popen("[ -d " .. shell_quote(path) .. " ] && echo 1 || echo 0")
-    if not pipe then
+    local handle = io.open(path, "r")
+    if not handle then
         return false
     end
 
-    local answer = pipe:read("*l")
-    pipe:close()
+    local _, _, code = handle:read(1)
+    handle:close()
 
-    return answer == "1"
+    return code == EISDIR
 end
 
 --- Returns the first candidate that exists, preferring the user's own.
