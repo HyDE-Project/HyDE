@@ -57,16 +57,15 @@ P.data = env("XDG_DATA_HOME", "/.local/share")
 --- so it reads as nil rather than as the working directory.
 P.runtime = env("XDG_RUNTIME_DIR")
 
---- Errno a read on an open directory fails with.
-local EISDIR = 21
-
 --- Reports whether a path is a directory.
 ---
---- Plain Lua cannot stat, so this asks the path itself: opening a directory
---- succeeds and reading a byte from it fails with EISDIR, a regular file hands
---- the byte over, and a path that is not there does not open at all. The handle
---- is closed on every outcome — leaving it open leaks one per probe, and this
---- module runs on every configuration reload.
+--- Plain Lua cannot stat, so this asks the path itself, and asks for the entry
+--- inside it that only a directory has: `dir/.` opens, while `file/.` and
+--- `fifo/.` fail with ENOTDIR before anything is opened. Probing the bare path
+--- instead would hand the resolver a way to hang — opening a FIFO with no
+--- writer blocks until one arrives, and this runs before Hyprland has a window
+--- on screen. The handle is closed on every outcome; leaving it open leaks one
+--- per probe, and this module runs on every configuration reload.
 ---
 --- Asking the shell instead, as this used to, costs a fork per probe. Hyprland
 --- gives the whole configuration a single 1500 ms budget and its watchdog
@@ -76,15 +75,14 @@ local EISDIR = 21
 --- @param path string Absolute path to test.
 --- @return boolean exists True when the path is a directory.
 local function is_directory(path)
-    local handle = io.open(path, "r")
+    local handle = io.open(path .. "/.", "r")
     if not handle then
         return false
     end
 
-    local _, _, code = handle:read(1)
     handle:close()
 
-    return code == EISDIR
+    return true
 end
 
 --- Returns the first candidate that exists, preferring the user's own.

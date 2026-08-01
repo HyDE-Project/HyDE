@@ -6,29 +6,43 @@
 # it, and the timeout surfaces in whichever module runs next — a parser, a bind
 # table, anything with a tight Lua loop, none of which are the cause.
 #
-# Nothing the session loads at reload time may fork.
+# Nothing the session loads at reload time may fork. The scan covers the whole
+# shipped hypr tree, entry point included, since that is what Hyprland executes.
 
 # shellcheck source=tests/lib/common.sh
 . "$(dirname -- "$0")/lib/common.sh"
 
-config_dir="$REPO_ROOT/Configs/.local/share/hypr/lua"
+config_dir="$REPO_ROOT/Configs/.local/share/hypr"
 [ -d "$config_dir" ] || {
-    fail "the shipped Hyprland Lua directory is missing"
+    fail "the shipped Hyprland directory is missing"
     finish
 }
 
+list=$(mktemp)
+trap 'rm -f "$list"' EXIT
+find "$config_dir" -name '*.lua' -type f | sort > "$list"
+
 count=0
-for file in $(find "$config_dir" -name '*.lua' -type f | sort); do
+while IFS= read -r file; do
     count=$((count + 1))
 
-    hits=$(grep -nE 'io\.popen|os\.execute' "$file" || true)
+    hits=$(grep -nE 'io\.popen|os\.execute' "$file")
+    status=$?
+
+    # grep answers 1 for a file with no match and 2 or more for a failure to
+    # read one, which must not pass as "nothing found".
+    if [ "$status" -gt 1 ]; then
+        fail "${file#"$REPO_ROOT"/} could not be scanned"
+        continue
+    fi
+
     [ -z "$hits" ] && continue
 
     printf '%s\n' "$hits" | while IFS= read -r hit; do
         printf '    %s:%s\n' "${file#"$REPO_ROOT"/}" "$hit"
     done
     fail "${file#"$REPO_ROOT"/} blocks the configuration on a subprocess"
-done
+done < "$list"
 
 printf '    %d file(s) checked\n' "$count"
 

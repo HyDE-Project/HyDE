@@ -84,6 +84,27 @@ HOME="$work_dir/x'; touch \"$marker\"; echo '" resolve lib >/dev/null 2>&1
 [ -e "$marker" ] &&
     fail "a crafted HOME executed a command through the directory probe"
 
+# A candidate that is not a directory has to be rejected, and a FIFO is the one
+# that can do more than that: opening it with no writer on the other end blocks
+# until one turns up, and this resolver runs before the session has a window on
+# screen. It must answer, and it must answer no.
+if command -v mkfifo >/dev/null 2>&1 && command -v timeout >/dev/null 2>&1; then
+    fifo_home="$work_dir/fifo"
+    mkdir -p "$fifo_home/.local"
+    mkfifo "$fifo_home/.local/lib"
+
+    lib=$(HOME="$fifo_home" timeout 5 lua -e "
+        local ok = pcall(dofile, [[$path_module]])
+        io.write(ok and tostring(hyde.path.lib) or 'error')
+    " 2>&1)
+    [ "$?" -eq 124 ] &&
+        fail "a FIFO in place of a candidate directory hung the resolver"
+    [ "$lib" = "$fifo_home/.local/lib" ] &&
+        fail "a FIFO was resolved as a directory: $lib"
+else
+    skip "mkfifo or timeout is not available, FIFO case not run"
+fi
+
 # The consumer has to be prepared for that, otherwise the guard above buys
 # nothing: dynamic.lua must not concatenate the config path unconditionally.
 dynamic="$REPO_ROOT/Configs/.local/share/hypr/lua/dynamic.lua"
