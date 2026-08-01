@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Core: an install deploys the cursor dots again instead of aborting on an existing theme file; the locked `deez-dots` revision predated the extraction fix, so every install kept running the defect the fix had already closed
 - Hyprland: a session started without `XDG_CONFIG_HOME`, such as one launched from a TTY, no longer dies with a Lua error before the first window; the unset variable is treated as unset instead of being pasted into a path
 - Hyprland: a home directory containing an apostrophe no longer makes the session load its libraries from the system directory instead of the user's own, and an empty `XDG_RUNTIME_DIR` reads as unset rather than resolving against the working directory
 - Waybar: the theme module and the HyDE menu call `theme.switch` again; `themeswitch` was removed and the calls failed outright
