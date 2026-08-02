@@ -197,7 +197,7 @@ toggle_output() {
 iconsDir="${iconsDir:-$XDG_DATA_HOME/icons}"
 icodir="$iconsDir/Wallbash-Icon/media"
 step=${VOLUME_STEPS:-5}
-if pactl info | grep -q "PipeWire" || $VOLUME_PIPEWIRE_ENABLE == true; then
+if pactl info | grep -q "PipeWire" || [[ "${VOLUME_PIPEWIRE_ENABLE:-false}" == "true" ]]; then
     use_pipewire=true
 else
     use_pipewire=false

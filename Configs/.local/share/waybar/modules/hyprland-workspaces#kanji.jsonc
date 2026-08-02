@@ -4,10 +4,10 @@
         "class": "no-margin-padding",
         "all-outputs": true,
         "active-only": false,
-        "on-click": "activate",
         "disable-scroll": false,
-        "on-scroll-up": "hyprctl dispatch workspace -1",
-        "on-scroll-down": "hyprctl dispatch workspace +1",
+        "tooltip": false,
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({workspace=\"e-1\"})'",
+        "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({workspace=\"e+1\"})'",
         "persistent-workspaces": {},
         "format": "{icon}",
         "format-icons": {

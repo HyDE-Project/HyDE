@@ -1,0 +1,17 @@
+[kitty]
+    description = "A modern, hackable, featureful, OpenGL-based terminal emulator"
+
+[[kitty.dependency]]
+    pacman = [ "kitty" ] # Dependency for kitty
+
+[[kitty.files]]
+    action      = "sync"
+    paths       = [ "kitty/hyde.conf", "kitty/kitty.conf" ]
+    source_root = "Configs/.config/"
+    target_root = "${XDG_CONFIG_HOME}"
+
+[[kitty.files]]
+    action      = "preserve"
+    paths       = "kitty/theme.conf"
+    source_root = "Configs/.config/"
+    target_root = "${XDG_CONFIG_HOME}"

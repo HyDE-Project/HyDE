@@ -1,7 +1,4 @@
-"""Session manager for named session files (save, list, delete, etc).
-
-Handles named session snapshots for each compositor backend.
-"""
+"""Named session manager for supported compositor backends."""
 
 import argparse
 import os
@@ -15,12 +12,17 @@ from session.compositor import detect, backend_short_name
 def build_parser() -> "argparse.ArgumentParser":
     p = argparse.ArgumentParser(
         prog="session.py",
-        description="Snapshot-based session manager for Hyprland/Niri/etc.",
+        description="Snapshot manager for supported compositor backends.",
     )
     p.add_argument(
         "-v",
         action="store_true",
         dest="verbose",
+        help="Show debug output for commands",
+    )
+    p.add_argument(
+        "--debug",
+        action="store_true",
         help="Show debug output for commands",
     )
     sub = p.add_subparsers(dest="action", required=True)
@@ -37,6 +39,11 @@ def build_parser() -> "argparse.ArgumentParser":
         action="store_true",
         help="Show debug output for save",
     )
+    sp.add_argument(
+        "--debug",
+        action="store_true",
+        help="Show debug output for save",
+    )
 
     rp = sub.add_parser("restore", help="Restore a saved snapshot (optionally named)")
     rp.add_argument(
@@ -47,6 +54,11 @@ def build_parser() -> "argparse.ArgumentParser":
     )
     rp.add_argument(
         "--verbose",
+        action="store_true",
+        help="Show debug output for restore",
+    )
+    rp.add_argument(
+        "--debug",
         action="store_true",
         help="Show debug output for restore",
     )
@@ -105,6 +117,7 @@ def save_named(name: str = "latest") -> Path:
     save = session_mod.save
     backend = detect()
     dest = _session_dir(backend) / f"{name}.json"
+    logger.debug("Destination snapshot path: %s", dest)
     save(dest)
     logger.info("Saved session '%s'", name)
     return dest

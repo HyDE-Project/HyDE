@@ -1,0 +1,119 @@
+[hyde]
+description = "Hyde core configuration"
+pre_command = "echo 'HyDE Is the Best!'"
+version = "v26.7.4"
+
+#? Core configuration
+[[hyde.files]]
+action = "preserve"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = ["hyde/wallbash"]
+
+[[hyde.files]]
+clean_target = true
+action = "sync"
+source_root = "Configs/.local/lib"
+target_root = "${HOME}/.local/lib"
+paths = "hyde"
+ignored_paths = [".*", "__pycache__"]
+
+# [[hyde.files]]
+# action = "sync"
+# source_root = "Configs/.local/share"
+# target_root = "${XDG_DATA_HOME}"
+# paths = ["icons/Wallbash-Icon", "themes/Wallbash-Gtk"]
+[[hyde.files]]
+clean_target = true
+action = "sync"
+source_root = "Configs/.local/share"
+target_root = "${XDG_DATA_HOME}"
+paths = ["hyde", "wallbash", "xdg-desktop-portal/hyprland-portals.conf"]
+ignored_paths = [".*", "__pycache__", "schema"]
+
+[[hyde.files]]
+action = "sync"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = ["gtk-3.0", "Kvantum", "nwg-look", "qt5ct", "qt6ct", "xsettingsd"]
+ignored_paths = [
+    "qt5ct/qt5ct.conf",
+    "qt6ct/qt6ct.conf",
+    "qt5ct/colors/wallbash.conf",
+    "qt6ct/colors/wallbash.conf",
+    "gtk-3.0/settings.ini"
+]
+
+[[hyde.files]]
+action = "sync"
+source_root = "Configs/"
+target_root = "${HOME}"
+paths = ".gtkrc-2.0"
+
+# Converted from Scripts/restore_cfg.psv
+[[hyde.files]]
+action = "preserve"
+source_root = "Configs/.config/hyde"
+target_root = "${XDG_CONFIG_HOME}/hyde"
+paths = "config.toml"
+
+[[hyde.files]]
+action = "preserve"
+source_root = "Configs/.config/pypr"
+target_root = "${XDG_CONFIG_HOME}/pypr"
+paths = "config.toml"
+
+# [[hyde.files]]
+# action = "sync"
+# source_root = "Configs/.config/systemd"
+# target_root = "${XDG_CONFIG_HOME}/systemd"
+# paths = "user"
+[[hyde.files]]
+action = "sync"
+source_root = "Configs/.config/uwsm"
+target_root = "${XDG_CONFIG_HOME}/uwsm"
+paths = ["env", "env-hyprland", "env.d", "env-hyprland.d"]
+
+[[hyde.files]]
+action = "preserve"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = [
+    "xdg-terminals.list",
+    "kdeglobals",
+    "qt5ct/qt5ct.conf",
+    "qt6ct/qt6ct.conf",
+    "qt5ct/colors/wallbash.conf",
+    "qt6ct/colors/wallbash.conf",
+    "gtk-3.0/settings.ini",
+]
+
+[[hyde.files]]
+action = "sync"
+source_root = "Configs/.local/bin"
+target_root = "${HOME}/.local/bin"
+paths = ["hyde-shell", "hydectl"]
+
+[grimblast]
+source = "blob+https://raw.githubusercontent.com/hyprwm/contrib/refs/heads/main/grimblast/grimblast"
+action = "sync"
+target_root = "${HOME}/.local/lib/hyde/screenshot"
+paths = "grimblast"
+owner = "hyprwm-contrib"
+post_command = "chmod +x ${HOME}/.local/lib/hyde/screenshot/grimblast"
+
+[xdg-terminal-exec]
+version = "0.14.0"
+owner = "Vladimir-csp"
+source = "blob+https://raw.githubusercontent.com/Vladimir-csp/xdg-terminal-exec/refs/heads/master/xdg-terminal-exec"
+action = "sync"
+target_root = "${HOME}/.local/bin"
+paths = "xdg-terminal-exec"
+post_command = "chmod +x ${HOME}/.local/bin/xdg-terminal-exec"
+
+[app2unit]
+source = "blob+https://raw.githubusercontent.com/Vladimir-csp/app2unit/refs/heads/master/app2unit"
+action = "sync"
+target_root = "${HOME}/.local/lib/hyde/"
+paths = "app2unit"
+post_command = "chmod +x ${HOME}/.local/lib/hyde/app2unit"

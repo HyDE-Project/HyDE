@@ -1,0 +1,2 @@
+/dev/null|${WALLBASH_SCRIPTS}/wayle-theme.sh
+# wayle palette bridge - colors passed via dcol_* environment variables

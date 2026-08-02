@@ -17,6 +17,7 @@ if _here not in sys.path:
     sys.path.insert(0, _here)
 
 from pyutils.compositor import HyprctlWrapper  # noqa: E402
+from session.compositor.hyprland import HyprlandBackend  # noqa: E402
 
 MATCH_CLASSES = {"brave-browser"}
 PRIORITY = 30
@@ -25,8 +26,14 @@ PRIORITY = 30
 _rule_counter = 0
 
 
-def _ipc_keyword(args: str) -> str:
-    return HyprctlWrapper._send(f"/keyword {args}")
+def _ipc_eval(code: str) -> str:
+    return HyprctlWrapper._send(f"/eval {code}")
+
+
+def _apply_window_rule(rule_name: str, client: dict, ws_target: str) -> None:
+    backend = HyprlandBackend()
+    rule = backend._lua_window_rule(rule_name, client, ws_target)
+    _ipc_eval(f"hl.window_rule({HyprlandBackend._lua_table(rule)})")
 
 
 def build_restore_cmd(client: dict, ws_target: str) -> str | None:
@@ -40,25 +47,11 @@ def build_restore_cmd(client: dict, ws_target: str) -> str | None:
     """
     global _rule_counter
     command = client.get("_launchString") or "flatpak run com.brave.Browser"
-    initial_class = client.get("initialClass", "brave-browser")
-
     rule_name = f"_hydesession_brave_{_rule_counter}"
     _rule_counter += 1
 
     try:
-        _ipc_keyword(f"windowrule[{rule_name}]:match:initial_class {initial_class}")
-        _ipc_keyword(f"windowrule[{rule_name}]:workspace {ws_target} silent")
-
-        if client.get("floating", False):
-            _ipc_keyword(f"windowrule[{rule_name}]:float true")
-            x, y = client.get("at", [0, 0])
-            w, h = client.get("size", [0, 0])
-            if w > 0 and h > 0:
-                _ipc_keyword(f"windowrule[{rule_name}]:size {w} {h}")
-            _ipc_keyword(f"windowrule[{rule_name}]:move {x} {y}")
-
-        if client.get("pinned", False):
-            _ipc_keyword(f"windowrule[{rule_name}]:pin true")
+        _apply_window_rule(rule_name, client, ws_target)
     except Exception as exc:
         print(f"  [plugin:brave] windowrule setup failed: {exc}", file=sys.stderr)
         return None

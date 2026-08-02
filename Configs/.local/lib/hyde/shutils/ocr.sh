@@ -35,6 +35,6 @@ ocr_extract() {
     )
 
     printf "%s" "$tesseract_output" | wl-copy
-    notify-send -a "HyDE Alert" "$(echo -e "OCR: ${#tesseract_output} symbols recognized\n\nLanguages used ${tesseract_languages[@]/#/'\n '}")" -i "$image_path" -e -r 9
+    notify-send -a "HyDE Alert" "$(echo -e "OCR: ${#tesseract_output} symbols recognized\n\nLanguages used ${tesseract_languages[*]/#/'\n '}")" -i "$image_path" -e -r 9
 
 }

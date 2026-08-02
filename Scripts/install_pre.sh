@@ -12,9 +12,34 @@ if ! source "${scrDir}/global_fn.sh"; then
 fi
 
 flg_DryRun=${flg_DryRun:-0}
+flg_Grub=${flg_Grub:-1}
+flg_Nvidia=${flg_Nvidia:-1}
+
+# Python environment setup
+if [ "${flg_DryRun}" -eq 1 ]; then
+    print_log -y "[PYTHON] " -b "dry-run :: " "Would setup Python environment"
+else
+    python_env_dir="${HOME}/.local/state/hyde/python_env"
+
+    # Create venv using system python3
+    if ! python3 "${cloneDir}/Configs/.local/lib/hyde/pyutils/python_env.py" create; then
+        print_log -err "[PYTHON] " -crit "ERROR" "Failed to create Python environment"
+        print_log -err "[PYTHON] " -crit "ERROR" "Did you you forgot to install base-devel?"
+        exit 1
+    fi
+
+    # Sync dependencies using venv python
+    python_exe="${python_env_dir}/bin/python"
+    if ! "${python_exe}" "${cloneDir}/Configs/.local/lib/hyde/pyutils/python_env.py" sync; then
+        print_log -err "[PYTHON] " -crit "ERROR" "Failed to install dependencies"
+        exit 1
+    fi
+
+    print_log -g "[PYTHON] " -b "complete :: " "Environment setup complete"
+fi
 
 # grub
-if pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
+if [ "${flg_Grub}" -eq 1 ] && pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
     print_log -sec "bootloader" -b "detected :: " "grub..."
 
     if [ ! -f /etc/default/grub.hyde.bkp ] && [ ! -f /boot/grub/grub.hyde.bkp ]; then

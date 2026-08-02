@@ -1,6 +1,5 @@
-"""Niri compositor backend for session management.
-Not working yet!!!!
-Implements the SessionBackend protocol using niri's IPC (niri msg --json).
+"""Niri compositor backend for session save/restore.
+Prototype support via niri msg --json.
 """
 
 import json
@@ -55,6 +54,13 @@ class NiriBackend:
 
         return str(ws.get("id", ws.get("name", "")))
 
+    def multiwindow_key(self, client: dict) -> tuple[int, int] | int | None:
+        pid = client.get("pid", 0)
+        return pid if pid > 0 else None
+
+    def append_multiwindow_metadata(self, rep: dict, client: dict) -> None:
+        return
+
     def launch(self, command: str, client: dict, ws_target: str) -> None:
 
         subprocess.Popen(command, shell=True)
@@ -70,6 +76,16 @@ class NiriBackend:
     def reposition(self, addr: str, saved: dict) -> None:
 
         pass
+
+    def restore_sort_key(self, client: dict) -> tuple:
+        workspace = client.get("workspace", {})
+        ws_id = workspace.get("id", 0)
+        at = client.get("at", [0, 0])
+        if not isinstance(at, (list, tuple)) or len(at) < 2:
+            at = [0, 0]
+        x = at[0] if isinstance(at[0], (int, float)) else 0
+        y = at[1] if isinstance(at[1], (int, float)) else 0
+        return (ws_id, x, y, client.get("_p_window_index", 0), client.get("focusHistoryID", 0))
 
     def schedule_cleanup(self) -> None:
 

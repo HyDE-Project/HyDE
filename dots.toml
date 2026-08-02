@@ -1,0 +1,76 @@
+# This is a full deez dots toml manifest file for Hyde
+# This strips all the old legacy hyprland config
+#  Configuration file for HyDE Dotfiles Manager - Deez Dots
+# This will also serve as an example for the configuration file
+[global] #  This is used to define global variables use for default fallbacks
+version = "0.1.0"                                # Version of the configuration file // Follows Semantic Versioning
+owner = "The HyDE Project"                       # Owner of the configuration file
+action = "preserve"                              # Actions can either be sync or preserve
+git = "https://github.com/HyDE-Project/HyDE.git"
+git_branch = "lua"
+pre_command = "./Scripts/install_aur.sh"
+post_command = "notify-send 'deez done'"
+# dots = ["kitty", "hyprland"] # List of dots to be used in the configuration file
+include = [
+    "Scripts/dots/deps.toml",
+    "Scripts/dots/archives.toml",
+    "Scripts/dots/hyde.toml",
+    "Scripts/dots/hyprland.toml",
+    "Scripts/dots/wallbash.toml",
+    "Scripts/dots/waybar.toml",
+    "Scripts/dots/lsd.toml",
+    "Scripts/dots/rofi.toml",
+    "Scripts/dots/libinput-gestures.toml",
+    "Scripts/dots/spotify.toml",
+    "Scripts/dots/code.toml",
+    "Scripts/dots/electron.toml",
+    "Scripts/dots/baloofilerc.toml",
+    "Scripts/dots/dolphin.toml",
+    "Scripts/dots/dunst.toml",
+    "Scripts/dots/kitty.toml",
+    "Scripts/dots/hyprlock.toml",
+    "Scripts/dots/hypridle.toml",
+    "Scripts/dots/hyprsunset.toml",
+    "Scripts/dots/fastfetch.toml",
+    "Scripts/dots/fish.toml",
+    "Scripts/dots/zsh.toml",
+    "Scripts/dots/wallbash-vim.toml",
+]
+
+# Loads an array of package manager commands
+# This helps support custom package managers
+# and add custom flags for each manager
+[[global.package_managers]]
+name = "yay"
+query = "yay -Qs"
+install = "yay -S"
+uninstall = "yay -R"
+update = "yay -Syu"
+
+[[global.package_managers]]
+name = "paru"
+query = "paru -Qs"
+install = "paru -S"
+uninstall = "paru -R"
+update = "paru -Syu"
+
+[[global.package_managers]]
+name = "dnf"
+query = "dnf list installed"
+install = "sudo dnf install"
+uninstall = "sudo dnf remove"
+update = "sudo dnf upgrade --refresh"
+
+[[global.package_managers]]
+name = "apt"
+query = "apt list --installed"
+install = "sudo apt install -y"
+uninstall = "sudo apt remove -y"
+update = "sudo apt update && sudo apt upgrade -y"
+
+[[global.package_managers]]
+name = "flatpak"
+query = "flatpak list --app --columns application | grep "
+install = "flatpak install -y"
+uninstall = "flatpak uninstall -y"                         # TODO: add --unused
+update = "flatpak update -y"

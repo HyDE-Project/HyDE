@@ -124,10 +124,32 @@ export reload_flag=1
 source "$LIB_DIR/hyde/globalcontrol.sh"
 source "$SHARE_DIR/hyde/env-theme"
 if [[ -r $HYPRLAND_CONFIG ]]; then
-    [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && hyprctl keyword misc:disable_autoreload 1 -q
-    [[ -r "$HYDE_THEME_DIR/hypr.theme" ]] && sanitize_hypr_theme "$HYDE_THEME_DIR/hypr.theme" "$XDG_CONFIG_HOME/hypr/themes/theme.conf"
-    load_hypr_variables "$HYDE_THEME_DIR/hypr.theme"
-    load_hypr_variables "${XDG_STATE_DIR:-$HOME/.local/state}/hyde/hyprland.conf"
+    # TODO convert to func
+    if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
+        case "$HYPRLAND_CONFIG" in
+        *.lua)
+            hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
+            ;;
+        *)
+            hyprctl keyword misc:disable_autoreload 1 -q
+            ;;
+        esac
+    fi
+    # TODO convert to func
+    if [[ -r "$HYDE_THEME_DIR/hypr.theme" ]]; then
+
+        if [[ "${HYPRLAND_CONFIG##*.}" == "lua" ]]; then
+            print_log -sec "theme" -stat "dump" "hypr.theme to lua"
+            hyq --dump "$HYDE_THEME_DIR/hypr.theme" --schema "$XDG_DATA_HOME/hypr/schema/hyprland-lua.json" --export lua >"$XDG_STATE_HOME/hyde/lua_state/hypr_theme.lua"
+        else
+            print_log -sec "theme" -stat "sanitize" "hypr.theme"
+            sanitize_hypr_theme "$HYDE_THEME_DIR/hypr.theme" "$XDG_CONFIG_HOME/hypr/themes/theme.conf"
+        fi
+
+    fi
+    load_hypr_variables "$HYDE_THEME_DIR/hypr.theme"                               # ? loads the theme vars
+    load_hypr_variables "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprland.conf" # ? loads the parsable user config vars, should override theme vars
+    # TODO -- Decide when to remove, hyprlang is still fast for simple stuff.
 fi
 show_theme_status
 if ! dconf write /org/gnome/desktop/interface/icon-theme "'$ICON_THEME'"; then

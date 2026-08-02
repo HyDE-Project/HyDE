@@ -1,0 +1,99 @@
+[cursor-bibata-modern-ice]
+version = "2.0.7"
+source = "https://github.com/ful1e5/Bibata_Cursor/releases/download/v2.0.7/Bibata-Modern-Ice.tar.xz"
+owner = "ful1e5"
+description = "Open source, compact, and material designed cursor set that aims to improve the cursor experience for users. "
+
+[[cursor-bibata-modern-ice.files]]
+action = "sync"
+target_root = "${XDG_DATA_HOME}/icons/Bibata-Modern-Ice"
+paths = ["index.theme", "cursor.theme", "cursors"]
+
+[[cursor-bibata-modern-ice.files]]
+action = "tarball"
+target_root = "/usr/local/share/icons/Bibata-Modern-Ice"
+paths = ["index.theme", "cursor.theme", "cursors"]
+
+[hyprcursor-bibata-modern-ice]
+version = "1.0.0"
+source = "https://github.com/LOSEARDES77/Bibata-Cursor-hyprcursor/releases/download/1.0/hypr_Bibata-Modern-Ice.tar.gz"
+owner = "LOSEARDES77"
+description = "A hyprcursor build of Bibata-Modern-Ice"
+
+[[hyprcursor-bibata-modern-ice.files]]
+action = "sync"
+target_root = "${XDG_DATA_HOME}/icons/Bibata-Modern-Ice"
+paths = ["manifest.hl", "hyprcursors"]
+
+[[hyprcursor-bibata-modern-ice.files]]
+action = "tarball"
+target_root = "/usr/local/share/icons/Bibata-Modern-Ice"
+paths = ["manifest.hl", "hyprcursors"]
+
+[font-cantarell]
+source = "blob+https://gitlab.gnome.org/GNOME/cantarell-fonts/-/package_files/1278/download"
+version = "v0.311"
+target_root = "${XDG_DATA_HOME}/fonts/cantarell"
+paths = "."
+owner = "gnome"
+description = "Humanist sans-serif font family for user interfaces"
+action = "sync"
+
+[font-caskaydia-cove]
+source = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/CascadiaCode.tar.xz"
+version = "3.4.0"
+target_root = "${XDG_DATA_HOME}/fonts/CaskaydiaCove"
+paths = "."
+owner = "ryanoasis"
+description = "Patched font Cascadia Code (CaskaydiaCove) from nerd fonts library"
+action = "sync"
+
+[font-jetbrains-mono]
+source = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.tar.xz"
+version = "3.4.0"
+target_root = "${XDG_DATA_HOME}/fonts/JetBrainsMono"
+paths = "."
+owner = "ryanoasis"
+description = "A typeface made for developers (Patched nerd font)"
+action = "sync"
+
+[font-maple-mono]
+source = "https://github.com/subframe7536/maple-font/releases/download/v7.9/MapleMono-TTF-AutoHint.zip"
+version = "7.9"
+target_root = "${XDG_DATA_HOME}/fonts/MapleMono"
+paths = "."
+owner = "subframe7536"
+description = "A monospaced font with programming ligatures"
+action = "sync"
+
+[font-mononoki]
+source = "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/Mononoki.tar.xz"
+version = "3.4.0"
+target_root = "${XDG_DATA_HOME}/fonts/Mononoki"
+paths = "."
+owner = "ryanoasis"
+description = "font for programming and code review"
+action = "sync"
+
+# *  We only handle a small subset of CJK fonts via NotoSansCJK
+[font-noto-sans-cjk-ttc]
+source = "https://github.com/notofonts/noto-cjk/blob/main/Sans/OTC/NotoSansCJK-Regular.ttc"
+version = "2.003"
+owner = "notofonts"
+description = "Basic CJK support via NotoSansCJK; install full cjk fonts system-wide for complete coverage."
+
+[[font-noto-sans-cjk-ttc.files]]
+target_root = "${XDG_DATA_HOME}/fonts/NotoSansCJK"
+paths = "."
+action = "sync"
+
+[[font-noto-sans-cjk-ttc.files]]
+target_root = "/usr/local/share/fonts/NotoSansCJK"
+paths = "."
+action = "tarball"
+#*
+#! MaterialDesingIcons are now built into the Nerd Fonts  no need to download them
+# TODO: Add systemwide installation
+# * font-noto-sans-cjk-ttc
+# * cursor-bibata-modern-ice
+# * hyprcursor-bibata-modern-ice

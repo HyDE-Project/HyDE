@@ -1,0 +1,14 @@
+
+
+
+[spotify]
+pre_command = "echo 'Preserve spotify flags'"
+
+[[spotify.dependency]]
+flatpak = ["com.spotify.Client"]
+
+[[spotify.files]]
+action = "preserve"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = "spotify-flags.conf"

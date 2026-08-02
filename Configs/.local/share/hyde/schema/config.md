@@ -8,7 +8,7 @@ Users are encouraged to use an editor that support schema validation to ensure t
 ---
 ### [battery.notify]
 
-batterynotify.sh configuration.
+Battery notification configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -103,29 +103,50 @@ Generic desktop/compositor configuration. Compositor-agnostic counterpart to [hy
 | --- | ----------- | ------- |
 | background_path | Lockscreen background path. |  |
 | bar | Status bar. | waybar |
-| browser | Default browser. | firefox |
-| button_layout | Button layout. (gtk only) |  |
-| color_scheme | Color scheme. | prefer-dark |
-| cursor_size | Cursor size. | 24 |
-| cursor_theme | Cursor theme. | Bibata-Modern-Ice |
-| document_font_size | Document font size. | 10 |
-| editor | Default editor. | code |
-| explorer | Default file manager. | dolphin |
-| font | Default font. | Canterell |
-| font_antialiasing | Font antialiasing. | rgba |
-| font_hinting | Font hinting. | full |
-| font_size | Font size. | 10 |
-| gtk_theme | GTK theme. | Wallbash-Gtk |
-| icon_theme | Icon theme. | Tela-circle-dracula |
-| lockscreen | Lockscreen command. | lockscreen.sh |
-| monospace_font | Monospace font. | CaskaydiaCove Nerd Font Mono |
-| monospace_font_size | Monospace font size. | 9 |
-| quickapps | Quick apps command. | kitty |
-| terminal | Default terminal. | kitty |
+
+### [desktop.app]
+
+Desktop application launcher defaults.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| browser | Browser launcher command. | hyde-shell open --fall firefox web-browser |
+| editor | Editor launcher command. | hyde-shell open --fall code-oss code-editor |
+| explorer | File manager launcher command. | hyde-shell open --fall dolphin file-manager |
+| lockscreen | Lockscreen command. | hyde-shell lock-session |
+| quickapps | Command used for quickapps. | kitty |
+| terminal | Terminal launcher command. | hyde-shell app -T |
+
+### [desktop.ui]
+
+Desktop UI settings for HyDE and cross-compositor support.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| bar_font | Bar font used by HyDE. | JetBrainsMono Nerd Font |
+| button_layout | Button layout string for UI controls. |  |
+| code_theme | Code theme used by HyDE. |  |
+| color_scheme | Color scheme for HyDE UI. | prefer-dark |
+| cursor_size | Cursor size used by HyDE. | 24 |
+| cursor_theme | Cursor theme used by HyDE. | Bibata-Modern-Ice |
+| document_font | Document font used by HyDE UI. | Cantarell |
+| document_font_size | Document font size for HyDE UI. | 10 |
+| font | Default font for HyDE UI. | Cantarell |
+| font_antialiasing | Font antialiasing mode for HyDE UI. | rgba |
+| font_hinting | Font hinting mode for HyDE UI. |  |
+| font_size | Font size for HyDE UI. | 10 |
+| gtk_theme | GTK theme for HyDE UI elements. | Wallbash-Gtk |
+| hyde_theme | HyDE theme name. | HyDE |
+| icon_theme | Icon theme for HyDE UI. | Tela-circle-dracula |
+| menu_font | Menu font used by HyDE. | JetBrainsMono Nerd Font |
+| monospace_font | Monospace font for HyDE UI. | CaskaydiaCove Nerd Font Mono |
+| monospace_font_size | Monospace font size for HyDE UI. | 9 |
+| notification_font | Notification font used by HyDE. | Mononoki Nerd Font Mono |
+| sddm_theme | sddm theme used by HyDE. |  |
 
 ### [desktop.start]
 
-Generic desktop autostart configuration. Compositor-agnostic counterpart to [hyprland-start]; use this for cross-compositor support (Hyprland, Sway, niri, etc.).
+Generic desktop autostart configuration. Use this header instead of hyprland-start for cross-compositor support (Hyprland, Sway, niri, etc.).
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -134,7 +155,7 @@ Generic desktop autostart configuration. Compositor-agnostic counterpart to [hyp
 | applet_removable_media | Removable media applet. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray |
 | auth_dialogue | Authentication dialogue. | hyde-shell app -t service -- polkitkdeauth.sh |
 | bar | Bar. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch |
-| battery_notify | Battery notification script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh |
+| battery_notify | Battery notification script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua |
 | blue_light_filter_daemon | Blue-light filter daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-blue-light-filter.service -t service -- hyprsunset |
 | clipboard_persist | Clipboard persist daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persist.service -t service wl-clip-persist --clipboard regular |
 | dbus_share_picker | DBus share picker (for XDG portal / XDPH). | dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME |
@@ -155,57 +176,24 @@ GTK3 configuration.
 | font | GTK3 font. | Canterell |
 | font_size | GTK3 font size. | 10 |
 
-### [hyprland]
+### [hyprland.anim]
 
-Hyprland configuration.
-
-| Key | Description | Default |
-| --- | ----------- | ------- |
-| background_path | LockScreen's Background path. |  |
-| bar | Bar. | waybar |
-| blue_light_filter | Blue-light filter. | hyprsunset |
-| browser | Browser. | firefox |
-| button_layout | Button layout. (gtk only) |  |
-| color_scheme | Color scheme. | prefer-dark |
-| cursor_size | Cursor size. | 24 |
-| cursor_theme | Cursor theme. | Bibata-Modern-Ice |
-| document_font_size | Document font size. | 10 |
-| editor | Editor. | code |
-| explorer | File manager. | dolphin |
-| font | Font. | Canterell |
-| font_antialiasing | Font antialiasing. | rgba |
-| font_hinting | Font hinting. | full |
-| font_size | Font size. | 10 |
-| gtk_theme | GTK theme. | Wallbash-Gtk |
-| icon_theme | Icon theme. | Tela-circle-dracula |
-| lockscreen | Lockscreen. | lockscreen.sh |
-| monospace_font | Monospace font. | CaskaydiaCove Nerd Font Mono |
-| monospace_font_size | Monospace font size. | 9 |
-| quickapps | Quick apps. | kitty |
-| terminal | Terminal. | kitty |
-
-### [hyprland-start]
-
-Hyprland start configuration.
+Animation settings for HyDE.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
-| applet_bluetooth | Bluetooth applet. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet |
-| applet_network_manager | Network manager. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-network-manager-applet.service -t service -- nm-applet --indicator |
-| applet_removable_media | Removable media manager. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray |
-| auth_dialogue | Authentication dialogue. | hyde-shell app -t service -- polkitkdeauth.sh |
-| bar | Bar. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch |
-| battery_notify | Battery notification script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh |
-| blue_light_filter_daemon | Blue-light filter daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-blue-light-filter.service -t service -- hyprsunset |
-| clipboard_persist | Clipboard persist daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persist.service -t service wl-clip-persist --clipboard regular |
-| dbus_share_picker | DBus share picker. | dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME |
-| idle_daemon | Idle daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-idle.service -t service -- hypridle |
-| image_clipboard | Image clipboard. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-image-clipboard.service -t service wl-paste --type image --watch cliphist store |
-| notifications | Notifications. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- dunst |
-| systemd_share_picker | Systemd share picker. | systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME |
-| text_clipboard | Text clipboard. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-text-clipboard.service -t service wl-paste --type text --watch cliphist store |
-| wallpaper | Wallpaper script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global |
-| xdg_portal_reset | XDG portal reset script. | hyde-shell resetxdgportal.sh |
+| duration_scale | Animation duration scale. | 0.5 |
+
+### [hyprland.window.float.no_bounds]
+
+Float window rules that skip size bounding.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| class | Window classes excluded from float bounds. | [] |
+| initial_class | Initial window classes excluded from float bounds. | [] |
+| initial_title | Initial window titles excluded from float bounds. | [] |
+| title | Window titles excluded from float bounds. | [] |
 
 ### [hyprlock]
 
@@ -501,4 +489,3 @@ wlogout configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | style | Style for wlogout. | 2 |
-

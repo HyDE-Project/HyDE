@@ -1,4 +1,4 @@
-$HOME/.config/waybar/theme.css|hyde-shell waybar --update
+$HOME/.config/waybar/theme.css|pgrep -x waybar > /dev/null 2>&1 && hyde-shell waybar --update
 @define-color bar-bg <wallbash_pry1_rgba(0.01)>;
 @define-color main-bg <wallbash_pry1_rgba(0.8)>;
 @define-color main-fg <wallbash_1xa8_rgba(0.8)>;

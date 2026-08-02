@@ -1,22 +1,13 @@
 #!/usr/bin/env python3
 """
-Hyprland session snapshot manager.
+Session snapshot manager for supported compositors.
 
-High-fidelity save/restore of window layouts via Hyprland IPC.
-Respects named workspaces, special workspaces, floating positions,
-and exact command-line reconstruction via a three-step pipeline
-(Flatpak → .desktop → /proc/cmdline with Electron filtering).
+Save and restore window layouts via IPC.
+Detects the current backend and stores snapshots per compositor.
 
 Usage:
-        session.py save                # snapshot → ~/.cache/hypr_session/default.json
-        session.py restore             # restore from the snapshot
-
-IMPORTANT:  Workspace dispatch uses a hybrid ID/name strategy:
-    - Positive ID (1, 2, …) = user-configured workspace → dispatch as ``id:N``
-        (stable across sessions, Hyprland applies the display name automatically).
-    - Negative ID (-1337, …) = named workspace → dispatch as ``name:X``
-        (negative IDs are ephemeral and differ each session).
-    - Special workspaces → ``special:name``.
+        session.py save
+        session.py restore
 """
 
 import configparser
@@ -72,6 +63,7 @@ _BLACKLIST_EXE = frozenset(
         "dbus-broker",
         # bars & widgets
         "waybar",
+        "wayle",
         "ags",
         "eww",
         # notification daemons
@@ -282,10 +274,10 @@ def _resolve_command(
 
 
 def save(dest: Path, *, verbose: bool = False) -> None:
-    """Snapshot every Hyprland client into *dest*.
+    """Snapshot every open client into *dest*.
 
-    The raw ``hyprctl clients -j`` dict for each window is kept as-is;
-    debug keys from every resolution step are added:
+    The raw client dict for each window is kept as-is; debug keys from
+    every resolution step are added:
 
     *  ``_exe``          – absolute path from ``/proc/<pid>/exe``
     *  ``_cmdline``      – shell-safe command from ``/proc/<pid>/cmdline``
@@ -296,6 +288,8 @@ def save(dest: Path, *, verbose: bool = False) -> None:
     Duplicate PIDs (grouped/tabbed windows) and swallowed windows are
     deduplicated so only one entry per logical application is saved.
     """
+    log = get_logger()
+
     backend = _detect_compositor()
     clients = backend.get_clients()
     workspaces = backend.get_workspaces()
@@ -318,6 +312,7 @@ def save(dest: Path, *, verbose: bool = False) -> None:
     enriched: list[dict] = []
     seen_pids: set[int] = set()
     seen_multi: set[tuple[int, int]] = set()
+    multi_reps: dict[tuple[int, int], dict] = {}
     skipped: list[str] = []
 
     for c in clients:
@@ -326,11 +321,15 @@ def save(dest: Path, *, verbose: bool = False) -> None:
 
         # Skip swallowed windows (the swallower already represents them)
         if addr in swallowed_addrs:
-            skipped.append(f"[skip] swallowed — addr={addr} class={c.get('class')}")
+            msg = f"[skip] swallowed — addr={addr} class={c.get('class')}"
+            skipped.append(msg)
+            log.debug(msg)
             continue
 
         if pid <= 0:
-            skipped.append(f"[skip] no pid — class={c.get('class')}")
+            msg = f"[skip] no pid — class={c.get('class')}"
+            skipped.append(msg)
+            log.debug(msg)
             continue
 
         initial_class = c.get("initialClass", "")
@@ -340,31 +339,52 @@ def save(dest: Path, *, verbose: bool = False) -> None:
         # one PID.  Dedup by (pid, workspace) so grouped tabs collapse
         # but windows on different workspaces are each saved.
         if plugin and getattr(plugin.module, "MULTI_WINDOW", False):
-            ws_id = c.get("workspace", {}).get("id", 0)
-            multi_key = (pid, ws_id)
+            multi_key = None
+            if hasattr(backend, "multiwindow_key"):
+                multi_key = backend.multiwindow_key(c)
+            if multi_key is None:
+                ws_id = c.get("workspace", {}).get("id", 0)
+                multi_key = (pid, ws_id)
+
             if multi_key in seen_multi:
-                skipped.append(f"[skip] duplicate pid+ws {pid}:{ws_id} — class={c.get('class')}")
+                rep = multi_reps.get(multi_key)
+                if rep is not None and hasattr(backend, "append_multiwindow_metadata"):
+                    backend.append_multiwindow_metadata(rep, c)
+                msg = f"[skip] duplicate pid+ws {pid}:{multi_key} — class={c.get('class')}"
+                skipped.append(msg)
+                log.debug(msg)
                 continue
             seen_multi.add(multi_key)
+            multi_reps[multi_key] = c
+            if hasattr(backend, "append_multiwindow_metadata"):
+                backend.append_multiwindow_metadata(c, c)
         else:
             # Skip duplicate PIDs (multi-window apps share a process —
             # launching once is correct; we keep the visible/focused one)
             if pid in seen_pids:
-                skipped.append(f"[skip] duplicate pid={pid} — class={c.get('class')}")
+                msg = f"[skip] duplicate pid={pid} — class={c.get('class')}"
+                skipped.append(msg)
+                log.debug(msg)
                 continue
             seen_pids.add(pid)
 
         exe = _proc_exe(pid)
         if not exe:
-            skipped.append(f"[skip] exe unreadable — pid={pid} class={c.get('class')}")
+            msg = f"[skip] exe unreadable — pid={pid} class={c.get('class')}"
+            skipped.append(msg)
+            log.debug(msg)
             continue
 
         if os.path.basename(exe) in _BLACKLIST_EXE:
+            msg = f"[skip] blacklisted exe — pid={pid} exe={exe}"
+            log.debug(msg)
             continue
 
         resolved = _resolve_command(pid, exe, initial_class, desktop_cache)
         if not resolved.get("_launchString"):
-            skipped.append(f"[skip] command unresolvable — pid={pid} exe={exe}")
+            msg = f"[skip] command unresolvable — pid={pid} exe={exe}"
+            skipped.append(msg)
+            log.debug(msg)
             continue
 
         # Merge all debug keys into the client dict
@@ -376,6 +396,16 @@ def save(dest: Path, *, verbose: bool = False) -> None:
             if extra:
                 c.update(extra)
 
+        ws = c.get("workspace", {}).get("name") or c.get("workspace", {}).get("id")
+        log.debug(
+            "[save] keep pid=%s addr=%s ws=%s launch=%s class=%s title=%s",
+            pid,
+            addr,
+            ws,
+            c.get("_launchString"),
+            c.get("class"),
+            c.get("title"),
+        )
         enriched.append(c)
 
     snapshot = {
@@ -390,6 +420,7 @@ def save(dest: Path, *, verbose: bool = False) -> None:
     tmp = dest.with_suffix(".tmp")
     tmp.write_text(json.dumps(snapshot, indent=2) + "\n")
     tmp.rename(dest)  # atomic on the same filesystem
+    log.debug("[save] wrote snapshot %s with %d windows, %d skipped", dest, len(enriched), len(skipped))
 
     session_name = dest.stem
     if session_name == "default":
@@ -428,13 +459,46 @@ def restore(src: Path, *, apply_snapshot: bool = True, dry_run: bool = False) ->
         print("Snapshot contains no windows.", file=sys.stderr)
         return
 
-    log = get_logger()
-    if dry_run:
-        print("[dry-run] No IPC calls will be made.")
-
     plugins = load_plugins()
 
+    expanded_clients: list[dict] = []
+    for c in clients:
+        plugin = find_plugin(c.get("initialClass", ""))
+        if plugin and getattr(plugin.module, "MULTI_WINDOW", False):
+            candidates = c.get("_p_window_candidates", [])
+            if isinstance(candidates, list) and len(candidates) > 1:
+                for idx, candidate in enumerate(candidates):
+                    copy_client = dict(c)
+                    copy_client.update(candidate)
+                    copy_client["_p_window_index"] = idx
+                    copy_client["_p_window_candidates"] = [candidate]
+                    expanded_clients.append(copy_client)
+                continue
+        expanded_clients.append(c)
+    clients = expanded_clients
+
+    def _default_restore_sort_key(client: dict) -> tuple:
+        workspace = client.get("workspace", {})
+        ws_id = workspace.get("id", 0)
+        at = client.get("at", [0, 0])
+        if not isinstance(at, (list, tuple)) or len(at) < 2:
+            at = [0, 0]
+        x = at[0] if isinstance(at[0], (int, float)) else 0
+        y = at[1] if isinstance(at[1], (int, float)) else 0
+        return (ws_id, y, x, client.get("_p_window_index", 0), client.get("focusHistoryID", 0))
+
     backend = _detect_compositor()
+    sort_key = getattr(backend, "restore_sort_key", None)
+    if callable(sort_key):
+        clients.sort(key=sort_key)
+    else:
+        clients.sort(key=_default_restore_sort_key)
+
+    log = get_logger()
+    log.debug("[restore] expanded client count: %d", len(clients))
+    log.debug("[restore] order: %s", [c.get("title") for c in clients])
+    if dry_run:
+        print("[dry-run] No IPC calls will be made.")
     if not dry_run:
         begin_restore = getattr(backend, "begin_restore", None)
         end_restore = getattr(backend, "end_restore", None)
@@ -456,30 +520,138 @@ def restore(src: Path, *, apply_snapshot: bool = True, dry_run: bool = False) ->
     launched = 0
     errors = 0
     seen_pids: set[int] = set()
+    seen_multi: set[tuple[int, int]] = set()
     used_live_addrs: set[str] = set()
     launched_live_clients: list[dict] = []
+
+    def _window_text_match(saved_text: str, live_text: str) -> bool:
+        if not saved_text or not live_text:
+            return False
+        if saved_text == live_text:
+            return True
+        if saved_text in live_text or live_text in saved_text:
+            return True
+        return False
+
+    def _saved_live_match(saved: dict, live: dict) -> bool:
+        if not saved or not live:
+            return False
+
+        if saved.get("class") and live.get("class"):
+            if saved.get("class") == live.get("class"):
+                return True
+        if saved.get("initialClass") and live.get("initialClass"):
+            if saved.get("initialClass") == live.get("initialClass"):
+                return True
+
+        if _window_text_match(saved.get("title", ""), live.get("title", "")):
+            return True
+        if _window_text_match(saved.get("initialTitle", ""), live.get("initialTitle", "")):
+            return True
+
+        saved_ws = saved.get("workspace", {})
+        live_ws = live.get("workspace", {})
+        if saved_ws and live_ws:
+            if saved_ws.get("id") == live_ws.get("id"):
+                return True
+            if saved_ws.get("name") == live_ws.get("name"):
+                return True
+
+        for candidate in saved.get("_p_window_candidates", []):
+            if not isinstance(candidate, dict):
+                continue
+            if _saved_live_match(candidate, live):
+                return True
+
+        return False
 
     def _pick_live_target(saved_client: dict, candidates: list[dict]) -> dict | None:
         if not candidates:
             return None
+
+        saved_addr = saved_client.get("address")
         plugin = find_plugin(saved_client.get("initialClass", ""))
+
         if plugin:
+            best_idx = None
             for idx, cand in enumerate(candidates):
+                cand_addr = cand.get("address")
+                if saved_addr and cand_addr == saved_addr:
+                    log.debug("[match] exact address match %s", saved_addr)
+                    return candidates.pop(idx)
+
                 verdict = call_match_running(plugin, saved_client, cand)
                 if verdict is True:
+                    log.debug(
+                        "[match] plugin %s matched addr=%s",
+                        plugin.name,
+                        cand_addr,
+                    )
                     return candidates.pop(idx)
                 if verdict is False:
+                    log.debug(
+                        "[match] plugin %s rejected addr=%s",
+                        plugin.name,
+                        cand_addr,
+                    )
                     continue
+                if best_idx is None:
+                    best_idx = idx
+
+            if saved_addr:
+                for idx, cand in enumerate(candidates):
+                    if cand.get("address") == saved_addr:
+                        log.debug("[match] exact address fallback %s", saved_addr)
+                        return candidates.pop(idx)
+
+            for idx, cand in enumerate(candidates):
+                if _saved_live_match(saved_client, cand):
+                    log.debug("[match] metadata fallback match addr=%s", cand.get("address"))
+                    return candidates.pop(idx)
+
+            if best_idx is not None:
+                return candidates.pop(best_idx)
+
+            if candidates:
+                log.debug(
+                    "[match] plugin undecided, using first remaining candidate %s",
+                    candidates[0].get("address"),
+                )
                 return candidates.pop(0)
+
+            return None
+
+        if saved_addr:
+            for idx, cand in enumerate(candidates):
+                if cand.get("address") == saved_addr:
+                    log.debug("[match] exact address match %s", saved_addr)
+                    return candidates.pop(idx)
+
+        for idx, cand in enumerate(candidates):
+            if _saved_live_match(saved_client, cand):
+                log.debug("[match] fallback metadata match addr=%s", cand.get("address"))
+                return candidates.pop(idx)
+
         return candidates.pop(0)
 
     try:
         for c in clients:
             pid = c.get("pid", 0)
-            if pid in seen_pids:
-                continue
-            if pid > 0:
-                seen_pids.add(pid)
+            initial_class = c.get("initialClass", "")
+            plugin = find_plugin(initial_class)
+
+            if plugin and getattr(plugin.module, "MULTI_WINDOW", False):
+                if c.get("_p_window_index") is None:
+                    ws_id = c.get("workspace", {}).get("id", 0)
+                    multi_key = (pid, ws_id)
+                    if multi_key in seen_multi:
+                        continue
+                    seen_multi.add(multi_key)
+            else:
+                if pid in seen_pids:
+                    continue
+                if pid > 0:
+                    seen_pids.add(pid)
 
             ws_target = backend.ws_target(c.get("workspace", {}))
             command = c.get("_launchString") or c.get("_command")  # v2 compat
@@ -630,8 +802,8 @@ def main() -> None:
     from session.manager import save_named, restore_named, list_sessions, delete_session
 
     args = build_parser().parse_args()
-    # support verbose passed as global or per subcommand
-    if getattr(args, "verbose", False):
+    # support verbose/debug passed as global or per subcommand
+    if getattr(args, "verbose", False) or getattr(args, "debug", False):
         os.environ.setdefault("LOG_LEVEL", "DEBUG")
 
     if args.action == "save":

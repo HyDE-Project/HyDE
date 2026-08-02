@@ -1,0 +1,32 @@
+[dolphin]
+    action      = "sync"
+    description = "KDE File Manager"
+    owner       = "The HyDE Project"
+    version     = "0.1.0"
+
+[[dolphin.dependency]]
+    dnf  = [ "dolphin" ]
+    pacman = [ "dolphin" ]
+
+[[dolphin.files]]
+    paths = [
+        ".config/dolphinrc",
+        ".local/share/dolphin",
+        ".local/share/kio/servicemenus/hydewallpaper.desktop",
+        ".local/share/kxmlgui5/dolphin",
+    ]
+    source_root = "Configs"
+    target_root = "${HOME}"
+
+[[dolphin.files]]
+    action      = "preserve"
+    paths       = "dolphinstaterc"
+    source_root = "Configs/.local/state"
+    target_root = "${HOME}/.local/state"
+
+
+[[dolphin.files]]
+    action      = "sync"
+    paths       = "applications.menu"
+    source_root = "Configs/.config/menus"
+    target_root = "${XDG_CONFIG_HOME}/menus"

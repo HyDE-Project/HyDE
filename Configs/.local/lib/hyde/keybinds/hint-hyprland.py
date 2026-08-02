@@ -229,6 +229,44 @@ def generate_rofi(binds):
     rofi_str = ""
     groups = {}
 
+    def rofi_flag_hint(bind):
+        def flag_enabled(value):
+            if isinstance(value, bool):
+                return value
+            if isinstance(value, str):
+                return value.strip().lower() == "true"
+            if isinstance(value, int):
+                return value != 0
+            return False
+
+        flag_names = {
+            "repeat": ("repeat", "#FFB300"),
+            "longPress": ("hold", "#8E24AA"),
+            "release": ("release", "#43A047"),
+            "click": ("click", "#FB8C00"),
+            "drag": ("drag", "#00ACC1"),
+            "locked": ("locked", "#7B1FA2"),
+            "mouse": ("mouse", "#6D4C41"),
+            "transparent": ("transparent", "#78909C"),
+            "ignore_mods": ("ignore", "#F4511E"),
+            "separate": ("split", "#1E88E5"),
+            "bypass": ("bypass", "#D81B60"),
+            "submap_universal": ("global", "#00C853"),
+            "non_consuming": ("pass", "#FF7043"),
+            "auto_consuming": ("auto", "#039BE5"),
+            "catch_all": ("catch-all", "#E53935"),
+            "devices": ("device", "#546E7A"),
+        }
+        formatted = []
+        for key, (label, color) in flag_names.items():
+            if flag_enabled(bind.get(key, False)):
+                formatted.append(
+                    f"<span size=\"xx-small\" foreground=\"{color}\"><i>{label}</i></span>"
+                )
+        if not formatted:
+            return ""
+        return " " + " ".join(formatted)
+
     delimiter = os.getenv("ROFI_KEYBIND_HINT_DELIMITER", ">")
     for bind in binds:
         catch_all = bind.get("catch_all", False)
@@ -249,7 +287,9 @@ def generate_rofi(binds):
         keycode = bind["keycode"]
         meta_data = f"{dispatcher} {arg} {repeated} {keycode} {header1} {header2} {header3} {header4} {header5} {submap} {displayed_keys}"
 
-        displayed_rofi_keys = f"{displayed_keys:<20} {delimiter:<5} {description}"
+        flag_hint = rofi_flag_hint(bind)
+        displayed_keys_with_hint = f"{displayed_keys}{flag_hint}"
+        displayed_rofi_keys = f"{displayed_keys_with_hint} {delimiter:<5} {description}"
 
         # Create nested dictionary structure
         if header1 not in groups:

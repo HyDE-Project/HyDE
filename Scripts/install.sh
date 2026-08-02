@@ -31,77 +31,121 @@ fi
 
 #------------------#
 # evaluate options #
-#------------------#
-flg_Install=0
-flg_Restore=0
-flg_Service=0
-flg_DryRun=0
-flg_Shell=0
-flg_Nvidia=1
-flg_ThemeInstall=1
+#------------------
 
-while getopts idrstmnh RunStep; do
-	case $RunStep in
-	i) flg_Install=1 ;;
-	d)
-		flg_Install=1
-		export use_default="--noconfirm"
-		;;
-	r) flg_Restore=1 ;;
-	s) flg_Service=1 ;;
-	n)
-		# shellcheck disable=SC2034
-		export flg_Nvidia=0
-		print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
-		;;
-	h)
-		# shellcheck disable=SC2034
-		export flg_Shell=1
-		print_log -r "[shell] " -b "Reevaluate :: " "shell options"
-		;;
-	t) flg_DryRun=1 ;;
-	m) flg_ThemeInstall=0 ;;
-	*)
-		cat <<EOF
-Usage: $0 [options]
-            i : [i]nstall hyprland without configs
-            d : install hyprland [d]efaults without configs --noconfirm
-            r : [r]estore config files
-            s : enable system [s]ervices
-            n : ignore/[n]o [n]vidia actions (-irsn to ignore nvidia)
-            h : re-evaluate S[h]ell
-            m : no the[m]e reinstallations
-            t : [t]est run without executing (-irst to dry run all)
+show_help() {
+	cat <<EOF
+Usage: $0 [OPTIONS]
+
+Options:
+    -i, --install          Install packages only
+    -d, --defaults         Install packages with defaults (noconfirm)
+    -r, --restore          Restore configs and dotfiles
+    -s, --services         Enable system services
+    -p, --pre              Run pre-install only (Python environment setup)
+    -n, --no-nvidia        Ignore nvidia actions
+    -h, --shell            Re-evaluate shell configuration
+    -m, --no-theme         Skip theme installation
+    -t, --test             Test run (dry-run)
+    --help                 Show this help message
+
+Common combinations:
+    ./install.sh              # Full installation (default)
+    ./install.sh -p           # Pre-install only (run first if restore fails)
+    ./install.sh -r           # Restore configs and dotfiles only
+    ./install.sh -irs         # Install, restore, and services
+    ./install.sh -irsn       # Full install without nvidia
 
 NOTE:
-        running without args is equivalent to -irs
-        to ignore nvidia, run -irsn
-
-WRONG:
-        install.sh -n # This will not work
+    If restore fails with "deez-dots not found", run: ./install.sh -p
+    The -p flag sets up Python environment and deez-dots
 
 EOF
-		exit 1
+	exit 0
+}
+
+operations=()
+dry_run=0
+nvidia=1
+theme_install=1
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+	-i | --install)
+		operations+=("install")
+		shift
+		;;
+	-d | --defaults)
+		operations+=("install")
+		export use_default="--noconfirm"
+		shift
+		;;
+	-r | --restore)
+		operations+=("restore")
+		shift
+		;;
+	-s | --services)
+		operations+=("services")
+		shift
+		;;
+	-p | --pre)
+		operations+=("pre")
+		shift
+		;;
+	-n | --no-nvidia)
+		nvidia=0
+		print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
+		shift
+		;;
+	-h | --shell)
+		export flg_Shell=1
+		print_log -r "[shell] " -b "Reevaluate :: " "shell options"
+		shift
+		;;
+	-m | --no-theme)
+		theme_install=0
+		shift
+		;;
+	-t | --test)
+		dry_run=1
+		shift
+		;;
+	--help)
+		show_help
+		;;
+	*)
+		echo "Unknown option: $1"
+		show_help
 		;;
 	esac
 done
 
-# Only export that are used outside this script
-HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
-export flg_DryRun flg_Nvidia flg_Shell flg_Install flg_ThemeInstall HYDE_LOG
+if [ ${#operations[@]} -eq 0 ]; then
+	operations=("install" "restore" "services")
+fi
 
-if [ "${flg_DryRun}" -eq 1 ]; then
+export flg_DryRun=$dry_run
+export flg_Nvidia=$nvidia
+export flg_ThemeInstall=$theme_install
+HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
+export HYDE_LOG
+
+if [ $dry_run -eq 1 ]; then
 	print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
-elif [ $OPTIND -eq 1 ]; then
-	flg_Install=1
-	flg_Restore=1
-	flg_Service=1
 fi
 
 #--------------------#
-# pre-install script #
+# Helper functions #
+#--------------------
+has_operation() {
+	local op="$1"
+	[[ " ${operations[*]} " =~ " ${op} " ]]
+}
+
 #--------------------#
-if [ ${flg_Install} -eq 1 ] && [ ${flg_Restore} -eq 1 ]; then
+# pre-install script #
+#--------------------
+if has_operation "pre"; then
 	cat <<"EOF"
                 _         _       _ _
  ___ ___ ___   |_|___ ___| |_ ___| | |
@@ -112,12 +156,17 @@ if [ ${flg_Install} -eq 1 ] && [ ${flg_Restore} -eq 1 ]; then
 EOF
 
 	"${scrDir}/install_pre.sh"
+	exit 0
+fi
+
+if has_operation "install" && has_operation "restore"; then
+	"${scrDir}/install_pre.sh"
 fi
 
 #------------#
 # installing #
-#------------#
-if [ ${flg_Install} -eq 1 ]; then
+#------------
+if has_operation "install"; then
 	cat <<"EOF"
 
  _         _       _ _ _
@@ -128,41 +177,14 @@ if [ ${flg_Install} -eq 1 ]; then
 
 EOF
 
-	#----------------------#
-	# prepare package list #
-	#----------------------#
-	shift $((OPTIND - 1))
-	custom_pkg=$1
-	cp "${scrDir}/pkg_core.lst" "${scrDir}/install_pkg.lst"
-	trap 'mv "${scrDir}/install_pkg.lst" "${cacheDir}/logs/${HYDE_LOG}/install_pkg.lst"' EXIT
-
-	echo -e "\n#user packages" >>"${scrDir}/install_pkg.lst" # Add a marker for user packages
-	if [ -f "${custom_pkg}" ] && [ -n "${custom_pkg}" ]; then
-		cat "${custom_pkg}" >>"${scrDir}/install_pkg.lst"
-	fi
-
-	#--------------------------------#
-	# add nvidia drivers to the list #
-	#--------------------------------#
-	if nvidia_detect; then
-		if [ ${flg_Nvidia} -eq 1 ]; then
-			cat /usr/lib/modules/*/pkgbase | while read -r kernel; do
-				echo "${kernel}-headers" >>"${scrDir}/install_pkg.lst"
-			done
-			nvidia_detect --drivers >>"${scrDir}/install_pkg.lst"
-		else
-			print_log -warn "Nvidia" "Nvidia GPU detected but ignored..."
-		fi
-	fi
-	nvidia_detect --verbose
-
 	#----------------#
 	# get user prefs #
 	#----------------#
 	echo ""
+
 	if ! chk_list "aurhlpr" "${aurList[@]}"; then
 		print_log -c "\nAUR Helpers :: "
-		aurList+=("yay-bin" "paru-bin") # Add this here instead of in global_fn.sh
+		aurList+=("yay-bin" "paru-bin")
 		for i in "${!aurList[@]}"; do
 			print_log -sec "$((i + 1))" " ${aurList[$i]} "
 		done
@@ -209,32 +231,67 @@ EOF
 			export myShell="zsh"
 			;;
 		esac
-		print_log -sec "shell" -stat "Added as shell" "${myShell}"
-		echo "${myShell}" >>"${scrDir}/install_pkg.lst"
+		print_log -sec "shell" -stat "detected" "${myShell}"
+	fi
 
-		if [[ -z "$myShell" ]]; then
-			print_log -sec "shell" -crit "No shell found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
-			exit 1
+	#------------------------------------#
+	# install AUR helper via pacman first #
+	#------------------------------------#
+	"${scrDir}/install_aur.sh" "${getAur}" 2>&1
+
+	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
+
+	#------------------------------------------#
+	# build transient TOML: core deps + nvidia  #
+	#------------------------------------------#
+	core_toml="$(mktemp --suffix=-core.toml)"
+	trap 'rm -f "${core_toml}"' RETURN EXIT
+
+	cat > "${core_toml}" <<-TOML
+		# Auto-generated by install.sh — core deps
+		include = [
+		    "${scrDir}/dots-groups/core.toml",
+		]
+
+		[[global.dependency]]
+		pacman = [
+	TOML
+
+# TODO: This is arch specific; A separate install script should be written
+	if nvidia_detect; then
+		if [ "${flg_Nvidia}" -eq 1 ]; then
+			cat /usr/lib/modules/*/pkgbase 2>/dev/null | while read -r kernel; do
+				echo "\"${kernel}-headers\","
+			done >> "${core_toml}"
+			nvidia_detect --drivers | while read -r pkg; do
+				[ -n "${pkg}" ] && echo "\"${pkg}\","
+			done >> "${core_toml}"
 		else
-			print_log -sec "shell" -stat "detected :: " "${myShell}"
+			print_log -warn "Nvidia" "Nvidia GPU detected but ignored..."
 		fi
 	fi
+	nvidia_detect --verbose
+	echo "]" >> "${core_toml}"
 
-	if ! grep -q "^#user packages" "${scrDir}/install_pkg.lst"; then
-		print_log -sec "pkg" -crit "No user packages found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}/install.sh"
-		exit 1
+	#--------------------------------#
+	# install core deps (+ nvidia)   #
+	#--------------------------------#
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[CORE] " -b "dry-run :: " "Would install core packages"
+	else
+		print_log -g "[CORE] " -b "install :: " "Core system packages..."
+		"${deez_exe}" deps --install --config "${core_toml}" --source "${cloneDir}" || {
+			print_log -err "[CORE] " -crit "ERROR" "Core package installation failed"
+			exit 1
+		}
+		print_log -g "[CORE] " -b "complete :: " "Core packages installed"
 	fi
-
-	#--------------------------------#
-	# install packages from the list #
-	#--------------------------------#
-	"${scrDir}/install_pkg.sh" "${scrDir}/install_pkg.lst"
 fi
 
 #---------------------------#
 # restore my custom configs #
-#---------------------------#
-if [ ${flg_Restore} -eq 1 ]; then
+#---------------------------
+if has_operation "restore"; then
 	cat <<"EOF"
 
              _           _
@@ -245,12 +302,114 @@ if [ ${flg_Restore} -eq 1 ]; then
 
 EOF
 
+	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
+
+	#------------------------------------------#
+	# rebuild transient TOML: core deps+nvidia  #
+	#------------------------------------------#
+	core_toml="$(mktemp --suffix=-core.toml)"
+	trap 'rm -f "${core_toml}"' RETURN EXIT
+
+	cat > "${core_toml}" <<-TOML
+		include = [
+		    "${scrDir}/dots-groups/core.toml",
+		]
+
+		[[global.dependency]]
+		pacman = [
+	TOML
+	if nvidia_detect && [ "${flg_Nvidia}" -eq 1 ]; then
+		cat /usr/lib/modules/*/pkgbase 2>/dev/null | while read -r kernel; do
+			echo "\"${kernel}-headers\","
+		done >> "${core_toml}"
+		nvidia_detect --drivers | while read -r pkg; do
+			[ -n "${pkg}" ] && echo "\"${pkg}\","
+		done >> "${core_toml}"
+	fi
+	echo "]" >> "${core_toml}"
+
+	#------------------------------------------#
+	# rebuild transient TOML: extra deps+shell  #
+	#------------------------------------------#
+	extra_toml="$(mktemp --suffix=-extra.toml)"
+	trap 'rm -f "${extra_toml}"' RETURN EXIT
+
+	cat > "${extra_toml}" <<-TOML
+		include = [
+		    "${scrDir}/dots-groups/extra.toml",
+		]
+
+		[[global.dependency]]
+		pacman = [
+	TOML
+	# starship is needed for both zsh and fish prompts
+	echo "\"starship\"," >> "${extra_toml}"
+	echo "]" >> "${extra_toml}"
+
+	#-------------------------------#
+	# re-check / install core deps  #
+	#-------------------------------#
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[CORE] " -b "dry-run :: " "Would re-check core deps"
+	else
+		print_log -g "[CORE] " -b "verify :: " "Verifying core packages..."
+		"${deez_exe}" deps --install --config "${core_toml}" --source "${cloneDir}" || {
+			print_log -err "[CORE] " -crit "ERROR" "Core package verification failed"
+			exit 1
+		}
+	fi
+
+	#-------------------------------#
+	# re-check / install extra deps #
+	#-------------------------------#
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[EXTRA] " -b "dry-run :: " "Would re-check extra deps"
+	else
+		print_log -g "[EXTRA] " -b "verify :: " "Verifying extra packages..."
+		"${deez_exe}" deps --install --config "${extra_toml}" --source "${cloneDir}" || {
+			print_log -err "[EXTRA] " -crit "ERROR" "Extra package verification failed"
+			exit 1
+		}
+		print_log -g "[DEPS] " -b "verify :: " "All packages verified"
+	fi
+
+	# Lua environment setup
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[LUA] " -b "dry-run :: " "Would setup Lua environment"
+	else
+		if ! python3 "${cloneDir}/Configs/.local/lib/hyde/pyutils/lua_env.py" create; then
+			print_log -err "[LUA] " -crit "ERROR" "Failed to create Lua environment"
+			exit 1
+		fi
+		print_log -g "[LUA] " -b "complete :: " "Environment setup complete"
+	fi
+
 	if [ "${flg_DryRun}" -ne 1 ] && [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
 		hyprctl keyword misc:disable_autoreload 1 -q
 	fi
 
-	"${scrDir}/restore_fnt.sh"
-	"${scrDir}/restore_cfg.sh"
+	# Deploy dotfiles using deez-dots
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[DEEZ-DOTS] " -b "dry-run :: " "Would deploy dotfiles"
+	else
+		python_env_dir="${HOME}/.local/state/hyde/python_env"
+		deez_exe="${python_env_dir}/bin/deez"
+
+		[ ! -f "${deez_exe}" ] && {
+			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "deez-dots not found in Python environment"
+			print_log -err "[DEEZ-DOTS] " -crit "FIX" "Run: ./install.sh -p (pre-install only)"
+			exit 1
+		}
+
+		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing core dotfiles..."
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/core.toml" dots --skip-git --deploy all || exit 1
+
+		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing extra dotfiles..."
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/extra.toml" dots --skip-git --deploy || exit 1
+
+		print_log -g "[DEEZ-DOTS] " -b "complete :: " "Dotfiles deployed"
+	fi
+
 	"${scrDir}/restore_thm.sh"
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
@@ -266,7 +425,7 @@ fi
 #---------------------#
 # post-install script #
 #---------------------#
-if [ ${flg_Install} -eq 1 ] && [ ${flg_Restore} -eq 1 ]; then
+if has_operation "install" && has_operation "restore"; then
 	cat <<"EOF"
 
              _      _         _       _ _
@@ -283,7 +442,7 @@ fi
 #---------------------------#
 # run migrations            #
 #---------------------------#
-if [ ${flg_Restore} -eq 1 ]; then
+if has_operation "restore"; then
 
 	# migrationDir="$(realpath "$(dirname "$(realpath "$0")")/../migrations")"
 	migrationDir="${scrDir}/migrations"
@@ -294,23 +453,16 @@ if [ ${flg_Restore} -eq 1 ]; then
 
 	echo "Running migrations from: ${migrationDir}"
 
-	if [ -d "${migrationDir}" ] && find "${migrationDir}" -type f | grep -q .; then
-		migrationFile=$(find "${migrationDir}" -maxdepth 1 -type f -printf '%f\n' | sort -r | head -n 1)
+	migrationStateFile="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/applied"
 
-		if [[ -n "${migrationFile}" && -f "${migrationDir}/${migrationFile}" ]]; then
-			echo "Found migration file: ${migrationFile}"
-			sh "${migrationDir}/${migrationFile}" || { true && print_log -warn "Migration" "Failed to execute ${migrationFile}"; }
-		else
-			echo "No migration file found in ${migrationDir}. Skipping migrations."
-		fi
-	fi
+	run_pending_migrations "${migrationDir}" "${migrationStateFile}"
 
 fi
 
 #------------------------#
 # enable system services #
 #------------------------#
-if [ ${flg_Service} -eq 1 ]; then
+if has_operation "services"; then
 	cat <<"EOF"
 
                  _
@@ -323,15 +475,15 @@ EOF
 	"${scrDir}/restore_svc.sh"
 fi
 
-if [ $flg_Install -eq 1 ]; then
+if has_operation "install"; then
 	echo ""
 	print_log -g "Installation" " :: " "COMPLETED!"
 fi
 print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
-if [ $flg_Install -eq 1 ] ||
-	[ $flg_Restore -eq 1 ] ||
-	[ $flg_Service -eq 1 ] &&
-	[ $flg_DryRun -ne 1 ]; then
+if has_operation "install" ||
+	has_operation "restore" ||
+	has_operation "services" &&
+	[ $dry_run -ne 1 ]; then
 
 	if [[ -z "${HYPRLAND_CONFIG:-}" ]] || [[ ! -f "${HYPRLAND_CONFIG}" ]]; then
 		print_log -warn "Hyprland config not found! Might be a new install or upgrade."

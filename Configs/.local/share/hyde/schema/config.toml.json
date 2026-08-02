@@ -402,7 +402,7 @@
             }
         },
         "battery.notify": {
-            "description": "batterynotify.sh configuration.",
+            "description": "Battery notification configuration.",
             "type": "object",
             "properties": {
                 "timer": {
@@ -983,110 +983,66 @@
             "description": "Hyprland configuration.",
             "type": "object",
             "properties": {
-                "browser": {
-                    "default": "firefox",
-                    "description": "Browser.",
-                    "type": "string"
+                "anim": {
+                    "description": "Animation settings for HyDE.",
+                    "type": "object",
+                    "properties": {
+                        "duration_scale": {
+                            "default": 0.5,
+                            "description": "Animation duration scale.",
+                            "type": "number"
+                        }
+                    }
                 },
-                "editor": {
-                    "default": "code",
-                    "description": "Editor.",
-                    "type": "string"
-                },
-                "explorer": {
-                    "default": "dolphin",
-                    "description": "File manager.",
-                    "type": "string"
-                },
-                "lockscreen": {
-                    "default": "lockscreen.sh",
-                    "description": "Lockscreen.",
-                    "type": "string"
-                },
-                "terminal": {
-                    "default": "kitty",
-                    "description": "Terminal.",
-                    "type": "string"
-                },
-                "quickapps": {
-                    "default": "kitty",
-                    "description": "Quick apps.",
-                    "type": "string"
-                },
-                "bar": {
-                    "default": "waybar",
-                    "description": "Bar.",
-                    "type": "string"
-                },
-                "color_scheme": {
-                    "default": "prefer-dark",
-                    "description": "Color scheme.",
-                    "type": "string"
-                },
-                "gtk_theme": {
-                    "default": "Wallbash-Gtk",
-                    "description": "GTK theme.",
-                    "type": "string"
-                },
-                "icon_theme": {
-                    "default": "Tela-circle-dracula",
-                    "description": "Icon theme.",
-                    "type": "string"
-                },
-                "cursor_size": {
-                    "default": 24,
-                    "description": "Cursor size.",
-                    "type": "integer"
-                },
-                "cursor_theme": {
-                    "default": "Bibata-Modern-Ice",
-                    "description": "Cursor theme.",
-                    "type": "string"
-                },
-                "button_layout": {
-                    "default": "",
-                    "description": "Button layout. (gtk only)",
-                    "type": "string"
-                },
-                "document_font_size": {
-                    "default": 10,
-                    "description": "Document font size.",
-                    "type": "integer"
-                },
-                "font": {
-                    "default": "Canterell",
-                    "description": "Font.",
-                    "type": "string"
-                },
-                "font_antialiasing": {
-                    "default": "rgba",
-                    "description": "Font antialiasing.",
-                    "type": "string"
-                },
-                "font_hinting": {
-                    "default": "full",
-                    "description": "Font hinting.",
-                    "type": "string"
-                },
-                "font_size": {
-                    "default": 10,
-                    "description": "Font size.",
-                    "type": "integer"
-                },
-                "monospace_font": {
-                    "default": "CaskaydiaCove Nerd Font Mono",
-                    "description": "Monospace font.",
-                    "type": "string"
-                },
-                "monospace_font_size": {
-                    "default": 9,
-                    "description": "Monospace font size.",
-                    "type": "integer"
-                },
-                "background_path": {
-                    "default": "",
-                    "description": "LockScreen's Background path.",
-                    "type": "string"
+                "window": {
+                    "description": "Hyprland window configuration.",
+                    "type": "object",
+                    "properties": {
+                        "float": {
+                            "description": "Floating window configuration.",
+                            "type": "object",
+                            "properties": {
+                                "no_bounds": {
+                                    "description": "Float window rules that skip size bounding.",
+                                    "type": "object",
+                                    "properties": {
+                                        "initial_title": {
+                                            "default": [],
+                                            "description": "Initial window titles excluded from float bounds.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "title": {
+                                            "default": [],
+                                            "description": "Window titles excluded from float bounds.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "class": {
+                                            "default": [],
+                                            "description": "Window classes excluded from float bounds.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "initial_class": {
+                                            "default": [],
+                                            "description": "Initial window classes excluded from float bounds.",
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -1094,110 +1050,157 @@
             "description": "Generic desktop/compositor configuration. Compositor-agnostic counterpart to [hyprland]; use this for cross-compositor support (Hyprland, Sway, niri, etc.).",
             "type": "object",
             "properties": {
-                "browser": {
-                    "default": "firefox",
-                    "description": "Default browser.",
-                    "type": "string"
-                },
-                "editor": {
-                    "default": "code",
-                    "description": "Default editor.",
-                    "type": "string"
-                },
-                "explorer": {
-                    "default": "dolphin",
-                    "description": "Default file manager.",
-                    "type": "string"
-                },
-                "lockscreen": {
-                    "default": "lockscreen.sh",
-                    "description": "Lockscreen command.",
-                    "type": "string"
-                },
-                "terminal": {
-                    "default": "kitty",
-                    "description": "Default terminal.",
-                    "type": "string"
-                },
-                "quickapps": {
-                    "default": "kitty",
-                    "description": "Quick apps command.",
-                    "type": "string"
-                },
                 "bar": {
                     "default": "waybar",
                     "description": "Status bar.",
                     "type": "string"
                 },
-                "color_scheme": {
-                    "default": "prefer-dark",
-                    "description": "Color scheme.",
-                    "type": "string"
-                },
-                "gtk_theme": {
-                    "default": "Wallbash-Gtk",
-                    "description": "GTK theme.",
-                    "type": "string"
-                },
-                "icon_theme": {
-                    "default": "Tela-circle-dracula",
-                    "description": "Icon theme.",
-                    "type": "string"
-                },
-                "cursor_size": {
-                    "default": 24,
-                    "description": "Cursor size.",
-                    "type": "integer"
-                },
-                "cursor_theme": {
-                    "default": "Bibata-Modern-Ice",
-                    "description": "Cursor theme.",
-                    "type": "string"
-                },
-                "button_layout": {
-                    "default": "",
-                    "description": "Button layout. (gtk only)",
-                    "type": "string"
-                },
-                "document_font_size": {
-                    "default": 10,
-                    "description": "Document font size.",
-                    "type": "integer"
-                },
-                "font": {
-                    "default": "Canterell",
-                    "description": "Default font.",
-                    "type": "string"
-                },
-                "font_antialiasing": {
-                    "default": "rgba",
-                    "description": "Font antialiasing.",
-                    "type": "string"
-                },
-                "font_hinting": {
-                    "default": "full",
-                    "description": "Font hinting.",
-                    "type": "string"
-                },
-                "font_size": {
-                    "default": 10,
-                    "description": "Font size.",
-                    "type": "integer"
-                },
-                "monospace_font": {
-                    "default": "CaskaydiaCove Nerd Font Mono",
-                    "description": "Monospace font.",
-                    "type": "string"
-                },
-                "monospace_font_size": {
-                    "default": 9,
-                    "description": "Monospace font size.",
-                    "type": "integer"
-                },
                 "background_path": {
                     "default": "",
                     "description": "Lockscreen background path.",
                     "type": "string"
+                },
+                "ui": {
+                    "description": "Desktop UI settings for HyDE and cross-compositor support.",
+                    "type": "object",
+                    "properties": {
+                        "hyde_theme": {
+                            "default": "HyDE",
+                            "description": "HyDE theme name.",
+                            "type": "string"
+                        },
+                        "gtk_theme": {
+                            "default": "Wallbash-Gtk",
+                            "description": "GTK theme for HyDE UI elements.",
+                            "type": "string"
+                        },
+                        "icon_theme": {
+                            "default": "Tela-circle-dracula",
+                            "description": "Icon theme for HyDE UI.",
+                            "type": "string"
+                        },
+                        "color_scheme": {
+                            "default": "prefer-dark",
+                            "description": "Color scheme for HyDE UI.",
+                            "type": "string"
+                        },
+                        "button_layout": {
+                            "default": "",
+                            "description": "Button layout string for UI controls.",
+                            "type": "string"
+                        },
+                        "cursor_theme": {
+                            "default": "Bibata-Modern-Ice",
+                            "description": "Cursor theme used by HyDE.",
+                            "type": "string"
+                        },
+                        "cursor_size": {
+                            "default": 24,
+                            "description": "Cursor size used by HyDE.",
+                            "type": "integer"
+                        },
+                        "font": {
+                            "default": "Cantarell",
+                            "description": "Default font for HyDE UI.",
+                            "type": "string"
+                        },
+                        "font_size": {
+                            "default": 10,
+                            "description": "Font size for HyDE UI.",
+                            "type": "integer"
+                        },
+                        "document_font": {
+                            "default": "Cantarell",
+                            "description": "Document font used by HyDE UI.",
+                            "type": "string"
+                        },
+                        "document_font_size": {
+                            "default": 10,
+                            "description": "Document font size for HyDE UI.",
+                            "type": "integer"
+                        },
+                        "monospace_font": {
+                            "default": "CaskaydiaCove Nerd Font Mono",
+                            "description": "Monospace font for HyDE UI.",
+                            "type": "string"
+                        },
+                        "monospace_font_size": {
+                            "default": 9,
+                            "description": "Monospace font size for HyDE UI.",
+                            "type": "integer"
+                        },
+                        "notification_font": {
+                            "default": "Mononoki Nerd Font Mono",
+                            "description": "Notification font used by HyDE.",
+                            "type": "string"
+                        },
+                        "bar_font": {
+                            "default": "JetBrainsMono Nerd Font",
+                            "description": "Bar font used by HyDE.",
+                            "type": "string"
+                        },
+                        "menu_font": {
+                            "default": "JetBrainsMono Nerd Font",
+                            "description": "Menu font used by HyDE.",
+                            "type": "string"
+                        },
+                        "font_antialiasing": {
+                            "default": "rgba",
+                            "description": "Font antialiasing mode for HyDE UI.",
+                            "type": "string"
+                        },
+                        "font_hinting": {
+                            "default": "",
+                            "description": "Font hinting mode for HyDE UI.",
+                            "type": "string"
+                        },
+                        "code_theme": {
+                            "default": "",
+                            "description": "Code theme used by HyDE.",
+                            "type": "string"
+                        },
+                        "sddm_theme": {
+                            "default": "",
+                            "description": "sddm theme used by HyDE.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "app": {
+                    "description": "Desktop application launcher defaults.",
+                    "type": "object",
+                    "properties": {
+                        "quickapps": {
+                            "default": "kitty",
+                            "description": "Command used for quickapps.",
+                            "type": "string"
+                        },
+                        "browser": {
+                            "default": "hyde-shell open --fall firefox web-browser",
+                            "description": "Browser launcher command.",
+                            "type": "string"
+                        },
+                        "editor": {
+                            "default": "hyde-shell open --fall code-oss code-editor",
+                            "description": "Editor launcher command.",
+                            "type": "string"
+                        },
+                        "explorer": {
+                            "default": "hyde-shell open --fall dolphin file-manager",
+                            "description": "File manager launcher command.",
+                            "type": "string"
+                        },
+                        "terminal": {
+                            "default": "hyde-shell app -T",
+                            "description": "Terminal launcher command.",
+                            "type": "string"
+                        },
+                        "lockscreen": {
+                            "default": "hyde-shell lock-session",
+                            "description": "Lockscreen command.",
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -1277,94 +1280,8 @@
                 }
             }
         },
-        "hyprland-start": {
-            "description": "Hyprland start configuration.",
-            "type": "object",
-            "properties": {
-                "dbus_share_picker": {
-                    "default": "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME",
-                    "description": "DBus share picker.",
-                    "type": "string"
-                },
-                "systemd_share_picker": {
-                    "default": "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME",
-                    "description": "Systemd share picker.",
-                    "type": "string"
-                },
-                "xdg_portal_reset": {
-                    "default": "hyde-shell resetxdgportal.sh",
-                    "description": "XDG portal reset script.",
-                    "type": "string"
-                },
-                "auth_dialogue": {
-                    "default": "hyde-shell app -t service -- polkitkdeauth.sh",
-                    "description": "Authentication dialogue.",
-                    "type": "string"
-                },
-                "idle_daemon": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-idle.service -t service -- hypridle",
-                    "description": "Idle daemon.",
-                    "type": "string"
-                },
-                "blue_light_filter_daemon": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-blue-light-filter.service -t service -- hyprsunset",
-                    "description": "Blue-light filter daemon.",
-                    "type": "string"
-                },
-                "text_clipboard": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-text-clipboard.service -t service wl-paste --type text --watch cliphist store",
-                    "description": "Text clipboard.",
-                    "type": "string"
-                },
-                "image_clipboard": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-image-clipboard.service -t service wl-paste --type image --watch cliphist store",
-                    "description": "Image clipboard.",
-                    "type": "string"
-                },
-                "clipboard_persist": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persist.service -t service wl-clip-persist --clipboard regular",
-                    "description": "Clipboard persist daemon.",
-                    "type": "string"
-                },
-                "wallpaper": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global",
-                    "description": "Wallpaper script.",
-                    "type": "string"
-                },
-                "bar": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch",
-                    "description": "Bar.",
-                    "type": "string"
-                },
-                "notifications": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- dunst",
-                    "description": "Notifications.",
-                    "type": "string"
-                },
-                "battery_notify": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh",
-                    "description": "Battery notification script.",
-                    "type": "string"
-                },
-                "applet_network_manager": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-network-manager-applet.service -t service -- nm-applet --indicator",
-                    "description": "Network manager.",
-                    "type": "string"
-                },
-                "applet_removable_media": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray",
-                    "description": "Removable media manager.",
-                    "type": "string"
-                },
-                "applet_bluetooth": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet",
-                    "description": "Bluetooth applet.",
-                    "type": "string"
-                }
-            }
-        },
         "desktop.start": {
-            "description": "Generic desktop autostart configuration. Compositor-agnostic counterpart to [hyprland-start]; use this for cross-compositor support (Hyprland, Sway, niri, etc.).",
+            "description": "Generic desktop autostart configuration. Use this header instead of hyprland-start for cross-compositor support (Hyprland, Sway, niri, etc.).",
             "type": "object",
             "properties": {
                 "dbus_share_picker": {
@@ -1428,7 +1345,7 @@
                     "type": "string"
                 },
                 "battery_notify": {
-                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.sh",
+                    "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua",
                     "description": "Battery notification script.",
                     "type": "string"
                 },

@@ -1,0 +1,18 @@
+[hyprlock]
+    description = "Hyprland's GPU-accelerated screen locking utility"
+
+[[hyprlock.dependency]]
+    dnf  = [ "hyprlock" ]
+    pacman = [ "hyprlock" ]
+
+[[hyprlock.files]]
+    action      = "preserve"
+    paths       = "hyprlock.conf"
+    source_root = "Configs/.config/hypr"
+    target_root = "${XDG_CONFIG_HOME}/hypr"
+
+[[hyprlock.files]]
+    action      = "sync"
+    paths       = [ "hyprlock.conf", "hyprlock-fingerprint.conf" ]
+    source_root = "Configs/.local/share/hypr"
+    target_root = "${XDG_DATA_HOME}/hypr"

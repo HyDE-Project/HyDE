@@ -12,7 +12,20 @@ GDK_SCALE="${GDK_SCALE:-1}"                                          # Set GDK s
 ELECTRON_OZONE_PLATFORM_HINT="${ELECTRON_OZONE_PLATFORM_HINT:-auto}" # Set Electron Ozone Platform Hint to auto, for Electron apps on Wayland
 
 # HyDEs Compositor Configuration
-HYPRLAND_CONFIG="${XDG_DATA_HOME:-$HOME/.local/share}/hypr/hyprland.conf"
+if [ -z "$HYDE_ACTIVATED" ]; then
+    for _hyde_activate in \
+        "$HOME/.local/lib/hyde/shell/activate" \
+        "/usr/local/lib/hyde/shell/activate" \
+        "/usr/lib/hyde/shell/activate"; do
+        [ -f "$_hyde_activate" ] && {
+            . "$_hyde_activate"
+            break
+        }
+    done
+    unset _hyde_activate
+fi
+
+HYPRLAND_CONFIG="${HYPRLAND_CONFIG:-${XDG_DATA_HOME:-$HOME/.local/share}/hypr/hyde.lua}"
 HYPRLAND_NO_SD_NOTIFY=1 # If systemd, disables the sd_notify calls.
 HYPRLAND_NO_SD_VARS=1   # Disables management of variables in systemd and dbus activation environments.
 

@@ -74,7 +74,12 @@ set -gx PARALLEL_HOME "$XDG_CONFIG_HOME/parallel"
 end
 
 if test -z "$HYPRLAND_CONFIG"
-set -gx HYPRLAND_CONFIG "$XDG_DATA_HOME/hypr/hyprland.conf"
+for candidate in "$XDG_DATA_HOME/hypr/hyde.lua" /usr/local/share/hypr/hyde.lua /usr/share/hypr/hyde.lua
+if test -r "$candidate"
+set -gx HYPRLAND_CONFIG "$candidate"
+break
+end
+end
 end
 
 fish_add_path $HOME/.local/bin:$PATH
