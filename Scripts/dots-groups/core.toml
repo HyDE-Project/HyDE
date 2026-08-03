@@ -8,14 +8,19 @@
     version     = "0.1.0"
     # dots = ["kitty", "hyprland"] # List of dots to be used in the configuration file
     # We can call it core packages!
+    # Order matters: dots are deployed in the order they are listed here. The
+    # archives download over the network and write into /usr/local under sudo,
+    # which is the most likely thing in this group to fail and the least
+    # important thing in it to have. Everything that makes up the desktop is
+    # deployed before them.
     include = [
         "../dots/deps.toml",
-        "../dots/archives.toml",
         "../dots/hyde.toml",
         "../dots/hyprland.toml",
         "../dots/wallbash.toml",
         "../dots/waybar.toml",
         "../dots/rofi.toml",
+        "../dots/archives.toml",
     ]
 
 # Loads an array of package manager commands
