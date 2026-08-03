@@ -16,7 +16,10 @@ drop_in="$REPO_ROOT/Configs/.config/fish/conf.d/hyde.fish"
     finish
 }
 
-if ! command -v fish >/dev/null 2>&1; then
+# Resolved here rather than called by name below: the run is started with a
+# PATH of its own, and a fish installed anywhere but there would not be found.
+fish_bin=$(command -v fish 2>/dev/null)
+if [ -z "$fish_bin" ]; then
     skip "fish is not installed"
     finish
 fi
@@ -37,16 +40,19 @@ path_entries=$(
         XDG_CONFIG_HOME="$work_dir/config" \
         PATH=/usr/bin:/bin \
         TERM=dumb \
-        fish -c "source '$drop_in' 2>/dev/null; for entry in \$PATH; echo \$entry; end" 2>/dev/null
+        "$fish_bin" -c "source '$drop_in' 2>/dev/null; for entry in \$PATH; echo \$entry; end" 2>/dev/null
 )
 
 printf '%s\n' "$path_entries" | grep -qxF "$home/.local/bin" ||
     fail "the drop-in did not put ~/.local/bin on PATH, so no HyDE command resolves in fish"
 
 # The failure this case exists for leaves a single entry holding the whole
-# joined string, which is a path in name only.
-printf '%s\n' "$path_entries" | grep -q ':' &&
-    fail "PATH holds a colon-joined entry, which is one path that exists nowhere"
+# joined string, which is a path in name only. Only the entries this drop-in
+# contributes are judged; what the machine's own fish configuration puts on
+# PATH is not this file's business.
+stray=$(printf '%s\n' "$path_entries" | grep "^$home" | grep ':')
+[ -n "$stray" ] &&
+    fail "PATH holds a colon-joined entry, which is one path that exists nowhere: $stray"
 
 printf '    %d PATH entry(ies) checked\n' "$(printf '%s\n' "$path_entries" | grep -c .)"
 
