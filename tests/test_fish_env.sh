@@ -31,9 +31,10 @@ home="$work_dir/home"
 mkdir -p "$home/.local/bin" "$work_dir/data" "$work_dir/config"
 
 # An isolated home keeps the universal variables fish_add_path writes out of
-# the one running the suite. The drop-in reaches for functions that live
-# elsewhere in the shipped config, past the line under test, so its diagnostics
-# are dropped rather than the whole file being pulled in.
+# the one running the suite. Past the line under test the drop-in calls a
+# function defined elsewhere in the shipped config, which is not sourced here;
+# fish reports that on stderr and carries on, so stderr is discarded rather
+# than the rest of the configuration being pulled in to silence it.
 path_entries=$(
     env -i HOME="$home" \
         XDG_DATA_HOME="$work_dir/data" \
