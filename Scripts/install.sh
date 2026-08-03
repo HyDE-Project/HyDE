@@ -303,6 +303,7 @@ if has_operation "restore"; then
 EOF
 
 	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
+	deploy_failed=0
 
 	#------------------------------------------#
 	# rebuild transient TOML: core deps+nvidia  #
@@ -401,13 +402,26 @@ EOF
 			exit 1
 		}
 
+		# A failed deployment used to end the run here, which cost the user
+		# every step below it — the theme, the wallpaper cache, the migrations,
+		# the services. Those are what bring a partly deployed tree back into
+		# shape, so they are exactly what should still run. The failure is
+		# carried to the end of the restore and reported there.
 		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing core dotfiles..."
-		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/core.toml" dots --skip-git --deploy all || exit 1
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/core.toml" dots --skip-git --deploy all || {
+			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Core dotfiles deployed with failures"
+			deploy_failed=1
+		}
 
 		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing extra dotfiles..."
-		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/extra.toml" dots --skip-git --deploy || exit 1
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/extra.toml" dots --skip-git --deploy || {
+			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Extra dotfiles deployed with failures"
+			deploy_failed=1
+		}
 
-		print_log -g "[DEEZ-DOTS] " -b "complete :: " "Dotfiles deployed"
+		if [ "${deploy_failed}" -eq 0 ]; then
+			print_log -g "[DEEZ-DOTS] " -b "complete :: " "Dotfiles deployed"
+		fi
 	fi
 
 	"${scrDir}/restore_thm.sh"
@@ -473,6 +487,14 @@ if has_operation "services"; then
 EOF
 
 	"${scrDir}/restore_svc.sh"
+fi
+
+# Reported here rather than where it happened, so the theme, the migrations and
+# the services above still run against the dots that did land.
+if [ "${deploy_failed:-0}" -ne 0 ]; then
+	print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Some dots were not deployed. Deal with the failures reported above and run the restore again."
+	print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
+	exit 1
 fi
 
 if has_operation "install"; then
