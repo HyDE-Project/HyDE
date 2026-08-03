@@ -84,6 +84,14 @@ run_migration
 grep -q '^if not hyde then$' "$managed" ||
     fail "the migration did not add the loader to the file the symlink points at"
 
+# A link pointing at nothing has to be reported rather than counted as "no file
+# here": the runner records a zero exit as applied, and repairing the link
+# afterwards would leave the loader missing for good.
+rm -f "$target"
+ln -s "$work_dir/nothing-here.lua" "$target"
+run_migration
+[ "$?" -ne 0 ] || fail "a config symlink pointing at nothing was treated as applied"
+
 # No file, nothing to do.
 rm -f "$target"
 run_migration

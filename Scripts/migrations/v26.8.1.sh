@@ -17,12 +17,13 @@ config_home="${XDG_CONFIG_HOME:-${HOME}/.config}"
 target="${config_home}/hypr/hyprland.lua"
 backup_dir="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/v26.8.1"
 
-[ -f "${target}" ] || exit 0
-
-# A config kept under a dotfile manager is a symlink into that tree. Replacing
-# the link with a regular file would take the machine off the managed copy, so
-# the rewrite follows it and edits the file the link points at.
+# A dangling link is checked before absence: exiting zero on one would have the
+# runner record this migration as applied, and repairing the link afterwards
+# would leave the loader missing for good.
 if [ -L "${target}" ]; then
+    # A config kept under a dotfile manager is a symlink into that tree.
+    # Replacing the link with a regular file would take the machine off the
+    # managed copy, so the rewrite follows it and edits what it points at.
     resolved=$(readlink -f "${target}")
     if [ -z "${resolved}" ] || [ ! -f "${resolved}" ]; then
         echo "  ${target} is a symlink that leads nowhere, leaving it alone" >&2
@@ -31,6 +32,8 @@ if [ -L "${target}" ]; then
     echo "  ${target} is a symlink, editing ${resolved}"
     target="${resolved}"
 fi
+
+[ -f "${target}" ] || exit 0
 
 if grep -q '^if not hyde then$' "${target}"; then
     echo "  ${target} already loads HyDE, nothing to do"
