@@ -13,13 +13,23 @@
 -- // ██████╔╝╚█████╔╝  ██║░╚███║╚█████╔╝░░░██║░░░  ███████╗██████╔╝██║░░░██║░░░
 -- // ╚═════╝░░╚════╝░  ╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░  ╚══════╝╚═════╝░╚═╝░░░╚═╝░░░
 
--- Hyprland anchors require() at the directory of the config it was started
--- with, and nowhere else, so a module shipped beside this file is reachable by
--- name only while this file is that config. Since v26.8.1 the entry point is
--- the user's hyprland.lua, which anchors the search path at ~/.config/hypr and
--- puts nothing here within reach. The bootstrap therefore comes off this
--- file's own path; everything after it loads by name from the search path this
--- block sets, so this is the only place that may not rely on one.
+-- Hyprland builds the Lua search path from the directory of the config it was
+-- started with and prepends nothing else, so a module shipped beside this file
+-- is reachable by name only while this file is that config. Since v26.8.1 the
+-- entry point is the user's hyprland.lua, which anchors the search path at
+-- ~/.config/hypr and leaves nothing here within reach.
+--
+-- The resolver is therefore loaded by path, and with dofile rather than
+-- require. Hyprland wraps require: a module that fails for any reason other
+-- than "not found" is logged and answered with an empty table, which would
+-- reach the session as an unresolved path several modules later instead of as
+-- an error on the line that caused it. The config directory is prepended to
+-- the search path as well, so a file the user happens to keep at
+-- hypr/hyde/path.lua would answer to the name first. Neither can happen to a
+-- dofile of a path this file resolved itself, and registering the result under
+-- the name the rest of the tree uses keeps a later require on the same table.
+--
+-- Everything below loads by name, from the search path this block sets.
 local root =
 	assert(
 		debug.getinfo(1, "S").source:match("^@(.*)/"),
