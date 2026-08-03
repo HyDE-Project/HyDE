@@ -19,6 +19,19 @@ backup_dir="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/v26.8.1"
 
 [ -f "${target}" ] || exit 0
 
+# A config kept under a dotfile manager is a symlink into that tree. Replacing
+# the link with a regular file would take the machine off the managed copy, so
+# the rewrite follows it and edits the file the link points at.
+if [ -L "${target}" ]; then
+    resolved=$(readlink -f "${target}")
+    if [ -z "${resolved}" ] || [ ! -f "${resolved}" ]; then
+        echo "  ${target} is a symlink that leads nowhere, leaving it alone" >&2
+        exit 1
+    fi
+    echo "  ${target} is a symlink, editing ${resolved}"
+    target="${resolved}"
+fi
+
 if grep -q '^if not hyde then$' "${target}"; then
     echo "  ${target} already loads HyDE, nothing to do"
     exit 0
@@ -37,6 +50,16 @@ if ! cp -p "${target}" "${backup_dir}/hyprland.lua"; then
 fi
 
 rewritten="${target}.hyde-migration"
+
+# Seeding the new file from the old one carries its mode across; the
+# redirection below truncates the copy rather than creating a file under the
+# current umask.
+if ! cp -p "${target}" "${rewritten}"; then
+    echo "  cannot stage the rewrite of ${target}, leaving it alone" >&2
+    rm -f "${rewritten}"
+    exit 1
+fi
+
 {
     cat <<'LOADER'
 -- Hyprland loads this file when it is started without a config, and it prefers

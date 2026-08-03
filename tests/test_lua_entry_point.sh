@@ -61,6 +61,29 @@ run_migration
 [ "$(cat "$target")" = "$before" ] || fail "a second run of the migration changed the file again"
 [ "$(grep -c '^if not hyde then$' "$target")" -eq 1 ] || fail "a second run added the loader twice"
 
+# The file mode survives the rewrite: a config the user tightened must not come
+# back readable by everyone because the new file was written under the umask.
+rm -f "$target"
+printf '%s\n' "$user_line" >"$target"
+chmod 600 "$target"
+run_migration
+[ "$(stat -c '%a' "$target")" = "600" ] ||
+    fail "the migration changed the file mode to $(stat -c '%a' "$target")"
+
+# A config kept under a dotfile manager is a symlink into that tree. The
+# rewrite has to follow it, or the machine silently comes off the managed copy.
+rm -f "$target"
+managed_dir="$work_dir/dotfiles"
+mkdir -p "$managed_dir"
+managed="$managed_dir/hyprland.lua"
+printf '%s\n' "$user_line" >"$managed"
+ln -s "$managed" "$target"
+run_migration
+
+[ -L "$target" ] || fail "the migration replaced the symlink with a regular file"
+grep -q '^if not hyde then$' "$managed" ||
+    fail "the migration did not add the loader to the file the symlink points at"
+
 # No file, nothing to do.
 rm -f "$target"
 run_migration
