@@ -159,8 +159,18 @@ EOF
 	exit 0
 fi
 
+# Both branches below run out of the Python environment, and the revisions they
+# run are the ones this checkout's lock pins. Without this step a restore
+# deploys with whatever was installed last time, so a corrected pin never
+# arrives. It has to happen here, above the first use of deez: the dependency
+# checks reach it before the deployment does. The pre-install script covers it
+# for a combined run; on its own each operation gets the environment alone,
+# since the rest of that script rewrites the bootloader and pacman
+# configuration and has no business running on a restore.
 if has_operation "install" && has_operation "restore"; then
-	"${scrDir}/install_pre.sh"
+	"${scrDir}/install_pre.sh" || exit 1
+elif has_operation "install" || has_operation "restore"; then
+	setup_python_env || exit 1
 fi
 
 #------------#
@@ -303,6 +313,7 @@ if has_operation "restore"; then
 EOF
 
 	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
+	deploy_failed=0
 
 	#------------------------------------------#
 	# rebuild transient TOML: core deps+nvidia  #
@@ -401,13 +412,26 @@ EOF
 			exit 1
 		}
 
+		# A failed deployment used to end the run here, which cost the user
+		# every step below it — the theme, the wallpaper cache, the migrations,
+		# the services. Those are what bring a partly deployed tree back into
+		# shape, so they are exactly what should still run. The failure is
+		# carried to the end of the restore and reported there.
 		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing core dotfiles..."
-		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/core.toml" dots --skip-git --deploy all || exit 1
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/core.toml" dots --skip-git --deploy all || {
+			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Core dotfiles deployed with failures"
+			deploy_failed=1
+		}
 
 		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing extra dotfiles..."
-		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/extra.toml" dots --skip-git --deploy || exit 1
+		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/extra.toml" dots --skip-git --deploy || {
+			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Extra dotfiles deployed with failures"
+			deploy_failed=1
+		}
 
-		print_log -g "[DEEZ-DOTS] " -b "complete :: " "Dotfiles deployed"
+		if [ "${deploy_failed}" -eq 0 ]; then
+			print_log -g "[DEEZ-DOTS] " -b "complete :: " "Dotfiles deployed"
+		fi
 	fi
 
 	"${scrDir}/restore_thm.sh"
@@ -473,6 +497,14 @@ if has_operation "services"; then
 EOF
 
 	"${scrDir}/restore_svc.sh"
+fi
+
+# Reported here rather than where it happened, so the theme, the migrations and
+# the services above still run against the dots that did land.
+if [ "${deploy_failed:-0}" -ne 0 ]; then
+	print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Some dots were not deployed. Deal with the failures reported above and run the restore again."
+	print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
+	exit 1
 fi
 
 if has_operation "install"; then
