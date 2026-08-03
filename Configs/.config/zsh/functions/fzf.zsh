@@ -55,7 +55,7 @@ _fuzzy_edit_search_file_content() {
         if editor=$(_hyde_editor); then
             "$editor" "$selected_file"
         else
-            echo "No editor found. Install one, or export EDITOR from \$ZDOTDIR/user.zsh."
+            echo "No editor found. Install one, or export EDITOR from \$ZDOTDIR/user.zsh or \$HOME/.user.zsh."
             return 1
         fi
 
@@ -83,7 +83,7 @@ _fuzzy_edit_search_file() {
         if editor=$(_hyde_editor); then
             "$editor" "$selected_file"
         else
-            echo "No editor found. Install one, or export EDITOR from \$ZDOTDIR/user.zsh."
+            echo "No editor found. Install one, or export EDITOR from \$ZDOTDIR/user.zsh or \$HOME/.user.zsh."
             return 1
         fi
     else
