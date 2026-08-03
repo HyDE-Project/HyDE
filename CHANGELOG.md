@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Hyprland: a session started without `HYPRLAND_CONFIG`, such as one launched from a TTY or a display manager, no longer trips emergency mode with `module 'lua.hyde.path' not found`; Hyprland resolves `require` against the directory of the config it picked, so the entry point now finds the modules shipped beside it from its own path instead of from a search path only one of the two entry points provides
 - Weather Applet: Avoid crashes from unknown weather codes or unavailable wttr.in responses.
 - Core: an install no longer ends at the Lua step on a machine that cannot build `lgi`; the introspection headers it compiles against are declared as a dependency, and an optional rock that still fails is reported and skipped instead of taking the run down before any dotfile is deployed
 - Hyprland: a session on a machine with a discrete NVIDIA GPU no longer comes up with a timed-out configuration; driver detection reads `/proc` and `/sys`, and the library directories are found by opening the candidate paths, so the budget Hyprland allows the whole configuration is no longer spent waiting on a subprocess
