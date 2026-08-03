@@ -33,6 +33,15 @@ position_in_core() {
 }
 
 archives_at=$(position_in_core archives)
+# The packages the rest of the group needs are installed by the first entry,
+# so it is the one member whose position is fixed rather than merely early.
+deps_at=$(position_in_core deps)
+if [ -z "$deps_at" ]; then
+    fail "the core group no longer includes deps.toml"
+elif [ "$deps_at" -ne 1 ]; then
+    fail "deps.toml is no longer the first entry in the core group"
+fi
+
 if [ -z "$archives_at" ]; then
     fail "the core group no longer includes archives.toml, or the include list could not be read"
 else
