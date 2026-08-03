@@ -41,7 +41,8 @@ printf 'import sys\nsys.exit(0)\n' >"$clone_dir/Configs/.local/lib/hyde/pyutils/
 
 mkdir -p "$home_dir/.local/state/hyde/python_env/bin" "$home_dir/.local/lib/hyde/wallpaper"
 for helper in "wallpaper/cache.sh" "theme.switch.sh" "waybar.py"; do
-    printf '#!/usr/bin/env sh\nexit 0\n' >"$home_dir/.local/lib/hyde/$helper"
+    printf '#!/usr/bin/env sh\nprintf "%%s\\n" "%s" >>"%s"\n' "$(basename "$helper")" "$ran_log" \
+        >"$home_dir/.local/lib/hyde/$helper"
     chmod +x "$home_dir/.local/lib/hyde/$helper"
 done
 
@@ -96,6 +97,7 @@ grep -q 'dots-groups/core.toml' "$deez_log" || fail "a clean restore never deplo
 ran restore_thm || fail "a clean restore did not apply the theme"
 ran migration || fail "a clean restore did not run the migrations"
 ran restore_svc || fail "a clean restore did not enable the services"
+ran cache.sh || fail "a clean restore did not rebuild the wallpaper cache"
 
 # The core deployment fails: the remaining steps still run, and the run ends
 # non-zero saying what happened.
@@ -109,6 +111,7 @@ grep -q 'dots-groups/extra.toml' "$deez_log" ||
 ran restore_thm || fail "a failed deployment stopped the theme from being applied"
 ran migration || fail "a failed deployment stopped the migrations from running"
 ran restore_svc || fail "a failed deployment stopped the services from being enabled"
+ran cache.sh || fail "a failed deployment stopped the wallpaper cache from being rebuilt"
 grep -q 'Some dots were not deployed' "$work_dir/out.log" ||
     fail "a failed deployment did not say so at the end of the run"
 grep -q 'COMPLETED' "$work_dir/out.log" &&
