@@ -1,137 +1,126 @@
 #!/usr/bin/env bash
-# A restore has to refresh the Python environment before it deploys anything.
+# The Python environment has to be refreshed before anything reaches deez.
 #
-# The dot deployment, the dependency checks and hyde-shell all run out of that
-# environment, and the revisions they run are the ones this checkout's lock
-# pins. A restore that skips the step deploys with whatever was installed the
-# last time it did not, so a corrected pin never reaches the machine. What it
-# must not do instead is pull in the rest of the pre-install script, which
-# rewrites the bootloader and pacman configuration.
+# The dot deployment and both dependency checks run out of that environment,
+# and the revisions they run are the ones this checkout's lock pins. A run that
+# skips the step works with whatever was installed the last time it did not, so
+# a corrected pin never reaches the machine. Ordering is the whole point: the
+# dependency checks reach deez well before the deployment does.
 
 . "$(dirname -- "$0")/lib/common.sh"
 
-if [ ! -f "$REPO_ROOT/Scripts/install_env.sh" ]; then
-    fail "Scripts/install_env.sh does not exist"
-    finish
-fi
+grep -q '^setup_python_env()' "$REPO_ROOT/Scripts/global_fn.sh" ||
+    fail "global_fn.sh does not define the Python environment step"
 
-[ -x "$REPO_ROOT/Scripts/install_env.sh" ] ||
-    fail "Scripts/install_env.sh is not executable"
+grep -qE '^[[:space:]]*setup_python_env' "$REPO_ROOT/Scripts/install_pre.sh" ||
+    fail "install_pre.sh no longer runs the Python environment step"
 
-# The environment step has to stand alone: the pre-install script may call it,
-# never the other way round.
-grep -q 'install_pre\.sh' "$REPO_ROOT/Scripts/install_env.sh" &&
-    fail "Scripts/install_env.sh calls back into the pre-install script"
-
-grep -qE '^[[:space:]]*"\$\{scrDir\}/install_env\.sh"' "$REPO_ROOT/Scripts/install_pre.sh" ||
-    fail "Scripts/install_pre.sh no longer runs the environment step"
-
-# Nothing of the environment setup may be left behind in the pre-install
-# script, or a change to one of them would stop matching the other unnoticed.
 grep -q 'python_env\.py' "$REPO_ROOT/Scripts/install_pre.sh" &&
-    fail "Scripts/install_pre.sh still sets up the Python environment itself"
+    fail "install_pre.sh sets up the environment itself instead of using the shared step"
 
 work_dir=$(mktemp -d)
 trap 'rm -rf "$work_dir"' EXIT
 
-cp -a "$REPO_ROOT/Scripts" "$work_dir/Scripts"
-mkdir -p "$work_dir/home" "$work_dir/state"
+clone_dir="$work_dir/clone"
+home_dir="$work_dir/home"
+mkdir -p "$clone_dir" "$home_dir/.local/lib/hyde/wallpaper" "$home_dir/.local/state/hyde/python_env/bin"
+cp -a "$REPO_ROOT/Scripts" "$clone_dir/Scripts"
 
-# Every script the installer hands off to is replaced by a stub that records
-# the fact, so a case can only fail on the dispatch under test and nothing
-# reaches the system running the suite.
+# Every hand-off is a stub that records the fact, so a case can only fail on
+# the flow under test and nothing reaches the machine running the suite.
 ran_log="$work_dir/ran.log"
-for stub in install_env install_pre install_aur install_pst restore_thm restore_svc; do
+for stub in install_pre install_aur install_pst restore_thm restore_svc; do
     printf '#!/usr/bin/env sh\nprintf "%%s\\n" "%s" >>"%s"\n' "$stub" "$ran_log" \
-        >"$work_dir/Scripts/$stub.sh"
-    chmod +x "$work_dir/Scripts/$stub.sh"
+        >"$clone_dir/Scripts/$stub.sh"
+    chmod +x "$clone_dir/Scripts/$stub.sh"
 done
-rm -f "$work_dir/Scripts/migrations"/*.sh
+rm -f "$clone_dir/Scripts/migrations"/*.sh
+
+mkdir -p "$clone_dir/Configs/.local/lib/hyde/pyutils"
+printf 'import sys\nsys.exit(0)\n' >"$clone_dir/Configs/.local/lib/hyde/pyutils/lua_env.py"
+
+# The environment step and deez both record what they were asked to do, in the
+# same log, so their order is part of what the case checks.
+write_python_stub() {
+    cat >"$clone_dir/Configs/.local/lib/hyde/pyutils/python_env.py" <<PY
+import sys
+
+with open("$ran_log", "a") as handle:
+    handle.write("python_env " + sys.argv[1] + "\n")
+
+sys.exit(${1:-0} if sys.argv[1] == "create" else 0)
+PY
+}
+write_python_stub 0
+
+ln -sf "$(command -v python3)" "$home_dir/.local/state/hyde/python_env/bin/python"
+printf '#!/usr/bin/env sh\nprintf "deez %%s\\n" "$1" >>"%s"\n' "$ran_log" \
+    >"$home_dir/.local/state/hyde/python_env/bin/deez"
+chmod +x "$home_dir/.local/state/hyde/python_env/bin/deez"
+
+for helper in "wallpaper/cache.sh" "theme.switch.sh" "waybar.py"; do
+    printf '#!/usr/bin/env sh\nexit 0\n' >"$home_dir/.local/lib/hyde/$helper"
+    chmod +x "$home_dir/.local/lib/hyde/$helper"
+done
 
 run_installer() {
     : >"$ran_log"
+    rm -rf "$work_dir/state"
     (
-        HOME="$work_dir/home" XDG_STATE_HOME="$work_dir/state" \
-            "$work_dir/Scripts/install.sh" "$@" </dev/null
+        env -u HYPRLAND_INSTANCE_SIGNATURE \
+            HOME="$home_dir" \
+            XDG_STATE_HOME="$work_dir/state" \
+            XDG_CACHE_HOME="$work_dir/cache" \
+            CLONE_DIR="$clone_dir" \
+            "$clone_dir/Scripts/install.sh" "$@" <<<"n"
     ) >"$work_dir/out.log" 2>&1
 }
 
 ran() { grep -qxF "$1" "$ran_log" 2>/dev/null; }
+line_of() { grep -nxF "$1" "$ran_log" 2>/dev/null | head -n 1 | cut -d: -f1; }
 
-# A restore on its own: the environment step runs, the bootloader and pacman
-# changes do not.
-run_installer -r -t
-ran install_env || fail "a restore did not refresh the Python environment"
+# A restore on its own refreshes the environment, and does it before the first
+# thing that runs out of it.
+run_installer -r
+ran "python_env create" || fail "a restore did not create the Python environment"
+ran "python_env sync" || fail "a restore did not sync the Python environment"
 ran install_pre && fail "a restore ran the pre-install script"
+
+first_deez=$(line_of "deez deps")
+sync_at=$(line_of "python_env sync")
+if [ -z "$first_deez" ] || [ -z "$sync_at" ]; then
+    fail "a restore did not reach both steps, the ordering could not be checked"
+elif [ "$sync_at" -gt "$first_deez" ]; then
+    fail "the environment was synced after deez had already run"
+fi
 
 # An install on its own reaches deez for the dependency check, so it needs the
 # environment just as much.
-run_installer -i -t
-ran install_env || fail "an install did not refresh the Python environment"
+run_installer -i
+ran "python_env sync" || fail "an install did not refresh the Python environment"
 ran install_pre && fail "an install on its own ran the pre-install script"
 
-# The pre-install operation still reaches the environment through
-# install_pre.sh, so the message a failed restore prints keeps working.
-run_installer -p -t
+# The pre-install operation and a combined run keep going through
+# install_pre.sh, unchanged from before.
+run_installer -p
 ran install_pre || fail "the pre-install operation no longer runs install_pre.sh"
 
-# A combined run keeps the pre-install script, unchanged from before.
-run_installer -i -r -t
+run_installer -i -r
 ran install_pre || fail "a combined install and restore no longer runs install_pre.sh"
 
-# What the extracted script itself does: create the environment, then sync it
-# against this checkout's lock, and stop at the first of the two that fails.
-env_tree="$work_dir/env_tree"
-mkdir -p "$env_tree/Configs/.local/lib/hyde/pyutils" "$env_tree/home/.local/state/hyde/python_env/bin"
-cp -a "$REPO_ROOT/Scripts" "$env_tree/Scripts"
-
-env_log="$env_tree/env.log"
-python_stub="$env_tree/Configs/.local/lib/hyde/pyutils/python_env.py"
-ln -sf "$(command -v python3)" "$env_tree/home/.local/state/hyde/python_env/bin/python"
-
-write_python_stub() {
-    printf 'import sys\nwith open(%s, "a") as handle:\n    handle.write(sys.argv[1] + "\\n")\nsys.exit(%s if sys.argv[1] == "create" else 0)\n' \
-        "\"$env_log\"" "$1" >"$python_stub"
-}
-
-run_env_step() {
-    : >"$env_log"
-    (
-        HOME="$env_tree/home" "$env_tree/Scripts/install_env.sh" </dev/null
-    ) >"$env_tree/out.log" 2>&1
-}
-
-write_python_stub 0
-run_env_step
-env_status=$?
-
-[ "$env_status" -eq 0 ] ||
-    fail "the environment step failed on a checkout where both calls succeed"
-
-env_calls=$(tr '\n' ' ' <"$env_log")
-[ "$env_calls" = "create sync " ] ||
-    fail "the environment step ran '$env_calls', expected 'create sync '"
-
 # A failed create has to stop the run: syncing into an environment that was
-# never built reports success over a machine that has nothing installed.
+# never built would report success over a machine that has nothing installed.
 write_python_stub 1
-run_env_step
-env_status=$?
+run_installer -r
+status=$?
+write_python_stub 0
 
-[ "$env_status" -ne 0 ] ||
-    fail "the environment step reported success after the environment failed to build"
-
-grep -qxF 'sync' "$env_log" &&
-    fail "the environment step synced dependencies after the environment failed to build"
+[ "$status" -ne 0 ] || fail "the run reported success after the environment failed to build"
+ran "python_env sync" && fail "the environment was synced after it failed to build"
+ran "deez deps" && fail "deez ran after the environment failed to build"
 
 # Dry run reports and touches nothing.
-: >"$env_log"
-(
-    HOME="$env_tree/home" flg_DryRun=1 "$env_tree/Scripts/install_env.sh" </dev/null
-) >"$env_tree/out.log" 2>&1 ||
-    fail "the environment step failed under dry-run"
-
-[ -s "$env_log" ] &&
-    fail "the environment step ran the setup under dry-run"
+run_installer -r -t
+ran "python_env create" && fail "the environment was built under dry-run"
 
 finish

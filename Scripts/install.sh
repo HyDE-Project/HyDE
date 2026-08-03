@@ -162,14 +162,15 @@ fi
 # Both branches below run out of the Python environment, and the revisions they
 # run are the ones this checkout's lock pins. Without this step a restore
 # deploys with whatever was installed last time, so a corrected pin never
-# arrives. The pre-install script covers it for a combined run; on its own each
-# operation gets the environment step alone, since the rest of that script
-# rewrites the bootloader and pacman configuration and has no business running
-# on a restore.
+# arrives. It has to happen here, above the first use of deez: the dependency
+# checks reach it before the deployment does. The pre-install script covers it
+# for a combined run; on its own each operation gets the environment alone,
+# since the rest of that script rewrites the bootloader and pacman
+# configuration and has no business running on a restore.
 if has_operation "install" && has_operation "restore"; then
 	"${scrDir}/install_pre.sh" || exit 1
 elif has_operation "install" || has_operation "restore"; then
-	"${scrDir}/install_env.sh" || exit 1
+	setup_python_env || exit 1
 fi
 
 #------------#

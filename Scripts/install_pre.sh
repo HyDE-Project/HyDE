@@ -15,9 +15,10 @@ flg_DryRun=${flg_DryRun:-0}
 flg_Grub=${flg_Grub:-1}
 flg_Nvidia=${flg_Nvidia:-1}
 
-# Python environment setup. It lives in its own script because a restore needs
-# it without the bootloader and pacman changes that follow here.
-"${scrDir}/install_env.sh" || exit 1
+# Python environment setup. The installer runs the same function on its own for
+# a restore, which needs the environment without the bootloader and pacman
+# changes that follow here.
+setup_python_env || exit 1
 
 # grub
 if [ "${flg_Grub}" -eq 1 ] && pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
