@@ -20,8 +20,13 @@ function ffec -d "Fuzzy search by file content and open in Editor"
     set selected_file (grep -irl -- "$grep_pattern" ./ 2>/dev/null | fzf $fzf_options)
 
     if test -n "$selected_file"
+        set editor (_hyde_editor)
+        if test -z "$editor"
+            echo "No editor found. Install one, or set EDITOR in ~/.config/fish/user.fish."
+            return 1
+        end
         cd (dirname $selected_file)
-        nvim (basename $selected_file)
+        $editor (basename $selected_file)
     else
         echo "No file selected or search returned no results."
     end

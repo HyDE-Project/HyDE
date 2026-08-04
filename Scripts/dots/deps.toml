@@ -4,6 +4,7 @@ pacman = [
   # System
   "lua", # for lua runtime
   "luarocks", # Core scripts lib
+  "libgirepository", # headers and pkg-config data the lgi rock is built against
   "uwsm", # A standalone Wayland session manager
   "pipewire", # audio/video server
   "pipewire-alsa", # pipewire alsa client
@@ -62,7 +63,8 @@ pacman = [
   "firefox", # browser
   "ark", # kde file archiver
   "unzip", # extracting zip files
-  "vim", # terminal text editor
+  # No text editor: HyDE runs none of its own, and the one it configures
+  # (Scripts/dots/wallbash-vim.toml) brings its own vim when it is opted into.
   # * "code", # ide text editor
   "nwg-displays", # monitor management utility
   "fzf", # Command-line fuzzy finder

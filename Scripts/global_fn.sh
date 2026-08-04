@@ -181,6 +181,37 @@ print_log() {
     fi
 }
 
+# Creates the Python environment and syncs it against this checkout's lock.
+#
+# The dot deployment, the dependency checks and hyde-shell all run out of that
+# environment, and the revisions they run are the ones this checkout pins. A
+# run that skips this works with whatever was installed the last time it did
+# not, so a corrected pin never reaches the machine that needs it. It lives
+# here rather than in a script of its own so the pre-install path and the
+# installer cannot drift apart.
+setup_python_env() {
+    local pyutils="${cloneDir}/Configs/.local/lib/hyde/pyutils/python_env.py"
+    local python_env_dir="${HOME}/.local/state/hyde/python_env"
+
+    if [ "${flg_DryRun:-0}" -eq 1 ]; then
+        print_log -y "[PYTHON] " -b "dry-run :: " "Would setup Python environment"
+        return 0
+    fi
+
+    if ! python3 "${pyutils}" create; then
+        print_log -err "[PYTHON] " -crit "ERROR" "Failed to create the Python environment; the error above says why"
+        print_log -err "[PYTHON] " -crit "HINT" "A missing python3 or base-devel is the usual cause"
+        return 1
+    fi
+
+    if ! "${python_env_dir}/bin/python" "${pyutils}" sync; then
+        print_log -err "[PYTHON] " -crit "ERROR" "Failed to install dependencies"
+        return 1
+    fi
+
+    print_log -g "[PYTHON] " -b "complete :: " "Environment setup complete"
+}
+
 # Runs each migration in "$1" missing from the record in "$2", in version order,
 # and records the ones that exit zero. Migrations must therefore be safe to run
 # on a machine that has no record yet, which replays all of them once.

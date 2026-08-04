@@ -57,39 +57,40 @@ P.data = env("XDG_DATA_HOME", "/.local/share")
 --- so it reads as nil rather than as the working directory.
 P.runtime = env("XDG_RUNTIME_DIR")
 
---- Wraps a value so the shell reads it as one literal word.
----
---- Single quotes protect everything except a single quote itself, which has to
---- leave the quoted run, contribute an escaped quote and open a new run. Values
---- here are derived from HOME, and a home directory is free to contain one.
----
---- @param value string Value to pass to the shell.
---- @return string quoted The value as a single quoted shell word.
----
---- Example:
----   shell_quote("/home/o'brien") --> "'/home/o'\\''brien'"
-local function shell_quote(value)
-    return "'" .. value:gsub("'", "'\\''") .. "'"
-end
+--- Errno the open reports when the path exists but may not be read.
+local EACCES = 13
 
 --- Reports whether a path is a directory.
 ---
---- Plain Lua cannot stat, so this asks the shell. The pipe is closed on every
---- outcome — leaving it open leaks a handle per probe, and this module runs on
---- every configuration reload.
+--- Plain Lua cannot stat, so this asks the path itself, and asks for the entry
+--- inside it that only a directory has: `dir/.` opens, while `file/.` and
+--- `fifo/.` fail with ENOTDIR before anything is opened. Probing the bare path
+--- instead would hand the resolver a way to hang — opening a FIFO with no
+--- writer blocks until one arrives, and this runs before Hyprland has a window
+--- on screen. The handle is closed on every outcome; leaving it open leaks one
+--- per probe, and this module runs on every configuration reload.
+---
+--- Asking the shell instead, as this used to, costs a fork per probe. Hyprland
+--- gives the whole configuration a single 1500 ms budget and its watchdog
+--- counts VM instructions, so time spent waiting on a subprocess is time no
+--- part of the configuration can account for.
+---
+--- A refusal on permission grounds counts as a directory. A directory that
+--- grants search but not read cannot be listed and cannot be opened this way,
+--- yet a file inside it still loads by name — which is all `package.path` ever
+--- does with it, and what `test -d` reported here before.
 ---
 --- @param path string Absolute path to test.
 --- @return boolean exists True when the path is a directory.
 local function is_directory(path)
-    local pipe = io.popen("[ -d " .. shell_quote(path) .. " ] && echo 1 || echo 0")
-    if not pipe then
-        return false
+    local handle, _, code = io.open(path .. "/.", "r")
+    if not handle then
+        return code == EACCES
     end
 
-    local answer = pipe:read("*l")
-    pipe:close()
+    handle:close()
 
-    return answer == "1"
+    return true
 end
 
 --- Returns the first candidate that exists, preferring the user's own.

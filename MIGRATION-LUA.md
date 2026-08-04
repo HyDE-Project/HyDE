@@ -36,8 +36,9 @@ Two things worth knowing before you run it:
 
 - `git pull` on its own changes nothing on your machine. The deployment and the
   migration step both live in `install.sh -r`.
-- If `install.sh -r` stops with `deez-dots not found in Python environment`, run
-  `./install.sh -p` once to rebuild the Python environment, then retry `-r`.
+- `install.sh -r` refreshes the Python environment before it deploys anything,
+  so the dot deployment runs the dependency revisions this checkout pins rather
+  than whatever was installed last time.
 
 ## The failures are silent
 
