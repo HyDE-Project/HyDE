@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Core: the dependency steps install the packages they were given again; the configs the installer writes at run time declared their group include at the document root, where deez does not read it, so both steps resolved an empty set, installed nothing but the machine-specific packages, and reported the packages verified
 - Fish: `~/.local/bin` reaches `PATH` again, so `hyde-shell` and everything the keybinds call resolve in a fish session; the directory was handed to `fish_add_path` joined to the rest of `PATH` by colons, which is one path that exists nowhere and is dropped without a word
 - Weather Applet: Avoid crashes from unknown weather codes or unavailable wttr.in responses.
 - Core: an install no longer ends at the Lua step on a machine that cannot build `lgi`; the introspection headers it compiles against are declared as a dependency, and an optional rock that still fails is reported and skipped instead of taking the run down before any dotfile is deployed
