@@ -1,12 +1,6 @@
--- Loads the shipped Hyprland entry point the way Hyprland loads it, and checks
--- that it can still reach the modules shipped beside it.
---
--- Hyprland builds package.path from the directory of the config it was started
--- with and prepends nothing else, so which files a bare require() can see
--- depends entirely on which file the session was pointed at. HyDE is reachable
--- through two of them: hyde.lua directly, which is what HYPRLAND_CONFIG names,
--- and the user's hyprland.lua, which is what Hyprland picks on its own. Only
--- the first puts the shipped tree on the search path, so the bootstrap has to
+-- Loads the shipped entry point with the search path Hyprland would give it,
+-- and checks it can still reach the modules beside it. Only one of the two
+-- entry points puts that tree on the search path, so the bootstrap has to
 -- resolve it without one.
 --
 -- Usage:
@@ -22,15 +16,9 @@ local root = assert(arg[3], "shipped root is not set")
 
 package.path = anchor .. "/?.lua;" .. anchor .. "/?/init.lua;" .. package.path
 
--- Only the bootstrap is under test. Everything the entry point pulls in after
--- it wants a live compositor, so the first require issued once the search path
--- is in place ends the load and records where it got to. A run that never
--- reaches one is a run that stopped earlier, which is the defect this case
--- exists for.
---
--- Extending the search path is what separates the two: anything required
--- before that is the bootstrap resolving itself, and has to succeed on its own
--- terms rather than be answered by this harness.
+-- Only the bootstrap is under test: the rest wants a live compositor. A
+-- require issued once the search path is in place ends the load; one issued
+-- before that is the bootstrap resolving itself and has to succeed on its own.
 local STOP = "stopped-at:"
 local bootstrap_path = package.path
 local real_require = require
@@ -69,8 +57,8 @@ check(
     )
 )
 
--- The resolver is what every later path is built from, so an entry point that
--- reaches it but leaves it half filled is no better than one that never did.
+-- Every later path is built from the resolver, so reaching it half filled is
+-- no better than never reaching it.
 check(type(hyde) == "table" and type(hyde.path) == "table", "hyde.path was not populated")
 
 if type(hyde) == "table" and type(hyde.path) == "table" then

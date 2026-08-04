@@ -125,12 +125,10 @@ layer_runs=$(XDG_DATA_HOME="$work_dir/data" lua -e "
 " 2>/dev/null | tail -n 1)
 [ "$layer_runs" = "0" ] || fail "the loader ran again while HyDE was loading this file, got '$layer_runs'"
 
-# Reaching HyDE is half of it. Hyprland builds the Lua search path from the
-# directory of the config it was started with and prepends nothing else, so an
-# entry point that resolves the modules shipped beside it by name works from
-# one of the two files and takes the session down from the other — with no
-# window on screen to report it from. Both are loaded here the way Hyprland
-# loads them, against the real tree rather than the stub above.
+# Reaching HyDE is half of it. The search path comes from the directory of the
+# config Hyprland was started with, so an entry point that resolves its modules
+# by name works from one of the two files and takes the session down from the
+# other. Both are loaded here against the real tree, not the stub above.
 harness="$TESTS_DIR/lua/config_entry_harness.lua"
 shipped="$REPO_ROOT/Configs/.local/share/hypr"
 
@@ -154,13 +152,11 @@ load_entry() {
         lua "$harness" "$1" "$2" "$deployed/.local/share/hypr"
 }
 
-# Started with no HYPRLAND_CONFIG: Hyprland picks the user's config and anchors
-# the search path there, where nothing HyDE ships can be reached by name.
+# No HYPRLAND_CONFIG: Hyprland picks the user's config.
 load_entry "$deployed/.config/hypr/hyprland.lua" "$deployed/.config/hypr" ||
     fail "the entry point does not hold when Hyprland picks the user config"
 
-# Started through HYPRLAND_CONFIG, which names the entry point directly. This
-# is the path the shell drop-ins and the uwsm environment take.
+# HYPRLAND_CONFIG names the entry point, as the shell drop-ins and uwsm do.
 load_entry "$deployed/.local/share/hypr/hyde.lua" "$deployed/.local/share/hypr" ||
     fail "the entry point does not hold when HYPRLAND_CONFIG names it"
 

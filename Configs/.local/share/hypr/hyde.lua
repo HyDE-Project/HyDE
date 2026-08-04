@@ -13,28 +13,11 @@
 -- // ██████╔╝╚█████╔╝  ██║░╚███║╚█████╔╝░░░██║░░░  ███████╗██████╔╝██║░░░██║░░░
 -- // ╚═════╝░░╚════╝░  ╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░  ╚══════╝╚═════╝░╚═╝░░░╚═╝░░░
 
--- Hyprland builds the Lua search path from the directory of the config it was
--- started with and prepends nothing else, so a module shipped beside this file
--- is reachable by name only while this file is that config. Since v26.8.1 the
--- entry point is the user's hyprland.lua, which anchors the search path at
--- ~/.config/hypr and leaves nothing here within reach.
---
--- The resolver is therefore loaded by path, and with dofile rather than
--- require. Hyprland wraps require: a module that fails for any reason other
--- than "not found" is logged and answered with an empty table, which would
--- reach the session as an unresolved path several modules later instead of as
--- an error on the line that caused it. The config directory is prepended to
--- the search path as well, so a file the user happens to keep at
--- hypr/hyde/path.lua would answer to the name first. Neither can happen to a
--- dofile of a path this file resolved itself, and registering the result under
--- the name the rest of the tree uses keeps a later require on the same table.
---
--- Everything below loads by name, from the search path this block sets.
-local root =
-	assert(
-		debug.getinfo(1, "S").source:match("^@(.*)/"),
-		"HyDE's entry point was not loaded from a file, so it cannot reach the modules shipped beside it"
-	)
+-- require() resolves against the directory of the config Hyprland was started
+-- with, which since v26.8.1 is the user's hyprland.lua, not this file. The
+-- resolver is therefore loaded by its own path; everything below loads by name
+-- from the search path it sets.
+local root = assert(debug.getinfo(1, "S").source:match("^@(.*)/"), "not loaded from a file")
 
 hyde = hyde or {}
 hyde.path = dofile(root .. "/lua/hyde/path.lua")
@@ -48,7 +31,7 @@ local pkg_paths = {
 	hyde.path.state .. "/hyde/lua_env/share/lua/5.5/?.lua", -- virtual env for lua
 	hyde.path.state .. "/hyde/lua_env/share/lua/5.5/?/init.lua", -- virtual env for lua
 	hyde.path.config .. "/hypr/?.lua", -- expose main users config
-	root .. "/lua/?.lua" -- the tree shipped beside this file, whichever prefix it was installed under
+	root .. "/lua/?.lua" -- this file's own tree, whatever prefix it sits under
 }
 
 package.path = package.path .. ";" .. table.concat(pkg_paths, ";") .. ";"
