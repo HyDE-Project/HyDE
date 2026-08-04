@@ -15,6 +15,13 @@ import tomllib
 ACTIONS = {"sync", "preserve", "tarball"}
 PACKAGE_MANAGERS = {"pacman", "yay", "paru", "dnf", "flatpak", "apt", "zypper"}
 
+# Packages the Arch repositories do not carry, checked against
+# https://archlinux.org/packages/search/json/?name=<package>. pacman installs a
+# whole dependency block with one command, so a single name it cannot resolve
+# aborts the command and leaves every other package in the block uninstalled.
+# These belong to an AUR helper instead.
+AUR_ONLY = {"hyprquery", "libinput-gestures", "wlogout"}
+
 REPO_ROOT = pathlib.Path(os.environ.get("REPO_ROOT", "."))
 DOTS_DIR = REPO_ROOT / "Scripts" / "dots"
 
@@ -165,6 +172,11 @@ def main() -> int:
             for manager, packages in table.items():
                 if not isinstance(packages, list):
                     fail(f"{where} declares {manager} as {type(packages).__name__}, expected a list")
+                    continue
+                if manager != "pacman":
+                    continue
+                for package in sorted(AUR_ONLY.intersection(packages)):
+                    fail(f"{where} asks pacman for {package!r}, which only the AUR carries")
 
     print(f"    {len(metafiles)} metafile(s) checked")
     return 1 if failures else 0
