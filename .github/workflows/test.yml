@@ -24,7 +24,7 @@ jobs:
       - name: Install test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lua5.4 shellcheck
+          sudo apt-get install -y --no-install-recommends lua5.4 shellcheck fish
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
 
@@ -32,6 +32,7 @@ jobs:
         run: |
           lua -v
           shellcheck --version
+          fish --version
           python3 --version
 
       - name: Run the test suite
