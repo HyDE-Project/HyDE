@@ -25,3 +25,21 @@ action = "preserve"
 source_root = "Configs/.config/hypr"
 target_root = "${XDG_CONFIG_HOME}/hypr/"
 paths = ["hyprland.lua"]
+
+# The shader selector reads this directory first and offers nothing when it is
+# absent.
+[[hyprland.files]]
+action = "sync"
+source_root = "Configs/.config/hypr"
+target_root = "${XDG_CONFIG_HOME}/hypr/"
+paths = ["shaders"]
+ignored_paths = [".*"]
+
+# Seeds only: wallbash writes the colors here on every pass and skips the
+# template when the directory does not exist, and the shipped hyprlock
+# configuration sources the colors from it.
+[[hyprland.files]]
+action = "preserve"
+source_root = "Configs/.config/hypr"
+target_root = "${XDG_CONFIG_HOME}/hypr/"
+paths = ["themes/colors.conf", "themes/theme.conf", "themes/wallbash.conf"]
