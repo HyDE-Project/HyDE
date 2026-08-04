@@ -82,7 +82,10 @@ end
 end
 end
 
-fish_add_path $HOME/.local/bin:$PATH
+# One directory per argument: fish_add_path does not split on ":", so a
+# colon-joined string is a single path that exists nowhere, and a path that
+# does not exist is dropped without a word.
+fish_add_path $HOME/.local/bin
 
 
 if type -q starship

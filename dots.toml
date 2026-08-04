@@ -7,7 +7,6 @@ version = "0.1.0"                                # Version of the configuration 
 owner = "The HyDE Project"                       # Owner of the configuration file
 action = "preserve"                              # Actions can either be sync or preserve
 git = "https://github.com/HyDE-Project/HyDE.git"
-git_branch = "lua"
 pre_command = "./Scripts/install_aur.sh"
 post_command = "notify-send 'deez done'"
 # dots = ["kitty", "hyprland"] # List of dots to be used in the configuration file
