@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Hyprland: rofi style selector keybind now correctly opens style menu instead of the default application launcher
 - Hyprland: a session started without `HYPRLAND_CONFIG`, from a TTY or a display manager, no longer trips emergency mode with `module 'lua.hyde.path' not found`; the entry point resolves the modules shipped beside it from its own path
 - Fish: `~/.local/bin` reaches `PATH` again, so `hyde-shell` and everything the keybinds call resolve in a fish session; the directory was handed to `fish_add_path` joined to the rest of `PATH` by colons, which is one path that exists nowhere and is dropped without a word
 - Weather Applet: Avoid crashes from unknown weather codes or unavailable wttr.in responses.
