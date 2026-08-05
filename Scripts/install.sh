@@ -222,7 +222,10 @@ EOF
 		fi
 	fi
 
-	if ! chk_list "myShell" "${shlList[@]}"; then
+	# Asking which packages are installed answered with whichever shell the
+	# system already carried, so the prompt never appeared and the answer was
+	# always the first of the list. Only an explicit choice is honoured here.
+	if ! chk_shell "${myShell:-}"; then
 		print_log -c "Shell :: "
 		for i in "${!shlList[@]}"; do
 			print_log -sec "$((i + 1))" " ${shlList[$i]} "
@@ -390,6 +393,23 @@ EOF
 		print_log -g "[DEPS] " -b "verify :: " "All packages verified"
 	fi
 
+	#-------------------------------#
+	# install the chosen shell only #
+	#-------------------------------#
+	# A restore of its own is never asked which shell to use, so the one the
+	# system already carries is kept rather than none being deployed at all.
+	chk_shell "${myShell:-}" || chk_list "myShell" "${shlList[@]}" || true
+	if [ "${flg_DryRun}" -eq 1 ]; then
+		print_log -y "[SHELL] " -b "dry-run :: " "Would install ${myShell:-the chosen shell}"
+	elif chk_shell "${myShell:-}"; then
+		print_log -g "[SHELL] " -b "install :: " "${myShell}..."
+		"${deez_exe}" deps --install --config "${scrDir}/dots-groups/shell.toml" \
+			--source "${cloneDir}" --dots "${myShell}" || {
+			print_log -err "[SHELL] " -crit "ERROR" "${myShell} installation failed"
+			exit 1
+		}
+	fi
+
 	# Lua environment setup
 	if [ "${flg_DryRun}" -eq 1 ]; then
 		print_log -y "[LUA] " -b "dry-run :: " "Would setup Lua environment"
@@ -434,6 +454,14 @@ EOF
 			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Extra dotfiles deployed with failures"
 			deploy_failed=1
 		}
+
+		if chk_shell "${myShell:-}"; then
+			print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing ${myShell} dotfiles..."
+			"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/shell.toml" dots --skip-git --deploy "${myShell}" || {
+				print_log -err "[DEEZ-DOTS] " -crit "ERROR" "${myShell} dotfiles deployed with failures"
+				deploy_failed=1
+			}
+		fi
 
 		if [ "${deploy_failed}" -eq 0 ]; then
 			print_log -g "[DEEZ-DOTS] " -b "complete :: " "Dotfiles deployed"

@@ -13,8 +13,13 @@ fi
 
 flg_DryRun=${flg_DryRun:-0}
 
+# The chosen shell is the one the installer was asked for. Falling back to the
+# first installed package of the list handed every run to zsh, because both
+# shells were installed regardless of the answer.
 # shellcheck disable=SC2154
-if chk_list "myShell" "${shlList[@]}"; then
+if chk_shell "${myShell:-}"; then
+    print_log -sec "SHELL" -stat "chosen" "${myShell}"
+elif chk_list "myShell" "${shlList[@]}"; then
     print_log -sec "SHELL" -stat "detected" "${myShell}"
 else
     print_log -sec "SHELL" -err "error" "no shell found..."
@@ -22,7 +27,7 @@ else
 fi
 
 # add zsh plugins
-if pkg_installed zsh; then
+if [ "${myShell}" = "zsh" ] && pkg_installed zsh; then
     prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
     PROMPT_INPUT="${PROMPT_INPUT:-y}"
     if [[ "${PROMPT_INPUT}" == "y" || "${PROMPT_INPUT}" == "yes" ]]; then
@@ -91,7 +96,9 @@ if pkg_installed zsh; then
 fi
 
 # set shell
-if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]]; then
+# The account database is asked rather than /etc/passwd, which carries no
+# network account and whose entry a pattern of the user name can miss.
+if [[ "$(login_shell)" != "${myShell}" ]]; then
     print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
     [ ${flg_DryRun} -eq 1 ] || chsh -s "$(which "${myShell}")"
 else

@@ -46,6 +46,22 @@ chk_list() {
     return 1
 }
 
+chk_shell() {
+    local candidate="${1:-}"
+    local shell
+    [ -n "${candidate}" ] || return 1
+    for shell in "${shlList[@]}"; do
+        [ "${shell}" = "${candidate}" ] && return 0
+    done
+    return 1
+}
+
+login_shell() {
+    local entry
+    entry="$(getent passwd "${USER}")" || return 1
+    basename "${entry##*:}"
+}
+
 pkg_available() {
     local PkgIn=$1
 
