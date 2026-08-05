@@ -173,10 +173,11 @@ def main() -> int:
                 if not isinstance(packages, list):
                     fail(f"{where} declares {manager} as {type(packages).__name__}, expected a list")
                     continue
-                if manager != "pacman":
-                    continue
-                for package in sorted(AUR_ONLY.intersection(packages)):
-                    fail(f"{where} asks pacman for {package!r}, which only the AUR carries")
+                for package in packages:
+                    if not isinstance(package, str):
+                        fail(f"{where} declares a package as {type(package).__name__}, expected a string")
+                    elif manager == "pacman" and package in AUR_ONLY:
+                        fail(f"{where} asks pacman for {package!r}, which only the AUR carries")
 
     print(f"    {len(metafiles)} metafile(s) checked")
     return 1 if failures else 0

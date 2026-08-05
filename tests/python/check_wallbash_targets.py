@@ -32,10 +32,23 @@ CONFIG_HOME = re.compile(
     r"|\$\{XDG_CONFIG_HOME(?::-[^}]*)?\}|\$XDG_CONFIG_HOME"
     r"|\$HOME/\.config)/([A-Za-z0-9._/-]+)"
 )
+CONFIG_HOME_ROOT = re.compile(
+    r"^(?:\$\{confDir(?::-[^}]*)?\}|\$confDir"
+    r"|\$\{XDG_CONFIG_HOME(?::-[^}]*)?\}|\$XDG_CONFIG_HOME"
+    r"|\$HOME/\.config)(?:/(.*))?$"
+)
+
+
+def below_config_home(target_root: object) -> str | None:
+    """The part of a target root under the config home, None when elsewhere."""
+    if not isinstance(target_root, str):
+        return None
+    matched = CONFIG_HOME_ROOT.match(target_root.rstrip("/"))
+    return (matched.group(1) or "") if matched else None
 
 
 def dot_paths() -> dict[str, set[str]]:
-    """Repository paths every metafile deploys, keyed by metafile name."""
+    """Deployment destinations below the config home, keyed by metafile name."""
     deployed: dict[str, set[str]] = {}
     for metafile in sorted(DOTS_DIR.glob("*.toml")):
         document = tomllib.loads(metafile.read_text())
@@ -45,7 +58,9 @@ def dot_paths() -> dict[str, set[str]]:
             for table in body.get("files", []) or []:
                 if not isinstance(table, dict) or table.get("source"):
                     continue
-                root = table.get("source_root", "")
+                root = below_config_home(table.get("target_root", ""))
+                if root is None:
+                    continue
                 paths = table.get("paths", [])
                 paths = [paths] if isinstance(paths, str) else paths
                 for relative in paths:
@@ -92,7 +107,6 @@ def main() -> int:
 
     deployed = dot_paths()
     reachable = installed_metafiles()
-    covering = {path: name for name, paths in deployed.items() for path in paths}
     failures = 0
     checked = 0
 
@@ -102,15 +116,18 @@ def main() -> int:
         print(f"    fail: {message}")
 
     for where, relative, by_installer in targets():
-        wanted = os.path.dirname(os.path.join(CONFIG_ROOT, relative)) or CONFIG_ROOT
-        if not (REPO_ROOT / wanted).is_dir():
+        # A target names either a file to render or the directory it lands in.
+        wanted = os.path.dirname(relative) if os.path.splitext(relative)[1] else relative
+        shipped = os.path.join(CONFIG_ROOT, wanted) if wanted else CONFIG_ROOT
+        if not (REPO_ROOT / shipped).is_dir():
             print(f"    note: {where} renders into {relative}, which this checkout ships nothing for")
             continue
 
         checked += 1
         owners = {
             name
-            for path, name in covering.items()
+            for name, paths in deployed.items()
+            for path in paths
             if path == wanted or path.startswith(f"{wanted}/") or wanted.startswith(f"{path}/")
         }
         if not owners:

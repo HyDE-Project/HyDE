@@ -17,6 +17,7 @@ import tomllib
 
 REPO_ROOT = pathlib.Path(os.environ.get("REPO_ROOT", "."))
 INSTALLER = REPO_ROOT / "Scripts" / "install.sh"
+GROUPS_DIR = REPO_ROOT / "Scripts" / "dots-groups"
 
 HEREDOC = re.compile(
     r'cat > "\$\{(?P<name>\w+)\}" <<-TOML\n(?P<body>.*?)\n\t+TOML\n',
@@ -78,8 +79,11 @@ def main() -> int:
             continue
 
         for included in includes:
-            if not pathlib.Path(included).is_file():
+            resolved = pathlib.Path(included).resolve()
+            if not resolved.is_file():
                 fail(f"{name} includes a missing group {included!r}")
+            elif resolved.suffix != ".toml" or resolved.parent != GROUPS_DIR.resolve():
+                fail(f"{name} includes {included!r}, which is not a dot group")
 
     print(f"    {len(blocks)} generated config(s) checked")
     return 1 if failures else 0
