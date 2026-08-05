@@ -13,8 +13,15 @@
 -- // ██████╔╝╚█████╔╝  ██║░╚███║╚█████╔╝░░░██║░░░  ███████╗██████╔╝██║░░░██║░░░
 -- // ╚═════╝░░╚════╝░  ╚═╝░░╚══╝░╚════╝░░░░╚═╝░░░  ╚══════╝╚═════╝░╚═╝░░░╚═╝░░░
 
+-- require() resolves against the directory of the config Hyprland was started
+-- with, which since v26.8.1 is the user's hyprland.lua, not this file. The
+-- resolver is therefore loaded by its own path; everything below loads by name
+-- from the search path it sets.
+local root = assert(debug.getinfo(1, "S").source:match("^@(.*)/"), "not loaded from a file")
+
 hyde = hyde or {}
-hyde.path = require("lua.hyde.path")
+hyde.path = dofile(root .. "/lua/hyde/path.lua")
+package.loaded["hyde.path"] = hyde.path
 
 local pkg_paths = {
 	hyde.path.state .. "/hyde/?.lua", -- Lua state
@@ -23,7 +30,8 @@ local pkg_paths = {
 	hyde.path.share .. "/hypr/lua/?.lua",
 	hyde.path.state .. "/hyde/lua_env/share/lua/5.5/?.lua", -- virtual env for lua
 	hyde.path.state .. "/hyde/lua_env/share/lua/5.5/?/init.lua", -- virtual env for lua
-	hyde.path.config .. "/hypr/?.lua" -- expose main users config
+	hyde.path.config .. "/hypr/?.lua", -- expose main users config
+	root .. "/lua/?.lua" -- this file's own tree, whatever prefix it sits under
 }
 
 package.path = package.path .. ";" .. table.concat(pkg_paths, ";") .. ";"
