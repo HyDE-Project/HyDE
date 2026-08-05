@@ -101,7 +101,7 @@ fi
 shellPath="$(command -v "${myShell}" || true)"
 if [ -z "${shellPath}" ]; then
     print_log -sec "SHELL" -err "error" "${myShell} is not installed, leaving the login shell alone..."
-elif [ -f /etc/shells ] && ! grep -qxF "${shellPath}" /etc/shells; then
+elif ! shell_listed "${shellPath}"; then
     print_log -sec "SHELL" -err "error" "${shellPath} is not listed in /etc/shells, leaving the login shell alone..."
 elif [[ "$(login_shell)" != "${myShell}" ]]; then
     print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
