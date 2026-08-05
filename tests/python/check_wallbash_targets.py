@@ -104,6 +104,7 @@ def targets() -> list[tuple[str, str, bool]]:
 
 
 def main() -> int:
+    """Reports every wallbash target no deployed dot creates a directory for."""
     if not WALLBASH.is_dir():
         print(f"    fail: {WALLBASH} is missing")
         return 1
@@ -114,6 +115,7 @@ def main() -> int:
     checked = 0
 
     def fail(message: str) -> None:
+        """Counts a defect and prints it the way the runner reads it."""
         nonlocal failures
         failures += 1
         print(f"    fail: {message}")

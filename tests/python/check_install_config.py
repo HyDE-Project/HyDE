@@ -44,6 +44,7 @@ def parse(body: str) -> dict:
 
 
 def main() -> int:
+    """Reports every generated config that would not load its group."""
     if not INSTALLER.is_file():
         print(f"    fail: {INSTALLER} is missing")
         return 1
@@ -56,6 +57,7 @@ def main() -> int:
     failures = 0
 
     def fail(message: str) -> None:
+        """Counts a defect and prints it the way the runner reads it."""
         nonlocal failures
         failures += 1
         print(f"    fail: {message}")

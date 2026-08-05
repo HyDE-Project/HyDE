@@ -96,6 +96,7 @@ def entries(document: dict) -> list[tuple[str, dict, bool]]:
 
 
 def dependencies(document: dict) -> list[tuple[str, dict]]:
+    """The dependency tables of a metafile, paired with the component naming them."""
     found = []
     for component, body in document.items():
         if isinstance(body, dict):
@@ -105,6 +106,7 @@ def dependencies(document: dict) -> list[tuple[str, dict]]:
 
 
 def main() -> int:
+    """Reports every metafile defect found and returns the exit status."""
     metafiles = sorted(DOTS_DIR.glob("*.toml"))
     if not metafiles:
         print(f"    fail: no metafiles found under {DOTS_DIR}")
@@ -113,6 +115,7 @@ def main() -> int:
     failures = 0
 
     def fail(message: str) -> None:
+        """Counts a defect and prints it the way the runner reads it."""
         nonlocal failures
         failures += 1
         print(f"    fail: {message}")
