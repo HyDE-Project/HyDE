@@ -65,16 +65,20 @@ login_shell() {
 
 shell_listed() {
     local wanted listed
+    local shells="${2:-/etc/shells}"
     # /etc/shells names an absolute path, and the same shell reaches it under
     # more than one of them: /bin and /usr/bin, a symlink, a versioned name.
     # Both sides are resolved so a shell listed once is not read as missing.
     wanted="$(realpath -e "${1}" 2>/dev/null)" || return 1
-    [ -f /etc/shells ] || return 0
-    while read -r listed; do
+    [ -f "${shells}" ] || return 0
+    # A file whose last line carries no newline ends the read with a non-zero
+    # status while the variable already holds that line, which drops the entry.
+    while IFS= read -r listed || [ -n "${listed}" ]; do
         listed="${listed%%#*}"
+        listed="${listed//[[:space:]]/}"
         [ -n "${listed}" ] || continue
         [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ] && return 0
-    done < /etc/shells
+    done < "${shells}"
     return 1
 }
 
