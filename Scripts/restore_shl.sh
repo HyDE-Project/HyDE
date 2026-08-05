@@ -17,9 +17,7 @@ flg_DryRun=${flg_DryRun:-0}
 # first installed package of the list handed every run to zsh, because both
 # shells were installed regardless of the answer.
 # shellcheck disable=SC2154
-if chk_shell "${myShell:-}"; then
-    print_log -sec "SHELL" -stat "chosen" "${myShell}"
-elif chk_list "myShell" "${shlList[@]}"; then
+if resolve_shell; then
     print_log -sec "SHELL" -stat "detected" "${myShell}"
 else
     print_log -sec "SHELL" -err "error" "no shell found..."
@@ -98,9 +96,16 @@ fi
 # set shell
 # The account database is asked rather than /etc/passwd, which carries no
 # network account and whose entry a pattern of the user name can miss.
-if [[ "$(login_shell)" != "${myShell}" ]]; then
+# chsh refuses a path /etc/shells does not list, so both are reported here
+# rather than leaving the run to end on a bare refusal.
+shellPath="$(command -v "${myShell}" || true)"
+if [ -z "${shellPath}" ]; then
+    print_log -sec "SHELL" -err "error" "${myShell} is not installed, leaving the login shell alone..."
+elif [ -f /etc/shells ] && ! grep -qxF "${shellPath}" /etc/shells; then
+    print_log -sec "SHELL" -err "error" "${shellPath} is not listed in /etc/shells, leaving the login shell alone..."
+elif [[ "$(login_shell)" != "${myShell}" ]]; then
     print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
-    [ ${flg_DryRun} -eq 1 ] || chsh -s "$(which "${myShell}")"
+    [ ${flg_DryRun} -eq 1 ] || chsh -s "${shellPath}"
 else
     print_log -sec "SHELL" -stat "exist" "${myShell} is already set as shell..."
 fi

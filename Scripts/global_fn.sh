@@ -59,7 +59,22 @@ chk_shell() {
 login_shell() {
     local entry
     entry="$(getent passwd "${USER}")" || return 1
+    [ -n "${entry##*:}" ] || return 1
     basename "${entry##*:}"
+}
+
+resolve_shell() {
+    local current
+    chk_shell "${myShell:-}" && return 0
+    # The shell the account already logs in with outranks the order of the
+    # list, which would hand a fish user zsh on every restore.
+    current="$(login_shell || true)"
+    if chk_shell "${current}"; then
+        myShell="${current}"
+        export myShell
+        return 0
+    fi
+    chk_list "myShell" "${shlList[@]}"
 }
 
 pkg_available() {

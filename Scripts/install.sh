@@ -397,8 +397,8 @@ EOF
 	# install the chosen shell only #
 	#-------------------------------#
 	# A restore of its own is never asked which shell to use, so the one the
-	# system already carries is kept rather than none being deployed at all.
-	chk_shell "${myShell:-}" || chk_list "myShell" "${shlList[@]}" || true
+	# account already logs in with is kept rather than none being deployed.
+	resolve_shell || true
 	if [ "${flg_DryRun}" -eq 1 ]; then
 		print_log -y "[SHELL] " -b "dry-run :: " "Would install ${myShell:-the chosen shell}"
 	elif chk_shell "${myShell:-}"; then
