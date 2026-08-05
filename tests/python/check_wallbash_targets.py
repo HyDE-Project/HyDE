@@ -62,7 +62,10 @@ def dot_paths() -> dict[str, set[str]]:
                 if root is None:
                     continue
                 paths = table.get("paths", [])
-                paths = [paths] if isinstance(paths, str) else paths
+                if isinstance(paths, str):
+                    paths = [paths]
+                elif not isinstance(paths, list):
+                    paths = []
                 for relative in paths:
                     if isinstance(relative, str):
                         joined = os.path.normpath(os.path.join(root, relative))
@@ -96,7 +99,7 @@ def targets() -> list[tuple[str, str, bool]]:
                 text = template.read_text().split("\n", 1)[0].split("|", 1)[0]
             where = template.relative_to(WALLBASH).as_posix()
             for relative in CONFIG_HOME.findall(text):
-                found.append((where, relative.strip('"'), by_installer))
+                found.append((where, os.path.normpath(relative.strip('"')), by_installer))
     return found
 
 
