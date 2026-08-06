@@ -215,15 +215,14 @@ function M.new(opts)
     end
 
     local function waybar()
-        local cur = state.read(sf)
+        -- Through current(), so a selection made through the environment is
+        -- reported rather than the default the state file does not hold yet.
+        local cur = current()
         if not cur then
-            local fallback = default_item()
-            if fallback then
-                state.write(sd, sf, fallback)
-                cur = state.read(sf) or fallback
-            else
-                cur = {icon = "", name = "unknown", description = "No items found"}
-            end
+            cur = {icon = "", name = "unknown", description = "No items found"}
+        elseif not state.read(sf) then
+            state.write(sd, sf, cur)
+            cur = state.read(sf) or cur
         end
         local icon = cur.icon or ""
         local name = cur.name or "unknown"

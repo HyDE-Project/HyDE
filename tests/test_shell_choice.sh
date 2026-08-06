@@ -15,9 +15,10 @@ grep -qE '"\.\./dots/zsh\.toml"' "$REPO_ROOT/Scripts/dots-groups/shell.toml" &&
     grep -qE '"\.\./dots/fish\.toml"' "$REPO_ROOT/Scripts/dots-groups/shell.toml" ||
     fail "the shell group no longer offers both shells to choose from"
 
-# Installing a dependency out of that group needs the managers declared in it.
-grep -q 'global.package_managers' "$REPO_ROOT/Scripts/dots-groups/shell.toml" ||
-    fail "the shell group declares no package managers, its dependencies cannot install"
+# deez carries the package manager commands, so a group that repeats them only
+# ships a second copy to keep in step.
+grep -q 'global.package_managers' "$REPO_ROOT/Scripts/dots-groups/shell.toml" &&
+    fail "the shell group repeats the package manager commands deez already carries"
 
 # Both hand-offs name the chosen shell. The file is matched as one line
 # because either command may be wrapped.
