@@ -33,9 +33,116 @@ case "$installer_flat" in
 *) fail "the installer does not limit the shell deployment to the chosen shell" ;;
 esac
 
-# A shell that cannot be set is refused before chsh is reached.
-grep -q 'shell_listed' "$REPO_ROOT/Scripts/restore_shl.sh" ||
-    fail "restore_shl.sh changes the login shell without checking /etc/shells"
+# The two scripts are run for real against stubs, because a choice can be lost
+# in either of them and a string match on the source would not notice.
+work_dir=$(mktemp -d)
+trap 'rm -rf "$work_dir"' EXIT
+
+clone_dir="$work_dir/clone"
+home_dir="$work_dir/home"
+stub_dir="$work_dir/bin"
+mkdir -p "$clone_dir" "$home_dir/.local/state/hyde/python_env/bin" \
+    "$home_dir/.local/lib/hyde/wallpaper" "$stub_dir"
+cp -a "$REPO_ROOT/Scripts" "$clone_dir/Scripts"
+
+# zsh is the shell the machine already carries and the first of the list, which
+# is what used to be taken for the answer.
+cat >"$stub_dir/pacman" <<'STUB'
+#!/usr/bin/env sh
+for arg in "$@"; do
+    case "$arg" in
+    zsh) exit 0 ;;
+    esac
+done
+exit 1
+STUB
+cat >"$stub_dir/getent" <<'STUB'
+#!/usr/bin/env sh
+printf '%s:x:1000:1000::/home/%s:/usr/bin/zsh\n' "$2" "$2"
+STUB
+chmod +x "$stub_dir/pacman" "$stub_dir/getent"
+
+deez_log="$work_dir/deez.log"
+deez_exe="$home_dir/.local/state/hyde/python_env/bin/deez"
+printf '#!/usr/bin/env sh\nprintf "%%s\\n" "$*" >>"%s"\nexit 0\n' "$deez_log" >"$deez_exe"
+chmod +x "$deez_exe"
+ln -sf "$(command -v python3)" "$home_dir/.local/state/hyde/python_env/bin/python"
+
+for stub in install_pre install_aur install_pst restore_thm restore_svc; do
+    printf '#!/usr/bin/env sh\nexit 0\n' >"$clone_dir/Scripts/$stub.sh"
+    chmod +x "$clone_dir/Scripts/$stub.sh"
+done
+rm -f "$clone_dir/Scripts/migrations"/*.sh
+mkdir -p "$clone_dir/Configs/.local/lib/hyde/pyutils"
+for py in lua_env python_env; do
+    printf 'import sys\nsys.exit(0)\n' >"$clone_dir/Configs/.local/lib/hyde/pyutils/$py.py"
+done
+for helper in "wallpaper/cache.sh" "theme.switch.sh" "waybar.py"; do
+    printf '#!/usr/bin/env sh\nexit 0\n' >"$home_dir/.local/lib/hyde/$helper"
+    chmod +x "$home_dir/.local/lib/hyde/$helper"
+done
+
+: >"$deez_log"
+# The installer writes its generated configs through mktemp, and one of its
+# traps overwrites another, so they are kept inside the case's own directory.
+mkdir -p "$work_dir/tmp"
+(
+    env -u HYPRLAND_INSTANCE_SIGNATURE \
+        TMPDIR="$work_dir/tmp" \
+        PATH="$stub_dir:$PATH" \
+        HOME="$home_dir" \
+        XDG_STATE_HOME="$work_dir/state" \
+        XDG_CACHE_HOME="$work_dir/cache" \
+        CLONE_DIR="$clone_dir" \
+        myShell=fish \
+        "$clone_dir/Scripts/install.sh" -i -r -t <<<"n"
+) >"$work_dir/install.log" 2>&1
+
+grep -q 'shell.toml.*--dots fish' "$deez_log" ||
+    grep -q 'dry-run.*fish' "$work_dir/install.log" ||
+    fail "the installer did not keep to fish: $(grep -i shell "$work_dir/install.log" | head -n 3)"
+grep -qE 'shell\.toml.*(--dots|--deploy) zsh' "$deez_log" &&
+    fail "the installer reached for zsh although fish was chosen"
+grep -q 'Defaulting to zsh' "$work_dir/install.log" &&
+    fail "the installer ignored the choice and fell back to zsh"
+
+# The script that sets the login shell keeps the same choice, does not pull the
+# plugins of the other shell, and refuses a shell /etc/shells does not carry.
+shell_log="$work_dir/restore_shl.log"
+(
+    env PATH="$stub_dir:$PATH" \
+        HOME="$home_dir" \
+        CLONE_DIR="$clone_dir" \
+        myShell=fish \
+        flg_DryRun=1 \
+        "$clone_dir/Scripts/restore_shl.sh" <<<"n"
+) >"$shell_log" 2>&1
+
+grep -q 'fish' "$shell_log" ||
+    fail "the shell setup lost the choice of fish: $(head -n 3 "$shell_log")"
+grep -q 'shell to zsh' "$shell_log" &&
+    fail "the shell setup switched the login shell to zsh although fish was chosen"
+grep -qi 'oh-my-zsh' "$shell_log" &&
+    fail "the shell setup installed zsh plugins for a fish user"
+
+# A shell whose path /etc/shells does not carry is refused, because chsh turns
+# it down and the run would end on a bare refusal.
+printf '#!/usr/bin/env sh\nexit 0\n' >"$stub_dir/fish"
+chmod +x "$stub_dir/fish"
+unlisted_log="$work_dir/unlisted.log"
+(
+    env PATH="$stub_dir:$PATH" \
+        HOME="$home_dir" \
+        CLONE_DIR="$clone_dir" \
+        myShell=fish \
+        flg_DryRun=1 \
+        "$clone_dir/Scripts/restore_shl.sh" <<<"n"
+) >"$unlisted_log" 2>&1
+
+grep -q '/etc/shells' "$unlisted_log" ||
+    fail "the shell setup tried to set a shell /etc/shells does not carry: $(tail -n 2 "$unlisted_log")"
+grep -q 'change.*shell to' "$unlisted_log" &&
+    fail "the shell setup changed the login shell to a path /etc/shells does not carry"
 
 probe() {
     # shellcheck disable=SC1090
