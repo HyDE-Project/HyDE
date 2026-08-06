@@ -13,9 +13,6 @@ fi
 
 flg_DryRun=${flg_DryRun:-0}
 
-# The chosen shell is the one the installer was asked for. Falling back to the
-# first installed package of the list handed every run to zsh, because both
-# shells were installed regardless of the answer.
 # shellcheck disable=SC2154
 if resolve_shell; then
     print_log -sec "SHELL" -stat "detected" "${myShell}"
@@ -94,10 +91,7 @@ if [ "${myShell}" = "zsh" ] && pkg_installed zsh; then
 fi
 
 # set shell
-# The account database is asked rather than /etc/passwd, which carries no
-# network account and whose entry a pattern of the user name can miss.
-# chsh refuses a path /etc/shells does not list, so both are reported here
-# rather than leaving the run to end on a bare refusal.
+# chsh refuses a path /etc/shells does not list, so both cases are reported.
 shellPath="$(command -v "${myShell}" || true)"
 if [ -z "${shellPath}" ]; then
     print_log -sec "SHELL" -err "error" "${myShell} is not installed, leaving the login shell alone..."

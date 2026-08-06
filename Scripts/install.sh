@@ -222,9 +222,7 @@ EOF
 		fi
 	fi
 
-	# Asking which packages are installed answered with whichever shell the
-	# system already carried, so the prompt never appeared and the answer was
-	# always the first of the list. Only an explicit choice is honoured here.
+	# Only an explicit choice counts; an installed package is not an answer.
 	if ! chk_shell "${myShell:-}"; then
 		print_log -c "Shell :: "
 		for i in "${!shlList[@]}"; do
@@ -396,8 +394,7 @@ EOF
 	#-------------------------------#
 	# install the chosen shell only #
 	#-------------------------------#
-	# A restore of its own is never asked which shell to use, so the one the
-	# account already logs in with is kept rather than none being deployed.
+	# A restore of its own is never asked, so it keeps the current shell.
 	resolve_shell || true
 	if [ "${flg_DryRun}" -eq 1 ]; then
 		print_log -y "[SHELL] " -b "dry-run :: " "Would install ${myShell:-the chosen shell}"

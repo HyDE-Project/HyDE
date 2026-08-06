@@ -182,10 +182,7 @@ function M.new(opts)
         return item
     end
 
-    -- Nothing chosen yet falls back to the first item in name order, which for
-    -- a set where every entry changes the screen means whichever one sorts
-    -- first is applied to a fresh install. A selector that has a neutral entry
-    -- names it here.
+    -- With nothing chosen yet, a selector with a neutral entry names it here.
     local function default_item()
         return find(opts.default_key or "default") or ordered[1]
     end

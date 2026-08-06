@@ -66,13 +66,10 @@ login_shell() {
 shell_listed() {
     local wanted listed
     local shells="${2:-/etc/shells}"
-    # /etc/shells names an absolute path, and the same shell reaches it under
-    # more than one of them: /bin and /usr/bin, a symlink, a versioned name.
-    # Both sides are resolved so a shell listed once is not read as missing.
+    # The same shell is listed under /bin or /usr/bin, so both sides resolve.
     wanted="$(realpath -e "${1}" 2>/dev/null)" || return 1
     [ -f "${shells}" ] || return 0
-    # A file whose last line carries no newline ends the read with a non-zero
-    # status while the variable already holds that line, which drops the entry.
+    # The guard keeps a last line that carries no trailing newline.
     while IFS= read -r listed || [ -n "${listed}" ]; do
         listed="${listed%%#*}"
         listed="${listed//[[:space:]]/}"
@@ -85,8 +82,7 @@ shell_listed() {
 resolve_shell() {
     local current
     chk_shell "${myShell:-}" && return 0
-    # The shell the account already logs in with outranks the order of the
-    # list, which would hand a fish user zsh on every restore.
+    # The shell already logged in with outranks the order of the list.
     current="$(login_shell || true)"
     if chk_shell "${current}"; then
         myShell="${current}"

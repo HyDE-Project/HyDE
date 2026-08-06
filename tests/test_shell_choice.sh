@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
 # The installer deploys the shell it was asked for, and only that one.
-#
-# Both shells used to be listed in the extra group, so both were installed
-# whatever the answer was. The shell was then picked back up by asking which
-# packages are present, in list order, which handed every run to the first
-# entry and set it as the login shell over the user's choice.
 
 . "$(dirname -- "$0")/lib/common.sh"
 
-# The group that carries the shells is the one the installer selects from, so
-# no other group may pull them in.
+# No other group may pull a shell in.
 for group in core extra; do
     group_file="$REPO_ROOT/Scripts/dots-groups/$group.toml"
     [ -f "$group_file" ] || continue
@@ -25,9 +19,8 @@ grep -qE '"\.\./dots/zsh\.toml"' "$REPO_ROOT/Scripts/dots-groups/shell.toml" &&
 grep -q 'global.package_managers' "$REPO_ROOT/Scripts/dots-groups/shell.toml" ||
     fail "the shell group declares no package managers, its dependencies cannot install"
 
-# The installer has to name the chosen shell on both hand-offs, or it falls
-# back to the whole group and installs both again. Either command may be
-# wrapped over several lines, so the file is matched as one.
+# Both hand-offs name the chosen shell. The file is matched as one line
+# because either command may be wrapped.
 installer_flat=$(tr '\n' ' ' <"$REPO_ROOT/Scripts/install.sh")
 
 case "$installer_flat" in
@@ -40,8 +33,7 @@ case "$installer_flat" in
 *) fail "the installer does not limit the shell deployment to the chosen shell" ;;
 esac
 
-# The script that sets the login shell refuses a shell it cannot set, rather
-# than leaving the run to end on chsh being turned down.
+# A shell that cannot be set is refused before chsh is reached.
 grep -q 'shell_listed' "$REPO_ROOT/Scripts/restore_shl.sh" ||
     fail "restore_shl.sh changes the login shell without checking /etc/shells"
 
@@ -59,8 +51,7 @@ chosen=$(myShell=fish stub_login=zsh bash -c "$(declare -f probe); probe" 2>/dev
 [ "$chosen" = "fish" ] ||
     fail "an explicit choice of fish resolved to '${chosen}'"
 
-# With no choice made, the shell the account already logs in with is kept,
-# even when the other one is installed and comes first in the list.
+# With no choice made, the current login shell is kept.
 kept=$(stub_login=fish bash -c "$(declare -f probe); unset myShell; probe" 2>/dev/null)
 [ "$kept" = "fish" ] ||
     fail "a restore of its own moved a fish login to '${kept}'"
@@ -70,7 +61,7 @@ other=$(stub_login=bash bash -c "$(declare -f probe); unset myShell; probe" 2>/d
 [ -n "$other" ] ||
     fail "a login shell outside the list resolved to nothing"
 
-# /etc/shells is matched by the path the entry resolves to, and read whole.
+# /etc/shells is matched by resolved path, and read whole.
 listing() {
     # shellcheck disable=SC1090
     . "$REPO_ROOT/Scripts/global_fn.sh"
