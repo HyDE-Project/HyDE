@@ -18,11 +18,13 @@ target_root = "${HOME}/.local/lib"
 paths = "hyde"
 ignored_paths = [".*", "__pycache__"]
 
-# [[hyde.files]]
-# action = "sync"
-# source_root = "Configs/.local/share"
-# target_root = "${XDG_DATA_HOME}"
-# paths = ["icons/Wallbash-Icon", "themes/Wallbash-Gtk"]
+# The icon set the notifications and the popups name by path.
+[[hyde.files]]
+action = "sync"
+source_root = "Configs/.local/share"
+target_root = "${XDG_DATA_HOME}"
+paths = ["icons/Wallbash-Icon"]
+
 [[hyde.files]]
 clean_target = true
 action = "sync"
