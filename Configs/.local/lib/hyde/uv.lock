@@ -340,7 +340,7 @@ wheels = [
 [[package]]
 name = "deez-dots"
 version = "0.1.0"
-source = { git = "https://github.com/HyDE-Project/deez-dots.git#e514a3215d4d0a691ac532accfa12e982d41160e" }
+source = { git = "https://github.com/HyDE-Project/deez-dots.git#fee297dc10591bf121cbc77e0d16fc0216a82a70" }
 
 [[package]]
 name = "frozenlist"
