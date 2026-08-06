@@ -210,6 +210,10 @@ local M =
         state_name = "shaders",
         waybar_class = "custom-shaders",
         staterc_key = "HYPR_SHADER",
+        -- Every shader here changes what the screen looks like, and the one
+        -- that sorts first tints it blue. A fresh install starts on the blank
+        -- one instead.
+        default_key = "disable",
         item_ext = ".frag",
         file_pattern = "%.frag$",
         load_item = function(path, base)

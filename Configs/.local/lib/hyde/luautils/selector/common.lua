@@ -182,6 +182,14 @@ function M.new(opts)
         return item
     end
 
+    -- Nothing chosen yet falls back to the first item in name order, which for
+    -- a set where every entry changes the screen means whichever one sorts
+    -- first is applied to a fresh install. A selector that has a neutral entry
+    -- names it here.
+    local function default_item()
+        return find(opts.default_key or "default") or ordered[1]
+    end
+
     local function current()
         local cur = state.read(sf)
         if cur then
@@ -198,7 +206,7 @@ function M.new(opts)
                 end
             end
         end
-        return find("default") or ordered[1]
+        return default_item()
     end
 
     local function reload()
@@ -212,7 +220,7 @@ function M.new(opts)
     local function waybar()
         local cur = state.read(sf)
         if not cur then
-            local fallback = find("default") or ordered[1]
+            local fallback = default_item()
             if fallback then
                 state.write(sd, sf, fallback)
                 cur = state.read(sf) or fallback
