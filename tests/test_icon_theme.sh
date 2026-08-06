@@ -21,10 +21,8 @@ dot=$(grep -rl "Icon_Wallbash" "$REPO_ROOT/Scripts/dots" 2>/dev/null | head -n 1
     fail "no dot metafile deploys the icon theme archive"
 
 if [ -n "$dot" ]; then
-    # A path relative to the working directory would only resolve when the
-    # installer happens to run from the clone root.
-    grep -q 'source *= *"\${cloneDir}/Source/arcs/Icon_Wallbash.tar.gz"' "$dot" ||
-        fail "$(basename "$dot") does not resolve the icon archive from the clone root"
+    grep -q 'source *= *"Source/arcs/Icon_Wallbash.tar.gz"' "$dot" ||
+        fail "$(basename "$dot") does not name the icon archive relative to the source root"
     grep -q 'target_root *= *"\${XDG_DATA_HOME}/icons/Wallbash-Icon"' "$dot" ||
         fail "$(basename "$dot") does not deploy the icon theme where the scripts look for it"
 fi

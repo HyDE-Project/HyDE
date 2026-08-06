@@ -1,8 +1,6 @@
-# The only entry of restore_fnt.lst that was not carried over to a dot. The
-# archive ships with this checkout, so the source is a path rather than a URL.
 [icon-wallbash]
 version = "0.1.0"
-source = "${cloneDir}/Source/arcs/Icon_Wallbash.tar.gz"
+source = "Source/arcs/Icon_Wallbash.tar.gz"
 owner = "The HyDE Project"
 description = "Icon theme wallbash recolors, named by path from the notifications and the popups"
 action = "sync"
