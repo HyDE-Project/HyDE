@@ -46,6 +46,52 @@ chk_list() {
     return 1
 }
 
+chk_shell() {
+    local candidate="${1:-}"
+    local shell
+    [ -n "${candidate}" ] || return 1
+    for shell in "${shlList[@]}"; do
+        [ "${shell}" = "${candidate}" ] && return 0
+    done
+    return 1
+}
+
+login_shell() {
+    local entry
+    entry="$(getent passwd "${USER}")" || return 1
+    [ -n "${entry##*:}" ] || return 1
+    basename "${entry##*:}"
+}
+
+shell_listed() {
+    local wanted listed
+    local shells="${2:-/etc/shells}"
+    # The same shell is listed under /bin or /usr/bin, so both sides resolve.
+    wanted="$(realpath -e "${1}" 2>/dev/null)" || return 1
+    [ -f "${shells}" ] || return 0
+    # The guard keeps a last line that carries no trailing newline.
+    while IFS= read -r listed || [ -n "${listed}" ]; do
+        listed="${listed%%#*}"
+        listed="${listed//[[:space:]]/}"
+        [ -n "${listed}" ] || continue
+        [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ] && return 0
+    done < "${shells}"
+    return 1
+}
+
+resolve_shell() {
+    local current
+    chk_shell "${myShell:-}" && return 0
+    # The shell already logged in with outranks the order of the list.
+    current="$(login_shell || true)"
+    if chk_shell "${current}"; then
+        myShell="${current}"
+        export myShell
+        return 0
+    fi
+    chk_list "myShell" "${shlList[@]}"
+}
+
 pkg_available() {
     local PkgIn=$1
 

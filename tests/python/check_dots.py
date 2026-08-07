@@ -15,6 +15,13 @@ import tomllib
 ACTIONS = {"sync", "preserve", "tarball"}
 PACKAGE_MANAGERS = {"pacman", "yay", "paru", "dnf", "flatpak", "apt", "zypper"}
 
+# Packages the Arch repositories do not carry, checked against
+# https://archlinux.org/packages/search/json/?name=<package>. pacman installs a
+# whole dependency block with one command, so a single name it cannot resolve
+# aborts the command and leaves every other package in the block uninstalled.
+# These belong to an AUR helper instead.
+AUR_ONLY = {"hyprquery", "libinput-gestures", "wlogout"}
+
 REPO_ROOT = pathlib.Path(os.environ.get("REPO_ROOT", "."))
 DOTS_DIR = REPO_ROOT / "Scripts" / "dots"
 
@@ -89,6 +96,7 @@ def entries(document: dict) -> list[tuple[str, dict, bool]]:
 
 
 def dependencies(document: dict) -> list[tuple[str, dict]]:
+    """The dependency tables of a metafile, paired with the component naming them."""
     found = []
     for component, body in document.items():
         if isinstance(body, dict):
@@ -98,6 +106,7 @@ def dependencies(document: dict) -> list[tuple[str, dict]]:
 
 
 def main() -> int:
+    """Reports every metafile defect found and returns the exit status."""
     metafiles = sorted(DOTS_DIR.glob("*.toml"))
     if not metafiles:
         print(f"    fail: no metafiles found under {DOTS_DIR}")
@@ -106,6 +115,7 @@ def main() -> int:
     failures = 0
 
     def fail(message: str) -> None:
+        """Counts a defect and prints it the way the runner reads it."""
         nonlocal failures
         failures += 1
         print(f"    fail: {message}")
@@ -165,6 +175,12 @@ def main() -> int:
             for manager, packages in table.items():
                 if not isinstance(packages, list):
                     fail(f"{where} declares {manager} as {type(packages).__name__}, expected a list")
+                    continue
+                for package in packages:
+                    if not isinstance(package, str):
+                        fail(f"{where} declares a package as {type(package).__name__}, expected a string")
+                    elif manager == "pacman" and package in AUR_ONLY:
+                        fail(f"{where} asks pacman for {package!r}, which only the AUR carries")
 
     print(f"    {len(metafiles)} metafile(s) checked")
     return 1 if failures else 0

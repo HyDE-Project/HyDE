@@ -16,6 +16,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - Core: `keyboardswitch.sh` triggers correct language notification; layout switch targets current device instead of cycling all devices, eliminating the IPC race condition and preventing multiple input devices from desyncing
+- Hyprlock: the lock screen comes up with its layout again instead of a black screen; the directory holding the shipped layouts was left behind by the move to the dot metafiles, so the selector listed nothing, `$LAYOUT_PATH` pointed at a file that was never deployed, and wallbash skipped the template rather than create the directory
+- Hyprland: the shader selector offers the shipped shaders again, and the colors wallbash writes for the lock screen have somewhere to land; both directories stopped being deployed when the installer moved off the restore list
+- Waybar: the stylesheet's own `user-style.css` import resolves again; the file it names was never deployed
+- wlogout: the menu is drawn with the HyDE layouts, icons and styles again instead of the upstream defaults
+- Notifications: an install brings a notification daemon again; `dunst` and the configuration it reads were left in a group the installer never loads, so nothing served notifications and every wallbash pass reported a missing directory for a dot that was never deployed
+- Core: an install no longer leaves the whole core package set uninstalled because one name is missing from the Arch repositories; `wlogout` and `libinput-gestures` are asked of an AUR helper, which is where they live, instead of pacman, which installs a dependency block with a single command and aborts all of it on a name it cannot resolve
+- Core: the dependency steps install the packages they were given again; the configs the installer writes at run time declared their group include at the document root, where deez does not read it, so both steps resolved an empty set, installed nothing but the machine-specific packages, and reported the packages verified
+- Hyprland: rofi style selector keybind now correctly opens style menu instead of the default application launcher
 - Hyprland: a session started without `HYPRLAND_CONFIG`, from a TTY or a display manager, no longer trips emergency mode with `module 'lua.hyde.path' not found`; the entry point resolves the modules shipped beside it from its own path
 - Fish: `~/.local/bin` reaches `PATH` again, so `hyde-shell` and everything the keybinds call resolve in a fish session; the directory was handed to `fish_add_path` joined to the rest of `PATH` by colons, which is one path that exists nowhere and is dropped without a word
 - Weather Applet: Avoid crashes from unknown weather codes or unavailable wttr.in responses.

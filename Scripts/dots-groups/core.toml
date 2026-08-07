@@ -19,6 +19,8 @@
         "../dots/wallbash.toml",
         "../dots/waybar.toml",
         "../dots/rofi.toml",
+        "../dots/dunst.toml",
+        "../dots/wlogout.toml",
         "../dots/archives.toml",
     ]
 
