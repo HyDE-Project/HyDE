@@ -13,7 +13,7 @@
     "dynamic-separator": "  ",
     "player-icons": {
       "default": "\u25b6",
-      "mpv": "\ud83c\udfb5",
+      "mpv": "\udb80\udf87",
       "spotify": "\uf1bc",
       "vlc": "\udb80\udfe1"
     },

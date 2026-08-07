@@ -6,8 +6,7 @@ fi
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
 [ -n "$1" ] && wlogoutStyle="$1"
-wlogoutStyle=${wlogoutStyle:-$WLOGOUT_STYLE}
-wlogoutStyle=${wlogoutStyle:-1}
+wlogoutStyle=${wlogoutStyle:-${WLOGOUT_STYLE:-1}}
 confDir="${confDir:-$HOME/.config}"
 wLayout="$confDir/wlogout/layout_$wlogoutStyle"
 wlTmplt="$confDir/wlogout/style_$wlogoutStyle.css"
