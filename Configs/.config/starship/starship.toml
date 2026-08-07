@@ -132,7 +132,7 @@ version_format = "${raw}"
 detect_extensions = []
 detect_files = ["package-lock.json", "yarn.lock"]
 detect_folders = ["node_modules"]
-format = "[ ](bold bright-green)"
+format = "[󰎙 ](bold bright-green)"
 version_format = "${raw}"
 
 [python]
