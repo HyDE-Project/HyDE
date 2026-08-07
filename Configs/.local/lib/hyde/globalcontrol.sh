@@ -343,12 +343,27 @@ get_hyprConf() {
         echo "$gsVal"
     fi
 }
+# Reads a monitor scale as a whole percent, so 100 comes back for 1, 1.0 and
+# 1.00 alike. Deleting the dot instead makes the result depend on how many
+# decimals the compositor printed, and a scale that arrives as 1 rather than
+# 1.00 leaves every measurement dividing by it a hundred times too large.
+get_monitor_scale() {
+    local raw=${1:-}
+    if [ -z "${raw}" ]; then
+        raw=$(hyprctl -j monitors 2>/dev/null | jq -r 'first(.[] | select(.focused==true) | .scale) // empty' 2>/dev/null)
+    fi
+    awk -v raw="${raw}" 'BEGIN {
+        scale = raw + 0
+        if (scale <= 0) scale = 1
+        printf "%d", scale * 100 + 0.5
+    }'
+}
 get_rofi_pos() {
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
     readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
     eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
         "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" ")))"')"
-    monRes[2]="${monRes[2]//./}"
+    monRes[2]="$(get_monitor_scale "${monRes[2]}")"
     monRes[0]=$((monRes[0] * 100 / monRes[2]))
     monRes[1]=$((monRes[1] * 100 / monRes[2]))
     curPos[0]=$((curPos[0] - monRes[3]))
