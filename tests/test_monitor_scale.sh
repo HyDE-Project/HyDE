@@ -52,7 +52,7 @@ for caller in $(grep -rl 'get_monitor_scale' "$lib_dir" 2>/dev/null); do
     case "$(basename "$caller")" in
         globalcontrol.sh) continue ;;
     esac
-    grep -q -- ':-100}' "$caller" ||
+    grep -qE '[Ss]cale.*:-100\}' "$caller" ||
         fail "$(basename "$caller") divides by a scale it never defaults"
 done
 
