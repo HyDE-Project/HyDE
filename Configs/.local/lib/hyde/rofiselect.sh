@@ -13,6 +13,8 @@ icon_border=$((elem_border - 5))
 mon_data=$(hyprctl -j monitors)
 mon_x_res=$(jq '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width else .height end' <<< "$mon_data")
 mon_scale=$(jq '.[] | select(.focused==true) | .scale' <<< "$mon_data" | awk '{printf "%d", ($1>0 ? $1*100 : 100)}')
+mon_x_res=${mon_x_res:-1920}
+mon_scale=${mon_scale:-100}
 mon_x_res=$((mon_x_res * 100 / mon_scale))
 elm_width=$(((20 + 12 + 16) * font_scale))
 max_avail=$((mon_x_res - (4 * font_scale)))
