@@ -182,6 +182,11 @@ function M.new(opts)
         return item
     end
 
+    -- With nothing chosen yet, a selector with a neutral entry names it here.
+    local function default_item()
+        return find(opts.default_key or "default") or ordered[1]
+    end
+
     local function current()
         local cur = state.read(sf)
         if cur then
@@ -198,7 +203,7 @@ function M.new(opts)
                 end
             end
         end
-        return find("default") or ordered[1]
+        return default_item()
     end
 
     local function reload()
@@ -210,15 +215,14 @@ function M.new(opts)
     end
 
     local function waybar()
-        local cur = state.read(sf)
+        -- Through current(), so a selection made through the environment is
+        -- reported rather than the default the state file does not hold yet.
+        local cur = current()
         if not cur then
-            local fallback = find("default") or ordered[1]
-            if fallback then
-                state.write(sd, sf, fallback)
-                cur = state.read(sf) or fallback
-            else
-                cur = {icon = "", name = "unknown", description = "No items found"}
-            end
+            cur = {icon = "", name = "unknown", description = "No items found"}
+        elseif not state.read(sf) then
+            state.write(sd, sf, cur)
+            cur = state.read(sf) or cur
         end
         local icon = cur.icon or ""
         local name = cur.name or "unknown"

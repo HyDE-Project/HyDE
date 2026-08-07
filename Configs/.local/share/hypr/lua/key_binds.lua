@@ -177,7 +177,7 @@ hl.bind(MOD .. " + V", hl.dsp.exec_cmd(hyde.sh.menu.clipboard()), _F)
 _F = {description = "[Launcher|Rofi menus] clipboard manager"}
 hl.bind(MOD .. " + SHIFT + V", hl.dsp.exec_cmd(hyde.sh.menu.cliphist()), _F)
 _F = {description = "[Launcher|Rofi menus] select rofi launcher"}
-hl.bind(MOD .. " + SHIFT + A", hl.dsp.exec_cmd(hyde.sh.menu.launcher()), _F)
+hl.bind(MOD .. " + SHIFT + A", hl.dsp.exec_cmd(hyde.sh.menu.select()), _F)
 _F = {description = "[Launcher|Rofi menus] Calculator"}
 hl.bind(MOD .. " + SHIFT + K", hl.dsp.exec_cmd(hyde.sh.menu.calculator()), _F)
 _F = {description = "[Launcher|Rofi menus] Web Search"}

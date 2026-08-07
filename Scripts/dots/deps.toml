@@ -30,7 +30,6 @@ pacman = [
   "qt5-graphicaleffects", # for sddm theme effects
   # Window Manager
   "awww", # wallpaper
-  "wlogout", # logout menu
   "grim", # screenshot tool
   "hyprpicker", # color picker
   "slurp", # region select for screenshot/screenshare
@@ -73,9 +72,11 @@ pacman = [
 ]
 yay = [
   "hyprquery", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
+  "wlogout", # logout menu
 
 ]
 paru = [
   "hyprquery", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
+  "wlogout", # logout menu
 
 ]

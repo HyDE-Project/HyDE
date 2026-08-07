@@ -1,3 +1,12 @@
+[icon-wallbash]
+version = "0.1.0"
+source = "Source/arcs/Icon_Wallbash.tar.gz"
+owner = "The HyDE Project"
+description = "Icon theme wallbash recolors, named by path from the notifications and the popups"
+action = "sync"
+target_root = "${XDG_DATA_HOME}/icons/Wallbash-Icon"
+paths = "."
+
 [cursor-bibata-modern-ice]
 version = "2.0.7"
 source = "https://github.com/ful1e5/Bibata_Cursor/releases/download/v2.0.7/Bibata-Modern-Ice.tar.xz"

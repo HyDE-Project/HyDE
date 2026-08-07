@@ -210,6 +210,8 @@ local M =
         state_name = "shaders",
         waybar_class = "custom-shaders",
         staterc_key = "HYPR_SHADER",
+        -- Without this a fresh install starts on the blue light filter.
+        default_key = "disable",
         item_ext = ".frag",
         file_pattern = "%.frag$",
         load_item = function(path, base)

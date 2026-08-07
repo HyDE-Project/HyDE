@@ -1,6 +1,6 @@
 local workflow = {
     name = "Default",
-    icon = "",
+    icon = "󰄯",
     description = "Unset workflow configuration"
 }
 
