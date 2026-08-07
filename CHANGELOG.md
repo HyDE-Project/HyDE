@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Rofi selector: the launcher grid is sized from the display again when the focused-monitor query comes back empty, instead of collapsing to a single column; the width had no fallback while the other two selectors both default to 1920
 - Hyprlock: the lock screen comes up with its layout again instead of a black screen; the directory holding the shipped layouts was left behind by the move to the dot metafiles, so the selector listed nothing, `$LAYOUT_PATH` pointed at a file that was never deployed, and wallbash skipped the template rather than create the directory
 - Hyprland: the shader selector offers the shipped shaders again, and the colors wallbash writes for the lock screen have somewhere to land; both directories stopped being deployed when the installer moved off the restore list
 - Waybar: the stylesheet's own `user-style.css` import resolves again; the file it names was never deployed
