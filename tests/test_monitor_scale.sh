@@ -40,6 +40,22 @@ if [ "$(grep -rlc 'scale.*//\.//}' "$lib_dir" 2>/dev/null | wc -l)" -ne 0 ]; the
     fail "a script still strips the dot out of a scale by expansion"
 fi
 
+grep -q 'export -f .*get_monitor_scale' "$lib_dir/globalcontrol.sh" ||
+    fail "the helper is not exported, so a function that calls it breaks in a child shell"
+
+exported=$(HOME="$work_dir/home" XDG_CONFIG_HOME="$work_dir/home/.config" \
+    bash -c ". '$lib_dir/globalcontrol.sh' >/dev/null 2>&1; bash -c 'get_monitor_scale 1.5'" 2>/dev/null)
+[ "$exported" = "150" ] ||
+    fail "a child shell reads the scale as '$exported', not 150"
+
+for caller in $(grep -rl 'get_monitor_scale' "$lib_dir" 2>/dev/null); do
+    case "$(basename "$caller")" in
+        globalcontrol.sh) continue ;;
+    esac
+    grep -q -- ':-100}' "$caller" ||
+        fail "$(basename "$caller") divides by a scale it never defaults"
+done
+
 if ! command -v jq > /dev/null 2>&1 || ! command -v envsubst > /dev/null 2>&1; then
     skip "jq or envsubst is not installed"
     finish

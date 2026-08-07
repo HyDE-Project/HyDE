@@ -7,7 +7,7 @@ hypr_border=${hypr_border:-2}
 if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
     mon_data=$(hyprctl -j monitors)
     mon_x_res=$(jq '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width else .height end' <<< "$mon_data")
-    mon_scale=$(get_monitor_scale "$(jq -r 'first(.[] | select(.focused==true) | .scale) // empty' <<< "$mon_data")")
+    mon_scale=$(get_monitor_scale "$(jq '.[] | select(.focused==true) | .scale' <<< "$mon_data")")
 fi
 
 mon_x_res=${mon_x_res:-1920}

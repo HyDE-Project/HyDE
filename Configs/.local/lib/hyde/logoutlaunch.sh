@@ -27,7 +27,8 @@ fi
 mon_data=$(hyprctl -j monitors)
 x_mon=$(jq '.[] | select(.focused==true) | .width' <<< "$mon_data")
 y_mon=$(jq '.[] | select(.focused==true) | .height' <<< "$mon_data")
-hypr_scale=$(get_monitor_scale "$(jq -r 'first(.[] | select(.focused==true) | .scale) // empty' <<< "$mon_data")")
+hypr_scale=$(get_monitor_scale "$(jq '.[] | select(.focused==true) | .scale' <<< "$mon_data")")
+hypr_scale=${hypr_scale:-100}
 case "$wlogoutStyle" in
     1)
         wlColms=6
