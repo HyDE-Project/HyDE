@@ -18,7 +18,7 @@ fastfetch --config hyde/*.jsonc
   "modules": [
     {
       "type": "command",
-      "key": "  ",
+      "key": "  󰁘",
       "keyColor": "blue",
       "text": "splash=$(hyprctl splash);echo $splash"
     },
@@ -99,7 +99,7 @@ fastfetch --config hyde/*.jsonc
     },
     {
       "type": "memory",
-      "key": "   Memory ",
+      "key": "  󰍛 Memory ",
       "keyColor": "magenta"
     },
     {

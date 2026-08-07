@@ -13,7 +13,7 @@ dnf = ["waybar"]
 action = "preserve"
 source_root = "Configs/.config/waybar"
 target_root = "${XDG_CONFIG_HOME}/waybar"
-paths = ["config.jsonc", "theme.css", "style.css"]
+paths = ["config.jsonc", "theme.css", "style.css", "user-style.css"]
 
 # [[waybar.files]]
 # action = "preserve"

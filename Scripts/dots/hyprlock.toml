@@ -16,3 +16,20 @@
     paths       = [ "hyprlock.conf", "hyprlock-fingerprint.conf" ]
     source_root = "Configs/.local/share/hypr"
     target_root = "${XDG_DATA_HOME}/hypr"
+
+# The layouts the selector lists and `$LAYOUT_PATH` resolves against. Without
+# them the lock screen has no layout to source and comes up black, and wallbash
+# skips its own template rather than create the directory.
+[[hyprlock.files]]
+    action        = "sync"
+    ignored_paths = [ "theme.conf" ]
+    paths         = "hyprlock"
+    source_root   = "Configs/.config/hypr"
+    target_root   = "${XDG_CONFIG_HOME}/hypr"
+
+# wallbash owns this one once a theme is applied, so it is only seeded.
+[[hyprlock.files]]
+    action      = "preserve"
+    paths       = "hyprlock/theme.conf"
+    source_root = "Configs/.config/hypr"
+    target_root = "${XDG_CONFIG_HOME}/hypr"

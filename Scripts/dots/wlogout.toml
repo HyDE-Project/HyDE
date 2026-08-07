@@ -1,0 +1,12 @@
+[wlogout]
+    description = "Logout menu for wayland"
+
+# The package itself is declared with the rest of the core dependencies, where
+# it is asked of an AUR helper. This dot carries the layouts, the icons and the
+# styles HyDE draws the menu with; without them wlogout falls back to its own
+# defaults and the menu does not match the theme.
+[[wlogout.files]]
+    action      = "sync"
+    paths       = "wlogout"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"

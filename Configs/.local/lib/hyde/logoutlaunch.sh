@@ -6,7 +6,7 @@ fi
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
 [ -n "$1" ] && wlogoutStyle="$1"
-wlogoutStyle=${wlogoutStyle:-$WLOGOUT_STYLE}
+wlogoutStyle=${wlogoutStyle:-${WLOGOUT_STYLE:-1}}
 confDir="${confDir:-$HOME/.config}"
 wLayout="$confDir/wlogout/layout_$wlogoutStyle"
 wlTmplt="$confDir/wlogout/style_$wlogoutStyle.css"
@@ -19,9 +19,15 @@ if [ ! -f "$wLayout" ] || [ ! -f "$wlTmplt" ]; then
     wLayout="$confDir/wlogout/layout_$wlogoutStyle"
     wlTmplt="$confDir/wlogout/style_$wlogoutStyle.css"
 fi
-x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
-y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
-hypr_scale=$(hyprctl -j monitors | jq '.[] | select (.focused == true) | .scale' | sed 's/\.//')
+if [ ! -f "$wLayout" ] || [ ! -f "$wlTmplt" ]; then
+    echo "ERROR: no wlogout config under $confDir/wlogout, not launching..."
+    exit 1
+fi
+mon_data=$(hyprctl -j monitors)
+x_mon=$(jq '.[] | select(.focused==true) | .width' <<< "$mon_data")
+y_mon=$(jq '.[] | select(.focused==true) | .height' <<< "$mon_data")
+hypr_scale=$(get_monitor_scale "$(jq '.[] | select(.focused==true) | .scale' <<< "$mon_data")")
+hypr_scale=${hypr_scale:-100}
 case "$wlogoutStyle" in
     1)
         wlColms=6

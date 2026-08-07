@@ -4,7 +4,8 @@
 pre_command = "echo 'Preserve libinput-gestures config'"
 
 [[libinput_gestures.dependency]]
-pacman = ["libinput-gestures"]
+yay = ["libinput-gestures"]
+paru = ["libinput-gestures"]
 
 [[libinput_gestures.files]]
 action = "preserve"
