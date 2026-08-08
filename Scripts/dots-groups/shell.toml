@@ -1,6 +1,6 @@
 [global]
     action      = "sync"
     description = "Choose a shell"
-    include     = [ "../dots/zsh.toml", "../dots/fish.toml" ]
+    include     = [ "../dots/zsh.toml", "../dots/fish.toml", "../dots/nushell.toml" ]
     owner       = "The HyDE Project"
     version     = "latest"

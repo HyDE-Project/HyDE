@@ -1,0 +1,26 @@
+[nushell]
+    description = "A new type of shell, with structured data instead of text"
+
+[[nushell.dependency]]
+    dnf    = [ "nushell", "starship", "fastfetch", "eza" ]
+    pacman = [ "nushell", "starship", "fastfetch", "eza" ]
+
+# Nushell sources every file in its user autoload directory on startup, so
+# HyDE's environment applies without the user having to edit config.nu.
+[[nushell.files]]
+    action      = "sync"
+    paths       = "autoload"
+    source_root = "Configs/.config/nushell"
+    target_root = "${XDG_CONFIG_HOME}/nushell"
+
+[[nushell.files]]
+    action      = "preserve"
+    paths       = "config.nu"
+    source_root = "Configs/.config/nushell"
+    target_root = "${XDG_CONFIG_HOME}/nushell"
+
+[[nushell.files]]
+    action      = "preserve"
+    paths       = "starship.toml"
+    source_root = "Configs/.config/starship"
+    target_root = "${XDG_CONFIG_HOME}/starship"
