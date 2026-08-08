@@ -16,9 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - Rofi selector: the launcher grid is sized from the display again when the focused-monitor query comes back empty, instead of collapsing to a single column; the width had no fallback while the other two selectors both default to 1920
+- Waybar: the theme picker opens again from the theme module, the HyDE menu and the macOS layout's menu; all three called `themeselect`, which the v26.7.4 migration renamed to `theme.select`
 - Hyprlock: the lock screen comes up with its layout again instead of a black screen; the directory holding the shipped layouts was left behind by the move to the dot metafiles, so the selector listed nothing, `$LAYOUT_PATH` pointed at a file that was never deployed, and wallbash skipped the template rather than create the directory
 - Hyprland: the shader selector offers the shipped shaders again, and the colors wallbash writes for the lock screen have somewhere to land; both directories stopped being deployed when the installer moved off the restore list
-- Waybar: the stylesheet's own `user-style.css` import resolves again; the file it names was never deployed
 - wlogout: the menu is drawn with the HyDE layouts, icons and styles again instead of the upstream defaults
 - Notifications: an install brings a notification daemon again; `dunst` and the configuration it reads were left in a group the installer never loads, so nothing served notifications and every wallbash pass reported a missing directory for a dot that was never deployed
 - Core: an install no longer leaves the whole core package set uninstalled because one name is missing from the Arch repositories; `wlogout` and `libinput-gestures` are asked of an AUR helper, which is where they live, instead of pacman, which installs a dependency block with a single command and aborts all of it on a name it cannot resolve

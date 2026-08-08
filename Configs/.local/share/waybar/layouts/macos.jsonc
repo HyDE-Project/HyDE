@@ -96,7 +96,7 @@
       "wallpaper-random": "hyde-shell wallpaper --random --global",
       "theme-next": "hyde-shell theme.switch -n",
       "theme-previous": "hyde-shell theme.switch -p",
-      "theme-select": "hyde-shell themeselect",
+      "theme-select": "hyde-shell theme.select",
       "theme-import": "hyde-shell app -T -- hydectl theme import",
       "waybar-restart": "hyde-shell waybar -ubg",
       "waybar-reload-css": "sed -i '${/^$/d;}'  $XDG_CONFIG_HOME/waybar/style.css",
