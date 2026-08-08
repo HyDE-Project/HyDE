@@ -64,6 +64,9 @@ duf|fish                                                 # prettier version of d
 # --------------------------------------------------- // OSD
 swayosd-git                                             #A GTK based on screen display for keyboard shortcuts like caps-lock and volume
 
+# --------------------------------------------------- // Speech-to-Text
+# hyprwhspr                                            # Native speech-to-text for Linux (dictation)
+
 # --------------------------------------------------- // Alternative Bar
 # wayle-bin                                             # Wayland desktop shell (bar, OSD, notifications, wallpaper)
 # matugen-bin|wayle-bin                                 # Material You color generation for dynamic theming
