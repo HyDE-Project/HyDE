@@ -5,7 +5,7 @@
         "tooltip-format": "\udb81\udfe1 Switch theme",
         "on-click": "hyde-shell theme.switch -n",
         "on-click-right": "hyde-shell theme.switch -p",
-        "on-click-middle": "sleep 0.1 && hyde-shell themeselect", 
+        "on-click-middle": "sleep 0.1 && hyde-shell theme.select",
         "interval": 86400,
         "tooltip": true
     }

@@ -13,7 +13,7 @@
       "wallpaper-random": "hyde-shell wallpaper --random --global",
       "theme-next": "hyde-shell theme.switch -n",
       "theme-previous": "hyde-shell theme.switch -p",
-      "theme-select": "hyde-shell themeselect",
+      "theme-select": "hyde-shell theme.select",
       "theme-import": "hyde-shell app -T -- hydectl theme import",
       "layouts-select": "hyde-shell layouts --select;pkill -RTMIN+19 waybar",
       "waybar-restart": "hyde-shell waybar -ubg",
