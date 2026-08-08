@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 - Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
+- WezTerm: configuration and wallbash theming, selectable as an optional dot and as a session terminal
 
 ### Removed
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
