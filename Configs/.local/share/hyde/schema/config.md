@@ -162,6 +162,7 @@ Generic desktop autostart configuration. Use this header instead of hyprland-sta
 | idle_daemon | Idle daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-idle.service -t service -- hypridle |
 | image_clipboard | Image clipboard daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-image-clipboard.service -t service wl-paste --type image --watch cliphist store |
 | notifications | Notification daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- dunst |
+| openrgb | Restore OpenRGB profile on startup. | if command -v openrgb >/dev/null 2>&1; then openrgb --profile "$XDG_CACHE_HOME/hyde/wallbash/openrgb"; fi |
 | systemd_share_picker | Systemd share picker (for XDG portal / XDPH). | systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME |
 | text_clipboard | Text clipboard daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-text-clipboard.service -t service wl-paste --type text --watch cliphist store |
 | wallpaper | Wallpaper script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global |
@@ -397,6 +398,7 @@ sysmonlaunch.sh configuration.
 | --- | ----------- | ------- |
 | commands | Fallback command options. | [""] |
 | execute | Default command to execute. |  |
+| terminal | Terminal used to launch a console monitor. Falls back to TERMINAL. |  |
 
 ### [volume]
 
@@ -489,3 +491,4 @@ wlogout configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | style | Style for wlogout. | 2 |
+

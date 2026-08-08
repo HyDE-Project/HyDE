@@ -27,5 +27,6 @@ hl.on(
 		check_exec(hs.applet_removable_media)
 		check_exec(hs.applet_bluetooth)
 		check_exec(hs.hyde_config)
+		check_exec(hs.openrgb)
 	end
 )

@@ -153,7 +153,7 @@ skip_template = [""]  # Templates to skip when using wallbash.
 font = "JetBrainsMono Nerd Font"  # Font for waybar.
 scale = 10  # Total scaling for waybar.
 icon_size = 10  # Icon size for waybar.
-position = "top"  # A fallback position of the waybar.
+position = "top"  # A fallback position of the waybar.  
 
 # Weather configuration.
 [weather]
@@ -326,6 +326,7 @@ battery_notify = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.ser
 applet_network_manager = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-network-manager-applet.service -t service -- nm-applet --indicator"  # Network manager applet.
 applet_removable_media = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray"  # Removable media applet.
 applet_bluetooth = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet"  # Bluetooth applet.
+openrgb = 'if command -v openrgb >/dev/null 2>&1; then openrgb --profile "$XDG_CACHE_HOME/hyde/wallbash/openrgb"; fi'  # Restore OpenRGB profile on startup.
 
 # mediaplayer.py configuration.
 [mediaplayer]
@@ -334,3 +335,4 @@ prefix_paused = "  "  # Prefix for paused media.
 max_length = 70  # Max length of song and artist string.
 standby_text = "  Music"  # To display on standby.
 artist_track_separator = "  "  # Separator symbols to display between artist and track.
+

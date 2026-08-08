@@ -1210,6 +1210,11 @@ default = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service 
 description = "Bluetooth applet."
 type = "string"
 
+[properties."desktop.start".properties.openrgb]
+default = "if command -v openrgb >/dev/null 2>&1; then openrgb --profile \"$XDG_CACHE_HOME/hyde/wallbash/openrgb\"; fi"
+description = "Restore OpenRGB profile on startup."
+type = "string"
+
 [properties.mediaplayer]
 description = "mediaplayer.py configuration."
 type = "object"

@@ -1,0 +1,13 @@
+
+[openrgb]
+pre_command = "echo 'Install OpenRGB'"
+post_command = '''
+    sudo mkdir -p /etc/systemd/system/openrgb.service.d \
+    && printf '%s\n' '[Service]' 'ExecStart=' 'ExecStart=/usr/bin/openrgb --server --server-host 127.0.0.1' \
+     | sudo tee /etc/systemd/system/openrgb.service.d/override.conf >/dev/null \
+    && sudo systemctl daemon-reload \
+    && sudo systemctl enable --now openrgb.service
+    '''
+
+[[openrgb.dependency]]
+pacman = ["openrgb"]

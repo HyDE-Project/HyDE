@@ -910,6 +910,11 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "terminal": {
+                    "default": "",
+                    "description": "Terminal used to launch a console monitor. Falls back to TERMINAL.",
+                    "type": "string"
                 }
             }
         },
@@ -1362,6 +1367,11 @@
                 "applet_bluetooth": {
                     "default": "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet",
                     "description": "Bluetooth applet.",
+                    "type": "string"
+                },
+                "openrgb": {
+                    "default": "if command -v openrgb >/dev/null 2>&1; then openrgb --profile \"$XDG_CACHE_HOME/hyde/wallbash/openrgb\"; fi",
+                    "description": "Restore OpenRGB profile on startup.",
                     "type": "string"
                 }
             }
