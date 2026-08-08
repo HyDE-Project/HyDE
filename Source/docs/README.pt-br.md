@@ -69,11 +69,17 @@ Embora instalar o HyDE com outro [ambiente desktop (DE)](https://wiki.archlinux.
 Para o suporte a NixOS, existe um projeto separado sendo mantido em @ [Hydenix](https://github.com/richen604/hydenix/tree/main)
 
 > [!IMPORTANT]
-> O script de instalação detectará automaticamente uma placa NVIDIA e instalará os drivers nvidia-open-dkms para o seu kernel.
-> Por favor, verifique se sua placa NVIDIA é compatível com os drivers nvidia-open-dkms listados [aqui](https://wiki.archlinux.org/title/NVIDIA).
+> O script de instalação detectará automaticamente uma placa NVIDIA e escolherá uma trilha de driver DKMS compatível com o seu kernel.
+> Placas mais novas podem usar `nvidia-dkms` / `nvidia-open-dkms`, enquanto placas legadas devem ser verificadas antes em [`Scripts/nvidia-db/`](../../Scripts/nvidia-db/).
+> Por favor, verifique se sua placa NVIDIA é compatível com a família de driver DKMS selecionada na lista [aqui](https://wiki.archlinux.org/title/NVIDIA).
+>
+> Se um pacote DKMS for selecionado, espere uma compilação local do módulo para o kernel atual durante a instalação. Isso pode levar vários minutos e pode acontecer mesmo que um pacote NVIDIA DKMS já estivesse instalado, porque o DKMS recompila os módulos para o kernel ativo.
 
 > [!CAUTION]
 > O script de instalação modifica as configurações do seu `grub` ou `systemd-boot` para habilitar o DRM da NVIDIA.
+
+> [!TIP]
+> Usuários do BigLinux / Manjaro podem querer criar um snapshot com o Timeshift antes de executar o instalador, especialmente quando o HyDE será instalado ao lado de um ambiente desktop já existente. Em placas NVIDIA mais antigas, revise antes a lista de drivers legados em [`Scripts/nvidia-db/`](../../Scripts/nvidia-db/).
 
 Para instalar, execute os comandos abaixo:
 
@@ -102,6 +108,14 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 -->
 Por favor, reinicie o sistema após o script concluir a instalação e levá-lo à tela de login do SDDM (ou a uma tela preta) pela primeira vez.
 Para mais detalhes, por favor consulte a [wiki de instalação](https://github.com/HyDE-Project/HyDE/wiki/installation).
+
+Checklist rápido para distros derivadas do Arch, como BigLinux / Manjaro:
+
+- Crie um ponto de restauração (por exemplo com o Timeshift) antes de executar `install.sh`.
+- Espere alterações no GRUB, SDDM e em `/etc/pacman.conf` durante a instalação.
+- Se sua GPU for um modelo NVIDIA antigo, verifique antes se ela pertence a uma série legada de dkms antes de aceitar o caminho padrão de driver.
+- Se um pacote NVIDIA `*-dkms` for selecionado, espere uma compilação local do módulo para o kernel atual durante a instalação; isso pode demorar mesmo quando o pacote já estava instalado anteriormente.
+- Reinicie após o término do instalador e então escolha a sessão Hyprland / HyDE no gerenciador de login.
 
 <div align="right">
   <br>
