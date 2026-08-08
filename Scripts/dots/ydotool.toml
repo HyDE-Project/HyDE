@@ -1,0 +1,5 @@
+[ydotool]
+pre_command = "echo 'Install ydotool'"
+
+[[ydotool.dependency]]
+pacman = ["ydotool"]

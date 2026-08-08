@@ -13,3 +13,4 @@
 NetworkManager|root|enable --now
 bluetooth|root|enable --now
 sddm|root|enable
+ydotool|user|enable --now

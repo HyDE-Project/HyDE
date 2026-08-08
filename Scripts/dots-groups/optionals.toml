@@ -12,7 +12,7 @@
         "../dots/fish.toml",
         "../dots/wallbash-vim.toml",
         "../dots/spotify.toml",
-
+        "../dots/ydotool.toml",
     ]
     owner = "The HyDE Project" #
     pre_command = "echo 'Optional Configurations you can uninstall later'"

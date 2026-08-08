@@ -388,8 +388,17 @@ get_rofi_pos() {
 
 }
 paste_string() {
-    if ! command -v wtype >/dev/null; then exit 0; fi
+    local paste_cmd=""
+    if command -v ydotool >/dev/null; then
+        paste_cmd="ydotool key 29:1 && sleep 0.01 && ydotool key 47:1 47:0 && sleep 0.01 && ydotool key 29:0"
+    elif command -v wtype >/dev/null; then
+        paste_cmd="wtype -M ctrl V -m ctrl"
+    else
+        exit 0
+    fi
+
     if [ -t 1 ]; then return 0; fi
+
     ignore_paste_file="$HYDE_STATE_HOME/ignore.paste"
     if [[ ! -e $ignore_paste_file ]]; then
         cat <<EOF >"$ignore_paste_file"
@@ -401,11 +410,13 @@ Alacritty
 xterm-256color
 EOF
     fi
+
     ignore_class=$(echo "$@" | awk -F'--ignore=' '{print $2}')
     [ -n "$ignore_class" ] && echo "$ignore_class" >>"$ignore_paste_file" && print_log -y "[ignore]" "'$ignore_class'" && exit 0
+
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
     if ! grep -q "$class" "$ignore_paste_file"; then
-        hyprctl -q dispatch exec 'wtype -M ctrl V -m ctrl'
+        hyprctl -q dispatch exec "$paste_cmd"
     fi
 }
 is_hovered() {
