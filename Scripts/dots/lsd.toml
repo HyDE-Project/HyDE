@@ -1,0 +1,11 @@
+[lsd]
+pre_command = "echo 'Preserve lsd config'"
+
+[[lsd.dependency]]
+pacman = ["lsd"]
+
+[[lsd.files]]
+action = "preserve"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = "lsd"

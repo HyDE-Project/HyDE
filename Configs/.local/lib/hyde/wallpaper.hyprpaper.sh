@@ -29,7 +29,7 @@ EOF
     if systemctl --user is-active --quiet hyprpaper.service; then
         systemctl --user restart hyprpaper.service
     else
-        app2unit.sh -- hyprpaper --config "$XDG_STATE_HOME/hyde/hyprpaper.conf"
+        app.sh -- hyprpaper --config "$XDG_STATE_HOME/hyde/hyprpaper.conf"
     fi
 
 fi

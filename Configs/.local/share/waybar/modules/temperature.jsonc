@@ -31,8 +31,8 @@
   //    sensors
   //
   // 4. Match thermal zone with actual sensor:
-  //    cat /sys/class/thermal/thermal_zone2/temp  (Returns millicelsius: 44050 = 44.05°C)
-  //    nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits  (Compare)
+  //    cat /sys/class/thermal/thermal_zone2/temp  # (Returns millicelsius: 44050 = 44.05°C)
+  //    nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits  # (Compare)
   //
   // 5. Common thermal zones:
   //    - acpitz: ACPI thermal zone (general system)
@@ -74,13 +74,13 @@
   //
   // === /sys/class/hwmon/hwmon0 ===
   // PCI bridge: Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 XL Downstream Port of PCI Express Switch (rev 11)
-  // 
+  //
   // === /sys/class/hwmon/hwmon1 ===
   // PCI bridge: Advanced Micro Devices, Inc. [AMD] Raphael/Granite Ridge Internal GPP Bridge to Bus [C:A]
-  // 
+  //
   // === /sys/class/hwmon/hwmon4 ===
   // Model name:                              AMD Ryzen 7 9700X 8-Core Processor
-  // 
+  //
   // 3. Take desired `hwmon-path` from the output of the script, replace `thermal-zone` with `hwmon-path` in waybar module config
   //    i.e. "thermal-zone": 2 -> "hwmon-path": "/sys/class/hwmon/hwmon0/temp1_input"
   //    p.s. do not forget to add temperature source (`temp1_input` in example above)
@@ -96,6 +96,11 @@
   // GPU Temperature Monitor (NVIDIA via thermal zone)
   "temperature#2": {
     "thermal-zone": 2, // SEN1 - NVIDIA GPU on this system
+    "hwmon-path": [
+        "/sys/class/thermal/thermal_zone3/temp",
+        "/sys/class/thermal/thermal_zone14/temp",
+        "/sys/class/thermal/thermal_zone5/temp"
+    ],
     // Temperature thresholds for GPU
     "critical-threshold": 65, // NVIDIA typical max temp
     "warning-threshold": 55, // Start warning at 75°C

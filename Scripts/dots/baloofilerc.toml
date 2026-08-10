@@ -1,0 +1,9 @@
+
+[baloofilerc]
+    description = "A framework for searching and managing metadata"
+
+[[baloofilerc.files]]
+    action      = "preserve"
+    paths       = "baloofilerc"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"

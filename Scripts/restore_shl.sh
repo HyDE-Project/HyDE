@@ -14,7 +14,7 @@ fi
 flg_DryRun=${flg_DryRun:-0}
 
 # shellcheck disable=SC2154
-if chk_list "myShell" "${shlList[@]}"; then
+if resolve_shell; then
     print_log -sec "SHELL" -stat "detected" "${myShell}"
 else
     print_log -sec "SHELL" -err "error" "no shell found..."
@@ -22,7 +22,7 @@ else
 fi
 
 # add zsh plugins
-if pkg_installed zsh; then
+if [ "${myShell}" = "zsh" ] && pkg_installed zsh; then
     prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
     PROMPT_INPUT="${PROMPT_INPUT:-y}"
     if [[ "${PROMPT_INPUT}" == "y" || "${PROMPT_INPUT}" == "yes" ]]; then
@@ -91,9 +91,15 @@ if pkg_installed zsh; then
 fi
 
 # set shell
-if [[ "$(grep "/${USER}:" /etc/passwd | awk -F '/' '{print $NF}')" != "${myShell}" ]]; then
+# chsh refuses a path /etc/shells does not list, so both cases are reported.
+shellPath="$(command -v "${myShell}" || true)"
+if [ -z "${shellPath}" ]; then
+    print_log -sec "SHELL" -err "error" "${myShell} is not installed, leaving the login shell alone..."
+elif ! shell_listed "${shellPath}"; then
+    print_log -sec "SHELL" -err "error" "${shellPath} is not listed in /etc/shells, leaving the login shell alone..."
+elif [[ "$(login_shell)" != "${myShell}" ]]; then
     print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
-    [ ${flg_DryRun} -eq 1 ] || chsh -s "$(which "${myShell}")"
+    [ ${flg_DryRun} -eq 1 ] || chsh -s "${shellPath}"
 else
     print_log -sec "SHELL" -stat "exist" "${myShell} is already set as shell..."
 fi

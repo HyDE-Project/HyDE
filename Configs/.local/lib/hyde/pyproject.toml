@@ -5,18 +5,29 @@ requires-python = ">=3.11"
 dependencies = [
     "loguru==0.7.3",
     "pulsectl==24.12.0",
-    "requests==2.33.0",
+    "requests==2.34.2",
     "inotify_simple",
-    "pywayland",
-    "PyGObject",
-    "PyQt6",
-    "pyprland==3.3.1",
     "hererocks>=0.25.1",
+    "websockets>=16.0",
+    "xdg-prefs",
+    "uv>=0.1.0",
+    "deez-dots",
+    "pyprland==3.4.3",
 ]
 
 [project.optional-dependencies]
 amd = ["pyamdgpuinfo"]
+wayland = [
+    "pywayland",
+    "PyGObject",
+    "PyQt6",
+]
+dev = [ "prek>=0.4.1" ]
 
 [tool.ruff]
 line-length = 100
 indent-width = 4
+
+[tool.uv.sources]
+xdg-prefs = { git = "https://github.com/rchaput/xdg-prefs" }
+deez-dots = { git = "https://github.com/HyDE-Project/deez-dots.git" }

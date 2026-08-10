@@ -12,8 +12,8 @@
  | youtube | https://www.youtube.com/results?search_query=%s
  | archlinux | https://archlinux.org/packages/?sort=&q=%s
  | AUR | https://aur.archlinux.org/packages?O=0&K=%s
- | searx | http://searx.neocities.org/?q=%s
- | searXNG | https://searx.tiekoetter.com/?q=%s
+󰆼 | searx | http://searx.neocities.org/?q=%s
+󰆼 | searXNG | https://searx.tiekoetter.com/?q=%s
  | dictionary | https://www.dictionary.com/browse/%s
  | thesaurus | https://www.thesaurus.com/browse/%s
  | stackoverflow | https://www.stackoverflow.com/search?q=%s
@@ -22,7 +22,7 @@
  | archwiki | https://wiki.archlinux.org/index.php?search=%s
  | quickRef | https://quickref.me/%s
  | brave | https://search.brave.com/search?q=%s
- | lens.org | https://www.lens.org/lens/search/patent/list?q=%s
+󰋊 | lens.org | https://www.lens.org/lens/search/patent/list?q=%s
  | patents.google | https://patents.google.com/?q=%s
  | worldwide.espacenet | https://worldwide.espacenet.com/patent/search?q=%s
  | chatGPT | https://chat.openai.com/?q=%s

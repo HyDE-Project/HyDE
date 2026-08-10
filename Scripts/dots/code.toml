@@ -1,0 +1,44 @@
+[code-oss]
+action = "preserve"
+description = "Open source version of Visual Studio Code configuration"
+
+[[code-oss.dependency]]
+pacman = ["code"]
+
+[[code-oss.files]]
+source_root = "Configs/.config/Code - OSS/User"
+target_root = "${XDG_CONFIG_HOME}/Code - OSS/User"
+paths = "settings.json"
+
+[[code-oss.files]]
+action = "preserve"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = "code-flags.conf"
+
+[vscode]
+description = "Visual Studio Code configuration"
+action = "preserve"
+yay = ["visual-studio-code-bin"]
+paru = ["visual-studio-code-bin"]
+
+[[vscode.files]]
+source_root = "Configs/.config/Code/User"
+target_root = "${XDG_CONFIG_HOME}/Code/User"
+paths = "settings.json"
+
+[vscodium]
+description = "Code Community open-source release."
+action = "preserve"
+yay = ["vscodium-bin"]
+paru = ["vscodium-bin"]
+
+[[vscodium.files]]
+source_root = "Configs/.config/VSCodium/User"
+target_root = "${XDG_CONFIG_HOME}/VSCodium/User"
+paths = "settings.json"
+
+[[vscodium.files]]
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = "codium-flags.conf"

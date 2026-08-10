@@ -74,10 +74,18 @@ set -gx PARALLEL_HOME "$XDG_CONFIG_HOME/parallel"
 end
 
 if test -z "$HYPRLAND_CONFIG"
-set -gx HYPRLAND_CONFIG "$XDG_DATA_HOME/hypr/hyprland.conf"
+for candidate in "$XDG_DATA_HOME/hypr/hyde.lua" /usr/local/share/hypr/hyde.lua /usr/share/hypr/hyde.lua
+if test -r "$candidate"
+set -gx HYPRLAND_CONFIG "$candidate"
+break
+end
+end
 end
 
-fish_add_path $HOME/.local/bin:$PATH
+# One directory per argument: fish_add_path does not split on ":", so a
+# colon-joined string is a single path that exists nowhere, and a path that
+# does not exist is dropped without a word.
+fish_add_path $HOME/.local/bin
 
 
 if type -q starship

@@ -36,7 +36,7 @@ if ((battery_count == 0)); then
 fi
 average_capacity=$((total_capacity / battery_count))
 index=$((average_capacity / 10))
-charging_icons=(" " " " " " " " " " " " " " " " " " " " " ")
+charging_icons=("󰂆 " "󰂇 " "󰂈 " "󰂉 " "󰂊 " "󰂋 " "󰂋 " "󰂋 " "󰂋 " "󰂋 " "󰂅 ")
 discharging_icons=("󰂎" "󰁺" "󰁻" "󰁼" "󰁽" "󰁾" "󰁿" "󰂀" "󰂁" "󰂂" "󰁹")
 status_icons=("" "X" "󰂇")
 battery_status=$(cat "$battery_path/status")

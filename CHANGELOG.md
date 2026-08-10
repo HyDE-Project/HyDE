@@ -6,6 +6,92 @@ All notable changes to 'HyDE' will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
+## Unreleased
+
+### Added
+- Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
+
+### Removed
+- Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
+
+### Fixed
+- Core: `keyboardswitch.sh` triggers correct language notification; layout switch targets current device instead of cycling all devices, eliminating the IPC race condition and preventing multiple input devices from desyncing
+- Rofi selector: the launcher grid is sized from the display again when the focused-monitor query comes back empty, instead of collapsing to a single column; the width had no fallback while the other two selectors both default to 1920
+- Waybar: the theme picker opens again from the theme module, the HyDE menu and the macOS layout's menu; all three called `themeselect`, which the v26.7.4 migration renamed to `theme.select`
+- Hyprlock: the lock screen comes up with its layout again instead of a black screen; the directory holding the shipped layouts was left behind by the move to the dot metafiles, so the selector listed nothing, `$LAYOUT_PATH` pointed at a file that was never deployed, and wallbash skipped the template rather than create the directory
+- Hyprland: the shader selector offers the shipped shaders again, and the colors wallbash writes for the lock screen have somewhere to land; both directories stopped being deployed when the installer moved off the restore list
+- wlogout: the menu is drawn with the HyDE layouts, icons and styles again instead of the upstream defaults
+- Notifications: an install brings a notification daemon again; `dunst` and the configuration it reads were left in a group the installer never loads, so nothing served notifications and every wallbash pass reported a missing directory for a dot that was never deployed
+- Core: an install no longer leaves the whole core package set uninstalled because one name is missing from the Arch repositories; `wlogout` and `libinput-gestures` are asked of an AUR helper, which is where they live, instead of pacman, which installs a dependency block with a single command and aborts all of it on a name it cannot resolve
+- Core: the dependency steps install the packages they were given again; the configs the installer writes at run time declared their group include at the document root, where deez does not read it, so both steps resolved an empty set, installed nothing but the machine-specific packages, and reported the packages verified
+- Hyprland: rofi style selector keybind now correctly opens style menu instead of the default application launcher
+- Hyprland: a session started without `HYPRLAND_CONFIG`, from a TTY or a display manager, no longer trips emergency mode with `module 'lua.hyde.path' not found`; the entry point resolves the modules shipped beside it from its own path
+- Fish: `~/.local/bin` reaches `PATH` again, so `hyde-shell` and everything the keybinds call resolve in a fish session; the directory was handed to `fish_add_path` joined to the rest of `PATH` by colons, which is one path that exists nowhere and is dropped without a word
+- Weather Applet: Avoid crashes from unknown weather codes or unavailable wttr.in responses.
+- Core: an install no longer ends at the Lua step on a machine that cannot build `lgi`; the introspection headers it compiles against are declared as a dependency, and an optional rock that still fails is reported and skipped instead of taking the run down before any dotfile is deployed
+- Hyprland: a session on a machine with a discrete NVIDIA GPU no longer comes up with a timed-out configuration; driver detection reads `/proc` and `/sys`, and the library directories are found by opening the candidate paths, so the budget Hyprland allows the whole configuration is no longer spent waiting on a subprocess
+- Core: an install deploys the cursor dots again instead of aborting on an existing theme file; the locked `deez-dots` revision predated the extraction fix, so every install kept running the defect the fix had already closed
+- Core: Pyprland commands keep their arguments when `nc`, `socat`, and `ncat` are unavailable, so commands such as `hyde-shell pypr toggle console` work through the CLI fallback again
+- Hyprland: a session started without `XDG_CONFIG_HOME`, such as one launched from a TTY, no longer dies with a Lua error before the first window; the unset variable is treated as unset instead of being pasted into a path
+- Hyprland: a home directory containing an apostrophe no longer makes the session load its libraries from the system directory instead of the user's own, and an empty `XDG_RUNTIME_DIR` reads as unset rather than resolving against the working directory
+- Waybar: the theme module and the HyDE menu call `theme.switch` again; `themeswitch` was removed and the calls failed outright
+- Dolphin: the "Set As Wallpaper" service menu switches the theme again
+- Fish: `HYPRLAND_CONFIG` points at the deployed `hypr/hyde.lua` instead of a config the Lua release deleted, so a session started outside uwsm no longer comes up without a config
+- Hyprland: the config editor offers the user's `hypr/hyprland.lua` instead of four files nothing reads, which it used to create empty on save
+- System monitor: a console monitor no longer launches with no terminal attached, and `[sysmonitor] terminal` is a real setting
+- Docs: the keybinding reference describes the Lua configuration instead of the removed `userprefs.conf`, documents binds that were missing from it, corrects four descriptions that no longer matched the code, and explains why an override needs the original bind's flags
+- Docs: the shipped `hypr/hyprland.lua` stub shows a working bind instead of pointing at a wiki that does not exist
+- Docs: the keybinding links in the German, Arabic, French, Dutch and Turkish readmes resolve again
+- Core: every migration that has not been applied yet now runs in version order and is recorded, instead of only the newest one running and retiring the rest unseen
+- Core: app launchers no longer show a false error when an unrelated `DEBUG` variable contains a non-boolean value such as `release`
+- Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
+- Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad
+- Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice
+- Screenshot: Satty defaults to the compatible GTK GL renderer when no explicit `GSK_RENDERER` is configured
+- Screenshot: the "print all monitors" keybind now invokes a full-output capture instead of capturing only the focused monitor
+- Waybar `hyprland/workspaces` module adapted to use lua dispatchers
+- Hyprland: `Super + Ctrl + arrows` no longer changes the group and the workspace at the same time.
+  Group navigation uses `Super + Ctrl + H/L`
+- Hyprland: the right Control key no longer hides Waybar on its own. Hiding moved to `Super + Ctrl + B`
+- Hyprland: workspaces 11-20 on the numpad respond again
+- OCR: the language list in the result notification is no longer split across arguments
+- Wallpaper: the duplicate check in the kon backend compares against the whole hash list again
+- Repo: dropped two stray gitlinks that made `git submodule` fail on a fresh clone
+
+## v26.7.4 | 4th Week of July 2026 Release
+
+**Alright** Looks like hyprland 0.56.1 warns user to use lua so here you go!
+
+Run `install.sh -r` to update.
+
+Please report and try to fix any bugs. Thank you!
+Life is tight as of the moment. Any help will do. 💓
+
+
+### Added
+- GTK: hyde will have our own dconf db called 'hyde_hyprland'. That means dconf settings are isolated for HyDE Hyprland ONLY
+- Hyprland: Added 'hyde-shell layouts --select' to select hyprland layouts from default or custom layouts.
+  Add your custom layout modifications to '~/.config/hypr/lua/layouts/custom.lua'
+
+
+### Changed
+
+- Hyprland: Use lua for all its config
+- Hyprland: Deprecate old hyprlang configs
+- Core: Added lua and luarocks dependencies
+- Core: Convert some script to lua
+- Hyprland: Removed '[hyprland-start]'. Use 'desktop.start' instead.
+- Desktop: Added 'desktop.start' to handle startup commands.
+- Core: Some config changes in '~/.config/hyde/config.toml', Please see the schema for more info.
+- Hyprland: Drop of hyprlang support
+- GTK: Have a separate 'DCONF_PROFILE' for GTK apps! For QT, twas always handled by qt6ct and should not
+    mangle with QT. But KDE apps uses ~/.config/kdeglobals which might break KDE apps for multi DE. (No fix for now)
+
+
+### Fixed
+- Fix cantarell font
+- Some minor bugs
+
 ## v26.4.5 | End of April Release
 
 ### Changed

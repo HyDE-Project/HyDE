@@ -38,7 +38,8 @@ case ${style:-5} in
         eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
     "monitor_info=(\(.width) \(.height) \(.scale) \(.x) \(.y)) reserved_info=(\(.reserved | join(" ")))"')"
         percent=80
-        monitor_scale="${monitor_info[2]//./}"
+        monitor_scale="$(get_monitor_scale "${monitor_info[2]}")"
+        monitor_scale="${monitor_scale:-100}"
         monitor_width=$((monitor_info[0] * percent / monitor_scale))
         monitor_height=$((monitor_info[1] * percent / monitor_scale))
         BG=$HOME/.local/share/hyde/rofi/assets/steamdeck_holographic.png

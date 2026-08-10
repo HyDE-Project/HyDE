@@ -1,52 +1,7 @@
 """Plugin loader and registry for session.py.
 
-Plugins live in ``session/plugins/`` as Python files.  Each plugin must
-define at least:
-
-    MATCH_CLASSES: set[str]
-        Which ``initialClass`` values (lowercase) this plugin handles.
-
-And may optionally define any of these hooks:
-
-    save_enrich(client: dict, pid: int) -> dict
-        Called during ``save`` for matched windows.  Return a dict of
-        extra keys to merge into the snapshot (prefix with ``_p_``).
-
-    build_restore_cmd(client: dict, ws_target: str) -> str | None
-        Called during ``restore``.  Return the full ``exec`` dispatch
-        string (including rules) to use instead of the default, or
-        ``None`` to fall back to the default restore logic.
-
-    match_running(saved: dict, running: dict) -> bool
-        Called during default restore to decide whether a running
-        window (*running*) is a suitable match for a saved window (*saved*).
-        Return ``True`` to reposition, ``False`` to skip the candidate
-        (and eventually launch a new instance).  If not defined the
-        default class-based matching is used.
-
-    MULTI_WINDOW: bool  (default False)
-        When ``True`` the app can have several windows sharing a single
-        PID (e.g. VS Code).  ``save()`` will keep one snapshot entry
-        per (pid, workspace) instead of collapsing to one per pid.
-
-    PRIORITY: int  (default 50)
-        Lower runs first.  Useful if multiple plugins could match.
-
-Example plugin (``session/plugins/kitty.py``)::
-
-    MATCH_CLASSES = {"kitty"}
-    PRIORITY = 40
-
-    def save_enrich(client, pid):
-        cwd = _read_cwd(pid)
-        return {"_p_cwd": cwd} if cwd else {}
-
-    def build_restore_cmd(client, ws_target):
-        cwd = client.get("_p_cwd")
-        if not cwd:
-            return None
-        cmd = client.get("_launchString", "kitty")
-        return f"exec [workspace {ws_target} silent] {cmd} --directory {cwd}"
+Plugins are Python modules under session/plugins/.
+Each plugin declares MATCH_CLASSES and optional hooks for save/restore.
 """
 
 import importlib
@@ -155,12 +110,9 @@ def call_match_running(plugin: _PluginEntry, saved: dict, running: dict) -> bool
     the plugin does not implement the hook (caller should fall back to
     default class-based matching).
 
-    Preferred hook name is ``match_running``. Legacy ``live_match`` is
-    also supported for backward compatibility.
+    Preferred hook name is ``match_running``.
     """
     fn = getattr(plugin.module, "match_running", None)
-    if fn is None:
-        fn = getattr(plugin.module, "live_match", None)
     if fn is None:
         return None
     try:
@@ -171,8 +123,3 @@ def call_match_running(plugin: _PluginEntry, saved: dict, running: dict) -> bool
             file=sys.stderr,
         )
         return None
-
-
-def call_live_match(plugin: _PluginEntry, saved: dict, live: dict) -> bool | None:
-    """Backward-compatible alias for old call sites."""
-    return call_match_running(plugin, saved, live)
