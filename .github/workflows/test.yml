@@ -37,3 +37,36 @@ jobs:
 
       - name: Run the test suite
         run: sh tests/run.sh
+
+  coverage:
+    name: Shell coverage
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install test and coverage dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends lua5.4 shellcheck fish kcov
+          sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
+          sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
+
+      - name: Measure the suite
+        run: |
+          mkdir -p coverage
+          kcov \
+            --include-path=Scripts,Configs/.local/bin,Configs/.local/lib/hyde \
+            --exclude-pattern=/tests/ \
+            coverage sh tests/run.sh
+
+      - name: Upload the report
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: coverage
+          flags: shell
+          name: shell
+          fail_ci_if_error: false
