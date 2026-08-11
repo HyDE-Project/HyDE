@@ -152,14 +152,16 @@ fn_wallbash() {
     else
         sed -i "$NORMAL_SED_SCRIPT" "$temp_target_file"
     fi
-    if [ -s "$temp_target_file" ] && [ ! -c "$target_file" ]; then
-        if ! mv "$temp_target_file" "$target_file"; then
-            rm -f "$temp_target_file"
-            print_log -sec "wallbash" -err "write" "could not write $target_file from $template"
-            return 1
-        fi
-    else
+    if [ ! -s "$temp_target_file" ] || [ -c "$target_file" ]; then
         rm -f "$temp_target_file"
+    elif [ -e "$target_file" ] && [ ! -f "$target_file" ]; then
+        rm -f "$temp_target_file"
+        print_log -sec "wallbash" -err "write" "$target_file is not a regular file, refusing to render $template"
+        return 1
+    elif ! mv "$temp_target_file" "$target_file"; then
+        rm -f "$temp_target_file"
+        print_log -sec "wallbash" -err "write" "could not write $target_file from $template"
+        return 1
     fi
     [ -z "$exec_command" ] || {
         [[ $LOG_LEVEL == "debug" ]] && print_log -sec "wallbash" -stat "Exec command:" " $exec_command from $WALLBASH_SCRIPTS"

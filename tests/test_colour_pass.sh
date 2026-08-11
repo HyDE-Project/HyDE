@@ -237,6 +237,28 @@ case "$output_absent" in
 *) fail "a skipped template was not named in the output: $output_absent" ;;
 esac
 
+stand_directory="$work_dir/render-directory"
+mkdir -p "$stand_directory/out/theme.conf"
+printf '%s\n' "$stand_directory/out/theme.conf" 'colour = <colour>' >"$work_dir/directory.dcol"
+output_directory=$(bash "$(build_render_stand "$stand_directory" "$work_dir/directory.dcol")" 2>&1)
+
+case "$output_directory" in
+*'status=1'*) ;;
+*) fail "a template whose target is a directory reported success: $output_directory" ;;
+esac
+case "$output_directory" in
+*'not a regular file'*) ;;
+*) fail "a target that is not a regular file was not named: $output_directory" ;;
+esac
+[ -d "$stand_directory/out/theme.conf" ] ||
+    fail "the directory target was replaced instead of refused"
+[ -e "$stand_directory/out/theme.conf/theme.conf" ] &&
+    fail "the render was moved inside the directory target, leaving the state unwritten"
+case "$output_directory" in
+*'leftovers=0'*) ;;
+*) fail "a refused render left its temporary behind: $output_directory" ;;
+esac
+
 printf '    colour pass behaviour checked\n'
 
 finish

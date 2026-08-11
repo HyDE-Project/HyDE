@@ -137,6 +137,13 @@ printf '$color = rgb(000000)\n' >"$home_hyprlang/.config/hypr/themes/colors.conf
 expect "complete" "$(probe "$home_hyprlang" "/somewhere/hyprland.conf" "$report" 2>/dev/null)" \
     "a hyprlang installation carrying its colour include"
 
+home_directory="$work_dir/directory"
+mkdir -p "$home_directory/.config/hypr/themes/colors.conf"
+probe "$home_directory" "" 'true' 2>/dev/null
+: >"$home_directory/.config/hypr/themes/colors.conf/leftover"
+expect "incomplete" "$(probe "$home_directory" "/somewhere/hyprland.conf" "$report" 2>/dev/null)" \
+    "a colour include that is a directory rather than a generated file"
+
 for helper in hyde_config_flavour wallbash_state_is_complete; do
     expect "function" "$(probe "$home_dirs" "" "bash -c 'type -t $helper'" 2>/dev/null)" \
         "$helper reaching a child process"

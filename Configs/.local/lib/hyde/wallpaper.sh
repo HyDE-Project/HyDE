@@ -220,12 +220,13 @@ main() {
             ;;
         esac
     fi
+    local backend_status=0
     if [ -f "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" ] && [ -n "$wallpaper_backend" ]; then
         print_log -sec "wallpaper" "Using backend: $wallpaper_backend"
-        "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" "$wallSet"
+        "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" "$wallSet" || backend_status=$?
     else
         if command -v "wallpaper.$wallpaper_backend.sh" >/dev/null; then
-            "wallpaper.$wallpaper_backend.sh" "$wallSet"
+            "wallpaper.$wallpaper_backend.sh" "$wallSet" || backend_status=$?
         else
             print_log -warn "wallpaper" "No backend script found for $wallpaper_backend"
             print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/$wallpaper_backend.png instead"
@@ -242,6 +243,7 @@ main() {
             notify-send -a "HyDE Alert" "Wallpaper not found"
         fi
     fi
+    return "$backend_status"
 }
 if [ -z "$*" ]; then
     echo "No arguments provided"

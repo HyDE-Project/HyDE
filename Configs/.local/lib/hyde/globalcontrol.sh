@@ -42,6 +42,7 @@ hyde_state_dirs() {
     done
 }
 hyde_state_dirs
+hyde_state_dirs_status=$?
 
 send_notifs() {
     local args=("$@")
@@ -497,7 +498,9 @@ wallbash_state_is_complete() {
     fi
     local artefact
     for artefact in "${required[@]}"; do
-        [ -s "$artefact" ] || return 1
+        if [ ! -f "$artefact" ] || [ ! -s "$artefact" ]; then
+            return 1
+        fi
     done
     return 0
 }
@@ -544,3 +547,11 @@ dconf_write() {
     fi
 }
 export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete hyde_config_flavour
+
+##
+# Fails the source when the generated-state directories could not be created,
+# so a caller does not render templates into a directory that is not there.
+##
+if [ "${hyde_state_dirs_status:-0}" -ne 0 ]; then
+    return "$hyde_state_dirs_status" 2>/dev/null || exit "$hyde_state_dirs_status"
+fi
