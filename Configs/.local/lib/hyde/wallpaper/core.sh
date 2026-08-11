@@ -76,8 +76,10 @@ Wall_Cache() {
     ln -fs "${wallList[setIndex]}" "$wallCur"
     if [ "$set_as_global" == "true" ]; then
         print_log -sec "wallpaper" "Setting Wallpaper as global"
-        if ! "$LIB_DIR/hyde/wallpaper/cache.sh" commence -w "${wallList[setIndex]}" >/dev/null 2>&1; then
+        local cache_output
+        if ! cache_output=$("$LIB_DIR/hyde/wallpaper/cache.sh" commence -w "${wallList[setIndex]}" 2>&1); then
             print_log -sec "wallpaper" -err "cache" "could not cache ${wallList[setIndex]}"
+            printf '%s\n' "$cache_output" >&2
             return 1
         fi
         if ! "$LIB_DIR/hyde/color.set.sh" "${wallList[setIndex]}"; then

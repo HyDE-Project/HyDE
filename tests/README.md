@@ -27,6 +27,7 @@ is adding a file.
 | `test_schema.sh` | Generated schema artifacts use the current Lua battery notification daemon rather than the removed shell implementation |
 | `test_screenshot_wrapper.sh` | Satty receives a compatible default GTK renderer while preserving explicit renderer overrides |
 | `test_shell.sh` | Every shipped shell script parses, and shellcheck finds no error-severity problem |
+| `test_theme_state.sh` | The generated theme colour state is produced in every mode. The shared helpers are executed against private homes: the state directories are created, the configuration flavour is taken from the deployed entry point when no session names one, the completeness probe reads what that flavour consumes, and both helpers reach child processes. The call sites are read as well: the colour pass runs in the foreground with its result checked, every hand-off carries the failure outwards, session start skips the pass only on a complete state, the theme switch generates the state and fails loudly when it cannot, a discard target is not written onto, template failures are counted rather than dropped, and the installer neither hides a failed theme switch nor finishes green after one |
 
 ## Dependencies
 

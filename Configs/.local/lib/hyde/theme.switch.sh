@@ -257,7 +257,12 @@ export -f pkg_installed
 ' sh {} + &
 theme_wallpaper="$(readlink "$HYDE_THEME_DIR/wall.set")"
 if [ -z "$theme_wallpaper" ] || [ ! -e "$theme_wallpaper" ]; then
-    theme_wallpaper="$(find -H "$HYDE_THEME_DIR/wallpapers" -type f -print -quit 2>/dev/null)"
+    if [ -d "$HYDE_THEME_DIR/wallpapers" ]; then
+        theme_wallpaper="$(find -H "$HYDE_THEME_DIR/wallpapers" -type f -print -quit)"
+    else
+        print_log -sec "theme" -warn "wallpaper" "$HYDE_THEME carries no wallpapers directory"
+        theme_wallpaper=""
+    fi
     [ -n "$theme_wallpaper" ] && ln -fs "$theme_wallpaper" "$HYDE_THEME_DIR/wall.set"
 fi
 if [ -z "$theme_wallpaper" ]; then
@@ -266,12 +271,13 @@ if [ -z "$theme_wallpaper" ]; then
 fi
 wallpaper_status=0
 if [ "$quiet" = true ]; then
-    "$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global >/dev/null 2>&1 || wallpaper_status=$?
+    wallpaper_output="$("$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global 2>&1)" || wallpaper_status=$?
 else
     "$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global || wallpaper_status=$?
 fi
 if [ "$wallpaper_status" -ne 0 ]; then
     print_log -sec "theme" -warn "wallpaper" "backend exited with $wallpaper_status, continuing with the colour state"
+    [ -n "${wallpaper_output:-}" ] && printf '%s\n' "$wallpaper_output" >&2
 fi
 if ! wallbash_state_is_complete; then
     print_log -sec "theme" -stat "colours" "generating the colour state for $HYDE_THEME"

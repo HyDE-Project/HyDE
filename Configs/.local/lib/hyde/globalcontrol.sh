@@ -201,6 +201,10 @@ get_themes() {
     unset thmSort
     unset thmList
     unset thmWall
+    if [ ! -d "$HYDE_CONFIG_HOME/themes" ]; then
+        print_log -sec "theme" -warn "themes" "no theme directory at $HYDE_CONFIG_HOME/themes"
+        return 1
+    fi
     while read -r thmDir; do
         local realWallPath
         realWallPath="$(readlink "$thmDir/wall.set")"
