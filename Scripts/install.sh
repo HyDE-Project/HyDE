@@ -469,9 +469,18 @@ EOF
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
 		export PATH="$HOME/.local/lib/hyde:$HOME/.local/bin:${PATH}"
-		"$HOME/.local/lib/hyde/wallpaper/cache.sh" commence -t ""
-		"$HOME/.local/lib/hyde/theme.switch.sh" -q || true
-		"$HOME/.local/lib/hyde/waybar.py" --update || true
+		if ! "$HOME/.local/lib/hyde/wallpaper/cache.sh" commence -t ""; then
+			print_log -err "[theme] " -crit "ERROR" "Wallpaper cache was not generated"
+			theme_failed=1
+		fi
+		if ! "$HOME/.local/lib/hyde/theme.switch.sh" -q; then
+			print_log -err "[theme] " -crit "ERROR" "Theme colour state was not generated"
+			theme_failed=1
+		fi
+		if ! "$HOME/.local/lib/hyde/waybar.py" --update; then
+			print_log -err "[theme] " -crit "ERROR" "Waybar configuration was not updated"
+			theme_failed=1
+		fi
 		echo "[install] reload :: Hyprland"
 	fi
 
@@ -534,6 +543,12 @@ fi
 # the services above still run against the dots that did land.
 if [ "${deploy_failed:-0}" -ne 0 ]; then
 	print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Some dots were not deployed. Deal with the failures reported above and run the restore again."
+	print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
+	exit 1
+fi
+
+if [ "${theme_failed:-0}" -ne 0 ]; then
+	print_log -err "[theme] " -crit "ERROR" "The theme state is incomplete, so the session would start without colours. Deal with the failures reported above and run the restore again."
 	print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
 	exit 1
 fi

@@ -154,16 +154,16 @@ main() {
         case "$wallpaper_setter_flag" in
         n)
             Wall_Hash
-            Wall_Change n
+            Wall_Change n || exit 1
             ;;
         p)
             Wall_Hash
-            Wall_Change p
+            Wall_Change p || exit 1
             ;;
         r)
             Wall_Hash
             setIndex=$((RANDOM % ${#wallList[@]}))
-            Wall_Cache "${wallList[setIndex]}"
+            Wall_Cache "${wallList[setIndex]}" || exit 1
             ;;
         s)
             if [ -z "$wallpaper_path" ] || [ ! -f "$wallpaper_path" ]; then
@@ -171,17 +171,22 @@ main() {
                 exit 1
             fi
             get_hashmap "$wallpaper_path"
-            Wall_Cache
+            Wall_Cache || exit 1
             ;;
         start)
             if [ ! -e "$wallSet" ]; then
                 print_log -err "wallpaper" "No current wallpaper found: $wallSet"
                 exit 1
             fi
-            export WALLPAPER_RELOAD_ALL=0 WALLBASH_STARTUP=1
+            export WALLPAPER_RELOAD_ALL=0
+            if wallbash_state_is_complete; then
+                export WALLBASH_STARTUP=1
+            else
+                print_log -sec "wallpaper" -warn "colours" "theme state is incomplete, generating it before the session starts"
+            fi
             current_wallpaper="$(realpath "$wallSet")"
             get_hashmap "$current_wallpaper"
-            Wall_Cache
+            Wall_Cache || exit 1
             ;;
         g)
             if [ ! -e "$wallSet" ]; then
@@ -206,11 +211,11 @@ main() {
             fi
             Wall_Select
             get_hashmap "$selected_wallpaper_path"
-            Wall_Cache
+            Wall_Cache || exit 1
             ;;
         link)
             Wall_Hash
-            Wall_Cache
+            Wall_Cache || exit 1
             exit 0
             ;;
         esac

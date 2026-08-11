@@ -422,6 +422,35 @@ is_hovered() {
     fi
     return 1
 }
+##
+# Reports whether the generated colour state the running configuration reads is
+# on disk. The Lua configuration reads the Lua state, the hyprlang one reads the
+# generated colour include.
+#
+# Globals:
+#   HYDE_STATE_HOME, HYPRLAND_CONFIG, confDir
+# Returns:
+#   0 when every artefact exists and carries content, 1 otherwise
+##
+wallbash_state_is_complete() {
+    local required=()
+    case "${HYPRLAND_CONFIG:-}" in
+    *.lua | "")
+        required=(
+            "$HYDE_STATE_HOME/lua_state/colors.lua"
+            "$HYDE_STATE_HOME/lua_state/ui.lua"
+        )
+        ;;
+    *)
+        required=("$confDir/hypr/themes/colors.conf")
+        ;;
+    esac
+    local artefact
+    for artefact in "${required[@]}"; do
+        [ -s "$artefact" ] || return 1
+    done
+    return 0
+}
 toml_write() {
     local config_file=$1
     local group=$2
