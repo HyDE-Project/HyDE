@@ -205,7 +205,7 @@ ON_WALLBASH
 
 }
 
-if [[ "${HYPRLAND_CONFIG##*.}" == "lua" ]]; then
+if [[ "$(hyde_config_flavour)" == "lua" ]]; then
     handle_on_lua
 else
     handle_legacy

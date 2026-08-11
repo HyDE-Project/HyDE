@@ -443,6 +443,35 @@ is_hovered() {
     return 1
 }
 ##
+# Reports which configuration flavour this installation uses. A running session
+# names its own configuration; outside one, the deployed entry point decides, so
+# an installer that never had a session still writes the state the next login
+# reads.
+#
+# Globals:
+#   HYPRLAND_CONFIG, XDG_DATA_HOME, XDG_CONFIG_HOME
+# Outputs:
+#   "lua" or "hyprlang"
+##
+hyde_config_flavour() {
+    case "${HYPRLAND_CONFIG:-}" in
+    *.lua)
+        echo "lua"
+        return 0
+        ;;
+    ?*)
+        echo "hyprlang"
+        return 0
+        ;;
+    esac
+    if [ -f "$XDG_DATA_HOME/hypr/hyde.lua" ] || [ -f "$XDG_CONFIG_HOME/hypr/hyprland.lua" ]; then
+        echo "lua"
+    else
+        echo "hyprlang"
+    fi
+}
+
+##
 # Reports whether the generated colour state the running configuration reads is
 # on disk. The Lua configuration reads the Lua state, the hyprlang one reads the
 # generated colour include.
@@ -454,17 +483,14 @@ is_hovered() {
 ##
 wallbash_state_is_complete() {
     local required=()
-    case "${HYPRLAND_CONFIG:-}" in
-    *.lua | "")
+    if [ "$(hyde_config_flavour)" = "lua" ]; then
         required=(
             "$HYDE_STATE_HOME/lua_state/colors.lua"
             "$HYDE_STATE_HOME/lua_state/ui.lua"
         )
-        ;;
-    *)
+    else
         required=("$confDir/hypr/themes/colors.conf")
-        ;;
-    esac
+    fi
     local artefact
     for artefact in "${required[@]}"; do
         [ -s "$artefact" ] || return 1
@@ -513,4 +539,4 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete
+export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete hyde_config_flavour
