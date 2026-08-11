@@ -1,8 +1,8 @@
 hyde = hyde or {}
 hyde.env.finalize()
 hl.env("PATH", (hyde.env("PATH") or "") .. ":" .. hyde.path.lib)
--- ? Isolate dconf
-hl.env("DCONF_PROFILE",  ((os.getenv("XDG_CONFIG_HOME") ~= "" and os.getenv("XDG_CONFIG_HOME")) or (os.getenv("HOME") or "" ) .. "/.config") .. "/dconf/profile/hyde_hyprland")
+-- ? Isolate dconf (Prevents already-opened GTK apps (brave, nwg-displays, etc.) from updating their theme)
+-- hl.env("DCONF_PROFILE",  ((os.getenv("XDG_CONFIG_HOME") ~= "" and os.getenv("XDG_CONFIG_HOME")) or (os.getenv("HOME") or "" ) .. "/.config") .. "/dconf/profile/hyde_hyprland")
 
 -- NVIDIA hook
 -- https://wiki.hypr.land/Nvidia/
