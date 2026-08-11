@@ -23,6 +23,26 @@ export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
+##
+# Creates the directories HyDE writes its own generated state into. A template
+# whose target directory is absent is skipped as an optional dependency, so a
+# first run on a clean machine would otherwise leave the colour state unwritten.
+#
+# Globals:
+#   HYDE_STATE_HOME, HYDE_CACHE_HOME, HYDE_RUNTIME_DIR
+##
+hyde_state_dirs() {
+    local dir
+    for dir in "$HYDE_STATE_HOME/lua_state" "$HYDE_CACHE_HOME/wallbash" "$HYDE_RUNTIME_DIR"; do
+        [ -d "$dir" ] && continue
+        if ! mkdir -p "$dir"; then
+            printf '[hyde] could not create %s\n' "$dir" >&2
+            return 1
+        fi
+    done
+}
+hyde_state_dirs
+
 send_notifs() {
     local args=("$@")
     notify-send "${args[@]}" &
