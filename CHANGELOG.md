@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Hyprland: restored missing background blur on UI layers (Waybar, Rofi, etc.)
 - Core: `keyboardswitch.sh` triggers correct language notification; layout switch targets current device instead of cycling all devices, eliminating the IPC race condition and preventing multiple input devices from desyncing
 - Rofi selector: the launcher grid is sized from the display again when the focused-monitor query comes back empty, instead of collapsing to a single column; the width had no fallback while the other two selectors both default to 1920
 - Waybar: the theme picker opens again from the theme module, the HyDE menu and the macOS layout's menu; all three called `themeselect`, which the v26.7.4 migration renamed to `theme.select`
