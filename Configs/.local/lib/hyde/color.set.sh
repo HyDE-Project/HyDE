@@ -2,8 +2,18 @@
 
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
 if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
-    hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
-    trap 'hyprctl reload -q' EXIT
+    # TODO convert to func
+    if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
+        case "$HYPRLAND_CONFIG" in
+        *.lua)
+            hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
+            ;;
+        *)
+            hyprctl keyword misc:disable_autoreload 1 -q
+            ;;
+        esac
+        trap 'hyprctl reload -q' EXIT
+    fi
 fi
 
 rgba_to_rgb() {
