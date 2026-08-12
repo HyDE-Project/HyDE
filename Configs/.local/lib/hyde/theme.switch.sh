@@ -101,7 +101,6 @@ export reload_flag=1
 source "$LIB_DIR/hyde/globalcontrol.sh"
 source "$SHARE_DIR/hyde/env-theme"
 if [[ -r $HYPRLAND_CONFIG ]]; then
-    # TODO convert to func
     if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
         hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
     fi
