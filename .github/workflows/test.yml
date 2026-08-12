@@ -37,3 +37,48 @@ jobs:
 
       - name: Run the test suite
         run: sh tests/run.sh
+
+  coverage:
+    name: Shell coverage
+    runs-on: ubuntu-latest
+    needs: test
+    env:
+      KCOV_VERSION: v43
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install test and coverage dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            lua5.4 shellcheck fish \
+            binutils-dev build-essential cmake ninja-build libssl-dev \
+            libcurl4-openssl-dev libelf-dev zlib1g-dev libdw-dev libiberty-dev
+          sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
+          sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
+
+      - name: Build the coverage tool
+        run: |
+          git clone --depth 1 --branch "$KCOV_VERSION" https://github.com/SimonKagstrom/kcov.git "$RUNNER_TEMP/kcov"
+          cmake -S "$RUNNER_TEMP/kcov" -B "$RUNNER_TEMP/kcov/build" -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/kcov/build"
+          sudo install -m 0755 "$RUNNER_TEMP/kcov/build/src/kcov" /usr/local/bin/kcov
+
+      - name: Measure the suite
+        run: |
+          mkdir -p coverage
+          kcov \
+            --include-path=Scripts,Configs/.local/bin,Configs/.local/lib/hyde \
+            --exclude-pattern=/tests/ \
+            coverage sh tests/run.sh
+
+      - name: Upload the report
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: coverage
+          flags: shell
+          name: shell
+          fail_ci_if_error: false
