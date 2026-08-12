@@ -29,11 +29,12 @@ export hashMech="sha1sum"
 # first run on a clean machine would otherwise leave the colour state unwritten.
 #
 # Globals:
-#   HYDE_STATE_HOME, HYDE_CACHE_HOME, HYDE_RUNTIME_DIR
+#   HYDE_STATE_HOME, HYDE_CACHE_HOME, HYDE_RUNTIME_DIR, XDG_CONFIG_HOME
 ##
 hyde_state_dirs() {
     local dir
-    for dir in "$HYDE_STATE_HOME/lua_state" "$HYDE_CACHE_HOME/wallbash" "$HYDE_RUNTIME_DIR"; do
+    for dir in "$HYDE_STATE_HOME/lua_state" "$HYDE_CACHE_HOME/wallbash" "$HYDE_RUNTIME_DIR" \
+        "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/themes"; do
         [ -d "$dir" ] && continue
         if ! mkdir -p "$dir"; then
             printf '[hyde] could not create %s\n' "$dir" >&2
@@ -477,9 +478,9 @@ hyde_config_flavour() {
 }
 
 ##
-# Reports whether the generated colour state the running configuration reads is
-# on disk. The Lua configuration reads the Lua state, the hyprlang one reads the
-# generated colour include.
+# Reports whether the generated colour state this installation reads is on disk.
+# The colour include is required in either flavour because hyprlock sources it,
+# and a Lua configuration additionally reads the generated Lua state.
 #
 # Globals:
 #   HYDE_STATE_HOME, HYPRLAND_CONFIG, confDir
@@ -487,14 +488,12 @@ hyde_config_flavour() {
 #   0 when every artefact exists and carries content, 1 otherwise
 ##
 wallbash_state_is_complete() {
-    local required=()
+    local required=("$confDir/hypr/themes/colors.conf")
     if [ "$(hyde_config_flavour)" = "lua" ]; then
-        required=(
+        required+=(
             "$HYDE_STATE_HOME/lua_state/colors.lua"
             "$HYDE_STATE_HOME/lua_state/ui.lua"
         )
-    else
-        required=("$confDir/hypr/themes/colors.conf")
     fi
     local artefact
     for artefact in "${required[@]}"; do

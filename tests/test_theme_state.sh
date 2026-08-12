@@ -79,7 +79,7 @@ expect "loaded" "$loaded" "the shared helpers do not load"
 home_dirs="$work_dir/dirs"
 mkdir -p "$home_dirs"
 probe "$home_dirs" "" 'true' 2>/dev/null
-for created in ".local/state/hyde/lua_state" ".cache/hyde/wallbash" "run/hyde"; do
+for created in ".local/state/hyde/lua_state" ".cache/hyde/wallbash" "run/hyde" ".config/hypr/themes"; do
     [ -d "$home_dirs/$created" ] ||
         fail "loading the shared helpers left $created uncreated, so its template is skipped as a missing dependency"
 done
@@ -120,8 +120,13 @@ expect "incomplete" "$(probe "$home_entry" "" "$report" 2>/dev/null)" \
     "a Lua state carrying colours but no interface state"
 
 printf 'return {}\n' >"$state_dir/ui.lua"
+expect "incomplete" "$(probe "$home_entry" "" "$report" 2>/dev/null)" \
+    "a Lua state carrying both generated files but no colour include for hyprlock"
+
+mkdir -p "$home_entry/.config/hypr/themes"
+printf '$color = rgb(000000)\n' >"$home_entry/.config/hypr/themes/colors.conf"
 expect "complete" "$(probe "$home_entry" "" "$report" 2>/dev/null)" \
-    "a Lua state carrying both generated files"
+    "a Lua state carrying every generated file"
 
 : >"$state_dir/colors.lua"
 expect "incomplete" "$(probe "$home_entry" "" "$report" 2>/dev/null)" \
