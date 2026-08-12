@@ -170,6 +170,14 @@ case "$theme_flat" in
 *) fail "the theme switch does not fail on an incomplete colour state" ;;
 esac
 case "$theme_flat" in
+*'hyq --dump'*'>"$theme_buffer"'*'mv "$theme_buffer" "$theme_state"'*) ;;
+*) fail "the theme dump writes onto the state directly, so a failed dump truncates it" ;;
+esac
+case "$theme_flat" in
+*'could not dump hypr.theme'*) ;;
+*) fail "a failed theme dump is not reported" ;;
+esac
+case "$theme_flat" in
 *'readlink "$HYDE_THEME_DIR/wall.set"'*'find -H "$HYDE_THEME_DIR/wallpapers"'*) ;;
 *) fail "the theme switch has no fallback when the theme carries no current wallpaper link" ;;
 esac
