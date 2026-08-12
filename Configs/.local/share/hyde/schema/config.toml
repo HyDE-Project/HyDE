@@ -196,9 +196,6 @@ channels = "stereo"  # Audio channels: stereo or mono.
 reverse = 1  # Reverse spectrum movement (0 or 1).
 range = "8"  # Bar sensitivity
 
-# Hypr configuration.
-[hypr.config]
-
 # volumecontrol.sh configuration.
 [volume]
 notify = true  # Enable notifications for volume control.
