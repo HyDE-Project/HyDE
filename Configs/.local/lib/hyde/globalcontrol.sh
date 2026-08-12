@@ -452,61 +452,21 @@ is_hovered() {
     return 1
 }
 ##
-# Reports which configuration flavour this installation uses. A running session
-# names its own configuration; outside one, the deployed entry point decides, so
-# an installer that never had a session still writes the state the next login
-# reads.
-#
-# Globals:
-#   HYPRLAND_CONFIG, XDG_DATA_HOME, XDG_DATA_DIRS, XDG_CONFIG_HOME
-# Outputs:
-#   "lua" or "hyprlang"
-##
-hyde_config_flavour() {
-    case "${HYPRLAND_CONFIG:-}" in
-    *.lua)
-        echo "lua"
-        return 0
-        ;;
-    ?*)
-        echo "hyprlang"
-        return 0
-        ;;
-    esac
-    if [ -f "$XDG_CONFIG_HOME/hypr/hyprland.lua" ]; then
-        echo "lua"
-        return 0
-    fi
-    local data_dir
-    local IFS=:
-    for data_dir in "$XDG_DATA_HOME" ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
-        [ -n "$data_dir" ] || continue
-        if [ -f "$data_dir/hypr/hyde.lua" ]; then
-            echo "lua"
-            return 0
-        fi
-    done
-    echo "hyprlang"
-}
-
-##
 # Reports whether the generated colour state this installation reads is on disk.
-# The colour include is required in either flavour because hyprlock sources it,
-# and a Lua configuration additionally reads the generated Lua state.
+# Hyprland reads the Lua state, and the colour include is required alongside it
+# because hyprlock, which has no Lua configuration, sources that file.
 #
 # Globals:
-#   HYDE_STATE_HOME, HYPRLAND_CONFIG, confDir
+#   HYDE_STATE_HOME, confDir
 # Returns:
 #   0 when every artefact exists and carries content, 1 otherwise
 ##
 wallbash_state_is_complete() {
-    local required=("$confDir/hypr/themes/colors.conf")
-    if [ "$(hyde_config_flavour)" = "lua" ]; then
-        required+=(
-            "$HYDE_STATE_HOME/lua_state/colors.lua"
-            "$HYDE_STATE_HOME/lua_state/ui.lua"
-        )
-    fi
+    local required=(
+        "$confDir/hypr/themes/colors.conf"
+        "$HYDE_STATE_HOME/lua_state/colors.lua"
+        "$HYDE_STATE_HOME/lua_state/ui.lua"
+    )
     local artefact
     for artefact in "${required[@]}"; do
         if [ ! -f "$artefact" ] || [ ! -s "$artefact" ]; then
@@ -557,7 +517,7 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete hyde_config_flavour
+export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete
 
 ##
 # Fails the source when the generated-state directories could not be created,

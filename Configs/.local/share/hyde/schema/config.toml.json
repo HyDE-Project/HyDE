@@ -837,19 +837,6 @@
                 }
             }
         },
-        "hypr.config": {
-            "description": "Hypr configuration.",
-            "type": "object",
-            "properties": {
-                "sanitize": {
-                    "description": "List of regex to sanitize in the theme.config.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "volume": {
             "description": "volumecontrol.sh configuration.",
             "type": "object",
