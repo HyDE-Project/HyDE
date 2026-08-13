@@ -42,4 +42,4 @@ ignored_paths = [".*"]
 action = "preserve"
 source_root = "Configs/.config/hypr"
 target_root = "${XDG_CONFIG_HOME}/hypr/"
-paths = ["themes/colors.conf", "themes/theme.conf", "themes/wallbash.conf"]
+paths = ["themes/colors.conf"]
