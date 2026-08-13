@@ -142,10 +142,10 @@ retired_theme="theme.conf wallbash.conf"
 seed_theme() {
     seed
     mkdir -p "$config_home/hypr/themes"
-    for rel in $retired_theme; do
-        printf 'old %s\n' "$rel" >"$config_home/hypr/themes/$rel"
-    done
+    printf 'old theme.conf\n' >"$config_home/hypr/themes/theme.conf"
+    ln -s "$work_dir/nothing-here.conf" "$config_home/hypr/themes/wallbash.conf"
     printf '$color = rgb(000000)\n' >"$config_home/hypr/themes/colors.conf"
+    printf 'source = themes/theme.conf\n' >"$config_home/hypr/userprefs.conf"
 }
 
 run_theme_migration() {
@@ -161,28 +161,48 @@ seed_theme
 run_theme_migration
 [ "$?" -eq 0 ] || fail "the theme migration failed on a machine it should act on: $(cat "$work_dir/theme.log")"
 for rel in $retired_theme; do
-    [ -e "$config_home/hypr/themes/$rel" ] && fail "themes/$rel was left in place"
-    [ -f "$theme_backup/$rel" ] || fail "themes/$rel was not kept in the backup"
+    { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } &&
+        fail "themes/$rel was left in place"
+    { [ -e "$theme_backup/$rel" ] || [ -L "$theme_backup/$rel" ]; } ||
+        fail "themes/$rel was not kept in the backup"
 done
 [ -f "$config_home/hypr/themes/colors.conf" ] ||
     fail "the colour include was moved, although hyprlock still sources it"
+grep -q '^#.*source = themes/theme.conf' "$config_home/hypr/userprefs.conf" ||
+    fail "the include pointing at a retired file was left active"
 
 seed_theme
 rm -f "$data_home/hypr/hyde.lua"
 run_theme_migration
 [ "$?" -eq 0 ] || fail "the theme migration failed instead of skipping without an entry point"
 for rel in $retired_theme; do
-    [ -f "$config_home/hypr/themes/$rel" ] ||
+    { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } ||
         fail "themes/$rel was moved with no entry point to replace it"
 done
 
-seed_theme
-chmod 000 "$data_home/hypr/hyde.lua"
-run_theme_migration
-chmod 644 "$data_home/hypr/hyde.lua"
-for rel in $retired_theme; do
-    [ -f "$config_home/hypr/themes/$rel" ] ||
-        fail "themes/$rel was moved while the entry point could not be read"
-done
+if [ "$(id -u)" -eq 0 ]; then
+    skip "an unreadable entry point cannot be simulated for the superuser"
+else
+    seed_theme
+    chmod 000 "$data_home/hypr/hyde.lua"
+    run_theme_migration
+    chmod 644 "$data_home/hypr/hyde.lua"
+    for rel in $retired_theme; do
+        { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } ||
+            fail "themes/$rel was moved while the entry point could not be read"
+    done
+
+    seed_theme
+    chmod 400 "$config_home/hypr/userprefs.conf"
+    run_theme_migration
+    theme_status=$?
+    chmod 644 "$config_home/hypr/userprefs.conf"
+    [ "$theme_status" -ne 0 ] ||
+        fail "the theme migration reported success although an include it had to rewrite was not writable"
+    for rel in $retired_theme; do
+        { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } ||
+            fail "themes/$rel was moved although the include pointing at it could not be rewritten"
+    done
+fi
 
 finish

@@ -28,6 +28,22 @@ fi
 
 retired="theme.conf wallbash.conf"
 
+sourced_by="
+hypr/userprefs.conf
+hypr/hyprland.conf
+"
+
+for rel in ${sourced_by}; do
+    file="${config_home}/${rel}"
+
+    [ -e "${file}" ] || [ -L "${file}" ] || continue
+
+    if [ ! -r "${file}" ] || [ ! -w "${file}" ]; then
+        echo "  ${file} cannot be rewritten, leaving the retired theme files in place" >&2
+        exit 1
+    fi
+done
+
 moved=0
 failed=0
 
@@ -60,24 +76,25 @@ for name in ${retired}; do
     fi
 done
 
-# Only files the user writes are rewritten here. The shipped hyprlang configs
-# that survive the Lua release belong to hyprlock, hypridle and hyprsunset, and
-# none of them sources the two retired files.
-sourced_by="
-hypr/userprefs.conf
-hypr/hyprland.conf
-hypr/themes/theme.conf
-"
-
 commented=0
 
 for rel in ${sourced_by}; do
     file="${config_home}/${rel}"
 
     [ -f "${file}" ] || continue
-    [ -w "${file}" ] || continue
 
-    grep -qE '^[[:space:]]*source[[:space:]]*=.*themes/(theme|wallbash)\.conf' "${file}" || continue
+    grep -qE '^[[:space:]]*source[[:space:]]*=.*themes/(theme|wallbash)\.conf' "${file}"
+    grep_status=$?
+
+    case "${grep_status}" in
+    0) ;;
+    1) continue ;;
+    *)
+        echo "  failed to read ${rel}" >&2
+        failed=$((failed + 1))
+        continue
+        ;;
+    esac
 
     if sed -i -E 's|^([[:space:]]*source[[:space:]]*=.*themes/(theme\|wallbash)\.conf.*)$|# retired by HyDE, the file it sources is no longer generated\n#\1|' "${file}"; then
         echo "  commented the retired include out of ${rel}"
