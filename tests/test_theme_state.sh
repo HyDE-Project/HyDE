@@ -51,7 +51,6 @@ probe() {
         XDG_CACHE_HOME="$1/.cache" \
         XDG_STATE_HOME="$1/.local/state" \
         XDG_RUNTIME_DIR="$1/run" \
-        XDG_DATA_DIRS="${PROBE_DATA_DIRS:-}" \
         HYPRLAND_CONFIG="${2:-}" \
         PATH="/usr/bin:/bin" \
         bash -c ". '$global_control' >/dev/null || exit 97
@@ -88,19 +87,6 @@ done
 home_entry="$work_dir/entry"
 mkdir -p "$home_entry"
 probe "$home_entry" "" 'true' 2>/dev/null
-
-for shared in local system; do
-    home_shared="$work_dir/shared-$shared"
-    case "$shared" in
-    local) shared_root="$home_shared/usr-local-share" ;;
-    system) shared_root="$home_shared/usr-share" ;;
-    esac
-    mkdir -p "$shared_root/hypr"
-    probe "$home_shared" "" 'true' 2>/dev/null
-    : >"$shared_root/hypr/hyde.lua"
-    expect "lua" "$(PROBE_DATA_DIRS="$shared_root" probe "$home_shared" "" 'hyde_config_flavour' 2>/dev/null)" \
-        "a Lua entry point deployed system-wide under the $shared data directory"
-done
 
 state_dir="$home_entry/.local/state/hyde/lua_state"
 report='wallbash_state_is_complete && echo complete || echo incomplete'
