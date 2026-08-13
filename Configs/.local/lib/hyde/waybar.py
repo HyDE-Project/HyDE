@@ -94,8 +94,14 @@ def get_file_hash(filepath):
 
 
 def is_backup_path(path):
-    """Return True if the given path points into a backups directory."""
-    return "/backup/" in path or "\\backup\\" in path
+    """Return True if the given path (or its symlink target) points into a backups directory."""
+    real_path = os.path.realpath(path)
+    return (
+        "/backup/" in path
+        or "\\backup\\" in path
+        or "/backup/" in real_path
+        or "\\backup\\" in real_path
+    )
 
 
 def find_layout_files():
