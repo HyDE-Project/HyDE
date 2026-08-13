@@ -280,18 +280,6 @@ if [ -z "$theme_wallpaper" ]; then
     print_log -sec "theme" -crit "error" "no wallpaper available for $HYDE_THEME"
     exit 1
 fi
-##
-# Reports whether a status from the wallpaper hand-off must stop the switch.
-# A stale colour state passes the completeness probe, so the status is the only
-# way to notice a failed generation.
-#
-# Arguments:
-#   $1  status the hand-off exited with
-# Globals:
-#   HYDE_STATUS_CACHE_FAILED, HYDE_STATUS_COLOURS_FAILED
-# Returns:
-#   0 when the switch must stop, 1 when it may carry on
-##
 wallpaper_failure_is_fatal() {
     case "$1" in
     "${HYDE_STATUS_CACHE_FAILED:-3}" | "${HYDE_STATUS_COLOURS_FAILED:-4}") return 0 ;;

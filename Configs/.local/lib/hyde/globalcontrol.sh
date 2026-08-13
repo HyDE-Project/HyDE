@@ -23,7 +23,6 @@ export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
-# Statuses the wallpaper hand-off reports its generation failures with.
 export HYDE_STATUS_CACHE_FAILED=3
 export HYDE_STATUS_COLOURS_FAILED=4
 
@@ -478,8 +477,6 @@ hyde_config_flavour() {
         echo "lua"
         return 0
     fi
-    # Searched the way every shell integration searches it, so a system-wide
-    # deployment is recognised as readily as a per-user one.
     local data_dir
     local IFS=:
     for data_dir in "$XDG_DATA_HOME" ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do

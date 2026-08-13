@@ -110,9 +110,6 @@ probe "$home_legacy" "" 'true' 2>/dev/null
 expect "hyprlang" "$(probe "$home_legacy" "" 'hyde_config_flavour' 2>/dev/null)" \
     "an installation carrying no Lua entry point"
 
-# A system-wide installation deploys the entry point under one of the shared
-# data directories and leaves nothing in the home, the way every shell
-# integration already searches for it.
 for shared in local system; do
     home_shared="$work_dir/shared-$shared"
     case "$shared" in
@@ -190,8 +187,6 @@ grep -q 'print_log -sec "wallpaper" -err "colors"' "$core_sh" ||
 grep -q 'cache_output' "$core_sh" ||
     fail "the wallpaper core discards the cache output, so a failure cannot be diagnosed"
 
-# The count is asserted too: an empty scan would never enter the loop and the
-# case would pass having checked nothing.
 handoff_calls=$(grep -nE '^[[:space:]]+(Wall_Cache|Wall_Change)( |$)' "$wallpaper_sh")
 handoff_count=$(printf '%s\n' "$handoff_calls" | grep -c '[^[:space:]]')
 [ "$handoff_count" -ge 5 ] ||

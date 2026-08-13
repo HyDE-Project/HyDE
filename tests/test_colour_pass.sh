@@ -15,8 +15,9 @@ core_sh="$REPO_ROOT/Configs/.local/lib/hyde/wallpaper/core.sh"
 color_set="$REPO_ROOT/Configs/.local/lib/hyde/color.set.sh"
 global_control="$REPO_ROOT/Configs/.local/lib/hyde/globalcontrol.sh"
 theme_switch="$REPO_ROOT/Configs/.local/lib/hyde/theme.switch.sh"
+wallpaper_sh="$REPO_ROOT/Configs/.local/lib/hyde/wallpaper.sh"
 
-for required in "$core_sh" "$color_set" "$global_control" "$theme_switch"; do
+for required in "$core_sh" "$color_set" "$global_control" "$theme_switch" "$wallpaper_sh"; do
     [ -f "$required" ] || {
         fail "missing ${required#"$REPO_ROOT"/}"
         finish
@@ -26,8 +27,6 @@ done
 work_dir=$(mktemp -d)
 trap 'rm -rf "$work_dir"' EXIT
 
-# Read from the helpers rather than repeated here, so a change to either status
-# cannot leave the suite asserting the old value.
 statuses_home="$work_dir/statuses"
 mkdir -p "$statuses_home"
 eval "$(env -i HOME="$statuses_home" \
@@ -160,8 +159,6 @@ esac
 [ -f "$stand_cache/colour.marker" ] &&
     fail "the colour pass ran although the thumbnail cache had already failed"
 
-# A stale colour state passes the completeness probe, so the theme switch has to
-# read the status instead.
 stand_verdict="$work_dir/switch-verdict"
 mkdir -p "$stand_verdict"
 cat >"$stand_verdict/run.sh" <<STAND
@@ -197,6 +194,32 @@ case "$output_verdict" in
 *'0=carry-on'*) ;;
 *) fail "a hand-off that succeeded was treated as a failure: $output_verdict" ;;
 esac
+
+stand_backend="$work_dir/backend-status"
+mkdir -p "$stand_backend"
+cat >"$stand_backend/run.sh" <<STAND
+#!/usr/bin/env bash
+HYDE_STATUS_CACHE_FAILED=$HYDE_STATUS_CACHE_FAILED
+HYDE_STATUS_COLOURS_FAILED=$HYDE_STATUS_COLOURS_FAILED
+$(sed -n '/^wallpaper_backend_status() {/,/^}$/p' "$wallpaper_sh")
+for probed in 0 1 2 "\$HYDE_STATUS_CACHE_FAILED" "\$HYDE_STATUS_COLOURS_FAILED"; do
+    printf '%s->%s\n' "\$probed" "\$(wallpaper_backend_status "\$probed")"
+done
+STAND
+output_backend=$(bash "$stand_backend/run.sh" 2>&1)
+
+for reserved in "$HYDE_STATUS_CACHE_FAILED" "$HYDE_STATUS_COLOURS_FAILED"; do
+    case "$output_backend" in
+    *"$reserved->1"*) ;;
+    *) fail "a backend exiting with $reserved is passed on as a failed generation, so a theme switch stops on a wallpaper that merely failed to paint: $output_backend" ;;
+    esac
+done
+for kept in '0->0' '1->1' '2->2'; do
+    case "$output_backend" in
+    *"$kept"*) ;;
+    *) fail "a backend status was rewritten although it collides with nothing ($kept): $output_backend" ;;
+    esac
+done
 
 ##
 # Builds a stand-alone script that loads the template renderer out of the
@@ -249,8 +272,6 @@ case "$output_file" in
 *) fail "rendering into a plain file left its temporary behind: $output_file" ;;
 esac
 
-# The case owns the device it points at: were the guard to regress, naming the
-# system one would cost the host its /dev/null.
 stand_discard="$work_dir/render-discard"
 mkdir -p "$stand_discard"
 discard_target="$stand_discard/discard.dev"

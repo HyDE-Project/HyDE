@@ -132,6 +132,13 @@ handle_output_mode() {
     return 0
 }
 
+wallpaper_backend_status() {
+    case "$1" in
+    "${HYDE_STATUS_CACHE_FAILED:-3}" | "${HYDE_STATUS_COLOURS_FAILED:-4}") printf '%s\n' 1 ;;
+    *) printf '%s\n' "$1" ;;
+    esac
+}
+
 main() {
     resolve_cache_args "$@"
 
@@ -243,7 +250,7 @@ main() {
             notify-send -a "HyDE Alert" "Wallpaper not found"
         fi
     fi
-    return "$backend_status"
+    return "$(wallpaper_backend_status "$backend_status")"
 }
 if [ -z "$*" ]; then
     echo "No arguments provided"
