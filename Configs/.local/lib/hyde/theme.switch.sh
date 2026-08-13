@@ -69,29 +69,6 @@ load_hypr_variables() {
     MENU_FONT=${__MENU_FONT:-$MENU_FONT}
     NOTIFICATION_FONT=${__NOTIFICATION_FONT:-$NOTIFICATION_FONT}
 }
-sanitize_hypr_theme() {
-    input_file="$1"
-    output_file="$2"
-    buffer_file="$(mktemp)"
-    sed '1d' "$input_file" >"$buffer_file"
-    dirty_regex=(
-        "^ *exec"
-        "^ *decoration[^:]*: *drop_shadow"
-        "^ *drop_shadow"
-        "^ *decoration[^:]*: *shadow *="
-        "^ *decoration[^:]*: *col.shadow* *="
-        "^ *shadow_"
-        "^ *col.shadow*")
-    dirty_regex+=("${HYPR_CONFIG_SANITIZE[@]}")
-    for pattern in "${dirty_regex[@]}"; do
-        grep -E "$pattern" "$buffer_file" | while read -r line; do
-            sed -i "\|$line|d" "$buffer_file"
-            print_log -sec "theme" -warn "sanitize" "$line"
-        done
-    done
-    cat "$buffer_file" >"$output_file"
-    rm -f "$buffer_file"
-}
 quiet=false
 while getopts "qnps:" option; do
     case $option in
@@ -124,32 +101,25 @@ export reload_flag=1
 source "$LIB_DIR/hyde/globalcontrol.sh"
 source "$SHARE_DIR/hyde/env-theme"
 if [[ -r $HYPRLAND_CONFIG ]]; then
-    # TODO convert to func
     if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
-        case "$HYPRLAND_CONFIG" in
-        *.lua)
-            hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
-            ;;
-        *)
-            hyprctl keyword misc:disable_autoreload 1 -q
-            ;;
-        esac
+        hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
     fi
-    # TODO convert to func
     if [[ -r "$HYDE_THEME_DIR/hypr.theme" ]]; then
-
-        if [[ "${HYPRLAND_CONFIG##*.}" == "lua" ]]; then
-            print_log -sec "theme" -stat "dump" "hypr.theme to lua"
-            hyq --dump "$HYDE_THEME_DIR/hypr.theme" --schema "$XDG_DATA_HOME/hypr/schema/hyprland-lua.json" --export lua >"$XDG_STATE_HOME/hyde/lua_state/hypr_theme.lua"
+        print_log -sec "theme" -stat "dump" "hypr.theme to lua"
+        theme_state="$XDG_STATE_HOME/hyde/lua_state/hypr_theme.lua"
+        theme_buffer="$(mktemp)"
+        if hyq --dump "$HYDE_THEME_DIR/hypr.theme" --schema "$XDG_DATA_HOME/hypr/schema/hyprland-lua.json" --export lua >"$theme_buffer" &&
+            [ -s "$theme_buffer" ] &&
+            mv "$theme_buffer" "$theme_state"; then
+            :
         else
-            print_log -sec "theme" -stat "sanitize" "hypr.theme"
-            sanitize_hypr_theme "$HYDE_THEME_DIR/hypr.theme" "$XDG_CONFIG_HOME/hypr/themes/theme.conf"
+            rm -f "$theme_buffer"
+            print_log -sec "theme" -crit "error" "could not dump hypr.theme, $theme_state keeps the previous theme"
+            exit 1
         fi
-
     fi
     load_hypr_variables "$HYDE_THEME_DIR/hypr.theme"                               # ? loads the theme vars
     load_hypr_variables "${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprland.conf" # ? loads the parsable user config vars, should override theme vars
-    # TODO -- Decide when to remove, hyprlang is still fast for simple stuff.
 fi
 show_theme_status
 if ! dconf write /org/gnome/desktop/interface/icon-theme "'$ICON_THEME'"; then
@@ -255,8 +225,49 @@ export -f pkg_installed
         fi
     done
 ' sh {} + &
+theme_wallpaper="$(readlink "$HYDE_THEME_DIR/wall.set")"
+if [ -z "$theme_wallpaper" ] || [ ! -e "$theme_wallpaper" ]; then
+    if [ -d "$HYDE_THEME_DIR/wallpapers" ]; then
+        theme_wallpaper="$(find -H "$HYDE_THEME_DIR/wallpapers" -type f -print -quit)"
+    else
+        print_log -sec "theme" -warn "wallpaper" "$HYDE_THEME carries no wallpapers directory"
+        theme_wallpaper=""
+    fi
+    [ -n "$theme_wallpaper" ] && ln -fs "$theme_wallpaper" "$HYDE_THEME_DIR/wall.set"
+fi
+if [ -z "$theme_wallpaper" ]; then
+    print_log -sec "theme" -crit "error" "no wallpaper available for $HYDE_THEME"
+    exit 1
+fi
+wallpaper_failure_is_fatal() {
+    case "$1" in
+    "${HYDE_STATUS_CACHE_FAILED:-3}" | "${HYDE_STATUS_COLOURS_FAILED:-4}") return 0 ;;
+    esac
+    return 1
+}
+
+wallpaper_status=0
 if [ "$quiet" = true ]; then
-    "$LIB_DIR/hyde/wallpaper.sh" -s "$(readlink "$HYDE_THEME_DIR/wall.set")" --global >/dev/null 2>&1
+    wallpaper_output="$("$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global 2>&1)" || wallpaper_status=$?
 else
-    "$LIB_DIR/hyde/wallpaper.sh" -s "$(readlink "$HYDE_THEME_DIR/wall.set")" --global
+    "$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global || wallpaper_status=$?
+fi
+if [ "$wallpaper_status" -ne 0 ]; then
+    [ -n "${wallpaper_output:-}" ] && printf '%s\n' "$wallpaper_output" >&2
+    if wallpaper_failure_is_fatal "$wallpaper_status"; then
+        print_log -sec "theme" -crit "error" "generating the colour state for $HYDE_THEME failed with $wallpaper_status, the state on disk is the one the previous theme left"
+        exit 1
+    fi
+    print_log -sec "theme" -warn "wallpaper" "backend exited with $wallpaper_status, continuing with the colour state"
+fi
+if ! wallbash_state_is_complete; then
+    print_log -sec "theme" -stat "colours" "generating the colour state for $HYDE_THEME"
+    if ! "$LIB_DIR/hyde/color.set.sh" "$theme_wallpaper"; then
+        print_log -sec "theme" -crit "error" "could not generate the colour state from $theme_wallpaper"
+        exit 1
+    fi
+fi
+if ! wallbash_state_is_complete; then
+    print_log -sec "theme" -crit "error" "colour state is still incomplete for $HYDE_THEME"
+    exit 1
 fi

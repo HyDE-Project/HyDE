@@ -23,6 +23,31 @@ export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
+export HYDE_STATUS_CACHE_FAILED=3
+export HYDE_STATUS_COLOURS_FAILED=4
+
+##
+# Creates the directories HyDE writes its own generated state into. A template
+# whose target directory is absent is skipped as an optional dependency, so a
+# first run on a clean machine would otherwise leave the colour state unwritten.
+#
+# Globals:
+#   HYDE_STATE_HOME, HYDE_CACHE_HOME, HYDE_RUNTIME_DIR, XDG_CONFIG_HOME
+##
+hyde_state_dirs() {
+    local dir
+    for dir in "$HYDE_STATE_HOME/lua_state" "$HYDE_CACHE_HOME/wallbash" "$HYDE_RUNTIME_DIR" \
+        "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/themes"; do
+        [ -d "$dir" ] && continue
+        if ! mkdir -p "$dir"; then
+            printf '[hyde] could not create %s\n' "$dir" >&2
+            return 1
+        fi
+    done
+}
+hyde_state_dirs
+hyde_state_dirs_status=$?
+
 send_notifs() {
     local args=("$@")
     notify-send "${args[@]}" &
@@ -181,6 +206,10 @@ get_themes() {
     unset thmSort
     unset thmList
     unset thmWall
+    if [ ! -d "$HYDE_CONFIG_HOME/themes" ]; then
+        print_log -sec "theme" -warn "themes" "no theme directory at $HYDE_CONFIG_HOME/themes"
+        return 1
+    fi
     while read -r thmDir; do
         local realWallPath
         realWallPath="$(readlink "$thmDir/wall.set")"
@@ -422,6 +451,30 @@ is_hovered() {
     fi
     return 1
 }
+##
+# Reports whether the generated colour state this installation reads is on disk.
+# Hyprland reads the Lua state, and the colour include is required alongside it
+# because hyprlock, which has no Lua configuration, sources that file.
+#
+# Globals:
+#   HYDE_STATE_HOME, confDir
+# Returns:
+#   0 when every artefact exists and carries content, 1 otherwise
+##
+wallbash_state_is_complete() {
+    local required=(
+        "$confDir/hypr/themes/colors.conf"
+        "$HYDE_STATE_HOME/lua_state/colors.lua"
+        "$HYDE_STATE_HOME/lua_state/ui.lua"
+    )
+    local artefact
+    for artefact in "${required[@]}"; do
+        if [ ! -f "$artefact" ] || [ ! -s "$artefact" ]; then
+            return 1
+        fi
+    done
+    return 0
+}
 toml_write() {
     local config_file=$1
     local group=$2
@@ -464,4 +517,12 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config
+export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete
+
+##
+# Fails the source when the generated-state directories could not be created,
+# so a caller does not render templates into a directory that is not there.
+##
+if [ "${hyde_state_dirs_status:-0}" -ne 0 ]; then
+    return "$hyde_state_dirs_status" 2>/dev/null || exit "$hyde_state_dirs_status"
+fi

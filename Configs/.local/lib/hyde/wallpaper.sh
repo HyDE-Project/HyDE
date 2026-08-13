@@ -132,6 +132,13 @@ handle_output_mode() {
     return 0
 }
 
+wallpaper_backend_status() {
+    case "$1" in
+    "${HYDE_STATUS_CACHE_FAILED:-3}" | "${HYDE_STATUS_COLOURS_FAILED:-4}") printf '%s\n' 1 ;;
+    *) printf '%s\n' "$1" ;;
+    esac
+}
+
 main() {
     resolve_cache_args "$@"
 
@@ -154,16 +161,16 @@ main() {
         case "$wallpaper_setter_flag" in
         n)
             Wall_Hash
-            Wall_Change n
+            Wall_Change n || exit $?
             ;;
         p)
             Wall_Hash
-            Wall_Change p
+            Wall_Change p || exit $?
             ;;
         r)
             Wall_Hash
             setIndex=$((RANDOM % ${#wallList[@]}))
-            Wall_Cache "${wallList[setIndex]}"
+            Wall_Cache "${wallList[setIndex]}" || exit $?
             ;;
         s)
             if [ -z "$wallpaper_path" ] || [ ! -f "$wallpaper_path" ]; then
@@ -171,17 +178,22 @@ main() {
                 exit 1
             fi
             get_hashmap "$wallpaper_path"
-            Wall_Cache
+            Wall_Cache || exit $?
             ;;
         start)
             if [ ! -e "$wallSet" ]; then
                 print_log -err "wallpaper" "No current wallpaper found: $wallSet"
                 exit 1
             fi
-            export WALLPAPER_RELOAD_ALL=0 WALLBASH_STARTUP=1
+            export WALLPAPER_RELOAD_ALL=0
+            if wallbash_state_is_complete; then
+                export WALLBASH_STARTUP=1
+            else
+                print_log -sec "wallpaper" -warn "colours" "theme state is incomplete, generating it before the session starts"
+            fi
             current_wallpaper="$(realpath "$wallSet")"
             get_hashmap "$current_wallpaper"
-            Wall_Cache
+            Wall_Cache || exit $?
             ;;
         g)
             if [ ! -e "$wallSet" ]; then
@@ -206,21 +218,22 @@ main() {
             fi
             Wall_Select
             get_hashmap "$selected_wallpaper_path"
-            Wall_Cache
+            Wall_Cache || exit $?
             ;;
         link)
             Wall_Hash
-            Wall_Cache
+            Wall_Cache || exit $?
             exit 0
             ;;
         esac
     fi
+    local backend_status=0
     if [ -f "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" ] && [ -n "$wallpaper_backend" ]; then
         print_log -sec "wallpaper" "Using backend: $wallpaper_backend"
-        "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" "$wallSet"
+        "$LIB_DIR/hyde/wallpaper.$wallpaper_backend.sh" "$wallSet" || backend_status=$?
     else
         if command -v "wallpaper.$wallpaper_backend.sh" >/dev/null; then
-            "wallpaper.$wallpaper_backend.sh" "$wallSet"
+            "wallpaper.$wallpaper_backend.sh" "$wallSet" || backend_status=$?
         else
             print_log -warn "wallpaper" "No backend script found for $wallpaper_backend"
             print_log -warn "wallpaper" "Created: $HYDE_CACHE_HOME/wallpapers/$wallpaper_backend.png instead"
@@ -237,6 +250,7 @@ main() {
             notify-send -a "HyDE Alert" "Wallpaper not found"
         fi
     fi
+    return "$(wallpaper_backend_status "$backend_status")"
 }
 if [ -z "$*" ]; then
     echo "No arguments provided"

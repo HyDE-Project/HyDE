@@ -2,18 +2,8 @@
 
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
 if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
-    # TODO convert to func
-    if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
-        case "$HYPRLAND_CONFIG" in
-        *.lua)
-            hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
-            ;;
-        *)
-            hyprctl keyword misc:disable_autoreload 1 -q
-            ;;
-        esac
-        trap 'hyprctl reload -q' EXIT
-    fi
+    hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
+    trap 'hyprctl -q reload' EXIT
 fi
 
 rgba_to_rgb() {
@@ -152,8 +142,16 @@ fn_wallbash() {
     else
         sed -i "$NORMAL_SED_SCRIPT" "$temp_target_file"
     fi
-    if [ -s "$temp_target_file" ]; then
-        mv "$temp_target_file" "$target_file"
+    if [ ! -s "$temp_target_file" ] || [ -c "$target_file" ]; then
+        rm -f "$temp_target_file"
+    elif [ -e "$target_file" ] && [ ! -f "$target_file" ]; then
+        rm -f "$temp_target_file"
+        print_log -sec "wallbash" -err "write" "$target_file is not a regular file, refusing to render $template"
+        return 1
+    elif ! mv "$temp_target_file" "$target_file"; then
+        rm -f "$temp_target_file"
+        print_log -sec "wallbash" -err "write" "could not write $target_file from $template"
+        return 1
     fi
     [ -z "$exec_command" ] || {
         [[ $LOG_LEVEL == "debug" ]] && print_log -sec "wallbash" -stat "Exec command:" " $exec_command from $WALLBASH_SCRIPTS"
@@ -242,8 +240,9 @@ if [ -n "$dcol_colors" ]; then
 fi
 if [ -n "$single_template" ]; then
     fn_wallbash "$single_template" "${wallbashDirs[@]}"
-    exit 0
+    exit $?
 fi
+render_failures=0
 [ -t 1 ] && "$scrDir/wallbash.print.colors.sh"
 print_log -sec "wallbash" -stat "wallbash directories" " $WALLBASH_DIRS"
 if [ "$enableWallDcol" -eq 0 ] && [[ $reload_flag -eq 1 ]]; then
@@ -253,9 +252,13 @@ if [ "$enableWallDcol" -eq 0 ] && [[ $reload_flag -eq 1 ]]; then
         fKey="$(find -H "$HYDE_THEME_DIR" -type f -name "$(basename "${pKey%.dcol}.theme")")"
         [ -z "$fKey" ] && deployList+=("$pKey")
     done < <(find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
-    parallel fn_wallbash {} "${wallbashDirs[@]}" ::: "${deployList[@]}" || true
+    parallel fn_wallbash {} "${wallbashDirs[@]}" ::: "${deployList[@]}" || render_failures=$((render_failures + $?))
 elif [ "$enableWallDcol" -gt 0 ]; then
     print_log -sec "wallbash" -stat "apply $dcol_mode colors" "Wallbash theme"
-    find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || true
+    find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
 fi
-find -H "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || true
+find -H "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
+if [ "$render_failures" -ne 0 ]; then
+    print_log -sec "wallbash" -err "render" "$render_failures template(s) failed, the colour state is incomplete"
+    exit 1
+fi

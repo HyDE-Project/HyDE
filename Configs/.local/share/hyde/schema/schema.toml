@@ -721,17 +721,6 @@ default = "8"
 description = "Bar sensitivity"
 type = "string"
 
-[properties."hypr.config"]
-description = "Hypr configuration."
-type = "object"
-
-[properties."hypr.config".properties.sanitize]
-description = "List of regex to sanitize in the theme.config."
-type = "array"
-
-[properties."hypr.config".properties.sanitize.items]
-type = "string"
-
 [properties.volume]
 description = "volumecontrol.sh configuration."
 type = "object"
