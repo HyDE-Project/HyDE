@@ -459,7 +459,7 @@ is_hovered() {
 # reads.
 #
 # Globals:
-#   HYPRLAND_CONFIG, XDG_DATA_HOME, XDG_CONFIG_HOME
+#   HYPRLAND_CONFIG, XDG_DATA_HOME, XDG_DATA_DIRS, XDG_CONFIG_HOME
 # Outputs:
 #   "lua" or "hyprlang"
 ##
@@ -474,11 +474,22 @@ hyde_config_flavour() {
         return 0
         ;;
     esac
-    if [ -f "$XDG_DATA_HOME/hypr/hyde.lua" ] || [ -f "$XDG_CONFIG_HOME/hypr/hyprland.lua" ]; then
+    if [ -f "$XDG_CONFIG_HOME/hypr/hyprland.lua" ]; then
         echo "lua"
-    else
-        echo "hyprlang"
+        return 0
     fi
+    # Searched the way every shell integration searches it, so a system-wide
+    # deployment is recognised as readily as a per-user one.
+    local data_dir
+    local IFS=:
+    for data_dir in "$XDG_DATA_HOME" ${XDG_DATA_DIRS:-/usr/local/share:/usr/share}; do
+        [ -n "$data_dir" ] || continue
+        if [ -f "$data_dir/hypr/hyde.lua" ]; then
+            echo "lua"
+            return 0
+        fi
+    done
+    echo "hyprlang"
 }
 
 ##
