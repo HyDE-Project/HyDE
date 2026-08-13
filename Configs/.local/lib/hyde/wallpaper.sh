@@ -154,16 +154,16 @@ main() {
         case "$wallpaper_setter_flag" in
         n)
             Wall_Hash
-            Wall_Change n || exit 1
+            Wall_Change n || exit $?
             ;;
         p)
             Wall_Hash
-            Wall_Change p || exit 1
+            Wall_Change p || exit $?
             ;;
         r)
             Wall_Hash
             setIndex=$((RANDOM % ${#wallList[@]}))
-            Wall_Cache "${wallList[setIndex]}" || exit 1
+            Wall_Cache "${wallList[setIndex]}" || exit $?
             ;;
         s)
             if [ -z "$wallpaper_path" ] || [ ! -f "$wallpaper_path" ]; then
@@ -171,7 +171,7 @@ main() {
                 exit 1
             fi
             get_hashmap "$wallpaper_path"
-            Wall_Cache || exit 1
+            Wall_Cache || exit $?
             ;;
         start)
             if [ ! -e "$wallSet" ]; then
@@ -186,7 +186,7 @@ main() {
             fi
             current_wallpaper="$(realpath "$wallSet")"
             get_hashmap "$current_wallpaper"
-            Wall_Cache || exit 1
+            Wall_Cache || exit $?
             ;;
         g)
             if [ ! -e "$wallSet" ]; then
@@ -211,11 +211,11 @@ main() {
             fi
             Wall_Select
             get_hashmap "$selected_wallpaper_path"
-            Wall_Cache || exit 1
+            Wall_Cache || exit $?
             ;;
         link)
             Wall_Hash
-            Wall_Cache || exit 1
+            Wall_Cache || exit $?
             exit 0
             ;;
         esac

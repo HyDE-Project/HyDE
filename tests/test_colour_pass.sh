@@ -13,8 +13,10 @@
 
 core_sh="$REPO_ROOT/Configs/.local/lib/hyde/wallpaper/core.sh"
 color_set="$REPO_ROOT/Configs/.local/lib/hyde/color.set.sh"
+global_control="$REPO_ROOT/Configs/.local/lib/hyde/globalcontrol.sh"
+theme_switch="$REPO_ROOT/Configs/.local/lib/hyde/theme.switch.sh"
 
-for required in "$core_sh" "$color_set"; do
+for required in "$core_sh" "$color_set" "$global_control" "$theme_switch"; do
     [ -f "$required" ] || {
         fail "missing ${required#"$REPO_ROOT"/}"
         finish
@@ -23,6 +25,27 @@ done
 
 work_dir=$(mktemp -d)
 trap 'rm -rf "$work_dir"' EXIT
+
+# Read from the helpers rather than repeated here, so a change to either status
+# cannot leave the suite asserting the old value.
+statuses_home="$work_dir/statuses"
+mkdir -p "$statuses_home"
+eval "$(env -i HOME="$statuses_home" \
+    XDG_CONFIG_HOME="$statuses_home/.config" \
+    XDG_DATA_HOME="$statuses_home/.local/share" \
+    XDG_CACHE_HOME="$statuses_home/.cache" \
+    XDG_STATE_HOME="$statuses_home/.local/state" \
+    XDG_RUNTIME_DIR="$statuses_home/run" \
+    PATH="/usr/bin:/bin" \
+    bash -c ". '$global_control' >/dev/null 2>&1
+printf 'HYDE_STATUS_CACHE_FAILED=%s\nHYDE_STATUS_COLOURS_FAILED=%s\n' \
+    \"\${HYDE_STATUS_CACHE_FAILED:-}\" \"\${HYDE_STATUS_COLOURS_FAILED:-}\"")"
+
+for named in HYDE_STATUS_CACHE_FAILED HYDE_STATUS_COLOURS_FAILED; do
+    case "$(eval "printf '%s' \"\${$named:-}\"")" in
+    '' | 0) fail "the shared helpers do not name $named, so a caller cannot tell a stale colour state from a backend that failed to paint" ;;
+    esac
+done
 
 ##
 # Builds a stand-alone script that loads the wallpaper core against stubs and
@@ -57,6 +80,9 @@ STAND="$stand"
 export STAND
 LIB_DIR="$stand/lib"
 export LIB_DIR
+HYDE_STATUS_CACHE_FAILED=$HYDE_STATUS_CACHE_FAILED
+HYDE_STATUS_COLOURS_FAILED=$HYDE_STATUS_COLOURS_FAILED
+export HYDE_STATUS_CACHE_FAILED HYDE_STATUS_COLOURS_FAILED
 print_log() { printf '%s\n' "log: \$*"; }
 wallList=("$stand/theme/wallpaper.png")
 wallHash=("deadbeef")
@@ -103,8 +129,8 @@ run_colour=$(build_core_stand "$stand_colour" 0 1)
 output_colour=$(bash "$run_colour" 2>&1)
 
 case "$output_colour" in
-*'status=1'*) ;;
-*) fail "a failed colour pass was reported as success: $output_colour" ;;
+*"status=$HYDE_STATUS_COLOURS_FAILED"*) ;;
+*) fail "a failed colour pass did not report its own status: $output_colour" ;;
 esac
 case "$output_colour" in
 *'could not generate colours'*) ;;
@@ -120,8 +146,8 @@ run_cache=$(build_core_stand "$stand_cache" 1 0)
 output_cache=$(bash "$run_cache" 2>&1)
 
 case "$output_cache" in
-*'status=1'*) ;;
-*) fail "a failed thumbnail cache was reported as success: $output_cache" ;;
+*"status=$HYDE_STATUS_CACHE_FAILED"*) ;;
+*) fail "a failed thumbnail cache did not report its own status: $output_cache" ;;
 esac
 case "$output_cache" in
 *'could not cache'*) ;;
@@ -133,6 +159,44 @@ case "$output_cache" in
 esac
 [ -f "$stand_cache/colour.marker" ] &&
     fail "the colour pass ran although the thumbnail cache had already failed"
+
+# A stale colour state passes the completeness probe, so the theme switch has to
+# read the status instead.
+stand_verdict="$work_dir/switch-verdict"
+mkdir -p "$stand_verdict"
+cat >"$stand_verdict/run.sh" <<STAND
+#!/usr/bin/env bash
+HYDE_STATUS_CACHE_FAILED=$HYDE_STATUS_CACHE_FAILED
+HYDE_STATUS_COLOURS_FAILED=$HYDE_STATUS_COLOURS_FAILED
+$(sed -n '/^wallpaper_failure_is_fatal() {/,/^}$/p' "$theme_switch")
+for probed in 0 1 2 "\$HYDE_STATUS_CACHE_FAILED" "\$HYDE_STATUS_COLOURS_FAILED"; do
+    if wallpaper_failure_is_fatal "\$probed"; then
+        printf '%s=fatal\n' "\$probed"
+    else
+        printf '%s=carry-on\n' "\$probed"
+    fi
+done
+STAND
+output_verdict=$(bash "$stand_verdict/run.sh" 2>&1)
+
+case "$output_verdict" in
+*"$HYDE_STATUS_CACHE_FAILED=fatal"*) ;;
+*) fail "a failed thumbnail cache does not stop the theme switch, so it finishes green on the previous theme's colours: $output_verdict" ;;
+esac
+case "$output_verdict" in
+*"$HYDE_STATUS_COLOURS_FAILED=fatal"*) ;;
+*) fail "a failed colour pass does not stop the theme switch, so it finishes green on the previous theme's colours: $output_verdict" ;;
+esac
+for painting in 1 2; do
+    case "$output_verdict" in
+    *"$painting=carry-on"*) ;;
+    *) fail "status $painting comes from the wallpaper backend, which paints and nothing else, and must not stop the theme switch: $output_verdict" ;;
+    esac
+done
+case "$output_verdict" in
+*'0=carry-on'*) ;;
+*) fail "a hand-off that succeeded was treated as a failure: $output_verdict" ;;
+esac
 
 ##
 # Builds a stand-alone script that loads the template renderer out of the
@@ -185,20 +249,28 @@ case "$output_file" in
 *) fail "rendering into a plain file left its temporary behind: $output_file" ;;
 esac
 
+# The case owns the device it points at: were the guard to regress, naming the
+# system one would cost the host its /dev/null.
 stand_discard="$work_dir/render-discard"
-printf '%s\n' '/dev/null' 'colour = <colour>' >"$work_dir/discard.dcol"
-output_discard=$(bash "$(build_render_stand "$stand_discard" "$work_dir/discard.dcol")" 2>&1)
+mkdir -p "$stand_discard"
+discard_target="$stand_discard/discard.dev"
+if mknod "$discard_target" c 1 3 2>/dev/null; then
+    printf '%s\n' "$discard_target" 'colour = <colour>' >"$work_dir/discard.dcol"
+    output_discard=$(bash "$(build_render_stand "$stand_discard" "$work_dir/discard.dcol")" 2>&1)
 
-case "$output_discard" in
-*'status=0'*) ;;
-*) fail "a template that discards its render was treated as a failure: $output_discard" ;;
-esac
-case "$output_discard" in
-*'leftovers=0'*) ;;
-*) fail "a discarding template left its temporary behind: $output_discard" ;;
-esac
-[ -c /dev/null ] ||
-    fail "the discard target stopped being a character device, which the run replaced"
+    case "$output_discard" in
+    *'status=0'*) ;;
+    *) fail "a template that discards its render was treated as a failure: $output_discard" ;;
+    esac
+    case "$output_discard" in
+    *'leftovers=0'*) ;;
+    *) fail "a discarding template left its temporary behind: $output_discard" ;;
+    esac
+    [ -c "$discard_target" ] ||
+        fail "the discard target stopped being a character device, which the run replaced"
+else
+    skip "creating a character device is not permitted here, so the discard target cannot be isolated from the host"
+fi
 
 stand_readonly="$work_dir/render-readonly"
 mkdir -p "$stand_readonly/locked"

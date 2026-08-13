@@ -280,6 +280,25 @@ if [ -z "$theme_wallpaper" ]; then
     print_log -sec "theme" -crit "error" "no wallpaper available for $HYDE_THEME"
     exit 1
 fi
+##
+# Reports whether a status from the wallpaper hand-off must stop the switch.
+# A stale colour state passes the completeness probe, so the status is the only
+# way to notice a failed generation.
+#
+# Arguments:
+#   $1  status the hand-off exited with
+# Globals:
+#   HYDE_STATUS_CACHE_FAILED, HYDE_STATUS_COLOURS_FAILED
+# Returns:
+#   0 when the switch must stop, 1 when it may carry on
+##
+wallpaper_failure_is_fatal() {
+    case "$1" in
+    "${HYDE_STATUS_CACHE_FAILED:-3}" | "${HYDE_STATUS_COLOURS_FAILED:-4}") return 0 ;;
+    esac
+    return 1
+}
+
 wallpaper_status=0
 if [ "$quiet" = true ]; then
     wallpaper_output="$("$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global 2>&1)" || wallpaper_status=$?
@@ -287,8 +306,12 @@ else
     "$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global || wallpaper_status=$?
 fi
 if [ "$wallpaper_status" -ne 0 ]; then
-    print_log -sec "theme" -warn "wallpaper" "backend exited with $wallpaper_status, continuing with the colour state"
     [ -n "${wallpaper_output:-}" ] && printf '%s\n' "$wallpaper_output" >&2
+    if wallpaper_failure_is_fatal "$wallpaper_status"; then
+        print_log -sec "theme" -crit "error" "generating the colour state for $HYDE_THEME failed with $wallpaper_status, the state on disk is the one the previous theme left"
+        exit 1
+    fi
+    print_log -sec "theme" -warn "wallpaper" "backend exited with $wallpaper_status, continuing with the colour state"
 fi
 if ! wallbash_state_is_complete; then
     print_log -sec "theme" -stat "colours" "generating the colour state for $HYDE_THEME"

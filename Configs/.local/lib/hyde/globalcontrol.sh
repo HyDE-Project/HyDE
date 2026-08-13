@@ -23,6 +23,10 @@ export themesDir="$THEMES_DIR"
 export fontsDir="$FONTS_DIR"
 export hashMech="sha1sum"
 
+# Statuses the wallpaper hand-off reports its generation failures with.
+export HYDE_STATUS_CACHE_FAILED=3
+export HYDE_STATUS_COLOURS_FAILED=4
+
 ##
 # Creates the directories HyDE writes its own generated state into. A template
 # whose target directory is absent is skipped as an optional dependency, so a

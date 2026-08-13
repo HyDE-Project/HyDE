@@ -173,14 +173,22 @@ grep -q 'print_log -sec "wallpaper" -err "colors"' "$core_sh" ||
 grep -q 'cache_output' "$core_sh" ||
     fail "the wallpaper core discards the cache output, so a failure cannot be diagnosed"
 
+# The count is asserted too: an empty scan would never enter the loop and the
+# case would pass having checked nothing.
+handoff_calls=$(grep -nE '^[[:space:]]+(Wall_Cache|Wall_Change)( |$)' "$wallpaper_sh")
+handoff_count=$(printf '%s\n' "$handoff_calls" | grep -c '[^[:space:]]')
+[ "$handoff_count" -ge 5 ] ||
+    fail "found $handoff_count wallpaper hand-off call(s), so the scan no longer reaches them and passes without checking anything"
+
 while IFS= read -r line; do
     [ -n "$line" ] || continue
     case "$line" in
-    *'||'*) continue ;;
+    *'|| exit $?'*) continue ;;
+    *'||'*) fail "a hand-off failure is flattened to a single status, so a stale colour state cannot be told from a backend that failed to paint: ${line}" ;;
     *) fail "an unchecked call drops a failure in the wallpaper script: ${line}" ;;
     esac
 done <<EOF
-$(grep -nE '^\s+(Wall_Cache|Wall_Change)( |$)' "$wallpaper_sh")
+$handoff_calls
 EOF
 
 wallpaper_flat=$(tr '\n' ' ' <"$wallpaper_sh")
