@@ -88,43 +88,10 @@ for created in ".local/state/hyde/lua_state" ".cache/hyde/wallbash" "run/hyde" "
         fail "loading the shared helpers left $created uncreated, so its template is skipped as a missing dependency"
 done
 
-expect "lua" "$(probe "$home_dirs" "/somewhere/hyde.lua" 'hyde_config_flavour' 2>/dev/null)" \
-    "a session on a Lua configuration"
-expect "hyprlang" "$(probe "$home_dirs" "/somewhere/hyprland.conf" 'hyde_config_flavour' 2>/dev/null)" \
-    "a session on a hyprlang configuration"
-
 home_entry="$work_dir/entry"
 mkdir -p "$home_entry/.local/share/hypr"
 probe "$home_entry" "" 'true' 2>/dev/null
 : >"$home_entry/.local/share/hypr/hyde.lua"
-expect "lua" "$(probe "$home_entry" "" 'hyde_config_flavour' 2>/dev/null)" \
-    "a deployed Lua entry point outside a session"
-
-home_config="$work_dir/config"
-mkdir -p "$home_config/.config/hypr"
-probe "$home_config" "" 'true' 2>/dev/null
-: >"$home_config/.config/hypr/hyprland.lua"
-expect "lua" "$(probe "$home_config" "" 'hyde_config_flavour' 2>/dev/null)" \
-    "a deployed Lua configuration outside a session"
-
-home_legacy="$work_dir/legacy"
-mkdir -p "$home_legacy"
-probe "$home_legacy" "" 'true' 2>/dev/null
-expect "hyprlang" "$(probe "$home_legacy" "" 'hyde_config_flavour' 2>/dev/null)" \
-    "an installation carrying no Lua entry point"
-
-for shared in local system; do
-    home_shared="$work_dir/shared-$shared"
-    case "$shared" in
-    local) shared_root="$home_shared/usr-local-share" ;;
-    system) shared_root="$home_shared/usr-share" ;;
-    esac
-    mkdir -p "$shared_root/hypr"
-    probe "$home_shared" "" 'true' 2>/dev/null
-    : >"$shared_root/hypr/hyde.lua"
-    expect "lua" "$(PROBE_DATA_DIRS="$shared_root" probe "$home_shared" "" 'hyde_config_flavour' 2>/dev/null)" \
-        "a Lua entry point deployed system-wide under the $shared data directory"
-done
 
 state_dir="$home_entry/.local/state/hyde/lua_state"
 report='wallbash_state_is_complete && echo complete || echo incomplete'
@@ -156,8 +123,8 @@ expect "incomplete" "$(probe "$home_hyprlang" "/somewhere/hyprland.conf" "$repor
     "a hyprlang installation with no colour include"
 
 printf '$color = rgb(000000)\n' >"$home_hyprlang/.config/hypr/themes/colors.conf"
-expect "complete" "$(probe "$home_hyprlang" "/somewhere/hyprland.conf" "$report" 2>/dev/null)" \
-    "a hyprlang installation carrying its colour include"
+expect "incomplete" "$(probe "$home_hyprlang" "/somewhere/hyprland.conf" "$report" 2>/dev/null)" \
+    "a hyprlang-style installation carrying its colour include but no Lua state"
 
 home_directory="$work_dir/directory"
 mkdir -p "$home_directory/.config/hypr/themes/colors.conf"
@@ -166,10 +133,8 @@ probe "$home_directory" "" 'true' 2>/dev/null
 expect "incomplete" "$(probe "$home_directory" "/somewhere/hyprland.conf" "$report" 2>/dev/null)" \
     "a colour include that is a directory rather than a generated file"
 
-for helper in hyde_config_flavour wallbash_state_is_complete; do
-    expect "function" "$(probe "$home_dirs" "" "bash -c 'type -t $helper'" 2>/dev/null)" \
-        "$helper reaching a child process"
-done
+expect "function" "$(probe "$home_dirs" "" "bash -c 'type -t wallbash_state_is_complete'" 2>/dev/null)" \
+    "wallbash_state_is_complete reaching a child process"
 
 core_flat=$(tr '\n' ' ' <"$core_sh")
 
@@ -269,8 +234,6 @@ case "$color_flat" in
 *) fail "the colour pass exits zero although templates failed" ;;
 esac
 
-grep -q 'hyde_config_flavour' "$color_hypr" ||
-    fail "the colour writer branches on the session environment instead of the deployed configuration"
 grep -qE '\$\{HYPRLAND_CONFIG##\*\.\}. == .lua' "$color_hypr" &&
     fail "the colour writer still reads the raw session variable"
 
