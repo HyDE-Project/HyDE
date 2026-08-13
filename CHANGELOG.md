@@ -35,6 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: a session started without `XDG_CONFIG_HOME`, such as one launched from a TTY, no longer dies with a Lua error before the first window; the unset variable is treated as unset instead of being pasted into a path
 - Hyprland: a home directory containing an apostrophe no longer makes the session load its libraries from the system directory instead of the user's own, and an empty `XDG_RUNTIME_DIR` reads as unset rather than resolving against the working directory
 - Waybar: the theme module and the HyDE menu call `theme.switch` again; `themeswitch` was removed and the calls failed outright
+- Waybar: a saved backup can no longer be resolved or re-applied as the active layout; a backup is never picked by name, hash or the first-layout fallback, and a stale state entry pointing into the backups directory is ignored, so an accidental backup no longer overwrites `config.jsonc` on login or reload. Backups stay browsable under the backup list
 - Dolphin: the "Set As Wallpaper" service menu switches the theme again
 - Fish: `HYPRLAND_CONFIG` points at the deployed `hypr/hyde.lua` instead of a config the Lua release deleted, so a session started outside uwsm no longer comes up without a config
 - Hyprland: the config editor offers the user's `hypr/hyprland.lua` instead of four files nothing reads, which it used to create empty on save

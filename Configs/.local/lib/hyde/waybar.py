@@ -93,15 +93,35 @@ def get_file_hash(filepath):
     return sha256.hexdigest()
 
 
+def is_backup_path(path):
+    """Return True if the given path points into a backups directory."""
+    return "/backup/" in path or "\\backup\\" in path
+
+
 def find_layout_files():
-    """Recursively find all layout files in the specified directories."""
+    """Recursively find all layout files in the specified directories, excluding backups."""
     layouts = []
     for layout_dir in LAYOUT_DIRS:
         for root, _, files in os.walk(layout_dir):
             for file in files:
                 if file.endswith(".jsonc") and file not in LAYOUT_IGNORE:
-                    layouts.append(os.path.join(root, file))
+                    full_path = os.path.join(root, file)
+                    if not is_backup_path(full_path):
+                        layouts.append(full_path)
     return sorted(layouts)
+
+
+def find_backup_files():
+    """Recursively find all backup layout files in the specified directories."""
+    backups = []
+    for layout_dir in LAYOUT_DIRS:
+        for root, _, files in os.walk(layout_dir):
+            for file in files:
+                if file.endswith(".jsonc") and file not in LAYOUT_IGNORE:
+                    full_path = os.path.join(root, file)
+                    if is_backup_path(full_path):
+                        backups.append(full_path)
+    return sorted(backups)
 
 
 def get_state_value(key, default=None):
@@ -168,8 +188,11 @@ def get_current_layout_from_config():
 
     layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
     if layout_path and os.path.exists(layout_path):
-        logger.debug(f"Found current layout in state file: {layout_path}")
-        return layout_path
+        if is_backup_path(layout_path):
+            logger.debug(f"Ignoring backup path in state file: {layout_path}")
+        else:
+            logger.debug(f"Found current layout in state file: {layout_path}")
+            return layout_path
 
     layout_name = get_state_value("WAYBAR_LAYOUT_NAME")
     if layout_name:
@@ -388,6 +411,7 @@ def handle_layout_navigation(option):
 def list_layouts():
     """List all layouts with their matching styles and backups."""
     layouts = find_layout_files()
+    backup_files = find_backup_files()
     layout_style_pairs = []
     backup_layouts = []
 
@@ -395,19 +419,23 @@ def list_layouts():
         for layout_dir in LAYOUT_DIRS:
             if layout.startswith(layout_dir):
                 relative_path = os.path.relpath(layout, start=layout_dir)
-                if "/backup/" in layout or "\\backup\\" in layout:
-                    name = relative_path.replace(".jsonc", "")
-                    backup_layouts.append(
-                        {
-                            "layout": layout,
-                            "name": name,
-                        }
-                    )
-                    continue
 
                 name = relative_path.replace(".jsonc", "")
                 style_path = resolve_style_path(layout)
                 layout_style_pairs.append({"layout": layout, "name": name, "style": style_path})
+                break
+
+    for layout in backup_files:
+        for layout_dir in LAYOUT_DIRS:
+            if layout.startswith(layout_dir):
+                relative_path = os.path.relpath(layout, start=layout_dir)
+                name = relative_path.replace(".jsonc", "")
+                backup_layouts.append(
+                    {
+                        "layout": layout,
+                        "name": name,
+                    }
+                )
                 break
 
     result = {"layouts": layout_style_pairs, "backups": backup_layouts}
@@ -1144,7 +1172,7 @@ def main():
         logger.debug(f"State file found: {STATE_FILE}")
         layout_path = get_state_value("WAYBAR_LAYOUT_PATH")
 
-        if layout_path and os.path.exists(layout_path):
+        if layout_path and os.path.exists(layout_path) and not is_backup_path(layout_path):
             # If config.jsonc doesn't exist, create it from the layout
             if not CONFIG_JSONC.exists():
                 logger.debug("Config file missing, creating from layout path")
