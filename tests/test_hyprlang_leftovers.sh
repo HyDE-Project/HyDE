@@ -130,4 +130,62 @@ run_migration
 [ -e "$config_home/hypr/hyprland.conf" ] || [ -L "$config_home/hypr/hyprland.conf" ] &&
     fail "a dangling symlink at a retired path was left behind"
 
+# The generated theme inputs are retired by their own migration, gated the same
+# way.
+theme_migration="$REPO_ROOT/Scripts/migrations/v26.8.3.sh"
+
+if [ ! -f "$theme_migration" ]; then
+    fail "no migration retires the generated hyprlang theme inputs"
+    finish
+fi
+
+retired_theme="theme.conf wallbash.conf"
+
+seed_theme() {
+    seed
+    mkdir -p "$config_home/hypr/themes"
+    for rel in $retired_theme; do
+        printf 'old %s\n' "$rel" >"$config_home/hypr/themes/$rel"
+    done
+    printf '$color = rgb(000000)\n' >"$config_home/hypr/themes/colors.conf"
+}
+
+run_theme_migration() {
+    (
+        HOME="$home_dir" XDG_CONFIG_HOME="$config_home" XDG_DATA_HOME="$data_home" \
+            XDG_STATE_HOME="$state_home" sh "$theme_migration" </dev/null
+    ) >"$work_dir/theme.log" 2>&1
+}
+
+theme_backup="$state_home/hyde/migration/v26.8.3"
+
+seed_theme
+run_theme_migration
+[ "$?" -eq 0 ] || fail "the theme migration failed on a machine it should act on: $(cat "$work_dir/theme.log")"
+for rel in $retired_theme; do
+    [ -e "$config_home/hypr/themes/$rel" ] && fail "themes/$rel was left in place"
+    [ -f "$theme_backup/$rel" ] || fail "themes/$rel was not kept in the backup"
+done
+[ -f "$config_home/hypr/themes/colors.conf" ] ||
+    fail "the colour include was moved, although hyprlock still sources it"
+
+# No entry point, and an unreadable one: the retired inputs have to stay.
+seed_theme
+rm -f "$data_home/hypr/hyde.lua"
+run_theme_migration
+[ "$?" -eq 0 ] || fail "the theme migration failed instead of skipping without an entry point"
+for rel in $retired_theme; do
+    [ -f "$config_home/hypr/themes/$rel" ] ||
+        fail "themes/$rel was moved with no entry point to replace it"
+done
+
+seed_theme
+chmod 000 "$data_home/hypr/hyde.lua"
+run_theme_migration
+chmod 644 "$data_home/hypr/hyde.lua"
+for rel in $retired_theme; do
+    [ -f "$config_home/hypr/themes/$rel" ] ||
+        fail "themes/$rel was moved while the entry point could not be read"
+done
+
 finish

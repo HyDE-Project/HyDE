@@ -15,8 +15,17 @@
 # than removed, so a user who wants them back has both the file and the include.
 
 config_home="${XDG_CONFIG_HOME:-${HOME}/.config}"
+data_home="${XDG_DATA_HOME:-${HOME}/.local/share}"
 state_home="${XDG_STATE_HOME:-${HOME}/.local/state}"
 backup_dir="${state_home}/hyde/migration/v26.8.3"
+
+entry_point="${data_home}/hypr/hyde.lua"
+
+# Readable, not merely present: the loader opens this file.
+if [ ! -r "${entry_point}" ]; then
+    echo "  ${entry_point} is missing or unreadable, leaving the generated theme files in place"
+    exit 0
+fi
 
 retired="theme.conf wallbash.conf"
 
