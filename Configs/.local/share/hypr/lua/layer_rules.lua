@@ -44,7 +44,7 @@ hl.layer_rule(
   {
     name = "hyde_layer_ignore_alpha",
     match = {namespace = ignore_alpha_layers.namespace},
-    ignore_alpha = true
+    ignore_alpha = 0.0
   }
 )
 
