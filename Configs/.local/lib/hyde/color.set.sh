@@ -3,7 +3,7 @@
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
 if [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]]; then
     hyprctl eval 'hl.config({misc = {disable_autoreload = true}})'
-    trap 'hyprctl reload -q' EXIT
+    trap 'hyprctl -q reload' EXIT
 fi
 
 rgba_to_rgb() {

@@ -151,6 +151,7 @@ seed_theme() {
 run_theme_migration() {
     (
         HOME="$home_dir" XDG_CONFIG_HOME="$config_home" XDG_DATA_HOME="$data_home" \
+            XDG_DATA_DIRS="${theme_data_dirs:-$work_dir/no-shared-data}" \
             XDG_STATE_HOME="$state_home" sh "$theme_migration" </dev/null
     ) >"$work_dir/theme.log" 2>&1
 }
@@ -170,6 +171,18 @@ done
     fail "the colour include was moved, although hyprlock still sources it"
 grep -q '^#.*source = themes/theme.conf' "$config_home/hypr/userprefs.conf" ||
     fail "the include pointing at a retired file was left active"
+
+shared_data="$work_dir/shared"
+mkdir -p "$shared_data/hypr"
+seed_theme
+rm -f "$data_home/hypr/hyde.lua"
+printf 'hyde = hyde or {}\n' >"$shared_data/hypr/hyde.lua"
+theme_data_dirs="$shared_data" run_theme_migration
+[ "$?" -eq 0 ] || fail "the theme migration failed on a system-wide entry point: $(cat "$work_dir/theme.log")"
+for rel in $retired_theme; do
+    { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } &&
+        fail "themes/$rel was left in place although a system-wide entry point is deployed"
+done
 
 seed_theme
 rm -f "$data_home/hypr/hyde.lua"
