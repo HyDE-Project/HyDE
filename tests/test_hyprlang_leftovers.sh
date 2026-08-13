@@ -130,8 +130,6 @@ run_migration
 [ -e "$config_home/hypr/hyprland.conf" ] || [ -L "$config_home/hypr/hyprland.conf" ] &&
     fail "a dangling symlink at a retired path was left behind"
 
-# The generated theme inputs are retired by their own migration, gated the same
-# way.
 theme_migration="$REPO_ROOT/Scripts/migrations/v26.8.3.sh"
 
 if [ ! -f "$theme_migration" ]; then
@@ -169,7 +167,6 @@ done
 [ -f "$config_home/hypr/themes/colors.conf" ] ||
     fail "the colour include was moved, although hyprlock still sources it"
 
-# No entry point, and an unreadable one: the retired inputs have to stay.
 seed_theme
 rm -f "$data_home/hypr/hyde.lua"
 run_theme_migration

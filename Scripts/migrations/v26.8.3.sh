@@ -21,7 +21,6 @@ backup_dir="${state_home}/hyde/migration/v26.8.3"
 
 entry_point="${data_home}/hypr/hyde.lua"
 
-# Readable, not merely present: the loader opens this file.
 if [ ! -r "${entry_point}" ]; then
     echo "  ${entry_point} is missing or unreadable, leaving the generated theme files in place"
     exit 0
