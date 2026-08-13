@@ -8,6 +8,7 @@ require("luautils.theme.parser")
 local lfs = require("lfs")
 local rofi = require("luautils.selector.rofi")
 local wf = require("workflows")
+local first_time = not lfs.attributes(wf.state_file)
 
 local current = wf.current() or {}
 local current_name = current.name or os.getenv("HYPR_WORKFLOW") or "Default"
@@ -29,7 +30,6 @@ if selected and selected ~= "" then
     -- Hyprland's own hot-reload already picks up edits to an already-required
     -- lua_state file; a forced reload is only needed the first time the file
     -- is created, before Hyprland has anything to watch.
-    local first_time = not lfs.attributes(wf.state_file)
     local item, err = wf.set(selected)
     if item then
         if first_time then
