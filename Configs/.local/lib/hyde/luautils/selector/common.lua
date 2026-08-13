@@ -17,7 +17,7 @@
 --       on_set                 = function(item) end,
 --       state_writer           = function(state_dir, state_file, item) end,
 --   })
---   -- M exposes: .dirs .list .names .all .find(n) .current() .set(n) .waybar()
+--   -- M exposes: .dirs .list .names .all .find(n) .current() .set(n) .waybar() .state_file
 --
 -- CLI RUNNER — delegates argparse to the returned module:
 --
@@ -247,7 +247,8 @@ function M.new(opts)
         set = set_item,
         reload = reload,
         waybar = waybar,
-        rofi_opts = opts.rofi_opts or {}
+        rofi_opts = opts.rofi_opts or {},
+        state_file = sf
     }
 end
 
