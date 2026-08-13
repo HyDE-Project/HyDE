@@ -14,6 +14,9 @@
 work_dir=$(mktemp -d)
 trap 'rm -rf "$work_dir"' EXIT
 
+empty_data_dir="$work_dir/no-shared-data"
+mkdir -p "$empty_data_dir"
+
 global_control="$REPO_ROOT/Configs/.local/lib/hyde/globalcontrol.sh"
 core_sh="$REPO_ROOT/Configs/.local/lib/hyde/wallpaper/core.sh"
 wallpaper_sh="$REPO_ROOT/Configs/.local/lib/hyde/wallpaper.sh"
@@ -51,7 +54,7 @@ probe() {
         XDG_CACHE_HOME="$1/.cache" \
         XDG_STATE_HOME="$1/.local/state" \
         XDG_RUNTIME_DIR="$1/run" \
-        XDG_DATA_DIRS="${PROBE_DATA_DIRS:-}" \
+        XDG_DATA_DIRS="${PROBE_DATA_DIRS:-$empty_data_dir}" \
         HYPRLAND_CONFIG="${2:-}" \
         PATH="/usr/bin:/bin" \
         bash -c ". '$global_control' >/dev/null || exit 97
