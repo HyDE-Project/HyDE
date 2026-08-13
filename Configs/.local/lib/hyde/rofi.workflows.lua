@@ -27,7 +27,10 @@ local selected =
 if selected and selected ~= "" then
     local item, err = wf.set(selected)
     if item then
-        os.execute("hyprctl reload >/dev/null 2>&1")
+        local ok, err_type, err_code = os.execute("hyprctl reload >/dev/null 2>&1")
+        if not ok then
+            io.stderr:write("Error: hyprctl reload failed: " .. tostring(err_type) .. " " .. tostring(err_code) .. "\n")
+        end
     else
         io.stderr:write("Error: " .. tostring(err) .. "\n")
     end
