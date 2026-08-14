@@ -57,6 +57,18 @@ Wall_Hash() {
     [ ! -e "$(readlink -f "$wallSet")" ] && echo "Fixing link :: $wallSet" && ln -fs "${wallList[setIndex]}" "$wallSet"
 }
 
+##
+# Links the selected wallpaper as current and, for a global set, caches its
+# thumbnails and generates the theme colour state that every consumer reads,
+# the Lua session configuration included.
+#
+# Globals:
+#   set_as_global, setIndex, wallList, wallHash, LIB_DIR, wall* link targets,
+#   HYDE_STATUS_CACHE_FAILED, HYDE_STATUS_COLOURS_FAILED
+# Returns:
+#   0 on success, HYDE_STATUS_CACHE_FAILED when the thumbnail cache fails,
+#   HYDE_STATUS_COLOURS_FAILED when the colour pass fails
+##
 Wall_Cache() {
     if [[ ${WALLPAPER_RELOAD_ALL:-1} -eq 1 ]] && [[ $wallpaper_setter_flag != "link" ]]; then
         print_log -sec "wallpaper" "Reloading themes and wallpapers"
@@ -66,8 +78,16 @@ Wall_Cache() {
     ln -fs "${wallList[setIndex]}" "$wallCur"
     if [ "$set_as_global" == "true" ]; then
         print_log -sec "wallpaper" "Setting Wallpaper as global"
-        "$LIB_DIR/hyde/wallpaper/cache.sh" commence -w "${wallList[setIndex]}" &> /dev/null
-        "$LIB_DIR/hyde/color.set.sh" "${wallList[setIndex]}" &
+        local cache_output
+        if ! cache_output=$("$LIB_DIR/hyde/wallpaper/cache.sh" commence -w "${wallList[setIndex]}" 2>&1); then
+            print_log -sec "wallpaper" -err "cache" "could not cache ${wallList[setIndex]}"
+            printf '%s\n' "$cache_output" >&2
+            return "${HYDE_STATUS_CACHE_FAILED:-3}"
+        fi
+        if ! "$LIB_DIR/hyde/color.set.sh" "${wallList[setIndex]}"; then
+            print_log -sec "wallpaper" -err "colors" "could not generate colours from ${wallList[setIndex]}"
+            return "${HYDE_STATUS_COLOURS_FAILED:-4}"
+        fi
         ln -fs "$thmbDir/${wallHash[setIndex]}.sqre" "$wallSqr"
         ln -fs "$thmbDir/${wallHash[setIndex]}.thmb" "$wallTmb"
         ln -fs "$thmbDir/${wallHash[setIndex]}.blur" "$wallBlr"

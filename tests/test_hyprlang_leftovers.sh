@@ -130,4 +130,92 @@ run_migration
 [ -e "$config_home/hypr/hyprland.conf" ] || [ -L "$config_home/hypr/hyprland.conf" ] &&
     fail "a dangling symlink at a retired path was left behind"
 
+theme_migration="$REPO_ROOT/Scripts/migrations/v26.8.3.sh"
+
+if [ ! -f "$theme_migration" ]; then
+    fail "no migration retires the generated hyprlang theme inputs"
+    finish
+fi
+
+retired_theme="theme.conf wallbash.conf"
+
+seed_theme() {
+    seed
+    mkdir -p "$config_home/hypr/themes"
+    printf 'old theme.conf\n' >"$config_home/hypr/themes/theme.conf"
+    ln -s "$work_dir/nothing-here.conf" "$config_home/hypr/themes/wallbash.conf"
+    printf '$color = rgb(000000)\n' >"$config_home/hypr/themes/colors.conf"
+    printf 'source = themes/theme.conf\n' >"$config_home/hypr/userprefs.conf"
+}
+
+run_theme_migration() {
+    (
+        HOME="$home_dir" XDG_CONFIG_HOME="$config_home" XDG_DATA_HOME="$data_home" \
+            XDG_DATA_DIRS="${theme_data_dirs:-$work_dir/no-shared-data}" \
+            XDG_STATE_HOME="$state_home" sh "$theme_migration" </dev/null
+    ) >"$work_dir/theme.log" 2>&1
+}
+
+theme_backup="$state_home/hyde/migration/v26.8.3"
+
+seed_theme
+run_theme_migration
+[ "$?" -eq 0 ] || fail "the theme migration failed on a machine it should act on: $(cat "$work_dir/theme.log")"
+for rel in $retired_theme; do
+    { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } &&
+        fail "themes/$rel was left in place"
+    { [ -e "$theme_backup/$rel" ] || [ -L "$theme_backup/$rel" ]; } ||
+        fail "themes/$rel was not kept in the backup"
+done
+[ -f "$config_home/hypr/themes/colors.conf" ] ||
+    fail "the colour include was moved, although hyprlock still sources it"
+grep -q '^#.*source = themes/theme.conf' "$config_home/hypr/userprefs.conf" ||
+    fail "the include pointing at a retired file was left active"
+
+shared_data="$work_dir/shared"
+mkdir -p "$shared_data/hypr"
+seed_theme
+rm -f "$data_home/hypr/hyde.lua"
+printf 'hyde = hyde or {}\n' >"$shared_data/hypr/hyde.lua"
+theme_data_dirs="$shared_data" run_theme_migration
+[ "$?" -eq 0 ] || fail "the theme migration failed on a system-wide entry point: $(cat "$work_dir/theme.log")"
+for rel in $retired_theme; do
+    { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } &&
+        fail "themes/$rel was left in place although a system-wide entry point is deployed"
+done
+
+seed_theme
+rm -f "$data_home/hypr/hyde.lua"
+run_theme_migration
+[ "$?" -eq 0 ] || fail "the theme migration failed instead of skipping without an entry point"
+for rel in $retired_theme; do
+    { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } ||
+        fail "themes/$rel was moved with no entry point to replace it"
+done
+
+if [ "$(id -u)" -eq 0 ]; then
+    skip "an unreadable entry point cannot be simulated for the superuser"
+else
+    seed_theme
+    chmod 000 "$data_home/hypr/hyde.lua"
+    run_theme_migration
+    chmod 644 "$data_home/hypr/hyde.lua"
+    for rel in $retired_theme; do
+        { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } ||
+            fail "themes/$rel was moved while the entry point could not be read"
+    done
+
+    seed_theme
+    chmod 400 "$config_home/hypr/userprefs.conf"
+    run_theme_migration
+    theme_status=$?
+    chmod 644 "$config_home/hypr/userprefs.conf"
+    [ "$theme_status" -ne 0 ] ||
+        fail "the theme migration reported success although an include it had to rewrite was not writable"
+    for rel in $retired_theme; do
+        { [ -e "$config_home/hypr/themes/$rel" ] || [ -L "$config_home/hypr/themes/$rel" ]; } ||
+            fail "themes/$rel was moved although the include pointing at it could not be rewritten"
+    done
+fi
+
 finish
