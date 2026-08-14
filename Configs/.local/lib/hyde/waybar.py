@@ -616,7 +616,7 @@ def rofi_file_selector(
         pattern = os.path.join(d, f"**/*{extension}") if recursive else os.path.join(d, f"*{extension}")
         found = [
             f for f in glob.glob(pattern, recursive=recursive)
-            if "/backup/" not in f and "\\backup\\" not in f
+            if not is_backup_path(f)
         ]
         files.extend(found)
         file_roots.extend([d] * len(found))
