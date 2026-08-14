@@ -50,6 +50,7 @@ local floating =
       "Open File",
       "Volume Control",
       "Save As.*"
+      "File Already Exists — Dolphin"
     }
   }
 )
