@@ -82,6 +82,10 @@ Two orphans are not harmless:
   `~/.config/zsh/completions/hyde-shell.zsh` moved into HyDE's library
   directory. The old copies shadow the new ones; delete them.
 
+
+## changes to hyde.toml
+some keys are renamed and require you to manually edit them. Refer from https://github.com/HyDE-Project/HyDE/blob/master/Configs%2F.local%2Fshare%2Fhyde%2Fschema%2Fconfig.md
+
 ## Where your settings go now
 
 Everything you used to keep in `userprefs.conf` goes in
