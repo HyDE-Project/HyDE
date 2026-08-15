@@ -153,7 +153,11 @@ fn_wallbash() {
         sed -i "$NORMAL_SED_SCRIPT" "$temp_target_file"
     fi
     if [ -s "$temp_target_file" ]; then
-        mv "$temp_target_file" "$target_file"
+        if [ "$target_file" = "/dev/null" ]; then
+            rm -f "$temp_target_file"
+        else
+            mv "$temp_target_file" "$target_file"
+        fi
     fi
     [ -z "$exec_command" ] || {
         [[ $LOG_LEVEL == "debug" ]] && print_log -sec "wallbash" -stat "Exec command:" " $exec_command from $WALLBASH_SCRIPTS"
