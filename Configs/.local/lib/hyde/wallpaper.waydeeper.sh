@@ -42,18 +42,8 @@ if ! command -v waydeeper &>/dev/null; then
     exit 1
 fi
 
-# Ensure the inpaint model is downloaded
-if [ ! -d "$XDG_DATA_HOME/waydeeper/models/inpaint" ] && [ ! -d "$HOME/.local/share/waydeeper/models/inpaint" ]; then
-    print_log -sec "wallpaper" -stat "downloading inpaint model"
-    if ! waydeeper download-model inpaint; then
-        print_log -err "failed to download waydeeper inpaint model"
-        notify-send -a "HyDE Alert" "ERROR: failed to download waydeeper inpaint model"
-        exit 1
-    fi
-fi
-
-# Build waydeeper command with --inpaint always enabled
-waydeeper_args=(waydeeper set "$selected_wall" --inpaint)
+# Build waydeeper command with --3d always enabled
+waydeeper_args=(waydeeper set "$selected_wall" --3d)
 
 # Add depth model if configured
 if [ -n "$WALLPAPER_WAYDEEPER_MODEL" ]; then
