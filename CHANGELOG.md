@@ -15,7 +15,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
-- Screenshot: area captures ask for the selection once again instead of twice; the `grimblast` dot carried no version, so it kept resolving to the default and existing installs never re-synced the upstream fix for the duplicate `slurp` call
 - Hyprland: restored missing background blur on UI layers (Waybar, Rofi, etc.)
 - Core: `keyboardswitch.sh` triggers correct language notification; layout switch targets current device instead of cycling all devices, eliminating the IPC race condition and preventing multiple input devices from desyncing
 - Rofi selector: the launcher grid is sized from the display again when the focused-monitor query comes back empty, instead of collapsing to a single column; the width had no fallback while the other two selectors both default to 1920
@@ -48,7 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Core: app launchers no longer show a false error when an unrelated `DEBUG` variable contains a non-boolean value such as `release`
 - Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
 - Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad
-- Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice
+- Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice; the dot carried no version of its own, so existing installs kept resolving to the default and never re-synced
 - Screenshot: Satty defaults to the compatible GTK GL renderer when no explicit `GSK_RENDERER` is configured
 - Screenshot: the "print all monitors" keybind now invokes a full-output capture instead of capturing only the focused monitor
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
