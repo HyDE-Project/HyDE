@@ -183,7 +183,7 @@ if pkg_installed flatpak; then
         --filesystem="$HOME/.local/share/icons" \
         --env=GTK_THEME="$gtk4Theme" \
         --env=ICON_THEME="$ICON_THEME"
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo &
+    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 fi
 sed -i -e "/^Net\/ThemeName /c\Net\/ThemeName \"$GTK_THEME\"" \
     -e "/^Net\/IconThemeName /c\Net\/IconThemeName \"$ICON_THEME\"" \
