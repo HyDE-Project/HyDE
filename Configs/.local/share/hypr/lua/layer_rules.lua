@@ -3,7 +3,7 @@
 
 local util = _G.hyde.utils
 
-local layers =
+local blur_layers =
   util.regex_compile(
   {
     namespace = {
@@ -24,7 +24,6 @@ local ignore_alpha_layers =
       "rofi",
       "notifications",
       "swaync-(notification-window|control-center)",
-      "logout_dialog",
       "waybar",
       "selection"
     }
@@ -32,26 +31,20 @@ local ignore_alpha_layers =
   true
 )
 
-hl.layer_rule(
-  {
-    name = "hyde_layer_blur",
-    match = {namespace = layers.namespace},
-    blur = true
-  }
-)
+hl.layer_rule({
+  name  = "hyde_layer_blur",
+  match = { namespace = blur_layers.namespace },
+  blur  = true,
+})
 
-hl.layer_rule(
-  {
-    name = "hyde_layer_ignore_alpha",
-    match = {namespace = ignore_alpha_layers.namespace},
-    ignore_alpha = true
-  }
-)
+hl.layer_rule({
+  name         = "hyde_layer_ignore_alpha",
+  match        = { namespace = ignore_alpha_layers.namespace },
+  ignore_alpha = 0,
+})
 
-hl.layer_rule(
-  {
-    name = "hyde_layer_no_anim",
-    no_anim = true,
-    match = {namespace = "selection"}
-  }
-)
+hl.layer_rule({
+  name    = "hyde_layer_no_anim",
+  no_anim = true,
+  match   = { namespace = "selection" },
+})

@@ -66,7 +66,7 @@ fi
 "${scrDir}/restore_shl.sh"
 
 # flatpak
-if ! pkg_installed flatpak; then
+if pkg_installed flatpak; then
     echo ""
     print_log -g "[FLATPAK]" -b " list :: " "flatpak application"
     awk -F '#' '$1 != "" {print "["++count"]", $1}' "${scrDir}/extra/custom_flat.lst"
@@ -81,5 +81,5 @@ if ! pkg_installed flatpak; then
     fi
 
 else
-    print_log -y "[FLATPAK]" -b " :: " "flatpak is already installed"
+    print_log -y "[FLATPAK]" -b " :: " "flatpak is not installed, skipping"
 fi
