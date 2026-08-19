@@ -235,6 +235,11 @@ window#waybar.right button {
     border: 0em
 }
 
+tooltip * {
+    background: transparent;
+    border: none
+}
+
 tooltip {
     /* all: unset; */
     background: @main-bg;
