@@ -63,6 +63,8 @@ require("key_binds")
 require("events")
 --* HyDE's startup overridable too!
 require("start_up")
+-- * Automatically load generated monitor configs (e.g., from nwg-displays)
+check_require("monitors")
 -- --* user now can have this file
 check_require("hyprland")
 -- --* workflows configuration overrides everything
