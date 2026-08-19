@@ -7,7 +7,7 @@
       "low": 0
     },
     "interval": 30,
-    "format": "{icon} {used:0.1f}GB",
+    "format": "{icon} {used:0.1f}G",
     "format-alt": "{icon} {percentage}%",
     "format-icons": {
       "critical": "\uf421",
@@ -19,6 +19,6 @@
     "max-length": 10,
     "tooltip": true,
     //"tooltip-format": "\udb83\udf86 {percentage}%\n\ue266 {used:0.1f}GB/{total:0.1f}GB",
-    "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f}GB / {total:0.2f}GB\n\udb80\udf5b Available: {avail:0.2f}GB\n\uf233 Swap used: {swapUsed:0.2f}GB / {swapTotal:0.2f}GB ({swapPercentage}%)"
+    "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f} GiB / {total:0.2f} GiB\n\udb80\udf5b Available: {avail:0.2f} GiB\n\uf233 Swap used: {swapUsed:0.2f} GiB / {swapTotal:0.2f} GiB ({swapPercentage}%)"
   }
 }
