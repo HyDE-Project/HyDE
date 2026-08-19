@@ -200,7 +200,7 @@ if [ -f "$HOME/.Xresources" ]; then
     sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
         -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xresources"
     grep -q "^Xcursor\.theme:" "$HOME/.Xresources" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xresources"
-    grep -q "^Xcursor\.size:" "$HOME/.Xresources" || echo "Xcursor.size: 30" >>"$HOME/.Xresources"
+    grep -q "^Xcursor\.size:" "$HOME/.Xresources" || echo "Xcursor.size: $CURSOR_SIZE" >>"$HOME/.Xresources"
 else
     cat >"$HOME/.Xresources" <<EOF
 Xcursor.theme: $CURSOR_THEME
@@ -211,7 +211,7 @@ if [ -f "$HOME/.Xdefaults" ]; then
     sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
         -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xdefaults"
     grep -q "^Xcursor\.theme:" "$HOME/.Xdefaults" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xdefaults"
-    grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: 30" >>"$HOME/.Xdefaults"
+    grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: $CURSOR_SIZE" >>"$HOME/.Xdefaults"
 fi
 if [ -f "$confDir/gtk-4.0/settings.ini" ]; then
     rm "$confDir/gtk-4.0/settings.ini"
