@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## Unreleased
 
 ### Added
+- Hyprland: automatically load `monitors.lua`. `nwg-displays` now works without requiring manual imports, while still allowing users to override them in `hyprland.lua`.
 - Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
 
 ### Removed
