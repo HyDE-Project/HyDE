@@ -220,6 +220,8 @@ EOF
 			print_log -sec "AUR" -crit "No AUR helper found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
 			exit 1
 		fi
+	else
+		export getAur="${aurhlpr}"
 	fi
 
 	# Only an explicit choice counts; an installed package is not an answer.
@@ -248,7 +250,7 @@ EOF
 	#------------------------------------#
 	# install AUR helper via pacman first #
 	#------------------------------------#
-	"${scrDir}/install_aur.sh" "${getAur}" 2>&1
+	"${scrDir}/install_aur.sh" "${getAur:-${aurhlpr:-yay-bin}}" 2>&1
 
 	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
 
