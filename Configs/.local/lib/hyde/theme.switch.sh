@@ -217,14 +217,18 @@ if [ -f "$confDir/gtk-4.0/settings.ini" ]; then
     rm "$confDir/gtk-4.0/settings.ini"
 fi
 export -f pkg_installed
-[[ -d "$HYDE_CACHE_HOME/wallpapers/" ]] && find -H "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
-    for file; do
-        base=$(basename "$file" .png)
-        if pkg_installed ${base}; then
-            "${LIB_DIR}/hyde/wallpaper.sh" --link --backend "${base}"
-        fi
-    done
-' sh {} + &
+if [[ -d "$HYDE_CACHE_HOME/wallpapers/" ]]; then
+    find -H "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
+        for file; do
+            base=$(basename "$file" .png)
+            if pkg_installed ${base}; then
+                "${LIB_DIR}/hyde/wallpaper.sh" --link --backend "${base}"
+            fi
+        done
+    ' sh {} + &
+    _link_pid=$!
+    trap 'wait "$_link_pid" 2>/dev/null' EXIT
+fi
 theme_wallpaper="$(readlink "$HYDE_THEME_DIR/wall.set")"
 if [ -z "$theme_wallpaper" ] || [ ! -e "$theme_wallpaper" ]; then
     if [ -d "$HYDE_THEME_DIR/wallpapers" ]; then
