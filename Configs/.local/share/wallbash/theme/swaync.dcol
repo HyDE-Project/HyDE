@@ -63,7 +63,7 @@ ${confDir}/swaync/theme.css|${WALLBASH_SCRIPTS}/swaync.sh
 /*
 * notification popup gap from the screen edge
 * kept in sync with the active HyDE theme's general:gaps_out
-* and decoration:rounding by swaync-hypr-sync.sh (do not hand-edit
+* and decoration:rounding by swaync.sh (do not hand-edit
 * the tagged padding/border-radius values below, they are
 * overwritten on every theme reload)
 * */
