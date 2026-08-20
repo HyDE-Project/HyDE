@@ -21,6 +21,7 @@
         "../dots/hypridle.toml",
         "../dots/hyprsunset.toml",
         "../dots/fastfetch.toml",
+        "../dots/swaync.toml",
     ]
 
 # Loads an array of package manager commands
