@@ -50,7 +50,7 @@ hyde_state_dirs_status=$?
 
 send_notifs() {
     local args=("$@")
-    notify-send "${args[@]}" &
+    notify-send "${args[@]}"
 }
 print_log() {
     [[ "${PRINT_LOG}" == "false" ]] && return 0
