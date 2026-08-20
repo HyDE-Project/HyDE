@@ -214,7 +214,10 @@ main() {
         select)
             # Warm cache/icons when actually applying a selection (not output-only)
             if [ "$output_flag" != "true" ]; then
+                local _cache_pid
                 "$LIB_DIR/hyde/wallpaper/cache.sh" commence &>/dev/null &
+                _cache_pid=$!
+                trap 'wait "$_cache_pid" 2>/dev/null' EXIT
             fi
             Wall_Select
             get_hashmap "$selected_wallpaper_path"
