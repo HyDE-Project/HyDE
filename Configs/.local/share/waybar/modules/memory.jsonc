@@ -1,20 +1,24 @@
 {
   "memory": {
     "states": {
-      "c": 90,
-      "h": 60,
-      "m": 30
+      "critical": 90,
+      "high": 60,
+      "medium": 30,
+      "low": 0
     },
     "interval": 30,
-    "format": "\udb83\udf86 {used:0.1f}GB",
+    "format": "{icon} {used:0.1f}G",
+    "format-alt": "{icon} {percentage}%",
+    "format-icons": {
+      "critical": "\uf421",
+      "high": "\udb81\udcc5",
+      "medium": "\udb83\udf85",
+      "low": "\udb83\udf86"
+    },
     "rotate": 0,
-    "format-m": "\udb83\udf85 {used:0.1f}GB",
-    "format-h": "\udb81\udcc5 {used:0.1f}GB",
-    "format-c": "\uf421 {used:0.1f}GB",
-    "format-alt": "\udb83\udf86 {percentage}%",
     "max-length": 10,
     "tooltip": true,
     //"tooltip-format": "\udb83\udf86 {percentage}%\n\ue266 {used:0.1f}GB/{total:0.1f}GB",
-    "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f}GB / {total:0.2f}GB\n\udb80\udf5b Available: {avail:0.2f}GB\n\uf233 Swap used: {swapUsed:0.2f}GB / {swapTotal:0.2f}GB ({swapPercentage}%)"
+    "tooltip-format": "\udb83\udf86 Memory usage: {percentage}%\n\ue266 Used: {used:0.2f} GiB / {total:0.2f} GiB\n\udb80\udf5b Available: {avail:0.2f} GiB\n\uf233 Swap used: {swapUsed:0.2f} GiB / {swapTotal:0.2f} GiB ({swapPercentage}%)"
   }
 }

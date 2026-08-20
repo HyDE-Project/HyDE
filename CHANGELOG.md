@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Waybar: resolved an issue in the memory module where state-specific formats overrode `format-alt` when memory usage exceeded 30%.
 - Waybar: enforced decimal rounding for values in the memory module
 - Hyprland: restored missing background blur on UI layers (Waybar, Rofi, etc.)
 - Core: `keyboardswitch.sh` triggers correct language notification; layout switch targets current device instead of cycling all devices, eliminating the IPC race condition and preventing multiple input devices from desyncing
