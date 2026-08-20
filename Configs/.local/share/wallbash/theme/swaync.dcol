@@ -1,4 +1,4 @@
-${confDir}/swaync/theme.css | hyprctl dispatch -q exec -- "swaync-client -R && swaync-client -rs"
+${confDir}/swaync/theme.css|${WALLBASH_SCRIPTS}/swaync.sh
 /* Import wallbash */
 @import "<<HOME>>/.cache/hyde/wallbash/gtk.css";
 
@@ -35,7 +35,7 @@ ${confDir}/swaync/theme.css | hyprctl dispatch -q exec -- "swaync-client -R && s
   /* The Control Center which contains the old notifications + widgets */
   background: @sw-cc-bg;
   color: @text-color;
-  border-radius: 12px;
+  border-radius: 12px; /* hyde:rounding */
   border: 2px solid @sw-cc-border-color;
   opacity: 0.9;
 }
@@ -59,12 +59,24 @@ ${confDir}/swaync/theme.css | hyprctl dispatch -q exec -- "swaync-client -R && s
 /* @define-color noti-bg-hover-opaque #4B697D; */
 
 @define-color noti-bg-hover @sw-noti-bg-hover;
+
+/*
+* notification popup gap from the screen edge
+* kept in sync with the active HyDE theme's general:gaps_out
+* and decoration:rounding by swaync.sh (do not hand-edit
+* the tagged padding/border-radius values below, they are
+* overwritten on every theme reload)
+* */
+.notification-row .notification-background {
+  padding: 8px; /* hyde:gaps_out */
+}
+
 .notification-row .notification-background .notification {
   /* The actual notification */
   color: @sw-noti-window-txt;
-  border-radius: 12px;
+  border-radius: 12px; /* hyde:rounding */
   border: 2px solid @sw-noti-window-br;
-  padding: 5;
+  padding: 5px;
   transition: background 0.15s ease-in-out;
   background: @sw-noti-window-bg;
   opacity: 0.8;

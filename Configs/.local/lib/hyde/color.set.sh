@@ -252,13 +252,13 @@ if [ "$enableWallDcol" -eq 0 ] && [[ $reload_flag -eq 1 ]]; then
         fKey="$(find -H "$HYDE_THEME_DIR" -type f -name "$(basename "${pKey%.dcol}.theme")")"
         [ -z "$fKey" ] && deployList+=("$pKey")
     done < <(find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
-    parallel fn_wallbash {} "${wallbashDirs[@]}" ::: "${deployList[@]}" || render_failures=1
+    parallel fn_wallbash {} "${wallbashDirs[@]}" ::: "${deployList[@]}" || render_failures=$((render_failures + $?))
 elif [ "$enableWallDcol" -gt 0 ]; then
     print_log -sec "wallbash" -stat "apply $dcol_mode colors" "Wallbash theme"
-    find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=1
+    find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
 fi
-find -H "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=1
+find -H "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
 if [ "$render_failures" -ne 0 ]; then
-    print_log -sec "wallbash" -err "render" "one or more templates failed, the colour state is incomplete"
+    print_log -sec "wallbash" -err "render" "$render_failures template(s) failed, the colour state is incomplete"
     exit 1
 fi

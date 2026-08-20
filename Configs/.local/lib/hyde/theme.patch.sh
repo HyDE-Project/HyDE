@@ -121,6 +121,8 @@ wpCount="$(wc -l <<<"$wallpapers")"
 } || {
     readonly wallpapers && print_log -g "\n[pass]  " "wallpapers :: [count] $wpCount (.gif+.jpg+.jpeg+.png)"
 }
+# Walk $THEME_DIR once for all tar archives instead of per-prefix
+all_tar_files=$(find -H "$THEME_DIR" -type f -name "*.tar.*" 2>/dev/null)
 if [ -d "$FAV_THEME_DIR/logo" ]; then
     logos=$(find -H "$FAV_THEME_DIR/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
     logosCount="$(wc -l <<<"$logos")"
@@ -175,7 +177,7 @@ check_tars() {
             print_log -warn "Variable $gsVal detected! " "be sure $gsVal is set as a different name or on a different file, skipping check"
         else
             print_log -g "[pass]  " "hypr.theme :: [$gsLow]" -b " $gsVal"
-            trArc="$(find -H "$THEME_DIR" -type f -name "${inVal}_*.tar.*")"
+            trArc="$(echo "$all_tar_files" | grep "/${inVal}_")"
             [ -f "$trArc" ] && [ "$(echo "$trArc" | wc -l)" -eq 1 ] && trVal="$(basename "$(tar -tf "$trArc" | cut -d '/' -f1 | sort -u)")" && trVal="$(echo "$trVal" | grep -w "$gsVal")"
             print_log -g "[pass]  " "../*.tar.* :: [$gsLow]" -b " $trVal"
             [ "$trVal" != "$gsVal" ] && print_log -r "[ERROR] " "$gsLow set in hypr.theme does not exist in ${inVal}_*.tar.*" && exit_flag=true
@@ -208,7 +210,7 @@ declare -A archive_map=(
     ["Menu-Font"]="$HOME/.local/share/fonts"
     ["Notification-Font"]="$HOME/.local/share/fonts")
 for prefix in "${!archive_map[@]}"; do
-    tarFile="$(find -H "$THEME_DIR" -type f -name "${prefix}_*.tar.*")"
+    tarFile="$(echo "$all_tar_files" | grep "/${prefix}_")"
     [ -f "$tarFile" ] || continue
     tgtDir="${archive_map[$prefix]}"
     if [[ $tgtDir =~ /(usr|usr\/local)\/share/ && -d /run/current-system/sw/share/ ]]; then

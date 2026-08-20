@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+setMode=0
 wallbashModes=("theme" "auto" "dark" "light")
 rofi_wallbash() {
     pkill -u "$USER" rofi && exit 0

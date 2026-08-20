@@ -183,7 +183,7 @@ if pkg_installed flatpak; then
         --filesystem="$HOME/.local/share/icons" \
         --env=GTK_THEME="$gtk4Theme" \
         --env=ICON_THEME="$ICON_THEME"
-    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo &
+    flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 fi
 sed -i -e "/^Net\/ThemeName /c\Net\/ThemeName \"$GTK_THEME\"" \
     -e "/^Net\/IconThemeName /c\Net\/IconThemeName \"$ICON_THEME\"" \
@@ -200,7 +200,7 @@ if [ -f "$HOME/.Xresources" ]; then
     sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
         -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xresources"
     grep -q "^Xcursor\.theme:" "$HOME/.Xresources" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xresources"
-    grep -q "^Xcursor\.size:" "$HOME/.Xresources" || echo "Xcursor.size: 30" >>"$HOME/.Xresources"
+    grep -q "^Xcursor\.size:" "$HOME/.Xresources" || echo "Xcursor.size: $CURSOR_SIZE" >>"$HOME/.Xresources"
 else
     cat >"$HOME/.Xresources" <<EOF
 Xcursor.theme: $CURSOR_THEME
@@ -211,20 +211,24 @@ if [ -f "$HOME/.Xdefaults" ]; then
     sed -i -e "/^Xcursor\.theme:/c\Xcursor.theme: $CURSOR_THEME" \
         -e "/^Xcursor\.size:/c\Xcursor.size: $CURSOR_SIZE" "$HOME/.Xdefaults"
     grep -q "^Xcursor\.theme:" "$HOME/.Xdefaults" || echo "Xcursor.theme: $CURSOR_THEME" >>"$HOME/.Xdefaults"
-    grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: 30" >>"$HOME/.Xdefaults"
+    grep -q "^Xcursor\.size:" "$HOME/.Xdefaults" || echo "Xcursor.size: $CURSOR_SIZE" >>"$HOME/.Xdefaults"
 fi
 if [ -f "$confDir/gtk-4.0/settings.ini" ]; then
     rm "$confDir/gtk-4.0/settings.ini"
 fi
 export -f pkg_installed
-[[ -d "$HYDE_CACHE_HOME/wallpapers/" ]] && find -H "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
-    for file; do
-        base=$(basename "$file" .png)
-        if pkg_installed ${base}; then
-            "${LIB_DIR}/hyde/wallpaper.sh" --link --backend "${base}"
-        fi
-    done
-' sh {} + &
+if [[ -d "$HYDE_CACHE_HOME/wallpapers/" ]]; then
+    find -H "$HYDE_CACHE_HOME/wallpapers" -name "*.png" -exec sh -c '
+        for file; do
+            base=$(basename "$file" .png)
+            if pkg_installed ${base}; then
+                "${LIB_DIR}/hyde/wallpaper.sh" --link --backend "${base}"
+            fi
+        done
+    ' sh {} + &
+    _link_pid=$!
+    trap 'wait "$_link_pid" 2>/dev/null' EXIT
+fi
 theme_wallpaper="$(readlink "$HYDE_THEME_DIR/wall.set")"
 if [ -z "$theme_wallpaper" ] || [ ! -e "$theme_wallpaper" ]; then
     if [ -d "$HYDE_THEME_DIR/wallpapers" ]; then

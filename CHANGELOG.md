@@ -9,12 +9,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## Unreleased
 
 ### Added
+- Hyprland: automatically load `monitors.lua`. `nwg-displays` now works without requiring manual imports, while still allowing users to override them in `hyprland.lua`.
 - Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
+- swaync: notification popup padding, control center margin, and corner rounding follow the active theme's `general:gaps_out` and `decoration:rounding`
 
 ### Removed
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Waybar: resolved an issue in the memory module where state-specific formats overrode `format-alt` when memory usage exceeded 30%.
+- Waybar: enforced decimal rounding for values in the memory module
 - Hyprland: restored missing background blur on UI layers (Waybar, Rofi, etc.)
 - Core: `keyboardswitch.sh` triggers correct language notification; layout switch targets current device instead of cycling all devices, eliminating the IPC race condition and preventing multiple input devices from desyncing
 - Rofi selector: the launcher grid is sized from the display again when the focused-monitor query comes back empty, instead of collapsing to a single column; the width had no fallback while the other two selectors both default to 1920
@@ -47,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Core: app launchers no longer show a false error when an unrelated `DEBUG` variable contains a non-boolean value such as `release`
 - Desktop: the generated battery notification startup command now launches `batterynotify.lua` instead of the removed shell implementation
 - Hyprland: Lua keybinds again match the documented shortcuts for window management, screenshots, wallpapers, Waybar, selectors, workspaces and the scratchpad
-- Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice
+- Screenshot: area capture now uses the fixed upstream Grimblast selector instead of prompting for the region twice; the dot carried no version of its own, so existing installs kept resolving to the default and never re-synced
 - Screenshot: Satty defaults to the compatible GTK GL renderer when no explicit `GSK_RENDERER` is configured
 - Screenshot: the "print all monitors" keybind now invokes a full-output capture instead of capturing only the focused monitor
 - Waybar `hyprland/workspaces` module adapted to use lua dispatchers
@@ -58,6 +62,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - OCR: the language list in the result notification is no longer split across arguments
 - Wallpaper: the duplicate check in the kon backend compares against the whole hash list again
 - Repo: dropped two stray gitlinks that made `git submodule` fail on a fresh clone
+- Waydeeper: drop unsupported `--inpaint` option and inpaint model, use `--3d` instead
+- swaync: use themes from the `.local/share/wallbash` template instead of a stale copy that permanently shadowed it
+- swaync: an install deploys `~/.config/swaync` again; its dot lived only in `notification-daemon.toml`, a group nothing includes, so nothing ever reached it
 
 ## v26.7.4 | 4th Week of July 2026 Release
 
