@@ -90,7 +90,6 @@ rofi_args+=(
     -theme "$rofi_config")
 rofi -show "$r_mode" "${rofi_args[@]}" &
 disown
-echo -show "$r_mode" "${rofi_args[@]}"
 rofi -show "$r_mode" \
     -show-icons \
     -config "$rofi_config" \

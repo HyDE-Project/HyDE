@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 scrDir=$(dirname "$(realpath "$0")")
 scrDir="${scrDir:-$HOME/.local/lib/hyde}"
-source $scrDir/globalcontrol.sh
+source "$scrDir/globalcontrol.sh"
 confDir=${confDir:-$XDG_CONFIG_HOME}
 rofi_config="$confDir/rofi/quickapps.rasi"
 if [ $# -eq 0 ]; then

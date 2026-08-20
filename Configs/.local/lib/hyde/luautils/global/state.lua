@@ -93,47 +93,58 @@ end
 --- everything else (e.g. static items without a path) gets a static snapshot.
 function S.write(state_dir, state_file, item)
     ensure_dir(state_dir)
-    local f, err = io.open(state_file, "w")
+    local f, open_err = io.open(state_file, "w")
     if not f then
-        error("failed to write state file: " .. tostring(err))
+        return nil, "failed to write state file: " .. tostring(open_err)
     end
-    if item.path and item.path:match("%.lua$") then
-        local p = string.format("%q", item.path)
-        local dir = string.format("%q", item.path:match("^(.*)/[^/]+$") or ".")
-        local key = string.format("%q", item.key or "")
-        -- Use require() so Hyprland hot-reload cache invalidation works.
-        -- The item's directory is injected into package.path before the call.
-        f:write("local _dir = ", dir, "\n")
-        f:write("local _p   = ", p, "\n")
-        f:write('local _mod = _p:match("^.*/(.-)%.lua$")\n')
-        f:write('if not package.path:find(_dir .. "/?.lua", 1, true) then\n')
-        f:write('    package.path = _dir .. "/?.lua;" .. package.path\n')
-        f:write("end\n")
-        f:write("local _ok, _t = pcall(require, _mod)\n")
-        f:write("if not (_ok and type(_t) == 'table') then _t = {} end\n")
-        f:write("_t.path = _p\n")
-        f:write("_t.key  = _t.key or ", key, "\n")
-        f:write("return _t\n")
-    else
-        f:write("return {")
-        if item.path then
-            f:write("\n  path = ", string.format("%q", item.path), ",")
+
+    local ok, write_err = pcall(function()
+        if item.path and item.path:match("%.lua$") then
+            local p = string.format("%q", item.path)
+            local dir = string.format("%q", item.path:match("^(.*)/[^/]+$") or ".")
+            local key = string.format("%q", item.key or "")
+            -- Use require() so Hyprland hot-reload cache invalidation works.
+            -- The item's directory is injected into package.path before the call.
+            assert(f:write("local _dir = ", dir, "\n"))
+            assert(f:write("local _p   = ", p, "\n"))
+            assert(f:write('local _mod = _p:match("^.*/(.-)%.lua$")\n'))
+            assert(f:write('if not package.path:find(_dir .. "/?.lua", 1, true) then\n'))
+            assert(f:write('    package.path = _dir .. "/?.lua;" .. package.path\n'))
+            assert(f:write("end\n"))
+            assert(f:write("local _ok, _t = pcall(require, _mod)\n"))
+            assert(f:write("if not (_ok and type(_t) == 'table') then _t = {} end\n"))
+            assert(f:write("_t.path = _p\n"))
+            assert(f:write("_t.key  = _t.key or ", key, "\n"))
+            assert(f:write("return _t\n"))
+        else
+            assert(f:write("return {"))
+            if item.path then
+                assert(f:write("\n  path = ", string.format("%q", item.path), ","))
+            end
+            if item.key then
+                assert(f:write("\n  key = ", string.format("%q", item.key), ","))
+            end
+            if item.name then
+                assert(f:write("\n  name = ", string.format("%q", item.name), ","))
+            end
+            if item.description then
+                assert(f:write("\n  description = ", string.format("%q", item.description), ","))
+            end
+            if item.icon then
+                assert(f:write("\n  icon = ", string.format("%q", item.icon), ","))
+            end
+            assert(f:write("\n}\n"))
         end
-        if item.key then
-            f:write("\n  key = ", string.format("%q", item.key), ",")
-        end
-        if item.name then
-            f:write("\n  name = ", string.format("%q", item.name), ",")
-        end
-        if item.description then
-            f:write("\n  description = ", string.format("%q", item.description), ",")
-        end
-        if item.icon then
-            f:write("\n  icon = ", string.format("%q", item.icon), ",")
-        end
-        f:write("\n}\n")
+    end)
+
+    local close_ok, close_err = f:close()
+    if not ok then
+        return nil, "failed to write state file: " .. tostring(write_err)
     end
-    f:close()
+    if not close_ok then
+        return nil, "failed to close state file: " .. tostring(close_err)
+    end
+    return true
 end
 
 return S

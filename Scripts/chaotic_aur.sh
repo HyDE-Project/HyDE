@@ -209,14 +209,15 @@ fresh() {
     title_green="$(_tput setaf 2 2>&1)Would you like to add Chaotic AUR to your mirror list?$(_tput sgr0)"
     title_cyan="$(_tput setaf 6 2>&1)About Chaotic AUR:$(_tput sgr0)"
     title_red="$(_tput setaf 1 2>&1) Skipping Chaotic AUR$(_tput sgr0)"
-    cat <<CHAOS
-
-${title_green}
+    echo
+    printf '%s\n' "${title_green}"
+    cat <<'CHAOS'
 Chaotic AUR provides prebuilt and precompiled packages,
 which can make installing packages from Arch faster.
-
-$vertL
-${title_cyan}
+CHAOS
+    printf '%s\n' "${vertL}"
+    printf '%s\n' "${title_cyan}"
+    cat <<'CHAOS'
 Most packages available in this repo are automatically built from their respective AUR source package. However there are a few exceptions, check github.com/chaotic-aur/packages to find out which ones.
 The primary building cluster is a node in UFSCars datacenter which is hosted in São Carlos, São Paulo, Brazil.
 
@@ -227,11 +228,11 @@ Disclaimer:
 This repo is generated on-demand from packages we use on our personal computers. If there are any package license infringements please notify us through email. The package will then be removed and blacklisted.
 
 For more information, visit: https://aur.chaotic.cx/
-$vertL
-
-HyDE is not affiliated with Chaotic AUR.
-
 CHAOS
+    printf '%s\n' "${vertL}"
+    echo
+    echo "HyDE is not affiliated with Chaotic AUR."
+    echo
 
     read -p "Type 'yes' to continue [default] No : " add_chaotic
     if [ ! "${add_chaotic}" == "yes" ]; then
