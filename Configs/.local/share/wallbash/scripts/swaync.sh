@@ -33,13 +33,18 @@ if [ -f "$theme_css" ]; then
 fi
 
 if [ -f "$config_json" ] && command -v jq &>/dev/null; then
-    # gaps_out follows CSS padding order: top[,right,bottom,left]
+    # Same 1/2/3/4-value CSS shorthand Hyprland itself parses gaps_out with
+    # 1 -> all sides
+    # 2 -> vertical, horizontal
+    # 3 -> top, horizontal, bottom
+    # 4 -> top, right, bottom, left
     IFS=',' read -ra _gaps <<<"$gaps_out"
-    if [ ${#_gaps[@]} -eq 1 ]; then
-        gap_top=${_gaps[0]} gap_right=${_gaps[0]} gap_bottom=${_gaps[0]} gap_left=${_gaps[0]}
-    else
-        gap_top=${_gaps[0]} gap_right=${_gaps[1]} gap_bottom=${_gaps[2]} gap_left=${_gaps[3]}
-    fi
+    case ${#_gaps[@]} in
+    1) gap_top=${_gaps[0]} gap_right=${_gaps[0]} gap_bottom=${_gaps[0]} gap_left=${_gaps[0]} ;;
+    2) gap_top=${_gaps[0]} gap_right=${_gaps[1]} gap_bottom=${_gaps[0]} gap_left=${_gaps[1]} ;;
+    3) gap_top=${_gaps[0]} gap_right=${_gaps[1]} gap_bottom=${_gaps[2]} gap_left=${_gaps[1]} ;;
+    *) gap_top=${_gaps[0]} gap_right=${_gaps[1]} gap_bottom=${_gaps[2]} gap_left=${_gaps[3]} ;;
+    esac
     config_tmp="$(mktemp)"
     if jq --argjson t "$gap_top" --argjson r "$gap_right" --argjson b "$gap_bottom" --argjson l "$gap_left" \
         '."control-center-margin-top"=$t | ."control-center-margin-right"=$r | ."control-center-margin-bottom"=$b | ."control-center-margin-left"=$l' \
