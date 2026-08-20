@@ -15,7 +15,7 @@ fi
 flg_DryRun=${flg_DryRun:-0}
 export log_section="package"
 
-"${scrDir}/install_aur.sh" "${getAur}" 2>&1
+"${scrDir}/install_aur.sh" "${getAur:-${aurhlpr:-yay-bin}}" 2>&1
 chk_list "aurhlpr" "${aurList[@]}"
 listPkg="${1:-"${scrDir}/pkg_core.lst"}"
 archPkg=()

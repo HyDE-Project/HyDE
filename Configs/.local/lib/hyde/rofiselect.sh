@@ -12,16 +12,18 @@ elem_border=$((hypr_border * 5))
 icon_border=$((elem_border - 5))
 mon_data=$(hyprctl -j monitors)
 mon_x_res=$(jq '.[] | select(.focused==true) | if (.transform % 2 == 0) then .width else .height end' <<< "$mon_data")
-mon_scale=$(jq '.[] | select(.focused==true) | .scale' <<< "$mon_data" | sed "s/\.//")
+mon_scale=$(get_monitor_scale "$(jq '.[] | select(.focused==true) | .scale' <<< "$mon_data")")
+mon_x_res=${mon_x_res:-1920}
+mon_scale=${mon_scale:-100}
 mon_x_res=$((mon_x_res * 100 / mon_scale))
 elm_width=$(((20 + 12 + 16) * font_scale))
 max_avail=$((mon_x_res - (4 * font_scale)))
 col_count=$((max_avail / elm_width))
 [[ $col_count -gt 5 ]] && col_count=5
-r_override="window{width:100%;} 
+r_override="window{width:100%;}
     listview{columns:$col_count;}
     element{orientation:vertical;border-radius:${elem_border}px;}
-    element-icon{border-radius:${icon_border}px;size:20em;} 
+    element-icon{border-radius:${icon_border}px;size:20em;}
     element-text{enabled:false;}"
 RofiSel=$(find -L "$rofiStyleDir" -type f -exec grep -l "Attr.*launcher.*" {} \; | while
     read -r file

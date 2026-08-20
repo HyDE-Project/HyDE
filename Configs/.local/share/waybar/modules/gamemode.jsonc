@@ -4,7 +4,7 @@
   "gamemode": {
     "format": "{glyph}",
     "format-alt": "{glyph} {count}",
-    "glyph": "",
+    "glyph": "󰊴",
     "hide-not-running": true,
     "use-icon": true,
     "icon-name": "input-gaming-symbolic",

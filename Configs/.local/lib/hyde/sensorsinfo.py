@@ -30,7 +30,7 @@ DEVICE_GLYPHS = {
     "coretemp": "",
     "pch_cannonlake": "",
     "BAT": "",
-    "acpi_fan": "",
+    "acpi_fan": "󰈐",
     "default": "",
 }
 
@@ -178,7 +178,7 @@ def get_sensor_data(result_sensors, page=0):
         if data["fan_speeds"]:
             has_data = True
             fan_columns = format_columns(data["fan_speeds"])
-            device_parts.append("        Fan Speeds:\n        " + "\n        ".join(fan_columns))
+            device_parts.append("       󰈐 Fan Speeds:\n        " + "\n        ".join(fan_columns))
         if data["voltages"]:
             has_data = True
             volt_columns = format_columns(data["voltages"])

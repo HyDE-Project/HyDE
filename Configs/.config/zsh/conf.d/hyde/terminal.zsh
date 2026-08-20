@@ -12,6 +12,8 @@
 # And ensures that we have an obstruction-free .zshrc file
 # This also ensures that the proper HyDE $ENVs are loaded
 
+setopt INTERACTIVE_COMMENTS
+
 function _load_functions() {
     # Load all custom function files // Directories are ignored
     for file in "${ZDOTDIR:-$HOME/.config/zsh}/functions/"*.zsh; do
@@ -226,7 +228,7 @@ else
     _load_completions
 fi
 
-__package_manager () { 
+__package_manager () {
     ${PM_COMMAND[@]} "$@"
 }
 
@@ -244,5 +246,3 @@ alias c='clear' \
     .4='cd ../../../..' \
     .5='cd ../../../../..' \
     mkdir='mkdir -p'
-
-

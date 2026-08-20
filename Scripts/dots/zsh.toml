@@ -1,0 +1,49 @@
+[zsh]
+    description = "A very advanced and programmable command interpreter (shell) for UNIX"
+
+[[zsh.dependency]]
+    dnf  = [ "zsh", "starship" ]
+    pacman = [ "zsh", "starship" ]
+
+[[zsh.files]]
+    action      = "sync"
+    paths       = ".zshenv"
+    source_root = "Configs"
+    target_root = "${HOME}"
+
+[[zsh.files]]
+    action      = "sync"
+    paths       = [ ".zshenv" ]
+    source_root = "Configs/.config/zsh"
+    target_root = "${XDG_CONFIG_HOME}/zsh"
+
+[[zsh.files]]
+    action      = "sync"
+    paths       = [ "hyde", "00-hyde.zsh" ]
+    source_root = "Configs/.config/zsh/conf.d"
+    target_root = "${XDG_CONFIG_HOME}/zsh/conf.d"
+
+[[zsh.files]]
+    action      = "sync"
+    paths       = [ "error-handlers.zsh", "fzf.zsh", "duf.zsh", "eza.zsh", "bat.zsh" ]
+    source_root = "Configs/.config/zsh/functions"
+    target_root = "${XDG_CONFIG_HOME}/zsh/functions"
+
+[[zsh.files]]
+    action      = "sync"
+    paths       = "hydectl.zsh"
+    source_root = "Configs/.config/zsh/completions"
+    target_root = "${XDG_CONFIG_HOME}/zsh/completions"
+
+[[zsh.files]]
+    action = "preserve"
+    paths = [
+        ".p10k.zsh",
+        "user.zsh",
+        "prompt.zsh",
+        "plugin.zsh",
+        ".zshrc",
+        "conf.d/binds.zsh",
+    ]
+    source_root = "Configs/.config/zsh"
+    target_root = "${XDG_CONFIG_HOME}/zsh"

@@ -1,0 +1,19 @@
+[vim]
+
+[[vim.dependency]]
+yay = ["vim"]
+paru = ["vim"]
+pacman = ["vim"]
+dnf = ["vim"]
+
+[[vim.files]]
+action = "preserve"
+source_root = "Configs/.config/vim"
+target_root = "${XDG_CONFIG_HOME}/vim"
+paths = "vimrc"
+
+[[vim.files]]
+action = "sync"
+source_root = "Configs/.config/vim"
+target_root = "${XDG_CONFIG_HOME}/vim"
+paths = ["colors/wallbash.vim", "hyde.vim"]

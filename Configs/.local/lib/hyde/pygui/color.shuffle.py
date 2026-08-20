@@ -366,8 +366,7 @@ class ColorShuffleQt(QtWidgets.QWidget):
         super().__init__()
         self.setWindowTitle("Hyde Color Editor")
 
-        # FORCE FLOATING - This WILL work!
-        self.setWindowFlags(QtCore.Qt.WindowType.Window | QtCore.Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowFlags(QtCore.Qt.WindowType.Window)
 
         # Set window properties
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips)

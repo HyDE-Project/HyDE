@@ -94,7 +94,7 @@ def build_restore_cmd(client: dict, ws_target: str) -> str | None:
     return f"exec [workspace {ws_target} silent] {cmd}"
 
 
-def live_match(saved: dict, live: dict) -> bool:
+def match_running(saved: dict, live: dict) -> bool:
     """Match a saved kitty window to a live one by comparing shell CWD.
 
     In live mode multiple kitty windows may be open in different

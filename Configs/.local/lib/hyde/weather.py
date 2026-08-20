@@ -82,7 +82,7 @@ class WttrResponse(TypedDict):
 WEATHER_CODES = {
     **dict.fromkeys(["113"], "☀️ "),
     **dict.fromkeys(["116"], "⛅ "),
-    **dict.fromkeys(["119", "122", "143", "248", "260"], "☁️ "),
+    **dict.fromkeys(["119", "122", "143", "149", "248", "260"], "☁️ "),
     **dict.fromkeys(
         [
             "176",
@@ -136,7 +136,7 @@ def load_env_file(filepath: Path) -> None:
 
 def get_weather_icon(weatherinstance: CurrentCondition | HourlyPoint) -> str:
     """Returns the appropriate weather icon based on the weather code."""
-    return WEATHER_CODES[weatherinstance["weatherCode"]]
+    return WEATHER_CODES.get(weatherinstance["weatherCode"], "☁️ ")
 
 
 def get_description(weatherinstance: CurrentCondition | HourlyPoint) -> str:
@@ -325,6 +325,37 @@ time_format: TimeFormat = "24h"
 windspeed_unit: WindUnit = "km/h"
 
 
+def get_weather_data(url: str, headers: dict[str, str]) -> WttrResponse | None:
+    try:
+        response = requests.get(url, timeout=10, headers=headers)
+        response.raise_for_status()
+        weather = response.json()
+    except (requests.exceptions.RequestException, json.decoder.JSONDecodeError):
+        return None
+
+    if not isinstance(weather, dict):
+        return None
+
+    current_condition = weather.get("current_condition")
+    forecast = weather.get("weather")
+    nearest_area = weather.get("nearest_area")
+    if not (
+        isinstance(current_condition, list)
+        and len(current_condition) > 0
+        and isinstance(forecast, list)
+        and len(forecast) > 0
+        and isinstance(nearest_area, list)
+        and len(nearest_area) > 0
+    ):
+        return None
+
+    return cast(WttrResponse, weather)
+
+
+def print_weather_unavailable() -> None:
+    print(json.dumps({"text": "Weather --", "tooltip": "Weather unavailable: wttr.in did not return usable data", "class": "error"}))
+
+
 def main() -> None:
     global weather_lang, temp_unit, time_format, windspeed_unit
 
@@ -391,12 +422,15 @@ def main() -> None:
 
     # Get the weather data
     headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, timeout=10, headers=headers)
-    try:
-        weather = cast(WttrResponse, response.json())
-    except json.decoder.JSONDecodeError:
-        sys.exit(1)
-    current_weather = weather["current_condition"][0]
+    weather = get_weather_data(url, headers)
+    if weather is None:
+        print_weather_unavailable()
+        sys.exit(0)
+    current_conditions = weather.get("current_condition")
+    if not current_conditions:
+        print_weather_unavailable()
+        sys.exit(0)
+    current_weather = current_conditions[0]
 
     # Get the data to display
     # waybar text

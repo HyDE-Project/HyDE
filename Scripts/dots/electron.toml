@@ -1,0 +1,12 @@
+[electron-flags]
+    description = "electron flags for wayland"
+
+
+[[electron-flags.dependency]]
+    pacman = [ "electron" ]
+
+[[electron-flags.files]]
+    action      = "preserve"
+    paths       = "electron-flags.conf"
+    source_root = "Configs/.config"
+    target_root = "${XDG_CONFIG_HOME}"

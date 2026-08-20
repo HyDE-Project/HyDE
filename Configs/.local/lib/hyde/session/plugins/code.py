@@ -13,6 +13,7 @@ reports the same PID.  This plugin:
 
 import json
 import os
+import re
 import shlex
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -37,6 +38,22 @@ _TITLE_MARKERS = (
 )
 
 
+def _normalize_project_name(name: str) -> str:
+    """Normalize VS Code project names extracted from window titles."""
+    name = name.strip()
+    if not name:
+        return name
+
+    # VS Code may append workspace markers like " (Workspace)" or " (Workspace 1)".
+    # Strip those so the project name can resolve to the actual folder name.
+    if name.endswith(")"):
+        normalized = re.sub(r"\s*\(Workspace(?: \d+)?\)$", "", name)
+        if normalized != name:
+            name = normalized.strip()
+
+    return name
+
+
 def _title_project(title: str) -> str | None:
     """Extract the project/folder name from a VS Code window title.
 
@@ -51,7 +68,7 @@ def _title_project(title: str) -> str | None:
         prefix = title[:idx]
         # The project name is the last segment before the marker
         parts = prefix.rsplit(" - ", 1)
-        name = parts[-1].strip()
+        name = _normalize_project_name(parts[-1])
         return name if name else None
     return None
 
@@ -124,21 +141,46 @@ def build_restore_cmd(client: dict, ws_target: str) -> str | None:
     folder = client.get("_p_folder")
     base_cmd = client.get("_launchString", "/usr/bin/code")
 
-    if folder and Path(folder).is_dir():
-        return f"exec [workspace {ws_target} silent] {base_cmd} {shlex.quote(folder)}"
+    candidate_windows = client.get("_p_window_candidates", [])
+    count = len(candidate_windows) if isinstance(candidate_windows, list) else 1
+    if count <= 0:
+        count = 1
 
-    # No folder resolved — bare launch (VS Code reopens last workspace)
-    return f"exec [workspace {ws_target} silent] {base_cmd}"
+    launch_cmds = []
+    for _ in range(count):
+        parts = [base_cmd]
+        if folder and Path(folder).is_dir():
+            parts.append("--new-window")
+            parts.append(shlex.quote(folder))
+        launch_cmds.append(" ".join(parts))
+
+    cmd = " ; ".join(launch_cmds)
+    if not cmd:
+        return None
+
+    # Delay the Code launch slightly so workspace targeting has time to settle
+    # in the compositor before the first window appears.
+    return f"exec [workspace {ws_target} silent] sh -c {shlex.quote(f'sleep 0.4; {cmd}') }"
 
 
-def live_match(saved: dict, live: dict) -> bool:
-    """Match VS Code windows by project name extracted from the title."""
+def match_running(saved: dict, live: dict) -> bool | None:
+    """Match VS Code windows by project title and, when available, workspace."""
     saved_project = saved.get("_p_project", "").lower()
     if not saved_project:
         return True  # no project info, accept any
 
     live_title = live.get("title", "")
     live_project = _title_project(live_title)
-    if live_project:
-        return live_project.lower() == saved_project
-    return False
+    if not live_project or live_project.lower() != saved_project:
+        return False
+
+    saved_ws = saved.get("workspace", {})
+    live_ws = live.get("workspace", {})
+    if saved_ws and live_ws:
+        if saved_ws.get("id") == live_ws.get("id"):
+            return True
+        if saved_ws.get("name") == live_ws.get("name"):
+            return True
+        return None
+
+    return True

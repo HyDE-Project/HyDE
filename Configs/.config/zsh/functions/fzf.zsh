@@ -1,4 +1,21 @@
 # best fzf aliases ever
+
+# The editor a selection opens in, discovered rather than chosen. The user's own
+# answer comes first; the rest is an order of discovery over what this machine
+# already has. HyDE installs none of them, so a machine with no editor gets a
+# message naming the fix instead of a guess.
+_hyde_editor() {
+    local candidate
+    for candidate in "$EDITOR" "$VISUAL" nvim vim helix hx nano micro emacs; do
+        [[ -n "$candidate" ]] || continue
+        if command -v "$candidate" &>/dev/null; then
+            printf '%s' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
 _fuzzy_change_directory() {
     local initial_query="$1"
     local selected_dir
@@ -34,11 +51,12 @@ _fuzzy_edit_search_file_content() {
     selected_file=$(grep -irl "${1:-}" ./ | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" ]]; then
-        if command -v "$EDITOR" &>/dev/null; then
-            "$EDITOR" "$selected_file"
+        local editor
+        if editor=$(_hyde_editor); then
+            "$editor" "$selected_file"
         else
-            echo "EDITOR is not specified. using vim.  (you can export EDITOR in ~/.zshrc)"
-            vim "$selected_file"
+            echo "No editor found. Install one, or export EDITOR from \$ZDOTDIR/user.zsh or \$HOME/.user.zsh."
+            return 1
         fi
 
     else
@@ -61,11 +79,12 @@ _fuzzy_edit_search_file() {
     selected_file=$(find . -maxdepth $max_depth -type f 2>/dev/null | fzf "${fzf_options[@]}")
 
     if [[ -n "$selected_file" && -f "$selected_file" ]]; then
-        if command -v "$EDITOR" &>/dev/null; then
-            "$EDITOR" "$selected_file"
+        local editor
+        if editor=$(_hyde_editor); then
+            "$editor" "$selected_file"
         else
-            echo "EDITOR is not specified. using vim.  (you can export EDITOR in ~/.zshrc)"
-            vim "$selected_file"
+            echo "No editor found. Install one, or export EDITOR from \$ZDOTDIR/user.zsh or \$HOME/.user.zsh."
+            return 1
         fi
     else
         return 1

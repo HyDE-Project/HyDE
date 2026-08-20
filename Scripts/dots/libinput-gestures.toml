@@ -1,0 +1,14 @@
+
+
+[libinput_gestures]
+pre_command = "echo 'Preserve libinput-gestures config'"
+
+[[libinput_gestures.dependency]]
+yay = ["libinput-gestures"]
+paru = ["libinput-gestures"]
+
+[[libinput_gestures.files]]
+action = "preserve"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = "libinput-gestures.conf"

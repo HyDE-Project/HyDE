@@ -51,7 +51,27 @@ def get_logger():
             if self.use_loguru:
                 # Keep loguru behavior stable by emitting a pre-formatted message.
                 if args or kwargs:
-                    msg = msg.format(*args, **kwargs)
+                    if kwargs:
+                        try:
+                            msg = msg.format(*args, **kwargs)
+                        except Exception:
+                            pass
+                    elif "{" in msg and "}" in msg:
+                        try:
+                            msg = msg.format(*args)
+                        except Exception:
+                            try:
+                                msg = msg % args
+                            except Exception:
+                                pass
+                    else:
+                        try:
+                            msg = msg % args
+                        except Exception:
+                            try:
+                                msg = msg.format(*args)
+                            except Exception:
+                                pass
                 method(msg)
                 return
             method(msg, *args, **kwargs)

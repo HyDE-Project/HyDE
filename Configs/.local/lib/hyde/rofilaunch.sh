@@ -22,7 +22,7 @@ case "$1" in
         r_mode="drun"
         rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
         rofi_args+=("${ROFI_LAUNCH_DRUN_ARGS[@]:-}")
-        rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
+        rofi_args+=("-run-command" "app.sh  --fuzzel-compat -- {cmd}")
         shift
         ;;
     w | --window)
@@ -40,7 +40,7 @@ case "$1" in
     r | --run)
         r_mode="run"
         rofi_config="${ROFI_LAUNCH_RUN_STYLE:-$rofi_config}"
-        rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
+        rofi_args+=("-run-command" "app.sh  --fuzzel-compat -- {cmd}")
         rofi_args+=("${ROFI_LAUNCH_RUN_ARGS[@]:-}")
         shift
         ;;
@@ -56,7 +56,7 @@ case "$1" in
         r_mode="drun"
         ROFI_LAUNCH_DRUN_STYLE="${ROFI_LAUNCH_DRUN_STYLE:-$ROFI_LAUNCH_STYLE}"
         rofi_args+=("${ROFI_LAUNCH_DRUN_ARGS[@]:-}")
-        rofi_args+=("-run-command" "app2unit.sh  --fuzzel-compat -- {cmd}")
+        rofi_args+=("-run-command" "app.sh  --fuzzel-compat -- {cmd}")
         rofi_config="${ROFI_LAUNCH_DRUN_STYLE:-$rofi_config}"
         ;;
 esac
@@ -90,7 +90,6 @@ rofi_args+=(
     -theme "$rofi_config")
 rofi -show "$r_mode" "${rofi_args[@]}" &
 disown
-echo -show "$r_mode" "${rofi_args[@]}"
 rofi -show "$r_mode" \
     -show-icons \
     -config "$rofi_config" \

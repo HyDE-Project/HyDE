@@ -1,0 +1,12 @@
+
+[hypridle]
+
+[[hypridle.dependency]]
+pacman = ["hypridle"]
+dnf = ["hypridle"]
+
+[[hypridle.files]]
+action = "preserve"
+source_root = "Configs/.config/hypr"
+target_root = "${XDG_CONFIG_HOME}/hypr"
+paths = "hypridle.conf"

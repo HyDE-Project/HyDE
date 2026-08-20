@@ -215,7 +215,7 @@ layout_test() {
     local temp_path="$XDG_RUNTIME_DIR/hyde/hyprlock-test.conf"
     generate_conf "$hyprlock_conf_path" "$temp_path"
     append_label_to_file "$temp_path"
-    app2unit.sh -S both -u "$HYPRLOCK_SCOPE_NAME" -t scope -- hyprlock --no-fade-in --immediate-render --grace 99999999 -c "$temp_path"
+    app.sh -S both -u "$HYPRLOCK_SCOPE_NAME" -t scope -- hyprlock --no-fade-in --immediate-render --grace 99999999 -c "$temp_path"
     rm -f "$temp_path"
 }
 rofi_test_preview() {
@@ -228,7 +228,7 @@ rofi_test_preview() {
     send_notifs "Hyprlock layout: $hyprlock_conf_name" "Please swipe, press a key or click to exit." \
         -i "system-lock-screen" -t 3000 \
         -r 9
-    app2unit.sh -S both -u "$unit_name" -t scope -- hyprlock.sh --test "$hyprlock_conf_name"
+    app.sh -S both -u "$unit_name" -t scope -- hyprlock.sh --test "$hyprlock_conf_name"
 }
 generate_conf() {
     local path="${1:-$confDir/hypr/hyprlock/theme.conf}"
@@ -405,7 +405,7 @@ reload) fn_reload ;;
 *)
     ensure_lockscreen_bg_exist
     check_and_sanitize_process
-    "${LIB_DIR}/hyde/app2unit.sh" -u "$HYPRLOCK_SCOPE_NAME" -t scope -- hyprlock
+    "${LIB_DIR}/hyde/app.sh" -u "$HYPRLOCK_SCOPE_NAME" -t scope -- hyprlock
     exit 0
     ;;
 esac

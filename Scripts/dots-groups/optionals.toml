@@ -1,0 +1,56 @@
+# Use for instalation script until we refactor the whole installation stack
+[global]
+    # dots = ["kitty", "hyprland"] # List of dots to be used in the configuration file
+    action = "preserve" #
+    description = "Optional configurations you can install later"
+    git = "https://github.com/HyDE-Project/HyDE.git"
+    git_branch = "lua"
+    include = [
+        "../dots/lsd.toml",
+        "../dots/libinput-gestures.toml",
+        "../dots/code.toml",
+        "../dots/fish.toml",
+        "../dots/wallbash-vim.toml",
+        "../dots/spotify.toml",
+
+    ]
+    owner = "The HyDE Project" #
+    pre_command = "echo 'Optional Configurations you can uninstall later'"
+    version = "0.1.0"
+# Loads an array of package manager commands
+# This helps support custom package managers
+# and add custom flags for each manager
+[[global.package_managers]]
+    install   = "yay -S"
+    name      = "yay"
+    query     = "yay -Qs"
+    uninstall = "yay -R"
+    update    = "yay -Syu"
+
+[[global.package_managers]]
+    install   = "paru -S"
+    name      = "paru"
+    query     = "paru -Qs"
+    uninstall = "paru -R"
+    update    = "paru -Syu"
+
+[[global.package_managers]]
+    install   = "sudo dnf install"
+    name      = "dnf"
+    query     = "dnf list installed"
+    uninstall = "sudo dnf remove"
+    update    = "sudo dnf upgrade --refresh"
+
+[[global.package_managers]]
+    install   = "sudo apt install -y"
+    name      = "apt"
+    query     = "apt list --installed"
+    uninstall = "sudo apt remove -y"
+    update    = "sudo apt update && sudo apt upgrade -y"
+
+[[global.package_managers]]
+    install   = "flatpak install -y"
+    name      = "flatpak"
+    query     = "flatpak list --app --columns application | grep "
+    uninstall = "flatpak uninstall -y"                             # TODO: add --unused
+    update    = "flatpak update -y"

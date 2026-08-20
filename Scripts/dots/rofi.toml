@@ -1,0 +1,12 @@
+
+[rofi]
+pre_command = "echo 'Preserve rofi config'"
+
+[[rofi.dependency]]
+pacman = ["rofi"]
+
+[[rofi.files]]
+action = "preserve"
+source_root = "Configs/.config"
+target_root = "${XDG_CONFIG_HOME}"
+paths = "rofi"
