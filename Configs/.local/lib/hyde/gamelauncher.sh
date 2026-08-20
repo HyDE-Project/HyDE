@@ -82,4 +82,4 @@ fi
 
 cmd=${selected#*$'\t'}
 
-eval exec "$cmd"
+exec "$cmd"
