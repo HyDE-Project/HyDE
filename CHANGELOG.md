@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 - Hyprland: automatically load `monitors.lua`. `nwg-displays` now works without requiring manual imports, while still allowing users to override them in `hyprland.lua`.
 - Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
+- swaync: notification popup padding, control center margin, and corner rounding follow the active theme's `general:gaps_out` and `decoration:rounding`
 
 ### Removed
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
@@ -61,6 +62,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Wallpaper: the duplicate check in the kon backend compares against the whole hash list again
 - Repo: dropped two stray gitlinks that made `git submodule` fail on a fresh clone
 - Waydeeper: drop unsupported `--inpaint` option and inpaint model, use `--3d` instead
+- swaync: use themes from the `.local/share/wallbash` template instead of a stale copy that permanently shadowed it
+- swaync: an install deploys `~/.config/swaync` again; its dot lived only in `notification-daemon.toml`, a group nothing includes, so nothing ever reached it
 
 ## v26.7.4 | 4th Week of July 2026 Release
 
