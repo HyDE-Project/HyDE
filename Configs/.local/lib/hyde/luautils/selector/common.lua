@@ -17,7 +17,7 @@
 --       on_set                 = function(item) end,
 --       state_writer           = function(state_dir, state_file, item) end,
 --   })
---   -- M exposes: .dirs .list .names .all .find(n) .current() .set(n) .waybar()
+--   -- M exposes: .dirs .list .names .all .find(n) .current() .set(n) .waybar() .state_file
 --
 -- CLI RUNNER — delegates argparse to the returned module:
 --
@@ -161,10 +161,18 @@ function M.new(opts)
     end
 
     local function write_state(state_dir, state_file, item)
+        local ok, err
         if opts.state_writer then
-            return opts.state_writer(state_dir, state_file, item)
+            -- legacy custom writers may not report status; treat "returned
+            -- nothing" as success, only a truthy err means an actual failure
+            ok, err = opts.state_writer(state_dir, state_file, item)
+        else
+            ok, err = state.write(state_dir, state_file, item)
         end
-        return state.write(state_dir, state_file, item)
+        if ok == false or (not ok and err) then
+            return nil, err or "state write failed"
+        end
+        return true
     end
 
     local function set_item(name)
@@ -172,7 +180,10 @@ function M.new(opts)
         if not item then
             return nil, "unknown item '" .. tostring(name) .. "'"
         end
-        write_state(sd, sf, item)
+        local ok, err = write_state(sd, sf, item)
+        if not ok then
+            return nil, err
+        end
         if opts.staterc_key then
             state.staterc_set(opts.staterc_key, item.key)
         end
@@ -247,7 +258,8 @@ function M.new(opts)
         set = set_item,
         reload = reload,
         waybar = waybar,
-        rofi_opts = opts.rofi_opts or {}
+        rofi_opts = opts.rofi_opts or {},
+        state_file = sf
     }
 end
 
