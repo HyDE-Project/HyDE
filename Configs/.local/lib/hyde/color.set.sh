@@ -242,7 +242,7 @@ if [ -n "$single_template" ]; then
     fn_wallbash "$single_template" "${wallbashDirs[@]}"
     exit $?
 fi
-render_failures=0
+render_failed=0
 [ -t 1 ] && "$scrDir/wallbash.print.colors.sh"
 print_log -sec "wallbash" -stat "wallbash directories" " $WALLBASH_DIRS"
 if [ "$enableWallDcol" -eq 0 ] && [[ $reload_flag -eq 1 ]]; then
