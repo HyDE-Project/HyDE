@@ -87,13 +87,6 @@ local modals =
 )
 
 
--- filemanagers
-hl.window_rule({
-	name = "filemanagers-fullscreen",
-	match = { class = "^(.*dolphin.*)$|^(.*pcmanfm-qt.*)$|^(.*nemo.*)$|^(.*ark.*)$|.*Nautilus.*" },
-	opaque = true,
-	float = false,
-})
 
 
 
@@ -170,3 +163,11 @@ hl.window_rule(
     workspace = "special:xwayland_video_bridge silent"
   }
 )
+
+-- filemanagers
+hl.window_rule({
+	name = "filemanagers-fullscreen",
+	match = { class = "^(.*dolphin.*)$|^(.*pcmanfm-qt.*)$|^(.*nemo.*)$|^(.*ark.*)$|.*Nautilus.*" },
+	opaque = true,
+	float = false,
+})
