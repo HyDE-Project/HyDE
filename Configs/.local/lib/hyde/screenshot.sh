@@ -5,6 +5,14 @@ else
     export_hyde_config
 fi
 
+# Prevent multiple screenshot annotation windows from running at once.
+screenshot_lock="${XDG_RUNTIME_DIR:-/tmp}/hyde-screenshot.lock"
+exec {screenshot_lock_fd}>"$screenshot_lock"
+
+if ! flock -n "$screenshot_lock_fd"; then
+    exit 0
+fi
+
 # shellcheck disable=SC1091
 [[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 
