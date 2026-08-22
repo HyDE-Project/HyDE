@@ -30,4 +30,4 @@ indent-width = 4
 
 [tool.uv.sources]
 xdg-prefs = { git = "https://github.com/rchaput/xdg-prefs" }
-deez-dots = { git = "https://github.com/HyDE-Project/deez-dots.git" }
+deez-dots = { git = "https://github.com/HyDE-Project/deez-dots.git", branch = "main" }

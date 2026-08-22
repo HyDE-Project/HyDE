@@ -340,7 +340,7 @@ wheels = [
 [[package]]
 name = "deez-dots"
 version = "0.1.0"
-source = { git = "https://github.com/HyDE-Project/deez-dots.git#fee297dc10591bf121cbc77e0d16fc0216a82a70" }
+source = { git = "https://github.com/HyDE-Project/deez-dots.git?branch=main#b0f6728292cee5a5fbe23672266d3645b2aceb21" }
 
 [[package]]
 name = "frozenlist"
@@ -488,7 +488,7 @@ wayland = [
 
 [package.metadata]
 requires-dist = [
-    { name = "deez-dots", git = "https://github.com/HyDE-Project/deez-dots.git" },
+    { name = "deez-dots", git = "https://github.com/HyDE-Project/deez-dots.git?branch=main" },
     { name = "hererocks", specifier = ">=0.25.1" },
     { name = "inotify-simple" },
     { name = "loguru", specifier = "==0.7.3" },
