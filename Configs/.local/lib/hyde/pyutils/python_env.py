@@ -29,6 +29,22 @@ def get_project_dir() -> str:
     return os.path.dirname(lib_dir)
 
 
+def ensure_venv(venv_path: str) -> None:
+    """Creates the virtual environment at the given path if it does not exist."""
+    if os.path.exists(venv_path):
+        if not os.path.isdir(venv_path):
+            raise NotADirectoryError(
+                f"Virtual environment path exists but is not a directory: {venv_path}"
+            )
+        return
+
+    print(f"Creating virtual environment at {venv_path}")
+    os.makedirs(os.path.dirname(venv_path), exist_ok=True)
+    uv = get_uv()
+    subprocess.run([uv, "venv", venv_path], check=True)
+
+
+
 def get_uv() -> str:
     """Finds or installs the 'uv' executable in the HyDE venv."""
     venv_path = get_venv_path()
@@ -106,6 +122,13 @@ def run_uv(
         notify.send("HyDE UV", notify_msg, replace_id=9)
 
     cmd = [uv] + args + ["--project", project_dir]
+    # uv sync (and the sync phase of add/remove) creates the project environment
+    # in a .venv directory by default. Point it at the HyDE venv with --active
+    # and force a copy-based install to avoid silent reflink failures on ext4.
+    if args and args[0] in ("sync", "add", "remove"):
+        ensure_venv(venv_path)
+        env["VIRTUAL_ENV"] = venv_path
+        cmd.extend(["--active", "--link-mode", "copy"])
 
     if stream:
         result = subprocess.run(cmd, env=env)
