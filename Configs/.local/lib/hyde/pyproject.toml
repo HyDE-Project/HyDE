@@ -10,7 +10,7 @@ dependencies = [
     "hererocks>=0.25.1",
     "websockets>=16.0",
     "xdg-prefs",
-    "uv>=0.1.0",
+    "uv>=0.5.29",
     "deez-dots",
     "pyprland==3.4.3",
 ]

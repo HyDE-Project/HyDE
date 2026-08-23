@@ -500,7 +500,7 @@ requires-dist = [
     { name = "pyqt6", marker = "extra == 'wayland'" },
     { name = "pywayland", marker = "extra == 'wayland'" },
     { name = "requests", specifier = "==2.34.2" },
-    { name = "uv", specifier = ">=0.1.0" },
+    { name = "uv", specifier = ">=0.5.29" },
     { name = "websockets", specifier = ">=16.0" },
     { name = "xdg-prefs", git = "https://github.com/rchaput/xdg-prefs" },
 ]

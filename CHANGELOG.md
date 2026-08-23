@@ -65,6 +65,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Waydeeper: drop unsupported `--inpaint` option and inpaint model, use `--3d` instead
 - swaync: use themes from the `.local/share/wallbash` template instead of a stale copy that permanently shadowed it
 - swaync: an install deploys `~/.config/swaync` again; its dot lived only in `notification-daemon.toml`, a group nothing includes, so nothing ever reached it
+- Python environment: `uv sync` now targets the HyDE-managed venv at `~/.local/state/hyde/python_env` instead of creating a project-local `.venv`; also forces `--link-mode copy` to avoid silent reflink failures on ext4 that left packages uninstalled
 
 ## v26.7.4 | 4th Week of July 2026 Release
 

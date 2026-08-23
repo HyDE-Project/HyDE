@@ -4,6 +4,7 @@ import subprocess
 import shutil
 import argparse
 import importlib
+import re
 from collections.abc import Iterable
 from types import ModuleType
 
@@ -27,6 +28,61 @@ def get_venv_path() -> str:
 def get_project_dir() -> str:
     """Returns the path to the project directory (parent of this file)."""
     return os.path.dirname(lib_dir)
+
+
+# Minimum uv version required for the --active flag used by run_uv().
+MIN_UV_VERSION = (0, 5, 29)
+
+
+def parse_uv_version(version_output: str) -> tuple[int, int, int]:
+    """Parses the first SemVer tuple from a uv --version string."""
+    match = re.search(r"(\d+)\.(\d+)\.(\d+)", version_output)
+    if not match:
+        raise RuntimeError(f"Could not parse uv version from: {version_output!r}")
+    return tuple(int(part) for part in match.groups())
+
+
+def get_uv_version(uv_path: str) -> tuple[int, int, int]:
+    """Returns the (major, minor, patch) version of the given uv executable."""
+    result = subprocess.run(
+        [uv_path, "--version"], capture_output=True, text=True, check=True
+    )
+    return parse_uv_version(result.stdout.strip())
+
+
+def check_uv_version(uv_path: str) -> None:
+    """Raises a clear error if the resolved uv executable is too old."""
+    version = get_uv_version(uv_path)
+    if version < MIN_UV_VERSION:
+        min_version_str = ".".join(str(part) for part in MIN_UV_VERSION)
+        current_version_str = ".".join(str(part) for part in version)
+        raise RuntimeError(
+            f"uv {current_version_str} is too old. "
+            f"HyDE requires uv >= {min_version_str} for sync/add/remove. "
+            "Please upgrade uv with 'pip install --upgrade uv' or 'pacman -Syu uv'."
+        )
+
+
+def ensure_venv(venv_path: str) -> None:
+    """Creates the virtual environment at the given path if it does not exist."""
+    if os.path.exists(venv_path):
+        if not os.path.isdir(venv_path):
+            raise NotADirectoryError(
+                f"Virtual environment path exists but is not a directory: {venv_path}"
+            )
+        return
+
+    print(f"Creating virtual environment at {venv_path}")
+    os.makedirs(os.path.dirname(venv_path), exist_ok=True)
+    uv = get_uv()
+    result = subprocess.run(
+        [uv, "venv", venv_path], capture_output=True, text=True, check=False
+    )
+    if result.returncode != 0:
+        err = result.stderr.strip() or result.stdout.strip() or "uv venv failed"
+        notify.send("HyDE UV", f"Failed to create virtual environment:\n{err}", urgency="critical")
+        raise RuntimeError(f"Failed to create virtual environment: {err}")
+
 
 
 def get_uv() -> str:
@@ -106,6 +162,16 @@ def run_uv(
         notify.send("HyDE UV", notify_msg, replace_id=9)
 
     cmd = [uv] + args + ["--project", project_dir]
+    # uv sync (and the sync phase of add/remove) creates the project environment
+    # in a .venv directory by default. Point it at the HyDE venv with --active
+    # and force a copy-based install to avoid silent reflink failures on ext4.
+    if args and args[0] in ("sync", "add", "remove"):
+        # --active was introduced in uv 0.5.29; fail clearly on older versions
+        # before trying to create the managed environment with that uv binary.
+        check_uv_version(uv)
+        ensure_venv(venv_path)
+        env["VIRTUAL_ENV"] = venv_path
+        cmd.extend(["--active", "--link-mode", "copy"])
 
     if stream:
         result = subprocess.run(cmd, env=env)
