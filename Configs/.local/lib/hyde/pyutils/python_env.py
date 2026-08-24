@@ -166,9 +166,18 @@ def run_uv(
     # in a .venv directory by default. Point it at the HyDE venv with --active
     # and force a copy-based install to avoid silent reflink failures on ext4.
     if args and args[0] in ("sync", "add", "remove"):
-        # --active was introduced in uv 0.5.29; fail clearly on older versions
-        # before trying to create the managed environment with that uv binary.
-        check_uv_version(uv)
+        # If system uv is too old for --active, bootstrap uv in HyDE's venv and retry.
+        try:
+            check_uv_version(uv)
+        except RuntimeError:
+            uv_venv = os.path.join(venv_path, "bin", "uv")
+            if uv != uv_venv:
+                setup_venv_with_uv()
+                uv = get_uv()
+                cmd[0] = uv
+                check_uv_version(uv)
+            else:
+                raise
         ensure_venv(venv_path)
         env["VIRTUAL_ENV"] = venv_path
         cmd.extend(["--active", "--link-mode", "copy"])
