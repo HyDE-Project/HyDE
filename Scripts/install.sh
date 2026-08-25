@@ -192,36 +192,56 @@ EOF
 	#----------------#
 	echo ""
 
-	if ! chk_list "aurhlpr" "${aurList[@]}"; then
-		print_log -c "\nAUR Helpers :: "
-		aurList+=("yay-bin" "paru-bin")
-		for i in "${!aurList[@]}"; do
-			print_log -sec "$((i + 1))" " ${aurList[$i]} "
-		done
+	# Step 1: Check if any AUR helper is installed
+	if chk_list "aurhlpr" "${aurList[@]}"; then
+		# Step 2: Show detected helper and ask user to confirm
+		print_log -c "\nDetected AUR helper: "
+		print_log -sec "AUR" -stat "Found" "${aurhlpr}"
 
-		prompt_timer 120 "Enter option number [default: yay-bin] | q to quit "
+		prompt_timer 60 "Use ${aurhlpr}? [Y/n] | q to quit "
 
 		case "${PROMPT_INPUT}" in
-		1) export getAur="yay" ;;
-		2) export getAur="paru" ;;
-		3) export getAur="yay-bin" ;;
-		4) export getAur="paru-bin" ;;
+		n|N)
+			# User wants to choose a different one — fall through to menu
+			;;
 		q)
 			print_log -sec "AUR" -crit "Quit" "Exiting..."
 			exit 1
 			;;
 		*)
-			print_log -sec "AUR" -warn "Defaulting to yay-bin"
-			print_log -sec "AUR" -stat "default" "yay-bin"
-			export getAur="yay-bin"
+			# User confirmed — use the detected helper
+			export getAur="${aurhlpr}"
 			;;
 		esac
-		if [[ -z "$getAur" ]]; then
-			print_log -sec "AUR" -crit "No AUR helper found..." "Log file at ${cacheDir}/logs/${HYDE_LOG}"
+	fi
+
+	# Step 3: If no helper chosen yet, show selection menu
+	if [[ -z "${getAur:-}" ]]; then
+		print_log -c "\nAvailable AUR helpers :: "
+		for i in "${!aurList[@]}"; do
+			print_log -sec "$((i + 1))" " ${aurList[$i]} "
+		done
+
+		prompt_timer 120 "Enter option number [default: yay] | q to quit "
+
+		case "${PROMPT_INPUT}" in
+		[1-9]|10) export getAur="${aurList[$((PROMPT_INPUT - 1))]}" ;;
+		q)
+			print_log -sec "AUR" -crit "Quit" "Exiting..."
 			exit 1
-		fi
-	else
-		export getAur="${aurhlpr}"
+			;;
+		*)
+			print_log -sec "AUR" -warn "Defaulting to yay"
+			export getAur="yay"
+			;;
+		esac
+	fi
+
+	# Step 4: Validate the chosen helper exists and works
+	if ! aur_health_check "${getAur}"; then
+		print_log -sec "AUR" -crit "ERROR" "'${getAur}' is not installed or not working"
+		print_log -sec "AUR" -crit "HINT" "Install it first, then re-run the installer"
+		exit 1
 	fi
 
 	# Only an explicit choice counts; an installed package is not an answer.
