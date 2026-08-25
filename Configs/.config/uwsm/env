@@ -1,13 +1,7 @@
-
 export APP2UNIT_SLICES='a=app-graphical.slice b=background-graphical.slice s=session-graphical.slice'
 export APP2UNIT_TYPE="service"
 
-# Source the script to apply environment variables from xdg_config/uwsm/env/*.sh files
-for f in ${XDG_CONFIG_HOME:-$HOME/.config}/uwsm/env.d/*.sh; do
-  if [[ -r "$f" ]]; then
-    source "$f"
-  fi
-done
+#! UWSM automaticlaly loads '~/.config/uwsm/env.d/*' -- https://github.com/Vladimir-csp/uwsm#4-environments-and-shell-profile
 
 # To add  or modify global environment variables please modify in '~/.config/uwsm/env.d/*.sh' files.
 # Create a new file: ~/.config/uwsm/env.d/my_env.sh
