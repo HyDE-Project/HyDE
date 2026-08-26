@@ -124,13 +124,14 @@ window#waybar {
     transition: all 0.3s cubic-bezier(.55, -0.68, .48, 1.682);
 }
 
-
-
 #workspaces,
 #taskbar {
     padding: 0em;
 }
 
+#window {
+    margin: 0 0.5em;
+}
 
 window#waybar.top .modules-left,
 window#waybar.top .modules-center,
