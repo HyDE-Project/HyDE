@@ -20,10 +20,10 @@
             "(.*)Netflix": "$1Netflix \udb81\udf46 ",
             "(.*) \u2014 Google chrome": "$1 \ue743 ",
             "(.*)Google chrome": "$1Google chrome \ue743 ",
-            "(.*) \u2014 Github": "$1 \ue709 ",
             "(.*)New Tab - Chromium": "$1Chromium \ue743 ",
             // [ ] forces waybar to sort and evaluate this AFTER "New Tab" rule
-            "(.*)[ ]- Chromium": "$1 \ue709 ", 
+            "(.*)[ ]- Chromium": "$1 \ue743 ", 
+            "(.*) \u2014 Github": "$1 \ue709 ",
             "(.*)Github": "$1Github \ue709 ",
             "(.*)Spotify Free": "$1Spotify \udb81\udcc7 ",
             "(.*)Spotify Premium": "$1Spotify \udb81\udcc7 "
