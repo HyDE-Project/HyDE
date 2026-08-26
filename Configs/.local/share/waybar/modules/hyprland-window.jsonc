@@ -21,7 +21,7 @@
             "(.*) \u2014 Github": "$1 \ue709 ",
             "(.*)Github": "Github \ue709 ",
             "(.*)Spotify Free": "Spotify \udb81\udcc7 ",
-            "(.*)Spotify Premiun": "Spotify \udb81\udcc7 "
+            "(.*)Spotify Premium": "Spotify \udb81\udcc7 "
         },
         "max-length": 50
     }
