@@ -157,6 +157,9 @@ Whether you're helping with code, testing, or documentation, we appreciate your 
 
 ---
 
+> [!NOTE]
+> If you are upgrading from an older version to the new Lua configuration, please follow the [Lua Migration Guide](https://hydeproject.pages.dev/en/help/lua/) in the HyDE wiki.
+
 To update HyDE, you will need to pull the latest changes from GitHub and restore the configs by running the following commands:
 
 > [!WARNING]
