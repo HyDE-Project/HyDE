@@ -237,13 +237,6 @@ EOF
 		esac
 	fi
 
-	# Step 4: Validate the chosen helper exists and works
-	if ! aur_health_check "${getAur}"; then
-		print_log -sec "AUR" -crit "ERROR" "'${getAur}' is not installed or not working"
-		print_log -sec "AUR" -crit "HINT" "Install it first, then re-run the installer"
-		exit 1
-	fi
-
 	# Only an explicit choice counts; an installed package is not an answer.
 	if ! chk_shell "${myShell:-}"; then
 		print_log -c "Shell :: "
