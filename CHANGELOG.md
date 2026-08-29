@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - Installer: a fresh install no longer aborts on a missing AUR helper before having the chance to install it
+- Wallbash: resolve `integer expected` syntax error in `color.set.sh` when evaluating template failure state
 - Waybar: resolved an issue in the memory module where state-specific formats overrode `format-alt` when memory usage exceeded 30%.
 - Waybar: enforced decimal rounding for values in the memory module
 - Hyprland: restored missing background blur on UI layers (Waybar, Rofi, etc.)
