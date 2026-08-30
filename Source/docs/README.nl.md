@@ -86,7 +86,7 @@ cd ~/HyDE/Scripts
 > Baseer je lijst op basis van `Scripts/pkg_extra.lst`
 > of je kunt `cp  Scripts/pkg_extra.lst Scripts/pkg_user.lst` Als je alle extra pakketten wilt installeren.
 
-Start je systeem opnieuw op na het installatiescript klaar is en je voor de eerste keer naar het SDDM inlogscherm (of zwart scherm) brengt. Voor meer details, raadpleeg de [installatie wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
+Start je systeem opnieuw op na het installatiescript klaar is en je voor de eerste keer naar het SDDM inlogscherm (of zwart scherm) brengt. Voor meer details, raadpleeg de [installatie wiki](https://hydeproject.pages.dev/en/getting-started/installation).
 
 <div align="right">
   <br>
