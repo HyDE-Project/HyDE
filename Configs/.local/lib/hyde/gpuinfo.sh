@@ -163,7 +163,7 @@ generate_json() {
     local util_bucket=$(((util_val / 10) * 10))
     local util_class="util-$util_bucket"
 
-    local temp_pct=$temp_val
+    local temp_pct=${temp_val:-0}
     ((temp_pct > 100)) && temp_pct=100
 
     local json="{\"text\":\"$thermo $temperature°C\", \"tooltip\":\"$emoji $primary_gpu\n$thermo Temperature: $temperature°C"
@@ -220,7 +220,7 @@ general_query() {
             echo "GPUINFO_PREV_STAT=\"$currStat\"" >>"$cpuinfo_file"
             echo "GPUINFO_PREV_IDLE=\"$currIdle\"" >>"$cpuinfo_file"
         }
-        awk -v stat="$diffStat" -v idle="$diffIdle" 'BEGIN {printf "%.1f", (stat/(stat+idle))*100}'
+        awk -v stat="$diffStat" -v idle="$diffIdle" 'BEGIN {total=stat+idle; printf "%.1f", (total > 0 ? (stat/total)*100 : 0)}'
     }
     utilization=$(get_utilization)
     current_clock_speed=$(awk '{sum += $1; n++} END {if (n > 0) print sum / n / 1000 ""}' /sys/devices/system/cpu/cpufreq/policy*/scaling_cur_freq)
@@ -266,7 +266,7 @@ amd_GPU() {
 }
 if [[ ! -f $gpuinfo_file ]]; then
     query
-    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file")\n\nReboot or '$0 --reset' to RESET Variables"
+    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file")\n\nReboot or '$0 --reset' to RESET Variables" >&2
 fi
 source "$gpuinfo_file"
 case "$1" in
@@ -281,7 +281,7 @@ case "$1" in
 "--reset" | "-rf")
     rm -fr "$gpuinfo_file"*
     query
-    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file" || true)\n\nReboot or '$0 --reset' to RESET Variables"
+    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file" || true)\n\nReboot or '$0 --reset' to RESET Variables" >&2
     exit
     ;;
 "--stat")
