@@ -99,7 +99,7 @@ Sehen Sie sich die Installationsanweisungen für HyDE in [Hyde-cli - Usage](http
 -->
 
 Bitte starten Sie neu, nachdem das Installationsskript abgeschlossen ist und Sie zum ersten Mal den SDDM-Anmeldebildschirm (oder einen schwarzen Bildschirm) sehen.
-Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
+Weitere Einzelheiten entnehmen Sie bitte dem [Installations-Wiki](https://hydeproject.pages.dev/de/getting-started/installation).
 
 <div align="right">
   <br>
