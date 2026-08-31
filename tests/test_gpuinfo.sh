@@ -113,11 +113,13 @@ else
         >/dev/null 2>"$stderr_file"
     unreadable_stderr=$(cat "$stderr_file")
 
-    case $unreadable_stderr in
-        *"awk: fatal"*)
-            fail "an unreadable power_now leaked an awk fatal error to stderr: $unreadable_stderr"
-            ;;
-    esac
+    # Match only a fatal that names power_now. The script has other awk calls
+    # that open files directly -- the cpufreq ones -- and those fail the same
+    # way on a machine with no cpufreq, which a container generally has not.
+    # Matching any "awk: fatal" would fail this case for an unrelated reason.
+    if printf '%s\n' "$unreadable_stderr" | grep -q 'awk: fatal.*power_now'; then
+        fail "an unreadable power_now leaked an awk fatal error to stderr: $unreadable_stderr"
+    fi
 fi
 
 finish
