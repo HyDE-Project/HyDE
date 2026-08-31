@@ -115,7 +115,8 @@ else
 
     # Match only a fatal that names power_now. The script has other awk calls
     # that open files directly -- the cpufreq ones -- and those fail the same
-    # way on a machine with no cpufreq, which a container generally has not.
+    # way wherever the host kernel has no cpufreq scaling driver loaded, which
+    # is the case on this project's CI runner.
     # Matching any "awk: fatal" would fail this case for an unrelated reason.
     if printf '%s\n' "$unreadable_stderr" | grep -q 'awk: fatal.*power_now'; then
         fail "an unreadable power_now leaked an awk fatal error to stderr: $unreadable_stderr"
