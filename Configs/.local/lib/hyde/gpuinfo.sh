@@ -194,11 +194,21 @@ general_query() {
     sensors_data=$(sensors 2>/dev/null)
     temperature=$(echo "$sensors_data" | $filter grep -m 1 -E "(edge|Package id.*|another keyword)" | awk -F ':' '{print int($2)}')
     fan_speed=$(echo "$sensors_data" | $filter grep -m 1 -E "fan[1-9]" | awk -F ':' '{print int($2)}')
-    for file in /sys/class/power_supply/BAT*/power_now; do
-        [[ -f $file ]] && power_discharge=$(awk '{print $1*10^-6 ""}' "$file") && break
+    local power_supply_dir="${GPUINFO_POWER_SUPPLY_DIR:-/sys/class/power_supply}"
+    local power_raw current_raw voltage_raw
+    # These attributes can exist and still fail to read — some laptops expose
+    # power_now but have their EC answer ENXIO for it — so read the value
+    # first and only use it if we actually got one. Letting awk open the file
+    # itself turns that into a fatal error on every poll.
+    for file in "$power_supply_dir"/BAT*/power_now; do
+        [[ -f $file ]] && power_raw=$(cat "$file" 2>/dev/null) && [[ -n $power_raw ]] &&
+            power_discharge=$(awk -v power="$power_raw" 'BEGIN {print power*10^-6 ""}') && break
     done
-    [[ -z $power_discharge ]] && for file in /sys/class/power_supply/BAT*/current_now; do
-        [[ -e $file ]] && power_discharge=$(awk -v current="$(cat "$file")" -v voltage="$(cat "${file/current_now/voltage_now}")" 'BEGIN {print (current * voltage) / 10^12 ""}') && break
+    [[ -z $power_discharge ]] && for file in "$power_supply_dir"/BAT*/current_now; do
+        [[ -e $file ]] && current_raw=$(cat "$file" 2>/dev/null) &&
+            voltage_raw=$(cat "${file/current_now/voltage_now}" 2>/dev/null) &&
+            [[ -n $current_raw && -n $voltage_raw ]] &&
+            power_discharge=$(awk -v current="$current_raw" -v voltage="$voltage_raw" 'BEGIN {print (current * voltage) / 10^12 ""}') && break
     done
     get_utilization() {
         statFile=$(head -1 /proc/stat)

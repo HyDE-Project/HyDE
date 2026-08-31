@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Waybar: `gpuinfo` no longer floods stderr with an `awk` fatal error on every poll when a battery exposes a `power_now` attribute the firmware cannot actually read; the value is now read before it is used instead of being handed straight to `awk`
 - Installer: a fresh install no longer aborts on a missing AUR helper before having the chance to install it
 - Wallbash: resolve `integer expected` syntax error in `color.set.sh` when evaluating template failure state
 - Waybar: resolved an issue in the memory module where state-specific formats overrode `format-alt` when memory usage exceeded 30%.
