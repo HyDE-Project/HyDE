@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
+- Waybar: choosing a theme, or just a wallpaper within the current theme, from the HyDE menu, the theme module, the wallpaper widget or the macOS layout's menu no longer silently leaves the wallpaper and colour state unapplied; both paths write into `hypr/themes/colors.conf`, which triggers a Hyprland autoreload, whose reload hook sends `SIGUSR2` to the whole `hyde-Hyprland-bar.service` cgroup — killing the in-flight `theme.select.sh`/`theme.switch.sh`/`wallpaper.sh` process tree along with it. These menu actions now launch them via `hyde-shell app -t scope` so they run in their own cgroup instead of waybar's.
 - Waybar: `gpuinfo` no longer floods stderr with an `awk` fatal error on every poll when a battery exposes a `power_now` attribute the firmware cannot actually read; the value is now read before it is used instead of being handed straight to `awk`
 - Installer: a fresh install no longer aborts on a missing AUR helper before having the chance to install it
 - Wallbash: resolve `integer expected` syntax error in `color.set.sh` when evaluating template failure state
