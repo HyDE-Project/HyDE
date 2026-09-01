@@ -9,6 +9,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## Unreleased
 
 ### Added
+- Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
+- Waybar: add VSCodium and Chromium icon rules to window module
+
+### Fixed
+- Waybar, wlogout: fix logout button behavior
+- Waybar: resolve visual collision between privacy and tray modules by adding margins
+- Docs: fix broken HyDE wiki links across the main and translated `README` files
+- Waybar: correct spacing and missing icons in window module 
+- Waybar: choosing a theme, or just a wallpaper within the current theme, from the HyDE menu, the theme module, the wallpaper widget or the macOS layout's menu no longer silently leaves the wallpaper and colour state unapplied; both paths write into `hypr/themes/colors.conf`, which triggers a Hyprland autoreload, whose reload hook sends `SIGUSR2` to the whole `hyde-Hyprland-bar.service` cgroup — killing the in-flight `theme.select.sh`/`theme.switch.sh`/`wallpaper.sh` process tree along with it. These menu actions now launch them via `hyde-shell app -t scope` so they run in their own cgroup instead of waybar's.
+- Waybar: `gpuinfo` no longer floods stderr with an `awk` fatal error on every poll when a battery exposes a `power_now` attribute the firmware cannot actually read; the value is now read before it is used instead of being handed straight to `awk`
+- Installer: a fresh install no longer aborts on a missing AUR helper before having the chance to install it
+- Wallbash: resolve `integer expected` syntax error in `color.set.sh` when evaluating template failure state
+- Waybar: `gpuinfo` no longer crashes with a division-by-zero error, leaks a plain-text banner into its JSON output on the first poll after a reboot or a `--reset`, or emits an invalid `"percentage":` with no value when no temperature sensor is available; all three used to break the module's parsing
+- Python environment: `uv sync` now targets the HyDE-managed venv at `~/.local/state/hyde/python_env` instead of creating a project-local `.venv`; also forces `--link-mode copy` to avoid silent reflink failures on ext4 that left packages uninstalled
+
+## v26.08.21
+
+### Added
 - Hyprland: automatically load `monitors.lua`. `nwg-displays` now works without requiring manual imports, while still allowing users to override them in `hyprland.lua`.
 - Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
 - swaync: notification popup padding, control center margin, and corner rounding follow the active theme's `general:gaps_out` and `decoration:rounding`
@@ -17,10 +35,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: dropped the legacy hyprlang dot, the files it deployed no longer exist
 
 ### Fixed
-- Waybar: choosing a theme, or just a wallpaper within the current theme, from the HyDE menu, the theme module, the wallpaper widget or the macOS layout's menu no longer silently leaves the wallpaper and colour state unapplied; both paths write into `hypr/themes/colors.conf`, which triggers a Hyprland autoreload, whose reload hook sends `SIGUSR2` to the whole `hyde-Hyprland-bar.service` cgroup — killing the in-flight `theme.select.sh`/`theme.switch.sh`/`wallpaper.sh` process tree along with it. These menu actions now launch them via `hyde-shell app -t scope` so they run in their own cgroup instead of waybar's.
-- Waybar: `gpuinfo` no longer floods stderr with an `awk` fatal error on every poll when a battery exposes a `power_now` attribute the firmware cannot actually read; the value is now read before it is used instead of being handed straight to `awk`
-- Installer: a fresh install no longer aborts on a missing AUR helper before having the chance to install it
-- Wallbash: resolve `integer expected` syntax error in `color.set.sh` when evaluating template failure state
 - Waybar: resolved an issue in the memory module where state-specific formats overrode `format-alt` when memory usage exceeded 30%.
 - Waybar: enforced decimal rounding for values in the memory module
 - Hyprland: restored missing background blur on UI layers (Waybar, Rofi, etc.)
@@ -41,7 +55,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: a session on a machine with a discrete NVIDIA GPU no longer comes up with a timed-out configuration; driver detection reads `/proc` and `/sys`, and the library directories are found by opening the candidate paths, so the budget Hyprland allows the whole configuration is no longer spent waiting on a subprocess
 - Core: an install deploys the cursor dots again instead of aborting on an existing theme file; the locked `deez-dots` revision predated the extraction fix, so every install kept running the defect the fix had already closed
 - Core: Pyprland commands keep their arguments when `nc`, `socat`, and `ncat` are unavailable, so commands such as `hyde-shell pypr toggle console` work through the CLI fallback again
-- Waybar: `gpuinfo` no longer crashes with a division-by-zero error, leaks a plain-text banner into its JSON output on the first poll after a reboot or a `--reset`, or emits an invalid `"percentage":` with no value when no temperature sensor is available; all three used to break the module's parsing
 - Hyprland: a session started without `XDG_CONFIG_HOME`, such as one launched from a TTY, no longer dies with a Lua error before the first window; the unset variable is treated as unset instead of being pasted into a path
 - Hyprland: a home directory containing an apostrophe no longer makes the session load its libraries from the system directory instead of the user's own, and an empty `XDG_RUNTIME_DIR` reads as unset rather than resolving against the working directory
 - Waybar: the theme module and the HyDE menu call `theme.switch` again; `themeswitch` was removed and the calls failed outright
@@ -70,7 +83,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Waydeeper: drop unsupported `--inpaint` option and inpaint model, use `--3d` instead
 - swaync: use themes from the `.local/share/wallbash` template instead of a stale copy that permanently shadowed it
 - swaync: an install deploys `~/.config/swaync` again; its dot lived only in `notification-daemon.toml`, a group nothing includes, so nothing ever reached it
-- Python environment: `uv sync` now targets the HyDE-managed venv at `~/.local/state/hyde/python_env` instead of creating a project-local `.venv`; also forces `--link-mode copy` to avoid silent reflink failures on ext4 that left packages uninstalled
 
 ## v26.7.4 | 4th Week of July 2026 Release
 
