@@ -88,9 +88,7 @@ if [ -f "${clockFile}" ] && command -v jq >/dev/null 2>&1; then
 
     currentFmt=$(jq -r '.clock.format // ""' "${clockFile}" 2>/dev/null)
     currentAlt=$(jq -r '.clock["format-alt"] // ""' "${clockFile}" 2>/dev/null)
-    newAlt=$(jq -n --arg alt "${currentAlt}" --arg seg "${newDateSeg}" '$alt | sub("%d·%m·%y"; $seg)')
-    newAlt="${newAlt#\"}"
-    newAlt="${newAlt%\"}"
+    newAlt=$(jq -rn --arg alt "${currentAlt}" --arg seg "${newDateSeg}" '$alt | sub("%d·%m·%y"; $seg)')
 
     if [ "${currentFmt}" != "${newTimeFmt}" ] || [ "${currentAlt}" != "${newAlt}" ]; then
         if [ "${flg_DryRun}" -eq 1 ]; then
@@ -143,8 +141,11 @@ remapFile="${confDir}/hypr/locale_remap.lua"
 if [ -f "${keyBindsFile}" ] && [ -f "${hyprLua}" ] && command -v xkbcli >/dev/null 2>&1 &&
     [ -n "${kbLayout}" ] && [ "${kbLayout}" != "us" ]; then
 
+    # gawk-specific: \s and the 3-arg match(..., array) form. Called
+    # explicitly rather than via plain 'awk', since a non-GNU awk provider
+    # (mawk, BusyBox) would silently return nothing here.
     xkb_code_sym_pairs() {
-        xkbcli compile-keymap --layout "$1" 2>/dev/null | awk '
+        xkbcli compile-keymap --layout "$1" 2>/dev/null | gawk '
             /^\s*key <[A-Z0-9]+>\s*\{/ {
                 match($0, /<([A-Z0-9]+)>/, c); match($0, /\[\s*([A-Za-z0-9_]+)/, s)
                 if (c[1] != "" && s[1] != "") print c[1], s[1]
@@ -170,7 +171,11 @@ if [ -f "${keyBindsFile}" ] && [ -f "${hyprLua}" ] && command -v xkbcli >/dev/nu
         remaps+=("${triggerName}:${tgtSym}")
     done < <(grep -oE 'MOD \.\. " \+ [^"]+"' "${keyBindsFile}" | sed -E 's/.*\+ //; s/"$//' | awk '{print $NF}' | sort -u)
 
-    remapBody=""
+    # All unbinds run before any bind: if one pair's target symbol equals a
+    # later pair's source symbol, interleaving them would let a later
+    # unbind remove the earlier pair's freshly-registered bind.
+    unbindLines=""
+    bindLines=""
     for pair in "${remaps[@]}"; do
         us="${pair%%:*}"
         tgt="${pair##*:}"
@@ -181,11 +186,12 @@ if [ -f "${keyBindsFile}" ] && [ -f "${hyprLua}" ] && command -v xkbcli >/dev/nu
             combo="${bindLine#*MOD .. \"}"
             combo="${combo%%\"*}"
             newBindLine="${bindLine/+ ${us}\"/+ ${tgt}\"}"
-            remapBody+="hl.unbind(MOD .. \"${combo}\")"$'\n'
-            remapBody+="${descLine}"$'\n'
-            remapBody+="${newBindLine}"$'\n\n'
+            unbindLines+="hl.unbind(MOD .. \"${combo}\")"$'\n'
+            bindLines+="${descLine}"$'\n'
+            bindLines+="${newBindLine}"$'\n\n'
         done < <(grep -nF "+ ${us}\"" "${keyBindsFile}" | cut -d: -f1)
     done
+    remapBody="${unbindLines}${unbindLines:+$'\n'}${bindLines}"
 
     if [ -n "${remapBody}" ]; then
         newRemapFile=$(
