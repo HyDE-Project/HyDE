@@ -234,6 +234,18 @@ get_themes() {
         done
     fi
 }
+##
+# Sources the two optional user-override files, if present.
+#
+# Both are optional -- most installs have neither -- so the `[ -f ... ] &&`
+# guards are expected to come back false. Without the trailing `return 0`
+# the function's own exit status becomes that of the last such guard, i.e.
+# it fails whenever the file happens to be absent. A function call is not
+# exempt from `set -e` the way a command inside an `&&`/`||` list is, so
+# every caller that runs with `set -e` (directly, or via `hyde-shell init`,
+# which calls this) would silently die right here, before doing anything,
+# on any system that never created these files.
+##
 export_hyde_config() {
     local user_conf_state="$XDG_STATE_HOME/hyde/staterc"
     local user_conf="$XDG_STATE_HOME/hyde/config"
