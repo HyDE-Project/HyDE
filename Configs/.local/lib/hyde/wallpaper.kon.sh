@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
+# shellcheck disable=SC1091
+source "$scrDir/shutils/l10n.sh"
 scrName="$(basename "$0")"
 kmenuPath="$HOME/.local/share/kio/servicemenus"
 kmenuDesk="$kmenuPath/hydewallpaper.desktop"
@@ -37,13 +39,13 @@ if [ ! -z "$setTheme" ] && [ ! -z "$setWall" ]; then
     inwallHash="$(set_hash "$setWall")"
     get_hashmap "$tgtPath/$setTheme"
     if [[ ${wallHash[*]} == *"$inwallHash"* ]]; then
-        notify-send -a "HyDE Notify" -i "$thmbDir/$inwallHash.sqre" "Error" "Hash matched in $setTheme"
+        send_notifs -a "HyDE Notify" -i "$thmbDir/$inwallHash.sqre" "Error" "${_T[Hash matched in]:-Hash matched in} $setTheme"
         exit 0
     fi
     cp "$setWall" "$tgtPath/$setTheme/wallpapers"
     ln -fs "$tgtPath/$setTheme/wallpapers/$(basename "$setWall")" "$tgtPath/$setTheme/wall.set"
     "$scrDir/theme.switch.sh" -s "$setTheme"
-    notify-send -a "HyDE Alert" -i "$thmbDir/$inwallHash.sqre" "Wallpaper set in $setTheme"
+    notify-send -a "HyDE Alert" -i "$thmbDir/$inwallHash.sqre" "${_T[Wallpaper set in]:-Wallpaper set in} $setTheme"
 else
     echo -e "[Desktop Entry]\nType=Service\nMimeType=image/png;image/jpeg;image/jpg;image/gif\nActions=Menu-Refresh$(printf ";%s" "${thmList[@]}")\nX-KDE-Submenu=Set As Wallpaper...\n\n[Desktop Action Menu-Refresh]\nName=.: Refresh List :.\nExec=$scrName" > "$kmenuDesk"
     for i in "${!thmList[@]}"; do

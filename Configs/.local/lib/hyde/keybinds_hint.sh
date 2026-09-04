@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 pkill -x rofi && exit
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 kb_cache="$XDG_RUNTIME_DIR/hyde/keybinds_hint.rofi"
 
 if [[ $1 == "--reload" ]]; then
@@ -18,7 +21,7 @@ then
 fi)"
 wait
 if [ -z "$output" ]; then
-    notify-send "Keybind Hint" "Initialization failed."
+    send_notifs "Keybind Hint" "Initialization failed."
     exit 0
 fi
 if ! command -v rofi &>/dev/null; then

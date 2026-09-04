@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 rofiAssetDir="$SHARE_DIR/hyde/rofi/assets"
 hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
 hypr_border=${hypr_border:-2}
@@ -42,7 +45,7 @@ selector_menu() {
         -theme "${ROFI_THEME_MENU_STYLE:-selector}")
     if [ -n "$RofiSel" ]; then
         selectedStyle=$(echo "$RofiSel" | awk -F '\x00' '{print $1}' | sed 's/Style //')
-        notify-send -a "HyDe Alert" -i "$rofiAssetDir/theme_style_$selectedStyle.png" "Style $selectedStyle applied..."
+        notify-send -a "HyDe Alert" -i "$rofiAssetDir/theme_style_$selectedStyle.png" "${_T[Style]:-Style} $selectedStyle ${_T[applied...]:-applied...}"
         set_conf "ROFI_THEME_STYLE" "$selectedStyle"
     fi
     exit 0

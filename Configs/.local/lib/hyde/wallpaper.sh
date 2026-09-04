@@ -8,6 +8,7 @@ else
 fi
 
 source "$LIB_DIR/hyde/wallpaper/help.sh"
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 source "$LIB_DIR/hyde/wallpaper/core.sh"
 source "$LIB_DIR/hyde/wallpaper/select.sh"
 
@@ -247,10 +248,10 @@ main() {
             if [ "$set_as_global" == "true" ]; then
                 notify-send -a "HyDE Alert" -i "$selected_thumbnail" "$selected_wallpaper"
             else
-                notify-send -a "HyDE Alert" -i "$selected_thumbnail" "$selected_wallpaper set for $wallpaper_backend"
+                notify-send -a "HyDE Alert" -i "$selected_thumbnail" "$selected_wallpaper ${_T[set for]:-set for} $wallpaper_backend"
             fi
         else
-            notify-send -a "HyDE Alert" "Wallpaper not found"
+            send_notifs -a "HyDE Alert" "Wallpaper not found"
         fi
     fi
     return "$(wallpaper_backend_status "$backend_status")"

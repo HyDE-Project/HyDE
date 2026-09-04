@@ -2,6 +2,8 @@
 
 scrDir="$(dirname "$(realpath "$0")")"
 source "$scrDir/globalcontrol.sh"
+# shellcheck disable=SC1091
+source "$scrDir/shutils/l10n.sh"
 
 lockDir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
 mkdir -p "$lockDir"
@@ -29,7 +31,7 @@ if [ "$is_video" -eq 1 ]; then
     extract_thumbnail "$selected_wall" "$cached_thumb"
     if [ ! -f "$cached_thumb" ]; then
         print_log -err "failed to extract thumbnail from" "$selected_wall"
-        notify-send -a "HyDE Alert" "ERROR: failed to extract thumbnail from video"
+        send_notifs -a "HyDE Alert" "ERROR: failed to extract thumbnail from video"
         exit 1
     fi
     selected_wall="$cached_thumb"
@@ -38,7 +40,7 @@ fi
 # Ensure waydeeper is installed
 if ! command -v waydeeper &>/dev/null; then
     print_log -err "waydeeper not found"
-    notify-send -a "HyDE Alert" "ERROR: waydeeper is not installed"
+    send_notifs -a "HyDE Alert" "ERROR: waydeeper is not installed"
     exit 1
 fi
 
@@ -53,7 +55,7 @@ if [ -n "$WALLPAPER_WAYDEEPER_MODEL" ]; then
         print_log -sec "wallpaper" -stat "downloading $WALLPAPER_WAYDEEPER_MODEL model"
         if ! waydeeper download-model $WALLPAPER_WAYDEEPER_MODEL; then
             print_log -err "failed to download waydeeper $WALLPAPER_WAYDEEPER_MODEL model"
-            notify-send -a "HyDE Alert" "ERROR: failed to download waydeeper $WALLPAPER_WAYDEEPER_MODEL model"
+            notify-send -a "HyDE Alert" "${_T[ERROR: failed to download waydeeper]:-ERROR: failed to download waydeeper} $WALLPAPER_WAYDEEPER_MODEL ${_T[model]:-model}"
             exit 1
         fi
     fi

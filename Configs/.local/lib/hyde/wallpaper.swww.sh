@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 #! A fallback script. Incase user explcitly set swww as wallpaper backend
-notify-send "DEPRECATION NOTICE: swww backend is deprecated, please switch to awww or other supported backends. See 'hyde-shell wallpaper --help' for more info."
+scrDir="$(dirname "$(realpath "$0")")"
+source "$scrDir/globalcontrol.sh"
+# shellcheck disable=SC1091
+source "$scrDir/shutils/l10n.sh"
+send_notifs "DEPRECATION NOTICE: swww backend is deprecated, please switch to awww or other supported backends. See 'hyde-shell wallpaper --help' for more info."
 
 selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.set"}"
 lockFile="$XDG_RUNTIME_DIR/hyde/$(basename "$0").lock"
@@ -16,8 +20,6 @@ EOF
 fi
 touch "$lockFile"
 trap 'rm -f ${lockFile}' EXIT
-scrDir="$(dirname "$(realpath "$0")")"
-source "$scrDir/globalcontrol.sh"
 case "$WALLPAPER_SET_FLAG" in
     p)
         xtrans=$WALLPAPER_SWWW_TRANSITION_PREV

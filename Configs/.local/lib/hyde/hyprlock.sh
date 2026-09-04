@@ -7,6 +7,8 @@ fi
 
 # Source argparse.sh for argument parsing
 source "${LIB_DIR}/hyde/shutils/argparse.sh"
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 
 confDir="${confDir:-$XDG_CONFIG_HOME}"
 cacheDir="${HYDE_CACHE_HOME:-"$XDG_CACHE_HOME/hyde"}"
@@ -139,7 +141,7 @@ fn_select() {
     layout_dir="$confDir/hypr/hyprlock"
     layout_items=$(find -L "$layout_dir" -name "*.conf" ! -name "theme.conf" 2>/dev/null | sed 's/\.conf$//')
     if [ -z "$layout_items" ]; then
-        notify-send -i "preferences-desktop-display" "Error" "No .conf files found in $layout_dir"
+        send_notifs -i "preferences-desktop-display" "Error" "${_T[No .conf files found in:]:-No .conf files found in:} $layout_dir"
         exit 1
     fi
     layout_items="Theme Preference
@@ -165,7 +167,7 @@ $layout_items"
     generate_conf "$hyprlock_conf_path"
     "$LIB_DIR/hyde/font.sh" resolve "$hyprlock_conf_path"
     fn_profile
-    notify-send -i "system-lock-screen" "Hyprlock layout:" "$selected_layout"
+    send_notifs -i "system-lock-screen" "Hyprlock layout:" "$selected_layout"
 }
 check_and_sanitize_process() {
     local unit_name="${1:-$HYPRLOCK_SCOPE_NAME}"
@@ -242,7 +244,7 @@ rofi_test_preview() {
     fi
     local unit_name="hyde-${XDG_SESSION_DESKTOP:-unknown}-lockscreen-preview.scope"
     check_and_sanitize_process "$unit_name"
-    send_notifs "Hyprlock layout: $hyprlock_conf_name" "Please swipe, press a key or click to exit." \
+    send_notifs "${_T[Hyprlock layout:]:-Hyprlock layout:} $hyprlock_conf_name" "Please swipe, press a key or click to exit." \
         -i "system-lock-screen" -t 3000 \
         -r 9
     app.sh -S both -u "$unit_name" -t scope -- hyprlock.sh --test "$hyprlock_conf_name"
@@ -407,7 +409,7 @@ fn_reload() {
     "$LIB_DIR/hyde/font.sh" resolve "$hyprlock_conf_path"
     fn_profile
     reload_hyprlock
-    notify-send -i "system-lock-screen" "Hyprlock config regenerated" "Layout: $layout"
+    notify-send -i "system-lock-screen" "${_T[Hyprlock config regenerated]:-Hyprlock config regenerated}" "${_T[Layout:]:-Layout:} $layout"
 }
 
 ensure_lockscreen_bg_exist() {

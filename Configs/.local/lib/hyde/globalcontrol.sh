@@ -188,7 +188,7 @@ get_hashmap() {
             return 1
         else
             echo "ERROR: No image found in any source"
-            [ -n "$no_notify" ] && notify-send -a "HyDE Alert" "WARNING: No compatible wallpapers found in: ${no_wallpapers[*]}"
+            [ -n "$no_notify" ] && notify-send -a "HyDE Alert" "${_T[WARNING: No compatible wallpapers found in:]:-WARNING: No compatible wallpapers found in:} ${no_wallpapers[*]}"
             exit 1
         fi
     fi
@@ -519,7 +519,7 @@ accepted_mime_types() {
             return 0
         else
             print_log -err "File type not supported for this wallpaper backend."
-            notify-send -u critical -a "HyDE-Alert" "File type not supported for this wallpaper backend."
+            notify-send -u critical -a "HyDE-Alert" "${_T[File type not supported for this wallpaper backend.]:-File type not supported for this wallpaper backend.}"
         fi
     done
 }

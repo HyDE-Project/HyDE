@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 rofiStyleDir="$SHARE_DIR/hyde/rofi/themes"
 rofiAssetDir="$SHARE_DIR/hyde/rofi/assets"
 font_scale=$ROFI_SELECT_SCALE
@@ -39,8 +42,8 @@ done | sort -n | rofi -dmenu \
     -select "$rofiStyle")
 if [ -n "$RofiSel" ]; then
     set_conf "rofiStyle" "$RofiSel"
-    notify-send -a "HyDE Alert" -r 2 -t 2200 -i "$rofiAssetDir/$RofiSel.png" " style $RofiSel applied..."
+    notify-send -a "HyDE Alert" -r 2 -t 2200 -i "$rofiAssetDir/$RofiSel.png" " ${_T[style]:-style} $RofiSel ${_T[applied...]:-applied...}"
 fi
 if [ -n "$ROFI_LAUNCH_STYLE" ]; then
-    notify-send -a "HyDE Alert" -r 3 -u critical "Style: '$ROFI_LAUNCH_STYLE' is explicitly set, remove it in ~/.config/hyde/config.toml for changes to take effect."
+    notify-send -a "HyDE Alert" -r 3 -u critical "${_T[Style:]:-Style:} '$ROFI_LAUNCH_STYLE' ${_T[is explicitly set, remove it in ~/.config/hyde/config.toml for changes to take effect.]:-is explicitly set, remove it in ~/.config/hyde/config.toml for changes to take effect.}"
 fi

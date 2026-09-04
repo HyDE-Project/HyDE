@@ -2,6 +2,9 @@
 
 [[ ${HYDE_SHELL_INIT} -ne 1 ]] && eval "$(hyde-shell init)"
 
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
+
 ocr_extract() {
     image_path="$1"
     tesseract_default_language=("eng")
@@ -15,7 +18,7 @@ ocr_extract() {
 
     for pkg in "${tesseract_packages[@]}"; do
         if ! pkg_installed "$pkg"; then
-            notify-send -a "HyDE Alert" "$(echo -e "OCR: required package is not installed\n $pkg")" -e -i "dialog-error"
+            notify-send -a "HyDE Alert" "$(echo -e "${_T[OCR: required package is not installed]:-OCR: required package is not installed}\n $pkg")" -e -i "dialog-error"
             return 1
         fi
     done
@@ -35,6 +38,6 @@ ocr_extract() {
     )
 
     printf "%s" "$tesseract_output" | wl-copy
-    notify-send -a "HyDE Alert" "$(echo -e "OCR: ${#tesseract_output} symbols recognized\n\nLanguages used ${tesseract_languages[*]/#/'\n '}")" -i "$image_path" -e -r 9
+    notify-send -a "HyDE Alert" "$(echo -e "${_T[OCR:]:-OCR:} ${#tesseract_output} ${_T[symbols recognized]:-symbols recognized}\n\n${_T[Languages used]:-Languages used} ${tesseract_languages[*]/#/'\n '}")" -i "$image_path" -e -r 9
 
 }

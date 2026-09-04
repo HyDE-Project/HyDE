@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 set -eo pipefail
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
+
 RECORDER="wl-screenrec"
 command -v "$RECORDER" &> /dev/null || RECORDER="wf-recorder"
 if ! command -v "$RECORDER" &> /dev/null; then
-    notify-send -a "HyDE Alert" "No screen recorder found. Try installing wl-screenrec or wf-recorder."
+    send_notifs -a "HyDE Alert" "No screen recorder found. Try installing wl-screenrec or wf-recorder."
     echo "No screen recorder found. Try installing wl-screenrec or wf-recorder."
     exit 1
 fi
@@ -85,7 +89,7 @@ handle_recording() {
         grim -g "$GEOM" "$tmp_thumbnail"
     fi
     "$RECORDER" "${parameters[@]}" -f "$save_file_path"
-    notify-send -a "HyDE Alert" "$RECORDER: Recording saved at $save_file_path" -i "$tmp_thumbnail"
+    notify-send -a "HyDE Alert" "$RECORDER: ${_T[Recording saved at]:-Recording saved at} $save_file_path" -i "$tmp_thumbnail"
 }
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -103,7 +107,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --quit)
             killall "$RECORDER"
-            notify-send -a "HyDE Alert" "Recording stopped"
+            send_notifs -a "HyDE Alert" "Recording stopped"
             exit 0
             ;;
         --help)

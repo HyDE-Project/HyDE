@@ -16,6 +16,8 @@ wallpaper_cache_bootstrap() {
 	export scrDir="${LIB_DIR:-$HOME/.local/lib}/hyde"
 	export thmbDir
 	export dcolDir
+	# shellcheck disable=SC1091
+	[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 }
 
 wallpaper_cache_init() {
@@ -43,7 +45,7 @@ fn_wallcache() {
 	if [ "$is_video" -eq 1 ]; then
 		if [ ! -e "$thmbDir/$x_hash.thmb" ] || [ ! -e "$thmbDir/$x_hash.sqre" ] || [ ! -e "$thmbDir/$x_hash.blur" ] || [ ! -e "$thmbDir/$x_hash.quad" ] || [ ! -e "$dcolDir/$x_hash.dcol" ]; then
 			local temp_image="/tmp/$x_hash.png"
-			notify-send -a "HyDE wallpaper" "Extracting thumbnail from video wallpaper..."
+			send_notifs -a "HyDE wallpaper" "Extracting thumbnail from video wallpaper..."
 			extract_thumbnail "$x_wall" "$temp_image"
 			x_wall="$temp_image"
 		fi

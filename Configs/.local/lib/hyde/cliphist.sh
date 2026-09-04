@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 pkill -u "$USER" rofi && exit 0
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
 favorites_file="$cache_dir/landing/cliphist_favorites"
 [ -f "$HOME/.cliphist_favorites" ] && favorites_file="$HOME/.cliphist_favorites"
@@ -17,7 +20,7 @@ process_deletion() {
             break
         elif [ -n "$line" ]; then
             cliphist delete <<< "$line"
-            notify-send "Deleted" "$line"
+            send_notifs "Deleted" "$line"
         fi
     done
     exit 0
@@ -60,7 +63,7 @@ check_content() {
         img_idx=$(awk -F '\t' '{print $1}' <<< "$line")
         local temp_preview="$XDG_RUNTIME_DIR/hyde/pastebin-preview_$img_idx"
         wl-paste > "$temp_preview"
-        notify-send -a "Pastebin:" "Preview: $img_idx" -i "$temp_preview" -t 2000
+        notify-send -a "Pastebin:" "${_T[Preview:]:-Preview:} $img_idx" -i "$temp_preview" -t 2000
         return 1
     fi
 }
@@ -173,7 +176,7 @@ delete_items() {
 }
 view_favorites() {
     prepare_favorites_for_display || {
-        notify-send "No favorites."
+        send_notifs "No favorites."
         return
     }
     local selected_item
@@ -186,9 +189,9 @@ view_favorites() {
             local selected_encoded_favorite="${favorites[$((index - 1))]}"
             echo "$selected_encoded_favorite" | base64 --decode | wl-copy
             paste_string "$@"
-            notify-send "Copied to clipboard."
+            send_notifs "Copied to clipboard."
         else
-            notify-send "Error: Selected favorite not found."
+            send_notifs "Error: Selected favorite not found."
         fi
     fi
 }
@@ -202,16 +205,16 @@ add_to_favorites() {
         local encoded_item
         encoded_item=$(echo "$full_item" | base64 -w 0)
         if [ -f "$favorites_file" ] && grep -Fxq "$encoded_item" "$favorites_file"; then
-            notify-send "Item is already in favorites."
+            send_notifs "Item is already in favorites."
         else
             echo "$encoded_item" >> "$favorites_file"
-            notify-send "Added to favorites."
+            send_notifs "Added to favorites."
         fi
     fi
 }
 delete_from_favorites() {
     prepare_favorites_for_display || {
-        notify-send "No favorites to remove."
+        send_notifs "No favorites to remove."
         return
     }
     local selected_favorite
@@ -226,9 +229,9 @@ delete_from_favorites() {
             else
                 grep -vF -x "$selected_encoded_favorite" "$favorites_file" > "$favorites_file.tmp" && mv "$favorites_file.tmp" "$favorites_file"
             fi
-            notify-send "Item removed from favorites."
+            send_notifs "Item removed from favorites."
         else
-            notify-send "Error: Selected favorite not found."
+            send_notifs "Error: Selected favorite not found."
         fi
     fi
 }
@@ -238,10 +241,10 @@ clear_favorites() {
         confirm=$(echo -e "Yes\nNo" | run_rofi "☢️ Clear All Favorites?") || exit 0
         if [ "$confirm" = "Yes" ]; then
             : > "$favorites_file"
-            notify-send "All favorites have been deleted."
+            send_notifs "All favorites have been deleted."
         fi
     else
-        notify-send "No favorites to delete."
+        send_notifs "No favorites to delete."
     fi
 }
 manage_favorites() {
@@ -270,7 +273,7 @@ clear_history() {
     handle_special_commands "${selected_item##*$'\n'}"
     if [ "$selected_item" = "Yes" ]; then
         cliphist wipe
-        notify-send "Clipboard history cleared."
+        send_notifs "Clipboard history cleared."
     fi
 }
 main_menu_options() {
@@ -301,7 +304,7 @@ ocr_scan() {
     mkdir -p "$runtime_dir"
     cliphist decode "$index" > "${image_path}"
     if [ ! -s "${image_path}" ]; then
-        notify-send "OCR Error" "No image data in clipboard -r 9"
+        send_notifs "OCR Error" "No image data in clipboard" -r 9
         exit 1
     fi
     print_log -g "Scanning ${image_path}"
