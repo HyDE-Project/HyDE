@@ -257,15 +257,16 @@ _desktopLang="${_desktopLang,,}"
 [[ "${_desktopLang}" == "c" || "${_desktopLang}" == "po" ]] && _desktopLang="en"
 localeJsonFile="${dataDir}/hyde/locale/${_desktopLang}.json"
 waybarModulesDir="${dataDir}/waybar/modules"
+waybarMenusDir="${dataDir}/waybar/menus"
 if [ -f "${localeJsonFile}" ] && [ -d "${waybarModulesDir}" ] && command -v python3 >/dev/null 2>&1; then
-    python3 - "${localeJsonFile}" "${waybarModulesDir}" "${flg_DryRun}" <<'PYEOF'
+    python3 - "${localeJsonFile}" "${waybarModulesDir}" "${waybarMenusDir}" "${flg_DryRun}" <<'PYEOF'
 import glob
 import json
 import os
 import re
 import sys
 
-locale_path, modules_dir, dry_run = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
+locale_path, modules_dir, menus_dir, dry_run = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] == "1"
 
 with open(locale_path, encoding="utf-8") as f:
     translations = json.load(f)
@@ -318,6 +319,36 @@ for path in paths:
     with open(path, encoding="utf-8") as f:
         content = f.read()
     new_content = translate_json_strings(content)
+    if new_content == content:
+        continue
+    name = os.path.basename(path)
+    if dry_run:
+        print(f"DRY:{name}")
+    else:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        print(f"OK:{name}")
+
+# Waybar right-click menus (custom-hyde-menu.jsonc and friends point a
+# "menu-file" at one of these): a separate GtkBuilder XML format, whose
+# <property name="label">...</property> elements are unambiguously
+# display text -- no key/value distinction to make here, unlike the JSON
+# modules above.
+label_re = re.compile(r'(<property name="label">)((?:(?!</property>).)*)(</property>)')
+
+
+def translate_xml_labels(content: str) -> str:
+    def replace(m: re.Match) -> str:
+        translated = translations.get(m.group(2))
+        return m.group(1) + (translated if translated is not None else m.group(2)) + m.group(3)
+
+    return label_re.sub(replace, content)
+
+
+for path in sorted(glob.glob(os.path.join(menus_dir, "*.xml"))):
+    with open(path, encoding="utf-8") as f:
+        content = f.read()
+    new_content = translate_xml_labels(content)
     if new_content == content:
         continue
     name = os.path.basename(path)
