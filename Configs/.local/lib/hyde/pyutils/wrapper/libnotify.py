@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+import json
 import os
 import shutil
 from subprocess import run, CalledProcessError, TimeoutExpired
@@ -11,6 +12,29 @@ DEFAULT_URGENCY = "normal"
 
 _notify_send_path: Optional[str] = None
 _notify_send_checked = False
+
+
+def _load_translations() -> dict:
+    """Load this process's locale/<lang>.json, if one exists.
+
+    Same DESKTOP_LANG detection as shutils/l10n.sh (bash) uses, but a
+    separate dictionary/file: the two runtimes can't share a source file
+    without bash learning to parse JSON or Python learning to parse a
+    sourced .sh array, so each keeps its own single language file.
+    """
+    lang = (os.environ.get("LC_ALL") or os.environ.get("LANG") or "en")[:2].lower()
+    if lang in ("c", "po"):  # "C"/"POSIX" locale, not an actual language
+        lang = "en"
+    data_home = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
+    path = os.path.join(data_home, "hyde", "locale", f"{lang}.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+_T = _load_translations()
 
 
 def _has_notify_send() -> bool:
@@ -48,6 +72,10 @@ def send(
     replace_id: Optional[int] = None,
 ) -> None:
     """Send a desktop notification via notify-send, with console fallback."""
+    summary = _T.get(summary, summary)
+    if body:
+        body = _T.get(body, body)
+
     if not _is_gui_available() or not _has_notify_send():
         _print_fallback(summary, body, app_name)
         return

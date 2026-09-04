@@ -8,10 +8,22 @@ export DESKTOP_LANG="${DESKTOP_LANG,,}"
 #? Handles edge cases where locale is set to "C" or "POSIX" which are not actual languages
 [[ "$DESKTOP_LANG" == "c" || "$DESKTOP_LANG" == "po" ]] && export DESKTOP_LANG="en"
 
-# Initialize the _T associative array for translations
+# Initialize the _T associative array for translations. One JSON file per
+# language is the single source of truth for every runtime (bash here,
+# Python's pyutils/wrapper/libnotify.py reads the same file) -- keeping
+# both in sync only works if there is exactly one file to edit.
 declare -A _T 2>/dev/null || : # Localization support
-[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${DESKTOP_LANG}.sh" ]] && source "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${DESKTOP_LANG}.sh"
-[[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.sh"
+_load_locale_json() {
+    local file="$1"
+    [[ -f "$file" ]] || return 0
+    command -v jq >/dev/null 2>&1 || return 0
+    local key value
+    while IFS=$'\t' read -r key value; do
+        [[ -n "$key" ]] && _T["$key"]="$value"
+    done < <(jq -r 'to_entries[] | [.key, .value] | @tsv' "$file" 2>/dev/null)
+}
+_load_locale_json "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${DESKTOP_LANG}.json"
+_load_locale_json "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.json"
 
 # method overrides for localization
 
