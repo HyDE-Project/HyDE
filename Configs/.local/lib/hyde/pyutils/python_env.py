@@ -80,7 +80,7 @@ def ensure_venv(venv_path: str) -> None:
     )
     if result.returncode != 0:
         err = result.stderr.strip() or result.stdout.strip() or "uv venv failed"
-        notify.send("HyDE UV", f"Failed to create virtual environment:\n{err}", urgency="critical")
+        notify.send("HyDE UV", f"{notify.translate('Failed to create virtual environment:')}\n{err}", urgency="critical")
         raise RuntimeError(f"Failed to create virtual environment: {err}")
 
 
@@ -193,7 +193,7 @@ def run_uv(
 
     if result.returncode != 0:
         err = result.stderr.strip() or result.stdout.strip() or "Unknown error"
-        notify.send("HyDE UV", f"Error:\n{err}", urgency="critical")
+        notify.send("HyDE UV", f"{notify.translate('Error:')}\n{err}", urgency="critical")
         raise RuntimeError(err)
 
     return result
@@ -282,11 +282,11 @@ def install_package(package: str | Iterable[str]) -> None:
         notify.send("HyDE UV", "No packages specified for installation", urgency="warning")
         return
 
-    notify.send("HyDE UV", f"Installing {', '.join(pkgs)}...")
+    notify.send("HyDE UV", f"{notify.translate('Installing')} {', '.join(pkgs)}...")
     try:
         run_uv(["add"] + pkgs, stream=True)
     except RuntimeError as e:
-        notify.send("HyDE UV", f"Error installing packages: {e}", urgency="critical")
+        notify.send("HyDE UV", f"{notify.translate('Error installing packages:')} {e}", urgency="critical")
         raise
 
 
@@ -301,11 +301,11 @@ def uninstall_package(package: str | Iterable[str]) -> None:
         notify.send("HyDE UV", "No packages specified for uninstallation", urgency="warning")
         return
 
-    notify.send("HyDE UV", f"Uninstalling {', '.join(pkgs)}...")
+    notify.send("HyDE UV", f"{notify.translate('Uninstalling')} {', '.join(pkgs)}...")
     try:
         run_uv(["remove"] + pkgs, stream=True)
     except RuntimeError as e:
-        notify.send("HyDE UV", f"Error uninstalling packages: {e}", urgency="critical")
+        notify.send("HyDE UV", f"{notify.translate('Error uninstalling packages:')} {e}", urgency="critical")
         raise
 
 
@@ -343,7 +343,7 @@ def v_import(module_name: str, auto_install: bool = True, extra: str = None) -> 
         if not auto_install:
             raise ImportError(f"Module '{module_name}' not found and auto_install is disabled")
 
-        notify.send("HyDE UV", f"Installing missing module: {module_name}")
+        notify.send("HyDE UV", f"{notify.translate('Installing missing module:')} {module_name}")
         if extra:
             run_uv(["sync", "--extra", extra])
         else:
@@ -354,15 +354,15 @@ def v_import(module_name: str, auto_install: bool = True, extra: str = None) -> 
 
         try:
             module = importlib.import_module(module_name)
-            notify.send("HyDE UV", f"{module_name} installed successfully")
+            notify.send("HyDE UV", f"{module_name} {notify.translate('installed successfully')}")
             return module
         except ImportError as e:
             notify.send(
                 "HyDE UV",
-                f"Failed to import {module_name} after installation: {e}",
+                f"{notify.translate('Failed to import')} {module_name} {notify.translate('after installation:')} {e}",
                 urgency="critical",
             )
-            raise RuntimeError(f"Failed to import {module_name} after installation: {e}")
+            raise RuntimeError(f"{notify.translate('Failed to import')} {module_name} {notify.translate('after installation:')} {e}")
 
 
 # =========================

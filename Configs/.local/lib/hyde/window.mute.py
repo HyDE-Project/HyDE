@@ -318,16 +318,18 @@ def main() -> int:
         print(f"No sink input for focused window: {app_class}", file=sys.stderr)
         return 1
 
+    from pyutils.wrapper.libnotify import translate
+
     selected = [s for s in sink_inputs if s.index in set(sink_ids)]
     want_mute = not all(s.mute for s in selected)
-    state_msg = "Muted" if want_mute else "Unmuted"
+    state_msg = translate("Muted") if want_mute else translate("Unmuted")
     state_icon = ICON_MUTED if want_mute else ICON_UNMUTED
 
     errors, failed_id = _mute_sink_inputs(sink_ids, want_mute)
     if errors:
         print(f"PulseAudio failed to set '{failed_id}' to '{state_msg}'.", file=sys.stderr)
         _notify(
-            f"Failed to set '{failed_id}' to '{state_msg}'!",
+            f"{translate('Failed to set')} '{failed_id}' {translate('to')} '{state_msg}'!",
             app_name="t1",
             replace_id=91190,
             expire_time=1200,

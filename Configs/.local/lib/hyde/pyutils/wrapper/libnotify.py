@@ -37,6 +37,18 @@ def _load_translations() -> dict:
 _T = _load_translations()
 
 
+def translate(text: str) -> str:
+    """Look up one fragment against the loaded locale file.
+
+    send() already does this for a whole summary/body automatically, so
+    callers only need this directly for messages built from an f-string:
+    the interpolated value makes the whole string impossible to match as
+    a fixed dictionary key, so the static part has to be looked up on its
+    own before the dynamic part is spliced in.
+    """
+    return _T.get(text, text)
+
+
 def _has_notify_send() -> bool:
     """Check if notify-send command is available (cached)."""
     global _notify_send_path, _notify_send_checked

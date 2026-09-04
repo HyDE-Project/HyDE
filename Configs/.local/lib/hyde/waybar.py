@@ -329,7 +329,7 @@ def _apply_layout(layout_path, style_path, notify_label):
     update_border_radius()
     generate_includes()
     update_global_css()
-    notify.send("Waybar", f"Layout changed to {notify_label}", replace_id=9)
+    notify.send("Waybar", f"Layout {notify.translate('changed to')} {notify_label}", replace_id=9)
     restart_waybar()
 
 
@@ -653,7 +653,7 @@ def style_selector(current_layout=None):
         update_global_css()
         notify.send(
             "Waybar",
-            f"Style changed to {os.path.basename(selected_style)}",
+            f"Style {notify.translate('changed to')} {os.path.basename(selected_style)}",
             replace_id=9,
         )
         restart_waybar()
