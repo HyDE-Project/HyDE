@@ -4,6 +4,8 @@ if ! source "$(which hyde-shell)"; then
     echo "[$0] :: Is HyDE installed?"
     exit 1
 fi
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 sunsetConf="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprsunset"
 default_temp=6000
 default_gamma=100
@@ -52,9 +54,9 @@ send_notification() {
         message="$newGamma"
     fi
     if [ -n "$message" ]; then
-        notify-send -a "HyDE Notify" -r 19 -t 800 -i redshift "$message" "$title"
+        send_notifs -a "HyDE Notify" -r 19 -t 800 -i redshift "$message" "$title"
     else
-        notify-send -a "HyDE Notify" -r 19 -t 800 -i redshift "$title"
+        send_notifs -a "HyDE Notify" -r 19 -t 800 -i redshift "$title"
     fi
 }
 send_signal_to_process() {

@@ -3,7 +3,8 @@
 # A missing key falls back to the original English string, so this file
 # only needs entries for what's actually been migrated to print_log_L /
 # send_notifs (or looked up directly against _T) so far -- see
-# Configs/.local/lib/hyde/screenshot.sh and volumecontrol.sh.
+# Configs/.local/lib/hyde/{screenshot,volumecontrol,hyprsunset,wallbashtoggle,
+# keyboardswitch,shutils/qr}.sh.
 
 # volumecontrol.sh
 _T["muted"]="Stumm"
@@ -27,3 +28,28 @@ _T["QR Scan"]="QR-Scan"
 _T["Performing QR scan on screenshot..."]="Führe QR-Scan auf Screenshot aus …"
 _T["QR: extraction error"]="QR: Fehler bei der Extraktion"
 _T["QR: screenshot error"]="QR: Fehler beim Screenshot"
+
+# shutils/qr.sh
+_T["zbar package is not installed"]="zbar-Paket ist nicht installiert"
+_T["QR: successfully recognized"]="QR: erfolgreich erkannt"
+
+# hyprsunset.sh
+_T["Hyprsunset: ON"]="Hyprsunset: AN"
+_T["Hyprsunset: OFF"]="Hyprsunset: AUS"
+_T["Mode: Temperature"]="Modus: Temperatur"
+_T["Mode: Gamma"]="Modus: Gamma"
+
+# wallbashtoggle.sh (translates the mode name and the "mode" suffix
+# separately, since the notification is built from wallbashModes'
+# fixed set of English words plus a static suffix)
+_T["theme"]="Theme"
+_T["auto"]="Automatisch"
+_T["dark"]="Dunkel"
+_T["light"]="Hell"
+_T["mode"]="Modus"
+
+# keyboardswitch.sh -- shows Hyprland's active_keymap XKB display name
+# verbatim. Only the two layouts this repo/session actually exercised are
+# covered; any other layout's English display name falls back untouched.
+_T["German"]="Deutsch"
+_T["English (US)"]="Englisch (US)"

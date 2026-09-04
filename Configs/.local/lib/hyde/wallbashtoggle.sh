@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 [[ $HYDE_SHELL_INIT -ne 1 ]] && eval "$(hyde-shell init)"
+
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
 setMode=0
 wallbashModes=("theme" "auto" "dark" "light")
 rofi_wallbash() {
@@ -42,4 +45,5 @@ export reload_flag=1
 [[ $setMode -lt 0 ]] && setMode=$((${#wallbashModes[@]} - 1))
 set_conf "enableWallDcol" "$setMode"
 "$LIB_DIR/hyde/theme.switch.sh"
-notify-send -a "HyDE Alert" -i "$ICONS_DIR/Wallbash-Icon/hyde.png" " ${wallbashModes[setMode]} mode"
+wallbashMode="${wallbashModes[setMode]}"
+notify-send -a "HyDE Alert" -i "$ICONS_DIR/Wallbash-Icon/hyde.png" " ${_T[$wallbashMode]:-$wallbashMode} ${_T[mode]:-mode}"

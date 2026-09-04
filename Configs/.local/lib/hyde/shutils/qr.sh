@@ -2,12 +2,15 @@
 
 [[ ${HYDE_SHELL_INIT} -ne 1 ]] && eval "$(hyde-shell init)"
 
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
+
 qr_extract() {
 
     image_path="$1"
 
     if ! pkg_installed "zbar"; then
-        notify-send -r 9 -a "QR Scan" "zbar package is not installed" -e -i "dialog-error"
+        send_notifs -r 9 -a "QR Scan" "zbar package is not installed" -e -i "dialog-error"
         return 1
     fi
 
@@ -21,5 +24,5 @@ qr_extract() {
     )
 
     printf "%s" "$qr_output" | wl-copy
-    notify-send -r 9 -a "QR Scan" "QR: successfully recognized" -i "$image_path" -e -r 9
+    send_notifs -r 9 -a "QR Scan" "QR: successfully recognized" -i "$image_path" -e -r 9
 }
