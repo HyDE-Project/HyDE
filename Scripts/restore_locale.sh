@@ -111,14 +111,30 @@ if [ -f "${clockFile}" ] && command -v jq >/dev/null 2>&1; then
 fi
 
 # --- keybindings: WYSIWYG remap of punctuation-triggered binds ------------
-# key_binds.lua is authored against a US physical layout (e.g. "slash" for
-# the keybindings-hint menu). On a different layout that key prints a
-# different symbol (German: "-"), so the bind is unbind+re-registered under
-# the symbol actually printed on that physical key -- found by asking
-# xkbcli which keysym each XKB key code produces on 'us' vs the detected
-# layout, and matching the two by code. Letters/digits are unaffected: only
-# names that resolve through this lookup (i.e. real XKB keysym names, not
-# Hyprland's own key aliases like "A" or "Delete") are ever considered.
+#
+# Why this exists:
+# key_binds.lua names bind keys by XKB keysym, e.g. `hl.bind(MOD .. " +
+# slash", ...)` for the keybindings-hint menu. With a single kb_layout
+# configured (what the section above sets), Hyprland resolves that keysym
+# name against the *active* layout to find the physical key to bind -- and
+# for letters this already does the right thing with zero help from us:
+# German QWERTZ swaps Y and Z relative to US QWERTY, but "SUPER + Z" still
+# resolves to whichever physical key produces "Z" on the active German
+# layout, i.e. the key labelled Z. Same story for AZERTY's A/Q and W/Z
+# swap. No remap needed for letters or digits on any layout, ever.
+#
+# Punctuation is the one place that breaks: a punctuation keysym can be
+# *entirely absent* from the target layout's unshifted level, rather than
+# just moved. On German, "/" isn't reachable at all next to where you'd
+# expect it -- it only exists on Shift+7. Hyprland's resolution still
+# "succeeds" in that case, it just lands the bind on Shift+7, which is not
+# what pressing the US-equivalent physical key does. That's the actual gap
+# this section closes: for every bind key that is a real XKB keysym name
+# (letters/Hyprland's own aliases like "A" or "Delete" never match one, so
+# they're naturally excluded, no allowlist needed), look up which physical
+# key produces it on 'us' via xkbcli, then look up what that same physical
+# key produces on the detected layout. Only unbind+re-register when that
+# comes back different -- i.e. only ever punctuation, in practice.
 #
 # Regenerated in full on every run into a HyDE-owned file; never edit
 # locale_remap.lua by hand, it will be overwritten.
