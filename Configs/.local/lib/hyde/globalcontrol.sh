@@ -239,6 +239,7 @@ export_hyde_config() {
     local user_conf="$XDG_STATE_HOME/hyde/config"
     [ -f "$user_conf_state" ] && source "$user_conf_state"
     [ -f "$user_conf" ] && source "$user_conf"
+    return 0
 }
 export_hyde_config
 case "$enableWallDcol" in
