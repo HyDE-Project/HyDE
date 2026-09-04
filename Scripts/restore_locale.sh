@@ -223,3 +223,114 @@ if [ -f "${keyBindsFile}" ] && [ -f "${hyprLua}" ] && command -v xkbcli >/dev/nu
         fi
     fi
 fi
+
+# --- waybar modules: translate tooltip/text strings via the same locale --
+# json shutils/l10n.sh (bash) and pyutils/wrapper/libnotify.py (Python)
+# already read -- one file, every runtime including this one goes through
+# it, no separate module-string dictionary to keep in sync.
+#
+# Every module under .local/share/waybar/modules is a synced dot (deez
+# redeploys it from the repo template on every restore, same as
+# clock.jsonc above), so translation has to happen here, post-deploy.
+# Deliberately generic: every quoted string *value* anywhere in a module
+# file that exactly matches a locale/<lang>.json key is swapped for its
+# translation -- a new module or a newly-translated string needs no
+# change here, only a de.json entry.
+#
+# This is text substitution on the raw file, not a JSON-parse-then-dump
+# round trip, on purpose: several modules are genuine JSONC (line
+# comments, e.g. bluetooth.jsonc), which a strict parser -- jq included --
+# refuses to load at all. A regex finds every "..." token and only
+# replaces it if it is *not* immediately followed by a colon: that is
+# the one condition that always means "this token is a JSON object key,
+# not a value" (custom-mediaplayer.jsonc's "next"/"previous" keys must
+# stay put; group-mediaplayer.jsonc's "next"/"previous" *values* are
+# exactly what's meant to be translated). Comments, formatting and
+# trailing commas outside of a translated token are left untouched.
+#
+# Same DESKTOP_LANG detection as shutils/l10n.sh -- duplicated rather than
+# sourced, since that file lives under the deployed .local/lib/hyde tree,
+# not anywhere reachable from Scripts/ by a stable relative path.
+_desktopLang="${LC_ALL:-${LANG:-en}}"
+_desktopLang="${_desktopLang:0:2}"
+_desktopLang="${_desktopLang,,}"
+[[ "${_desktopLang}" == "c" || "${_desktopLang}" == "po" ]] && _desktopLang="en"
+localeJsonFile="${dataDir}/hyde/locale/${_desktopLang}.json"
+waybarModulesDir="${dataDir}/waybar/modules"
+if [ -f "${localeJsonFile}" ] && [ -d "${waybarModulesDir}" ] && command -v python3 >/dev/null 2>&1; then
+    python3 - "${localeJsonFile}" "${waybarModulesDir}" "${flg_DryRun}" <<'PYEOF'
+import glob
+import json
+import os
+import re
+import sys
+
+locale_path, modules_dir, dry_run = sys.argv[1], sys.argv[2], sys.argv[3] == "1"
+
+with open(locale_path, encoding="utf-8") as f:
+    translations = json.load(f)
+
+token_re = re.compile(r'"(?:[^"\\]|\\.)*"')
+# Waybar's own display-text fields, only -- not every field that happens
+# to hold a string. Scoping this way is what keeps a short, generic de.json
+# entry (input for the wallbash mode picker, say "auto") from also
+# matching an unrelated *config* value that happens to be the identical
+# literal, e.g. cava.jsonc's "source": "auto" (an enum cava itself
+# requires verbatim, not display text -- translating it would silently
+# break auto source detection instead of translating anything visible).
+DISPLAY_FIELDS_RE = re.compile(r"^(text|format-alt|tooltip(-format)?.*)$")
+key_re = re.compile(r'"([a-zA-Z0-9_-]+)"\s*:\s*$')
+
+
+def translate_json_strings(content: str) -> str:
+    # A quoted token not immediately followed by a colon is a value,
+    # never a key -- JSON syntax has no other way to write "key": that a
+    # value could be confused with. Checked *after* matching, against the
+    # untouched original text, and not as a lookahead baked into the
+    # regex: a lookahead that disqualifies a match makes re's scanner
+    # retry one character later, landing inside the rejected token and
+    # matching garbage through to some unrelated later quote.
+    out = []
+    last = 0
+    for m in token_re.finditer(content):
+        out.append(content[last : m.start()])
+        raw = m.group(0)
+        is_key = bool(re.match(r"\s*:", content[m.end() :]))
+        if not is_key:
+            key_match = key_re.search(content[:m.start()])
+            field = key_match.group(1) if key_match else ""
+            if DISPLAY_FIELDS_RE.match(field):
+                try:
+                    value = json.loads(raw)
+                except json.JSONDecodeError:
+                    value = None
+                translated = translations.get(value) if value is not None else None
+                if translated is not None:
+                    raw = json.dumps(translated, ensure_ascii=False)
+        out.append(raw)
+        last = m.end()
+    out.append(content[last:])
+    return "".join(out)
+
+
+paths = sorted(glob.glob(os.path.join(modules_dir, "*.json")) + glob.glob(os.path.join(modules_dir, "*.jsonc")))
+for path in paths:
+    with open(path, encoding="utf-8") as f:
+        content = f.read()
+    new_content = translate_json_strings(content)
+    if new_content == content:
+        continue
+    name = os.path.basename(path)
+    if dry_run:
+        print(f"DRY:{name}")
+    else:
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        print(f"OK:{name}")
+PYEOF
+fi | while IFS=: read -r status name; do
+    case "${status}" in
+    DRY) print_log -y "[LOCALE] " -b "dry-run :: " "Would translate ${name}" ;;
+    OK) print_log -g "[LOCALE] " -b "waybar :: " "translated ${name}" ;;
+    esac
+done
