@@ -228,7 +228,7 @@ hl.bind(MOD .. " + ALT + G", hl.dsp.exec_cmd(hyde.sh.gamemode()), _F) -- TODO
 _F = {description = "[Utilities] game launcher"}
 hl.bind(MOD .. " + SHIFT + G", hl.dsp.exec_cmd("hyde-shell gamelauncher"), _F)
 
-_F = {description = "[Utilities] screen capture] color picker", locked = true}
+_F = {description = "[Utilities|Screen Capture] color picker", locked = true}
 hl.bind(MOD .. " + SHIFT + P", hl.dsp.exec_cmd("hyprpicker -an"), _F)
 _F = {description = "[Utilities] partial screenshot capture", locked = true}
 hl.bind(MOD .. " + P", hl.dsp.exec_cmd(hyde.sh.screenshot.snip()), _F)

@@ -258,15 +258,28 @@ _desktopLang="${_desktopLang,,}"
 localeJsonFile="${dataDir}/hyde/locale/${_desktopLang}.json"
 waybarModulesDir="${dataDir}/waybar/modules"
 waybarMenusDir="${dataDir}/waybar/menus"
-if [ -f "${localeJsonFile}" ] && [ -d "${waybarModulesDir}" ] && command -v python3 >/dev/null 2>&1; then
-    python3 - "${localeJsonFile}" "${waybarModulesDir}" "${waybarMenusDir}" "${flg_DryRun}" <<'PYEOF'
+# key_binds.lua's `description = "..."` fields feed the keybindings-hint
+# rofi menu (keybinds/hint-hyprland.py parses the "[Header|...] text"
+# shape straight out of these strings) -- display text like the waybar
+# menu labels above, just a different host file. It lives under the same
+# synced .local/share/hypr tree, so it's translated here too, not via a
+# separate mechanism.
+keyBindsLuaFile="${dataDir}/hypr/lua/key_binds.lua"
+if [ -f "${localeJsonFile}" ] && command -v python3 >/dev/null 2>&1; then
+    python3 - "${localeJsonFile}" "${waybarModulesDir}" "${waybarMenusDir}" "${flg_DryRun}" "${keyBindsLuaFile}" <<'PYEOF'
 import glob
 import json
 import os
 import re
 import sys
 
-locale_path, modules_dir, menus_dir, dry_run = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4] == "1"
+locale_path, modules_dir, menus_dir, dry_run, key_binds_path = (
+    sys.argv[1],
+    sys.argv[2],
+    sys.argv[3],
+    sys.argv[4] == "1",
+    sys.argv[5],
+)
 
 with open(locale_path, encoding="utf-8") as f:
     translations = json.load(f)
@@ -358,10 +371,36 @@ for path in sorted(glob.glob(os.path.join(menus_dir, "*.xml"))):
         with open(path, "w", encoding="utf-8") as f:
             f.write(new_content)
         print(f"OK:{name}")
+
+# Every description is `description = "..."`, an unambiguous field name --
+# no key/value guesswork needed here like the JSON modules above.
+desc_re = re.compile(r'(description\s*=\s*")((?:[^"\\]|\\.)*)(")')
+
+
+def translate_lua_descriptions(content: str) -> str:
+    def replace(m: re.Match) -> str:
+        translated = translations.get(m.group(2))
+        return m.group(1) + (translated if translated is not None else m.group(2)) + m.group(3)
+
+    return desc_re.sub(replace, content)
+
+
+if key_binds_path and os.path.isfile(key_binds_path):
+    with open(key_binds_path, encoding="utf-8") as f:
+        content = f.read()
+    new_content = translate_lua_descriptions(content)
+    if new_content != content:
+        name = os.path.basename(key_binds_path)
+        if dry_run:
+            print(f"DRY:{name}")
+        else:
+            with open(key_binds_path, "w", encoding="utf-8") as f:
+                f.write(new_content)
+            print(f"OK:{name}")
 PYEOF
 fi | while IFS=: read -r status name; do
     case "${status}" in
     DRY) print_log -y "[LOCALE] " -b "dry-run :: " "Would translate ${name}" ;;
-    OK) print_log -g "[LOCALE] " -b "waybar :: " "translated ${name}" ;;
+    OK) print_log -g "[LOCALE] " -b "locale :: " "translated ${name}" ;;
     esac
 done

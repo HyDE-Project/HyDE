@@ -17,10 +17,9 @@ _notify_send_checked = False
 def _load_translations() -> dict:
     """Load this process's locale/<lang>.json, if one exists.
 
-    Same DESKTOP_LANG detection as shutils/l10n.sh (bash) uses, but a
-    separate dictionary/file: the two runtimes can't share a source file
-    without bash learning to parse JSON or Python learning to parse a
-    sourced .sh array, so each keeps its own single language file.
+    Same DESKTOP_LANG detection and same file as shutils/l10n.sh (bash)
+    uses -- one JSON file per language is the single source of truth for
+    every runtime, bash loads it via jq, Python via json.load here.
     """
     lang = (os.environ.get("LC_ALL") or os.environ.get("LANG") or "en")[:2].lower()
     if lang in ("c", "po"):  # "C"/"POSIX" locale, not an actual language
