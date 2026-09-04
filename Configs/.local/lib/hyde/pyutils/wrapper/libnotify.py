@@ -14,23 +14,35 @@ _notify_send_path: Optional[str] = None
 _notify_send_checked = False
 
 
+def _load_locale_json(path: str) -> dict:
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
 def _load_translations() -> dict:
     """Load this process's locale/<lang>.json, if one exists.
 
-    Same DESKTOP_LANG detection and same file as shutils/l10n.sh (bash)
-    uses -- one JSON file per language is the single source of truth for
-    every runtime, bash loads it via jq, Python via json.load here.
+    Same DESKTOP_LANG detection and same file/overlay precedence as
+    shutils/l10n.sh (bash) uses -- an existing DESKTOP_LANG wins over
+    LC_ALL/LANG, and a config-home locale file overrides the data-home
+    one, key by key. One JSON file per language is the single source of
+    truth for every runtime, bash loads it via jq, Python via json.load
+    here.
     """
-    lang = (os.environ.get("LC_ALL") or os.environ.get("LANG") or "en")[:2].lower()
+    lang = (os.environ.get("DESKTOP_LANG") or os.environ.get("LC_ALL") or os.environ.get("LANG") or "en")[
+        :2
+    ].lower()
     if lang in ("c", "po"):  # "C"/"POSIX" locale, not an actual language
         lang = "en"
     data_home = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
-    path = os.path.join(data_home, "hyde", "locale", f"{lang}.json")
-    try:
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
+    config_home = os.environ.get("XDG_CONFIG_HOME") or os.path.expanduser("~/.config")
+    translations = _load_locale_json(os.path.join(data_home, "hyde", "locale", f"{lang}.json"))
+    translations.update(_load_locale_json(os.path.join(config_home, "hyde", "locale", f"{lang}.json")))
+    return translations
 
 
 _T = _load_translations()

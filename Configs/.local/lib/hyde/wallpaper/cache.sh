@@ -17,7 +17,7 @@ wallpaper_cache_bootstrap() {
 	export thmbDir
 	export dcolDir
 	# shellcheck disable=SC1091
-	[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
+	[[ -f "$scrDir/shutils/l10n.sh" ]] && source "$scrDir/shutils/l10n.sh"
 }
 
 wallpaper_cache_init() {
