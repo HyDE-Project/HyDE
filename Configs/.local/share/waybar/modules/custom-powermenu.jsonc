@@ -6,7 +6,7 @@
         "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/power.xml",
         "menu-actions": {
             "lock": "hyde-shell lockscreen.sh",
-            "logout": "hyprctl dispatch exit 0",
+            "logout": "hyprctl dispatch 'hl.dsp.exit()'",
             "shutdown-now": "shutdown now",
             "shutdown-wait": "systemctl poweroff",
             "reboot-now": "systemctl reboot",

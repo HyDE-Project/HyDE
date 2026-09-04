@@ -35,8 +35,7 @@ window#waybar {
 }
 
 /*
- These are groups/islands configs
-
+These are groups/islands configs
 */
 #leaf,
 #leaf-inverse,
@@ -55,10 +54,6 @@ window#waybar {
     border-style: solid;
     border-color: @main-bg;
 }
-
-
-
-
 
 #workspaces button {
     box-shadow: none;
@@ -131,6 +126,11 @@ window#waybar {
 
 #window {
     margin: 0 0.5em;
+}
+
+#privacy,
+#tray {
+    margin: 0 0.3em;
 }
 
 window#waybar.top .modules-left,
