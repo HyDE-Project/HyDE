@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
+# shellcheck disable=SC1091
+source "$scrDir/shutils/l10n.sh"
 confDir=${confDir:-$XDG_CONFIG_HOME}
 use_swayosd=false
 isNotify=${VOLUME_NOTIFY:-true}
@@ -53,9 +55,9 @@ notify_mute() {
     mute=$(pamixer "$srce" --get-mute | cat)
     [ "$srce" == "--default-source" ] && dvce="microphone" || dvce="speaker"
     if [ "$mute" == "true" ]; then
-        [[ $isNotify == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "$icodir/muted-$dvce.svg" "muted" "$nsink"
+        [[ $isNotify == true ]] && send_notifs -a "HyDE Notify" -r 8 -t 2000 -i "$icodir/muted-$dvce.svg" "muted" "$nsink"
     else
-        [[ $isNotify == true ]] && notify-send -a "HyDE Notify" -r 8 -t 2000 -i "$icodir/unmuted-$dvce.svg" "unmuted" "$nsink"
+        [[ $isNotify == true ]] && send_notifs -a "HyDE Notify" -r 8 -t 2000 -i "$icodir/unmuted-$dvce.svg" "unmuted" "$nsink"
     fi
 }
 change_volume() {
@@ -140,9 +142,9 @@ select_output() {
         if [ -n "$selection" ]; then
             device=$(pw-dump | sel=$selection jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink" and .info?.props?."node.description" == env.sel) | .info?.props?."object.id"' | xargs)
             if wpctl set-default "$device"; then
-                notify-send -t 2000 -i "$icodir/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
+                notify-send -t 2000 -i "$icodir/unmuted-speaker.svg" -r 8 -u low "${_T[Activated:]:-Activated:} $selection"
             else
-                notify-send -t 2000 -r 8 -u critical "Error activating $selection"
+                notify-send -t 2000 -r 8 -u critical "${_T[Error activating:]:-Error activating:} $selection"
             fi
         else
             pw-dump | jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink") | .info?.props?."node.description"' | sort
@@ -151,9 +153,9 @@ select_output() {
         if [ -n "$selection" ]; then
             device=$(pactl list sinks | grep -C2 -F "Description: $selection" | grep Name | cut -d: -f2 | xargs)
             if pactl set-default-sink "$device"; then
-                notify-send -t 2000 -i "$icodir/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
+                notify-send -t 2000 -i "$icodir/unmuted-speaker.svg" -r 8 -u low "${_T[Activated:]:-Activated:} $selection"
             else
-                notify-send -t 2000 -r 8 -u critical "Error activating $selection"
+                notify-send -t 2000 -r 8 -u critical "${_T[Error activating:]:-Error activating:} $selection"
             fi
         else
             pactl list sinks | grep -ie "Description:" | awk -F ': ' '{print $2}' | sort
@@ -222,10 +224,10 @@ while getopts "iop:stq" opt; do
         s)
             if
                 ! selected_output=$(hyprland-dialog --text "$(
-                    echo -e "Devices:"
+                    echo -e "${_T[Devices:]:-Devices:}"
                     select_output | sed 's/^/           🔈 /'
                 )" \
-                    --title "Choose an output device" \
+                    --title "${_T[Choose an output device]:-Choose an output device}" \
                     --buttons "$(select_output | sed 's/$/;/')")
             then
                 selected_output=$(select_output | rofi -dmenu -theme "notification")
