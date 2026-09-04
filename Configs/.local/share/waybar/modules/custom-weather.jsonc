@@ -1,9 +1,11 @@
 {
   "custom/weather": {
     "exec": "hyde-shell weather",
+    "on-click": "pkill -RTMIN+10 waybar",
     "tooltip": true,
     "format": "{0}",
-    "interval": 30,
-    "return-type": "json"
+    "interval": 3600, // Update every hour
+    "return-type": "json",
+    "signal": 10
   }
 }
