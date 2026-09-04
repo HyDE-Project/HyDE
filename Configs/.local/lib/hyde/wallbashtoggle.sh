@@ -12,13 +12,22 @@ rofi_wallbash() {
     r_scale="configuration {font: \"JetBrainsMono Nerd Font $font_scale\";}"
     elem_border=$((hypr_border * 4))
     r_override="window{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
-    rofiSel=$(parallel echo {} ::: "${wallbashModes[@]}" | rofi -dmenu \
+    local labels=()
+    for m in "${wallbashModes[@]}"; do
+        labels+=("${_T[$m]:-$m}")
+    done
+    rofiSel=$(printf '%s\n' "${labels[@]}" | rofi -dmenu \
         -theme-str "$r_scale" \
         -theme-str "$r_override" \
         -theme wallbash \
-        -select "${wallbashModes[$enableWallDcol]}")
-    if [ ! -z "$rofiSel" ]; then
-        setMode="$(parallel --link echo {} ::: "${!wallbashModes[@]}" ::: "${wallbashModes[@]}" ::: "$rofiSel" | awk '{if ($2 == $3) print $1}')"
+        -select "${labels[$enableWallDcol]}")
+    if [ -n "$rofiSel" ]; then
+        for i in "${!labels[@]}"; do
+            if [ "${labels[$i]}" == "$rofiSel" ]; then
+                setMode="$i"
+                break
+            fi
+        done
     else
         exit 0
     fi
@@ -46,4 +55,4 @@ export reload_flag=1
 set_conf "enableWallDcol" "$setMode"
 "$LIB_DIR/hyde/theme.switch.sh"
 wallbashMode="${wallbashModes[setMode]}"
-notify-send -a "HyDE Alert" -i "$ICONS_DIR/Wallbash-Icon/hyde.png" " ${_T[$wallbashMode]:-$wallbashMode} ${_T[mode]:-mode}"
+notify-send -a "HyDE Alert" -i "$ICONS_DIR/Wallbash-Icon/hyde.png" " ${_T[$wallbashMode]:-$wallbashMode}"

@@ -40,14 +40,14 @@ _T["Hyprsunset: OFF"]="Hyprsunset: AUS"
 _T["Mode: Temperature"]="Modus: Temperatur"
 _T["Mode: Gamma"]="Modus: Gamma"
 
-# wallbashtoggle.sh (translates the mode name and the "mode" suffix
-# separately, since the notification is built from wallbashModes'
-# fixed set of English words plus a static suffix)
+# wallbashtoggle.sh -- same short labels in both the rofi mode-picker
+# list (-m) and the notification afterwards, on purpose. "Automatisch"
+# was tried for "auto" and rejected: too long, rofi truncated it with
+# "...". "Auto" reads fine standalone in both places.
 _T["theme"]="Theme"
-_T["auto"]="Automatisch"
+_T["auto"]="Auto"
 _T["dark"]="Dunkel"
 _T["light"]="Hell"
-_T["mode"]="Modus"
 
 # keyboardswitch.sh -- shows Hyprland's active_keymap XKB display name
 # verbatim. Only the two layouts this repo/session actually exercised are
