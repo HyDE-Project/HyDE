@@ -18,7 +18,7 @@ def _load_locale_json(path: str) -> dict:
     try:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return {}
     return data if isinstance(data, dict) else {}
 
