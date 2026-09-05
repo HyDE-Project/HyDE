@@ -113,7 +113,7 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 -->
 
 Please reboot after the install script completes and takes you to the SDDM login screen (or black screen) for the first time.
-For more details, please refer to the [installation wiki](https://github.com/HyDE-Project/HyDE/wiki/installation).
+For more details, please refer to the [installation wiki](https://hydeproject.pages.dev/en/getting-started/installation).
 
 Quick checklist for Arch-based distros such as BigLinux / Manjaro:
 
@@ -156,6 +156,9 @@ Whether you're helping with code, testing, or documentation, we appreciate your 
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=UPDATING" width="450"/>
 
 ---
+
+> [!NOTE]
+> If you are upgrading from an older version to the new Lua configuration, please follow the [Lua Migration Guide](https://hydeproject.pages.dev/en/help/lua/) in the HyDE wiki.
 
 To update HyDE, you will need to pull the latest changes from GitHub and restore the configs by running the following commands:
 

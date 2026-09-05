@@ -10,19 +10,15 @@ dependencies = [
     "hererocks>=0.25.1",
     "websockets>=16.0",
     "xdg-prefs",
-    "uv>=0.1.0",
+    "uv>=0.5.29",
     "deez-dots",
     "pyprland==3.4.3",
 ]
 
 [project.optional-dependencies]
 amd = ["pyamdgpuinfo"]
-wayland = [
-    "pywayland",
-    "PyGObject",
-    "PyQt6",
-]
-dev = [ "prek>=0.4.1" ]
+wayland = ["pywayland", "PyGObject", "PyQt6"]
+dev = ["pre-commit>=4.6.2", "prek>=0.4.1"]
 
 [tool.ruff]
 line-length = 100
@@ -30,4 +26,4 @@ indent-width = 4
 
 [tool.uv.sources]
 xdg-prefs = { git = "https://github.com/rchaput/xdg-prefs" }
-deez-dots = { git = "https://github.com/HyDE-Project/deez-dots.git" }
+deez-dots = { git = "https://github.com/HyDE-Project/deez-dots.git", branch = "main" }

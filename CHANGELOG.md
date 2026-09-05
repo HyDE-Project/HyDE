@@ -9,6 +9,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## Unreleased
 
 ### Added
+- Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
+- Waybar: add VSCodium and Chromium icon rules to window module
+
+### Fixed
+- Waybar, wlogout: fix logout button behavior
+- Waybar: resolve visual collision between privacy and tray modules by adding margins
+- Docs: fix broken HyDE wiki links across the main and translated `README` files
+- Waybar: correct spacing and missing icons in window module 
+- Waybar: choosing a theme, or just a wallpaper within the current theme, from the HyDE menu, the theme module, the wallpaper widget or the macOS layout's menu no longer silently leaves the wallpaper and colour state unapplied; both paths write into `hypr/themes/colors.conf`, which triggers a Hyprland autoreload, whose reload hook sends `SIGUSR2` to the whole `hyde-Hyprland-bar.service` cgroup — killing the in-flight `theme.select.sh`/`theme.switch.sh`/`wallpaper.sh` process tree along with it. These menu actions now launch them via `hyde-shell app -t scope` so they run in their own cgroup instead of waybar's.
+- Waybar: `gpuinfo` no longer floods stderr with an `awk` fatal error on every poll when a battery exposes a `power_now` attribute the firmware cannot actually read; the value is now read before it is used instead of being handed straight to `awk`
+- Installer: a fresh install no longer aborts on a missing AUR helper before having the chance to install it
+- Wallbash: resolve `integer expected` syntax error in `color.set.sh` when evaluating template failure state
+- Waybar: `gpuinfo` no longer crashes with a division-by-zero error, leaks a plain-text banner into its JSON output on the first poll after a reboot or a `--reset`, or emits an invalid `"percentage":` with no value when no temperature sensor is available; all three used to break the module's parsing
+- Python environment: `uv sync` now targets the HyDE-managed venv at `~/.local/state/hyde/python_env` instead of creating a project-local `.venv`; also forces `--link-mode copy` to avoid silent reflink failures on ext4 that left packages uninstalled
+
+## v26.08.21
+
+### Added
 - Hyprland: automatically load `monitors.lua`. `nwg-displays` now works without requiring manual imports, while still allowing users to override them in `hyprland.lua`.
 - Docs: `MIGRATION-LUA.md`, a transition guide for upgrading from the hyprlang configuration — what moved where, the silent failures and their causes, and the files the upgrade leaves behind
 - swaync: notification popup padding, control center margin, and corner rounding follow the active theme's `general:gaps_out` and `decoration:rounding`
