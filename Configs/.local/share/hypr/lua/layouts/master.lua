@@ -86,9 +86,11 @@ hl.bind("ALT + U", hl.dsp.layout("rollnext"), _F)
 _F = {description = "[Master] rotate previous stack window into master"}
 hl.bind("ALT + I", hl.dsp.layout("rollprev"), _F)
 
+-- 3-finger swipes switch workspaces, matching the monocle layout and the
+-- near-universal desktop convention; 4-finger swipes move focus instead.
 hl.gesture(
     {
-        fingers = 4,
+        fingers = 3,
         direction = "horizontal",
         action = "workspace"
     }
@@ -96,7 +98,7 @@ hl.gesture(
 
 hl.gesture(
     {
-        fingers = 4,
+        fingers = 3,
         direction = "vertical",
         action = "workspace"
     }
@@ -105,7 +107,7 @@ hl.gesture(
 for _, dir in ipairs({"up", "down", "left", "right"}) do
     hl.gesture(
         {
-            fingers = 3,
+            fingers = 4,
             direction = dir,
             action = function()
                 hl.dispatch(hl.dsp.focus({direction = dir}))
