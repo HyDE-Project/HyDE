@@ -29,9 +29,11 @@ hl.bind("ALT + U", hl.dsp.layout("movetoroot"), {description = "[Dwindle] move f
 hl.bind("ALT + Y", hl.dsp.layout("preselect l"), {description = "[Dwindle] preselect left/top split"})
 hl.bind("ALT + I", hl.dsp.layout("preselect r"), {description = "[Dwindle] preselect right/bottom split"})
 
+-- 3-finger swipes switch workspaces, matching the monocle layout and the
+-- near-universal desktop convention; 4-finger swipes move focus instead.
 hl.gesture(
     {
-        fingers = 4,
+        fingers = 3,
         direction = "horizontal",
         action = "workspace"
     }
@@ -39,7 +41,7 @@ hl.gesture(
 
 hl.gesture(
     {
-        fingers = 4,
+        fingers = 3,
         direction = "vertical",
         action = "workspace"
     }
@@ -48,7 +50,7 @@ hl.gesture(
 for _, dir in ipairs({"up", "down", "left", "right"}) do
     hl.gesture(
         {
-            fingers = 3,
+            fingers = 4,
             direction = dir,
             action = function()
                 hl.dispatch(hl.dsp.focus({direction = dir}))
