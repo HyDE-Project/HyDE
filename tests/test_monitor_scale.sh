@@ -28,7 +28,23 @@ for pair in '1 100' '1.0 100' '1.00 100' '1.000000 100' '1.25 125' '1.5 150' '2 
         fail "a scale of $raw reads as $got, not $want"
 done
 
-got=$(probe "")
+# An empty argument makes get_monitor_scale fall back to querying the live
+# compositor via hyprctl, so "unreadable" has to be forced by making that
+# query fail -- otherwise this case silently tests the real session's scale
+# instead of the fallback path, and passes or fails depending on whether the
+# machine running the suite has a Hyprland session open.
+unreadable_bin_dir="$work_dir/bin_unreadable"
+mkdir -p "$unreadable_bin_dir"
+cat > "$unreadable_bin_dir/hyprctl" << 'STUB'
+#!/usr/bin/env sh
+exit 1
+STUB
+chmod +x "$unreadable_bin_dir/hyprctl"
+
+got=$(HOME="$work_dir/home" \
+    XDG_CONFIG_HOME="$work_dir/home/.config" \
+    PATH="$unreadable_bin_dir:$PATH" \
+    bash -c ". '$lib_dir/globalcontrol.sh' >/dev/null 2>&1; get_monitor_scale ''" 2>/dev/null)
 [ "$got" = "100" ] ||
     fail "an unreadable scale reads as $got, not 100"
 
