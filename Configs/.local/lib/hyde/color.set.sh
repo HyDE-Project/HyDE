@@ -242,7 +242,7 @@ if [ -n "$single_template" ]; then
     fn_wallbash "$single_template" "${wallbashDirs[@]}"
     exit $?
 fi
-render_failed=0
+render_failures=0
 [ -t 1 ] && "$scrDir/wallbash.print.colors.sh"
 print_log -sec "wallbash" -stat "wallbash directories" " $WALLBASH_DIRS"
 if [ "$enableWallDcol" -eq 0 ] && [[ $reload_flag -eq 1 ]]; then
@@ -259,6 +259,6 @@ elif [ "$enableWallDcol" -gt 0 ]; then
 fi
 find -H "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
 if [ "$render_failures" -ne 0 ]; then
-    print_log -sec "wallbash" -err "render" "$render_failures template(s) failed, the colour state is incomplete"
+    print_log -sec "wallbash" -err "render" "one or more templates failed, the colour state is incomplete"
     exit 1
 fi

@@ -14,7 +14,9 @@
 --       load_item              = function(path, base) return { ... } end,
 --       static_items           = { ... },                    -- extra items to inject
 --       static_items_position  = "prepend",                -- or "append"
---       on_set                 = function(item) end,
+--       on_selection_changed   = "cmd {text}",             -- rofi callback when selection changes (shell cmd)
+--       on_menu_canceled       = "cmd",                    -- rofi callback when menu is cancelled (shell cmd)
+--       on_set                 = function(item) end,        -- called when item is confirmed (persists state)
 --       state_writer           = function(state_dir, state_file, item) end,
 --   })
 --   -- M exposes: .dirs .list .names .all .find(n) .current() .set(n) .waybar() .state_file
@@ -313,9 +315,9 @@ function M.run(module, opts)
             print_item(item)
         end
     elseif cli.reload then
-        local item, err = module.reload and module.reload()
+        local item = module.reload and module.reload()
         if not item then
-            io.stderr:write("Error: " .. tostring(err) .. "\n")
+            io.stderr:write("Error: reload failed\n")
             os.exit(1)
         end
         os.execute("hyprctl reload >/dev/null 2>&1")
