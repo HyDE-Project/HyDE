@@ -77,17 +77,27 @@ for _, path in ipairs(list_layout_files()) do
     for _, gesture in ipairs(gestures) do
         total_gestures = total_gestures + 1
 
+        local fingers = tonumber(gesture.fingers)
+
         if gesture.action == "workspace" then
             check(
-                gesture.fingers == 3,
+                fingers == 3,
                 string.format(
                     "%s binds workspace-switch (%s) to %s fingers, not 3 -- inconsistent with the rest",
-                    name, tostring(gesture.direction), tostring(gesture.fingers)
+                    name, tostring(gesture.direction), tostring(fingers)
+                )
+            )
+        elseif type(gesture.action) == "function" then
+            check(
+                fingers == 4,
+                string.format(
+                    "%s binds directional focus (%s) to %s fingers, not 4 -- inconsistent with the rest",
+                    name, tostring(gesture.direction), tostring(fingers)
                 )
             )
         end
 
-        local id = tostring(gesture.fingers) .. "|" .. tostring(gesture.direction)
+        local id = tostring(fingers) .. "|" .. tostring(gesture.direction)
         check(seen[id] == nil, string.format("%s declares %s twice", name, id))
         seen[id] = true
     end
