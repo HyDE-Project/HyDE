@@ -29,7 +29,9 @@ local selected =
         current_icon = current_icon,
         current_row = current_row,
         prompt = "Select shader",
-        placeholder = "Shaders..."
+        placeholder = "Shaders...",
+        on_selection_changed = sh.rofi_opts and sh.rofi_opts.on_selection_changed,
+        on_menu_canceled = sh.rofi_opts and sh.rofi_opts.on_menu_canceled
     }
 )
 

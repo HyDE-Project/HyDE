@@ -17,12 +17,8 @@ dependencies = [
 
 [project.optional-dependencies]
 amd = ["pyamdgpuinfo"]
-wayland = [
-    "pywayland",
-    "PyGObject",
-    "PyQt6",
-]
-dev = [ "prek>=0.4.1" ]
+wayland = ["pywayland", "PyGObject", "PyQt6"]
+dev = ["pre-commit>=4.6.2", "prek>=0.4.1"]
 
 [tool.ruff]
 line-length = 100
