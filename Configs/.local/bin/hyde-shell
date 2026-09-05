@@ -278,7 +278,7 @@ hyde-logout() {
         if command -v hyprshutdown >/dev/null 2>&1; then
             hyprshutdown --top-label "Stay HyDErated!🫧"
         else
-            hyprctl dispatch exit 0
+            hyprctl dispatch 'hl.dsp.exit()'
         fi
     fi
 }

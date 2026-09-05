@@ -4,6 +4,9 @@ Hyprland 0.56 warns against the old `hyprlang` config format, so HyDE moved its
 entire Hyprland configuration to Lua. If you installed HyDE before that release,
 this page covers what changed, what breaks, and what to do about it.
 
+> [!NOTE]
+> For the most comprehensive guide on migration, it is highly recommended to check the HyDE wiki first: [Lua for the User & Migration](https://hydeproject.pages.dev/en/help/lua/)
+
 ## What changed
 
 | Before | Now |
