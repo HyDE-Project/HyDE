@@ -85,6 +85,14 @@ for _, path in ipairs(list_layout_files()) do
                     name, tostring(gesture.direction), tostring(gesture.fingers)
                 )
             )
+        elseif type(gesture.action) == "function" then
+            check(
+                gesture.fingers == 4,
+                string.format(
+                    "%s binds directional focus (%s) to %s fingers, not 4 -- inconsistent with the rest",
+                    name, tostring(gesture.direction), tostring(gesture.fingers)
+                )
+            )
         end
 
         local id = tostring(gesture.fingers) .. "|" .. tostring(gesture.direction)
