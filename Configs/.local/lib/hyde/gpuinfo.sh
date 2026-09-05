@@ -163,7 +163,7 @@ generate_json() {
     local util_bucket=$(((util_val / 10) * 10))
     local util_class="util-$util_bucket"
 
-    local temp_pct=${temp_val:-0}
+    local temp_pct=$temp_val
     ((temp_pct > 100)) && temp_pct=100
 
     local json="{\"text\":\"$thermo $temperature°C\", \"tooltip\":\"$emoji $primary_gpu\n$thermo Temperature: $temperature°C"
@@ -194,21 +194,11 @@ general_query() {
     sensors_data=$(sensors 2>/dev/null)
     temperature=$(echo "$sensors_data" | $filter grep -m 1 -E "(edge|Package id.*|another keyword)" | awk -F ':' '{print int($2)}')
     fan_speed=$(echo "$sensors_data" | $filter grep -m 1 -E "fan[1-9]" | awk -F ':' '{print int($2)}')
-    local power_supply_dir="${GPUINFO_POWER_SUPPLY_DIR:-/sys/class/power_supply}"
-    local power_raw current_raw voltage_raw
-    # These attributes can exist and still fail to read — some laptops expose
-    # power_now but have their EC answer ENXIO for it — so read the value
-    # first and only use it if we actually got one. Letting awk open the file
-    # itself turns that into a fatal error on every poll.
-    for file in "$power_supply_dir"/BAT*/power_now; do
-        [[ -f $file ]] && power_raw=$(cat "$file" 2>/dev/null) && [[ -n $power_raw ]] &&
-            power_discharge=$(awk -v power="$power_raw" 'BEGIN {print power*10^-6 ""}') && break
+    for file in /sys/class/power_supply/BAT*/power_now; do
+        [[ -f $file ]] && power_discharge=$(awk '{print $1*10^-6 ""}' "$file") && break
     done
-    [[ -z $power_discharge ]] && for file in "$power_supply_dir"/BAT*/current_now; do
-        [[ -e $file ]] && current_raw=$(cat "$file" 2>/dev/null) &&
-            voltage_raw=$(cat "${file/current_now/voltage_now}" 2>/dev/null) &&
-            [[ -n $current_raw && -n $voltage_raw ]] &&
-            power_discharge=$(awk -v current="$current_raw" -v voltage="$voltage_raw" 'BEGIN {print (current * voltage) / 10^12 ""}') && break
+    [[ -z $power_discharge ]] && for file in /sys/class/power_supply/BAT*/current_now; do
+        [[ -e $file ]] && power_discharge=$(awk -v current="$(cat "$file")" -v voltage="$(cat "${file/current_now/voltage_now}")" 'BEGIN {print (current * voltage) / 10^12 ""}') && break
     done
     get_utilization() {
         statFile=$(head -1 /proc/stat)
@@ -230,7 +220,7 @@ general_query() {
             echo "GPUINFO_PREV_STAT=\"$currStat\"" >>"$cpuinfo_file"
             echo "GPUINFO_PREV_IDLE=\"$currIdle\"" >>"$cpuinfo_file"
         }
-        awk -v stat="$diffStat" -v idle="$diffIdle" 'BEGIN {total=stat+idle; printf "%.1f", (total > 0 ? (stat/total)*100 : 0)}'
+        awk -v stat="$diffStat" -v idle="$diffIdle" 'BEGIN {printf "%.1f", (stat/(stat+idle))*100}'
     }
     utilization=$(get_utilization)
     current_clock_speed=$(awk '{sum += $1; n++} END {if (n > 0) print sum / n / 1000 ""}' /sys/devices/system/cpu/cpufreq/policy*/scaling_cur_freq)
@@ -276,7 +266,7 @@ amd_GPU() {
 }
 if [[ ! -f $gpuinfo_file ]]; then
     query
-    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file")\n\nReboot or '$0 --reset' to RESET Variables" >&2
+    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file")\n\nReboot or '$0 --reset' to RESET Variables"
 fi
 source "$gpuinfo_file"
 case "$1" in
@@ -291,7 +281,7 @@ case "$1" in
 "--reset" | "-rf")
     rm -fr "$gpuinfo_file"*
     query
-    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file" || true)\n\nReboot or '$0 --reset' to RESET Variables" >&2
+    echo -e "Initialized Variable:\n$(cat "$gpuinfo_file" || true)\n\nReboot or '$0 --reset' to RESET Variables"
     exit
     ;;
 "--stat")
