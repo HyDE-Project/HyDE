@@ -19,7 +19,6 @@
 -- from the search path it sets.
 local root = assert(debug.getinfo(1, "S").source:match("^@(.*)/"), "not loaded from a file")
 
--- luacheck: globals hyde
 hyde = hyde or {}
 hyde.path = dofile(root .. "/lua/hyde/path.lua")
 package.loaded["hyde.path"] = hyde.path
@@ -36,20 +35,15 @@ local pkg_paths = {
 }
 
 package.path = package.path .. ";" .. table.concat(pkg_paths, ";") .. ";"
-package.cpath = package.cpath
-	.. ";"
-	.. hyde.path.state
-	.. "/hyde/lua_env/lib/lua/5.5/?.so" -- virtual env shared objects
+package.cpath = package.cpath .. ";" .. hyde.path.state .. "/hyde/lua_env/lib/lua/5.5/?.so" -- virtual env shared objects
 
 -- Let's call it early so we can use it in other files
-local utils = require("hyde.utils")
+require("hyde.utils")
 require("hyde.env")
 require("hyde.config")
 require("hyde.binds")
 require("hyde.dispatcher")
 require("hyde.handlers")
-
-local check_require = utils.check_require
 
 -- * Variables
 require("variables")
@@ -61,10 +55,10 @@ require("window_rules")
 require("layer_rules")
 -- * Environment variable Setup
 require("env")
--- * Binds
-require("key_binds")
 --* Dynamic Stuff example theming and variable handlings
 require("dynamic")
+-- * Binds
+require("key_binds")
 -- * Event handlers for more DE like experience
 require("events")
 --* HyDE's startup overridable too!
