@@ -129,28 +129,121 @@ fi
 # placeholder that never matched anything. A system with neither an amdgpu
 # GPU nor an Intel CPU (e.g. an AMD CPU with a non-amdgpu/non-detected GPU)
 # got an empty temperature on every poll (#1952).
+#
+# "Tctl" and "Tdie" are separate alternatives in the regex -- a dump carrying
+# only one of them has to match on its own, not just the pair together, or a
+# driver/board that only ever exposes one of the two would still come back
+# empty despite the fix.
 cat >"$fake_bin/sensors" <<'EOF'
 #!/bin/sh
 cat <<'SENSORS'
 k10temp-pci-00c3
 Adapter: PCI adapter
 Tctl:         +45.0°C
-Tdie:         +45.0°C
 
 SENSORS
 EOF
 chmod +x "$fake_bin/sensors"
 
 rm -f "$state_file"
-amd_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
-amd_stderr=$(cat "$stderr_file")
+tctl_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+tctl_stderr=$(cat "$stderr_file")
 
-case $amd_stdout in
+case $tctl_stdout in
 *'45°C'*) ;;
-*) fail "an AMD k10temp Tctl reading of 45°C was not picked up as the temperature: $amd_stdout" ;;
+*) fail "an AMD k10temp Tctl-only reading of 45°C was not picked up as the temperature: $tctl_stdout" ;;
 esac
-case $amd_stderr in
-*"division by zero"*) fail "an AMD k10temp reading crashed awk with a division-by-zero: $amd_stderr" ;;
+case $tctl_stderr in
+*"division by zero"*) fail "a Tctl-only reading crashed awk with a division-by-zero: $tctl_stderr" ;;
+esac
+
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tdie:         +52.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+tdie_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+tdie_stderr=$(cat "$stderr_file")
+
+case $tdie_stdout in
+*'52°C'*) ;;
+*) fail "an AMD k10temp Tdie-only reading of 52°C was not picked up as the temperature: $tdie_stdout" ;;
+esac
+case $tdie_stderr in
+*"division by zero"*) fail "a Tdie-only reading crashed awk with a division-by-zero: $tdie_stderr" ;;
+esac
+
+# Out-of-spec: the matched line's value is not a number at all (a driver
+# quirk, or a board that reports an unsupported/placeholder reading). awk's
+# int() coerces this to 0 instead of dying on it -- this only confirms that
+# still holds for the newly matched labels, not just the pre-existing ones.
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         N/A
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+garbage_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+garbage_stderr=$(cat "$stderr_file")
+
+case $garbage_stderr in
+*"division by zero"*) fail "a non-numeric Tctl reading crashed awk with a division-by-zero: $garbage_stderr" ;;
+esac
+if [ -z "$garbage_stdout" ] || ! printf '%s\n' "$garbage_stdout" | python3 -c '
+import json, sys
+lines = [line for line in sys.stdin.read().splitlines() if line.strip()]
+if not lines:
+    raise SystemExit(1)
+for line in lines:
+    if not isinstance(json.loads(line), dict):
+        raise SystemExit(1)
+' >/dev/null 2>&1; then
+    fail "a non-numeric Tctl reading produced a line on stdout that is not a JSON object: $garbage_stdout"
+fi
+
+# Ambiguous case the regex was already living with before this fix: a system
+# that (however unusually) exposes both an amdgpu "edge" reading and a CPU
+# "Tctl" reading. grep -m 1 takes whichever line comes first in the sensors
+# dump -- asserting that pins the actual, currently-observed precedence as a
+# known behavior instead of leaving it silently undefined.
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         +45.0°C
+
+amdgpu-pci-0100
+Adapter: PCI adapter
+edge:         +60.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+both_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+both_stderr=$(cat "$stderr_file")
+
+case $both_stdout in
+*'45°C'*) ;;
+*) fail "with both a Tctl and an edge reading present, the first line (Tctl, 45°C) was not the one picked: $both_stdout" ;;
+esac
+case $both_stderr in
+*"division by zero"*) fail "a combined Tctl+edge reading crashed awk with a division-by-zero: $both_stderr" ;;
 esac
 
 finish
