@@ -123,4 +123,34 @@ else
     fi
 fi
 
+# An AMD CPU's k10temp/zenpower sensor labels its reading "Tctl"/"Tdie", not
+# "edge" (amdgpu GPU) or "Package id" (Intel CPU) -- the only two the
+# temperature regex recognized, plus a literal unfinished "another keyword"
+# placeholder that never matched anything. A system with neither an amdgpu
+# GPU nor an Intel CPU (e.g. an AMD CPU with a non-amdgpu/non-detected GPU)
+# got an empty temperature on every poll (#1952).
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         +45.0°C
+Tdie:         +45.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+amd_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+amd_stderr=$(cat "$stderr_file")
+
+case $amd_stdout in
+*'45°C'*) ;;
+*) fail "an AMD k10temp Tctl reading of 45°C was not picked up as the temperature: $amd_stdout" ;;
+esac
+case $amd_stderr in
+*"division by zero"*) fail "an AMD k10temp reading crashed awk with a division-by-zero: $amd_stderr" ;;
+esac
+
 finish
