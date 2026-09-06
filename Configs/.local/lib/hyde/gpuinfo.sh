@@ -192,10 +192,9 @@ generate_json() {
 general_query() {
     filter=''
     sensors_data=$(sensors 2>/dev/null)
-    # "edge" is amdgpu's GPU temp, "Package id.*" is Intel CPU package temp --
-    # an AMD CPU (k10temp/zenpower, label Tctl or Tdie) matched neither and
-    # fell through empty, cascading into an invalid "percentage" and an error
-    # log every poll (#1952).
+    # "edge" is amdgpu's GPU temp, "Package id.*" is Intel CPU package temp.
+    # Some AMD CPUs expose temperature via k10temp/zenpower with labels "Tctl"/"Tdie";
+    # without matching those, `temperature` can be empty on such systems (#1952).
     temperature=$(echo "$sensors_data" | $filter grep -m 1 -E "(edge|Package id.*|Tctl|Tdie)" | awk -F ':' '{print int($2)}')
     fan_speed=$(echo "$sensors_data" | $filter grep -m 1 -E "fan[1-9]" | awk -F ':' '{print int($2)}')
     local power_supply_dir="${GPUINFO_POWER_SUPPLY_DIR:-/sys/class/power_supply}"
