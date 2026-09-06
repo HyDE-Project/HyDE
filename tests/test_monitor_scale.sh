@@ -13,7 +13,7 @@ lib_dir="$REPO_ROOT/Configs/.local/lib/hyde"
 probe() {
     HOME="$work_dir/home" \
         XDG_CONFIG_HOME="$work_dir/home/.config" \
-        bash -c ". '$lib_dir/globalcontrol.sh' >/dev/null 2>&1; get_monitor_scale '$1'" 2>/dev/null
+        bash -c '. "$1/globalcontrol.sh" >/dev/null 2>&1; get_monitor_scale "$2"' _ "$lib_dir" "$1" 2>/dev/null
 }
 
 work_dir=$(mktemp -d) || exit 1
@@ -44,7 +44,7 @@ chmod +x "$unreadable_bin_dir/hyprctl"
 got=$(HOME="$work_dir/home" \
     XDG_CONFIG_HOME="$work_dir/home/.config" \
     PATH="$unreadable_bin_dir:$PATH" \
-    bash -c ". '$lib_dir/globalcontrol.sh' >/dev/null 2>&1; get_monitor_scale ''" 2>/dev/null)
+    bash -c '. "$1/globalcontrol.sh" >/dev/null 2>&1; get_monitor_scale ""' _ "$lib_dir" 2>/dev/null)
 [ "$got" = "100" ] ||
     fail "an unreadable scale reads as $got, not 100"
 
@@ -60,7 +60,7 @@ grep -q 'export -f .*get_monitor_scale' "$lib_dir/globalcontrol.sh" ||
     fail "the helper is not exported, so a function that calls it breaks in a child shell"
 
 exported=$(HOME="$work_dir/home" XDG_CONFIG_HOME="$work_dir/home/.config" \
-    bash -c ". '$lib_dir/globalcontrol.sh' >/dev/null 2>&1; bash -c 'get_monitor_scale 1.5'" 2>/dev/null)
+    bash -c '. "$1/globalcontrol.sh" >/dev/null 2>&1; bash -c "get_monitor_scale 1.5"' _ "$lib_dir" 2>/dev/null)
 [ "$exported" = "150" ] ||
     fail "a child shell reads the scale as '$exported', not 150"
 
