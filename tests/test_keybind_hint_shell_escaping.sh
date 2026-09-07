@@ -1,4 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+# bash, not sh: keybinds_hint.sh itself is bash (`echo -e` is a bash
+# extension with undefined behavior in POSIX sh), and this test exists
+# specifically to demonstrate what bash's own `echo -e` does to the escaped
+# dispatcher string, so it has to run under the same shell.
+#
 # keybinds_hint.sh must not run hint-hyprland.py's output through `echo -e`
 # before handing it to rofi. A resolved __lua bind's dispatcher can contain
 # the backslash escapes _escape_lua_string() produces (\\ and \n, so the
