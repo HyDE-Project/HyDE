@@ -60,8 +60,12 @@ status=$?
 backup="$work_dir/state/hyde/migration/v26.9.1/binds.zsh"
 [ -f "$backup" ] || fail "no backup copy was created at $backup"
 if [ -f "$backup" ]; then
-    backup_content=$(cat "$backup")
-    [ "$backup_content" = "$(printf '%s' "$original_content")" ] ||
+    # cmp, not a $(...)-captured string compare: command substitution strips
+    # trailing newlines from both sides, which would hide exactly the kind
+    # of difference this check exists to catch.
+    original="$work_dir/original-for-compare"
+    printf '%s' "$original_content" >"$original"
+    cmp -s "$original" "$backup" ||
         fail "the backed-up file's content does not match the original byte-for-byte"
 fi
 
