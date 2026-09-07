@@ -78,6 +78,14 @@ def main() -> int:
                 (3, "Semicolon Game", "foo;rm -rf ~", "wine", "", ""),
                 (4, "Empty Slug Game", "", "wine", "", ""),
                 (5, "Weird Case Game", "Some Slug", "wine", "", ""),
+                # Nothing after the newline: Python's $ matches immediately
+                # before a single trailing "\n" as well as at the true end
+                # of string, so match() (as opposed to fullmatch()) accepts
+                # this even though the pattern never actually consumes the
+                # newline itself -- a slug with content *after* the
+                # newline (e.g. "foo\nrm -rf ~") is already rejected by
+                # plain match() too, so it wouldn't exercise this gap.
+                (6, "Trailing Newline Game", "foo\n", "wine", "", ""),
             ],
         )
 
@@ -104,6 +112,11 @@ def main() -> int:
             (3, "a slug containing a shell metacharacter (;) was not filtered out"),
             (4, "an empty slug was not filtered out"),
             (5, "a slug with spaces/uppercase (not what Lutris generates) was not filtered out"),
+            (
+                6,
+                "a slug that is just 'foo\\n' was not filtered out -- match() would accept it "
+                "(Python's $ matches before a trailing newline too), only fullmatch() rejects it",
+            ),
         ]:
             check(bad_id not in by_id, why)
 

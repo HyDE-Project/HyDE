@@ -229,7 +229,12 @@ def main(argv=None):
     result = []
     for g in games:
         slug = g.get("slug") or ""
-        if not _SAFE_SLUG.match(slug):
+        # fullmatch, not match: "^...$" under match() still accepts one
+        # trailing newline after what the pattern consumed (Python's `$`
+        # matches immediately before a trailing "\n" as well as at the true
+        # end of string) -- a slug ending in "\n<more shell>" would pass and
+        # inject a second statement once eval sees the embedded newline.
+        if not _SAFE_SLUG.fullmatch(slug):
             print(
                 f"Skipping {g.get('name', '?')!r}: slug {slug!r} is not a plain lowercase-hyphenated "
                 "identifier, refusing to embed it in a shell command",
