@@ -72,7 +72,9 @@ fi
 # A custom ZDOTDIR must be respected, not just the default fallback.
 reset_sandbox
 mkdir -p "$work_dir/home/custom-zdotdir/conf.d"
-printf 'bindkey "^[OC" forward-word\n' >"$work_dir/home/custom-zdotdir/conf.d/binds.zsh"
+custom_zdotdir_fixture="$work_dir/custom-zdotdir-fixture"
+printf 'bindkey "^[OC" forward-word\n' >"$custom_zdotdir_fixture"
+cp "$custom_zdotdir_fixture" "$work_dir/home/custom-zdotdir/conf.d/binds.zsh"
 
 run_migration "$work_dir/home/custom-zdotdir" >"$work_dir/out" 2>&1
 [ -e "$work_dir/home/custom-zdotdir/conf.d/binds.zsh" ] &&
@@ -97,22 +99,30 @@ status=$?
 [ "$status" -eq 0 ] && fail "a re-appeared file with an existing backup did not report a conflict"
 [ -e "$work_dir/home/custom-zdotdir/conf.d/binds.zsh" ] ||
     fail "a re-appeared file was silently consumed instead of being left in place on conflict"
-backup_after=$(cat "$work_dir/state/hyde/migration/v26.9.1/binds.zsh" 2>/dev/null)
-case $backup_after in
-*"forward-word"*) ;;
-*) fail "the original backup was overwritten by the conflicting re-run" ;;
-esac
+cmp -s "$custom_zdotdir_fixture" "$work_dir/state/hyde/migration/v26.9.1/binds.zsh" ||
+    fail "the original backup was overwritten by the conflicting re-run (mismatches the fixture it was created from)"
 
 # Out-of-spec: a broken symlink at the source path (present via -L, absent
-# via -e) must still be treated as present and moved, not silently ignored.
+# via -e) must still be treated as present and *moved* -- not silently
+# ignored, and not just deleted in place (which would also make the source
+# disappear, so that alone isn't proof of anything).
 reset_sandbox
 mkdir -p "$work_dir/home/.config/zsh/conf.d"
-ln -s "$work_dir/home/.config/zsh/conf.d/does-not-exist-target" "$work_dir/home/.config/zsh/conf.d/binds.zsh"
+dangling_target="$work_dir/home/.config/zsh/conf.d/does-not-exist-target"
+ln -s "$dangling_target" "$work_dir/home/.config/zsh/conf.d/binds.zsh"
 run_migration >"$work_dir/out4" 2>&1
 status=$?
 [ "$status" -eq 0 ] || fail "a broken-symlink source exited $status: $(cat "$work_dir/out4")"
 [ -e "$work_dir/home/.config/zsh/conf.d/binds.zsh" ] || [ -L "$work_dir/home/.config/zsh/conf.d/binds.zsh" ] &&
     fail "a broken-symlink source was left in place instead of being moved"
+
+symlink_backup="$work_dir/state/hyde/migration/v26.9.1/binds.zsh"
+if [ -L "$symlink_backup" ]; then
+    [ "$(readlink "$symlink_backup")" = "$dangling_target" ] ||
+        fail "the symlink was recreated pointing somewhere else instead of moved with its original target"
+else
+    fail "the broken symlink was not preserved as a symlink at the backup path (deleted rather than moved?)"
+fi
 
 # Not run through run_pending_migrations against the real Scripts/migrations
 # directory: that would execute every other shipped migration too, each with
