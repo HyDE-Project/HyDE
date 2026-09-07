@@ -61,9 +61,17 @@ local wm = Gio.Settings.new("org.gnome.desktop.wm.preferences")
 if BUTTON_LAYOUT then wm:set_string("button-layout", BUTTON_LAYOUT) end
 Gio.Settings.sync()
 
+-- TERMINAL comes from the user's own config (hyde.config.ui.terminal), so a
+-- quote in it must not break the probe or reach the shell unescaped (#1901).
+local function shell_quote(arg)
+    arg = tostring(arg)
+    arg = arg:gsub("'", "'\\''")
+    return "'" .. arg .. "'"
+end
+
 local ok_term, term = pcall(Gio.Settings.new, "org.gnome.desktop.default-applications.terminal")
 if ok_term and term then
-    local handle = io.popen("command -v " .. TERMINAL .. " 2>/dev/null")
+    local handle = io.popen("command -v " .. shell_quote(TERMINAL) .. " 2>/dev/null")
     local bin = handle and handle:read("*l") or TERMINAL
     if handle then handle:close() end
     if bin and bin ~= "" then

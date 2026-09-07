@@ -58,8 +58,16 @@ local function getenv_int(name, default)
     local v = os.getenv(name); if not v then return default end; local n = tonumber(v); if not n then return default end; return
         n
 end
+-- Unused today, but a command name reaching the shell unescaped is the same
+-- class of bug reported in #1901 (path.lua's directory probe) -- fixed here
+-- too so it isn't a landmine for whatever calls this next.
+local function shell_quote(arg)
+    arg = tostring(arg)
+    arg = arg:gsub("'", "'\\''")
+    return "'" .. arg .. "'"
+end
 local function has_command(cmd)
-    local f = io.popen('command -v ' .. cmd .. ' 2>/dev/null')
+    local f = io.popen('command -v ' .. shell_quote(cmd) .. ' 2>/dev/null')
     if not f then return false end
     local out = f:read('*l'); f:close(); return out and out ~= ''
 end
