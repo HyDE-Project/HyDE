@@ -53,9 +53,15 @@ hl.config({
 		snap = {
 			border_overlap = true,
 			enabled = true,
-			monitor_gap = 1,
+			-- window_gap/monitor_gap are the minimum-pixel proximity a
+			-- floating window has to reach before it snaps (Hyprland's
+			-- own schema default is 10) -- not a visual spacing value
+			-- like general:gaps_in/out. At 1px the trigger zone is too
+			-- thin to hit while dragging, so snapping looks broken
+			-- (#1917).
+			monitor_gap = 10,
 			respect_gaps = true,
-			window_gap = 1,
+			window_gap = 10,
 		},
 	},
 })
