@@ -1,9 +1,4 @@
-#!/usr/bin/env bash
-# bash, not sh: keybinds_hint.sh itself is bash (`echo -e` is a bash
-# extension with undefined behavior in POSIX sh), and this test exists
-# specifically to demonstrate what bash's own `echo -e` does to the escaped
-# dispatcher string, so it has to run under the same shell.
-#
+#!/usr/bin/env sh
 # keybinds_hint.sh must not run hint-hyprland.py's output through `echo -e`
 # before handing it to rofi. A resolved __lua bind's dispatcher can contain
 # the backslash escapes _escape_lua_string() produces (\\ and \n, so the
@@ -43,10 +38,13 @@ printf_result=$(printf '%s\n' "$escaped_dispatch")
 # The same string through the pattern this test exists to keep out, as
 # positive proof the two are not equivalent -- if this ever stops failing,
 # the two forms have become the same and the guard above is no longer
-# protecting anything.
-echo_e_result=$(echo -e "$escaped_dispatch")
+# protecting anything. Modeled with `printf '%b'` rather than `echo -e`
+# itself: same escape-interpreting behavior (verified: both collapse "\\"
+# the same way), but POSIX-specified instead of a non-portable echo flag,
+# so this stays plain sh like the rest of the suite.
+echo_e_result=$(printf '%b\n' "$escaped_dispatch")
 if [ "$echo_e_result" = "$escaped_dispatch" ]; then
-    fail "echo -e no longer corrupts backslash escapes on this shell -- the reasoning behind this test needs re-checking, not just the pattern match"
+    fail "escape-interpreting output no longer differs from the raw string on this shell -- the reasoning behind this test needs re-checking, not just the pattern match"
 fi
 
 # The printf'd result must still be exactly one line (multiple lines is
