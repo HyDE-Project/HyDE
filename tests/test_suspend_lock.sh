@@ -51,10 +51,14 @@ has_active_lock_before_sleep() {
     conf_file=$1
     line=$(grep -E '^[[:space:]]*before_sleep_cmd[[:space:]]*=' "$conf_file")
     [ -n "$line" ] || return 1
-    case $line in
-    *lock*) return 0 ;;
-    *) return 1 ;;
-    esac
+    # Exact value comparison after stripping the inline comment, not a
+    # substring match on the raw line: "*lock*" would also accept
+    # "notify-send lock" (lock is just an argument, nothing gets locked) or
+    # an empty command followed by a "# lock" comment. loginctl lock-session
+    # is the one command this repo actually ships and relies on hypridle's
+    # own inhibit_sleep=3 recognizing.
+    value=$(printf '%s\n' "$line" | sed -E 's/^[[:space:]]*before_sleep_cmd[[:space:]]*=[[:space:]]*//; s/#.*//; s/[[:space:]]+$//')
+    [ "$value" = "loginctl lock-session" ]
 }
 
 # Same reasoning, for the mode that actually makes before_sleep_cmd
@@ -96,6 +100,19 @@ has_active_lock_before_sleep "$work_dir/empty-value.conf" &&
 printf 'before_sleep_cmd = notify-send "going to sleep"\n' >"$work_dir/no-lock.conf"
 has_active_lock_before_sleep "$work_dir/no-lock.conf" &&
     fail "a before_sleep_cmd with no locking command was accepted"
+
+# Adversarial: the word "lock" appears, but as an argument to something that
+# doesn't lock anything -- a loose "*lock*" substring match (the bug
+# CodeRabbit caught in review here) would wrongly accept this.
+printf 'before_sleep_cmd = notify-send lock\n' >"$work_dir/word-lock-not-command.conf"
+has_active_lock_before_sleep "$work_dir/word-lock-not-command.conf" &&
+    fail "'notify-send lock' was accepted as a locking command (word 'lock' present, but nothing locks)"
+
+# Adversarial: an empty command with a misleading trailing comment -- the
+# comment must not be considered part of the command.
+printf 'before_sleep_cmd = # lock before sleep\n' >"$work_dir/empty-with-lock-comment.conf"
+has_active_lock_before_sleep "$work_dir/empty-with-lock-comment.conf" &&
+    fail "an empty command with a '# lock' comment was accepted as locking the session"
 
 # Boundary: indentation/whitespace variants around an otherwise-correct line
 # must still be recognized as active.
