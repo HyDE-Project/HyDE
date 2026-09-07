@@ -1,12 +1,6 @@
 #!/usr/bin/env sh
-# general:snap:window_gap/monitor_gap are the minimum-pixel proximity a
-# floating window has to reach before it snaps (Hyprland's own schema says
-# so: Configs/.local/share/hyde/schema/hyprland-lua.json describes them as
-# "minimum gap in pixels ... before snapping", default 10) -- not a visual
-# spacing value like general:gaps_in/out. HyDE's defaults.lua shipped them
-# at 1px, a trigger zone too thin to hit while dragging a window with a
-# mouse, so snapping looked broken even though it was technically enabled
-# (#1917).
+# See the fix comment on general:snap in defaults.lua for why window_gap/
+# monitor_gap at 10 (not 1) matters (#1917).
 
 . "$(dirname -- "$0")/lib/common.sh"
 
@@ -110,7 +104,6 @@ boundary_monitor_gap=$(printf '%s\n' "$boundary_values" | sed -n '3p')
 [ "$boundary_monitor_gap" -ge 10 ] 2>/dev/null ||
     fail "a monitor_gap of exactly 10 (the schema default) was rejected"
 
-# The real shipped file.
 real_values=$(read_snap_values "$defaults_lua") || fail "defaults.lua failed to load under the stubbed hl.config"
 real_enabled=$(printf '%s\n' "$real_values" | sed -n '1p')
 real_window_gap=$(printf '%s\n' "$real_values" | sed -n '2p')
