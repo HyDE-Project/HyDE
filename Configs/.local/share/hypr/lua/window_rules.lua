@@ -165,6 +165,19 @@ hl.window_rule(
   }
 )
 
+-- Pyprland tags scratchpad windows `pypr_noanim` while teleporting them off-screen on hide.
+-- It registers this no_anim rule itself via `hyprctl eval`, but rules added at runtime do
+-- not survive `hyprctl reload`, so declare it here. See hyprland-community/pyprland#221.
+hl.window_rule(
+  {
+    name = "pypr_noanim",
+    match = {
+      tag = "pypr_noanim"
+    },
+    no_anim = true
+  }
+)
+
 -- filemanagers
 hl.window_rule({
 	name = "filemanagers-fullscreen",
