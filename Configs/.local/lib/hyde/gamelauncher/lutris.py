@@ -109,7 +109,13 @@ def read_games_from_db(db_path: Path) -> List[Dict]:
                     "name": r["name"],
                     "slug": r["slug"],
                     "runner": r["runner"],
-                    "path": r.get("prefix") if "prefix" in r.keys() else None,
+                    # sqlite3.Row supports [] and .keys(), not .get() -- and
+                    # the AttributeError from calling it anyway isn't a
+                    # sqlite3.Error, so the try/except around this block
+                    # never caught it: every real Lutris DB (which has a
+                    # "games" table, the primary query this is inside)
+                    # crashed the whole script before this line was reached.
+                    "path": r["prefix"] if "prefix" in r.keys() else None,
                     "icon": r["icon"],
                 }
             )
