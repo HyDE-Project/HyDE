@@ -82,4 +82,11 @@ fi
 
 cmd=${selected#*$'\t'}
 
-exec "$cmd"
+# run_command is a full shell command line (e.g. `xdg-open "lutris:rungame/
+# <slug>"`), not a single argv -- a plain, quoted exec would try to run that
+# whole string as one program name and always fail. eval is what actually
+# parses it as shell syntax; the backends (steam.py: a regex-validated
+# numeric appid, lutris.py: a slug checked against ^[a-z0-9-]+$) are
+# responsible for making sure nothing unexpected ends up in this string in
+# the first place.
+eval exec "$cmd"
