@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Waybar: add VSCodium and Chromium icon rules to window module
 
 ### Fixed
+- Hyprland: windows that cannot join a group, such as pyprland's dropdown terminal, get the same border colors as every other window; `general.col.nogroup_border` and `nogroup_border_active` were never set, so those windows kept Hyprland's magenta and yellow defaults whatever the theme or wallbash mode
 - Hyprland: the dropdown terminal (`SUPER + ALT + T`) no longer reappears and fades out after sliding off-screen when an animation preset is active; pyprland's `no_anim` rule for the `pypr_noanim` tag is registered at runtime and was lost on every config reload, so it is now declared in `window_rules.lua`
 - Waybar, wlogout: fix logout button behavior
 - Waybar: resolve visual collision between privacy and tray modules by adding margins
