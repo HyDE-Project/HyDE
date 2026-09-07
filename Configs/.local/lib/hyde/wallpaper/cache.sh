@@ -92,6 +92,7 @@ fn_envar_cache() {
 wallpaper_cache_commence() {
     local mode=""
     local option
+    local single_wallpaper=0
 
     wallpaper_cache_bootstrap || return 1
     wallpaper_cache_init || return 1
@@ -100,6 +101,7 @@ wallpaper_cache_commence() {
     case "$1" in
     w)
         shift
+        set -- -w "$@"
         ;;
     t)
         shift
@@ -120,6 +122,8 @@ wallpaper_cache_commence() {
                 return 1
             fi
             cacheIn="$OPTARG"
+            single_wallpaper=1
+            mode=""
             ;;
         t)
             cacheIn="$(dirname "$HYDE_THEME_DIR")/$OPTARG"
@@ -127,10 +131,13 @@ wallpaper_cache_commence() {
                 echo "Error: Input theme \"$OPTARG\" not found!"
                 return 1
             fi
+            single_wallpaper=0
+            mode=""
             ;;
         f)
             cacheIn="$(dirname "$HYDE_THEME_DIR")"
             mode="_force"
+            single_wallpaper=0
             ;;
         *)
             echo "... invalid option ..."
@@ -145,7 +152,11 @@ wallpaper_cache_commence() {
 
     fn_envar_cache
     wallPathArray=("$cacheIn")
-    wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
+    # -w already names the one file to cache; scanning every configured custom
+    # wallpaper directory on top of it re-hashes the whole collection for a
+    # single-wallpaper request (#1985) -- only -t/-f are meant to cover more
+    # than the given path.
+    [ "$single_wallpaper" -eq 0 ] && wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
     get_hashmap "${wallPathArray[@]}" --no-notify
     parallel --bar --link "fn_wallcache$mode" ::: "${wallHash[@]}" ::: "${wallList[@]}"
 }
