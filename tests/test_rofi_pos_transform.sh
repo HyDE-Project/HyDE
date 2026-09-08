@@ -25,7 +25,9 @@ mkdir -p "$bin_dir" "$work_dir/home/.config"
 # so the same stub covers every case below without rewriting it each time.
 # transform_field is the raw jq fragment for the "transform" key -- passing
 # an empty string omits the key entirely, to cover a monitors payload from a
-# hyprctl too old to report it.
+# hyprctl too old to report it. mon_x/mon_y/reserved default to 0/0/all-zero
+# so most cases don't have to think about them, but can be overridden to
+# exercise the monitor-offset and reserved-margin arithmetic too.
 cat > "$bin_dir/hyprctl" << 'STUB'
 #!/usr/bin/env sh
 case "$1 $2" in
@@ -33,8 +35,8 @@ case "$1 $2" in
     printf '{"x":%s,"y":%s}\n' "$CURSOR_X" "$CURSOR_Y"
     ;;
 "-j monitors")
-    printf '[{"focused":true,"width":%s,"height":%s,"scale":1,"x":0,"y":0,"reserved":[0,0,0,0]%s}]\n' \
-        "$MON_W" "$MON_H" "$TRANSFORM_FIELD"
+    printf '[{"focused":true,"width":%s,"height":%s,"scale":1,"x":%s,"y":%s,"reserved":[%s]%s}]\n' \
+        "$MON_W" "$MON_H" "${MON_X:-0}" "${MON_Y:-0}" "${RESERVED:-0,0,0,0}" "$TRANSFORM_FIELD"
     ;;
 esac
 STUB
@@ -47,6 +49,8 @@ get_pos() {
         CURSOR_X="$1" CURSOR_Y="$2" \
         MON_W="$3" MON_H="$4" \
         TRANSFORM_FIELD="$5" \
+        MON_X="${6:-0}" MON_Y="${7:-0}" \
+        RESERVED="${8:-0,0,0,0}" \
         PATH="$bin_dir:$PATH" \
         bash -c '. "$1/globalcontrol.sh" >/dev/null 2>&1; get_rofi_pos' _ "$lib_dir"
 }
@@ -58,6 +62,36 @@ pos=$(get_pos 1800 1000 1920 1080 ',"transform":0')
 case "$pos" in
 *"east"*"south"*) ;;
 *) fail "transform 0, cursor near bottom-right: expected east/south, got '$pos'" ;;
+esac
+
+# Boundary: the anchor decision uses -ge, so a cursor sitting exactly on the
+# midpoint of a 1920x1080 monitor (960, 540) must fall on the east/south side
+# of the split, not just comfortably past it -- and the offsets computed from
+# that exact point must match precisely, not merely land in the right corner.
+pos=$(get_pos 960 540 1920 1080 ',"transform":0')
+case "$pos" in
+*"east"*"south"*"x-offset:-960px"*"y-offset:-540px"*) ;;
+*) fail "cursor exactly at the monitor's midpoint (960,540): expected east/south with x-offset:-960px/y-offset:-540px, got '$pos'" ;;
+esac
+
+# Boundary: the (0,0) corner, combined with non-zero reserved margins (e.g. a
+# bar reserving space on each edge) -- exercises offRes[0]/offRes[1], which
+# every other case in this file leaves at zero and so never actually checks.
+pos=$(get_pos 0 0 1920 1080 ',"transform":0' 0 0 '10,20,30,40')
+case "$pos" in
+*"west"*"north"*"x-offset:-10px"*"y-offset:-20px"*) ;;
+*) fail "cursor at (0,0) with reserved margins [10,20,30,40]: expected west/north with x-offset:-10px/y-offset:-20px, got '$pos'" ;;
+esac
+
+# Out-of-spec for every other case here, but a normal multi-monitor layout:
+# the focused monitor sits at a non-zero position (x=1920, as the second
+# monitor in a side-by-side layout). Every other case leaves monRes[3]/
+# monRes[4] at zero, so the curPos-minus-monitor-origin subtraction has never
+# actually been exercised until this case.
+pos=$(get_pos 2620 300 1920 1080 ',"transform":0' 1920 0)
+case "$pos" in
+*"west"*"north"*"x-offset:700px"*"y-offset:300px"*) ;;
+*) fail "cursor at (2620,300) on a monitor positioned at x=1920: expected west/north with x-offset:700px/y-offset:300px, got '$pos'" ;;
 esac
 
 # transform 1 (90 degrees): the SAME 1920x1080 mode now displays as a
