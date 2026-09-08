@@ -406,7 +406,17 @@ get_rofi_pos() {
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
     readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
     eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
-        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" ")))"')"
+        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" "))) monTransform=\(.transform)"')"
+    # hyprctl reports width/height as the monitor's pre-transform mode, not
+    # swapped for a 90/270-degree rotation (verified against a headless test
+    # output: transform=1 left width/height unchanged) -- so on a portrait
+    # monitor these still carried its landscape resolution, landing rofi
+    # menus off-screen near the bottom/right (#975).
+    if ((monTransform % 2 == 1)); then
+        local mon_swap="${monRes[0]}"
+        monRes[0]="${monRes[1]}"
+        monRes[1]="$mon_swap"
+    fi
     monRes[2]="$(get_monitor_scale "${monRes[2]}")"
     monRes[0]=$((monRes[0] * 100 / monRes[2]))
     monRes[1]=$((monRes[1] * 100 / monRes[2]))
