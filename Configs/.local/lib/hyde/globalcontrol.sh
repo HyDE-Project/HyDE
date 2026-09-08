@@ -406,7 +406,7 @@ get_rofi_pos() {
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
     readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
     eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
-        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" "))) monTransform=\(.transform)"')"
+        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" "))) monTransform=\(.transform // 0)"')"
     # hyprctl reports width/height as the monitor's pre-transform mode, not
     # swapped for a 90/270-degree rotation (verified against a headless test
     # output: transform=1 left width/height unchanged) -- so on a portrait

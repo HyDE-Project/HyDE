@@ -99,4 +99,43 @@ case "$pos" in
 *) fail "missing transform field: expected the no-swap fallback (east/south), got '$pos'" ;;
 esac
 
+# Out-of-spec: a missing "transform" key makes jq emit the bare word null,
+# and bash arithmetic resolves an unquoted identifier as a variable name --
+# so without an explicit `// 0` fallback in the jq expression, a shell that
+# happens to already have a variable literally named "null" in scope hijacks
+# the swap decision instead of the intended no-swap default.
+pos=$(HOME="$work_dir/home" \
+    XDG_CONFIG_HOME="$work_dir/home/.config" \
+    HYPRLAND_INSTANCE_SIGNATURE=test \
+    CURSOR_X=1800 CURSOR_Y=1000 MON_W=1920 MON_H=1080 TRANSFORM_FIELD='' \
+    null=1 \
+    PATH="$bin_dir:$PATH" \
+    bash -c '. "$1/globalcontrol.sh" >/dev/null 2>&1; get_rofi_pos' _ "$lib_dir")
+case "$pos" in
+*"east"*"south"*) ;;
+*) fail "missing transform field with a coincidental 'null' variable in scope: expected the no-swap fallback (east/south), got '$pos'" ;;
+esac
+
+# Missing/absent: no HYPRLAND_INSTANCE_SIGNATURE (not running inside a
+# Hyprland session, or the guard rail regressed) must fail loudly and never
+# reach hyprctl at all -- shadow it with a stub that fails the test outright
+# if invoked, as proof the guard clause short-circuits before any query.
+no_session_bin_dir="$work_dir/bin_no_session"
+mkdir -p "$no_session_bin_dir"
+cat > "$no_session_bin_dir/hyprctl" << 'STUB'
+#!/usr/bin/env sh
+echo "hyprctl was invoked without a Hyprland session -- get_rofi_pos's guard did not short-circuit" >&2
+exit 99
+STUB
+chmod +x "$no_session_bin_dir/hyprctl"
+
+out=$(HOME="$work_dir/home" \
+    XDG_CONFIG_HOME="$work_dir/home/.config" \
+    HYPRLAND_INSTANCE_SIGNATURE="" \
+    PATH="$no_session_bin_dir:$PATH" \
+    bash -c '. "$1/globalcontrol.sh" >/dev/null 2>&1; get_rofi_pos' _ "$lib_dir" 2>&1)
+status=$?
+[ "$status" -eq 1 ] || fail "an unset HYPRLAND_INSTANCE_SIGNATURE made get_rofi_pos exit $status, not 1"
+[ -z "$out" ] || fail "an unset HYPRLAND_INSTANCE_SIGNATURE still produced output: $out"
+
 finish
