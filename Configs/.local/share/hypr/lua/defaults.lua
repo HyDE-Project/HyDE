@@ -51,7 +51,6 @@ hl.config({
 	},
 	general = {
 		snap = {
-			border_overlap = true,
 			enabled = true,
 			respect_gaps = true,
 			-- window_gap/monitor_gap deliberately not set here: they're a
