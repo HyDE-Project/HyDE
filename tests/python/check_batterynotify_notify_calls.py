@@ -14,6 +14,24 @@ import sys
 from pathlib import Path
 
 
+def _skip_lua_string(text, i):
+    """i points at a ' or " that opens a Lua string; returns the index just
+    past its matching close, honouring \\-escapes -- a stray ')' or '(' a
+    battery-percentage message happens to contain (e.g. "Battery at 20%)")
+    must not be mistaken for call syntax.
+    """
+    quote = text[i]
+    i += 1
+    while i < len(text):
+        if text[i] == "\\":
+            i += 2
+            continue
+        if text[i] == quote:
+            return i + 1
+        i += 1
+    return i  # unterminated string -- stop where the text does
+
+
 def extract_calls(text, name="notify_send"):
     """Every "name(...)" call in text, matched by tracking paren depth
     rather than a fixed-nesting-depth regex -- a regex like
@@ -23,6 +41,13 @@ def extract_calls(text, name="notify_send"):
     dropped from the result, so a missing { urgency/icon } table on that
     call would never be checked -- not "no calls found" (which the caller
     below already fails loudly on), just fewer calls than actually exist.
+
+    Parens and quote characters inside a Lua string literal or a `--` line
+    comment are skipped rather than counted, so a message like "Battery at
+    20%)" can't be mistaken for the call's own closing paren. Lua's
+    `--[[ ]]` long-bracket comments are not handled -- batterynotify.lua
+    doesn't use them and a notify_send call sitting inside one would be dead
+    code anyway, so it's not worth the extra complexity here.
     """
     calls = []
     start = 0
@@ -34,9 +59,17 @@ def extract_calls(text, name="notify_send"):
         i = idx + len(name)
         end = None
         while i < len(text):
-            if text[i] == "(":
+            ch = text[i]
+            if ch in ("'", '"'):
+                i = _skip_lua_string(text, i)
+                continue
+            if ch == "-" and text[i:i + 2] == "--":
+                nl = text.find("\n", i)
+                i = len(text) if nl == -1 else nl
+                continue
+            if ch == "(":
                 depth += 1
-            elif text[i] == ")":
+            elif ch == ")":
                 depth -= 1
                 if depth == 0:
                     end = i + 1

@@ -52,6 +52,16 @@ notify_send('X', 'Y', { urgency = 'critical' })
 LUA
     python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$work_dir/urgency-only.lua" >/dev/null 2>&1 &&
         fail "a notify_send call with urgency but no icon was accepted"
+
+    # Out-of-spec: a literal ')' inside a Lua string argument (a battery
+    # percentage message can legitimately contain one) must not be mistaken
+    # for the call's own closing paren -- a naive char-by-char depth counter
+    # would truncate the call there and report a false "missing" failure.
+    cat >"$work_dir/paren-in-string.lua" <<'LUA'
+notify_send('Battery at 20%)', 'body', { urgency = 'critical', icon = 'battery-full-symbolic' })
+LUA
+    python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$work_dir/paren-in-string.lua" ||
+        fail "a ')' inside a string argument made a well-formed notify_send call fail"
 else
     skip "python3 is not installed"
 fi
