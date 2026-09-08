@@ -22,9 +22,19 @@ Assumptions/notes:
 import argparse
 import json
 import os
+import re
 import sqlite3
+import sys
 from pathlib import Path
 from typing import Dict, List, Optional
+
+# gamelauncher.sh runs run_command with `eval exec` (it has to: the command
+# is a full shell command line, not a single argv), so a slug that isn't
+# what Lutris actually generates -- e.g. one containing a `"` -- could break
+# out of the quotes it's embedded in below and inject arbitrary shell code.
+# Lutris slugs are lowercased, hyphenated ASCII by construction; anything
+# else is treated as untrustworthy rather than assumed safe.
+_SAFE_SLUG = re.compile(r"^[a-z0-9-]+$")
 
 DEFAULT_LOCATIONS = [
     Path(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")) + "/lutris/pga.db"),
@@ -99,7 +109,13 @@ def read_games_from_db(db_path: Path) -> List[Dict]:
                     "name": r["name"],
                     "slug": r["slug"],
                     "runner": r["runner"],
-                    "path": r.get("prefix") if "prefix" in r.keys() else None,
+                    # sqlite3.Row supports [] and .keys(), not .get() -- and
+                    # the AttributeError from calling it anyway isn't a
+                    # sqlite3.Error, so the try/except around this block
+                    # never caught it: every real Lutris DB (which has a
+                    # "games" table, the primary query this is inside)
+                    # crashed the whole script before this line was reached.
+                    "path": r["prefix"] if "prefix" in r.keys() else None,
                     "icon": r["icon"],
                 }
             )
@@ -212,6 +228,20 @@ def main(argv=None):
     games = read_games_from_db(use_db)
     result = []
     for g in games:
+        slug = g.get("slug") or ""
+        # fullmatch, not match: "^...$" under match() still accepts one
+        # trailing newline after what the pattern consumed (Python's `$`
+        # matches immediately before a trailing "\n" as well as at the true
+        # end of string) -- a slug ending in "\n<more shell>" would pass and
+        # inject a second statement once eval sees the embedded newline.
+        if not _SAFE_SLUG.fullmatch(slug):
+            print(
+                f"Skipping {g.get('name', '?')!r}: slug {slug!r} is not a plain lowercase-hyphenated "
+                "identifier, refusing to embed it in a shell command",
+                file=sys.stderr,
+            )
+            continue
+
         g2 = g.copy()
         cover = guess_cover_path(g, use_db)
         if cover:
