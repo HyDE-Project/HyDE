@@ -25,6 +25,33 @@ grep -q "xfce4-battery-critical" "$script" &&
 if command -v python3 >/dev/null 2>&1; then
     python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$script" ||
         fail "a notify_send(...) call does not pass an { urgency = ... } options table -- notify_mod.send reads opts.urgency/opts.icon, so a bare string/positional 4th arg silently loses both"
+
+    work_dir=$(mktemp -d) || exit 1
+    trap 'rm -rf "$work_dir"' EXIT
+
+    # Out-of-spec: a call nested three function-calls deep (well past what
+    # any real call in this file needs) must still be found and checked --
+    # a fixed-one-level-of-parens regex would silently drop it from the
+    # results instead of failing loudly, so a missing options table on a
+    # deeply-nested call would never be caught.
+    cat >"$work_dir/deep-ok.lua" <<'LUA'
+notify_send('Deep', string.format('%s', tostring(compute(x, y))), { urgency = 'critical', icon = 'battery-full-symbolic' })
+LUA
+    python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$work_dir/deep-ok.lua" ||
+        fail "a deeply-nested notify_send call with both urgency and icon was rejected"
+
+    cat >"$work_dir/deep-missing-icon.lua" <<'LUA'
+notify_send('Deep', string.format('%s', tostring(compute(x, y))), { urgency = 'critical' })
+LUA
+    python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$work_dir/deep-missing-icon.lua" >/dev/null 2>&1 &&
+        fail "a deeply-nested notify_send call missing icon was accepted -- the balanced-paren scanner may have silently dropped it instead of checking it"
+
+    # Missing icon on an otherwise well-formed (unnested) call.
+    cat >"$work_dir/urgency-only.lua" <<'LUA'
+notify_send('X', 'Y', { urgency = 'critical' })
+LUA
+    python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$work_dir/urgency-only.lua" >/dev/null 2>&1 &&
+        fail "a notify_send call with urgency but no icon was accepted"
 else
     skip "python3 is not installed"
 fi
