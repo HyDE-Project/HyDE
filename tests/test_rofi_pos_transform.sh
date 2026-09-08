@@ -103,17 +103,21 @@ esac
 # and bash arithmetic resolves an unquoted identifier as a variable name --
 # so without an explicit `// 0` fallback in the jq expression, a shell that
 # happens to already have a variable literally named "null" in scope hijacks
-# the swap decision instead of the intended no-swap default.
+# the swap decision instead of the intended no-swap default. Cursor x=700 on
+# a 1920x1080 monitor is chosen deliberately: it reads "west" against the
+# real width (1920) but "east" against the wrongly-swapped one (1080) -- a
+# cursor position that reads the same either way (as an earlier version of
+# this test used) would pass regardless of whether the hijack happened.
 pos=$(HOME="$work_dir/home" \
     XDG_CONFIG_HOME="$work_dir/home/.config" \
     HYPRLAND_INSTANCE_SIGNATURE=test \
-    CURSOR_X=1800 CURSOR_Y=1000 MON_W=1920 MON_H=1080 TRANSFORM_FIELD='' \
+    CURSOR_X=700 CURSOR_Y=100 MON_W=1920 MON_H=1080 TRANSFORM_FIELD='' \
     null=1 \
     PATH="$bin_dir:$PATH" \
     bash -c '. "$1/globalcontrol.sh" >/dev/null 2>&1; get_rofi_pos' _ "$lib_dir")
 case "$pos" in
-*"east"*"south"*) ;;
-*) fail "missing transform field with a coincidental 'null' variable in scope: expected the no-swap fallback (east/south), got '$pos'" ;;
+*"west"*"north"*) ;;
+*) fail "missing transform field with a coincidental 'null' variable in scope: expected the no-swap fallback (west/north), got '$pos'" ;;
 esac
 
 # Missing/absent: no HYPRLAND_INSTANCE_SIGNATURE (not running inside a
