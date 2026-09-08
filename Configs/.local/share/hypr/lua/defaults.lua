@@ -53,15 +53,14 @@ hl.config({
 		snap = {
 			border_overlap = true,
 			enabled = true,
-			-- window_gap/monitor_gap are the minimum-pixel proximity a
-			-- floating window has to reach before it snaps (Hyprland's
-			-- own schema default is 10) -- not a visual spacing value
-			-- like general:gaps_in/out. At 1px the trigger zone is too
-			-- thin to hit while dragging, so snapping looks broken
-			-- (#1917).
-			monitor_gap = 10,
 			respect_gaps = true,
-			window_gap = 10,
+			-- window_gap/monitor_gap deliberately not set here: they're a
+			-- minimum-pixel proximity threshold, and a fixed pixel count
+			-- doesn't scale across HiDPI monitors. HyDE shipping its own
+			-- copy of Hyprland's default (previously 1, then 10) also
+			-- silently drifts if Hyprland ever changes that default.
+			-- Leaving these keys out entirely means Hyprland's own
+			-- built-in default applies, un-owned by HyDE (#1917).
 		},
 	},
 })
