@@ -22,6 +22,19 @@ script="$REPO_ROOT/Configs/.local/lib/hyde/batterynotify.lua"
 grep -q "xfce4-battery-critical" "$script" &&
     fail "batterynotify.lua still requests the non-standard 'xfce4-battery-critical' icon"
 
+if command -v python3 >/dev/null 2>&1; then
+    python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$script" ||
+        fail "a notify_send(...) call does not pass an { urgency = ... } options table -- notify_mod.send reads opts.urgency/opts.icon, so a bare string/positional 4th arg silently loses both"
+else
+    skip "python3 is not installed"
+fi
+
+# The UNPLUG-threshold notification (mirrors the Battery Low block below it,
+# same interval throttle) used to compute an icon and never call
+# notify_send at all.
+awk '/unplug_charger_threshold and not string\.find/,/^    end$/' "$script" | grep -q "notify_send" ||
+    fail "the UNPLUG-threshold block still never calls notify_send"
+
 grep -qE "'battery-' \.\. tostring\(\(steps > 0\) and steps or [0-9]+\) \.\. '-charging'" "$script" &&
     fail "batterynotify.lua still builds a plain 'battery-N-charging' icon name, not the freedesktop battery-level-N-charging-symbolic form"
 
@@ -32,10 +45,30 @@ done
 
 # Every icon name actually passed to notify_send must match the freedesktop
 # battery icon pattern -- catches a typo'd or malformed replacement, not just
-# the two specific strings above.
+# the two specific strings above. Fully-literal names are pulled directly;
+# the dynamic ones ('prefix' .. tostring(...) .. 'suffix') are reconstructed
+# with a representative steps value AND the expression's own fallback value,
+# so a typo in either the literal parts or the fallback number is caught --
+# grep alone can't do this, since it never sees the concatenated result.
 icons=$(grep -oE "'(battery-[a-z0-9-]*-symbolic|xfce4[a-z0-9-]*)'" "$script" | tr -d "'" | sort -u)
+
+dynamic=$(grep -oE "local icon = '[a-z-]+' \.\. tostring\(\(steps > 0\) and steps or [0-9]+\) \.\. '[a-z-]+'" "$script")
+[ -n "$dynamic" ] || fail "no dynamically-built icon expressions found -- the extraction pattern below may be stale"
+while IFS= read -r expr; do
+    prefix=$(printf '%s\n' "$expr" | sed -E "s/^local icon = '([a-z-]+)'.*/\1/")
+    fallback=$(printf '%s\n' "$expr" | sed -E "s/.*or ([0-9]+)\).*/\1/")
+    suffix=$(printf '%s\n' "$expr" | sed -E "s/.*\.\. '([a-z-]+)'\$/\1/")
+    icons="${icons}
+${prefix}50${suffix}
+${prefix}${fallback}${suffix}"
+done <<EOF
+$dynamic
+EOF
+
+icons=$(printf '%s\n' "$icons" | sort -u)
 [ -n "$icons" ] || fail "no battery icon names found in batterynotify.lua at all -- the patterns above may be stale"
 while IFS= read -r icon; do
+    [ -n "$icon" ] || continue
     case "$icon" in
     battery-empty-symbolic | battery-full-symbolic | battery-good-symbolic | \
         battery-low-symbolic | battery-caution-symbolic | battery-missing-symbolic | \
