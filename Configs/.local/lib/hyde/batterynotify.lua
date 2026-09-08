@@ -227,7 +227,7 @@ local function start_critical_countdown()
             local mm = math.floor(crit_remaining / 60); local ss = crit_remaining % 60
             notify_send('Battery Critically Low',
                 string.format('%d%% is critically low. Device will execute %s in %d:%02d.', pct, conf.execute_critical,
-                    mm, ss), 'critical', 'xfce4-battery-critical')
+                    mm, ss), 'critical', 'battery-empty-symbolic')
             crit_remaining = crit_remaining - 1
             if crit_remaining <= 0 then
                 run_cmd_shell(conf.execute_critical); crit_source = nil; return false
@@ -245,7 +245,7 @@ local function start_critical_countdown()
             local mm = math.floor(crit_remaining / 60); local ss = crit_remaining % 60
             notify_send('Battery Critically Low',
                 string.format('%d%% is critically low. Device will execute %s in %d:%02d.', pct, conf.execute_critical,
-                    mm, ss), 'critical', 'xfce4-battery-critical')
+                    mm, ss), 'critical', 'battery-empty-symbolic')
             crit_remaining = crit_remaining - 1
             if crit_remaining <= 0 then
                 run_cmd_shell(conf.execute_critical); timer:stop(); timer:close(); crit_source = nil
@@ -292,7 +292,11 @@ local function handle_update()
 
     if percentage >= conf.unplug_charger_threshold and not string.find(tostring(status), 'Discharging') and status ~= 'Full' and (percentage - last_notified_percentage) >= conf.interval then
         local steps = math.floor(((percentage + 5) / 10) + 0.00001) * 10
-        local icon = 'battery-' .. tostring((steps > 0) and steps or 100) .. '-charging'
+        -- Matches the battery-level-N-symbolic pattern already used below for
+        -- the discharging icons: freedesktop's icon-naming spec has no plain
+        -- "battery-N-charging" name, so themes that only ship the level-based
+        -- set (e.g. Tela-circle-dracula) rendered no icon at all (#798).
+        local icon = 'battery-level-' .. tostring((steps > 0) and steps or 100) .. '-charging-symbolic'
         log.debug('Prompt: UNPLUG threshold=%d status=%s percentage=%d steps=%d',
             conf.unplug_charger_threshold, tostring(status), percentage, steps)
         cancel_critical_countdown()
@@ -332,7 +336,11 @@ local function handle_update()
                 prev_status = status
                 local urgency = (percentage >= conf.unplug_charger_threshold) and 'CRITICAL' or 'NORMAL'
                 local steps = math.floor(((percentage + 5) / 10) + 0.00001) * 10
-                local icon = 'battery-' .. tostring((steps > 0) and steps or 100) .. '-charging'
+                -- Matches the battery-level-N-symbolic pattern already used below for
+        -- the discharging icons: freedesktop's icon-naming spec has no plain
+        -- "battery-N-charging" name, so themes that only ship the level-based
+        -- set (e.g. Tela-circle-dracula) rendered no icon at all (#798).
+        local icon = 'battery-level-' .. tostring((steps > 0) and steps or 100) .. '-charging-symbolic'
                 notify_send('Charger Plug In', string.format('Battery is at %d%%.', percentage), urgency, icon)
                 if conf.execute_charging ~= '' then run_cmd_shell(conf.execute_charging) end
             end
