@@ -191,7 +191,14 @@ call_wallbashScript() {
         fi
     done
     dirs=("${sanitized_dirs[@]}")
-    script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    # A missing or empty name must never reach `find`: an empty scriptName
+    # would search for the literal filename ".sh", which a real wallbash
+    # script directory could legitimately contain -- executing it instead
+    # of showing usage for what is clearly not a real request.
+    script_path=""
+    if [[ -n "$scriptName" ]]; then
+        script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    fi
 
     for func in $(compgen -A function); do
         export -f "${func?}"

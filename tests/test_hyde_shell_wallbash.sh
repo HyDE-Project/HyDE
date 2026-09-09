@@ -27,6 +27,16 @@ echo "ran with args: $*"
 EOF
 chmod +x "$scripts_dir/spotify.sh"
 
+# A script literally named ".sh" -- appending ".sh" to an empty/missing name
+# produces exactly this filename, so this fixture is what makes the
+# missing/empty-name cases below a real test instead of one that would pass
+# just as well with an empty scripts directory.
+cat >"$scripts_dir/.sh" <<'EOF'
+#!/usr/bin/env bash
+echo "DOT-SH SCRIPT RAN UNEXPECTEDLY"
+EOF
+chmod +x "$scripts_dir/.sh"
+
 ##
 # Runs `hyde-shell wallbash "$@"` against the sandboxed HOME/XDG dirs.
 ##
@@ -92,20 +102,26 @@ case $output in
 esac
 
 # Missing/absent: no script-name argument at all -- ${1%.sh} on an unset $1
-# must not error (this file has no `set -u`), and must fall through to the
-# usage text like any other unresolvable name, not crash or hang.
+# must not error (this file has no `set -u`), and appending ".sh" to that
+# empty name must not resolve to (and run) the ".sh" fixture above instead
+# of falling through to the usage text like any other unresolvable name.
 output=$(run_wallbash)
 status=$?
 [ "$status" -eq 0 ] || fail "wallbash with no arguments at all exited $status: $output (stderr: $(cat "$work_dir/stderr"))"
+case $output in
+*'DOT-SH SCRIPT RAN'*) fail "wallbash with no arguments at all ran the '.sh' script instead of showing usage: $output" ;;
+esac
 case $output in
 *'Usage: wallbash'*) ;;
 *) fail "wallbash with no arguments at all did not show the usage text: got '$output' (stderr: $(cat "$work_dir/stderr"))" ;;
 esac
 
 # Boundary: an explicit empty-string name must behave the same as no
-# argument at all, not match every script or explode the -name pattern into
-# just ".sh".
+# argument at all -- same ".sh"-fixture risk as above.
 output=$(run_wallbash "")
+case $output in
+*'DOT-SH SCRIPT RAN'*) fail "wallbash with an empty-string name ran the '.sh' script instead of showing usage: $output" ;;
+esac
 case $output in
 *'Usage: wallbash'*) ;;
 *) fail "wallbash with an empty-string name did not show the usage text: got '$output' (stderr: $(cat "$work_dir/stderr"))" ;;
