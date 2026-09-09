@@ -91,4 +91,36 @@ case $output in
     ;;
 esac
 
+# Missing/absent: no script-name argument at all -- ${1%.sh} on an unset $1
+# must not error (this file has no `set -u`), and must fall through to the
+# usage text like any other unresolvable name, not crash or hang.
+output=$(run_wallbash)
+status=$?
+[ "$status" -eq 0 ] || fail "wallbash with no arguments at all exited $status: $output (stderr: $(cat "$work_dir/stderr"))"
+case $output in
+*'Usage: wallbash'*) ;;
+*) fail "wallbash with no arguments at all did not show the usage text: got '$output' (stderr: $(cat "$work_dir/stderr"))" ;;
+esac
+
+# Boundary: an explicit empty-string name must behave the same as no
+# argument at all, not match every script or explode the -name pattern into
+# just ".sh".
+output=$(run_wallbash "")
+case $output in
+*'Usage: wallbash'*) ;;
+*) fail "wallbash with an empty-string name did not show the usage text: got '$output' (stderr: $(cat "$work_dir/stderr"))" ;;
+esac
+
+# Malformed/out-of-spec: a path-traversal-shaped name must not escape the
+# wallbash script directories or otherwise behave differently from any
+# other nonexistent name -- find's -name matches basenames only, so a
+# name containing "/" can never match a real file through it, but that
+# safety property is worth pinning down explicitly rather than trusting
+# incidentally.
+output=$(run_wallbash "../../../etc/passwd")
+case $output in
+*'Usage: wallbash'*) ;;
+*) fail "a path-traversal-shaped name did not fall through to the usage text: got '$output' (stderr: $(cat "$work_dir/stderr"))" ;;
+esac
+
 finish
