@@ -209,29 +209,33 @@ hyde.binds._active = hyde.binds._active or {}
 -- opaque "__lua" registry reference with no way to invoke it externally,
 -- except by re-emitting a fresh hl.dsp.exec_cmd("...") call -- so
 -- hint-hyprland.py needs the original command string for binds built that
--- way. Lua evaluates hl.dsp.exec_cmd(cmd) fully before hl.bind(combo, <that
--- result>, opts) runs, so wrapping exec_cmd to remember only the command it
--- was just called with, then having hl.bind read-and-clear that value
--- immediately, pairs the two correctly without inspecting what exec_cmd
--- actually returns. A bind built any other way -- a plain Lua function, a
--- native dispatcher called directly -- never sets it and stays unresolved,
--- which is the documented limit: those can't be reduced to one command.
+-- way. Associate each command with the action returned by hl.dsp.exec_cmd so
+-- delayed and unrelated hl.bind calls cannot consume each other's commands.
+-- A bind built any other way -- a plain Lua function, a native dispatcher
+-- called directly -- has no matching entry and stays unresolved, which is the
+-- documented limit: those can't be reduced to one command.
 hyde.binds._commands = hyde.binds._commands or {}
 
-local pending_command
+local pending_commands = setmetatable({}, {__mode = "k"})
 if type(hl.dsp) == "table" and is_callable(hl.dsp.exec_cmd) then
     local orig_exec_cmd = hl.dsp.exec_cmd
     hl.dsp.exec_cmd = function(command, ...)
-        pending_command = command
-        return orig_exec_cmd(command, ...)
+        local action = orig_exec_cmd(command, ...)
+        if action ~= nil then
+            pending_commands[action] = command
+        end
+        return action
     end
 end
 
 local orig_add = hl.bind
 
 hl.bind = function(keycombo, action, ...)
-    local command = pending_command
-    pending_command = nil
+    local command
+    if action ~= nil then
+        command = pending_commands[action]
+        pending_commands[action] = nil
+    end
 
     local normalized = hyde.binds.normalize(keycombo)
     local opts = find_options(...)

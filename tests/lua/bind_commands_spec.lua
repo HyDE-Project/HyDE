@@ -57,6 +57,14 @@ hl.bind("SUPER + E", hl.dsp.exec_cmd("dolphin"), {description = "explorer"})
 check(hyde.binds._commands["SUPER + T"] == "kitty", "SUPER + T was not paired with its own command")
 check(hyde.binds._commands["SUPER + E"] == "dolphin", "SUPER + E was not paired with its own command")
 
+-- A delayed exec_cmd action must survive an unrelated bind and still pair
+-- with its own command when that exact action is eventually registered.
+local delayed_action = hl.dsp.exec_cmd("delayed")
+hl.bind("SUPER + D", hl.dsp.window.close(), {description = "unrelated"})
+check(hyde.binds._commands["SUPER + D"] == nil, "an unrelated bind consumed a delayed command")
+hl.bind("SUPER + Y", delayed_action, {description = "delayed"})
+check(hyde.binds._commands["SUPER + Y"] == "delayed", "a delayed matching action lost its command")
+
 -- 2. A native dispatcher called directly (no exec_cmd) must not be recorded,
 -- and must not pick up a command left over from an unrelated earlier bind.
 hl.bind("SUPER + Q", hl.dsp.window.close(), {description = "close"})
