@@ -271,6 +271,28 @@ function get_python_command() {
     fi
 }
 
+function qemu_supports_display() {
+    local qemu_cmd="$1"
+    local backend="$2"
+    "$qemu_cmd" -display help 2>&1 | awk -v backend="$backend" '
+        $0 ~ "^[[:space:]]*" backend "([[:space:]]|$)" { found=1 }
+        END { exit(found ? 0 : 1) }'
+}
+
+function add_qemu_display_args() {
+    local qemu_cmd="$1"
+
+    if qemu_supports_display "$qemu_cmd" gtk; then
+        qemu_args+=(-device virtio-vga-gl -display "gtk,gl=on,grab-on-hover=on")
+    elif qemu_supports_display "$qemu_cmd" sdl; then
+        echo "⚠️  QEMU GTK display is unavailable; falling back to SDL."
+        qemu_args+=(-device virtio-vga -display sdl)
+    else
+        echo "⚠️  QEMU has no graphical display backend; falling back to SSH-only mode."
+        qemu_args+=(-display none -vga none)
+    fi
+}
+
 function run_qemu_vm() {
     local vm_disk="$1"
     local memory="${2:-4G}"
@@ -302,8 +324,8 @@ function run_qemu_vm() {
             qemu_args+=(-display none -vga none)
             echo "🖥️  Running headless (SSH-only mode)"
         else
-            # Normal mode with GPU acceleration
-            qemu_args+=(-device virtio-vga-gl -display "gtk,gl=on,grab-on-hover=on")
+            # Prefer GTK with OpenGL, then fall back to SDL or headless mode.
+            add_qemu_display_args "$qemu_cmd"
         fi
 
         # Add KVM-specific arguments
@@ -532,11 +554,22 @@ SETUP_EOF
     $python_cmd -m http.server 8000 --bind 0.0.0.0 &
     local server_pid=$!
 
+    # Always stop the setup server, including when QEMU fails to start.
+    cleanup_server() {
+        kill "$server_pid" 2>/dev/null || true
+    }
+    trap cleanup_server RETURN
+
     # Start VM for setup
     run_qemu_vm "$temp_image" "${VM_MEMORY:-4G}" "${VM_CPUS:-2}" "" "$ssh_only" "$mount_path"
+    local qemu_status=$?
 
-    # Kill the HTTP server
-    kill $server_pid 2>/dev/null || true
+    cleanup_server
+    trap - RETURN
+    if [ "$qemu_status" -ne 0 ]; then
+        echo "❌ QEMU exited with status $qemu_status; the temporary HTTP server was stopped." >&2
+        return "$qemu_status"
+    fi
 
     echo ""
     echo "💾 Converting VM to snapshot..."
