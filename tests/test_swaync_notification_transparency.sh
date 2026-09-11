@@ -15,7 +15,7 @@ dcol="$REPO_ROOT/Configs/.local/share/wallbash/theme/swaync.dcol"
 grep -Eq 'notificationwindow,[[:space:]]*blankwindow[[:space:]]*\{' "$dcol" ||
     fail "swaync.dcol has no rule for the notificationwindow/blankwindow GTK nodes"
 
-awk '/notificationwindow,[ \t]*blankwindow[ \t]*\{/,/\}/' "$dcol" | grep -q 'background:[[:space:]]*transparent' ||
+awk '/notificationwindow,[ \t]*blankwindow[ \t]*\{/,/\}/' "$dcol" | grep -q 'background:[[:space:]]*transparent[[:space:];]' ||
     fail "the notificationwindow/blankwindow rule does not set a transparent background"
 
 finish

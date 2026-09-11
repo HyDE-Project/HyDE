@@ -195,7 +195,7 @@ general_query() {
     # "edge" is amdgpu's GPU temp, "Package id.*" is Intel CPU package temp.
     # Some AMD CPUs expose temperature via k10temp/zenpower with labels "Tctl"/"Tdie";
     # without matching those, `temperature` can be empty on such systems (#1952).
-    temperature=$(echo "$sensors_data" | $filter grep -m 1 -E "(edge|Package id.*|Tctl|Tdie)" | awk -F ':' '{print int($2)}')
+    temperature=$(echo "$sensors_data" | $filter grep -E "(edge|Package id.*|Tctl|Tdie)" | awk -F ':' '$2 ~ /^[[:space:]]*[+-]?[0-9]/ {print int($2); exit}')
     fan_speed=$(echo "$sensors_data" | $filter grep -m 1 -E "fan[1-9]" | awk -F ':' '{print int($2)}')
     local power_supply_dir="${GPUINFO_POWER_SUPPLY_DIR:-/sys/class/power_supply}"
     local power_raw current_raw voltage_raw
@@ -268,7 +268,7 @@ nvidia_GPU() {
 amd_GPU() {
     primary_gpu="AMD $GPUINFO_AMD_GPU"
     amd_output=$("${XDG_STATE_HOME:-$HOME/.local/state}/hyde/python_env/bin/python" "$scrDir/amdgpu.py")
-    if [[ $amd_output != *"No AMD GPUs detected."* ]] && [[ $amd_output != *"Unknown query failure"* ]]; then
+    if [[ -n $amd_output ]] && [[ $amd_output != *"No AMD GPUs detected."* ]] && [[ $amd_output != *"Unknown query failure"* ]]; then
         temperature=$(echo "$amd_output" | jq -r '.["GPU Temperature"]' | sed 's/°C//')
         utilization=$(echo "$amd_output" | jq -r '.["GPU Load"]' | sed 's/%//')
         core_clock=$(echo "$amd_output" | jq -r '.["GPU Core Clock"]' | sed 's/ GHz//;s/ MHz//')

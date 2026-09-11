@@ -181,9 +181,9 @@ case $tdie_stderr in
 esac
 
 # Out-of-spec: the matched line's value is not a number at all (a driver
-# quirk, or a board that reports an unsupported/placeholder reading). awk's
-# int() coerces this to 0 instead of dying on it -- this only confirms that
-# still holds for the newly matched labels, not just the pre-existing ones.
+# quirk, or a board that reports an unsupported/placeholder reading). When
+# no line carries a numeric reading, temperature must be empty rather than
+# coerced to 0 by awk's int().
 cat >"$fake_bin/sensors" <<'EOF'
 #!/bin/sh
 cat <<'SENSORS'
@@ -213,6 +213,44 @@ for line in lines:
 ' >/dev/null 2>&1; then
     fail "a non-numeric Tctl reading produced a line on stdout that is not a JSON object: $garbage_stdout"
 fi
+# The percentage must be empty when no numeric reading exists, not coerced
+# to 0 by awk int().
+case $garbage_stdout in
+*%"percentage":*)
+    fail "a non-numeric-only Tctl reading produced a non-empty percentage: $garbage_stdout"
+    ;;
+esac
+
+# Regression: a non-numeric Tctl line followed by a valid numeric edge
+# reading must not cause the Tctl line to shadow the real temperature.
+# Before the fix, grep -m 1 returned the first regex match (Tctl: N/A)
+# and awk coerced it to 0, losing the valid reading entirely.
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         N/A
+
+amdgpu-pci-0100
+Adapter: PCI adapter
+edge:         +63.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+skip_nontemp_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+skip_nontemp_stderr=$(cat "$stderr_file")
+
+case $skip_nontemp_stderr in
+*"division by zero"*) fail "non-numeric-then-valid reading crashed awk with a division-by-zero: $skip_nontemp_stderr" ;;
+esac
+case $skip_nontemp_stdout in
+*'63°C'*) ;;
+*) fail "when a non-numeric Tctl precedes a valid edge reading, the valid reading was not selected: $skip_nontemp_stdout" ;;
+esac
 
 # Ambiguous case the regex was already living with before this fix: a system
 # that (however unusually) exposes both an amdgpu "edge" reading and a CPU

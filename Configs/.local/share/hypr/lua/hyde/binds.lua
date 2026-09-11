@@ -250,8 +250,13 @@ hl.bind = function(keycombo, action, ...)
         keycombo = normalized
     end
 
-    if normalized ~= "" and type(command) == "string" and command ~= "" then
-        hyde.binds._commands[canonicalize(keycombo)] = command
+    if normalized ~= "" then
+        local canonical = canonicalize(keycombo)
+        if type(command) == "string" and command ~= "" then
+            hyde.binds._commands[canonical] = command
+        else
+            hyde.binds._commands[canonical] = nil
+        end
     end
 
     return orig_add(keycombo, action, ...)

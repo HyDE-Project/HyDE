@@ -62,6 +62,16 @@ notify_send('Battery at 20%)', 'body', { urgency = 'critical', icon = 'battery-f
 LUA
     python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$work_dir/paren-in-string.lua" ||
         fail "a ')' inside a string argument made a well-formed notify_send call fail"
+
+    # Out-of-spec: the words "urgency" and "icon" appear as positional
+    # string arguments, not as keys in an options table -- the checker must
+    # parse top-level call arguments and reject this rather than matching
+    # bare substrings anywhere in the call.
+    cat >"$work_dir/urgency-as-arg.lua" <<'LUA'
+notify_send('urgency', 'icon', 'critical', icon)
+LUA
+    python3 "$TESTS_DIR/python/check_batterynotify_notify_calls.py" "$work_dir/urgency-as-arg.lua" >/dev/null 2>&1 &&
+        fail "a notify_send call with 'urgency' and 'icon' as positional string args was accepted"
 else
     skip "python3 is not installed"
 fi

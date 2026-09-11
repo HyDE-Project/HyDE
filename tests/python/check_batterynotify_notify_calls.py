@@ -10,6 +10,7 @@ back to their defaults ('normal', no icon) for every notification in this
 file, regardless of what was actually passed.
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -94,10 +95,67 @@ if not calls:
     print("no notify_send(...) calls found -- extract_calls() may be stale")
     sys.exit(1)
 
+def split_args(text):
+    """Split the *inner* text of a function call (everything between the outer
+    parens) into top-level argument strings by comma, respecting nested
+    parentheses, string literals, and Lua line comments.  A call like
+    notify_send('A', 'B', { urgency = 'c', icon = 'i' }) yields three
+    elements: the two string args and the table arg.
+    """
+    args = []
+    depth = 0
+    start = 0
+    i = 0
+    while i < len(text):
+        ch = text[i]
+        if ch in ("'", '"'):
+            i = _skip_lua_string(text, i)
+            continue
+        if ch == "-" and text[i:i + 2] == "--":
+            nl = text.find("\n", i)
+            i = len(text) if nl == -1 else nl
+            continue
+        if ch in ("(", "{"):
+            depth += 1
+        elif ch in (")", "}"):
+            depth -= 1
+        elif ch == "," and depth == 0:
+            args.append(text[start:i].strip())
+            start = i + 1
+        i += 1
+    args.append(text[start:].strip())
+    return args
+
+
+def extract_call_args(call_text):
+    """Given a full 'name(...)' call string, return the list of top-level
+    argument strings.  Returns an empty list for malformed calls.
+    """
+    open_paren = call_text.find("(")
+    close_paren = call_text.rfind(")")
+    if open_paren == -1 or close_paren == -1 or close_paren <= open_paren:
+        return []
+    return split_args(call_text[open_paren + 1:close_paren])
+
+
 failures = []
 for call in calls:
-    has_urgency = "urgency" in call
-    has_icon = "icon" in call
+    args = extract_call_args(call)
+    if len(args) < 3:
+        failures.append((call, ["options table (3rd arg)"]))
+        continue
+    opts_raw = args[2].strip()
+    # A valid options table must start with '{' and contain 'urgency =' and
+    # 'icon =' as keys -- bare string matches anywhere else are rejected.
+    if not (opts_raw.startswith("{") and opts_raw.endswith("}")):
+        failures.append((call, ["options table (3rd arg) must be { ... }" ]))
+        continue
+    opts_inner = opts_raw[1:-1]
+    # Match 'urgency' / 'icon' followed by optional whitespace then '=' --
+    # this catches both `urgency =` and `urgency=` forms while rejecting
+    # bare occurrences inside string values.
+    has_urgency = bool(re.search(r'\burgency\s*=', opts_inner))
+    has_icon = bool(re.search(r'\bicon\s*=', opts_inner))
     if not (has_urgency and has_icon):
         missing = []
         if not has_urgency:

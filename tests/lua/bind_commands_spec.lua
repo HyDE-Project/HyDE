@@ -82,6 +82,22 @@ hl.bind("SUPER + V", hl.dsp.exec_cmd("first"), {description = "v1"})
 hl.bind("SUPER + V", hl.dsp.exec_cmd("second"), {description = "v2"})
 check(hyde.binds._commands["SUPER + V"] == "second", "re-registering a combo did not overwrite the older command")
 
+-- 4b. Replacing an exec_cmd bind with a native dispatcher must clear the
+-- stale command so it does not leak into the keybind-hint menu.
+hl.bind("SUPER + R", hl.dsp.exec_cmd("refresh"), {description = "r1"})
+check(hyde.binds._commands["SUPER + R"] == "refresh", "exec_cmd did not store its command")
+hl.bind("SUPER + R", hl.dsp.window.close(), {description = "r2"})
+check(hyde.binds._commands["SUPER + R"] == nil, "native-dispatcher rebound did not clear the stale command")
+
+-- 4c. Replacing an exec_cmd bind with a plain Lua function must also clear
+-- the stale command.
+hl.bind("SUPER + M", hl.dsp.exec_cmd("maximize"), {description = "m1"})
+check(hyde.binds._commands["SUPER + M"] == "maximize", "exec_cmd did not store its command for M")
+local function toggle_float()
+end
+hl.bind("SUPER + M", toggle_float, {description = "m2"})
+check(hyde.binds._commands["SUPER + M"] == nil, "plain-function rebound did not clear the stale command")
+
 -- 5. Modifier order/spelling must canonicalize the same way _active already
 -- does -- this is a different table, computed at a different point in
 -- hl.bind, so it is not automatically guaranteed just because _active works.
