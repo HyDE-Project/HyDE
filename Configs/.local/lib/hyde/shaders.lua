@@ -6,17 +6,17 @@ package.path = package.path .. ";" .. root .. "?.lua;" .. root .. "?/init.lua;"
 require("luautils.init")
 local xdg = require("luautils.xdg")
 local lfs = require("lfs")
+local hyprctl = require("luautils.hypr.hyprctl")
 local common = require("luautils.selector.common")
+local argparse = require("argparse")
 
 local COMPILED = xdg.state .. "/hyde/compiled.cache.glsl"
-local DEFAULT_SHADER_ICON = ""
-local SHADER_DIRS = {
+local DEFAULT_SHADER_ICON = ""local SHADER_DIRS = {
     xdg.config .. "/hypr/shaders",
     xdg.data .. "/hypr/shaders",
     "/usr/local/share/hypr/shaders",
     "/usr/share/hypr/shaders"
 }
-
 local function ensure_dir(path)
     local cur = ""
     for p in path:gmatch("[^/]+") do
@@ -172,6 +172,7 @@ local function apply_shader(item)
         end
         shader = compiled
     end
+    hyprctl.exec("keyword", "decoration:screen_shader", shader)
 end
 
 -- Read metadata from #define SHADER_* macros in a .frag file.
@@ -246,9 +247,135 @@ if rawget(_G, "hl") then
 end
 
 local _src = debug.getinfo(1, "S").source
+local _script_path = _src:match("^@(.*)$") or _src
+if _script_path:sub(1, 1) ~= "/" then
+    _script_path = arg[0] or _script_path
+end
+
+M.rofi_opts.on_selection_changed = string.format(
+    [[lua "%s" --test "{entry}"]],
+    _script_path
+)
+M.rofi_opts.on_menu_canceled = "hyprctl reload"
+
+local function normalize_rofi_entry(value)
+    value = tostring(value or "")
+    value = value:match("^%s*(.-)%s*$")
+    return value:match("[^	]+$") or value
+end
+
 local _is_main = arg and arg[0] and (_src == "@" .. arg[0] or _src:sub(2):match("[^/]+$") == arg[0]:match("[^/]+$"))
 if _is_main then
-    common.run(M, {name = "hyde-shell shaders", description = "HyDE Shader Selector"})
+    -- Custom CLI parser with test flags
+    local parser = argparse("hyde-shell shaders", "HyDE Shader Selector")
+    parser:flag("--list", "List available items")
+    parser:option("--set", "Set the given item"):argname("NAME")
+    parser:flag("--select", "Select an item with rofi")
+    parser:flag("--reload", "Reload the current item and re-apply its configuration")
+    parser:flag("--current", "Show the current item")
+    parser:flag("--waybar", "Get item info for Waybar")
+    parser:option("--test", "Transiently preview shader (for rofi on-selection-changed)"):argname("NAME")
+
+    local cli = parser:parse(arg or {})
+
+    local function print_item(item)
+        print((item.icon or "") .. " " .. (item.name or "?") .. ": " .. (item.description or ""))
+    end
+
+    if cli.list then
+        if not M.list or #M.list == 0 then
+            print("No items found")
+            return
+        end
+        for _, item in ipairs(M.list) do
+            print((item.icon or "") .. " " .. (item.name or "?") .. " :: " .. (item.description or ""))
+            if item.path then
+                print("  " .. item.path)
+            end
+        end
+    elseif cli.set then
+        local item, err = M.set(cli.set)
+        if not item then
+            io.stderr:write("Error: " .. tostring(err) .. "\n")
+            if M.names then
+                io.stderr:write("Available: " .. table.concat(M.names, ", ") .. "\n")
+            end
+            os.exit(1)
+        end
+        print_item(item)
+    elseif cli.test then
+        local shader_name = normalize_rofi_entry(cli.test)
+        local item = M.find(shader_name)
+        if not item then
+            io.stderr:write("Error: unknown shader '" .. tostring(shader_name) .. "'\n")
+            if M.names then
+                io.stderr:write("Available: " .. table.concat(M.names, ", ") .. "\n")
+            end
+            os.exit(1)
+        end
+        local compiled, err = compile_shader(item)
+        if not compiled then
+            io.stderr:write("Error: " .. tostring(err) .. "\n")
+            os.exit(1)
+        end
+        local shader = item.key ~= "disable" and compiled or ""
+        local lua_cmd = string.format(
+            "hl.config({ debug = { damage_tracking = false }, decoration = { screen_shader = %s } })",
+            string.format("%q", shader)
+        )
+        hyprctl.exec("eval", lua_cmd)
+    elseif cli.current then
+        local item = M.current and M.current()
+        if not item then
+            print("No current item")
+        else
+            print_item(item)
+        end
+    elseif cli.reload then
+        local item = M.reload and M.reload()
+        if not item then
+            io.stderr:write("Error: reload failed\n")
+            os.exit(1)
+        end
+        print_item(item)
+    elseif cli.select then
+        if not M.list or #M.list == 0 then
+            print("No items found")
+            return
+        end
+
+        local current_item = M.current and M.current()
+        local rofi_opts = {}
+        -- merge module-level rofi_opts (e.g. prioritize) without overriding caller opts
+        if M.rofi_opts then
+            for k, v in pairs(M.rofi_opts) do
+                if rofi_opts[k] == nil then
+                    rofi_opts[k] = v
+                end
+            end
+        end
+        rofi_opts.current_item = current_item
+
+        local rofi = require("luautils.selector.rofi")
+        local selected = rofi.select(M.list, rofi_opts)
+        if not selected or selected == "" then
+            return
+        end
+
+        local item, err = M.set(selected)
+        if not item then
+            io.stderr:write("Error: " .. tostring(err) .. "\n")
+            if M.names then
+                io.stderr:write("Available: " .. table.concat(M.names, ", ") .. "\n")
+            end
+            os.exit(1)
+        end
+        print_item(item)
+    elseif cli.waybar then
+        M.waybar()
+    else
+        print(parser:get_help())
+    end
 end
 
 return M

@@ -93,7 +93,7 @@ cd ~/HyDE/Scripts
 -->
 
 قم بإعادة تشغيل الجهاز بعد اكتمال البرنامج النصي للتثبيت وستظهر لك شاشة تسجيل الدخول SDDM (أو شاشة سوداء) لأول مرة.
-لمزيد من التفاصيل، راجع [دليل التثبيت](https://github.com/HyDE-Project/HyDE/wiki/installation).
+لمزيد من التفاصيل، راجع [دليل التثبيت](https://hydeproject.pages.dev/en/getting-started/installation).
 
 <div align="right">
   <br>

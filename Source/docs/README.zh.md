@@ -107,7 +107,7 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 -->
 
 
-在安装脚本运行完成后请重启，首次启动时您将看到 SDDM 登录界面（或者黑屏）。更多细节请看[安装 wiki](https://github.com/HyDE-Project/HyDE/wiki/installation)
+在安装脚本运行完成后请重启，首次启动时您将看到 SDDM 登录界面（或者黑屏）。更多细节请看[安装 wiki](https://hydeproject.pages.dev/zh/getting-started/installation)
 
 <div align="right">
   <br>

@@ -78,9 +78,11 @@ hl.bind(MOD .. "+CTRL + mouse_up", hl.dsp.focus({direction = "left"}), _F)
 _F = {description = "[Scrolling] scroll focus right"}
 hl.bind(MOD .. "+CTRL + mouse_down", hl.dsp.focus({direction = "right"}), _F)
 
+-- 3-finger swipes switch workspaces, matching the monocle layout and the
+-- near-universal desktop convention; 4-finger swipes move focus instead.
 hl.gesture(
 	{
-		fingers = 4,
+		fingers = 3,
 		direction = "horizontal",
 		action = "workspace"
 	}
@@ -88,7 +90,7 @@ hl.gesture(
 
 hl.gesture(
 	{
-		fingers = 4,
+		fingers = 3,
 		direction = "vertical",
 		action = "workspace"
 	}
@@ -97,7 +99,7 @@ hl.gesture(
 for _, dir in ipairs({"up", "down", "left", "right"}) do
 	hl.gesture(
 		{
-			fingers = 3,
+			fingers = 4,
 			direction = dir,
 			action = function()
 				hl.dispatch(hl.dsp.focus({direction = dir}))

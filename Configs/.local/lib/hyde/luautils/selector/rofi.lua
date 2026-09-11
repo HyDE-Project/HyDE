@@ -66,6 +66,8 @@ function M.select(items, opts)
     opts = opts or {}
     local current_item = opts.current_item
     local prefix = opts.env_prefix
+    local selection_changed_cmd = opts.on_selection_changed
+    local menu_canceled_cmd = opts.on_menu_canceled
 
     if current_item then
         opts.current_name = opts.current_name or current_item.name
@@ -148,6 +150,15 @@ function M.select(items, opts)
         end
     end
 
+    -- Build callback options
+    local callback_opts = ""
+    if selection_changed_cmd then
+        callback_opts = callback_opts .. " -on-selection-changed " .. shell_quote(selection_changed_cmd)
+    end
+    if menu_canceled_cmd then
+        callback_opts = callback_opts .. " -on-menu-canceled " .. shell_quote(menu_canceled_cmd)
+    end
+
     local rofi_cmd =
         string.format(
         [[printf %s | rofi -dmenu -i %s \
@@ -156,6 +167,7 @@ function M.select(items, opts)
             -theme-str %s \
             -theme-str %s \
             -theme-str %s \
+            %s \
             %s \
             -theme %s
         ]],
@@ -168,6 +180,7 @@ function M.select(items, opts)
         shell_quote(font_override),
         shell_quote(r_override),
         pos_override,
+        callback_opts,
         shell_quote(theme)
     )
 

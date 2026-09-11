@@ -3,9 +3,9 @@
         "format": "{0}",
         "rotate": 0,
         "tooltip-format": "\udb81\udfe1 Switch theme",
-        "on-click": "hyde-shell theme.switch -n",
-        "on-click-right": "hyde-shell theme.switch -p",
-        "on-click-middle": "sleep 0.1 && hyde-shell theme.select",
+        "on-click": "hyde-shell app -t scope -- theme.switch.sh -n",
+        "on-click-right": "hyde-shell app -t scope -- theme.switch.sh -p",
+        "on-click-middle": "sleep 0.1 && hyde-shell app -t scope -- theme.select.sh",
         "interval": 86400,
         "tooltip": true
     }

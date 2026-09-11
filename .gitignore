@@ -14,3 +14,9 @@ build
 
 # Local agent worktrees, never part of the tree
 .claude/
+
+
+# testing files
+*ignore_me*
+*ignore-me*
+*IGNORE_ME*

@@ -101,7 +101,7 @@ Voir les instructions d'installation pour HyDE dans [Hyde-cli - Usage](https://g
 -->
 
 Veuillez redémarrer après que le script d'installation se termine et vous amène à l'écran de connexion SDDM (ou écran noir) pour la première fois.
-Pour plus de détails, veuillez consulter le [wiki d'installation](https://github.com/HyDE-Project/HyDE/wiki/installation).
+Pour plus de détails, veuillez consulter le [wiki d'installation](https://hydeproject.pages.dev/fr/getting-started/installation).
 
 <div align="right">
   <br>

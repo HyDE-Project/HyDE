@@ -234,11 +234,26 @@ get_themes() {
         done
     fi
 }
+##
+# Sources the two optional user-override files, if present.
+#
+# Both are optional -- most installs have neither -- so a missing file is
+# not a failure and must not make the function return non-zero: a function
+# call is not exempt from `set -e` the way a command inside an `&&`/`||`
+# list is, so every caller that runs with `set -e` (directly, or via
+# `hyde-shell init`, which calls this) would silently die right here,
+# before doing anything, on any system that never created these files.
+#
+# A file that *does* exist and fails to source (e.g. broken syntax) is a
+# real error and must still fail loudly -- that case is deliberately not
+# swallowed, only "the file is absent" is treated as success.
+##
 export_hyde_config() {
     local user_conf_state="$XDG_STATE_HOME/hyde/staterc"
     local user_conf="$XDG_STATE_HOME/hyde/config"
-    [ -f "$user_conf_state" ] && source "$user_conf_state"
-    [ -f "$user_conf" ] && source "$user_conf"
+    [ -f "$user_conf_state" ] && { source "$user_conf_state" || return; }
+    [ -f "$user_conf" ] && { source "$user_conf" || return; }
+    return 0
 }
 export_hyde_config
 case "$enableWallDcol" in

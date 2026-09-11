@@ -13,8 +13,13 @@ fi
 
 # shellcheck disable=SC2154
 if chk_list "aurhlpr" "${aurList[@]}"; then
-    print_log -sec "AUR" -stat "Detected" "${aurhlpr}"
-    exit 0
+    if aur_health_check "${aurhlpr}"; then
+        print_log -sec "AUR" -stat "Detected" "${aurhlpr}"
+        exit 0
+    else
+        print_log -sec "AUR" -warn "Detected '${aurhlpr}' is not working properly"
+        print_log -sec "AUR" -warn "Proceeding with fresh installation"
+    fi
 fi
 
 aurhlpr="${1:-yay-bin}"

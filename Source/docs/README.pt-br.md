@@ -107,7 +107,7 @@ As a second install option, you can also use `Hyde-install`, which might be easi
 View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com/kRHYME7/Hyde-cli?tab=readme-ov-file#usage).
 -->
 Por favor, reinicie o sistema após o script concluir a instalação e levá-lo à tela de login do SDDM (ou a uma tela preta) pela primeira vez.
-Para mais detalhes, por favor consulte a [wiki de instalação](https://github.com/HyDE-Project/HyDE/wiki/installation).
+Para mais detalhes, por favor consulte a [wiki de instalação](https://hydeproject.pages.dev/en/getting-started/installation).
 
 Checklist rápido para distros derivadas do Arch, como BigLinux / Manjaro:
 

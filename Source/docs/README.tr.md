@@ -102,7 +102,7 @@ View installation instructions for HyDE in [Hyde-cli - Usage](https://github.com
 -->
 
 Kurulum betiği (script) tamamlandıktan ve sizi ilk kez SDDM oturum açma ekranına (veya siyah ekrana) yönlendirdikten sonra lütfen yeniden başlatın.
-Daha fazla ayrıntı için lütfen [kurulum wiki](https://github.com/HyDE-Project/HyDE/wiki/installation) sayfasına bakın.
+Daha fazla ayrıntı için lütfen [kurulum wiki](https://hydeproject.pages.dev/en/getting-started/installation) sayfasına bakın.
 
 <div align="right">
   <br>

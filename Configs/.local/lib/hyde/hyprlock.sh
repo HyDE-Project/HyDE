@@ -38,11 +38,28 @@ fn_profile() {
     return 0
 }
 fn_mpris() {
-    local player=${1:-$(playerctl --list-all 2>/dev/null | head -n 1)}
+    local player=$(playerctl --list-all 2>/dev/null | head -n 1)
     THUMB="$cacheDir/landing/mpris"
     player_status="$(playerctl -p "$player" status 2>/dev/null)"
-    if [[ $player_status == "Playing" ]]; then
-        playerctl -p "$player" metadata --format "{{xesam:title}} $(mpris_icon "$player")  {{xesam:artist}}"
+    if [[ $player_status == "Playing" || $player_status == "Paused" ]]; then
+        # Extensible: takes a single metadata field (artist|album|title|player_name|status|length);
+        # unknown values pass through as raw playerctl template tokens
+        local -A field_map=(
+            ["artist"]="{{xesam:artist}}"
+            ["album"]="{{xesam:album}}"
+            ["title"]="{{xesam:title}}"
+            ["player_name"]="{{playerName}}"
+            ["status"]="{{status}}"
+            ["length"]="{{mpris:length}}"
+        )
+        local format
+        if [[ -n ${1:-} ]]; then
+            format="${field_map[$1]:-$1}"
+        else
+            # Backward compatible default output when no field is supplied
+            format="{{xesam:title}} $(mpris_icon "$player")  {{xesam:artist}}"
+        fi
+        playerctl -p "$player" metadata --format "$format"
         mpris_thumb "$player"
     else
         if [ -f "$HOME/.face.icon" ]; then
@@ -331,6 +348,22 @@ source = $hyde_hyprlock_conf
 #│                                                                            │
 #│   cmd [update:1000] \$MPRIS_TEXT                                           │
 #│   - Text from media players in "Title  Author" format.                    │
+#│   - Optional fields: artist album title player_name status length          │
+#│                                                                            │
+#│   cmd [update:1000] \$MPRIS_TITLE                                          │
+#│   - The song title from media players.                                     │
+#│                                                                            │
+#│   cmd [update:1000] \$MPRIS_ARTIST                                         │
+#│   - The artist from media players.                                         │
+#│                                                                            │
+#│   cmd [update:1000] \$MPRIS_ALBUM                                          │
+#│   - The album from media players.                                          │
+#│                                                                            │
+#│   cmd [update:1000] \$MPRIS_LENGTH                                         │
+#│   - The track duration from media players.                                 │
+#│                                                                            │
+#│   cmd [update:1000] \$MPRIS_STATUS                                         │
+#│   - The player status (Playing or Paused).                                 │
 #│                                                                            │
 #│                                                                            │
 #│   cmd [update:1000] \$SPLASH_CMD                                           │
@@ -344,6 +377,15 @@ source = $hyde_hyprlock_conf
 #│   cmd [update:5000] \$BATTERY_ICON                                         │
 #│   - The battery icon to be displayed on the lock screen.                   │
 #│   - Only works if the battery is available.                                │
+#│                                                                            │
+#│   cmd [update:5000] \$BATTERY_PERCENT                                      │
+#│   - The battery percentage.                                                │
+#│                                                                            │
+#│   cmd [update:5000] \$BATTERY_status                                       │
+#│   - The battery status (Charging, Discharging, Full).                      │
+#│                                                                            │
+#│   cmd [update:1000] \$LOCATION                                             │
+#│   - The current city based on IP geolocation.                              │
 #│                                                                            │                                                                    │
 #└────────────────────────────────────────────────────────────────────────────┘
 
@@ -382,7 +424,7 @@ argparse_footer "Use 'hyde-shell hyprlock --help' for more information."
 
 argparse "background,--background,-b" "" "Converts and ensures background to be a png"
 argparse "profile,--profile" "" "Generates the profile picture"
-argparse "mpris,--mpris" "MPRIS_PLAYER" "Handles mpris thumbnail generation" "parameter_optional"
+argparse "mpris,--mpris" "MPRIS_PLAYER" "Handles mpris thumbnail generation [fields: title|artist|album|player_name|status|length]" "parameter_optional"
 argparse "cava,--cava" "" "Placeholder function for cava"
 argparse "art,--art" "" "Prints the path to the mpris art"
 argparse "--select,-S" "" "Selects the hyprlock layout"
