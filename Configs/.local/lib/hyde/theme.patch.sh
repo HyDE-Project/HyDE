@@ -176,11 +176,34 @@ check_tars() {
         if [[ $gsVal =~ ^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$ ]]; then
             print_log -warn "Variable $gsVal detected! " "be sure $gsVal is set as a different name or on a different file, skipping check"
         else
+            # Theme authors commonly put a font style/size in the archive
+            # directory name while hypr.theme contains only the family (for
+            # example `SF Pro Rounded` vs `SF Pro Rounded Regular 10.5`).
+            # Compare trimmed names and accept an archive whose top-level
+            # directory starts with the configured value.
+            gsVal="${gsVal##+([[:space:]])}"
+            gsVal="${gsVal%%+([[:space:]])}"
             print_log -g "[pass]  " "hypr.theme :: [$gsLow]" -b " $gsVal"
             trArc="$(echo "$all_tar_files" | grep "/${inVal}_")"
-            [ -f "$trArc" ] && [ "$(echo "$trArc" | wc -l)" -eq 1 ] && trVal="$(basename "$(tar -tf "$trArc" | cut -d '/' -f1 | sort -u)")" && trVal="$(echo "$trVal" | grep -w "$gsVal")"
+            trVal=""
+            if [ -f "$trArc" ] && [ "$(echo "$trArc" | wc -l)" -eq 1 ]; then
+                while IFS= read -r candidate; do
+                    candidate="${candidate%/}"
+                    if [[ "$candidate" == "$gsVal" || "$candidate" == "$gsVal "* || "$candidate" == "$gsVal-"* ]]; then
+                        trVal="$candidate"
+                        break
+                    fi
+                done < <(tar -tf "$trArc" | cut -d '/' -f1 | sort -u)
+            fi
             print_log -g "[pass]  " "../*.tar.* :: [$gsLow]" -b " $trVal"
-            [ "$trVal" != "$gsVal" ] && print_log -r "[ERROR] " "$gsLow set in hypr.theme does not exist in ${inVal}_*.tar.*" && exit_flag=true
+            if [ -z "$trVal" ]; then
+                if [ "$2" == "--mandatory" ]; then
+                    print_log -r "[ERROR] " "$gsLow set in hypr.theme does not exist in ${inVal}_*.tar.*"
+                    exit_flag=true
+                else
+                    print_log -y "[note] " "$gsLow package for '$gsVal' is missing, continuing..."
+                fi
+            fi
         fi
     else
         [ "$2" == "--mandatory" ] && print_log -r "[ERROR] " "hypr.theme :: [$gsLow]" -r " Not Found" && exit_flag=true && return 0
