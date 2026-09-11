@@ -123,4 +123,165 @@ else
     fi
 fi
 
+# An AMD CPU's k10temp/zenpower sensor labels its reading "Tctl"/"Tdie", not
+# "edge" (amdgpu GPU) or "Package id" (Intel CPU) -- the only two the
+# temperature regex recognized, plus a literal unfinished "another keyword"
+# placeholder that never matched anything. A system with neither an amdgpu
+# GPU nor an Intel CPU (e.g. an AMD CPU with a non-amdgpu/non-detected GPU)
+# got an empty temperature on every poll (#1952).
+#
+# "Tctl" and "Tdie" are separate alternatives in the regex -- a dump carrying
+# only one of them has to match on its own, not just the pair together, or a
+# driver/board that only ever exposes one of the two would still come back
+# empty despite the fix.
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         +45.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+tctl_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+tctl_stderr=$(cat "$stderr_file")
+
+case $tctl_stdout in
+*'45°C'*) ;;
+*) fail "an AMD k10temp Tctl-only reading of 45°C was not picked up as the temperature: $tctl_stdout" ;;
+esac
+case $tctl_stderr in
+*"division by zero"*) fail "a Tctl-only reading crashed awk with a division-by-zero: $tctl_stderr" ;;
+esac
+
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tdie:         +52.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+tdie_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+tdie_stderr=$(cat "$stderr_file")
+
+case $tdie_stdout in
+*'52°C'*) ;;
+*) fail "an AMD k10temp Tdie-only reading of 52°C was not picked up as the temperature: $tdie_stdout" ;;
+esac
+case $tdie_stderr in
+*"division by zero"*) fail "a Tdie-only reading crashed awk with a division-by-zero: $tdie_stderr" ;;
+esac
+
+# Out-of-spec: the matched line's value is not a number at all (a driver
+# quirk, or a board that reports an unsupported/placeholder reading). When
+# no line carries a numeric reading, temperature must be empty rather than
+# coerced to 0 by awk's int().
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         N/A
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+garbage_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+garbage_stderr=$(cat "$stderr_file")
+
+case $garbage_stderr in
+*"division by zero"*) fail "a non-numeric Tctl reading crashed awk with a division-by-zero: $garbage_stderr" ;;
+esac
+if [ -z "$garbage_stdout" ] || ! printf '%s\n' "$garbage_stdout" | python3 -c '
+import json, sys
+lines = [line for line in sys.stdin.read().splitlines() if line.strip()]
+if not lines:
+    raise SystemExit(1)
+for line in lines:
+    if not isinstance(json.loads(line), dict):
+        raise SystemExit(1)
+' >/dev/null 2>&1; then
+    fail "a non-numeric Tctl reading produced a line on stdout that is not a JSON object: $garbage_stdout"
+fi
+# The percentage must be empty when no numeric reading exists, not coerced
+# to 0 by awk int().
+case $garbage_stdout in
+*%"percentage":*)
+    fail "a non-numeric-only Tctl reading produced a non-empty percentage: $garbage_stdout"
+    ;;
+esac
+
+# Regression: a non-numeric Tctl line followed by a valid numeric edge
+# reading must not cause the Tctl line to shadow the real temperature.
+# Before the fix, grep -m 1 returned the first regex match (Tctl: N/A)
+# and awk coerced it to 0, losing the valid reading entirely.
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         N/A
+
+amdgpu-pci-0100
+Adapter: PCI adapter
+edge:         +63.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+skip_nontemp_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+skip_nontemp_stderr=$(cat "$stderr_file")
+
+case $skip_nontemp_stderr in
+*"division by zero"*) fail "non-numeric-then-valid reading crashed awk with a division-by-zero: $skip_nontemp_stderr" ;;
+esac
+case $skip_nontemp_stdout in
+*'63°C'*) ;;
+*) fail "when a non-numeric Tctl precedes a valid edge reading, the valid reading was not selected: $skip_nontemp_stdout" ;;
+esac
+
+# Ambiguous case the regex was already living with before this fix: a system
+# that (however unusually) exposes both an amdgpu "edge" reading and a CPU
+# "Tctl" reading. grep -m 1 takes whichever line comes first in the sensors
+# dump -- asserting that pins the actual, currently-observed precedence as a
+# known behavior instead of leaving it silently undefined.
+cat >"$fake_bin/sensors" <<'EOF'
+#!/bin/sh
+cat <<'SENSORS'
+k10temp-pci-00c3
+Adapter: PCI adapter
+Tctl:         +45.0°C
+
+amdgpu-pci-0100
+Adapter: PCI adapter
+edge:         +60.0°C
+
+SENSORS
+EOF
+chmod +x "$fake_bin/sensors"
+
+rm -f "$state_file"
+both_stdout=$(PATH="$fake_bin:$PATH" bash "$script" 2>"$stderr_file")
+both_stderr=$(cat "$stderr_file")
+
+case $both_stdout in
+*'45°C'*) ;;
+*) fail "with both a Tctl and an edge reading present, the first line (Tctl, 45°C) was not the one picked: $both_stdout" ;;
+esac
+case $both_stderr in
+*"division by zero"*) fail "a combined Tctl+edge reading crashed awk with a division-by-zero: $both_stderr" ;;
+esac
+
 finish

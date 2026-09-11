@@ -18,6 +18,31 @@ wallpaper_cache_bootstrap() {
     export dcolDir
 }
 
+move_generated_thumbnail() {
+    local source="$1"
+    local target="$2"
+    if [ -f "$source" ]; then
+        if mv -- "$source" "$target"; then
+            return 0
+        elif [ -e "$target" ]; then
+            # Another cache worker may have created the target concurrently.
+            return 0
+        else
+            printf 'Warning: failed to move generated wallpaper thumbnail "%s" to "%s"\n' "$source" "$target" >&2
+            return 1
+        fi
+    elif [ -e "$target" ]; then
+        # Another cache worker may have moved the shared temporary first.
+        return 0
+    else
+        if [ -e "$target" ]; then
+            return 0
+        fi
+        printf 'Warning: generated wallpaper thumbnail "%s" is missing; skipping "%s"\n' "$source" "$target" >&2
+        return 1
+    fi
+}
+
 wallpaper_cache_init() {
     [ -d "$HYDE_THEME_DIR" ] && cacheIn="$HYDE_THEME_DIR" || {
         echo "Error: HYDE_THEME_DIR not found!"
@@ -49,9 +74,15 @@ fn_wallcache() {
         fi
     fi
     [ ! -e "$thmbDir/$x_hash.thmb" ] && magick "$x_wall"[0] -strip -resize 1000 -gravity center -extent 1000 -quality 90 "$thmbDir/$x_hash.thmb"
-    [ ! -e "$thmbDir/$x_hash.sqre" ] && magick "$x_wall"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "$thmbDir/$x_hash.sqre.png" && mv "$thmbDir/$x_hash.sqre.png" "$thmbDir/$x_hash.sqre"
+    if [ ! -e "$thmbDir/$x_hash.sqre" ]; then
+        magick "$x_wall"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "$thmbDir/$x_hash.sqre.png" &&
+            move_generated_thumbnail "$thmbDir/$x_hash.sqre.png" "$thmbDir/$x_hash.sqre" || return 1
+    fi
     [ ! -e "$thmbDir/$x_hash.blur" ] && magick "$x_wall"[0] -strip -scale 10% -blur 0x3 -resize 100% "$thmbDir/$x_hash.blur"
-    [ ! -e "$thmbDir/$x_hash.quad" ] && magick "$thmbDir/$x_hash.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "$thmbDir/$x_hash.quad.png" && mv "$thmbDir/$x_hash.quad.png" "$thmbDir/$x_hash.quad"
+    if [ ! -e "$thmbDir/$x_hash.quad" ]; then
+        magick "$thmbDir/$x_hash.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "$thmbDir/$x_hash.quad.png" &&
+            move_generated_thumbnail "$thmbDir/$x_hash.quad.png" "$thmbDir/$x_hash.quad" || return 1
+    fi
     {
         [ ! -e "$dcolDir/$x_hash.dcol" ] || [ "$(wc -l <"$dcolDir/$x_hash.dcol")" -ne 89 ]
     } && "$scrDir/wallbash.sh" --custom "$wallbashCustomCurve" "$thmbDir/$x_hash.thmb" "$dcolDir/$x_hash" &>/dev/null
@@ -71,9 +102,11 @@ fn_wallcache_force() {
         x_wall="$temp_image"
     fi
     magick "$x_wall"[0] -strip -resize 1000 -gravity center -extent 1000 -quality 90 "$thmbDir/$x_hash.thmb"
-    magick "$x_wall"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "$thmbDir/$x_hash.sqre.png" && mv "$thmbDir/$x_hash.sqre.png" "$thmbDir/$x_hash.sqre"
+    magick "$x_wall"[0] -strip -thumbnail 500x500^ -gravity center -extent 500x500 "$thmbDir/$x_hash.sqre.png" &&
+        move_generated_thumbnail "$thmbDir/$x_hash.sqre.png" "$thmbDir/$x_hash.sqre" || return 1
     magick "$x_wall"[0] -strip -scale 10% -blur 0x3 -resize 100% "$thmbDir/$x_hash.blur"
-    magick "$thmbDir/$x_hash.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "$thmbDir/$x_hash.quad.png" && mv "$thmbDir/$x_hash.quad.png" "$thmbDir/$x_hash.quad"
+    magick "$thmbDir/$x_hash.sqre" \( -size 500x500 xc:white -fill "rgba(0,0,0,0.7)" -draw "polygon 400,500 500,500 500,0 450,0" -fill black -draw "polygon 500,500 500,0 450,500" \) -alpha Off -compose CopyOpacity -composite "$thmbDir/$x_hash.quad.png" &&
+        move_generated_thumbnail "$thmbDir/$x_hash.quad.png" "$thmbDir/$x_hash.quad" || return 1
     "$scrDir/wallbash.sh" --custom "$wallbashCustomCurve" "$thmbDir/$x_hash.thmb" "$dcolDir/$x_hash" &>/dev/null
     if [ "$is_video" -eq 1 ]; then
         rm -f "$temp_image"
@@ -92,6 +125,7 @@ fn_envar_cache() {
 wallpaper_cache_commence() {
     local mode=""
     local option
+    local single_wallpaper=0
 
     wallpaper_cache_bootstrap || return 1
     wallpaper_cache_init || return 1
@@ -100,6 +134,7 @@ wallpaper_cache_commence() {
     case "$1" in
     w)
         shift
+        set -- -w "$@"
         ;;
     t)
         shift
@@ -120,6 +155,8 @@ wallpaper_cache_commence() {
                 return 1
             fi
             cacheIn="$OPTARG"
+            single_wallpaper=1
+            mode=""
             ;;
         t)
             cacheIn="$(dirname "$HYDE_THEME_DIR")/$OPTARG"
@@ -127,10 +164,13 @@ wallpaper_cache_commence() {
                 echo "Error: Input theme \"$OPTARG\" not found!"
                 return 1
             fi
+            single_wallpaper=0
+            mode=""
             ;;
         f)
             cacheIn="$(dirname "$HYDE_THEME_DIR")"
             mode="_force"
+            single_wallpaper=0
             ;;
         *)
             echo "... invalid option ..."
@@ -145,12 +185,16 @@ wallpaper_cache_commence() {
 
     fn_envar_cache
     wallPathArray=("$cacheIn")
-    wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
+    # -w already names the one file to cache; scanning every configured custom
+    # wallpaper directory on top of it re-hashes the whole collection for a
+    # single-wallpaper request (#1985) -- only -t/-f are meant to cover more
+    # than the given path.
+    [ "$single_wallpaper" -eq 0 ] && wallPathArray+=("${WALLPAPER_CUSTOM_PATHS[@]}")
     get_hashmap "${wallPathArray[@]}" --no-notify
     parallel --bar --link "fn_wallcache$mode" ::: "${wallHash[@]}" ::: "${wallList[@]}"
 }
 
-export -f fn_wallcache fn_wallcache_force fn_envar_cache wallpaper_cache_bootstrap wallpaper_cache_init wallpaper_cache_commence extract_thumbnail
+export -f fn_wallcache fn_wallcache_force fn_envar_cache wallpaper_cache_bootstrap wallpaper_cache_init wallpaper_cache_commence extract_thumbnail move_generated_thumbnail
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
     subcommand="$1"

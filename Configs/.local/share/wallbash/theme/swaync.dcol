@@ -11,6 +11,15 @@ ${confDir}/swaync/theme.css|${WALLBASH_SCRIPTS}/swaync.sh
 @define-color text-color #FFFFFF;
 @define-color text-color-disabled #070707;
 
+/* swaync's layer-shell surface spans the full monitor height (fit-to-screen
+ * in config.json), so its GTK window node has to be transparent -- without
+ * this, GTK's default dark window background paints across that whole area,
+ * not just the notification popup itself (#1611). */
+notificationwindow, blankwindow {
+  background: transparent;
+  background-color: transparent;
+}
+
 /*
  *
  * control center

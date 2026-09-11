@@ -72,7 +72,7 @@ else
     appDir=/usr/share/applications
 fi
 RofiSel=$(for qApp in "$@"; do
-    Lkp=$(grep "$qApp" $appDir/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1)
+    Lkp=$(grep -F "$qApp" "$appDir"/* | grep 'Exec=' | awk -F ':' '{print $1}' | head -1)
     Ico=$(grep 'Icon=' "$Lkp" | awk -F '=' '{print $2}' | head -1)
     echo -en "$qApp\x00icon\x1f$Ico\n"
 done | rofi -no-fixed-num-lines -dmenu \

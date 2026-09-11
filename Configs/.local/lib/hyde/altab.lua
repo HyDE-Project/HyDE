@@ -132,8 +132,18 @@ local function file_exists(path)
     return false
 end
 
+-- Quoting alone isn't escaping: a cmd containing a single quote still closes
+-- this early and reaches the shell (#1901's path.lua had the same class of
+-- bug via HOME; only hardcoded callers exist here today, but the next one
+-- might not be).
+local function shell_quote(arg)
+    arg = tostring(arg)
+    arg = arg:gsub("'", "'\\''")
+    return "'" .. arg .. "'"
+end
+
 local function which(cmd)
-    local h = io.popen("command -v '" .. cmd .. "' 2>/dev/null")
+    local h = io.popen("command -v " .. shell_quote(cmd) .. " 2>/dev/null")
     local r = h:read("*a")
     h:close()
     return r and r:match("%S")
