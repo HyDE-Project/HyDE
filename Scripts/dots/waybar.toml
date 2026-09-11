@@ -4,10 +4,11 @@ pre_command = "echo 'Pre commands '"
 post_command = "echo 'HyDE backed up!'"
 
 [[waybar.dependency]]
-pacman = ["waybar"]
-yay = ["waybar"]
-paru = ["waybar"]
-dnf = ["waybar"]
+# Config-relative glob includes require Waybar 0.15.0 or newer.
+pacman = ["waybar>=0.15.0"]
+yay = ["waybar>=0.15.0"]
+paru = ["waybar>=0.15.0"]
+dnf = ["waybar>=0.15.0"]
 
 [[waybar.files]]
 action = "preserve"
