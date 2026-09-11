@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+shopt -s extglob
 script_dir=$(dirname "$(realpath "$0")")
 if ! source "$script_dir/globalcontrol.sh"; then
     echo "Error: unable to source globalcontrol.sh..."
