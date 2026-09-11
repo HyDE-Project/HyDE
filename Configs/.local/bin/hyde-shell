@@ -174,7 +174,13 @@ USAGE() {
 }
 
 call_wallbashScript() {
-    local scriptName=$1
+    # Accept a name with or without ".sh": the usage fallback below lists
+    # scripts by their real filename (e.g. "spotify.sh"), which is what a
+    # user copies -- but the -name match further down always appends its
+    # own ".sh", so passing that exact listed name looked for
+    # "spotify.sh.sh", found nothing, and silently fell through to the same
+    # usage/help text instead of running the script (#1801).
+    local scriptName=${1%.sh}
     shift
     local args=("${@}")
     local dirs=("${WALLBASH_DIRS[@]}")
@@ -185,7 +191,14 @@ call_wallbashScript() {
         fi
     done
     dirs=("${sanitized_dirs[@]}")
-    script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    # A missing or empty name must never reach `find`: an empty scriptName
+    # would search for the literal filename ".sh", which a real wallbash
+    # script directory could legitimately contain -- executing it instead
+    # of showing usage for what is clearly not a real request.
+    script_path=""
+    if [[ -n "$scriptName" ]]; then
+        script_path=$(find -L "${dirs[@]}" -type f -path "*/scripts/*" -name "${scriptName}.sh" -exec echo {} \; -quit)
+    fi
 
     for func in $(compgen -A function); do
         export -f "${func?}"
@@ -516,6 +529,16 @@ export BIN_DIR LIB_DIR SHARE_DIR PATH HYDE_SCRIPTS_PATH
 
 case "$1" in
 app)
+    # app launches a service/scope that outlives this shell via exec, so
+    # anything it needs from HyDE's generated config (e.g. config.toml ->
+    # env vars like BATTERY_NOTIFY_DOCK) has to be sourced and exported
+    # before the exec below -- this path used to skip globalcontrol.sh
+    # entirely and reach it only on the fallback branch further down,
+    # silently launching every app-managed service without it (#1951).
+    if ! source "${LIB_DIR}/hyde/globalcontrol.sh"; then
+        echo "Error: Could not load HyDE, broken installation?"
+        exit 1
+    fi
     export PATH="${HYDE_SCRIPTS_PATH}:${PATH}"
     [[ "${HYDEPY}" -eq 1 ]] && python_activate
     shift

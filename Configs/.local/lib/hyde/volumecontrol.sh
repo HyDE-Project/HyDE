@@ -137,15 +137,17 @@ toggle_mute() {
 select_output() {
     local selection=$1
     if [[ $use_pipewire == true ]]; then
+        local pw_dump
+        pw_dump=$(pw-dump)
         if [ -n "$selection" ]; then
-            device=$(pw-dump | sel=$selection jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink" and .info?.props?."node.description" == env.sel) | .info?.props?."object.id"' | xargs)
+            device=$(echo "$pw_dump" | sel=$selection jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink" and .info?.props?."node.description" == env.sel) | .info?.props?."object.id"' | xargs)
             if wpctl set-default "$device"; then
                 notify-send -t 2000 -i "$icodir/unmuted-speaker.svg" -r 8 -u low "Activated: $selection"
             else
                 notify-send -t 2000 -r 8 -u critical "Error activating $selection"
             fi
         else
-            pw-dump | jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink") | .info?.props?."node.description"' | sort
+            echo "$pw_dump" | jq -r '.[] | select(.info?.props?."media.class" == "Audio/Sink") | .info?.props?."node.description"' | sort
         fi
     else
         if [ -n "$selection" ]; then
