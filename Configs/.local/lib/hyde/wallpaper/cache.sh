@@ -35,6 +35,10 @@ move_generated_thumbnail() {
         # Another cache worker may have moved the shared temporary first.
         return 0
     else
+    else
+        if [ -e "$target" ]; then
+            return 0
+        fi
         printf 'Warning: generated wallpaper thumbnail "%s" is missing; skipping "%s"\n' "$source" "$target" >&2
         return 1
     fi
