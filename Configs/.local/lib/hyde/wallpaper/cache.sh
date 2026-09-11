@@ -22,7 +22,15 @@ move_generated_thumbnail() {
     local source="$1"
     local target="$2"
     if [ -f "$source" ]; then
-        mv -- "$source" "$target"
+        if mv -- "$source" "$target"; then
+            return 0
+        elif [ -e "$target" ]; then
+            # Another cache worker may have created the target concurrently.
+            return 0
+        else
+            printf 'Warning: failed to move generated wallpaper thumbnail "%s" to "%s"\n' "$source" "$target" >&2
+            return 1
+        fi
     else
         printf 'Warning: generated wallpaper thumbnail "%s" is missing; skipping "%s"\n' "$source" "$target" >&2
     fi
