@@ -30,11 +30,7 @@ local function run(argv, extra_opts)
         print_fn = function(s) lines[#lines + 1] = s end,
         state_suffix_override = "_cli_test",
         detect_vendor_opts = FAKE_DETECT,
-        -- Same reason: no `sensors` subprocess, no real sysfs reads.
-        sensors_json = "",
-        stat_file = work_dir .. "/no-such-stat-file",
-        cpu_sysfs_dir = work_dir .. "/no-such-cpufreq-dir",
-        power_supply_dir = work_dir .. "/no-such-power-dir",
+        lact_output = '{"primary_gpu":"Test GPU","temperature":62,"utilization":45,"current_clock_speed":1800,"max_clock_speed":3600,"power_usage":120,"power_limit":200}',
     }
     for k, v in pairs(extra_opts or {}) do
         opts[k] = v
@@ -121,42 +117,5 @@ local reset_with_flag = gpuinfo.read_state("_cli_test")
 check(reset_with_flag.tired == true, "--reset wiped a --tired flag passed on the same invocation")
 
 os.remove(gpuinfo.state_path("_cli_test"))
-
--- The AMD branch's own command construction must survive an apostrophe in
--- python_bin/amdgpu_py_cmd -- same class of bug as #1901/PR #2060's
--- shell_quote fix in altab.lua et al., caught here in review: a bare
--- "'...'" wrap alone breaks on one, so the command silently returns nothing
--- and this falls back to generic sensor readings instead of surfacing real
--- AMD data.
-local amd_suffix = "_cli_test_amd_quote"
-os.remove(gpuinfo.state_path(amd_suffix))
-gpuinfo.write_state(amd_suffix, {
-    detected = true,
-    amd_enable = true,
-    amd_gpu = "Test GPU",
-    available = {"amd"},
-    priority = "amd",
-})
-local quote_dir = work_dir .. "/o'brien"
-os.execute('mkdir -p "' .. quote_dir .. '"')
-local fake_python = quote_dir .. "/python"
-local script = assert(io.open(fake_python, "w"))
-script:write([[#!/bin/sh
-cat <<'JSON'
-{"GPU Temperature": "62°C", "GPU Load": "45.0%", "GPU Core Clock": "1500 MHz", "GPU Power Usage": "120 Watts"}
-JSON
-]])
-script:close()
-os.execute('chmod +x "' .. fake_python .. '"')
-local _, quote_out = run({}, {
-    state_suffix_override = amd_suffix,
-    python_bin = fake_python,
-    amdgpu_py_cmd = fake_python, -- content ignored by the fake script; just needs to exist as an argument
-})
-check(
-    quote_out:find("62"),
-    "an apostrophe in python_bin broke the AMD command's quoting, fell back to generic sensors instead: " .. quote_out
-)
-os.remove(gpuinfo.state_path(amd_suffix))
 
 os.exit(failures == 0 and 0 or 1)

@@ -576,7 +576,15 @@ function M.generate_json(fields)
 
     local current_clock = fields.current_clock_speed or fields.core_clock
     local temperature_display = M.format_temperature(temp_val)
-    local tooltip = status_icon .. " " .. (fields.primary_gpu or "Not found")
+    local gpu_label = fields.primary_gpu or "Not found"
+    if fields.vendor or fields.family then
+        local label_parts = {}
+        if fields.vendor then label_parts[#label_parts + 1] = fields.vendor end
+        if fields.family then label_parts[#label_parts + 1] = fields.family end
+        label_parts[#label_parts + 1] = gpu_label
+        gpu_label = table.concat(label_parts, " ")
+    end
+    local tooltip = status_icon .. " " .. gpu_label
         .. "\n" .. thermo_icon .. " Temperature: " .. temperature_display
         .. "\n" .. speedo_icon .. " Utilization: " .. value_or_na(fields.utilization, "%")
         .. "\n Clock Speed: " .. value_or_na(current_clock) .. "/" .. value_or_na(fields.max_clock_speed) .. " MHz"
@@ -675,14 +683,24 @@ function M.amd_query(opts)
     return fields
 end
 
+--- Parses the normalized JSON emitted by lact_gpuinfo.py. LACT is the sole
+--- runtime source for GPU metrics; an unavailable daemon yields empty fields
+--- so generate_json renders N/A instead of substituting CPU data.
+function M.lact_query(output)
+    local ok, decoded = pcall(json.decode, output or "")
+    if not ok or type(decoded) ~= "table" or decoded.error then
+        return {primary_gpu = "Not found"}
+    end
+    return decoded
+end
+
 local argparse = require("luautils.argparse")
 
 local VENDOR_STAT_KEY = {nvidia = "nvidia_enable", amd = "amd_enable", intel = "intel_enable"}
 
 --- CLI entry point. `opts` (all optional, used by tests to avoid touching
 --- the real machine): print_fn, state_suffix_override, detect_vendor_opts,
---- sensors_cmd, nvidia_smi_cmd, amdgpu_py_cmd, python_bin, lspci_cmd,
---- stat_file, cpu_sysfs_dir.
+--- lact_cmd, lact_output, state_suffix_override, detect_vendor_opts.
 function M.cli_main(argv, opts)
     opts = opts or {}
     local print_fn = opts.print_fn or print
@@ -810,51 +828,17 @@ function M.cli_main(argv, opts)
         return 1
     end
 
-    local fields
-    if state.nvidia_enable then
-        local nvidia_fields, suspended = M.nvidia_query({
-            nvidia_gpu = state.nvidia_gpu,
-            is_nouveau = state.nvidia_nouveau,
-            nvidia_addr = state.nvidia_addr,
-            tired = state.tired,
-            nvidia_smi_cmd = opts.nvidia_smi_cmd,
-            state = state,
-        })
-        if suspended then
-            print_fn(json.encode({text = "󰤂", tooltip = nvidia_fields.primary_gpu .. " ⏾ Suspended mode"}))
-            return 0
+    local lact_output = opts.lact_output
+    if not lact_output then
+        local lact_cmd = opts.lact_cmd or (root .. "lact_gpuinfo.py")
+        local vendor = state.priority or ""
+        local handle = io.popen(shell_quote(lact_cmd) .. " " .. shell_quote(vendor) .. " 2>/dev/null")
+        lact_output = handle and handle:read("*a") or ""
+        if handle then
+            handle:close()
         end
-        fields = nvidia_fields
-    elseif state.amd_enable then
-        -- HOME can be unset (some systemd unit contexts); don't concatenate nil.
-        local python_bin = opts.python_bin
-            or (
-                (os.getenv("XDG_STATE_HOME") or ((os.getenv("HOME") or "/root") .. "/.local/state"))
-                .. "/hyde/python_env/bin/python"
-            )
-        local amdgpu_output = opts.amdgpu_output
-        if not amdgpu_output then
-            -- Quoted: both paths are filesystem paths that may contain spaces
-            -- or (a wrapping "'...'" alone doesn't handle) an apostrophe --
-            -- same fix as #1901/PR #2060's shell_quote in altab.lua et al.
-            local handle = io.popen(
-                shell_quote(python_bin) .. " " .. shell_quote(opts.amdgpu_py_cmd or (root .. "amdgpu.py")) .. " 2>/dev/null"
-            )
-            amdgpu_output = handle and handle:read("*a") or ""
-            if handle then
-                handle:close()
-            end
-        end
-        fields = M.amd_query({
-            amdgpu_gpu = state.amd_gpu,
-            amdgpu_output = amdgpu_output,
-            state = state,
-        })
-    elseif state.intel_enable then
-        fields = {primary_gpu = "Intel " .. tostring(state.intel_gpu)}
-    else
-        fields = {primary_gpu = "Not found"}
     end
+    local fields = M.lact_query(lact_output)
     fields.emoji = state.emoji
 
     M.write_state(suffix, state)

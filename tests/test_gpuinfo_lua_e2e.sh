@@ -78,6 +78,7 @@ package.path = os.getenv("REPO_ROOT") .. "/Configs/.local/lib/hyde/?.lua;" .. pa
 local gpuinfo = require("gpuinfo")
 os.exit(gpuinfo.cli_main({}, {
     detect_vendor_opts = {pci_dir = "/nonexistent", modules_file = "/nonexistent"},
+    lact_output = "{\\\"primary_gpu\\\":\\\"Not found\\\"}",
 }))
 ' 2>"$work_dir/stderr")
 case $both_stdout in
