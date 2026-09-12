@@ -227,7 +227,7 @@ local function start_critical_countdown()
             local mm = math.floor(crit_remaining / 60); local ss = crit_remaining % 60
             notify_send('Battery Critically Low',
                 string.format('%d%% is critically low. Device will execute %s in %d:%02d.', pct, conf.execute_critical,
-                    mm, ss), 'critical', 'xfce4-battery-critical')
+                    mm, ss), { urgency = 'critical', icon = 'battery-empty-symbolic' })
             crit_remaining = crit_remaining - 1
             if crit_remaining <= 0 then
                 run_cmd_shell(conf.execute_critical); crit_source = nil; return false
@@ -245,7 +245,7 @@ local function start_critical_countdown()
             local mm = math.floor(crit_remaining / 60); local ss = crit_remaining % 60
             notify_send('Battery Critically Low',
                 string.format('%d%% is critically low. Device will execute %s in %d:%02d.', pct, conf.execute_critical,
-                    mm, ss), 'critical', 'xfce4-battery-critical')
+                    mm, ss), { urgency = 'critical', icon = 'battery-empty-symbolic' })
             crit_remaining = crit_remaining - 1
             if crit_remaining <= 0 then
                 run_cmd_shell(conf.execute_critical); timer:stop(); timer:close(); crit_source = nil
@@ -292,9 +292,20 @@ local function handle_update()
 
     if percentage >= conf.unplug_charger_threshold and not string.find(tostring(status), 'Discharging') and status ~= 'Full' and (percentage - last_notified_percentage) >= conf.interval then
         local steps = math.floor(((percentage + 5) / 10) + 0.00001) * 10
-        local icon = 'battery-' .. tostring((steps > 0) and steps or 100) .. '-charging'
+        -- Matches the battery-level-N-symbolic pattern already used below for
+        -- the discharging icons: freedesktop's icon-naming spec has no plain
+        -- "battery-N-charging" name, so themes that only ship the level-based
+        -- set (e.g. Tela-circle-dracula) rendered no icon at all (#798).
+        local icon = 'battery-level-' .. tostring((steps > 0) and steps or 100) .. '-charging-symbolic'
         log.debug('Prompt: UNPLUG threshold=%d status=%s percentage=%d steps=%d',
             conf.unplug_charger_threshold, tostring(status), percentage, steps)
+        -- The computed icon went unused here -- this branch mirrors the
+        -- Battery Low block above (same interval-throttle condition) but was
+        -- missing the actual notify_send call and the last_notified_percentage
+        -- update needed to make that throttle work.
+        notify_send('Unplug Charger', string.format('Battery is at %d%%. You can unplug the charger.', percentage),
+            { urgency = 'normal', icon = icon })
+        last_notified_percentage = percentage
         cancel_critical_countdown()
     end
 
@@ -313,7 +324,8 @@ local function handle_update()
         local icon = 'battery-level-' .. tostring((steps > 0) and steps or 10) .. '-symbolic'
         log.debug('Prompt: LOW threshold=%d status=%s percentage=%d',
             conf.battery_low_threshold, tostring(status), percentage)
-        notify_send('Battery Low', string.format('Battery is at %d%%. Connect the charger.', percentage), 'critical', icon)
+        notify_send('Battery Low', string.format('Battery is at %d%%. Connect the charger.', percentage),
+            { urgency = 'critical', icon = icon })
         last_notified_percentage = percentage
     end
 
@@ -324,7 +336,8 @@ local function handle_update()
                 local urgency = (percentage <= conf.battery_low_threshold) and 'CRITICAL' or 'NORMAL'
                 local steps = math.floor(((percentage + 5) / 10) + 0.00001) * 10
                 local icon = 'battery-level-' .. tostring((steps > 0) and steps or 10) .. '-symbolic'
-                notify_send('Charger Plug Out', string.format('Battery is at %d%%.', percentage), urgency, icon)
+                notify_send('Charger Plug Out', string.format('Battery is at %d%%.', percentage),
+                    { urgency = urgency, icon = icon })
                 if conf.execute_discharging ~= '' then run_cmd_shell(conf.execute_discharging) end
             end
         elseif starts_with(tostring(status), 'Not') or starts_with(tostring(status), 'Charging') then
@@ -332,8 +345,13 @@ local function handle_update()
                 prev_status = status
                 local urgency = (percentage >= conf.unplug_charger_threshold) and 'CRITICAL' or 'NORMAL'
                 local steps = math.floor(((percentage + 5) / 10) + 0.00001) * 10
-                local icon = 'battery-' .. tostring((steps > 0) and steps or 100) .. '-charging'
-                notify_send('Charger Plug In', string.format('Battery is at %d%%.', percentage), urgency, icon)
+                -- Matches the battery-level-N-symbolic pattern already used below for
+        -- the discharging icons: freedesktop's icon-naming spec has no plain
+        -- "battery-N-charging" name, so themes that only ship the level-based
+        -- set (e.g. Tela-circle-dracula) rendered no icon at all (#798).
+        local icon = 'battery-level-' .. tostring((steps > 0) and steps or 100) .. '-charging-symbolic'
+                notify_send('Charger Plug In', string.format('Battery is at %d%%.', percentage),
+                    { urgency = urgency, icon = icon })
                 if conf.execute_charging ~= '' then run_cmd_shell(conf.execute_charging) end
             end
         elseif status == 'Full' then
@@ -343,8 +361,8 @@ local function handle_update()
                 if prev_status and string.find(prev_status, 'harging') then do_notify = true end
                 if not do_notify and (now - lt) >= (conf.notify * 60) then do_notify = true end
                 if do_notify then
-                    notify_send('Battery Full', 'Please unplug your Charger', 'critical',
-                        'battery-full-charging-symbolic')
+                    notify_send('Battery Full', 'Please unplug your Charger',
+                        { urgency = 'critical', icon = 'battery-full-charging-symbolic' })
                     prev_status = status
                     lt = now
                     if conf.execute_charging ~= '' then run_cmd_shell(conf.execute_charging) end

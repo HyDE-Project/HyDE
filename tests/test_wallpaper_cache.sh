@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# wallpaper/cache.sh commence -w <file> must cache only that one file. It used
-# to also scan every configured custom wallpaper directory on top of it,
-# re-hashing (and re-processing with ImageMagick/wallbash) the whole
+# Covers wallpaper/cache.sh argument dispatch and generated-thumbnail failure
+# propagation. In particular, commence -w <file> must cache only that one file;
+# it used to also scan every configured custom wallpaper directory on top of
+# it, re-hashing (and re-processing with ImageMagick/wallbash) the whole
 # collection for what should be a single-wallpaper request (#1985).
 #
 # get_hashmap is stubbed to record the paths it was asked to scan instead of
@@ -56,8 +57,13 @@ fn_envar_cache() { return 0; }
 # line, args space-joined -- real get_hashmap behavior is not under test here.
 get_hashmap() {
     printf '%s\n' "$*" >>"$hashmap_calls_file"
-    wallHash=()
-    wallList=()
+    if [ -n "${exercise_thumbnail_failure:-}" ]; then
+        wallHash=(failure)
+        wallList=("$single_wallpaper")
+    else
+        wallHash=()
+        wallList=()
+    fi
 }
 
 # wallpaper_cache_commence picks between fn_wallcache and fn_wallcache_force
@@ -70,11 +76,19 @@ get_hashmap() {
 # looks only at which name it was asked to run.
 mode_calls_file="$work_dir/mode_calls"
 parallel() {
+    local job=""
     for arg in "$@"; do
         case $arg in
-        fn_wallcache*) printf '%s\n' "$arg" >>"$mode_calls_file" ;;
+        fn_wallcache*)
+            job="$arg"
+            printf '%s\n' "$arg" >>"$mode_calls_file"
+            ;;
         esac
     done
+    if [ -n "${exercise_thumbnail_failure:-}" ]; then
+        "$job" "${wallHash[0]}" "${wallList[0]}"
+        return $?
+    fi
 }
 
 # Not exported: wallpaper_cache_commence and get_hashmap run in this same
@@ -176,5 +190,56 @@ case $(cat "$mode_calls_file") in
 fn_wallcache_force) ;;
 *) fail "-t followed by -f did not dispatch to fn_wallcache_force: got '$(cat "$mode_calls_file")'" ;;
 esac
+
+# A shared generated filename may already have been moved by another worker.
+# That race is successful only when the final target really exists.
+missing_source="$work_dir/missing.png"
+existing_target="$work_dir/existing.sqre"
+: >"$existing_target"
+move_generated_thumbnail "$missing_source" "$existing_target" 2>"$work_dir/move-existing.err" ||
+    fail "a missing temporary was treated as failure although another worker created the target"
+
+missing_target="$work_dir/missing.sqre"
+if move_generated_thumbnail "$missing_source" "$missing_target" 2>"$work_dir/move-missing.err"; then
+    fail "a missing temporary and target reported success"
+fi
+grep -q 'generated wallpaper thumbnail.*is missing' "$work_dir/move-missing.err" ||
+    fail "a missing temporary and target did not emit the expected warning"
+
+# Simulate ImageMagick returning success without producing one of its outputs.
+# Every sqre/quad move in the normal and forced workers must carry that failure
+# through parallel and wallpaper_cache_commence.
+magick() {
+    local output="${!#}"
+    if [ "$exercise_thumbnail_failure" = quad ] && [[ $output = *.sqre.png ]]; then
+        : >"$output"
+    fi
+    return 0
+}
+
+expect_thumbnail_failure() {
+    local worker_mode="$1" missing_kind="$2"
+    exercise_thumbnail_failure="$missing_kind"
+    export exercise_thumbnail_failure
+    rm -rf "$work_dir/thumbs" "$work_dir/dcol" "$work_dir/cache"
+    : >"$mode_calls_file"
+
+    if [ "$worker_mode" = force ]; then
+        wallpaper_cache_commence -f >"$work_dir/$worker_mode-$missing_kind.out" 2>&1
+    else
+        wallpaper_cache_commence -w "$single_wallpaper" >"$work_dir/$worker_mode-$missing_kind.out" 2>&1
+    fi
+    local status=$?
+    [ "$status" -ne 0 ] ||
+        fail "$worker_mode cache reported success with an absent .$missing_kind thumbnail"
+    [ ! -e "$work_dir/thumbs/failure.$missing_kind" ] ||
+        fail "$worker_mode cache unexpectedly created the absent .$missing_kind thumbnail"
+    unset exercise_thumbnail_failure
+}
+
+expect_thumbnail_failure normal sqre
+expect_thumbnail_failure normal quad
+expect_thumbnail_failure force sqre
+expect_thumbnail_failure force quad
 
 finish

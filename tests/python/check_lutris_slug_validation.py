@@ -86,6 +86,7 @@ def main() -> int:
                 # newline (e.g. "foo\nrm -rf ~") is already rejected by
                 # plain match() too, so it wouldn't exercise this gap.
                 (6, "Trailing Newline Game", "foo\n", "wine", "", ""),
+                (7, "Injected\tCommand", "valid-slug", "wine", "", ""),
             ],
         )
 
@@ -106,6 +107,11 @@ def main() -> int:
                 by_id[1]["run_command"] == 'xdg-open "lutris:rungame/counter-strike-2"',
                 f"the legitimate game's run_command is wrong: {by_id[1].get('run_command')!r}",
             )
+            check(
+                by_id[1]["rofi_string"]
+                == 'Counter-Strike 2\txdg-open "lutris:rungame/counter-strike-2"',
+                f"the legitimate game's launcher row is wrong: {by_id[1].get('rofi_string')!r}",
+            )
 
         for bad_id, why in [
             (2, "a slug containing an embedded double-quote was not filtered out"),
@@ -117,6 +123,7 @@ def main() -> int:
                 "a slug that is just 'foo\\n' was not filtered out -- match() would accept it "
                 "(Python's $ matches before a trailing newline too), only fullmatch() rejects it",
             ),
+            (7, "a game name containing a tab was not filtered out"),
         ]:
             check(bad_id not in by_id, why)
 

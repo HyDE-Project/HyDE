@@ -57,6 +57,14 @@ hl.bind("SUPER + E", hl.dsp.exec_cmd("dolphin"), {description = "explorer"})
 check(hyde.binds._commands["SUPER + T"] == "kitty", "SUPER + T was not paired with its own command")
 check(hyde.binds._commands["SUPER + E"] == "dolphin", "SUPER + E was not paired with its own command")
 
+-- A delayed exec_cmd action must survive an unrelated bind and still pair
+-- with its own command when that exact action is eventually registered.
+local delayed_action = hl.dsp.exec_cmd("delayed")
+hl.bind("SUPER + D", hl.dsp.window.close(), {description = "unrelated"})
+check(hyde.binds._commands["SUPER + D"] == nil, "an unrelated bind consumed a delayed command")
+hl.bind("SUPER + Y", delayed_action, {description = "delayed"})
+check(hyde.binds._commands["SUPER + Y"] == "delayed", "a delayed matching action lost its command")
+
 -- 2. A native dispatcher called directly (no exec_cmd) must not be recorded,
 -- and must not pick up a command left over from an unrelated earlier bind.
 hl.bind("SUPER + Q", hl.dsp.window.close(), {description = "close"})
@@ -81,6 +89,22 @@ check(
 hl.bind("SUPER + V", hl.dsp.exec_cmd("first"), {description = "v1"})
 hl.bind("SUPER + V", hl.dsp.exec_cmd("second"), {description = "v2"})
 check(hyde.binds._commands["SUPER + V"] == "second", "re-registering a combo did not overwrite the older command")
+
+-- 4b. Replacing an exec_cmd bind with a native dispatcher must clear the
+-- stale command so it does not leak into the keybind-hint menu.
+hl.bind("SUPER + R", hl.dsp.exec_cmd("refresh"), {description = "r1"})
+check(hyde.binds._commands["SUPER + R"] == "refresh", "exec_cmd did not store its command")
+hl.bind("SUPER + R", hl.dsp.window.close(), {description = "r2"})
+check(hyde.binds._commands["SUPER + R"] == nil, "native-dispatcher rebound did not clear the stale command")
+
+-- 4c. Replacing an exec_cmd bind with a plain Lua function must also clear
+-- the stale command.
+hl.bind("SUPER + M", hl.dsp.exec_cmd("maximize"), {description = "m1"})
+check(hyde.binds._commands["SUPER + M"] == "maximize", "exec_cmd did not store its command for M")
+local function toggle_float()
+end
+hl.bind("SUPER + M", toggle_float, {description = "m2"})
+check(hyde.binds._commands["SUPER + M"] == nil, "plain-function rebound did not clear the stale command")
 
 -- 5. Modifier order/spelling must canonicalize the same way _active already
 -- does -- this is a different table, computed at a different point in

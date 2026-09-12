@@ -1,5 +1,7 @@
 [global]
-    description = "Choose a notification daemon. Only choose 1"
-    include     = [ "../dots/dunst.toml", "../dots/swaync.toml" ]
+    description = "Default notification daemon (Dunst)"
+    # Dunst is HyDE's supported default. SwayNC is an optional alternative;
+    # never deploy both daemons because they claim the same D-Bus service.
+    include     = [ "../dots/dunst.toml" ]
     owner       = "The HyDE Project"
     version     = "latest"

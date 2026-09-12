@@ -1,6 +1,6 @@
 
 [swaync]
-    description = " A simple notification daemon with a GTK panel for checking previous notifications like other DEs"
+    description = "Optional SwayNC notification daemon (alternative to Dunst)"
 [[swaync.dependency]]
     pacman = [ "swaync" ]
 

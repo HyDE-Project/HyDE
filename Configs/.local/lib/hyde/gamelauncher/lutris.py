@@ -228,6 +228,14 @@ def main(argv=None):
     games = read_games_from_db(use_db)
     result = []
     for g in games:
+        name = g.get("name") or ""
+        if "\t" in name:
+            print(
+                f"Skipping {name!r}: game names containing tabs cannot be safely added to the launcher",
+                file=sys.stderr,
+            )
+            continue
+
         slug = g.get("slug") or ""
         # fullmatch, not match: "^...$" under match() still accepts one
         # trailing newline after what the pattern consumed (Python's `$`
