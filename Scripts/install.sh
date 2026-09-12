@@ -44,6 +44,8 @@ Options:
     -s, --services         Enable system services
     -p, --pre              Run pre-install only (Python environment setup)
     -n, --no-nvidia        Ignore nvidia actions
+    --lact                 Install and enable LACT GPU monitoring
+    --no-lact              Skip LACT GPU monitoring
     -h, --shell            Re-evaluate shell configuration
     -m, --no-theme         Skip theme installation
     -t, --test             Test run (dry-run)
@@ -67,6 +69,7 @@ EOF
 operations=()
 dry_run=0
 nvidia=1
+lact=2
 theme_install=1
 
 while [[ $# -gt 0 ]]; do
@@ -97,6 +100,14 @@ while [[ $# -gt 0 ]]; do
 		print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
 		shift
 		;;
+	--lact)
+		lact=1
+		shift
+		;;
+	--no-lact)
+		lact=0
+		shift
+		;;
 	-h | --shell)
 		export flg_Shell=1
 		print_log -r "[shell] " -b "Reevaluate :: " "shell options"
@@ -124,8 +135,18 @@ if [ ${#operations[@]} -eq 0 ]; then
 	operations=("install" "restore" "services")
 fi
 
+if [ "${lact}" -eq 2 ]; then
+	if [ -t 0 ] && [ -z "${use_default:-}" ]; then
+		read -r -p "Install LACT GPU monitoring and enable lactd? [y/N] " lact_answer
+		[[ "${lact_answer}" == [Yy]* ]] && lact=1 || lact=0
+	else
+		lact=0
+	fi
+fi
+
 export flg_DryRun=$dry_run
 export flg_Nvidia=$nvidia
+export flg_Lact=$lact
 export flg_ThemeInstall=$theme_install
 HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
 export HYDE_LOG
@@ -298,6 +319,15 @@ EOF
 			done >> "${core_toml}"
 		else
 			print_log -warn "Nvidia" "Nvidia GPU detected but ignored..."
+		fi
+	fi
+	if [ "${lact}" -eq 1 ]; then
+		if command -v pacman >/dev/null 2>&1; then
+			echo '"lact",' >> "${core_toml}"
+		else
+			print_log -warn "LACT" "The Arch package is unavailable on this package manager; skipping"
+			lact=0
+			export flg_Lact=$lact
 		fi
 	fi
 	nvidia_detect --verbose
@@ -552,6 +582,10 @@ if has_operation "services"; then
 EOF
 
 	"${scrDir}/restore_svc.sh"
+	if [ "${flg_Lact:-0}" -eq 1 ] && systemctl cat lactd.service >/dev/null 2>&1; then
+		print_log -g "[LACT] " -b "service :: " "Enabling lactd"
+		[ "${flg_DryRun}" -eq 1 ] || sudo systemctl enable --now lactd.service
+	fi
 fi
 
 # Reported here rather than where it happened, so the theme, the migrations and

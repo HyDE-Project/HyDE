@@ -24,9 +24,24 @@ jobs:
       - name: Install test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lua5.4 shellcheck fish
+          sudo apt-get install -y --no-install-recommends lua5.4 liblua5.4-dev luarocks shellcheck fish
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
+          # gpuinfo.lua (and several other shipped scripts) require "lfs" at
+          # load time. On a real install this comes from hyde-shell luainit's
+          # own luarocks-managed tree; CI has no such tree, so give plain
+          # lua5.4 the same module via its default system rocks path instead.
+          # --lua-version=5.4 alone isn't enough: Ubuntu's luarocks package
+          # can't locate liblua5.4-dev's headers on its own. Debian's
+          # lua5.4.pc reports `includedir` as the bare /usr/include prefix
+          # and only appends the versioned subdirectory in its own Cflags
+          # field, so `pkg-config --variable=includedir` alone isn't the
+          # real header path either -- confirmed against this runner via
+          # `dpkg -L liblua5.4-dev`, which lists the headers under
+          # <includedir>/lua5.4 (e.g. /usr/include/lua5.4/lua.h).
+          sudo luarocks --lua-version=5.4 install luafilesystem \
+            LUA_INCDIR="$(pkg-config --variable=includedir lua5.4)/lua5.4" \
+            LUA_LIBDIR="$(pkg-config --variable=libdir lua5.4)"
 
       - name: Report tool versions
         run: |
@@ -53,9 +68,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            lua5.4 shellcheck fish \
+            lua5.4 liblua5.4-dev luarocks shellcheck fish \
             binutils-dev build-essential cmake ninja-build libssl-dev \
             libcurl4-openssl-dev libelf-dev zlib1g-dev libdw-dev libiberty-dev
+          sudo luarocks --lua-version=5.4 install luafilesystem \
+            LUA_INCDIR="$(pkg-config --variable=includedir lua5.4)/lua5.4" \
+            LUA_LIBDIR="$(pkg-config --variable=libdir lua5.4)"
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
 

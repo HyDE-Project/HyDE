@@ -12,6 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
 - Waybar: add VSCodium and Chromium icon rules to window module
 
+### Changed
+- Waybar: `gpuinfo` is now `gpuinfo.lua`, a Lua rewrite of `gpuinfo.sh` — far fewer subprocess calls per poll and parsing that is maintainable instead of a `lspci | grep | awk | sed` pipeline
+- Waybar: `gpuinfo` now reads normalized cross-vendor metrics from the optional LACT/lactd backend; the installer can install and enable it with `--lact`
+- Waybar: `gpuinfo` state now lives in `${XDG_RUNTIME_DIR:-/tmp}/hyde-$UID-gpuinfo<suffix>.json`
+
 ### Fixed
 - Hyprland: prevent window borders from being clipped when snapping to monitor edges in 0-gap workflows 
 - Hyprland: windows that cannot join a group, such as pyprland's dropdown terminal, get the same border colors as every other window; `general.col.nogroup_border` and `nogroup_border_active` were never set, so those windows kept Hyprland's magenta and yellow defaults whatever the theme or wallbash mode
