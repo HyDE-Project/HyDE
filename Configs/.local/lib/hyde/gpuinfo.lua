@@ -202,19 +202,6 @@ function M.detect_vendor(opts)
     end
     result.nvidia_nouveau = nouveau_found
 
-    -- nvidia-smi presence: PATH search instead of `command -v nvidia-smi`.
-    for _, dir in ipairs(path_dirs) do
-        if lfs.attributes(dir .. "/nvidia-smi", "mode") == "file" then
-            result.nvidia_smi_present = true
-            break
-        end
-    end
-
-    -- nvidia is only true if there's a way to query it (nouveau or nvidia-smi present)
-    if result.nvidia and not (nouveau_found or result.nvidia_smi_present) then
-        result.nvidia = false
-    end
-
     return result
 end
 
@@ -828,8 +815,17 @@ function M.cli_main(argv, opts)
         return 1
     end
 
-    local lact_output = opts.lact_output
-    if not lact_output then
+    local lact_output = ""
+    local skip_lact = false
+    if state.tired and state.priority == "nvidia" and state.nvidia_addr then
+        local status_path = "/sys/bus/pci/devices/" .. tostring(state.nvidia_addr) .. "/power/runtime_status"
+        local runtime_status = read_first_line(status_path)
+        skip_lact = runtime_status and runtime_status:find("suspend") ~= nil or false
+    end
+    if not skip_lact then
+        lact_output = opts.lact_output
+    end
+    if not skip_lact and not lact_output then
         local lact_cmd = opts.lact_cmd or (root .. "lact_gpuinfo.py")
         local vendor = state.priority or ""
         local handle = io.popen(shell_quote(lact_cmd) .. " " .. shell_quote(vendor) .. " 2>/dev/null")

@@ -32,7 +32,7 @@ local full = gpuinfo.generate_json({
 })
 local ok2, decoded2 = pcall(json.decode, full)
 check(ok2, "generate_json with a full field set did not produce valid JSON")
-check(decoded2.text:find("62"), "text field did not include the temperature")
+check(decoded2.text:find(gpuinfo.format_temperature(62), 1, true), "text field did not include the temperature")
 check(decoded2.tooltip:find("45"), "tooltip did not include utilization")
 check(decoded2.tooltip:find("1800/3600 MHz"), "tooltip did not include the clock speed segment in the documented format")
 check(decoded2.tooltip:find("120/200 W"), "tooltip did not include the power usage/limit segment")

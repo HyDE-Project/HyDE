@@ -11,6 +11,7 @@ SOCKET = "/run/lactd.sock"
 
 def request(payload):
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+        sock.settimeout(2.0)
         sock.connect(SOCKET)
         sock.sendall((json.dumps(payload) + "\n").encode())
         sock.shutdown(socket.SHUT_WR)
@@ -31,6 +32,13 @@ def first_value(mapping, *keys):
     return None
 
 
+def optional_request(payload):
+    try:
+        return request(payload)
+    except (OSError, RuntimeError, json.JSONDecodeError):
+        return {}
+
+
 def main():
     devices = request({"command": "list_devices"})
     if not devices:
@@ -45,7 +53,7 @@ def main():
     device_id = device["id"]
     info = request({"command": "device_info", "args": {"id": device_id}})
     stats = request({"command": "device_stats", "args": {"id": device_id}})
-    clocks = request({"command": "device_clocks_info", "args": {"id": device_id}})
+    clocks = optional_request({"command": "device_clocks_info", "args": {"id": device_id}})
 
     pci = info.get("pci_info", {}).get("device_pci_info", {})
     drm = info.get("drm_info", {})

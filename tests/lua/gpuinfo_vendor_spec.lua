@@ -129,8 +129,8 @@ local garbage_result = gpuinfo.detect_vendor({
 })
 check(garbage_result.nvidia == false, "a device with a garbage class file was still detected as a GPU")
 
--- nvidia GPU physically present but no driver available: nvidia must be false
--- since there's no way to query it (matching bash original behavior).
+-- NVIDIA hardware remains selectable even without nvidia-smi: LACT is the
+-- runtime query backend and may provide the driver data independently.
 local nodriver_dir = work_dir .. "/pci_nodriver"
 os.execute("mkdir -p " .. nodriver_dir .. "/0000:02:00.0")
 write_file(nodriver_dir .. "/0000:02:00.0/class", "0x030200\n")  -- 3D controller
@@ -158,12 +158,12 @@ local nodriver_result = gpuinfo.detect_vendor({
     lspci_cmd = "lspci",
 })
 check(
-    nodriver_result.nvidia == false,
-    "nvidia GPU without any driver should be false (no nouveau, no nvidia-smi), but got: " .. tostring(nodriver_result.nvidia)
+    nodriver_result.nvidia == true,
+    "PCI-detected NVIDIA hardware was not retained for LACT, got: " .. tostring(nodriver_result.nvidia)
 )
 check(
     nodriver_result.nvidia_addr == "0000:02:00.0",
-    "nvidia_addr should still record the address even though result.nvidia is false"
+    "nvidia_addr should record the PCI address for LACT"
 )
 
 -- Same PCI device, but with nouveau actually loaded this time -- and with
