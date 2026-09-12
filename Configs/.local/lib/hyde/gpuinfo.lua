@@ -474,6 +474,39 @@ local function clamp(value, low, high)
     return value
 end
 
+local locale_fahrenheit
+
+local function locale_uses_fahrenheit()
+    if locale_fahrenheit ~= nil then
+        return locale_fahrenheit
+    end
+    local handle = io.popen("locale -k LC_MEASUREMENT 2>/dev/null")
+    local line = handle and handle:read("*l") or nil
+    if handle then
+        handle:close()
+    end
+    locale_fahrenheit = line and line:match("^measurement=2") ~= nil or false
+    return locale_fahrenheit
+end
+
+--- Formats a Celsius sensor reading according to LC_MEASUREMENT.
+function M.format_temperature(value, fahrenheit)
+    if value == nil or tostring(value) == "" or tostring(value) == "[N/A]" then
+        return "N/A"
+    end
+    local numeric = tonumber(value)
+    if not numeric then
+        return tostring(value)
+    end
+    if fahrenheit == nil then
+        fahrenheit = locale_uses_fahrenheit()
+    end
+    if fahrenheit then
+        return string.format("%.0f°F", numeric * 9 / 5 + 32)
+    end
+    return string.format("%.0f°C", numeric)
+end
+
 --- Ported 1:1 from the bash version's map_floor: given a "threshold:value,
 --- threshold:value, ..., default" spec string and a numeric value, returns
 --- the value for the highest threshold the number clears, or the default.
@@ -519,6 +552,14 @@ function M.generate_json(fields)
     -- not support, and nvidia_query passes raw CSV strings straight through.
     -- math.floor("[N/A]") raises, which would break the "always valid JSON"
     -- contract waybar's return-type:json depends on.
+    local function value_or_na(value, suffix)
+        local text = value == nil and "" or tostring(value)
+        if text == "" or text == "[N/A]" then
+            return "N/A"
+        end
+        return text .. (suffix or "")
+    end
+
     local temp_num = tonumber(fields.temperature)
     local temp_val = temp_num and math.floor(temp_num) or nil
     local temp_clamped = temp_val and clamp(temp_val, 0, 999) or 0
@@ -533,36 +574,17 @@ function M.generate_json(fields)
 
     local temp_pct = clamp(temp_val or 0, 0, 100)
 
-    local tooltip = status_icon .. " " .. (fields.primary_gpu or "Not found") .. "\n" .. thermo_icon .. " Temperature: " .. (temp_val or "") .. "°C"
-
-    if fields.utilization then
-        tooltip = tooltip .. "\n" .. speedo_icon .. " Utilization: " .. fields.utilization .. "%"
-    end
-    if fields.current_clock_speed and fields.max_clock_speed then
-        tooltip = tooltip .. "\n Clock Speed: " .. fields.current_clock_speed .. "/" .. fields.max_clock_speed .. " MHz"
-    end
-    if fields.core_clock then
-        tooltip = tooltip .. "\n Clock Speed: " .. fields.core_clock .. " MHz"
-    end
-    if fields.power_usage then
-        if fields.power_limit then
-            tooltip = tooltip .. "\n󱪉 Power Usage: " .. fields.power_usage .. "/" .. fields.power_limit .. " W"
-        else
-            tooltip = tooltip .. "\n󱪉 Power Usage: " .. fields.power_usage .. " W"
-        end
-    end
-    -- Numeric compare: read_battery_discharge returns a float, so a zero
-    -- reading on AC power stringifies as "0.0" and slipped past a string
-    -- comparison against "0", printing a bogus "Power Discharge: 0.0 W" line.
-    if fields.power_discharge and tonumber(fields.power_discharge) ~= 0 then
-        tooltip = tooltip .. "\n Power Discharge: " .. fields.power_discharge .. " W"
-    end
-    if fields.fan_speed then
-        tooltip = tooltip .. "\n Fan Speed: " .. fields.fan_speed .. " RPM"
-    end
-
+    local current_clock = fields.current_clock_speed or fields.core_clock
+    local temperature_display = M.format_temperature(temp_val)
+    local tooltip = status_icon .. " " .. (fields.primary_gpu or "Not found")
+        .. "\n" .. thermo_icon .. " Temperature: " .. temperature_display
+        .. "\n" .. speedo_icon .. " Utilization: " .. value_or_na(fields.utilization, "%")
+        .. "\n Clock Speed: " .. value_or_na(current_clock) .. "/" .. value_or_na(fields.max_clock_speed) .. " MHz"
+        .. "\n󱪉 Power Usage: " .. value_or_na(fields.power_usage) .. "/" .. value_or_na(fields.power_limit) .. " W"
+    -- Battery discharge is deliberately excluded: this module reports GPU
+    -- metrics, and system battery draw is not GPU-specific.
     return json.encode({
-        text = thermo_icon .. " " .. (temp_val or "") .. "°C",
+        text = thermo_icon .. " " .. temperature_display,
         tooltip = tooltip,
         class = {temp_class, util_class},
         percentage = temp_pct,
@@ -571,20 +593,12 @@ function M.generate_json(fields)
 end
 
 --- NVIDIA vendor branch. Returns (fields, suspended). When `opts.is_nouveau`
---- (the open-source driver, which nvidia-smi cannot query), falls back to
---- the same generic sensors/proc-stat/cpufreq/battery reads every other
---- "no dedicated vendor tool" path uses.
+--- (the open-source driver, which nvidia-smi cannot query), leaves vendor
+--- metrics unavailable rather than substituting CPU or generic sensor data.
 function M.nvidia_query(opts)
     local fields = {primary_gpu = "NVIDIA " .. tostring(opts.nvidia_gpu)}
 
     if opts.is_nouveau then
-        local temperature, fan_speed = M.read_sensors(opts.sensors_json or "")
-        fields.temperature = temperature
-        fields.fan_speed = fan_speed
-        fields.power_discharge = M.read_battery_discharge(opts.power_supply_dir or "/sys/class/power_supply")
-        local state = opts.state or {}
-        fields.utilization = M.read_cpu_utilization(state, opts.stat_file)
-        fields.current_clock_speed, fields.max_clock_speed = M.read_cpu_clock_speed(opts.cpu_sysfs_dir)
         return fields, false
     end
 
@@ -637,8 +651,8 @@ end
 
 --- AMD vendor branch. Parses amdgpu.py's JSON (see Configs/.local/lib/hyde/
 --- amdgpu.py) with luautils.json instead of `jq`+`sed`. Falls back to the
---- generic sensors/proc-stat/cpufreq/battery reads whenever the output isn't
---- the expected object -- covers "No AMD GPUs detected." (amdgpu.py's own
+--- no substitute values whenever the output isn't the expected object --
+--- covers "No AMD GPUs detected." (amdgpu.py's own
 --- explicit no-hardware message) *and* any of amdgpu.py's exception-branch
 --- error strings, which the bash version's two-literal-substring check did
 --- not (it would have tried to jq-parse those as JSON).
@@ -658,13 +672,6 @@ function M.amd_query(opts)
         return fields
     end
 
-    local temperature, fan_speed = M.read_sensors(opts.sensors_json or "")
-    fields.temperature = temperature
-    fields.fan_speed = fan_speed
-    fields.power_discharge = M.read_battery_discharge(opts.power_supply_dir or "/sys/class/power_supply")
-    local state = opts.state or {}
-    fields.utilization = M.read_cpu_utilization(state, opts.stat_file)
-    fields.current_clock_speed, fields.max_clock_speed = M.read_cpu_clock_speed(opts.cpu_sysfs_dir)
     return fields
 end
 
@@ -675,7 +682,7 @@ local VENDOR_STAT_KEY = {nvidia = "nvidia_enable", amd = "amd_enable", intel = "
 --- CLI entry point. `opts` (all optional, used by tests to avoid touching
 --- the real machine): print_fn, state_suffix_override, detect_vendor_opts,
 --- sensors_cmd, nvidia_smi_cmd, amdgpu_py_cmd, python_bin, lspci_cmd,
---- power_supply_dir, stat_file, cpu_sysfs_dir.
+--- stat_file, cpu_sysfs_dir.
 function M.cli_main(argv, opts)
     opts = opts or {}
     local print_fn = opts.print_fn or print
@@ -803,21 +810,6 @@ function M.cli_main(argv, opts)
         return 1
     end
 
-    local common_opts = {
-        sensors_json = opts.sensors_json,
-        stat_file = opts.stat_file,
-        cpu_sysfs_dir = opts.cpu_sysfs_dir,
-        power_supply_dir = opts.power_supply_dir,
-        state = state,
-    }
-    if not opts.sensors_json then
-        local handle = io.popen((opts.sensors_cmd or "sensors") .. " -j 2>/dev/null")
-        common_opts.sensors_json = handle and handle:read("*a") or ""
-        if handle then
-            handle:close()
-        end
-    end
-
     local fields
     if state.nvidia_enable then
         local nvidia_fields, suspended = M.nvidia_query({
@@ -826,10 +818,6 @@ function M.cli_main(argv, opts)
             nvidia_addr = state.nvidia_addr,
             tired = state.tired,
             nvidia_smi_cmd = opts.nvidia_smi_cmd,
-            sensors_json = common_opts.sensors_json,
-            stat_file = common_opts.stat_file,
-            cpu_sysfs_dir = common_opts.cpu_sysfs_dir,
-            power_supply_dir = common_opts.power_supply_dir,
             state = state,
         })
         if suspended then
@@ -860,24 +848,12 @@ function M.cli_main(argv, opts)
         fields = M.amd_query({
             amdgpu_gpu = state.amd_gpu,
             amdgpu_output = amdgpu_output,
-            sensors_json = common_opts.sensors_json,
-            stat_file = common_opts.stat_file,
-            cpu_sysfs_dir = common_opts.cpu_sysfs_dir,
-            power_supply_dir = common_opts.power_supply_dir,
             state = state,
         })
     elseif state.intel_enable then
         fields = {primary_gpu = "Intel " .. tostring(state.intel_gpu)}
-        fields.temperature, fields.fan_speed = M.read_sensors(common_opts.sensors_json)
-        fields.power_discharge = M.read_battery_discharge(common_opts.power_supply_dir or "/sys/class/power_supply")
-        fields.utilization = M.read_cpu_utilization(state, common_opts.stat_file)
-        fields.current_clock_speed, fields.max_clock_speed = M.read_cpu_clock_speed(common_opts.cpu_sysfs_dir)
     else
         fields = {primary_gpu = "Not found"}
-        fields.temperature, fields.fan_speed = M.read_sensors(common_opts.sensors_json)
-        fields.power_discharge = M.read_battery_discharge(common_opts.power_supply_dir or "/sys/class/power_supply")
-        fields.utilization = M.read_cpu_utilization(state, common_opts.stat_file)
-        fields.current_clock_speed, fields.max_clock_speed = M.read_cpu_clock_speed(common_opts.cpu_sysfs_dir)
     end
     fields.emoji = state.emoji
 

@@ -36,7 +36,7 @@ check(decoded2.text:find("62"), "text field did not include the temperature")
 check(decoded2.tooltip:find("45"), "tooltip did not include utilization")
 check(decoded2.tooltip:find("1800/3600 MHz"), "tooltip did not include the clock speed segment in the documented format")
 check(decoded2.tooltip:find("120/200 W"), "tooltip did not include the power usage/limit segment")
-check(decoded2.tooltip:find("15.5 W"), "tooltip did not include the power discharge segment")
+check(not decoded2.tooltip:find("Power Discharge"), "GPU tooltip included non-GPU battery discharge")
 check(decoded2.class[1] == "temp-60", "temperature class bucket was wrong: got " .. tostring(decoded2.class[1]))
 check(decoded2.class[2] == "util-40", "utilization class bucket was wrong: got " .. tostring(decoded2.class[2]))
 check(decoded2.percentage == 62, "percentage did not mirror the temperature")
@@ -48,7 +48,7 @@ check(decoded2.percentage == 62, "percentage did not mirror the temperature")
 local core_clock_only = gpuinfo.generate_json({primary_gpu = "AMD Radeon", core_clock = 1500})
 local ok3, decoded3 = pcall(json.decode, core_clock_only)
 check(ok3, "generate_json with only core_clock did not produce valid JSON")
-check(decoded3.tooltip:find("1500 MHz"), "core_clock alone did not appear in the tooltip")
+check(decoded3.tooltip:find("1500/N/A MHz"), "core_clock alone did not appear in the tooltip")
 
 -- Out-of-spec: a negative or absurd temperature (a sensor glitch) must still
 -- clamp into a valid bucket/percentage instead of producing an out-of-range
@@ -82,10 +82,18 @@ check(ok6 and decoded6.class[2] == "util-0", "a non-numeric utilization did not 
 local str_ok, str_json = pcall(gpuinfo.generate_json, {primary_gpu = "x", temperature = "62", utilization = "45"})
 local ok7, decoded7 = pcall(json.decode, str_ok and str_json or "")
 check(ok7 and decoded7.percentage == 62, "a numeric-string temperature stopped being read: got " .. tostring(ok7 and decoded7.percentage))
+check(gpuinfo.format_temperature(0, true) == "32°F", "Fahrenheit conversion was incorrect")
+check(gpuinfo.format_temperature(100, false) == "100°C", "Celsius formatting was incorrect")
 
--- A zero discharge reading (on AC power) is not a discharge -- it must not add
--- a "Power Discharge: 0.0 W" tooltip line. read_battery_discharge returns a
--- float, so this is "0.0", which a string comparison against "0" let through.
+local missing = gpuinfo.generate_json({primary_gpu = "Intel GPU"})
+local ok9, decoded9 = pcall(json.decode, missing)
+check(ok9, "missing GPU values did not produce valid JSON")
+check(ok9 and decoded9.tooltip:find("Temperature: N/A"), "missing temperature was not rendered as N/A")
+check(ok9 and decoded9.tooltip:find("Utilization: N/A"), "missing utilization was not rendered as N/A")
+check(ok9 and decoded9.tooltip:find("Clock Speed: N/A/N/A MHz"), "missing clocks were not rendered as N/A")
+check(ok9 and decoded9.tooltip:find("Power Usage: N/A/N/A W"), "missing power values were not rendered as N/A")
+
+-- Battery discharge is never part of the GPU tooltip, even when supplied.
 local ac = gpuinfo.generate_json({primary_gpu = "x", temperature = 50, power_discharge = 0.0})
 local ok8, decoded8 = pcall(json.decode, ac)
 check(ok8 and not decoded8.tooltip:find("Power Discharge"), "a zero discharge reading still produced a Power Discharge tooltip line")

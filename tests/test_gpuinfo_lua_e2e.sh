@@ -61,9 +61,8 @@ for line in lines:
     fail "a fully-empty environment did not produce a JSON object on stdout: $stdout2 (stderr: $stderr2)"
 fi
 
-# AMD k10temp Tctl/Tdie, out-of-spec value, and Tctl-vs-edge precedence --
-# ported from tests/test_gpuinfo.sh's own equivalent cases, updated for the
-# explicit priority this rewrite introduces (edge wins over Tctl, see spec).
+# Generic sensor data must not be presented as GPU data when no supported
+# vendor query is available.
 cat >"$fake_bin/sensors" <<'EOF'
 #!/bin/sh
 cat <<'SENSORS'
@@ -73,12 +72,7 @@ EOF
 chmod +x "$fake_bin/sensors"
 rm -rf "$work_dir/runtime"
 mkdir -p "$work_dir/runtime"
-# Isolated from the plain CLI's real /sys/bus/pci/devices + /proc/modules
-# scan: on a runner with actual (or virtualized) AMD/NVIDIA hardware, real
-# detection could route this through a vendor-specific query instead of the
-# generic sensors path this case is meant to exercise, making the "60°C"
-# assertion below depend on what happens to be plugged into the machine
-# running the suite rather than on gpuinfo.lua's own priority logic.
+# Isolated from the plain CLI's real /sys/bus/pci/devices + /proc/modules scan.
 both_stdout=$(XDG_RUNTIME_DIR="$work_dir/runtime" REPO_ROOT="$REPO_ROOT" PATH="$fake_bin:$PATH" lua -e '
 package.path = os.getenv("REPO_ROOT") .. "/Configs/.local/lib/hyde/?.lua;" .. package.path
 local gpuinfo = require("gpuinfo")
@@ -87,8 +81,8 @@ os.exit(gpuinfo.cli_main({}, {
 }))
 ' 2>"$work_dir/stderr")
 case $both_stdout in
-*'60°C'*) ;;
-*) fail "with both Tctl and edge present, edge (the GPU reading) did not win as the new documented priority: $both_stdout" ;;
+*'Temperature: N/A'*'Utilization: N/A'*) ;;
+*) fail "generic sensor data was used as a GPU fallback: $both_stdout" ;;
 esac
 
 finish
