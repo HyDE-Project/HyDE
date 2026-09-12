@@ -511,6 +511,7 @@ function M.generate_json(fields)
     local temp_lv = emoji and "85:🌋, 65:🔥, 45:☁️, ❄️" or "85:, 65:, 45:☁, ❄"
     local util_lv = "90:, 60:󰓅, 30:󰾅, 󰾆"
     local speedo_icon = M.map_floor(util_lv, fields.utilization or 0)
+    local utilization_icon = "󰓅"
     local thermo_icon = M.map_floor(temp_lv, fields.temperature or -999)
 
     -- tonumber first: nvidia-smi answers "[N/A]" for query fields a card does
@@ -534,13 +535,13 @@ function M.generate_json(fields)
     local tooltip = (fields.primary_gpu or "Not found") .. "\n" .. thermo_icon .. " Temperature: " .. (temp_val or "") .. "°C"
 
     if fields.utilization then
-        tooltip = tooltip .. "\n" .. speedo_icon .. " Utilization: " .. fields.utilization .. "%"
+        tooltip = tooltip .. "\n" .. utilization_icon .. " Utilization: " .. fields.utilization .. "%"
     end
     if fields.current_clock_speed and fields.max_clock_speed then
-        tooltip = tooltip .. "\n Clock Speed: " .. fields.current_clock_speed .. "/" .. fields.max_clock_speed .. " MHz"
+        tooltip = tooltip .. "\n" .. speedo_icon .. " Clock Speed: " .. fields.current_clock_speed .. "/" .. fields.max_clock_speed .. " MHz"
     end
     if fields.core_clock then
-        tooltip = tooltip .. "\n Clock Speed: " .. fields.core_clock .. " MHz"
+        tooltip = tooltip .. "\n" .. speedo_icon .. " Clock Speed: " .. fields.core_clock .. " MHz"
     end
     if fields.power_usage then
         if fields.power_limit then
