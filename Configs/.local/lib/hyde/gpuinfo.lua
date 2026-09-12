@@ -508,11 +508,12 @@ end
 --- line breaks the whole module, the #2021/#2022 contract this preserves).
 function M.generate_json(fields)
     local emoji = fields.emoji
-    local temp_lv = emoji and "85:🌋, 65:🔥, 45:☁️, ❄️" or "85:, 65:, 45:☁, ❄"
-    local util_lv = "90:, 60:󰓅, 30:󰾅, 󰾆"
+    local temp_icon_lv = "85:, 65:, 45:, "
+    local temp_status_lv = emoji and "85:🌋, 65:🔥, 45:☁️, ❄️" or "85:, 65:, 45:☁, ❄"
+    local util_lv = "90:, 60:󰓅, 30:󰾅, 󰾆"
     local speedo_icon = M.map_floor(util_lv, fields.utilization or 0)
-    local utilization_icon = "󰓅"
-    local thermo_icon = M.map_floor(temp_lv, fields.temperature or -999)
+    local thermo_icon = M.map_floor(temp_icon_lv, fields.temperature or -999)
+    local status_icon = M.map_floor(temp_status_lv, fields.temperature or -999)
 
     -- tonumber first: nvidia-smi answers "[N/A]" for query fields a card does
     -- not support, and nvidia_query passes raw CSV strings straight through.
@@ -532,16 +533,16 @@ function M.generate_json(fields)
 
     local temp_pct = clamp(temp_val or 0, 0, 100)
 
-    local tooltip = (fields.primary_gpu or "Not found") .. "\n" .. thermo_icon .. " Temperature: " .. (temp_val or "") .. "°C"
+    local tooltip = status_icon .. " " .. (fields.primary_gpu or "Not found") .. "\n" .. thermo_icon .. " Temperature: " .. (temp_val or "") .. "°C"
 
     if fields.utilization then
-        tooltip = tooltip .. "\n" .. utilization_icon .. " Utilization: " .. fields.utilization .. "%"
+        tooltip = tooltip .. "\n" .. speedo_icon .. " Utilization: " .. fields.utilization .. "%"
     end
     if fields.current_clock_speed and fields.max_clock_speed then
-        tooltip = tooltip .. "\n" .. speedo_icon .. " Clock Speed: " .. fields.current_clock_speed .. "/" .. fields.max_clock_speed .. " MHz"
+        tooltip = tooltip .. "\n Clock Speed: " .. fields.current_clock_speed .. "/" .. fields.max_clock_speed .. " MHz"
     end
     if fields.core_clock then
-        tooltip = tooltip .. "\n" .. speedo_icon .. " Clock Speed: " .. fields.core_clock .. " MHz"
+        tooltip = tooltip .. "\n Clock Speed: " .. fields.core_clock .. " MHz"
     end
     if fields.power_usage then
         if fields.power_limit then
@@ -554,10 +555,10 @@ function M.generate_json(fields)
     -- reading on AC power stringifies as "0.0" and slipped past a string
     -- comparison against "0", printing a bogus "Power Discharge: 0.0 W" line.
     if fields.power_discharge and tonumber(fields.power_discharge) ~= 0 then
-        tooltip = tooltip .. "\n Power Discharge: " .. fields.power_discharge .. " W"
+        tooltip = tooltip .. "\n Power Discharge: " .. fields.power_discharge .. " W"
     end
     if fields.fan_speed then
-        tooltip = tooltip .. "\n Fan Speed: " .. fields.fan_speed .. " RPM"
+        tooltip = tooltip .. "\n Fan Speed: " .. fields.fan_speed .. " RPM"
     end
 
     return json.encode({
