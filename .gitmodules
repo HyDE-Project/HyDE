@@ -2,3 +2,7 @@
 	path = language-packs
 	url = https://github.com/HyDE-Project/language-packs.git
 	branch = master
+[submodule "tests"]
+	path = tests
+	url = https://github.com/HyDE-Project/tests.git
+	branch = main
