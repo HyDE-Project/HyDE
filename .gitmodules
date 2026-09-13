@@ -1,0 +1,4 @@
+[submodule "tests"]
+	path = tests
+	url = https://github.com/HyDE-Project/tests.git
+	branch = main
