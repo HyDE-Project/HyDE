@@ -44,6 +44,7 @@ Options:
     -s, --services         Enable system services
     -p, --pre              Run pre-install only (Python environment setup)
     -n, --no-nvidia        Ignore nvidia actions
+    --lact                 Install and enable LACT (experimental, cross-vendor GPU monitoring)
     -h, --shell            Re-evaluate shell configuration
     -m, --no-theme         Skip theme installation
     -t, --test             Test run (dry-run)
@@ -54,11 +55,16 @@ Common combinations:
     ./install.sh -p           # Pre-install only (run first if restore fails)
     ./install.sh -r           # Restore configs and dotfiles only
     ./install.sh -irs         # Install, restore, and services
+    ./install.sh --defaults --lact  # Silent install with LACT and lactd
     ./install.sh -irsn       # Full install without nvidia
 
 NOTE:
     If restore fails with "deez-dots not found", run: ./install.sh -p
     The -p flag sets up Python environment and deez-dots
+    --lact enables the lactd service, which polls GPUs continuously; on
+    hybrid-graphics (Optimus/PRIME) laptops this can keep an idle discrete
+    GPU from entering PCI runtime-suspend, affecting battery life
+    (upstream: https://github.com/ilya-zlobintsev/LACT/issues/1057)
 
 EOF
 	exit 0
@@ -67,6 +73,8 @@ EOF
 operations=()
 dry_run=0
 nvidia=1
+lact=2 # 2 = undecided yet (detect/prompt below), 1 = install, 0 = skip
+lact_explicit=0 # set only by --lact itself, never by auto-detection below
 theme_install=1
 
 while [[ $# -gt 0 ]]; do
@@ -97,6 +105,11 @@ while [[ $# -gt 0 ]]; do
 		print_log -r "[nvidia] " -b "Ignored :: " "skipping Nvidia actions"
 		shift
 		;;
+	--lact)
+		lact=1
+		lact_explicit=1
+		shift
+		;;
 	-h | --shell)
 		export flg_Shell=1
 		print_log -r "[shell] " -b "Reevaluate :: " "shell options"
@@ -124,11 +137,62 @@ if [ ${#operations[@]} -eq 0 ]; then
 	operations=("install" "restore" "services")
 fi
 
+# An existing LACT package or service means the user already opted in. Avoid
+# asking again and let the normal services step keep lactd enabled.
+if [ "${lact}" -eq 2 ] && {
+	(command -v pacman >/dev/null 2>&1 && pacman -Qq lact >/dev/null 2>&1) ||
+	systemctl cat lactd.service >/dev/null 2>&1
+}; then
+	lact=1
+	print_log -g "[LACT] " -b "detected :: " "already installed; enabling lactd"
+fi
+
+if [ "${lact}" -eq 2 ]; then
+	if [ -t 0 ] && [ -z "${use_default:-}" ]; then
+		read -r -p "Install LACT for experimental cross-vendor GPU monitoring (custom/lact Waybar module) and enable the lactd service? [y/N] " lact_answer
+		if [[ "${lact_answer}" == [Yy]* ]]; then
+			lact=1
+			lact_explicit=1
+		else
+			lact=0
+		fi
+	else
+		lact=0
+	fi
+fi
+
+# Explicitly opting into LACT always includes the service operation, so both
+# --lact and --defaults --lact end up with lactd actually enabled, not just
+# installed. Gated on lact_explicit: an already-installed LACT merely
+# detected on the machine (see above) must not turn e.g. a restore-only `-r`
+# run into one that also runs the services step -- that case only keeps
+# lactd in sync when the services step was going to run anyway.
+if [ "${lact}" -eq 1 ] && [ "${lact_explicit}" -eq 1 ] && [[ ! " ${operations[*]} " =~ " services " ]]; then
+	operations+=("services")
+fi
+
 export flg_DryRun=$dry_run
 export flg_Nvidia=$nvidia
+export flg_Lact=$lact
 export flg_ThemeInstall=$theme_install
 HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
 export HYDE_LOG
+
+# Authenticate before package installation so sudo does not interrupt an
+# otherwise silent/--defaults run partway through the later lactd-enable step.
+# Gated on lact_explicit, not just lact=1: an already-installed LACT detected
+# on the machine (see above) must not turn an unrelated install/restore run
+# into one that hard-fails without a TTY to answer `sudo -v` -- that case
+# just keeps lactd in sync via the normal (best-effort, non-fatal) enable
+# call in the services step below.
+if [ "${lact}" -eq 1 ] && [ "${lact_explicit}" -eq 1 ] && [ "${dry_run}" -eq 0 ] && [ "${EUID}" -ne 0 ] &&
+	[[ " ${operations[*]} " =~ " services " ]]; then
+	print_log -g "[sudo] " -b "auth :: " "Authentication required before installing/enabling LACT"
+	sudo -v || {
+		print_log -err "[sudo] " -crit "ERROR" "Authentication failed"
+		exit 1
+	}
+fi
 
 if [ $dry_run -eq 1 ]; then
 	print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
@@ -301,6 +365,14 @@ EOF
 		fi
 	fi
 	nvidia_detect --verbose
+	if [ "${flg_Lact}" -eq 1 ]; then
+		if command -v pacman >/dev/null 2>&1; then
+			echo '"lact",' >> "${core_toml}"
+		else
+			print_log -warn "LACT" "The Arch package is unavailable on this package manager; skipping"
+			flg_Lact=0
+		fi
+	fi
 	echo "]" >> "${core_toml}"
 
 	#--------------------------------#
@@ -357,6 +429,14 @@ EOF
 		nvidia_detect --drivers | while read -r pkg; do
 			[ -n "${pkg}" ] && echo "\"${pkg}\","
 		done >> "${core_toml}"
+	fi
+	if [ "${flg_Lact}" -eq 1 ]; then
+		if command -v pacman >/dev/null 2>&1; then
+			echo '"lact",' >> "${core_toml}"
+		else
+			print_log -warn "LACT" "The Arch package is unavailable on this package manager; skipping"
+			flg_Lact=0
+		fi
 	fi
 	echo "]" >> "${core_toml}"
 
@@ -552,6 +632,17 @@ if has_operation "services"; then
 EOF
 
 	"${scrDir}/restore_svc.sh"
+
+	if [ "${flg_Lact:-0}" -eq 1 ] && systemctl cat lactd.service >/dev/null 2>&1; then
+		print_log -g "[LACT] " -b "service :: " "Enabling lactd"
+		# Best-effort: a failed enable (no sudo/no TTY, e.g. an already-installed
+		# LACT auto-detected on a non-interactive run) must not leak a nonzero
+		# status out of this whole `if has_operation "services"` block and be
+		# mistaken for the overall run having failed.
+		if [ "${flg_DryRun}" -ne 1 ]; then
+			sudo systemctl enable --now lactd.service || print_log -warn "LACT" "Failed to enable lactd.service"
+		fi
+	fi
 fi
 
 # Reported here rather than where it happened, so the theme, the migrations and
