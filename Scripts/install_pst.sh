@@ -35,6 +35,15 @@ if pkg_installed sddm; then
             sudo touch /etc/sddm.conf.d/the_hyde_project.conf
             sudo cp /etc/sddm.conf.d/the_hyde_project.conf /etc/sddm.conf.d/backup_the_hyde_project.conf
             sudo cp /usr/share/sddm/themes/${sddmtheme}/the_hyde_project.conf /etc/sddm.conf.d/
+
+            # Some greeter themes hardcode an English 12h HourFormat/DateFormat
+            # (e.g. Candy's "hh:mm A") that ignores the system locale. Blanking
+            # both lets Qt fall back to Locale.ShortFormat/LongFormat, which
+            # follows LANG like everything else.
+            sddmThemeConf="/usr/share/sddm/themes/${sddmtheme}/theme.conf"
+            if [ -f "${sddmThemeConf}" ]; then
+                sudo sed -i -E 's/^(HourFormat=).*/\1""/; s/^(DateFormat=).*/\1""/' "${sddmThemeConf}"
+            fi
         fi
 
         print_log -g "[DISPLAYMANAGER] " -b " :: " "sddm configured with ${sddmtheme} theme..."
