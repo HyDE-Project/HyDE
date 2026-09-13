@@ -215,7 +215,16 @@ function M.generate_json(devices, opts)
     opts = opts or {}
     devices = type(devices) == "table" and devices or {}
 
-    local thermo_lv = opts.emoji and "85:🌋, 65:🔥, 45:☁️, ❄️" or "85:, 65:, 45:☁, ❄"
+    -- Fixed icons, not temperature-mood-varying like gpuinfo's: the color
+    -- already signals "how hot" (see TEMP_COLOR_BANDS), so the icon here
+    -- only needs to say "this is a temperature/clock/fan reading". Written
+    -- as \u{} escapes rather than typed glyphs -- a literal Nerd Font
+    -- Private Use Area character in this file's source has silently come
+    -- out blank before (caught in review comparing the live tooltip against
+    -- what glyph.db says these codepoints render as).
+    local thermo_icon_fixed = opts.emoji and "🌡️" or "\u{f050f}" -- md-thermometer
+    local chip_icon = "\u{f061a}" -- md-chip
+    local fan_icon = "\u{f0210}" -- md-fan
     local util_lv = "90:, 60:󰓅, 30:󰾅, 󰾆"
 
     if #devices == 0 then
@@ -262,17 +271,26 @@ function M.generate_json(devices, opts)
             gpu_label = table.concat(label_parts, " ")
         end
 
-        local thermo_icon = M.map_floor(thermo_lv, temp_val or -999)
         local speedo_icon = M.map_floor(util_lv, tonumber(fields.utilization) or 0)
         local current_clock = fields.current_clock_speed or fields.core_clock
 
-        tooltip_blocks[#tooltip_blocks + 1] = table.concat({
+        local block = {
             gpu_label,
-            thermo_icon .. " Temperature: " .. colorize(temp_display, color),
+            thermo_icon_fixed .. " Temperature: " .. colorize(temp_display, color),
             speedo_icon .. " Utilization: " .. value_or_na(fields.utilization, "%"),
-            " Clock Speed: " .. value_or_na(current_clock) .. "/" .. value_or_na(fields.max_clock_speed) .. " MHz",
-            "󱪉 Power Usage: " .. value_or_na(fields.power_usage) .. "/" .. value_or_na(fields.power_limit) .. " W",
-        }, "\n")
+            chip_icon .. " Clock Speed: " .. value_or_na(current_clock) .. "/" .. value_or_na(fields.max_clock_speed) .. " MHz",
+            "\u{f1a89}" .. " Power Usage: " .. value_or_na(fields.power_usage) .. "/" .. value_or_na(fields.power_limit) .. " W",
+        }
+        -- Only when the daemon actually reported a fan reading (present but
+        -- 0 RPM is a real, meaningful "fan is off" answer on some cards, not
+        -- a missing value) -- unlike temperature/clock/power there is no
+        -- sensible N/A fallback line to show for a GPU with no fan sensor
+        -- at all (blower-less cards, most laptop iGPUs).
+        if fields.fan_speed ~= nil then
+            block[#block + 1] = fan_icon .. " Fan Speed: " .. value_or_na(fields.fan_speed, " RPM")
+        end
+
+        tooltip_blocks[#tooltip_blocks + 1] = table.concat(block, "\n")
     end
 
     local temp_pct = clamp(hottest_temp or 0, 0, 100)

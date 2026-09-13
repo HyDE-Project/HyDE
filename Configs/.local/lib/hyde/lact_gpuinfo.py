@@ -91,6 +91,8 @@ def device_fields(device_id, fallback_name):
     power = power if isinstance(power, dict) else {}
     clock = stats.get("clockspeed", {})
     clock = clock if isinstance(clock, dict) else {}
+    fan = stats.get("fan", {})
+    fan = fan if isinstance(fan, dict) else {}
 
     clock_table = clocks.get("table", {})
     clock_data = clock_table.get("value", {}) if isinstance(clock_table, dict) else {}
@@ -107,6 +109,7 @@ def device_fields(device_id, fallback_name):
         "max_clock_speed": clock_range[-1] if clock_range else None,
         "power_usage": power.get("current"),
         "power_limit": first_value(power, "cap_current", "cap_max"),
+        "fan_speed": fan.get("speed_current"),
     }
 
 
