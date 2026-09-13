@@ -45,7 +45,7 @@ font_name=${font_name:-$(get_hyprConf "FONT")}
 font_override="* {font: \"${font_name:-"JetBrainsMono Nerd Font"} $font_scale\";}"
 icon_override=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'//g")
 icon_override="configuration {icon-theme: \"$icon_override\";}"
-selected=$(echo -e "$output" | rofi -dmenu -markup -markup-rows -p \
+selected=$(printf '%s\n' "$output" | rofi -dmenu -markup -markup-rows -p \
     -theme-str "entry { placeholder: \"\t⌨️ Keybindings \";}" \
     " Keybinds \t\tﴕ Description" \
     -p -i \

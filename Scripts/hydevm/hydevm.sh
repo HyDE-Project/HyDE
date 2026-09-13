@@ -271,6 +271,48 @@ function get_python_command() {
     fi
 }
 
+function qemu_supports_display() {
+    local qemu_cmd="$1"
+    local backend="$2"
+    "$qemu_cmd" -display help 2>&1 | awk -v backend="$backend" '
+        $0 ~ "^[[:space:]]*" backend "([[:space:]]|$)" { found=1 }
+        END { exit(found ? 0 : 1) }'
+}
+
+function add_qemu_display_args() {
+    local qemu_cmd="$1"
+
+    if qemu_supports_display "$qemu_cmd" gtk; then
+        qemu_args+=(-device virtio-vga-gl -display "gtk,gl=on,grab-on-hover=on")
+    elif qemu_supports_display "$qemu_cmd" sdl; then
+        echo "⚠️  QEMU GTK display is unavailable; falling back to SDL."
+        qemu_args+=(-device virtio-vga -display sdl)
+    else
+        echo "❌ QEMU has no graphical display backend." >&2
+        echo "   Retry with --ssh-only (and connect through the forwarded SSH port)." >&2
+        return 1
+    fi
+}
+
+function has_qemu_display_override() {
+    local i arg next
+    for ((i = 0; i < ${#extra_vm_args[@]}; i++)); do
+        arg="${extra_vm_args[i]}"
+        next="${extra_vm_args[i + 1]:-}"
+        case "$arg" in
+            -display|-nographic|-vga)
+                return 0
+                ;;
+            -device)
+                case "$next" in
+                    *vga*|*gpu*|virtio-gpu*) return 0 ;;
+                esac
+                ;;
+        esac
+    done
+    return 1
+}
+
 function run_qemu_vm() {
     local vm_disk="$1"
     local memory="${2:-4G}"
@@ -297,13 +339,21 @@ function run_qemu_vm() {
             -boot "menu=on"
         )
 
+        local -a extra_vm_args=()
+        if [ -n "${VM_EXTRA_ARGS:-}" ]; then
+            # shellcheck disable=SC2086
+            read -ra extra_vm_args <<< "$VM_EXTRA_ARGS"
+        fi
+
         if [ "$ssh_only" = "true" ]; then
             # Headless mode: no display, no GPU device
             qemu_args+=(-display none -vga none)
             echo "🖥️  Running headless (SSH-only mode)"
         else
-            # Normal mode with GPU acceleration
-            qemu_args+=(-device virtio-vga-gl -display "gtk,gl=on,grab-on-hover=on")
+            # Prefer GTK with OpenGL, then fall back to SDL or headless mode.
+            if ! has_qemu_display_override; then
+                add_qemu_display_args "$qemu_cmd" || return 1
+            fi
         fi
 
         # Add KVM-specific arguments
@@ -332,14 +382,38 @@ function run_qemu_vm() {
         fi
 
         # Add any extra VM arguments
-        if [ -n "${VM_EXTRA_ARGS:-}" ]; then
-            # shellcheck disable=SC2086
-            read -ra extra_vm_args <<< "$VM_EXTRA_ARGS"
+        if [ "${#extra_vm_args[@]}" -gt 0 ]; then
             qemu_args+=("${extra_vm_args[@]}")
         fi
 
         # Execute QEMU with all arguments
-        "$qemu_cmd" "${qemu_args[@]}"
+        if "$qemu_cmd" "${qemu_args[@]}"; then
+            return 0
+        fi
+        local qemu_status=$?
+        if [[ " ${qemu_args[*]} " == *" -display gtk,gl=on,grab-on-hover=on "* ]] && qemu_supports_display "$qemu_cmd" sdl; then
+            echo "⚠️  QEMU GTK failed to start; retrying with SDL."
+            local -a sdl_args=()
+            local i arg next
+            for ((i = 0; i < ${#qemu_args[@]}; i++)); do
+                arg="${qemu_args[i]}"
+                next="${qemu_args[i + 1]:-}"
+                if [ "$arg" = "-device" ] && [ "$next" = "virtio-vga-gl" ]; then
+                    i=$((i + 1))
+                    sdl_args+=(-device virtio-vga)
+                    continue
+                fi
+                if [ "$arg" = "-display" ] && [[ "$next" == gtk,* ]]; then
+                    i=$((i + 1))
+                    sdl_args+=(-display sdl)
+                    continue
+                fi
+                sdl_args+=("$arg")
+            done
+            "$qemu_cmd" "${sdl_args[@]}"
+            return $?
+        fi
+        return "$qemu_status"
     fi
 }
 
@@ -532,11 +606,27 @@ SETUP_EOF
     $python_cmd -m http.server 8000 --bind 0.0.0.0 &
     local server_pid=$!
 
-    # Start VM for setup
-    run_qemu_vm "$temp_image" "${VM_MEMORY:-4G}" "${VM_CPUS:-2}" "" "$ssh_only" "$mount_path"
+    # Always stop the setup server, including when QEMU fails to start.
+    cleanup_server() {
+        kill "$server_pid" 2>/dev/null || true
+    }
+    trap cleanup_server RETURN
 
-    # Kill the HTTP server
-    kill $server_pid 2>/dev/null || true
+    # Start VM for setup
+    local qemu_status=0
+    if run_qemu_vm "$temp_image" "${VM_MEMORY:-4G}" "${VM_CPUS:-2}" "" "$ssh_only" "$mount_path"; then
+        qemu_status=0
+    else
+        qemu_status=$?
+    fi
+
+    cleanup_server
+    trap - RETURN
+    if [ "$qemu_status" -ne 0 ]; then
+        echo "❌ QEMU exited with status $qemu_status; the temporary HTTP server was stopped." >&2
+        rm -f "$temp_image" "$setup_script"
+        return "$qemu_status"
+    fi
 
     echo ""
     echo "💾 Converting VM to snapshot..."

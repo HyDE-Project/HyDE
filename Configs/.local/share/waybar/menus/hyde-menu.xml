@@ -5,13 +5,13 @@
 
         <child>
             <object class="GtkMenuItem" id="animation_menu">
-                <property name="label">󰗘 Animations</property>
+                <property name="label">󰗘&#x2003;Animations</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
                         <child>
                             <object class="GtkMenuItem" id="animations-select">
-                                <property name="label"> Select Animation</property>
+                                <property name="label">&#x2003;Select Animation</property>
                             </object>
                         </child>
 
@@ -24,28 +24,28 @@
 
         <child>
             <object class="GtkMenuItem" id="wallpaper_menu">
-                <property name="label">󰸉 Wallpaper</property>
+                <property name="label">󰸉&#x2003;Wallpaper</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
                         <child>
                             <object class="GtkMenuItem" id="wallpaper-select">
-                                <property name="label"> Select Wallpaper</property>
+                                <property name="label">&#x2003;Select Wallpaper</property>
                             </object>
                         </child>
                         <child>
                             <object class="GtkMenuItem" id="wallpaper-next">
-                                <property name="label"> Next Wallpaper</property>
+                                <property name="label">&#x2003;Next Wallpaper</property>
                             </object>
                         </child>
                         <child>
                             <object class="GtkMenuItem" id="wallpaper-previous">
-                                <property name="label"> Previous Wallpaper</property>
+                                <property name="label">&#x2003;Previous Wallpaper</property>
                             </object>
                         </child>
                         <child>
                             <object class="GtkMenuItem" id="wallpaper-random">
-                                <property name="label"> Random Wallpaper</property>
+                                <property name="label">&#x2003;Random Wallpaper</property>
                             </object>
                         </child>
 
@@ -58,32 +58,32 @@
 
         <child>
             <object class="GtkMenuItem" id="theme_menu">
-                <property name="label"> Theme</property>
+                <property name="label">&#x2003;Theme</property>
                 <child
                     type="submenu">
                     <object class="GtkMenu">
 
                         <child>
                             <object class="GtkMenuItem" id="theme-select">
-                                <property name="label"> Select Theme</property>
+                                <property name="label">&#x2003;Select Theme</property>
                             </object>
                         </child>
 
                         <child>
                             <object class="GtkMenuItem" id="theme-next">
-                                <property name="label"> Next Theme</property>
+                                <property name="label">&#x2003;Next Theme</property>
                             </object>
                         </child>
 
                         <child>
                             <object class="GtkMenuItem" id="theme-previous">
-                                <property name="label"> Previous Theme</property>
+                                <property name="label">&#x2003;Previous Theme</property>
                             </object>
                         </child>
 
                         <child>
                             <object class="GtkMenuItem" id="theme-import">
-                                <property name="label"> More Themes</property>
+                                <property name="label">&#x2003;More Themes</property>
                             </object>
                         </child>
 
@@ -96,13 +96,13 @@
 
         <child>
             <object class="GtkMenuItem" id="layouts_menu">
-                <property name="label"> Layouts</property>
+                <property name="label">&#x2003;Layouts</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
                         <child>
                             <object class="GtkMenuItem" id="layouts-select">
-                                <property name="label"> Select Layout</property>
+                                <property name="label">&#x2003;Select Layout</property>
                             </object>
                         </child>
 
@@ -114,41 +114,41 @@
 
         <child>
             <object class="GtkMenuItem" id="waybar-menu">
-                <property name="label"> Waybar</property>
+                <property name="label">&#x2003;Waybar</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-layout-select">
-                                <property name="label"> Select Layout</property>
+                                <property name="label">&#x2003;Select Layout</property>
                             </object>
                         </child>
 
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-style-select">
-                                <property name="label"> Select Style</property>
+                                <property name="label">&#x2003;Select Style</property>
                             </object>
                         </child>
 
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-layout-next">
-                                <property name="label"> Next Layout</property>
+                                <property name="label">&#x2003;Next Layout</property>
                             </object>
                         </child>
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-layout-prev">
-                                <property name="label"> Previous Layout</property>
+                                <property name="label">&#x2003;Previous Layout</property>
                             </object>
                         </child>
 
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-reload-css">
-                                <property name="label">󰑓 Reload CSS</property>
+                                <property name="label">󰑓&#x2003;Reload CSS</property>
                             </object>
                         </child>
 
@@ -160,7 +160,7 @@
 
                         <child>
                             <object class="GtkMenuItem" id="waybar-restart">
-                                <property name="label">󰜉 Restart</property>
+                                <property name="label">󰜉&#x2003;Restart</property>
                             </object>
                         </child>
 
@@ -173,13 +173,13 @@
 
         <child>
             <object class="GtkMenuItem" id="workflows_menu">
-                <property name="label"> Workflows</property>
+                <property name="label">&#x2003;Workflows</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
                         <child>
                             <object class="GtkMenuItem" id="workflows-select">
-                                <property name="label"> Select Workflow</property>
+                                <property name="label">&#x2003;Select Workflow</property>
                             </object>
                         </child>
 
@@ -192,13 +192,13 @@
 
         <child>
             <object class="GtkMenuItem" id="lockscreen_menu">
-                <property name="label"> Lockscreen</property>
+                <property name="label">&#x2003;Lockscreen</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
                         <child>
                             <object class="GtkMenuItem" id="lockscreen-select">
-                                <property name="label"> Select Lockscreen</property>
+                                <property name="label">&#x2003;Select Lockscreen</property>
                             </object>
                         </child>
 
@@ -211,14 +211,14 @@
 
         <child>
             <object class="GtkMenuItem" id="eyecare_menu">
-                <property name="label">󰛨 Eye Care</property>
+                <property name="label">󰛨&#x2003;Eye Care</property>
                 <child type="submenu">
                     <object class="GtkMenu">
 
                         <!-- Hyprsunset submenu -->
                         <child>
                             <object class="GtkMenuItem" id="hyprsunset_menu">
-                                <property name="label"> Hyprsunset</property>
+                                <property name="label">&#x2003;Hyprsunset</property>
                                 <child type="submenu">
                                     <object class="GtkMenu">
 
@@ -236,14 +236,14 @@
                                         <!-- Temperature submenu -->
                                         <child>
                                             <object class="GtkMenuItem" id="temperature_menu">
-                                                <property name="label"> Temperature</property>
+                                                <property name="label">&#x2003;Temperature</property>
                                                 <child type="submenu">
                                                     <object class="GtkMenu">
 
                                                         <child>
                                                             <object class="GtkMenuItem"
                                                                 id="temp-off">
-                                                                <property name="label">󰨙 Default</property>
+                                                                <property name="label">󰨙&#x2003;Default</property>
                                                             </object>
                                                         </child>
 
@@ -310,7 +310,7 @@
                                         <!-- Gamma submenu -->
                                         <child>
                                             <object class="GtkMenuItem" id="gamma_menu">
-                                                <property name="label">󰃝 Gamma</property>
+                                                <property name="label">󰃝&#x2003;Gamma</property>
                                                 <child type="submenu">
                                                     <object class="GtkMenu">
 
@@ -391,7 +391,7 @@
                         <!-- Shaders direct item -->
                         <child>
                             <object class="GtkMenuItem" id="shaders-select">
-                                <property name="label"> Shaders</property>
+                                <property name="label">&#x2003;Shaders</property>
                             </object>
                         </child>
 
@@ -408,13 +408,13 @@
 
         <child>
             <object class="GtkMenuItem" id="keybinds-hint">
-                <property name="label"> Keybinds</property>
+                <property name="label">&#x2003;Keybinds</property>
             </object>
         </child>
 
         <child>
             <object class="GtkMenuItem" id="about-hyde">
-                <property name="label"> About</property>
+                <property name="label">&#x2003;About</property>
             </object>
         </child>
 
