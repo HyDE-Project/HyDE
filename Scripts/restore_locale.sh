@@ -95,7 +95,11 @@ clockFile="${dataDir}/waybar/modules/clock.jsonc"
 if [ -f "${clockFile}" ] && command -v jq >/dev/null 2>&1; then
     currentFmt=$(jq -r '.clock.format // ""' "${clockFile}" 2>/dev/null)
     currentAlt=$(jq -r '.clock["format-alt"] // ""' "${clockFile}" 2>/dev/null)
-    newAlt=$(jq -rn --arg alt "${currentAlt}" --arg seg "${newDateSeg}" '$alt | sub("%d·%m·%y"; $seg)')
+    # Order-agnostic: matches the date segment whatever order a previous run
+    # (under a different locale) left it in, not just the shipped default's
+    # "%d·%m·%y" -- anchoring on that one literal meant a second locale
+    # change could never be re-detected once the first had overwritten it.
+    newAlt=$(jq -rn --arg alt "${currentAlt}" --arg seg "${newDateSeg}" '$alt | sub("%[dmy]·%[dmy]·%[dmy]"; $seg)')
 
     if [ "${currentFmt}" != "${newTimeFmt}" ] || [ "${currentAlt}" != "${newAlt}" ]; then
         if [ "${flg_DryRun}" -eq 1 ]; then

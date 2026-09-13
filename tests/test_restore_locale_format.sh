@@ -47,4 +47,24 @@ grep -qx 'HourFormat=""' "$conf.out" || fail "SDDM HourFormat was not blanked"
 grep -qx 'DateFormat=""' "$conf.out" || fail "SDDM DateFormat was not blanked"
 grep -qx 'Locale=""' "$conf.out" || fail "SDDM sed touched an unrelated key"
 
+# --- waybar: date-order segment re-detected regardless of which order a
+# previous run (under a different locale) left it in, not just the shipped
+# default's "%d·%m·%y" literal.
+if command -v jq >/dev/null 2>&1; then
+    check_date_order() {
+        alt=$1
+        seg=$2
+        expected=$3
+        got=$(jq -rn --arg alt "$alt" --arg seg "$seg" '$alt | sub("%[dmy]·%[dmy]·%[dmy]"; $seg)')
+        [ "$got" = "$expected" ] || fail "date-order resub: '$alt' with seg '$seg' -> '$got', expected '$expected'"
+    }
+
+    check_date_order '{:%R X %d·%m·%y}' '%d·%m·%y' '{:%R X %d·%m·%y}'
+    # the actual bug: a prior run already left the segment in a different
+    # order (e.g. after a 12h/US locale ran once) -- must still be found.
+    check_date_order '{:%R X %m·%d·%y}' '%d·%m·%y' '{:%R X %d·%m·%y}'
+else
+    skip "jq is not installed"
+fi
+
 finish
