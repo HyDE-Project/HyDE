@@ -6,6 +6,11 @@
 #   - waybar clock time format (12h vs 24h) and date order (day/month/year
 #     position), re-derived from LC_TIME on every run, since the clock
 #     module is a synced (always redeployed) dot.
+#   - hyprlock preset clocks, switched from their hardcoded 12h "date" format
+#     to 24h alongside the waybar clock, for the same locales and the same
+#     reason (synced dots, re-derived on every run). SDDM's own greeter
+#     clock is handled separately, at theme-install time -- see
+#     install_pst.sh and theme.patch.sh's Sddm_* handling.
 #   - keybindings authored against US punctuation keys (e.g. "slash" for the
 #     keybindings-hint menu) are unbound and re-registered under whatever
 #     symbol the physically same key produces on the detected layout, so the
@@ -50,45 +55,51 @@ if [ -f "${hyprLua}" ] && ! grep -q "kb_layout" "${hyprLua}"; then
 fi
 
 # --- clock: time format (12h vs 24h), from LC_TIME's t_fmt ----------------
+# Computed unconditionally (not gated on the waybar clock file existing)
+# since the hyprlock section below reuses newTimeFmt too.
+timeFmt=$(locale -k LC_TIME 2>/dev/null | grep '^t_fmt=' | cut -d= -f2 | tr -d '"')
+# glibc uses %r/%T as shorthand for the 12h/24h forms on many locales
+# instead of spelling out %I/%p or %H -- match both.
+newTimeFmt="{:%I:%M %p}"
+if [[ "${timeFmt}" == *%I* || "${timeFmt}" == *%p* || "${timeFmt}" == *%r* ]]; then
+    newTimeFmt="{:%I:%M %p}"
+elif [[ "${timeFmt}" == *%H* || "${timeFmt}" == *%T* || "${timeFmt}" == *%k* ]]; then
+    newTimeFmt="{:%H:%M}"
+fi
+
+# --- clock: date order (day/month/year position), from LC_TIME's d_fmt
+dateFmt=$(locale -k LC_TIME 2>/dev/null | grep '^d_fmt=' | cut -d= -f2 | tr -d '"')
+order=""
+while read -r tok; do
+    case "${tok}" in
+    %d | %e) order+="d" ;;
+    %m) order+="m" ;;
+    %Y | %y) order+="y" ;;
+    esac
+done < <(grep -oE '%[a-zA-Z]' <<<"${dateFmt}")
+
+newDateSeg="%d·%m·%y"
+if [ "${#order}" -eq 3 ] && [[ "${order}" == *d* && "${order}" == *m* && "${order}" == *y* ]]; then
+    newDateSeg=""
+    for i in 0 1 2; do
+        case "${order:${i}:1}" in
+        d) newDateSeg+="%d" ;;
+        m) newDateSeg+="%m" ;;
+        y) newDateSeg+="%y" ;;
+        esac
+        [ "${i}" -lt 2 ] && newDateSeg+="·"
+    done
+fi
+
 clockFile="${dataDir}/waybar/modules/clock.jsonc"
 if [ -f "${clockFile}" ] && command -v jq >/dev/null 2>&1; then
-    timeFmt=$(locale -k LC_TIME 2>/dev/null | grep '^t_fmt=' | cut -d= -f2 | tr -d '"')
-    # glibc uses %r/%T as shorthand for the 12h/24h forms on many locales
-    # instead of spelling out %I/%p or %H -- match both.
-    newTimeFmt="{:%I:%M %p}"
-    if [[ "${timeFmt}" == *%I* || "${timeFmt}" == *%p* || "${timeFmt}" == *%r* ]]; then
-        newTimeFmt="{:%I:%M %p}"
-    elif [[ "${timeFmt}" == *%H* || "${timeFmt}" == *%T* || "${timeFmt}" == *%k* ]]; then
-        newTimeFmt="{:%H:%M}"
-    fi
-
-    # --- clock: date order (day/month/year position), from LC_TIME's d_fmt
-    dateFmt=$(locale -k LC_TIME 2>/dev/null | grep '^d_fmt=' | cut -d= -f2 | tr -d '"')
-    order=""
-    while read -r tok; do
-        case "${tok}" in
-        %d | %e) order+="d" ;;
-        %m) order+="m" ;;
-        %Y | %y) order+="y" ;;
-        esac
-    done < <(grep -oE '%[a-zA-Z]' <<<"${dateFmt}")
-
-    newDateSeg="%d·%m·%y"
-    if [ "${#order}" -eq 3 ] && [[ "${order}" == *d* && "${order}" == *m* && "${order}" == *y* ]]; then
-        newDateSeg=""
-        for i in 0 1 2; do
-            case "${order:${i}:1}" in
-            d) newDateSeg+="%d" ;;
-            m) newDateSeg+="%m" ;;
-            y) newDateSeg+="%y" ;;
-            esac
-            [ "${i}" -lt 2 ] && newDateSeg+="·"
-        done
-    fi
-
     currentFmt=$(jq -r '.clock.format // ""' "${clockFile}" 2>/dev/null)
     currentAlt=$(jq -r '.clock["format-alt"] // ""' "${clockFile}" 2>/dev/null)
-    newAlt=$(jq -rn --arg alt "${currentAlt}" --arg seg "${newDateSeg}" '$alt | sub("%d·%m·%y"; $seg)')
+    # Order-agnostic: matches the date segment whatever order a previous run
+    # (under a different locale) left it in, not just the shipped default's
+    # "%d·%m·%y" -- anchoring on that one literal meant a second locale
+    # change could never be re-detected once the first had overwritten it.
+    newAlt=$(jq -rn --arg alt "${currentAlt}" --arg seg "${newDateSeg}" '$alt | sub("%[dmy]·%[dmy]·%[dmy]"; $seg)')
 
     if [ "${currentFmt}" != "${newTimeFmt}" ] || [ "${currentAlt}" != "${newAlt}" ]; then
         if [ "${flg_DryRun}" -eq 1 ]; then
@@ -105,6 +116,33 @@ if [ -f "${clockFile}" ] && command -v jq >/dev/null 2>&1; then
                 print_log -warn "[LOCALE] " "Failed to update clock format in ${clockFile}"
             fi
         fi
+    fi
+fi
+
+# --- lockscreen: time format (12h vs 24h) in hyprlock preset clocks -------
+# hyprlock presets hardcode their own 'date' format string (no locale-aware
+# format API like Qt/fmtlib exists here). Only 12h->24h is handled: dropping
+# " %p" and turning %I/%-I into %H is always safe. A preset authored as
+# 24h-only (e.g. a bare "%H" digit) is left alone for 12h locales, since
+# inserting "%p" into an unknown widget layout isn't safe to automate.
+# ponytail: 12h-locale users keep seeing any 24h-styled preset unswapped;
+# upgrade path is a per-preset "%p" insertion point if that's ever requested.
+if [[ "${newTimeFmt}" == *%H* ]]; then
+    hyprlockDir="${confDir}/hypr/hyprlock"
+    if [ -d "${hyprlockDir}" ]; then
+        changed=0
+        for f in "${hyprlockDir}"/*.conf; do
+            [ -f "${f}" ] || continue
+            grep -qE '%-?I' "${f}" || continue
+            changed=1
+            if [ "${flg_DryRun}" -eq 1 ]; then
+                print_log -y "[LOCALE] " -b "dry-run :: " "Would switch '${f}' clock to 24h"
+            else
+                sed -i -E 's/%-?I(:%M)?( %p)?/%H\1/g' "${f}"
+            fi
+        done
+        [ "${changed}" -eq 1 ] && [ "${flg_DryRun}" -ne 1 ] &&
+            print_log -g "[LOCALE] " -b "lockscreen :: " "hyprlock clocks switched to 24h"
     fi
 fi
 

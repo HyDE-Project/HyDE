@@ -261,6 +261,19 @@ for prefix in "${!archive_map[@]}"; do
             print_log "The above error can be ignored if the '$tgtDir' is not writable..."
         fi
     fi
+    if [ "$prefix" = "Sddm" ]; then
+        # Some greeter themes hardcode an English 12h HourFormat/DateFormat
+        # that ignores the system locale. Blanking both lets Qt fall back to
+        # Locale.ShortFormat/LongFormat, which follows LANG like everything else.
+        sddmThemeConf="$tgtDir/$tgtChk/theme.conf"
+        if [ -f "$sddmThemeConf" ]; then
+            if [ -w "$sddmThemeConf" ]; then
+                sed -i -E 's/^(HourFormat=).*/\1""/; s/^(DateFormat=).*/\1""/' "$sddmThemeConf"
+            else
+                sudo sed -i -E 's/^(HourFormat=).*/\1""/; s/^(DateFormat=).*/\1""/' "$sddmThemeConf"
+            fi
+        fi
+    fi
 done
 confDir=${XDG_CONFIG_HOME:-"$HOME/.config"}
 theme_wallpapers="$confDir/hyde/themes/$THEME_NAME/wallpapers"
