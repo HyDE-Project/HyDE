@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 - Installer: `install_pst.sh` and `restore_svc.lst` still configured and enabled SDDM (Qt/KDE) even though the fork ships greetd + ReGreet. The post-install step now writes `/etc/greetd/config.toml` (ReGreet inside cage) and a `regreet.toml` seeded with the fork's GTK theme/icons/cursor, backs up any existing greetd config, and `restore_svc.lst` enables `greetd` instead of `sddm`. Without this the GTK login never came up on a fresh install.
+- Themes: restore the executable bit on `theme.switch.sh` (it had regressed to 0644 during an edit, so the theme selector — SUPER+SHIFT+T → pick a theme — failed with "Permission denied" and never switched). Now 0755 like its sibling scripts.
 - Themes: removed the orphan `dolphinstaterc` state file left over from Dolphin (no longer part of the fork).
 - Portals: the file-chooser portal now prefers `gtk` (was `kde;gtk`) so file dialogs work without a KDE portal installed; RemoteDesktop uses `hyprland`
 - Wallbash: renamed the KDE-centric `load_dconf_kdeglobals` to `load_dconf_scheme`; the `kdeglobals` color shim stays opt-in (`HYDE_KDEGLOBALS_FIX=0`) and no longer runs on a clean GTK install
