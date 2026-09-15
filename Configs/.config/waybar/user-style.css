@@ -114,3 +114,24 @@ tooltip {
     border-radius: 10pt;
     box-shadow: 0 4px 14px alpha(#000000, 0.18);
 }
+
+
+/* Icon/text breathing room. Applies to any layout because HyDE always imports
+ * user-style.css last. Some modules render glyph+value in one label (e.g.
+ * custom/gpuinfo emits "icon value" with a single space, battery's
+ * format-charging has no separator), so at the 22px height they read cramped.
+ * A small horizontal margin + a hair of letter-spacing keeps them legible
+ * without editing the shared module .jsonc files or any layout. */
+window#waybar #pill #custom-cpuinfo,
+window#waybar #pill #custom-gpuinfo,
+window#waybar #pill #cpu,
+window#waybar #pill #memory,
+window#waybar #pill #battery,
+window#waybar #pill #backlight,
+window#waybar #pill #network,
+window#waybar #pill #pulseaudio,
+window#waybar #pill #custom-updates {
+    margin-left: 0.30em;
+    margin-right: 0.30em;
+    letter-spacing: 0.6px;
+}

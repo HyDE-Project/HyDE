@@ -7,9 +7,9 @@
 #   - hypridle.conf       -> hypridle.toml (preserve)
 #   - kitty.conf          -> kitty.toml (sync)
 #   - zsh/user.zsh        -> zsh.toml (preserve)
-#   - waybar/user-style.css -> waybar.toml (preserve)
-#   - waybar layouts/modules (my-hyde.jsonc, brightness-panel.jsonc)
-#                         -> waybar.toml (sync of .local/share/waybar/*)
+#   - waybar/user-style.css -> waybar.toml (preserve); carries the LAGC islands
+#     and icon/text spacing, applied on top of any HyDE layout
+#   - waybar brightness-panel.jsonc module -> waybar.toml (sync of .local/share/waybar/*)
 #   - hyde/config.toml    -> hyde.toml (preserve)
 #   - hyde/wallbash/*     -> hyde.toml (preserve of hyde/wallbash)
 [my-hyde]
