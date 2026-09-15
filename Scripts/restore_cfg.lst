@@ -49,11 +49,8 @@ N|Y|${HOME}/.config/hypr|nvidia.conf|hyprland nvidia-utils
 N|Y|${HOME}/.config/hypr|hyde.conf keybindings.conf monitors.conf userprefs.conf animations.conf hyprland.conf windowrules.conf animations themes|hyprland
 Y|Y|${HOME}/.local/lib|hyde|hyprland
 Y|Y|${HOME}/.config|kitty|kitty
-Y|Y|${HOME}/.config|Kvantum|kvantum
 Y|Y|${HOME}/.config|MangoHud|mangohud
 Y|Y|${HOME}/.config|fastfetch|fastfetch
-Y|Y|${HOME}/.config|qt5ct|qt5ct
-Y|Y|${HOME}/.config|qt6ct|qt6ct
 Y|Y|${HOME}/.config|rofi|rofi
 Y|Y|${HOME}/.config|swaylock|swaylock-effects
 Y|Y|${HOME}/.config/waybar|modules config.jsonc style.css theme.css|waybar
@@ -62,10 +59,4 @@ Y|Y|${HOME}/.config|wlogout|wlogout
 Y|Y|${HOME}/.config|xsettingsd nwg-look gtk-3.0|nwg-look
 Y|Y|${HOME}/.local/share/icons|default|nwg-look
 Y|Y|${HOME}|.gtkrc-2.0|nwg-look
-Y|Y|${HOME}/.config|dolphinrc kdeglobals|dolphin
-N|Y|${HOME}/.config|baloofilerc|dolphin
-Y|Y|${HOME}/.config/menus|applications.menu|dolphin
-Y|Y|${HOME}/.local/share|dolphin|dolphin
-Y|Y|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
-Y|Y|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
 N|Y|${HOME}/.config|libinput-gestures.conf|libinput-gestures

@@ -14,8 +14,6 @@
     include = [
         "../dots/deps.toml",
         "../dots/electron.toml",
-        "../dots/baloofilerc.toml",
-        "../dots/dolphin.toml",
         "../dots/kitty.toml",
         "../dots/hyprlock.toml",
         "../dots/hypridle.toml",

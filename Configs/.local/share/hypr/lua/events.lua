@@ -1,6 +1,6 @@
 local floating_window_boundary = function(win)
 	-- HyDE's helper to limit the window size when floating, based on the monitor's usable area.
-	-- This prevents windows from opening larger than the screen, eg annoying  dolphin window
+	-- This prevents windows from opening larger than the screen, eg annoying file manager window
 	if not win or not win.floating then
 		return
 	end

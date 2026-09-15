@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
-# /* ---- 💫 Modified version of polkitkdeauth.sh from https://github.com/JaKooLit 💫 ---- */  ##
-# This script starts the first available Polkit agent from a list of possible locations
-
-# List of potential Polkit agent file paths
+# Starts the first available Polkit agent, preferring GNOME on this GTK fork.
+# GTK-only session: GNOME agent first, generic fallbacks after.
+# (No hyprpolkitagent / KDE agents — this fork installs polkit-gnome, see Scripts/pkg_core.lst.)
 
 polkit=(
-  # Hyprland / Wayland (Priority since it's the intended agent for Hyprland)
-  "/usr/libexec/hyprpolkitagent"
-  "/usr/lib/hyprpolkitagent"
-  "/usr/lib/hyprpolkitagent/hyprpolkitagent"
-
   # GNOME (Arch, Fedora)
   "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 
@@ -18,12 +12,11 @@ polkit=(
   "/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"
   "/usr/lib/polkit-gnome-authentication-agent-1"
 
-  # KDE (Arch)
-  "/usr/lib/polkit-kde-authentication-agent-1"
+  # Pantheon (elementary OS, GNOME-based)
+  "/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"
 
-  # KDE (Debian/Ubuntu)
-  "/usr/lib/x86_64-linux-gnu/libexec/polkit-kde-authentication-agent-1"
-  "/usr/libexec/polkit-kde-authentication-agent-1"
+  # Generic fallback (if packaged differently)
+  "/usr/bin/polkit-gnome-authentication-agent-1"
 
   # MATE
   "/usr/libexec/polkit-mate-authentication-agent-1"
@@ -39,14 +32,7 @@ polkit=(
 
   # Deepin
   "/usr/lib/polkit-1-dde/dde-polkit-agent"
-
-  # Pantheon (elementary OS)
-  "/usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1"
-
-  # Generic fallback (if packaged differently)
-  "/usr/bin/polkit-gnome-authentication-agent-1"
 )
-
 
 executed=false
 
@@ -62,5 +48,5 @@ done
 
 # Fallback message if nothing executed
 if [ "$executed" == false ]; then
-  echo "No valid Polkit agent found. Please install one."
+  echo "No valid Polkit agent found. Please install polkit-gnome."
 fi

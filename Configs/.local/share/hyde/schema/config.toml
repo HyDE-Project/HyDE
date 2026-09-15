@@ -281,7 +281,7 @@ sddm_theme = ""  # sddm theme used by HyDE.
 quickapps = "kitty"  # Command used for quickapps.
 browser = "hyde-shell open --fall firefox web-browser"  # Browser launcher command.
 editor = "hyde-shell open --fall code-oss code-editor"  # Editor launcher command.
-explorer = "hyde-shell open --fall dolphin file-manager"  # File manager launcher command.
+explorer = "hyde-shell open --fall nautilus file-manager"  # File manager launcher command.
 terminal = "hyde-shell app -T"  # Terminal launcher command.
 lockscreen = "hyde-shell lock-session"  # Lockscreen command.
 
@@ -307,10 +307,10 @@ font_size = 10  # GTK3 font size.
 
 # Generic desktop autostart configuration. Use this header instead of hyprland-start for cross-compositor support (Hyprland, Sway, niri, etc.).
 [desktop.start]
-dbus_share_picker = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"  # DBus share picker (for XDG portal / XDPH).
-systemd_share_picker = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"  # Systemd share picker (for XDG portal / XDPH).
+dbus_share_picker = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME"  # DBus share picker (for XDG portal / XDPH).
+systemd_share_picker = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME"  # Systemd share picker (for XDG portal / XDPH).
 xdg_portal_reset = "hyde-shell resetxdgportal.sh"  # XDG portal reset script.
-auth_dialogue = "hyde-shell app -t service -- polkitkdeauth.sh"  # Authentication dialogue.
+auth_dialogue = "hyde-shell app -t service -- polkitauth.sh"  # Authentication dialogue.
 idle_daemon = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-idle.service -t service -- hypridle"  # Idle daemon.
 blue_light_filter_daemon = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-blue-light-filter.service -t service -- hyprsunset"  # Blue-light filter daemon.
 text_clipboard = "hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-text-clipboard.service -t service wl-paste --type text --watch cliphist store"  # Text clipboard daemon.

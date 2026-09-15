@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Service
-MimeType=image/png;image/jpeg;image/jpg;image/gif
-Actions=Menu-Refresh
-X-KDE-Submenu=Set As Wallpaper...
-
-[Desktop Action Menu-Refresh]
-Name=.: Refresh List :.
-Exec=wallpaper.kon.sh

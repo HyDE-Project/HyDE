@@ -24,7 +24,7 @@ load_dconf_kdeglobals() {
 
     #? Do not change when users has active plasma session installed
     #? This fixes kde connect and similar app color issues
-    if [[ ${HYDE_KDEGLOBALS_FIX:-1} -eq 1 ]]; then
+    if [[ ${HYDE_KDEGLOBALS_FIX:-0} -eq 1 ]]; then
         print_log -sec "wallbash" -stat "applying kdeglobals color fix" "to match $dcol_mode mode"
         print_log -sec "wallbash" -stat " NOTE" "This may override colors in existing plasma sessions, but will fix color issues in apps like kde connect"
         print_log -sec "wallbash" -stat " NOTE" "set HYDE_KDEGLOBALS_FIX=0 to disable this fix"
@@ -39,8 +39,6 @@ load_dconf_kdeglobals() {
         toml_write "$XDG_CONFIG_HOME/kdeglobals" "Colors:View" "ForegroundNormal" "$(rgba_to_rgb "${dcol_txt1_rgba:-}")"
         toml_write "$XDG_CONFIG_HOME/kdeglobals" "Colors:Tooltip" "ForegroundNormal" "$(rgba_to_rgb "${dcol_txt1_rgba:-}")"
         toml_write "$XDG_CONFIG_HOME/kdeglobals" "Colors:Selection" "ForegroundNormal" "$(rgba_to_rgb "${dcol_txt2_rgba:-}")"
-
-        toml_write "$XDG_CONFIG_HOME/Kvantum/wallbash/wallbash.kvconfig" '%General' 'reduce_menu_opacity' 0
     fi
     lua "$LIB_DIR/hyde/color/dconf.lua"
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] && lua "$LIB_DIR/hyde/shaders.lua" --reload

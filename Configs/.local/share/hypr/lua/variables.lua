@@ -6,8 +6,7 @@ local systemd_env = {
     "XDG_CONFIG_HOME",
     "XDG_DATA_HOME",
     "XDG_CACHE_HOME",
-    "XDG_STATE_HOME",
-    "QT_QPA_PLATFORMTHEME"
+    "XDG_STATE_HOME"
 }
 local systemd_env_str = table.concat(systemd_env, " ")
 
@@ -22,7 +21,6 @@ hyde.env("XDG_SESSION_DESKTOP", "Hyprland")
 hyde.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 hyde.env("QT_QPA_PLATFORM", "wayland;xcb")
 hyde.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
-hyde.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hyde.env("MOZ_ENABLE_WAYLAND", "1")
 hyde.env("GDK_SCALE", "1")
 hyde.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
@@ -39,7 +37,7 @@ local hc = hyde.config
 hc.start.dbus_share_picker = "dbus-update-activation-environment --systemd " .. systemd_env_str
 hc.start.systemd_share_picker = "systemctl --user import-environment " .. systemd_env_str
 hc.start.xdg_portal_reset = "hyde-shell resetxdgportal.lua"
-hc.start.auth_dialogue = "hyde-shell app -t " .. svc .. " -- polkitkdeauth.sh"
+hc.start.auth_dialogue = "hyde-shell app -t " .. svc .. " -- polkitauth.sh"
 hc.start.idle_daemon = "hyde-shell app -u " .. unt .. "-idle.service -t " .. svc .. " -- hypridle"
 hc.start.blue_light_filter_daemon =
     "hyde-shell app -u " .. unt .. "-blue-light-filter.service -t " .. svc .. " -- hyprsunset"
@@ -97,7 +95,7 @@ hc.ui.sddm_theme = ""
 hc.app.quickapps = nil
 hc.app.browser = "hyde-shell open --fall firefox web-browser"
 hc.app.editor = "hyde-shell open --fall code-oss code-editor"
-hc.app.explorer = "hyde-shell open --fall dolphin file-manager"
+hc.app.explorer = "hyde-shell open --fall nautilus file-manager"
 hc.app.terminal = "hyde-shell app -T"
 hc.app.lockscreen = "hyde-shell lock-session"
 

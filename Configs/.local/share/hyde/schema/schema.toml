@@ -1031,7 +1031,7 @@ description = "Editor launcher command."
 type = "string"
 
 [properties.desktop.properties.app.properties.explorer]
-default = "hyde-shell open --fall dolphin file-manager"
+default = "hyde-shell open --fall nautilus file-manager"
 description = "File manager launcher command."
 type = "string"
 
@@ -1120,12 +1120,12 @@ description = "Generic desktop autostart configuration. Use this header instead 
 type = "object"
 
 [properties."desktop.start".properties.dbus_share_picker]
-default = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"
+default = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME"
 description = "DBus share picker (for XDG portal / XDPH)."
 type = "string"
 
 [properties."desktop.start".properties.systemd_share_picker]
-default = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME"
+default = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME"
 description = "Systemd share picker (for XDG portal / XDPH)."
 type = "string"
 
@@ -1135,7 +1135,7 @@ description = "XDG portal reset script."
 type = "string"
 
 [properties."desktop.start".properties.auth_dialogue]
-default = "hyde-shell app -t service -- polkitkdeauth.sh"
+default = "hyde-shell app -t service -- polkitauth.sh"
 description = "Authentication dialogue."
 type = "string"
 

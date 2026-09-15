@@ -112,7 +112,7 @@ Desktop application launcher defaults.
 | --- | ----------- | ------- |
 | browser | Browser launcher command. | hyde-shell open --fall firefox web-browser |
 | editor | Editor launcher command. | hyde-shell open --fall code-oss code-editor |
-| explorer | File manager launcher command. | hyde-shell open --fall dolphin file-manager |
+| explorer | File manager launcher command. | hyde-shell open --fall nautilus file-manager |
 | lockscreen | Lockscreen command. | hyde-shell lock-session |
 | quickapps | Command used for quickapps. | kitty |
 | terminal | Terminal launcher command. | hyde-shell app -T |
@@ -153,16 +153,16 @@ Generic desktop autostart configuration. Use this header instead of hyprland-sta
 | applet_bluetooth | Bluetooth applet. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bluetooth-applet.service -t service -- blueman-applet |
 | applet_network_manager | Network manager applet. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-network-manager-applet.service -t service -- nm-applet --indicator |
 | applet_removable_media | Removable media applet. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-removable-media-applet.service -t service -- udiskie --no-automount --smart-tray |
-| auth_dialogue | Authentication dialogue. | hyde-shell app -t service -- polkitkdeauth.sh |
+| auth_dialogue | Authentication dialogue. | hyde-shell app -t service -- polkitauth.sh |
 | bar | Bar. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-bar.scope -t scope -- waybar.py --watch |
 | battery_notify | Battery notification script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-battery-notify.service -t service -- batterynotify.lua |
 | blue_light_filter_daemon | Blue-light filter daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-blue-light-filter.service -t service -- hyprsunset |
 | clipboard_persist | Clipboard persist daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-clipboard-persist.service -t service wl-clip-persist --clipboard regular |
-| dbus_share_picker | DBus share picker (for XDG portal / XDPH). | dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME |
+| dbus_share_picker | DBus share picker (for XDG portal / XDPH). | dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME |
 | idle_daemon | Idle daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-idle.service -t service -- hypridle |
 | image_clipboard | Image clipboard daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-image-clipboard.service -t service wl-paste --type image --watch cliphist store |
 | notifications | Notification daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-notifications.service -t service -- dunst |
-| systemd_share_picker | Systemd share picker (for XDG portal / XDPH). | systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME QT_QPA_PLATFORMTHEME |
+| systemd_share_picker | Systemd share picker (for XDG portal / XDPH). | systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_CONFIG_HOME |
 | text_clipboard | Text clipboard daemon. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-text-clipboard.service -t service wl-paste --type text --watch cliphist store |
 | wallpaper | Wallpaper script. | hyde-shell app -u hyde-$XDG_SESSION_DESKTOP-wallpaper.service -t service -- wallpaper.sh --start --global |
 | xdg_portal_reset | XDG portal reset script. | hyde-shell resetxdgportal.sh |

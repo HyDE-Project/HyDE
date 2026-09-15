@@ -23,8 +23,6 @@ include = [
     "Scripts/dots/spotify.toml",
     "Scripts/dots/code.toml",
     "Scripts/dots/electron.toml",
-    "Scripts/dots/baloofilerc.toml",
-    "Scripts/dots/dolphin.toml",
     "Scripts/dots/dunst.toml",
     "Scripts/dots/kitty.toml",
     "Scripts/dots/hyprlock.toml",

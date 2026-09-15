@@ -16,26 +16,20 @@ local floating =
       "org.keepassxc.KeePassXC",
       "hyprland-share-picker",
       "blueman-manager",
-      "pavucontrol-qt",
       "com\\.gabm\\.satty",
       "vlc",
-      "kvantummanager",
-      "qt6ct",
-      "qt[56]ct",
       "nwg-(look|displays)",
-      "org\\.kde\\.ark",
       "org\\.pulseaudio\\.pavucontrol",
       "nm-(applet|connection-editor)",
-      "hyprpolkitagent",
+      "polkit-gnome-authentication-agent-1",
       "console-dropdown",
-      "org\\.kde\\.dolphin",
+      "org\\.gnome\\.Nautilus",
       ".*dialog.*",
       "[Xx]dg-desktop-portal-gtk",
       "org\\.freedesktop\\.impl\\.portal\\.desktop\\.(hyprland|gtk)"
     },
     title = {
-      "Progress Dialog — Dolphin",
-      "Copying — Dolphin",
+      "Copying",
       "Choose Files",
       "Save As",
       "Confirm to replace files",
@@ -50,7 +44,7 @@ local floating =
       "Open File",
       "Volume Control",
       "Save As.*",
-      "File Already Exists — Dolphin",
+      "File Already Exists",
       "Properties for.*"
     }
   }
@@ -91,7 +85,7 @@ local modals =
 
 
 
--- Consolidated floating rules (includes dialogs, portal dialogs, popups, dolphin dialogs)
+-- Consolidated floating rules (includes dialogs, portal dialogs, popups, file manager dialogs)
 hl.window_rule(
   {
     name = "hyde_floating_class",
@@ -168,7 +162,7 @@ hl.window_rule(
 -- filemanagers
 hl.window_rule({
 	name = "filemanagers-fullscreen",
-	match = { class = "^(.*dolphin.*)$|^(.*pcmanfm-qt.*)$|^(.*nemo.*)$|^(.*ark.*)$|.*Nautilus.*" },
+	match = { class = "^(.*nautilus.*)$|^(org\\.gnome\\.Nautilus.*)$|^(.*nemo.*)$|.*Nautilus.*" },
 	opaque = true,
 	float = false,
 })
