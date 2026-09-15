@@ -24,6 +24,13 @@ M.dict = {
     ["log-viewer"] = "text/x-log"
 }
 
+local KEYWORD_APP_ENV = {
+    ["web-browser"] = "DESKTOP_APP_BROWSER",
+    ["text-editor"] = "DESKTOP_APP_EDITOR",
+    ["code-editor"] = "DESKTOP_APP_EDITOR",
+    ["file-manager"] = "DESKTOP_APP_EXPLORER"
+}
+
 local LOG_LEVELS = {error = 1, warn = 2, info = 3, debug = 4}
 local current_log_level = LOG_LEVELS.info
 
@@ -101,6 +108,42 @@ local function file_exists(path)
         return true
     end
     return false
+end
+
+local function get_option_value(command, option_pattern)
+    if not command or command == "" then
+        return nil
+    end
+    return command:match(option_pattern .. '%s+"([^"]+)"') or command:match(option_pattern .. "%s+'([^']+)'") or
+        command:match(option_pattern .. "%s+([^%s]+)")
+end
+
+function M.get_configured_app_for_keyword(keyword)
+    local env_name = KEYWORD_APP_ENV[keyword]
+    if not env_name then
+        return nil
+    end
+
+    local configured_cmd = os.getenv(env_name)
+    if not configured_cmd or configured_cmd == "" then
+        return nil
+    end
+
+    local with_app = get_option_value(configured_cmd, "%-%-with")
+    if with_app and with_app ~= "" then
+        return with_app
+    end
+
+    local fallback_app = get_option_value(configured_cmd, "%-%-fall")
+    if fallback_app and fallback_app ~= "" then
+        return fallback_app
+    end
+
+    if configured_cmd:match("^%s*hyde%-shell%s+open%s+") then
+        return nil
+    end
+
+    return configured_cmd:match("^%s*([^%s]+)")
 end
 
 function M.resolve_mime(input)
@@ -715,6 +758,17 @@ function M.cli_main(argv)
             end
         else
             local appinfo = chosen_appinfo
+            if not appinfo then
+                local configured_app = M.get_configured_app_for_keyword(inp)
+                if configured_app then
+                    local configured_appinfo, cerr = M.appinfo_from_desktop(configured_app)
+                    if configured_appinfo then
+                        appinfo = configured_appinfo
+                    else
+                        log("warn", "Configured app for", inp, "is not available:", configured_app, cerr or "")
+                    end
+                end
+            end
             if not appinfo then
                 local a, aerr = M.find_default_app_for_mime(mime)
                 if not a then
