@@ -1,0 +1,27 @@
+/* LAGC Tech Dark — SwayNC. */
+@define-color main-bg #061B2B;
+@define-color main-fg #EAF7FA;
+@define-color act-bg #1B5CFF;
+@define-color hvr-bg #17D7E8;
+
+.notification {
+    background: alpha(@main-bg, 0.97);
+    color: @main-fg;
+    border: 1px solid alpha(@hvr-bg, 0.35);
+    border-radius: 12px;
+}
+
+.notification .summary { color: @main-fg; }
+.notification .body { color: alpha(@main-fg, 0.85); }
+.notification .actions button {
+    background: @act-bg;
+    color: #FFFFFF;
+    border-radius: 8px;
+}
+
+.control-center {
+    background: alpha(@main-bg, 0.97);
+    color: @main-fg;
+    border: 1px solid alpha(@hvr-bg, 0.25);
+    border-radius: 14px;
+}

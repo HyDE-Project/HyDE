@@ -1,0 +1,108 @@
+/* LAGC Tech Dark — self-contained Rofi (no @import: rofi 2.x resolves it unreliably). */
+configuration {
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    drun-display-format: "{name}";
+}
+* {
+    font: "Noto Sans Medium 11";
+    main-bg:            #061B2BEB;
+    main-fg:            #EAF7FAFF;
+    main-br:            #17D7E8FF;
+    main-ex:            #FF7A3DFF;
+    select-bg:          #1B5CFFFF;
+    select-fg:          #FFFFFFFF;
+    separatorcolor:     transparent;
+    border-color:       transparent;
+}
+
+window {
+    width: 640px;
+    border: 1px;
+    border-color: @main-br;
+    border-radius: 12px;
+    background-color: @main-bg;
+}
+
+mainbox {
+    padding: 12px;
+    background-color: transparent;
+}
+
+inputbar {
+    padding: 8px;
+    background-color: transparent;
+    border: 0 0 1px 0;
+    border-color: @main-br;
+}
+
+entry {
+    background-color: transparent;
+    text-color: @main-fg;
+    placeholder: "Search…";
+    placeholder-color: @main-fg;
+}
+
+listview {
+    lines: 8;
+    spacing: 2px;
+    background-color: transparent;
+    scrollbar-width: 0;
+}
+
+element {
+    padding: 6px 10px;
+    border-radius: 8px;
+    background-color: transparent;
+    text-color: @main-fg;
+}
+
+element selected {
+    background-color: @select-bg;
+    text-color: @select-fg;
+}
+element normal.normal {
+    background-color: transparent;
+    text-color: @main-fg;
+}
+
+element alternate.normal {
+    background-color: transparent;
+    text-color: @main-fg;
+}
+
+element selected.normal {
+    background-color: @select-bg;
+    text-color: @select-fg;
+}
+
+element normal.urgent {
+    background-color: transparent;
+    text-color: @main-ex;
+}
+
+element selected.urgent {
+    background-color: @main-ex;
+    text-color: @main-fg;
+}
+
+element normal.active {
+    background-color: transparent;
+    text-color: @main-br;
+}
+
+element selected.active {
+    background-color: @main-br;
+    text-color: @select-fg;
+}
+
+
+element-text {
+    background-color: transparent;
+    text-color: inherit;
+}
+
+element-icon {
+    background-color: transparent;
+    text-color: inherit;
+}

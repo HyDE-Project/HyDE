@@ -257,3 +257,38 @@ if ! wallbash_state_is_complete; then
     print_log -sec "theme" -crit "error" "colour state is still incomplete for $HYDE_THEME"
     exit 1
 fi
+
+# --- LAGC / custom theme support: apply theme.toml settings ---
+apply_custom_theme_settings() {
+    local theme_dir="$HYDE_THEME_DIR"
+    local theme_toml="$theme_dir/theme.toml"
+    if [ -f "$theme_toml" ]; then
+        if [ -f "$theme_dir/gtk.css" ]; then
+            cp "$theme_dir/gtk.css" "$confDir/gtk-3.0/gtk.css" 2>/dev/null || cp "$theme_dir/gtk.css" "$confDir/gtk-4.0/gtk.css" 2>/dev/null || true
+        fi
+        if [ -f "$theme_dir/rofi-full.rasi" ]; then
+            cp "$theme_dir/rofi-full.rasi" "$confDir/rofi/theme.rasi" 2>/dev/null || true
+        fi
+        if [ -f "$theme_dir/waybar.css" ]; then
+            cp "$theme_dir/waybar.css" "$confDir/waybar/style.css" 2>/dev/null || true
+        fi
+        if [ -f "$theme_dir/swaync.css" ]; then
+            cp "$theme_dir/swaync.css" "$confDir/swaync/style.css" 2>/dev/null || true
+        fi
+        if [ -f "$theme_dir/btop.theme" ]; then
+            cp "$theme_dir/btop.theme" "$confDir/btop/theme.theme" 2>/dev/null || true
+        fi
+        if [ -d "$theme_dir/wallpapers" ]; then
+            for wp in "$theme_dir/wallpapers"/*.png "$theme_dir/wallpapers"/*.jpg; do
+                [ -f "$wp" ] || continue
+                cp "$wp" "$XDG_DATA_HOME/wallbash/" 2>/dev/null || cp "$wp" "$HOME/.local/share/wallbash/" 2>/dev/null || true
+            done
+        fi
+        local gtk_theme icon_theme
+        gtk_theme=$(grep '^gtk_base\s*=' "$theme_toml" 2>/dev/null | sed 's/.*= *"\?\([^"]*\)"\?.*/\1/' | tr -d ' ')
+        icon_theme=$(grep '^icon_theme\s*=' "$theme_toml" 2>/dev/null | sed 's/.*= *"\?\([^"]*\)"\?.*/\1/' | tr -d ' ')
+        [ -n "$gtk_theme" ] && dconf write /org/gnome/desktop/interface/gtk-theme "$gtk_theme" 2>/dev/null || true
+        [ -n "$icon_theme" ] && dconf write /org/gnome/desktop/interface/icon-theme "$icon_theme" 2>/dev/null || true
+    fi
+}
+apply_custom_theme_settings

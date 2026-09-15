@@ -1,0 +1,6 @@
+name = "LAGC Tech Dark"
+id = "lagc-dark"
+mode = "dark"
+gtk_base = "adw-gtk3-dark"
+icon_theme = "Papirus-Dark"
+palette = "midnight / cyan / cobalt / ember"

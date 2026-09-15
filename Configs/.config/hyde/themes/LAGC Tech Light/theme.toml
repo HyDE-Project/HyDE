@@ -1,0 +1,6 @@
+name = "LAGC Tech Light"
+id = "lagc-light"
+mode = "light"
+gtk_base = "adw-gtk3"
+icon_theme = "Papirus-Light"
+palette = "frost / cyan / cobalt / ember"
