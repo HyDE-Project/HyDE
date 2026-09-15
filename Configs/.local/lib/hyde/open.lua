@@ -146,6 +146,18 @@ function M.get_configured_app_for_keyword(keyword)
     return configured_cmd:match("^%s*([^%s]+)")
 end
 
+local function appinfo_from_candidate(candidate, source_label)
+    if not candidate or candidate == "" then
+        return nil
+    end
+    local appinfo, err = M.appinfo_from_desktop(candidate)
+    if appinfo then
+        return appinfo
+    end
+    log("debug", source_label or "candidate", "app not resolvable:", candidate, err or "")
+    return nil
+end
+
 function M.resolve_mime(input)
     if not input or input == "" then
         return nil, "no input"
@@ -715,14 +727,19 @@ function M.cli_main(argv)
         else
             chosen_mime = mime
             if not chosen_appinfo then
-                local appinfo, aerr = M.find_default_app_for_mime(mime)
-                if not appinfo then
-                    io.stderr:write("No default app for mime " .. mime .. ": " .. tostring(aerr) .. "\n")
-                    if fallback_cmd then
-                        M.run_fallback(fallback_cmd, dry_run)
+                if fallback_cmd then
+                    chosen_appinfo = appinfo_from_candidate(fallback_cmd, "fallback")
+                end
+                if not chosen_appinfo then
+                    local appinfo, aerr = M.find_default_app_for_mime(mime)
+                    if not appinfo then
+                        io.stderr:write("No default app for mime " .. mime .. ": " .. tostring(aerr) .. "\n")
+                        if fallback_cmd then
+                            M.run_fallback(fallback_cmd, dry_run)
+                        end
+                    else
+                        chosen_appinfo = appinfo
                     end
-                else
-                    chosen_appinfo = appinfo
                 end
             end
 
@@ -761,13 +778,11 @@ function M.cli_main(argv)
             if not appinfo then
                 local configured_app = M.get_configured_app_for_keyword(inp)
                 if configured_app then
-                    local configured_appinfo, cerr = M.appinfo_from_desktop(configured_app)
-                    if configured_appinfo then
-                        appinfo = configured_appinfo
-                    else
-                        log("warn", "Configured app for", inp, "is not available:", configured_app, cerr or "")
-                    end
+                    appinfo = appinfo_from_candidate(configured_app, "configured")
                 end
+            end
+            if not appinfo and fallback_cmd then
+                appinfo = appinfo_from_candidate(fallback_cmd, "fallback")
             end
             if not appinfo then
                 local a, aerr = M.find_default_app_for_mime(mime)
