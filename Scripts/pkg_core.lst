@@ -52,6 +52,9 @@ ffmpegthumbnailer                                      # thumbnailer for nautilu
 libnotify                                              # for notifications
 noto-fonts-emoji                                       # emoji font
 noto-fonts                                             # base Noto Sans UI font (LAGC overlay)
+ttf-cascadia-code-nerd                                 # CaskaydiaCove Nerd Font Mono (kitty / monospace font)
+ttf-jetbrains-mono-nerd                                # JetBrainsMono Nerd Font (Waybar bar font)
+cantarell-fonts                                        # Cantarell (HyDE default menu font)
 ddcutil                                                # external monitor brightness via DDC/CI (brightness panel)
 gtk-layer-shell                                        # layer-shell support for GTK popups (brightness panel)
 python-gobject                                         # GObject bindings used by the GTK brightness panel

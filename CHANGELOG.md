@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Themes: native `LAGC Tech Dark` and `LAGC Tech Light` themes (built on `adw-gtk3` + Papirus), each shipping the full theme-switch contract plus a default wallpaper
 - Personal LAGC overlay vendored via the standard dots manager (`Scripts/dots/my-hyde.toml`): sharp-LCD fontconfig baseline, `Future-cursors` cursor theme, DDC/CI brightness panel, and a Zed LAGC theme
 - Dependencies: `adw-gtk-theme`, `papirus-icon-theme`, `ddcutil`, `gtk-layer-shell`, `python-gobject` and `noto-fonts`
+- Fonts: add the fonts the config references so a clean install renders correctly — `ttf-cascadia-code-nerd` (CaskaydiaCove Nerd Font Mono for kitty/monospace), `ttf-jetbrains-mono-nerd` (Waybar bar font) and `cantarell-fonts` (HyDE menu font). Previously only `noto-fonts` was pulled in and the monospace font relied on a manual install.
 
 ### Removed
 - Dropped the Qt/KDE pieces that the GNOME layer replaces: `wlogout`, Dolphin, Kvantum, `kvconfig`, `kxmlgui5` and `kio` service menus; stray Qt apps are still themed through `qt6ct`/Wallbash without Kvantum
