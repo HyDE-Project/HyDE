@@ -1,0 +1,335 @@
+#!/usr/bin/env python3
+"""Layer-shell brightness popup for HyDE."""
+
+import json
+import os
+import re
+import subprocess
+import sys
+import time
+
+# GtkLayerShell requires a native Wayland GDK surface. Keep this local to the popup.
+os.environ["GDK_BACKEND"] = "wayland"
+
+import gi
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("GtkLayerShell", "0.1")
+from gi.repository import Gdk, GLib, Gtk, GtkLayerShell
+
+EXTERNAL_MODEL = "LG ULTRAGEAR"
+THEME_CSS = os.path.join(
+    os.environ.get("XDG_CONFIG_HOME", os.path.join(os.path.expanduser("~"), ".config")),
+    "waybar",
+    "theme.css",
+)
+DDC_LOCK = os.path.join(
+    os.environ.get("XDG_RUNTIME_DIR", f"/tmp/runtime-{os.getuid()}"),
+    "hyde-ddcutil.lock",
+)
+STATUS_CACHE = os.path.join(
+    os.environ.get("XDG_RUNTIME_DIR", f"/tmp/runtime-{os.getuid()}"),
+    "hyde-brightness-status.json",
+)
+
+
+def run(*args: str) -> str:
+    result = subprocess.run(args, capture_output=True, text=True, check=False)
+    return result.stdout.strip()
+
+
+def ddc_command(*args: str) -> list[str]:
+    return ["flock", "-w", "3", DDC_LOCK, "ddcutil", *args]
+
+
+def internal_brightness() -> int:
+    match = re.search(r"(\d+)%", run("brightnessctl", "-m"))
+    return int(match.group(1)) if match else 50
+
+
+def external_brightness() -> int | None:
+    output = run(*ddc_command("getvcp", "10", "--model", EXTERNAL_MODEL, "--brief"))
+    match = re.search(r"VCP 10 C (\d+) (\d+)", output)
+    if not match:
+        return None
+    current, maximum = map(int, match.groups())
+    return round(current * 100 / maximum) if maximum else 0
+
+
+def cached_external_brightness() -> int | None:
+    try:
+        with open(STATUS_CACHE, encoding="utf-8") as cache_file:
+            cache = json.load(cache_file)
+        if time.time() - float(cache["timestamp"]) <= 60:
+            value = cache.get("external")
+            return int(value) if value is not None else None
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        pass
+    return external_brightness()
+
+
+def write_status_cache(internal: int, external: int | None) -> None:
+    temporary = f"{STATUS_CACHE}.tmp"
+    try:
+        with open(temporary, "w", encoding="utf-8") as cache_file:
+            json.dump(
+                {"internal": internal, "external": external, "timestamp": time.time()},
+                cache_file,
+            )
+        os.replace(temporary, STATUS_CACHE)
+    except OSError:
+        pass
+
+
+def theme_colors() -> dict[str, str]:
+    """Read the active LAGC palette from HyDE's generated Waybar theme.
+
+    Falls back to GTK theme colors when the file or a key is missing, so a
+    fresh machine or an unfinished theme switch never breaks the popup.
+    """
+    colors = {"bg": "@theme_bg_color", "fg": "@theme_fg_color", "accent": "@theme_selected_bg_color"}
+    try:
+        with open(THEME_CSS, encoding="utf-8") as theme_file:
+            theme = theme_file.read()
+    except OSError:
+        return colors
+    found = dict(re.findall(r"@define-color\s+([\w-]+)\s+([^;]+);", theme))
+    if found.get("main-bg"):
+        colors["bg"] = found["main-bg"].strip()
+    if found.get("main-fg"):
+        colors["fg"] = found["main-fg"].strip()
+    if found.get("wb-act-bg"):
+        colors["accent"] = found["wb-act-bg"].strip()
+    return colors
+
+
+def popup_css(colors: dict[str, str]) -> bytes:
+    bg, fg, accent = colors["bg"], colors["fg"], colors["accent"]
+    slider_base = (
+        f"background-color: {bg}; background-image: none; "
+        f"border: 2px solid {accent}; box-shadow: none; outline: none; "
+        "transition: none; -gtk-icon-shadow: none; border-radius: 50%; "
+        "min-height: 14px; min-width: 14px;"
+    )
+    slider_hover = (
+        f"background-color: {bg}; background-image: none; "
+        f"border: 2px solid {accent}; box-shadow: 0 0 0 5px alpha({accent}, 0.22); "
+        "outline: none; transition: none; border-radius: 50%; "
+        "min-height: 14px; min-width: 14px;"
+    )
+    return f"""
+#brightness-popup {{
+    background-color: {bg};
+    color: {fg};
+    border: 1px solid alpha({fg}, 0.18);
+    border-radius: 12px;
+}}
+#brightness-title {{ font-size: 16px; font-weight: 600; }}
+#brightness-value {{ font-weight: 600; }}
+scale {{ min-height: 22px; }}
+scale trough {{
+    background-color: alpha({fg}, 0.18);
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 6px;
+}}
+scale highlight,
+scale trough highlight:active {{
+    background-color: {accent};
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    border-radius: 6px;
+}}
+scale slider,
+scale slider:active,
+scale slider:focus,
+scale slider:backdrop,
+scale slider:disabled {{ {slider_base} }}
+scale.pointer-hover slider {{ {slider_hover} }}
+""".encode("utf-8")
+
+
+def status() -> None:
+    internal = internal_brightness()
+    external = external_brightness()
+    write_status_cache(internal, external)
+    external_text = f"{external}%" if external is not None else "Not detected"
+    print(
+        json.dumps(
+            {
+                "text": "󰃠",
+                "tooltip": f"Internal: {internal}%\nLG ULTRAGEAR: {external_text}\n\nRight-click to adjust both",
+                "class": "dual-brightness",
+            }
+        )
+    )
+
+
+class BrightnessPopup(Gtk.Window):
+    def __init__(self) -> None:
+        super().__init__(type=Gtk.WindowType.TOPLEVEL)
+        self.set_name("brightness-popup")
+        self.set_title("Display brightness")
+        self.set_decorated(False)
+        self.set_resizable(False)
+        self.set_size_request(390, -1)
+
+        GtkLayerShell.init_for_window(self)
+        GtkLayerShell.set_namespace(self, "hyde-brightness-popup")
+        GtkLayerShell.set_layer(self, GtkLayerShell.Layer.OVERLAY)
+        try:
+            cursor = json.loads(run("hyprctl", "cursorpos", "-j"))
+            monitor = Gdk.Display.get_default().get_monitor_at_point(
+                int(cursor["x"]), int(cursor["y"])
+            )
+            if monitor is not None:
+                GtkLayerShell.set_monitor(self, monitor)
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            pass
+        GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.TOP, True)
+        GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.RIGHT, True)
+        GtkLayerShell.set_margin(self, GtkLayerShell.Edge.TOP, 30)
+        GtkLayerShell.set_margin(self, GtkLayerShell.Edge.RIGHT, 10)
+        GtkLayerShell.set_exclusive_zone(self, 0)
+        GtkLayerShell.set_keyboard_mode(self, GtkLayerShell.KeyboardMode.ON_DEMAND)
+
+        # Hyprland can move focus with the pointer. Closing immediately on
+        # focus-out destroys the popup while the pointer travels from Waybar
+        # to this window, so allow enough time for focus-in to cancel it.
+        self.close_timeout: int | None = None
+        self.connect("focus-out-event", self.schedule_close)
+        self.connect("focus-in-event", self.cancel_scheduled_close)
+        self.connect("key-press-event", self.on_key_press)
+
+        css = Gtk.CssProvider()
+        css.load_from_data(popup_css(theme_colors()))
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), css, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box.set_border_width(16)
+        self.add(box)
+
+        title = Gtk.Label(label="Display brightness", xalign=0)
+        title.set_name("brightness-title")
+        box.pack_start(title, False, False, 0)
+
+        self.internal_scale, self.internal_label = self.add_control(
+            box, "Internal display (eDP-1)", internal_brightness()
+        )
+        self.internal_timeout: int | None = None
+        self.internal_scale.connect("enter-notify-event", self.slider_entered)
+        self.internal_scale.connect("leave-notify-event", self.slider_left)
+        self.internal_scale.connect("value-changed", self.internal_changed)
+
+        external = cached_external_brightness()
+        self.external_scale, self.external_label = self.add_control(
+            box, "LG ULTRAGEAR", external if external is not None else 0
+        )
+        if external is None:
+            self.external_scale.set_sensitive(False)
+            self.external_label.set_text("Not detected")
+        else:
+            self.external_scale.connect("enter-notify-event", self.slider_entered)
+            self.external_scale.connect("leave-notify-event", self.slider_left)
+            self.external_scale.connect("value-changed", self.external_changed)
+            self.external_scale.connect("button-release-event", self.apply_external)
+
+    @staticmethod
+    def add_control(box: Gtk.Box, name: str, value: int) -> tuple[Gtk.Scale, Gtk.Label]:
+        row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        row.pack_start(Gtk.Label(label=name, xalign=0), True, True, 0)
+        value_label = Gtk.Label(label=f"{value}%", xalign=1)
+        value_label.set_name("brightness-value")
+        value_label.set_size_request(56, -1)
+        row.pack_end(value_label, False, False, 0)
+        box.pack_start(row, False, False, 0)
+
+        scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 1, 100, 1)
+        scale.set_draw_value(False)
+        scale.set_value(max(1, min(100, value)))
+        box.pack_start(scale, False, False, 0)
+        return scale, value_label
+
+    def on_key_press(self, _widget: Gtk.Widget, event: Gdk.EventKey) -> bool:
+        if event.keyval == Gdk.KEY_Escape:
+            self.cancel_scheduled_close()
+            self.close()
+            return True
+        return False
+
+    @staticmethod
+    def slider_entered(scale: Gtk.Scale, _event: Gdk.EventCrossing) -> bool:
+        scale.get_style_context().add_class("pointer-hover")
+        return False
+
+    @staticmethod
+    def slider_left(scale: Gtk.Scale, _event: Gdk.EventCrossing) -> bool:
+        scale.get_style_context().remove_class("pointer-hover")
+        return False
+
+    def schedule_close(self, *_args: object) -> bool:
+        self.cancel_scheduled_close()
+        self.close_timeout = GLib.timeout_add(750, self.close_after_focus_loss)
+        return False
+
+    def cancel_scheduled_close(self, *_args: object) -> bool:
+        if self.close_timeout is not None:
+            GLib.source_remove(self.close_timeout)
+            self.close_timeout = None
+        return False
+
+    def close_after_focus_loss(self) -> bool:
+        self.close_timeout = None
+        self.close()
+        return False
+
+    def internal_changed(self, scale: Gtk.Scale) -> None:
+        value = round(scale.get_value())
+        self.internal_label.set_text(f"{value}%")
+        if self.internal_timeout is not None:
+            GLib.source_remove(self.internal_timeout)
+        self.internal_timeout = GLib.timeout_add(80, self.apply_internal)
+
+    def apply_internal(self) -> bool:
+        self.internal_timeout = None
+        subprocess.Popen(
+            ["brightnessctl", "set", f"{round(self.internal_scale.get_value())}%"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return False
+
+    def external_changed(self, scale: Gtk.Scale) -> None:
+        self.external_label.set_text(f"{round(scale.get_value())}%")
+
+    def apply_external(self, *_args: object) -> bool:
+        value = round(self.external_scale.get_value())
+        write_status_cache(internal_brightness(), value)
+        subprocess.Popen(
+            ddc_command(
+                "setvcp",
+                "10",
+                str(value),
+                "--model",
+                EXTERNAL_MODEL,
+            ),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        return False
+
+
+if __name__ == "__main__":
+    if "--status" in sys.argv:
+        status()
+    else:
+        popup = BrightnessPopup()
+        popup.connect("destroy", Gtk.main_quit)
+        popup.show_all()
+        popup.present()
+        Gtk.main()

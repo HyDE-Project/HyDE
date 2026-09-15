@@ -1,0 +1,4 @@
+name = Future-cursors
+description = Future Cyan cursor with XCursor-aligned hotspots
+version = 0.1-overlay.1
+cursors_directory = hyprcursors

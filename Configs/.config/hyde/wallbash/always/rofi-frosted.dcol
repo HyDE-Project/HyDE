@@ -1,0 +1,11 @@
+$HOME/.config/rofi/theme.rasi|"$HOME/.local/bin/my-hyde-rofi-selection"
+* {
+    main-bg:            #<wallbash_pry1>F7;
+    main-fg:            #<wallbash_1xa9>FF;
+    main-br:            #<wallbash_pry3>FF;
+    main-ex:            #<wallbash_pry2>FF;
+    select-bg:          #<wallbash_4xa8>FF;
+    select-fg:          #<wallbash_4xa1>FF;
+    separatorcolor:     transparent;
+    border-color:       transparent;
+}

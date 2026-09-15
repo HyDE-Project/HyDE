@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="32"
+   height="32"
+   version="1.1"
+   viewBox="0 0 32 32"
+   id="svg19"
+   sodipodi:docname="cell.svg"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <metadata
+     id="metadata23">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1906"
+     inkscape:window-height="1037"
+     id="namedview21"
+     showgrid="true"
+     inkscape:zoom="23.906249"
+     inkscape:cx="17.673203"
+     inkscape:cy="19.932027"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg19"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="1"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs5">
+    <filter
+       id="a"
+       x="-0.24"
+       y="-0.24"
+       width="1.48"
+       height="1.48"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         stdDeviation="1.4"
+         id="feGaussianBlur2" />
+    </filter>
+  </defs>
+  <path
+     id="rect893"
+     style="fill:#151515;fill-opacity:1;stroke:none;stroke-width:3;stroke-opacity:1"
+     d="m 14,8.9609374 a 1.0001,1.0001 0 0 0 -1,1 V 12.960938 H 9.9999999 a 1.0001,1.0001 0 0 0 -1,1 v 4 a 1.0001,1.0001 0 0 0 1,1 H 13 v 3 a 1.0001,1.0001 0 0 0 1,1 h 4 a 1.0001,1.0001 0 0 0 1,-1 v -3 h 3 a 1.0001,1.0001 0 0 0 1,-1 v -4 a 1.0001,1.0001 0 0 0 -1,-1 H 19 V 9.9609374 a 1.0001,1.0001 0 0 0 -1,-1 z m 1,1.9999996 h 2 v 3.000001 a 1.0001,1.0001 0 0 0 1,1 h 3 v 2 h -3 a 1.0001,1.0001 0 0 0 -1,1 v 3 h -2 v -3 a 1.0001,1.0001 0 0 0 -1,-1 h -3 v -2 h 3 a 1.0001,1.0001 0 0 0 1,-1 z" />
+  <g
+     transform="translate(0.99999992,-1019.4)"
+     id="g17">
+    <g
+       transform="translate(-315.06,61.33)"
+       id="g15">
+      <g
+         transform="translate(197.06,802.03)"
+         id="g13">
+        <path
+           d="m 131,166 v 4 h -4 v 6 h 4 v 4 h 6 v -4 h 4 v -6 h -4 v -4 z"
+           color="#000000"
+           color-rendering="auto"
+           filter="url(#a)"
+           image-rendering="auto"
+           opacity="0.35"
+           shape-rendering="auto"
+           solid-color="#000000"
+           style="text-indent:0;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;text-transform:none;white-space:normal;isolation:auto;mix-blend-mode:normal"
+           id="path7" />
+      </g>
+    </g>
+  </g>
+  <path
+     id="rect889"
+     style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3;stroke-opacity:1"
+     d="M 14,9.9609374 V 13.960938 H 9.9999999 v 4 H 14 v 4 h 4 v -4 h 4 v -4 H 18 V 9.9609374 Z" />
+</svg>

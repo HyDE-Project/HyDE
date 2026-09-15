@@ -1,0 +1,75 @@
+# Personal LAGC overlay, vendored into the fork.
+#
+# These are the pieces of the "My HyDE dots" overlay that are NOT already
+# deployed by another dots manifest. Files that upstream dots already own are
+# intentionally omitted here to avoid double-management:
+#   - hyprland.lua        -> hyprland.toml (preserve)
+#   - hypridle.conf       -> hypridle.toml (preserve)
+#   - kitty.conf          -> kitty.toml (sync)
+#   - zsh/user.zsh        -> zsh.toml (preserve)
+#   - waybar/user-style.css -> waybar.toml (preserve)
+#   - waybar layouts/modules (my-hyde.jsonc, brightness-panel.jsonc)
+#                         -> waybar.toml (sync of .local/share/waybar/*)
+#   - hyde/config.toml    -> hyde.toml (preserve)
+#   - hyde/wallbash/*     -> hyde.toml (preserve of hyde/wallbash)
+[my-hyde]
+    description  = "Personal LAGC Tech overlay (fonts, cursor, Zed themes, helpers)"
+    post_command = "echo 'LAGC personal overlay deployed'"
+
+[[my-hyde.dependency]]
+    pacman = [ "brightnessctl", "ddcutil", "python-gobject", "gtk-layer-shell", "noto-fonts" ]
+    dnf    = [ "brightnessctl", "ddcutil", "python3-gobject", "gtk-layer-shell", "google-noto-sans-fonts" ]
+
+#? Sharp LCD fontconfig baseline (user-owned, editable)
+[[my-hyde.files]]
+    action      = "preserve"
+    source_root = "Configs/.config/fontconfig"
+    target_root = "${XDG_CONFIG_HOME}/fontconfig"
+    paths       = "fonts.conf"
+
+#? Cursor environment for the session (Future-cursors)
+[[my-hyde.files]]
+    action      = "preserve"
+    source_root = "Configs/.config/environment.d"
+    target_root = "${XDG_CONFIG_HOME}/environment.d"
+    paths       = "90-cursor-theme.conf"
+
+#? Default icon theme pointer -> Future-cursors
+[[my-hyde.files]]
+    action      = "preserve"
+    source_root = "Configs/.icons"
+    target_root = "${HOME}/.icons"
+    paths       = "default/index.theme"
+
+#? Zed editor: LAGC themes + settings seed (user-owned)
+[[my-hyde.files]]
+    action      = "preserve"
+    source_root = "Configs/.config/zed"
+    target_root = "${XDG_CONFIG_HOME}/zed"
+    paths       = [ "themes/lagc-tech.json", "lagc-tech-settings.json" ]
+
+#? LAGC Tech themes (native HyDE themes: theme-switch, Wallbash, GTK, Waybar,
+#? Rofi, Kitty contracts + a default wallpaper so theme.switch has one to set).
+[[my-hyde.files]]
+    action      = "preserve"
+    source_root = "Configs/.config/hyde/themes"
+    target_root = "${XDG_CONFIG_HOME}/hyde/themes"
+    paths       = [ "LAGC Tech Dark", "LAGC Tech Light" ]
+
+#? Future-cursors theme (XCursor built assets + hyprcursor sources).
+#? post_command builds the native Hyprcursor from the vendored SVG sources
+#? when hyprcursor-util is available; XCursor works on its own regardless.
+[[my-hyde.files]]
+    action       = "sync"
+    source_root  = "Configs/.local/share/icons"
+    target_root  = "${XDG_DATA_HOME}/icons"
+    paths        = [ "Future-cursors", "default/index.theme" ]
+    post_command = "command -v hyprcursor-util >/dev/null 2>&1 && hyprcursor-util --create '${XDG_DATA_HOME}/icons/Future-cursors/hyprcursor-src' --output '${XDG_DATA_HOME}/icons/Future-cursors' >/dev/null 2>&1 && cp -a '${XDG_DATA_HOME}/icons/Future-cursors/theme_Future-cursors/manifest.hl' '${XDG_DATA_HOME}/icons/Future-cursors/manifest.hl' && cp -a '${XDG_DATA_HOME}/icons/Future-cursors/theme_Future-cursors/hyprcursors' '${XDG_DATA_HOME}/icons/Future-cursors/hyprcursors' || echo 'hyprcursor-util not found; XCursor Future-cursors still active'"
+
+#? Personal helper binaries
+[[my-hyde.files]]
+    action       = "sync"
+    source_root  = "Configs/.local/bin"
+    target_root  = "${HOME}/.local/bin"
+    paths        = [ "hyde-brightness-panel", "my-hyde-rofi-selection" ]
+    post_command = "chmod +x '${HOME}/.local/bin/hyde-brightness-panel' '${HOME}/.local/bin/my-hyde-rofi-selection' 2>/dev/null || true"

@@ -1,0 +1,6 @@
+resize_algorithm = none
+hotspot_x = 0.5
+hotspot_y = 0.1875
+
+define_size = 0, center_ptr.svg
+

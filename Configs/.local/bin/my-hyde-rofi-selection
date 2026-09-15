@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Apply LAGC Tech Light's Rofi selection after the documented Wallbash pass.
+set -Eeuo pipefail
+
+[[ ${HYDE_THEME:-} == "LAGC Tech Light" ]] || exit 0
+
+target="${XDG_CONFIG_HOME:-$HOME/.config}/rofi/theme.rasi"
+[[ -f "$target" ]] || exit 0
+
+if [[ $(grep -Ec '^[[:space:]]*select-bg:' "$target") -ne 1 ]] || \
+   [[ $(grep -Ec '^[[:space:]]*select-fg:' "$target") -ne 1 ]]; then
+    printf 'Unexpected Rofi selection contract: %s\n' "$target" >&2
+    exit 1
+fi
+
+temporary=$(mktemp "${target}.XXXXXX")
+trap 'rm -f -- "$temporary"' EXIT
+sed -E \
+    -e 's|^[[:space:]]*select-bg:.*$|    select-bg:          #17D7E8FF;|' \
+    -e 's|^[[:space:]]*select-fg:.*$|    select-fg:          #061B2BFF;|' \
+    "$target" >"$temporary"
+chmod --reference="$target" -- "$temporary"
+mv -- "$temporary" "$target"

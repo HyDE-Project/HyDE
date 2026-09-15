@@ -1,0 +1,9 @@
+resize_algorithm = none
+hotspot_x = 0.796875
+hotspot_y = 0.140625
+
+define_size = 0, right_ptr.svg
+
+define_override = draft_large
+define_override = draft_small
+

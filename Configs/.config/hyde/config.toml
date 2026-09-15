@@ -2,3 +2,51 @@
 # Environment variables should be on top
 # Updated config.toml file can be found at $HOME/.local/share/hyde/config.toml
 "$schema" = "https://raw.githubusercontent.com/HyDE-Project/HyDE/refs/heads/master/Configs/.local/share/hyde/schema/config.toml.json"
+
+[wallpaper]
+custom_paths = [
+    "${HOME}/Pictures/Wallpapers",
+]
+
+[waybar]
+scale = 12
+icon_size = 9
+font = "Noto Sans SemiBold"
+
+[desktop.ui]
+cursor_theme = "Future-cursors"
+cursor_size = 42
+font = "Noto Sans Medium"
+font_size = 11
+document_font = "Noto Sans Medium"
+document_font_size = 11
+monospace_font = "CaskaydiaCove Nerd Font Mono"
+monospace_font_size = 10
+font_antialiasing = "rgba"
+font_hinting = "slight"
+
+[gtk3]
+font = "Noto Sans Medium"
+font_size = 11
+
+# QT font metrics only; the fork is GTK/GNOME-first, these apply to stray Qt apps.
+[qt5]
+font = "Noto Sans Medium"
+font_size = 11
+monospace_font = "CaskaydiaCove Nerd Font Mono"
+monospace_font_size = 10
+
+[qt6]
+font = "Noto Sans Medium"
+font_size = 11
+monospace_font = "CaskaydiaCove Nerd Font Mono"
+monospace_font_size = 10
+
+[notification]
+font = "Noto Sans Medium"
+font_size = 11
+
+# HyDE reads duration_scale while it loads the animation preset, so the value
+# has to live here and not in hyprland.lua, which runs after the preset.
+[hyprland.anim]
+duration_scale = 0.9

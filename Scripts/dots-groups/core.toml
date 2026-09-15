@@ -21,6 +21,7 @@
         "../dots/rofi.toml",
         "../dots/dunst.toml",
         "../dots/archives.toml",
+        "../dots/my-hyde.toml",
     ]
 
 # Loads an array of package manager commands

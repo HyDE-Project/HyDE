@@ -1,0 +1,9 @@
+resize_algorithm = none
+hotspot_x = 0.84375
+hotspot_y = 0.15625
+
+define_size = 0, top_right_corner.svg
+
+define_override = ne-resize
+define_override = ur_angle
+

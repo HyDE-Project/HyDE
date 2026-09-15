@@ -1,0 +1,8 @@
+resize_algorithm = none
+hotspot_x = 0.5
+hotspot_y = 0.71875
+
+define_size = 0, down-arrow.svg
+
+define_override = sb_down_arrow
+

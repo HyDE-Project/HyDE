@@ -1,0 +1,9 @@
+resize_algorithm = none
+hotspot_x = 0.5
+hotspot_y = 0.5
+
+define_size = 0, size_bdiag.svg
+
+define_override = nesw-resize
+define_override = fb_double_arrow
+

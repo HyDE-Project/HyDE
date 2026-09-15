@@ -47,8 +47,14 @@ pacman = [
   "ffmpegthumbnailer", # thumbnailer for nautilus previews
   "libnotify", # for notifications
   "noto-fonts-emoji", # emoji font
+  "noto-fonts", # base Noto Sans UI font (LAGC overlay)
+  "ddcutil", # external monitor brightness via DDC/CI (brightness panel)
+  "gtk-layer-shell", # layer-shell support for GTK popups (brightness panel)
+  "python-gobject", # GObject bindings used by the GTK brightness panel
   # Theming
   "nwg-look", # gtk configuration tool
+  "adw-gtk-theme", # libadwaita-compatible GTK3 theme used by the LAGC themes (gtk_base)
+  "papirus-icon-theme", # icon theme used by the LAGC themes
   # Applications
   "firefox", # browser
   "nautilus", # file manager (GTK)

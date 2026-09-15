@@ -1,0 +1,30 @@
+resize_algorithm = none
+hotspot_x = 0.5
+hotspot_y = 0.5
+
+define_size = 0, wait.svg, 500
+define_size = 0, wait-01.svg, 500
+define_size = 0, wait-02.svg, 500
+define_size = 0, wait-03.svg, 500
+define_size = 0, wait-04.svg, 500
+define_size = 0, wait-05.svg, 500
+define_size = 0, wait-06.svg, 500
+define_size = 0, wait-07.svg, 500
+define_size = 0, wait-08.svg, 500
+define_size = 0, wait-09.svg, 500
+define_size = 0, wait-10.svg, 500
+define_size = 0, wait-11.svg, 500
+define_size = 0, wait-12.svg, 500
+define_size = 0, wait-13.svg, 500
+define_size = 0, wait-14.svg, 500
+define_size = 0, wait-15.svg, 500
+define_size = 0, wait-16.svg, 500
+define_size = 0, wait-17.svg, 500
+define_size = 0, wait-18.svg, 500
+define_size = 0, wait-19.svg, 500
+define_size = 0, wait-20.svg, 500
+define_size = 0, wait-21.svg, 500
+define_size = 0, wait-22.svg, 500
+define_size = 0, wait-23.svg, 500
+
+define_override = watch

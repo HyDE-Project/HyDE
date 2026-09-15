@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" version="1.1" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+ <metadata>
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <filter id="b" x="-.55819" y="-.12404" width="2.1164" height="1.2481" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="0.93030967"/>
+  </filter>
+  <filter id="a" x="-.15709" y="-.15901" width="1.3142" height="1.318" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="0.93030967"/>
+  </filter>
+ </defs>
+ <g shape-rendering="auto">
+  <path d="m5.9991 25.96a1.0001 1.0001 0 0 0 1-1v-16a1.0001 1.0001 0 0 0-1-1h-2a1.0001 1.0001 0 0 0-1 1v16a1.0001 1.0001 0 0 0 1 1z" color="#000000" color-rendering="auto" dominant-baseline="auto" filter="url(#b)" image-rendering="auto" opacity=".35" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;paint-order:stroke fill markers;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+  <path d="m22.211 15.96a1.0001 1.0001 0 0 0-1.002-1l-6.0391 0.01563 1.9219-1.9219a1.0001 1.0001 0 0 0 0-1.4141l-1.3848-1.3867a1.0001 1.0001 0 0 0-1.4141 0l-6.002 6a1.0001 1.0001 0 0 0-2e-3 1.4121l6 6.041a1.0001 1.0001 0 0 0 1.418 2e-3l1.3848-1.3848a1.0001 1.0001 0 0 0 0-1.416l-1.9336-1.9316 6.0547-0.01563a1.0001 1.0001 0 0 0 0.99805-1zm-9.4629 1.0215a1.0001 1.0001 0 0 0-0.90234 1.4258l-1.4355-1.4453 1.4648-1.4648a1.0001 1.0001 0 0 0 0.87305 1.4844z" color="#000000" color-rendering="auto" dominant-baseline="auto" enable-background="new" filter="url(#a)" image-rendering="auto" opacity=".35" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+  <path d="m6 25a1.0001 1.0001 0 0 0 1-1v-16a1.0001 1.0001 0 0 0-1-1h-2a1.0001 1.0001 0 0 0-1 1v16a1.0001 1.0001 0 0 0 1 1z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#151515" image-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;paint-order:stroke fill markers;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+ </g>
+ <g fill="#151515">
+  <rect transform="scale(-1)" x="-6" y="-24" width="2" height="16" fill="#fff" style="paint-order:stroke fill markers"/>
+  <path d="m15.001 10 1.3851 1.3859-3.6349 3.6348 8.4614-0.0211v2l-8.4614 0.0211 3.6349 3.6344-1.3851 1.3851-6.0009-6.0406z" enable-background="new" stroke="#151515" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+  <path d="m15.001 10 1.3851 1.3859-3.6349 3.6348 8.4614-0.0211v2l-8.4614 0.0211 3.6349 3.6344-1.3851 1.3851-6.0009-6.0406z" enable-background="new" fill="#fff"/>
+ </g>
+</svg>

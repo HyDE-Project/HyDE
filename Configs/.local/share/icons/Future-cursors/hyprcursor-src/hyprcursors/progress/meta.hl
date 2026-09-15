@@ -1,0 +1,32 @@
+resize_algorithm = none
+hotspot_x = 0.203125
+hotspot_y = 0.140625
+
+define_size = 0, progress.svg, 500
+define_size = 0, progress-01.svg, 500
+define_size = 0, progress-02.svg, 500
+define_size = 0, progress-03.svg, 500
+define_size = 0, progress-04.svg, 500
+define_size = 0, progress-05.svg, 500
+define_size = 0, progress-06.svg, 500
+define_size = 0, progress-07.svg, 500
+define_size = 0, progress-08.svg, 500
+define_size = 0, progress-09.svg, 500
+define_size = 0, progress-10.svg, 500
+define_size = 0, progress-11.svg, 500
+define_size = 0, progress-12.svg, 500
+define_size = 0, progress-13.svg, 500
+define_size = 0, progress-14.svg, 500
+define_size = 0, progress-15.svg, 500
+define_size = 0, progress-16.svg, 500
+define_size = 0, progress-17.svg, 500
+define_size = 0, progress-18.svg, 500
+define_size = 0, progress-19.svg, 500
+define_size = 0, progress-20.svg, 500
+define_size = 0, progress-21.svg, 500
+define_size = 0, progress-22.svg, 500
+define_size = 0, progress-23.svg, 500
+
+define_override = half_busy
+define_override = left_ptr_watch
+

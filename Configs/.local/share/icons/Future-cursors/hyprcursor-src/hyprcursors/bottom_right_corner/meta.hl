@@ -1,0 +1,8 @@
+resize_algorithm = none
+hotspot_x = 0.921875
+hotspot_y = 0.859375
+
+define_size = 0, bottom_right_corner.svg
+
+define_override = lr_angle
+define_override = se-resize

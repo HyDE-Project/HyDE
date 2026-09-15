@@ -32,6 +32,7 @@ include = [
     "Scripts/dots/fish.toml",
     "Scripts/dots/zsh.toml",
     "Scripts/dots/wallbash-vim.toml",
+    "Scripts/dots/my-hyde.toml",
 ]
 
 # Loads an array of package manager commands

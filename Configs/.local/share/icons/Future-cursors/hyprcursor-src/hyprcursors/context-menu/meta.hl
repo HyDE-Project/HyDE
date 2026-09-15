@@ -1,0 +1,6 @@
+resize_algorithm = none
+hotspot_x = 0.203125
+hotspot_y = 0.140625
+
+define_size = 0, context-menu.svg
+
