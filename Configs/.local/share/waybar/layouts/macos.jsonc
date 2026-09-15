@@ -66,7 +66,7 @@
     "format": "File",
     "interval": 60,
     "return-type": "plain",
-    "on-click": "hyde-shell open --fall dolphin file-manager" //or you favorite Filer Explorer
+    "on-click": "hyde-shell open --fall nautilus file-manager" //or you favorite Filer Explorer
   },
   "custom/text#three": {
     "format": "Edit",

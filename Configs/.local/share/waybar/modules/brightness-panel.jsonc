@@ -1,0 +1,10 @@
+{
+    "custom/brightness-panel": {
+        "exec": "$HOME/.local/bin/hyde-brightness-panel --status",
+        "return-type": "json",
+        "interval": 15,
+        "format": "{}",
+        "on-click-right": "$HOME/.local/bin/hyde-brightness-panel",
+        "tooltip": true
+    }
+}
