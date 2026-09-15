@@ -2,8 +2,8 @@ $HOME/.config/hypr/themes/theme.conf|> $HOME/.config/hypr/themes/colors.conf
 # LAGC Tech Dark: native HyDE theme configuration.
 # Palette: midnight #061B2B, cyan #17D7E8, cobalt #1B5CFF, ember #FF7A3D.
 
-$GTK_THEME=Catppuccin-Mocha
-$ICON_THEME=Fluent-dark
+$GTK_THEME=adw-gtk3-dark
+$ICON_THEME=Papirus-Dark
 $COLOR_SCHEME=prefer-dark
 
 general {
