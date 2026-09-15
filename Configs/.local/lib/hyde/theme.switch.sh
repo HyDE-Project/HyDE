@@ -108,13 +108,19 @@ if [[ -r $HYPRLAND_CONFIG ]]; then
         print_log -sec "theme" -stat "dump" "hypr.theme to lua"
         theme_state="$XDG_STATE_HOME/hyde/lua_state/hypr_theme.lua"
         theme_buffer="$(mktemp)"
-        if hyq --dump "$HYDE_THEME_DIR/hypr.theme" --schema "$XDG_DATA_HOME/hypr/schema/hyprland-lua.json" --export lua >"$theme_buffer" &&
+        theme_dump_err="$(mktemp)"
+        if hyq --dump "$HYDE_THEME_DIR/hypr.theme" --schema "$XDG_DATA_HOME/hypr/schema/hyprland-lua.json" --export lua >"$theme_buffer" 2>"$theme_dump_err" &&
             [ -s "$theme_buffer" ] &&
             mv "$theme_buffer" "$theme_state"; then
-            :
+            rm -f "$theme_dump_err"
         else
             rm -f "$theme_buffer"
             print_log -sec "theme" -crit "error" "could not dump hypr.theme, $theme_state keeps the previous theme"
+            # hyq's own stderr is the only thing that says *why* (missing binary,
+            # unsupported flag on an outdated hyq/hyprquery, bad schema, ...); it
+            # never reaches the run's log file otherwise, see HyDE#2098.
+            [ -s "$theme_dump_err" ] && print_log -sec "theme" -r "$(cat "$theme_dump_err")"
+            rm -f "$theme_dump_err"
             exit 1
         fi
     fi
