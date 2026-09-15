@@ -116,10 +116,21 @@ if [[ -r $HYPRLAND_CONFIG ]]; then
         else
             rm -f "$theme_buffer"
             print_log -sec "theme" -crit "error" "could not dump hypr.theme, $theme_state keeps the previous theme"
-            # hyq's own stderr is the only thing that says *why* (missing binary,
-            # unsupported flag on an outdated hyq/hyprquery, bad schema, ...); it
-            # never reaches the run's log file otherwise, see HyDE#2098.
             [ -s "$theme_dump_err" ] && print_log -sec "theme" -r "$(cat "$theme_dump_err")"
+            # theme.switch.sh runs at session runtime (hyde-shell reload, the
+            # theme menu, ...), where print_log only writes to the terminal --
+            # there is no HYDE_LOG here, that only exists inside install.sh.
+            # hyq's own stderr is the only thing that says *why* the dump
+            # failed (missing binary, an outdated hyq/hyprquery predating
+            # --dump/--schema/--export, a bad schema, ...), and without a file
+            # it is gone the moment the terminal scrolls, see HyDE#2098.
+            theme_dump_log="$cacheDir/logs/theme.switch.sh.log"
+            mkdir -p "$(dirname "$theme_dump_log")"
+            {
+                printf '%s :: could not dump hypr.theme, %s keeps the previous theme\n' \
+                    "$(date -Iseconds)" "$theme_state"
+                [ -s "$theme_dump_err" ] && cat "$theme_dump_err"
+            } >>"$theme_dump_log"
             rm -f "$theme_dump_err"
             exit 1
         fi
