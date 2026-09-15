@@ -5,7 +5,7 @@
         "tooltip-format": "\udb80\udd8a Switch wallpaper",
         "on-click": "hyde-shell wallpaper -n",
         "on-click-right": "hyde-shell wallpaper -p",
-        "on-click-middle": "hyde-shell wallpaper --select", 
+        "on-click-middle": "hyde-shell wallpaper --select",
         "interval": 86400,
         "tooltip": true
     }

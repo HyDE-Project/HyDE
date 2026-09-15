@@ -281,7 +281,7 @@ Para más información, visite [HyDE-Project/hyde-themes](https://github.com/HyD
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=ESTRELLAS" width="450"/>
-                        
+
 [![Stargazers over time](https://starchart.cc/HyDE-Project/HyDE.svg?background=%231f2226&axis=%23ebbcba&line=%23c79bf0)](https://starchart.cc/HyDE-Project/HyDE)
 
 

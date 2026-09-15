@@ -10,7 +10,7 @@
 4. **📦Shapshots** -  Snapshots are only created when `master` is stable.
 5. **🔄Schedule** - Freeze Weeks And Release Weeks alternate **every Friday** beginning with Release Week. This means that every *odd* Friday is a Release Week and every *even* Friday is a Freeze Week.
 
-> [!NOTE] 
+> [!NOTE]
 > The `dev` branch is always open for new features and development *every* week, regardless of the release cycle. Only the `rc` branch is frozen for testing and bug fixes for release preparation during Freeze Week.
 
 ---
@@ -69,7 +69,7 @@ From https://github.com/HyDE-Project/HyDE
 
 ---
 
-# FLOWCHART 
+# FLOWCHART
 
 Here are some visuals to help you understand the flowchart better.
 
@@ -80,13 +80,13 @@ graph TD
     A[Normal Development<br/>✅ All PRs to dev] --> B{Even Friday?}
     B -->|Yes| C[🔄 DEV → RC<br/>rc frozen<br/>🧪 Testing Phase]
     B -->|No| A
-    
+
     C --> D[🔄 MERGE DAY<br/>Odd Friday<br/>rc → master]
     D --> E[✅ DEV & RC REOPEN<br/>New features to dev]
     E --> F[📦 SNAPSHOT RELEASE<br/>Even Friday<br/>Whenever master stable]
     F --> G[🔄 Prep Next Cycle]
     G --> A
-    
+
     style A fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
     style C fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737
     style D fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
@@ -106,24 +106,24 @@ graph LR
         MERGE --> OPEN[✅ OPEN<br/>all dev]
         OPEN --> RC
     end
-    
+
     subgraph "RC Branch"
         RC2[rc branch] --> FROZEN2[🚫 FROZEN<br/>fixes only]
         FROZEN2 --> MERGE2[🔄 MERGING<br/>to master]
         MERGE2 --> OPEN2[✅ OPEN<br/>accepts new dev]
         OPEN2 --> RC2
     end
-    
+
     subgraph "Master Branch"
         MASTER[master branch] --> PREV[🔧 Previous fixes]
         PREV --> RECEIVE[📥 RECEIVES<br/>new code]
         RECEIVE --> RELEASE[📦 RELEASE<br/>whenever stable]
         RELEASE --> PREV
     end
-    
+
     MERGE -.-> RECEIVE
     MERGE2 -.-> RECEIVE
-    
+
     style DEV fill:#252737,stroke:#a9b1d6,stroke-width:2px,color:#a9b1d6
     style RC fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
     style FROZEN fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737

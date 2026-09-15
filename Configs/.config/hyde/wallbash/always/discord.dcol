@@ -27,7 +27,7 @@ ${XDG_CACHE_HOME}/hyde/wallbash/discord.css|${WALLBASH_SCRIPTS}/discord.sh
 }
 
 ::-webkit-scrollbar-thumb {
-  /* On bigger screens, the scrollbar's border radius falls short, 
+  /* On bigger screens, the scrollbar's border radius falls short,
   so we put an obscenely large value for the border radius */
   border-radius: 500px !important;
   background: rgba(var(--accentcolor), 0.7) !important;

@@ -63,21 +63,21 @@ uniform float time;
 
 void main(){
     vec4 originalColor=texture(tex,v_texcoord);
-    
+
     // If OLED_MONITOR is -1, always enable effect. Otherwise, only for matching monitor.
     if(OLED_MONITOR!=-1&&wl_output!=OLED_MONITOR){
         fragColor=originalColor;
         return;
     }
-    
+
     vec2 fragCoord=gl_FragCoord.xy;
-    
+
     // Animation: swap pattern every OLED_SWAP_INTERVAL seconds
     bool swapPhase=mod(floor(time/OLED_SWAP_INTERVAL),2.)==1.;
     float checkerX=floor(fragCoord.x/OLED_PIXEL_SIZE);
     float checkerY=floor(fragCoord.y/OLED_PIXEL_SIZE);
     bool isEvenPixel=mod(checkerX+checkerY,2.)==0.;
-    
+
     #ifdef OLED_SWAP_PIXELS
     vec4 color=(swapPhase?(isEvenPixel?originalColor:OLED_FILL_COLOR)
     :(isEvenPixel?OLED_FILL_COLOR:originalColor));
@@ -85,7 +85,7 @@ void main(){
     vec4 color=(swapPhase?(isEvenPixel?OLED_FILL_COLOR:originalColor)
     :(isEvenPixel?originalColor:OLED_FILL_COLOR));
     #endif
-    
+
     #ifdef OLED_AREA
     const vec4 area=vec4(OLED_AREA);
     bool inArea=fragCoord.x>=area.x&&fragCoord.x<=(area.x+area.z)&&

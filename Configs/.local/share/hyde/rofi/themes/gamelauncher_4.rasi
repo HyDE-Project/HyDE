@@ -1,8 +1,8 @@
 /**
- * ROFI Layout 
+ * ROFI Layout
  *
- * Game launcher 4: span horizontal 
- * 
+ * Game launcher 4: span horizontal
+ *
  * User: The HyDE Project [  span horizontal  ]
  * Copyright: The HyDE Project
  */
@@ -43,9 +43,9 @@ mainbox {
 listview {
     enabled:                     true;
     columns:                     10;  // Set a reasonable number of columns
-    lines:                       1;  
+    lines:                       1;
     spacing:                     1.9em;
-    padding:                     1em 3em; 
+    padding:                     1em 3em;
     cycle:                       true;
     dynamic:                     false;  // Keep dynamic layout disabled to prevent crashes
     scrollbar:                   false;
@@ -92,4 +92,3 @@ element-text {
     background-color:            transparent;
     text-color:                  inherit;
 }
-

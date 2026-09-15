@@ -1,8 +1,8 @@
 /**
- * ROFI Layout 
+ * ROFI Layout
  *
  * Wallbash Mode Selector.
- * 
+ *
  * User: The HyDE Project [ Wallbash mode Selector ]
  * Copyright: https://github.com/prasanthrangan/hyprdots/
  */
@@ -90,4 +90,3 @@ element-text {
     background-color:            transparent;
     text-color:                  inherit;
 }
-

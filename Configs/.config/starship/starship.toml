@@ -100,7 +100,7 @@ continuation_prompt = '▶▶ '
 disabled = false
 format = "[$path](bold fg:#8be9fd)"
 truncate_to_repo = false
-# home_symbol = "" 
+# home_symbol = ""
 
 [git_branch]
 format = " [  $branch](fg:#9198a1)"

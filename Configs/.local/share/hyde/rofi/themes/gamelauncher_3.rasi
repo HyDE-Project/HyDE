@@ -1,8 +1,8 @@
 /**
- * ROFI Layout 
+ * ROFI Layout
  *
- * Game launcher 3: span vertical left 
- * 
+ * Game launcher 3: span vertical left
+ *
  * User: The HyDE Project [  span vertical left ]
  * Copyright: The HyDE Project
  */
@@ -94,4 +94,3 @@ element-text {
     background-color:            transparent;
     text-color:                  inherit;
 }
-

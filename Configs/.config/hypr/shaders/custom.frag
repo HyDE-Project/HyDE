@@ -3,7 +3,7 @@
 //  by: khing
 
 
-/* 
+/*
 To override these parameters create a file named './custom.inc'
 We only need to match the file name and use 'inc' to indicate that
 this is an "include" file

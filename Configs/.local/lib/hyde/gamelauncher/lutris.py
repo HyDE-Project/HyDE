@@ -4,8 +4,8 @@ Hi! This is lightweight Lutris DB inspector for gamelauncher.sh as the lutris co
 - Detects possible Lutris database locations (native & flatpak)
 - Reads installed games from the SQLite DB and outputs JSON to stdout
 - Usage:
-    gamelaunche/lutris.py --detect     
-    gamelaunche/lutris.py --list       
+    gamelaunche/lutris.py --detect
+    gamelaunche/lutris.py --list
 
 Output fields per game: {"id","name","slug","runner","path","icon"}
 

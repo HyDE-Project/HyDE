@@ -39,13 +39,3 @@
 
 # set aurhelper yay
 set aurhelper yay
-
-
-
-
-
-
-
-
-
-

@@ -45,7 +45,7 @@ Multi-language KEYBINDINGS support
 
 Hier zijn alle HyDE-specifieke toetscombinaties opgesomd.
 
->[!TIP] 
+>[!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> toont de toetscombinaties.
 
 <!-- ## <a id="fenster-verwaltung">Fenster Verwaltung</a> -->
@@ -278,7 +278,7 @@ Bijvoorbeeld, om een sneltoets toe te voegen voor het starten van de **HyDE Game
 bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
 ```
 
-Hiermee koppel je de Game Launcher aan <kbd>SUPER</kbd> + <kbd>Spatie</kbd>.  
+Hiermee koppel je de Game Launcher aan <kbd>SUPER</kbd> + <kbd>Spatie</kbd>.
 Je kunt `SPACE` vervangen door een andere gewenste toets.
 
 Het script `gamelauncher.sh` is standaard inbegrepen en staat op:

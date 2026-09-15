@@ -51,7 +51,7 @@ Multi-language KEYBINDINGS support
 
 Aqui estão todos os atalhos de teclado específicos do HyDE listados.
 
-> [!TIP]  
+> [!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> mostra os atalhos de teclado.
 
 <!-- ## <a id=window-management>Window Management</a> -->
@@ -300,7 +300,7 @@ Por exemplo, para criar um atalho que abre o **HyDE Game Launcher**, adicione a 
 bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
 ```
 
-Isto irá vincular o **Game Launcher** à combinação <kbd>SUPER</kbd> + <kbd>Space</kbd>.  
+Isto irá vincular o **Game Launcher** à combinação <kbd>SUPER</kbd> + <kbd>Space</kbd>.
 Você pode substituir `SPACE` por qualquer outra tecla que preferir.
 
 O script `gamelauncher.sh` está incluído por padrão e fica em:
@@ -328,4 +328,3 @@ O script `gamelauncher.sh` está incluído por padrão e fica em:
 <div align="right">
   <sub>Última edição em: 01/02/2025<span id="last-edited"></span></sub>
 </div>
-

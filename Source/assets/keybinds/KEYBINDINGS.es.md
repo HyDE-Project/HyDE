@@ -295,7 +295,7 @@ Por ejemplo, para crear un atajo que inicie el **HyDE Game Launcher**, agrega es
 bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
 ```
 
-Esto asignará el **Game Launcher** a <kbd>SUPER</kbd> + <kbd>Espacio</kbd>.  
+Esto asignará el **Game Launcher** a <kbd>SUPER</kbd> + <kbd>Espacio</kbd>.
 Puedes reemplazar `SPACE` con cualquier otra tecla que prefieras.
 
 El script `gamelauncher.sh` viene incluido por defecto y se encuentra en:

@@ -5,7 +5,7 @@
 [![es](https://img.shields.io/badge/lang-es-yellow.svg)](./Hyprdots-to-HyDE.es.md)
 [![en](https://img.shields.io/badge/lang-en-blue.svg)](../../Hyprdots-to-HyDE.md)
 
-## Ce fork va améliorer et réparer prasanthrangan/hyprdots au fil des années (et des mise à jours) 
+## Ce fork va améliorer et réparer prasanthrangan/hyprdots au fil des années (et des mise à jours)
 
 ### Pourquoi ?
 
@@ -26,7 +26,7 @@ Qui est $USER?
 ✅ Veux rester à jour avec cet SUPER config
 ✅ Ne sais pas comment les repo fonctionnent
 ✅ Vous n'avez pas le temps de créer vos propres fichiers de configuration ? Utilisez ceci comme source d'inspiration.
-✅ Veux un `~/.config` propre avec tout structuré comme un vrai packet linux 
+✅ Veux un `~/.config` propre avec tout structuré comme un vrai packet linux
 ✅ Demande une expérience qui ressemble à celle d'un DE ( Environnement de Bureau)
 
 ### ROADMAP 🛣️📍

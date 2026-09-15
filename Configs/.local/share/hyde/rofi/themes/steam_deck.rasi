@@ -1,8 +1,8 @@
 /**
- * ROFI Layout 
+ * ROFI Layout
  *
- * Game launcher 4: steamdeck holographic fullscreen 
- * 
+ * Game launcher 4: steamdeck holographic fullscreen
+ *
  * User: The HyDE Project [  steamdeck holographic fullscreen ]
  * Copyright: The HyDE Project
  */
@@ -92,4 +92,3 @@ element-text {
     background-color:            transparent;
     text-color:                  inherit;
 }
-

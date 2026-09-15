@@ -26,7 +26,7 @@ function ffch -d "Fuzzy search through command history"
       # "^ffch" -> "YOURNAME"
       # what it does is it excludes the init command form the history results
       set FZF_DEFAULT_COMMAND 'builtin history -z --reverse | command grep -zv "^ffch" | command perl -0 -pe \'s/^/$.\t/g; s/\n/\n\t/gm\''
-      
+
       # NOTE: if you want the initiator command included in the fzf results, uncomment the following line
       # set FZF_DEFAULT_COMMAND 'builtin history -z --reverse | command perl -0 -pe \'s/^/$.\t/g; s/\n/\n\t/gm\''
 
@@ -56,4 +56,3 @@ function ffch -d "Fuzzy search through command history"
 
     commandline -f repaint
 end
-

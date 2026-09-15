@@ -26,7 +26,7 @@ hyde_distro_logo=$iconDir/Wallbash-Icon/distro/$LOGO
 case $1 in
     logo)
         random() {
-            (   
+            (
                 image_dirs+=("$confDir/fastfetch/logo")
                 image_dirs+=("$iconDir/Wallbash-Icon/fastfetch/")
                 if [ -n "$HYDE_THEME" ] && [ -d "$confDir/hyde/themes/$HYDE_THEME/logo" ]; then
@@ -63,7 +63,7 @@ HELP
         [ -z "$*" ] && random && exit
         [[ $1 == "--rand" ]] && random && exit
         [[ $1 == *"help"* ]] && help && exit
-        (   
+        (
             image_dirs=()
             for arg in "$@"; do
                 case $arg in

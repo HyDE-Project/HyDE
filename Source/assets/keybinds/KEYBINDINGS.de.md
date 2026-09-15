@@ -48,7 +48,7 @@ Mehrsprachige KEYBINDINGS-Unterstützung
 
 Hier sind alle HyDE-spezifischen Tastenkombinationen aufgelistet.
 
->[!TIP] 
+>[!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> zeigt die Tastenkombinationen.
 
 <!-- ## <a id="fenster-verwaltung">Fenster Verwaltung</a> -->
@@ -293,7 +293,7 @@ Zum Beispiel, um eine Tastenkombination für den **HyDE Game Launcher** zu erste
 bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
 ```
 
-Dies weist den **Game Launcher** der Kombination <kbd>SUPER</kbd> + <kbd>Leertaste</kbd> zu.  
+Dies weist den **Game Launcher** der Kombination <kbd>SUPER</kbd> + <kbd>Leertaste</kbd> zu.
 Du kannst `SPACE` durch jede andere Taste ersetzen.
 
 Das Skript `gamelauncher.sh` ist standardmäßig enthalten und befindet sich unter:

@@ -11,7 +11,7 @@ cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
 recent_data="$cache_dir/landing/show_glyph.recent"
 save_recent_entry() {
     local glyph_line="$1"
-    (   
+    (
         echo "$glyph_line"
         cat "$recent_data"
     ) | awk '!seen[$0]++' > temp && mv temp "$recent_data"

@@ -25,4 +25,3 @@ for client_css in "${client_list[@]}" ; do
         cp "${discord_col}" "${client_css}"
     fi
 done
-

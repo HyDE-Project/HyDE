@@ -9,16 +9,16 @@ from threading import Event, Thread
 import argparse
 import time
 
-import pyutils.logger  
+import pyutils.logger
 
-import pulsectl  
-from pywayland.client.display import Display  
-from pywayland.protocol.idle_inhibit_unstable_v1.zwp_idle_inhibit_manager_v1 import (  
+import pulsectl
+from pywayland.client.display import Display
+from pywayland.protocol.idle_inhibit_unstable_v1.zwp_idle_inhibit_manager_v1 import (
     ZwpIdleInhibitManagerV1,
 )
-from pywayland.protocol.wayland.wl_compositor import WlCompositor  
-from pywayland.protocol.wayland.wl_registry import WlRegistryProxy  
-from pywayland.protocol.wayland.wl_surface import WlSurface  
+from pywayland.protocol.wayland.wl_compositor import WlCompositor
+from pywayland.protocol.wayland.wl_registry import WlRegistryProxy
+from pywayland.protocol.wayland.wl_surface import WlSurface
 
 logger = pyutils.logger.get_logger()  # Initialize logger
 

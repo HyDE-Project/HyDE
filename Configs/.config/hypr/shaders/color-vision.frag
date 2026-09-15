@@ -10,12 +10,12 @@
  **********************************************************************************************/
 
 
-/* 
+/*
 To override this parameters create a file named './color-vision.inc'
 We only need to match the file name and use 'inc' to indicate that
  this is an "include" file
  NOTE: You also need to restate the #version  on top example: #version 300 es
- Example: 
+ Example:
   ┌────────────────────────────────────────────────────────────────────────────┐
   │  //file: ./color-vision.inc                                                │
   │  // integer: 0:Normal vision, 1:Protanopia, 2:Deuteranopia, 3:Tritanopia   │
@@ -35,7 +35,7 @@ We only need to match the file name and use 'inc' to indicate that
     #define COLOR_VISION_INTENSITY 0.0 // Default fallback value
 #endif
 
-/* 
+/*
   ┌─────────────────────────────────────────────────────────────────────────┐
  !│ DO NOT EDIT THE FOLLOWING LINES                                         │
   └─────────────────────────────────────────────────────────────────────────┘
@@ -82,7 +82,7 @@ const mat3 LMS2RGB = mat3(
 vec3 simulateColorVisionDeficiency(vec3 color) {
     // Convert from RGB to LMS color space (Long, Medium, Short cone response)
     vec3 lms = RGB2LMS * color;
-    
+
     // Apply CVD transformation based on selected mode
     mat3 m;
     if(MODE == 0) {        // Normal vision (no transformation)
@@ -110,7 +110,7 @@ vec3 simulateColorVisionDeficiency(vec3 color) {
             tritanopia_r, tritanopia_g, 0.0
         );
     }
-    
+
     // Transform back to RGB color space
     return LMS2RGB * (m * lms);
 }
@@ -119,7 +119,7 @@ vec3 simulateColorVisionDeficiency(vec3 color) {
 vec3 daltonize(vec3 color, vec3 simulation) {
     // Calculate the error between original and simulated colors
     vec3 error = color - simulation;
-    
+
     // Redistribute the error to enhance visibility
     vec3 correction;
     if (MODE == 0) { // Normal vision - no correction needed
@@ -131,7 +131,7 @@ vec3 daltonize(vec3 color, vec3 simulation) {
     } else { // Tritanopia - shift errors in blue to red and green
         correction = vec3(error.b * 0.5, error.b * 0.5, 0.0);
     }
-    
+
     // Apply correction
     return color + correction;
 }
@@ -140,22 +140,22 @@ void main() {
     // Sample the texture at the current fragment's texture coordinates
     vec4 pixColor = texture(tex, v_texcoord);
     vec3 color = pixColor.rgb;
-    
+
     // No effect needed for normal vision with no intensity
     if (MODE == 0 && INTENSITY == 0.0) {
         fragColor = pixColor;
         return;
     }
-    
+
     // Simulate color vision deficiency based on the selected mode
     vec3 simulated = simulateColorVisionDeficiency(color);
-    
+
     // Optional: Apply daltonization (color correction) if intensity is negative
     // This helps make colors more distinguishable for users with CVD
     vec3 corrected = daltonize(color, simulated);
-    
+
     vec3 result;
-    
+
     // Special handling for normal vision mode
     if (MODE == 0) {
         // For normal vision, positive intensity increases saturation
@@ -178,7 +178,7 @@ void main() {
         // Apply daltonization correction with gradually increasing intensity
         result = mix(color, corrected, -INTENSITY);
     }
-    
+
     // Output the final color with the original alpha value
     fragColor = vec4(result, pixColor.a);
 }

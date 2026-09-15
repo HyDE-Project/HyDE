@@ -45,9 +45,9 @@ if __name__ == "__main__":
 
     directory = "."
     output_file = args.file
-    
+
     nvidia_table = generate_table(directory)
     write_table_to_file(nvidia_table, output_file, "<!-- START NVIDIA TABLE -->\n", "<!-- END NVIDIA TABLE -->\n")
-    
+
     table_of_contents = generate_table_of_contents(directory)
     write_table_to_file(table_of_contents, output_file, "<!-- START TABLE OF CONTENTS -->\n", "<!-- END TABLE OF CONTENTS -->\n")

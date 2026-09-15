@@ -21,16 +21,16 @@ configure_spicetify() {
     local cache_dir=$2
     local spotify_flags='--ozone-platform=wayland'
     local spotify_conf
-    
+
     spicetify &>/dev/null
     mkdir -p ~/.config/spotify
     touch ~/.config/spotify/prefs
     spotify_conf=$(spicetify -c)
-    
+
     sed -i -e "/^prefs_path/ s+=.*$+= $HOME/.config/spotify/prefs+g" \
     -e "/^spotify_path/ s+=.*$+= $spotify_path+g" \
     -e "/^spotify_launch_flags/ s+=.*$+= $spotify_flags+g" "$spotify_conf"
-    
+
     spicetify_themes_dir="$HOME/.config/spicetify/Themes"
     if [ ! -d "${spicetify_themes_dir}/Sleek" ]; then
         curl -L -o "${cache_dir}/landing/Spotify_Sleek.tar.gz" "https://github.com/HyDE-Project/HyDE/raw/master/Source/arcs/Spotify_Sleek.tar.gz"
@@ -59,7 +59,7 @@ if [ -n "${SPOTIFY_PATH}" ]; then
 
             note: run with 'sudo' if only needed.
 EOF
-    
+
     elif [ -d "${XDG_DATA_HOME}/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify" ]; then
     spotify_path="${XDG_DATA_HOME}/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share/spotify"
     print_log -sec "Spotify" " User Flatpak"
@@ -83,7 +83,7 @@ if (pkg_installed spotify && pkg_installed spicetify-cli) || [ -e "${spotify_pat
     if [ "$(spicetify config | awk '{if ($1=="color_scheme") print $2}')" != "Wallbash" ] || [[ "${*}" == *"--reset"* ]]; then
         configure_spicetify "$spotify_path" "$cacheDir"
     fi
-    
+
     if pgrep -x spotify >/dev/null; then
         pkill -x spicetify
         spicetify -q watch -s &

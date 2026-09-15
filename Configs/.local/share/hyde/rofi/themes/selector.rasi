@@ -1,5 +1,5 @@
 /**
- * ROFI Layout 
+ * ROFI Layout
  *
  * HyDE's Global Seletor Style
  * User: The HyDE Project [  HyDE's Global Selector Style  ]
@@ -91,4 +91,3 @@ element-text {
     background-color:            transparent;
     text-color:                  inherit;
 }
-

@@ -1,8 +1,8 @@
 /**
- * ROFI Layout 
+ * ROFI Layout
  *
- * Quick Apps Layout 
- * 
+ * Quick Apps Layout
+ *
  * User: The HyDE Project [  Quick Apps Layout  ]
  * Copyright: The HyDE Project
  */
@@ -52,7 +52,7 @@ listview {
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
-    flow:                        horizontal; 
+    flow:                        horizontal;
     reverse:                     false;
     fixed-height:                false;
     fixed-columns:               false;
@@ -80,4 +80,3 @@ element-icon {
 element-text {
     enabled:                     false;
 }
-

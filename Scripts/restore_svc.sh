@@ -16,7 +16,7 @@ flg_DryRun=${flg_DryRun:-0}
 # Legacy function for backward compatibility with old system_ctl.lst format
 handle_legacy_service() {
     local serviceChk="$1"
-    
+
     # Use the original logic for backward compatibility
     if [[ $(systemctl list-units --all -t service --full --no-legend "${serviceChk}.service" | sed 's/^\s*//g' | cut -f1 -d' ') == "${serviceChk}.service" ]]; then
         print_log -y "[skip] " -b "active " "Service ${serviceChk}"
@@ -34,12 +34,12 @@ print_log -sec "services" -stat "restore" "system services..."
 while IFS='|' read -r service context command || [ -n "$service" ]; do
     # Skip empty lines and comments
     [[ -z "$service" || "$service" =~ ^[[:space:]]*# ]] && continue
-    
+
     # Trim whitespace
     service=$(echo "$service" | xargs)
     context=$(echo "$context" | xargs)
     command=$(echo "$command" | xargs)
-    
+
     # Check if this is the new pipe-delimited format or legacy format
     if [[ -z "$context" ]]; then
         # Legacy format: service name only
@@ -48,14 +48,14 @@ while IFS='|' read -r service context command || [ -n "$service" ]; do
         # New format: service|context|command
         # Parse command into array to handle spaces properly
         read -ra cmd_array <<< "$command"
-        
+
         print_log -y "[exec] " "Service ${service} (${context}): $command"
-        
+
         if [ "$flg_DryRun" -ne 1 ]; then
             if [ "$context" = "user" ] ; then
             if [[ -n "${DBUS_SESSION_BUS_ADDRESS}" ]] && [[ -n $XDG_RUNTIME_DIR ]];then
                 systemctl --user "${cmd_array[@]}" "${service}.service"
-            else 
+            else
              print_log -sec "services" -stat "error" "DBUS_SESSION_BUS_ADDRESS or XDG_RUNTIME_DIR not set for user service" -y " skipping"
             fi
             else
@@ -69,7 +69,7 @@ while IFS='|' read -r service context command || [ -n "$service" ]; do
             fi
         fi
     fi
-    
+
 done < "${scrDir}/restore_svc.lst"
 
 print_log -sec "services" -stat "completed" "service updated successfully"

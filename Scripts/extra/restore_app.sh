@@ -47,4 +47,3 @@ if pkg_installed firefox; then
         firefox -profile "${FoxRel}" "${fext}" &> /dev/null &
     done
 fi
-

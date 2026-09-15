@@ -32,7 +32,7 @@ const float INTENSITY=INVERT_COLORS_INTENSITY;
 
 void main(){
     vec4 pixColor=texture(tex,v_texcoord);
-    
+
     // Apply inversion with intensity factor
     vec3 invertedColor=mix(pixColor.rgb,1.-pixColor.rgb,INTENSITY);
     fragColor=vec4(invertedColor,pixColor.a);

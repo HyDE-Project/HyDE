@@ -4,11 +4,11 @@
 
 This document provides an explanation of the color configuration used for theming HyDE. It covers primary colors, text colors, and accent colors. Each color can be specified in either hexadecimal or RGBA format.
 
-## Color Identifiers 
+## Color Identifiers
 
 By default, while  **wallpaper caching**, it will produce 4 primary colors, 4 text colors, and 9 accent colors for each primary color.
 
-- **`dcol_mode`**: This identifier determines whether the theme is in dark or light mode. 
+- **`dcol_mode`**: This identifier determines whether the theme is in dark or light mode.
 - **`dcol_pryX`**: These are the primary colors, with `X` ranging from 1 to 4.
 - **`dcol_txtX`**: These are the inverted primary colors used for text, with `X` ranging from 1 to 4.
 - **`dcol_XaxY`**: These are the accent colors for each primary color, with `X` ranging from 1 to 4 and `Y` ranging from 1 to 9.

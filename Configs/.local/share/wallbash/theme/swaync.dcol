@@ -141,4 +141,3 @@ ${confDir}/swaync/theme.css|${WALLBASH_SCRIPTS}/swaync.sh
   /* background-color: @noti-bg-hover-opaque; */
   background-color: @sw-noti-gr-collapse-but-hvr;
 }
-

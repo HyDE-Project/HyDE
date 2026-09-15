@@ -47,7 +47,7 @@ Prise en charge multilingue des RACCOURCIS CLAVIER
 
 Voici tous les raccourcis clavier spécifiques à HyDE.
 
->[!TIP] 
+>[!TIP]
 > <kbd>Super</kbd> + <kbd>/</kbd> affiche les raccourcis clavier.
 
 <!-- ## <a id="gestion-fenetre">Gestion des Fenêtres</a> -->
@@ -292,7 +292,7 @@ Par exemple, pour créer un raccourci qui lance le **HyDE Game Launcher**, ajout
 bind = $mainMod, SPACE, exec, $HOME/.local/lib/hyde/gamelauncher.sh
 ```
 
-Cela assignera le Game Launcher à <kbd>SUPER</kbd> + <kbd>Espace</kbd>.  
+Cela assignera le Game Launcher à <kbd>SUPER</kbd> + <kbd>Espace</kbd>.
 Vous pouvez remplacer `SPACE` par une autre touche de votre choix.
 
 Le script `gamelauncher.sh` est inclus par défaut et se trouve ici :

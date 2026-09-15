@@ -4,7 +4,7 @@
 QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-wayland;xcb}"                               # Qt: Use wayland if available, fall back to x11 if not.
 QT_AUTO_SCREEN_SCALE_FACTOR="${QT_AUTO_SCREEN_SCALE_FACTOR:-1}"                 # Enables automatic scaling, based on the monitor’s pixel density
 QT_WAYLAND_DISABLE_WINDOWDECORATION="${QT_WAYLAND_DISABLE_WINDOWDECORATION:-1}" # Disables window decorations on Qt applications
-QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME:-qt6ct}"                           # Tells Qt based applications to pick your theme from qt5ct, use with Kvantum.
+QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME:-qt6ct}"                           # GTK/GNOME-first fork: stray Qt apps read their theme from qt6ct (no Kvantum required).
 
 # # HyDE Environment Variables
 MOZ_ENABLE_WAYLAND="${MOZ_ENABLE_WAYLAND:-1}"                        # Enable Wayland for Firefox

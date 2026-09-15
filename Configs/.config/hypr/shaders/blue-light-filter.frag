@@ -2,11 +2,11 @@
 
 
 
-/* 
+/*
 To override this parameters create a file named './blue-light-filter.inc'
 We only need to match the file name and use 'inc' to incdicate that
  this is an "include" file
- Example: 
+ Example:
 
   ┌────────────────────────────────────────────────────────────────────────────┐
   │ // file: ./blue-light-filter.inc                                           │
