@@ -11,12 +11,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 - Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
 - Waybar: add VSCodium and Chromium icon rules to window module
+- Hyprland: default keyboard layout is now Spanish (Spain) primary + Latin American Spanish secondary (`kb_layout = "es,latam"`, `kb_options = "grp:alt_shift_toggle"`); toggle with SUPER+K or Alt+Shift
+- GTK/GNOME fork: replaced the default Qt/KDE application layer with a GNOME one — Nautilus (file manager), Loupe (images), GNOME Text Editor, GNOME Calculator, GNOME System Monitor, GNOME Control Center and File Roller — wired through a new `mimeapps.list`
+- File manager: Nautilus is now the default explorer (`org.gnome.Nautilus.desktop`), and a Nautilus *Set as Wallpaper* script replaces the KDE/Dolphin service menu, driving the wallpaper through `hyde-shell wallpaper`
+- Themes: native `LAGC Tech Dark` and `LAGC Tech Light` themes (built on `adw-gtk3` + Papirus), each shipping the full theme-switch contract plus a default wallpaper
+- Personal LAGC overlay vendored via the standard dots manager (`Scripts/dots/my-hyde.toml`): sharp-LCD fontconfig baseline, `Future-cursors` cursor theme, DDC/CI brightness panel, and a Zed LAGC theme
+- Dependencies: `adw-gtk-theme`, `papirus-icon-theme`, `ddcutil`, `gtk-layer-shell`, `python-gobject` and `noto-fonts`
+
+### Removed
+- Dropped the Qt/KDE pieces that the GNOME layer replaces: `wlogout`, Dolphin, Kvantum, `kvconfig`, `kxmlgui5` and `kio` service menus; stray Qt apps are still themed through `qt6ct`/Wallbash without Kvantum
+- Authentication: replaced the KDE polkit agent with `polkit-gnome`
 
 ### Fixed
+- Installer: `install_pst.sh` and `restore_svc.lst` still configured and enabled SDDM (Qt/KDE) even though the fork ships greetd + ReGreet. The post-install step now writes `/etc/greetd/config.toml` (ReGreet inside cage) and a `regreet.toml` seeded with the fork's GTK theme/icons/cursor, backs up any existing greetd config, and `restore_svc.lst` enables `greetd` instead of `sddm`. Without this the GTK login never came up on a fresh install.
+- Themes: removed the orphan `dolphinstaterc` state file left over from Dolphin (no longer part of the fork).
+- Portals: the file-chooser portal now prefers `gtk` (was `kde;gtk`) so file dialogs work without a KDE portal installed; RemoteDesktop uses `hyprland`
+- Wallbash: renamed the KDE-centric `load_dconf_kdeglobals` to `load_dconf_scheme`; the `kdeglobals` color shim stays opt-in (`HYDE_KDEGLOBALS_FIX=0`) and no longer runs on a clean GTK install
+- Themes: aligned the LAGC theme directories with the official HyDE theme contract — kept only `hypr.theme`, `kitty.theme`, `rofi.theme`, `waybar.theme`, `theme.dcol`, `theme.toml` and `wallpapers/`. Removed static files carried over from an early GTK prototype that HyDE's theme-switch never reads: `btop.theme` (btop is colored via the `btop.dcol` Wallbash template → `color_theme = "hyde-wallbash"`), plus orphan `gtk.css`, `hypr-colors.conf`, `kitty.conf`, `rofi-full.rasi`, `swaync.css` and `waybar.css` (GTK/SwayNC read the generated `~/.cache/hyde/wallbash/gtk.css`; kitty/waybar/rofi colors come from their inline `.theme` files). The stray `btop.theme` also lacked the Wallbash `target|exec` header, which made `theme.switch` abort with "Theme colour state was not generated".
+- Waybar: the vendored `my-hyde` layout now ships its own `styles/my-hyde.css` (imports the shared HyDE `defaults.css` base, then the compact theme-aware island overrides). HyDE resolves `styles/<layout>.css` automatically, so the island styling travels with the layout instead of relying on `user-style.css` — which stays a clean user extension point. Fixes the layout's islands/colors not applying after install.
 - Waybar, wlogout: fix logout button behavior
 - Waybar: resolve visual collision between privacy and tray modules by adding margins
 - Docs: fix broken HyDE wiki links across the main and translated `README` files
-- Waybar: correct spacing and missing icons in window module 
+- Waybar: correct spacing and missing icons in window module
 - Waybar: choosing a theme, or just a wallpaper within the current theme, from the HyDE menu, the theme module, the wallpaper widget or the macOS layout's menu no longer silently leaves the wallpaper and colour state unapplied; both paths write into `hypr/themes/colors.conf`, which triggers a Hyprland autoreload, whose reload hook sends `SIGUSR2` to the whole `hyde-Hyprland-bar.service` cgroup — killing the in-flight `theme.select.sh`/`theme.switch.sh`/`wallpaper.sh` process tree along with it. These menu actions now launch them via `hyde-shell app -t scope` so they run in their own cgroup instead of waybar's.
 - Waybar: `gpuinfo` no longer floods stderr with an `awk` fatal error on every poll when a battery exposes a `power_now` attribute the firmware cannot actually read; the value is now read before it is used instead of being handed straight to `awk`
 - Installer: a fresh install no longer aborts on a missing AUR helper before having the chance to install it

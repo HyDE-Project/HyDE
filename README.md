@@ -1,5 +1,5 @@
 <div align = center>
-  
+
 <a href="https://discord.gg/AYbJ9MJez7">
     <img alt="Dynamic JSON Badge" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdiscordapp.com%2Fapi%2Finvites%2FmT5YqjaJFh%3Fwith_counts%3Dtrue&query=%24.approximate_member_count&suffix=%20members&style=for-the-badge&logo=discord&logoSize=auto&label=The%20HyDe%20Project&labelColor=ebbcba&color=c79bf0">
   </a>
@@ -23,6 +23,38 @@ Multi-language README support
 [![ar](https://img.shields.io/badge/lang-AR-orange.svg)](Source/docs/README.ar.md)
 [![pt-br](https://img.shields.io/badge/lang-pt--br-006400.svg)](Source/docs/README.pt-br.md)
 [![tr](https://img.shields.io/badge/lang-tr-e30a17.svg)](Source/docs/README.tr.md)
+
+<div align="center">
+
+## HyDE-gtk — a GTK/GNOME fork of HyDE
+
+</div>
+
+> [!NOTE]
+> **This is a personal fork of [HyDE-Project/HyDE](https://github.com/HyDE-Project/HyDE).**
+> It swaps HyDE's default Qt/KDE application layer for a **GTK/GNOME** stack and ships two
+> native **LAGC Tech** themes. Everything else — the Hyprland setup, Wallbash color engine,
+> Waybar, Rofi, the `hyde-shell` tooling and the dots manager — is inherited from upstream
+> HyDE and kept in sync with it. All original credit belongs to The HyDE Project; see
+> [CREDITS.md](./CREDITS.md).
+
+### What is different in this fork
+
+- **File manager:** [Nautilus](https://apps.gnome.org/Nautilus/) is the default instead of Dolphin,
+  with a `mimeapps.list` wiring Nautilus/File Roller/Loupe/GNOME Text Editor, and a
+  Nautilus _Set as Wallpaper_ script replacing the KDE service menu.
+- **GNOME app layer:** `nautilus`, `loupe`, `gnome-text-editor`, `gnome-calculator`,
+  `gnome-system-monitor`, `gnome-control-center`, `file-roller` (+ `gvfs`, `sushi`, `gnome-autoar`).
+- **Authentication agent:** `polkit-gnome` instead of the KDE polkit agent.
+- **Portals:** the file-chooser portal is `gtk` (no KDE portal dependency).
+- **Removed:** `wlogout`, Dolphin, Kvantum, `kvconfig`, `kxmlgui5` and `kio` service menus.
+  Stray Qt apps still get themed colors via `qt6ct`/Wallbash — no Kvantum required.
+- **Themes:** native `LAGC Tech Dark` and `LAGC Tech Light`, built on `adw-gtk3` + Papirus,
+  driving Hyprland, Waybar, Rofi, Kitty, Dunst/SwayNC and Wallbash through HyDE's own contracts.
+- **Personal overlay, vendored:** solid-first Hyprland visual layer, a compact 22 px Waybar
+  layout, a DDC/CI brightness panel, the `Future-cursors` cursor theme, an LCD-sharp
+  fontconfig baseline and a Zed LAGC theme — all deployed through the standard HyDE dots
+  manager (`Scripts/dots/my-hyde.toml`).
 
 <div align="center">
 
@@ -90,10 +122,15 @@ To install, execute the following commands:
 
 ```shell
 sudo pacman -S --needed git base-devel
-git clone --depth 1 https://github.com/HyDE-Project/HyDE ~/HyDE
-cd ~/HyDE/Scripts
+git clone --depth 1 https://github.com/IGUNUBLUE/HyDE-gtk ~/HyDE-gtk
+cd ~/HyDE-gtk/Scripts
 ./install.sh
 ```
+
+> [!NOTE]
+> This fork installs the GTK/GNOME application stack and the LAGC Tech themes automatically.
+> To upgrade an existing upstream HyDE install to this fork, back up your configs first
+> (they are preserved under `~/.config/cfg_backups`), then run the installer above.
 
 > [!TIP]
 > You can also add any other apps you wish to install alongside HyDE to `Scripts/pkg_user.lst` and pass the file as a parameter to install it like so:
@@ -166,7 +203,7 @@ To update HyDE, you will need to pull the latest changes from GitHub and restore
 > The following commands will discard any uncommitted local changes in the repository.
 
 ```shell
-cd ~/HyDE/Scripts
+cd ~/HyDE-gtk/Scripts
 git fetch --update-shallow --depth 1 origin master
 git reset --hard origin/master
 ./install.sh -r
@@ -226,7 +263,23 @@ For more details, please refer to the [HyDEVM README](Scripts/hydevm/README.md).
 
 ---
 
-All our official themes are stored in a separate repository, allowing users to install them using themepatcher.
+This fork ships two **native LAGC Tech themes** out of the box — no themepatcher needed:
+
+<div align="center">
+  <table><tr><td>
+
+[![LAGC-Tech-Dark](https://placehold.co/150x30/061B2B/17D7E8?text=LAGC+Tech+Dark&font=Oswald)](Configs/.config/hyde/themes/LAGC%20Tech%20Dark)
+[![LAGC-Tech-Light](https://placehold.co/150x30/EAF7FA/1B5CFF?text=LAGC+Tech+Light&font=Oswald)](Configs/.config/hyde/themes/LAGC%20Tech%20Light)
+
+  </td></tr></table>
+</div>
+
+Switch between them with `hyde-shell theme.switch.sh -n` / `-p`, or the theme selector
+(`SUPER + SHIFT + T`). Both are built on `adw-gtk3` + Papirus and follow the standard HyDE
+theme contract (Hyprland, Waybar, Rofi, Kitty, Dunst/SwayNC, Wallbash), so they recolor the
+whole GTK/GNOME session including Nautilus.
+
+All upstream HyDE themes remain available and are installed with themepatcher.
 For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-Project/hyde-themes).
 
 <div align="center">
@@ -290,10 +343,6 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/rofi_style_12.png"/></td></tr>
 </table></div>
 
-<div align="center"><table><tr>Wlogout Menu</tr><tr><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_1.png"/></td><td>
-<img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/wlog_style_2.png"/></td></tr></table></div>
-
 <div align="center"><table><tr>Game Launcher</tr><tr><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_1.png"/></td><td>
 <img src="https://raw.githubusercontent.com/prasanthrangan/hyprdots/main/Source/assets/game_launch_2.png"/></td><td>
@@ -306,10 +355,10 @@ For more information, visit [HyDE-Project/hyde-themes](https://github.com/HyDE-P
 
 <a id="star_history"></a>
 <img src="https://readme-typing-svg.herokuapp.com?font=Lexend+Giga&size=25&pause=1000&color=CCA9DD&vCenter=true&width=435&height=25&lines=STARS" width="450"/>
-                        
+
 [![Stargazers over time](https://starchart.cc/HyDE-Project/HyDE.svg?background=%231f2226&axis=%23ebbcba&line=%23c79bf0)](https://starchart.cc/HyDE-Project/HyDE)
 
-                    
+
 
 ---
 
