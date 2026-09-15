@@ -2,7 +2,7 @@
 
 set -eu
 
-repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+repo_root=$(CDPATH='' cd -- "$(dirname -- "$0")/../.." && pwd)
 open_lua="$repo_root/Configs/.local/lib/hyde/open.lua"
 
 if ! command -v lua >/dev/null 2>&1; then
@@ -20,7 +20,7 @@ package.preload["lgi"] = function()
     return {Gio = {}, GLib = {}}
 end
 
-local open = dofile(os.getenv("OPEN_LUA"))
+local open = assert(loadfile(os.getenv("OPEN_LUA")))("__test__")
 
 local function fake_app(id)
     return {
@@ -69,7 +69,7 @@ local function run_case(label, configured_app, fallback, appinfo_map, expected)
         return nil, "missing"
     end
 
-    local args = {"hyde-shell", "open", "web-browser", "--std"}
+    local args = {[0] = "hyde-shell", "open", "web-browser", "--std"}
     if fallback then
         table.insert(args, "--fall")
         table.insert(args, fallback)
