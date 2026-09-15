@@ -18,12 +18,14 @@ rgba_to_rgb() {
     fi
 }
 
-load_dconf_kdeglobals() {
+load_dconf_scheme() {
     source "$SHARE_DIR/hyde/env-theme"
     source "$LIB_DIR/hyde/color/hypr.sh"
 
-    #? Do not change when users has active plasma session installed
-    #? This fixes kde connect and similar app color issues
+    #? GTK/GNOME is the primary stack for this fork. The kdeglobals block below
+    #? is an opt-in compatibility shim, only useful if the user also has a Plasma
+    #? session or KDE apps (e.g. KDE Connect) installed. It stays disabled by
+    #? default (HYDE_KDEGLOBALS_FIX=0) and never runs on a clean GTK install.
     if [[ ${HYDE_KDEGLOBALS_FIX:-0} -eq 1 ]]; then
         print_log -sec "wallbash" -stat "applying kdeglobals color fix" "to match $dcol_mode mode"
         print_log -sec "wallbash" -stat " NOTE" "This may override colors in existing plasma sessions, but will fix color issues in apps like kde connect"
@@ -219,7 +221,7 @@ revert_colors=0
     grep -q "$dcol_mode" <<<"$(get_hyprConf "COLOR_SCHEME")" || revert_colors=1
 }
 export revert_colors
-load_dconf_kdeglobals
+load_dconf_scheme
 export GTK_THEME GTK_ICON CURSOR_THEME COLOR_SCHEME
 WALLBASH_DIRS=""
 for dir in "${wallbashDirs[@]}"; do
