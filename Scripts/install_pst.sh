@@ -80,6 +80,13 @@ fi
 # shell
 "${scrDir}/restore_shl.sh"
 
+# waybar: select the LAGC layout by default (temperature + brightness modules).
+# Users can switch/cycle later with `hyde-shell waybar --set <name>` or SUPER+ALT+UP/DOWN.
+if command -v hyde-shell >/dev/null 2>&1; then
+    print_log -g "[WAYBAR] " -b " :: " "setting LAGC layout as default..."
+    [ ${flg_DryRun} -eq 1 ] || hyde-shell waybar --set lagc >/dev/null 2>&1 || true
+fi
+
 # flatpak
 if pkg_installed flatpak; then
     echo ""
