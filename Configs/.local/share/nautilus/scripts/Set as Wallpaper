@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Nautilus script: GTK replacement for the KDE/Dolphin "Set as Wallpaper"
+# service menu. Right-click an image -> Scripts -> Set as Wallpaper.
+#
+# Uses HyDE's official wallpaper pipeline (hyde-shell wallpaper), so the
+# selection also drives Wallbash colors and updates thumbnails. Falls back to
+# the raw backends only if hyde-shell is unavailable.
+set -Eeuo pipefail
+
+# Nautilus passes newline-separated selected paths; take the first one.
+img=${NAUTILUS_SCRIPT_SELECTED_FILE_PATHS%%$'\n'*}
+[[ -f ${img:-} ]] || {
+    notify-send -a "HyDE" "Set as Wallpaper" "Please select an image file."
+    exit 1
+}
+
+if command -v hyde-shell >/dev/null 2>&1; then
+    hyde-shell wallpaper --set "$img" --global \
+        || notify-send -a "HyDE" "Set as Wallpaper" "hyde-shell could not apply the wallpaper."
+elif command -v awww >/dev/null 2>&1; then
+    awww img "$img" \
+        || notify-send -a "HyDE" "Set as Wallpaper" "awww rejected the wallpaper."
+elif command -v hyprpaper >/dev/null 2>&1; then
+    hyprctl hyprpaper wallpaper ",$img" 2>/dev/null \
+        || notify-send -a "HyDE" "Set as Wallpaper" "hyprpaper rejected the wallpaper."
+else
+    notify-send -a "HyDE" "Set as Wallpaper" "No wallpaper backend found (hyde-shell/awww/hyprpaper)."
+    exit 1
+fi

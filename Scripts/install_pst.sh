@@ -14,51 +14,66 @@ fi
 cloneDir="${cloneDir:-$CLONE_DIR}"
 flg_DryRun=${flg_DryRun:-0}
 
-# sddm
-if pkg_installed sddm; then
-    print_log -c "[DISPLAYMANAGER] " -b "detected :: " "sddm"
-    if [ ! -d /etc/sddm.conf.d ]; then
-        [ ${flg_DryRun} -eq 1 ] || sudo mkdir -p /etc/sddm.conf.d
-    fi
-    if [ ! -f /etc/sddm.conf.d/backup_the_hyde_project.conf ] || [ "${HYDE_INSTALL_SDDM}" = true ]; then
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "configuring sddm..."
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "Select sddm theme:" -r "\n[1]" -b " Candy" -r "\n[2]" -b " Corners"
-        read -p " :: Enter option number : " -r sddmopt
+# greetd + ReGreet (GTK greeter) — this fork replaces SDDM (Qt/KDE) with the
+# GTK/GNOME login stack. ReGreet runs inside the cage kiosk compositor.
+if pkg_installed greetd; then
+    print_log -c "[DISPLAYMANAGER] " -b "detected :: " "greetd"
 
-        case $sddmopt in
-        1) sddmtheme="Candy" ;;
-        *) sddmtheme="Corners" ;;
-        esac
+    if [ ! -f /etc/greetd/config.toml.backup_the_hyde_project ] || [ "${HYDE_INSTALL_GREETD}" = true ]; then
+        print_log -g "[DISPLAYMANAGER] " -b " :: " "configuring greetd + regreet..."
 
         if [[ ${flg_DryRun} -ne 1 ]]; then
-            sudo tar -xzf "${cloneDir}/Source/arcs/Sddm_${sddmtheme}.tar.gz" -C /usr/share/sddm/themes/
-            sudo touch /etc/sddm.conf.d/the_hyde_project.conf
-            sudo cp /etc/sddm.conf.d/the_hyde_project.conf /etc/sddm.conf.d/backup_the_hyde_project.conf
-            sudo cp /usr/share/sddm/themes/${sddmtheme}/the_hyde_project.conf /etc/sddm.conf.d/
+            sudo mkdir -p /etc/greetd
+
+            # Back up any existing greetd configuration once.
+            [ -f /etc/greetd/config.toml ] && [ ! -f /etc/greetd/config.toml.backup_the_hyde_project ] &&
+                sudo cp /etc/greetd/config.toml /etc/greetd/config.toml.backup_the_hyde_project
+            [ -f /etc/greetd/regreet.toml ] && [ ! -f /etc/greetd/regreet.toml.backup_the_hyde_project ] &&
+                sudo cp /etc/greetd/regreet.toml /etc/greetd/regreet.toml.backup_the_hyde_project
+
+            # greetd launches ReGreet inside cage (Wayland kiosk compositor).
+            sudo tee /etc/greetd/config.toml >/dev/null <<'GREETD_EOF'
+[terminal]
+vt = 1
+
+[default_session]
+command = "cage -s -- regreet"
+user = "greeter"
+GREETD_EOF
+
+            # Minimal ReGreet config; the greeter reads GTK theme/icons/cursor
+            # from the greeter user's environment.
+            [ -f /etc/greetd/regreet.toml ] || sudo tee /etc/greetd/regreet.toml >/dev/null <<'REGREET_EOF'
+[commands]
+reboot = [ "systemctl", "reboot" ]
+poweroff = [ "systemctl", "poweroff" ]
+
+[GTK]
+application_prefer_dark_theme = true
+cursor_theme_name = "Future-cursors"
+icon_theme_name = "Papirus-Dark"
+theme_name = "adw-gtk3-dark"
+REGREET_EOF
         fi
 
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "sddm configured with ${sddmtheme} theme..."
+        print_log -g "[DISPLAYMANAGER] " -b " :: " "greetd configured with ReGreet (GTK) greeter..."
     else
-        print_log -y "[DISPLAYMANAGER] " -b " :: " "sddm is already configured..."
-    fi
-
-    if [ ! -f "/usr/share/sddm/faces/${USER}.face.icon" ] && [ -f "${cloneDir}/Source/misc/${USER}.face.icon" ]; then
-        sudo cp "${cloneDir}/Source/misc/${USER}.face.icon" /usr/share/sddm/faces/
-        print_log -g "[DISPLAYMANAGER] " -b " :: " "avatar set for ${USER}..."
+        print_log -y "[DISPLAYMANAGER] " -b " :: " "greetd is already configured..."
     fi
 
 else
-    print_log -y "[DISPLAYMANAGER] " -b " :: " "sddm is not installed..."
+    print_log -y "[DISPLAYMANAGER] " -b " :: " "greetd is not installed..."
 fi
 
-# dolphin
-if pkg_installed dolphin && pkg_installed xdg-utils; then
-    print_log -c "[FILEMANAGER] " -b "detected :: " "dolphin"
-    xdg-mime default org.kde.dolphin.desktop inode/directory
+# nautilus (GTK/GNOME file manager)
+if pkg_installed nautilus && pkg_installed xdg-utils; then
+    print_log -c "[FILEMANAGER] " -b "detected :: " "nautilus"
+    xdg-mime default org.gnome.Nautilus.desktop inode/directory
+    xdg-mime default org.gnome.Nautilus.desktop x-scheme-handler/trash
     print_log -g "[FILEMANAGER] " -b " :: " "setting $(xdg-mime query default "inode/directory") as default file explorer..."
 
 else
-    print_log -y "[FILEMANAGER]" -b " :: " "dolphin is not installed..."
+    print_log -y "[FILEMANAGER]" -b " :: " "nautilus is not installed..."
     print_log -y "[FILEMANAGER]" -b " :: " "Setting $(xdg-mime query default "inode/directory") as default file explorer..."
 fi
 

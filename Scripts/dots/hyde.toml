@@ -38,6 +38,14 @@ target_root = "${XDG_DATA_HOME}"
 paths = ["hyde", "wallbash", "xdg-desktop-portal/hyprland-portals.conf"]
 ignored_paths = [".*", "__pycache__", "schema"]
 
+#? Nautilus scripts (GTK replacement for the Dolphin service menus)
+[[hyde.files]]
+action = "sync"
+source_root = "Configs/.local/share"
+target_root = "${XDG_DATA_HOME}"
+paths = ["nautilus/scripts"]
+post_command = "chmod +x '${XDG_DATA_HOME}/nautilus/scripts/Set as Wallpaper' 2>/dev/null || true"
+
 [[hyde.files]]
 action = "sync"
 source_root = "Configs/.config"
@@ -81,6 +89,7 @@ target_root = "${XDG_CONFIG_HOME}"
 paths = [
     "xdg-terminals.list",
     "gtk-3.0/settings.ini",
+    "mimeapps.list",
 ]
 
 [[hyde.files]]
