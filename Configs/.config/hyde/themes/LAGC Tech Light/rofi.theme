@@ -1,0 +1,12 @@
+$HOME/.config/rofi/theme.rasi
+/* LAGC Tech Light: documented HyDE Rofi color contract. */
+* {
+    main-bg:            #F7FCFDEB;
+    main-fg:            #061B2BFF;
+    main-br:            #1B5CFFFF;
+    main-ex:            #FF7A3DFF;
+    select-bg:          #17D7E8FF;
+    select-fg:          #061B2BFF;
+    separatorcolor:     transparent;
+    border-color:       transparent;
+}

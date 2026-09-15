@@ -1,0 +1,40 @@
+$HOME/.config/kitty/theme.conf|killall -SIGUSR1 kitty
+# LAGC Tech Dark terminal palette.
+
+foreground              #EAF7FA
+background              #061B2B
+selection_foreground    #061B2B
+selection_background    #8CEBF2
+cursor                  #17D7E8
+cursor_text_color       #061B2B
+url_color               #8CEBF2
+active_border_color     #17D7E8
+inactive_border_color   #3D5969
+bell_border_color       #FF7A3D
+active_tab_foreground   #061B2B
+active_tab_background   #17D7E8
+inactive_tab_foreground #ACC4CE
+inactive_tab_background #0A2740
+tab_bar_background      #061B2B
+mark1_foreground        #061B2B
+mark1_background        #17D7E8
+mark2_foreground        #061B2B
+mark2_background        #1B5CFF
+mark3_foreground        #061B2B
+mark3_background        #FF7A3D
+color0  #0A2740
+color1  #FF7A3D
+color2  #17D7E8
+color3  #FFB18D
+color4  #1B5CFF
+color5  #8CEBF2
+color6  #ACC4CE
+color7  #EAF7FA
+color8  #3D5969
+color9  #FF9666
+color10 #61E2EC
+color11 #FFD5C2
+color12 #6C98FF
+color13 #B8CBFF
+color14 #BFF7FB
+color15 #F7FCFD

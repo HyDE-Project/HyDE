@@ -1,0 +1,33 @@
+$HOME/.config/hypr/themes/theme.conf|> $HOME/.config/hypr/themes/colors.conf
+# LAGC Tech Dark: native HyDE theme configuration.
+# Palette: midnight #061B2B, cyan #17D7E8, cobalt #1B5CFF, ember #FF7A3D.
+
+$GTK_THEME=Catppuccin-Mocha
+$ICON_THEME=Fluent-dark
+$COLOR_SCHEME=prefer-dark
+
+general {
+    gaps_in = 2
+    gaps_out = 4
+    border_size = 2
+    col.active_border = rgba(17d7e8ff) rgba(1b5cffff) 45deg
+    col.inactive_border = rgba(3d5969cc) rgba(587182cc) 45deg
+    layout = dwindle
+    resize_on_border = true
+}
+
+group {
+    col.border_active = rgba(17d7e8ff) rgba(1b5cffff) 45deg
+    col.border_inactive = rgba(3d5969cc) rgba(587182cc) 45deg
+    col.border_locked_active = rgba(ff7a3dff) rgba(17d7e8ff) 45deg
+    col.border_locked_inactive = rgba(587182cc) rgba(3d5969cc) 45deg
+}
+
+decoration {
+    rounding = 8
+    shadow:enabled = false
+
+    blur {
+        enabled = no
+    }
+}

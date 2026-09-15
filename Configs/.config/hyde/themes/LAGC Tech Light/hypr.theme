@@ -1,0 +1,33 @@
+$HOME/.config/hypr/themes/theme.conf|> $HOME/.config/hypr/themes/colors.conf
+# LAGC Tech Light: native HyDE theme configuration.
+# Palette: frost #F7FCFD, cobalt #1B5CFF, cyan #17D7E8, ember #FF7A3D.
+
+$GTK_THEME=Catppuccin-Latte
+$ICON_THEME=Fluent
+$COLOR_SCHEME=prefer-light
+
+general {
+    gaps_in = 2
+    gaps_out = 4
+    border_size = 2
+    col.active_border = rgba(1b5cffff) rgba(17d7e8ff) 45deg
+    col.inactive_border = rgba(587182cc) rgba(3d5969cc) 45deg
+    layout = dwindle
+    resize_on_border = true
+}
+
+group {
+    col.border_active = rgba(1b5cffff) rgba(17d7e8ff) 45deg
+    col.border_inactive = rgba(587182cc) rgba(3d5969cc) 45deg
+    col.border_locked_active = rgba(ff7a3dff) rgba(1b5cffff) 45deg
+    col.border_locked_inactive = rgba(3d5969cc) rgba(587182cc) 45deg
+}
+
+decoration {
+    rounding = 8
+    shadow:enabled = false
+
+    blur {
+        enabled = no
+    }
+}

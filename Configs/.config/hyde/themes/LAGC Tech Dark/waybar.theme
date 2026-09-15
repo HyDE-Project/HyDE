@@ -1,0 +1,12 @@
+$HOME/.config/waybar/theme.css|${scrDir}/wbarconfgen.sh
+/* LAGC Tech Dark: documented HyDE Waybar color contract. */
+@define-color bar-bg rgba(6, 27, 43, 0.92);
+
+@define-color main-bg #061B2B;
+@define-color main-fg #EAF7FA;
+
+@define-color wb-act-bg #1B5CFF;
+@define-color wb-act-fg #FFFFFF;
+
+@define-color wb-hvr-bg #17D7E8;
+@define-color wb-hvr-fg #061B2B;
