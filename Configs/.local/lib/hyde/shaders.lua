@@ -171,7 +171,11 @@ end
 -- icon/name split on the way back out; fall back to the filename instead.
 local function sanitize_name(raw, fallback)
     local safe = strip_shell_unsafe(raw)
-    return safe ~= "" and safe or fallback
+    if safe ~= "" then
+        return safe
+    end
+    -- The fallback (the filename) is just as untrusted as SHADER_NAME.
+    return strip_shell_unsafe(fallback)
 end
 
 -- Read metadata from #define SHADER_* macros in a .frag file.
