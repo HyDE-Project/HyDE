@@ -450,6 +450,22 @@ EOF
 			exit 1
 		}
 
+		# Migrations normally run once, at the very end of restore (see below).
+		# A dot whose *ownership* of a path changed (moved to another dot, or a
+		# once-shared directory got split) needs its stale record cleared before
+		# deploying, not after: deez-dots reuses a cached bundle whenever the
+		# dot's own source files haven't changed, so a fix expressed purely as a
+		# TOML edit -- e.g. an added `ignored_paths` -- never invalidates that
+		# cache on its own, and the affected dot keeps failing on "File
+		# conflict" every single restore, forever (#2103). Running the
+		# migrations here too, before deploy, lets one clear its own stale
+		# manifest/cache in time to take effect in this same run. Safe to call
+		# twice: applied migrations are tracked in migrationStateFile, so the
+		# real end-of-restore run below just finds nothing new pending here.
+		migrationDir="${scrDir}/migrations"
+		migrationStateFile="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/applied"
+		run_pending_migrations "${migrationDir}" "${migrationStateFile}"
+
 		# A failed deployment used to end the run here, which cost the user
 		# every step below it — the theme, the wallpaper cache, the migrations,
 		# the services. Those are what bring a partly deployed tree back into
