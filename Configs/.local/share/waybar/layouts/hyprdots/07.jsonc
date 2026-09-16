@@ -60,7 +60,7 @@
             "network",
             "pulseaudio",
             "pulseaudio#microphone",
-            "custom/notifications",
+            "custom/dunst",
             "custom/keybindhint"
         ]
     },
