@@ -166,6 +166,14 @@ local function strip_shell_unsafe(s)
     return (s:gsub('[%c`$"\\]', ""))
 end
 
+-- A name that strips down to nothing (e.g. SHADER_NAME was only unsafe
+-- characters) would break rofi's tab-separated row format and the
+-- icon/name split on the way back out; fall back to the filename instead.
+local function sanitize_name(raw, fallback)
+    local safe = strip_shell_unsafe(raw)
+    return safe ~= "" and safe or fallback
+end
+
 -- Read metadata from #define SHADER_* macros in a .frag file.
 -- Stops scanning when actual GLSL declarations begin.
 local function read_frag_meta(path)
@@ -242,7 +250,7 @@ local M =
             return {
                 path = path,
                 key = base,
-                name = strip_shell_unsafe(meta.name or base),
+                name = sanitize_name(meta.name or base, base),
                 icon = strip_shell_unsafe(meta.icon or DEFAULT_SHADER_ICON),
                 description = meta.description or ("Shader: " .. base),
                 hook = meta.hook,
