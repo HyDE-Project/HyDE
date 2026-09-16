@@ -54,7 +54,14 @@ hc.start.clipboard_persist =
 hc.start.wallpaper =
     "hyde-shell app -u " .. unt .. "-wallpaper.service -t " .. svc .. " -- wallpaper.sh --start --global"
 hc.start.bar = "hyde-shell app -u " .. unt .. "-bar.scope -t " .. scp .. " -- waybar.py --watch" -- waybar.py injects it itself as -u $unt.service :- therefore we use scope here to avoid conflicts
-hc.start.notifications = "hyde-shell app -u " .. unt .. "-notifications.service -t " .. svc .. " -- dunst"
+-- Dunst is the default, but #2084 kept SwayNC installable as an opt-in
+-- alternative, deployed and never uninstalled alongside it. A user who
+-- follows that path (installs SwayNC, uninstalls Dunst) got
+-- "Executable not found: dunst" on every login, since this used to always
+-- launch dunst by name regardless of what's actually on disk (#2108).
+hc.start.notifications = "hyde-shell app -u " ..
+    unt .. "-notifications.service -t " .. svc ..
+    " -- sh -c 'command -v dunst >/dev/null 2>&1 && exec dunst || exec swaync'"
 hc.start.battery_notify = "hyde-shell app -u " .. unt .. "-battery-notify.service -t " .. svc .. " -- batterynotify.lua"
 hc.start.applet_network_manager =
     "hyde-shell app -u " .. unt .. "-network-manager-applet.service -t " .. svc .. " -- nm-applet --indicator"
