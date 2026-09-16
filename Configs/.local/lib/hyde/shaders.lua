@@ -158,6 +158,14 @@ local function compile_shader(item)
     return compiled
 end
 
+-- Shader name/icon end up inside a double-quoted shell string (rofi's
+-- on_selection_changed {entry} substitution): strip what can break out of
+-- that context so a crafted .frag file (or filename) can't run commands
+-- just by being highlighted in the picker.
+local function strip_shell_unsafe(s)
+    return (s:gsub('[%c`$"\\]', ""))
+end
+
 -- Read metadata from #define SHADER_* macros in a .frag file.
 -- Stops scanning when actual GLSL declarations begin.
 local function read_frag_meta(path)
@@ -234,8 +242,8 @@ local M =
             return {
                 path = path,
                 key = base,
-                name = meta.name or base,
-                icon = meta.icon or DEFAULT_SHADER_ICON,
+                name = strip_shell_unsafe(meta.name or base),
+                icon = strip_shell_unsafe(meta.icon or DEFAULT_SHADER_ICON),
                 description = meta.description or ("Shader: " .. base),
                 hook = meta.hook,
                 error = meta.error
