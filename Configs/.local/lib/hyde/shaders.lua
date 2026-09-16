@@ -427,13 +427,45 @@ function M.apply(item)
 end
 
 function M.preview(name, token)
-    return locked(function()
+    -- Rofi can emit repeated or rapidly changing selections. Only apply the
+    -- latest settled entry, and never recompile the preview already on screen.
+    local request, err = locked(function()
         local menu = read_menu()
-        if not token or not menu or menu.token ~= token then return true end
+        if not token or not menu or menu.token ~= token then return false end
         local item = M.find(name)
         if not item then return nil, "unknown shader" end
-        local before, err = runtime_state()
-        if not before then return nil, err end
+        local before, read_err = runtime_state()
+        if not before then return nil, read_err end
+        local saved = state.read(M.state_file)
+        if (menu.preview_key == item.key and menu.preview_path == before.shader)
+            or (saved and saved.key == item.key and saved.compiled == before.shader) then
+            -- Also invalidate a pending callback for a different entry.
+            menu.request = (menu.request or 0) + 1
+            menu.request_key = nil
+            local ok, failure = atomic_write(MENU_FILE, JSON.encode(menu))
+            if not ok then return nil, failure end
+            return false
+        end
+        if menu.request_key == item.key then return false end
+        menu.request = (menu.request or 0) + 1
+        menu.request_key = item.key
+        local ok, failure = atomic_write(MENU_FILE, JSON.encode(menu))
+        if not ok then return nil, failure end
+        return menu.request
+    end)
+    if request == nil then return nil, err end
+    if request == false then return true end
+    socket.sleep(0.15)
+    return locked(function()
+        local menu = read_menu()
+        if not menu or menu.token ~= token or menu.request ~= request then return true end
+        menu.request_key = nil
+        local recorded, record_err = atomic_write(MENU_FILE, JSON.encode(menu))
+        if not recorded then return nil, record_err end
+        local item = M.find(name)
+        if not item then return nil, "unknown shader" end
+        local before, read_err = runtime_state()
+        if not before then return nil, read_err end
         local meta = item.key ~= "disable" and read_frag_meta(item.path) or {}
         if meta.error then return nil, meta.error end
         -- Hovering must never grant consent or change the user's damage tracking.
@@ -445,6 +477,13 @@ function M.preview(name, token)
             local restored = apply_config(before.shader)
             if restored then discard(compiled) end
             return nil, apply_err
+        end
+        menu.preview_key, menu.preview_path = item.key, compiled
+        local recorded_preview, preview_err = atomic_write(MENU_FILE, JSON.encode(menu))
+        if not recorded_preview then
+            local restored = apply_config(before.shader)
+            if restored then discard(compiled) end
+            return nil, preview_err
         end
         -- The saved shader must survive every preview, including Disable.
         local saved = state.read(M.state_file)

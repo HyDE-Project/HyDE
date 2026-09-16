@@ -99,6 +99,10 @@ local ok, err = xpcall(function()
         assert(sh.preview('other',stale)); assert(calls==previous_calls)
         assert(sh.preview('comments',stale))
         assert(current.shader~=first.compiled)
+        previous_calls=calls
+        local preview_path=current.shader
+        assert(sh.preview('comments',stale))
+        assert(calls==previous_calls and current.shader==preview_path, 'duplicate preview reloaded shader')
         assert(sh.preview('disable',stale)); assert(current.shader=='')
         assert(read(first.compiled)==bytes and read(sh.state_file)==before.state)
         return nil
@@ -107,7 +111,26 @@ local ok, err = xpcall(function()
     assert(not selected and not cancel_err); unchanged(before)
     local previous_calls=calls
     assert(sh.preview('static',stale)); assert(calls==previous_calls)
-    print('PASS: previews preserve committed cache, cancellation restores runtime, late callbacks are ignored')
+    print('PASS: previews preserve committed cache, cancellation restores runtime, duplicate/late callbacks are ignored')
+
+    -- Simulate another callback arriving while the first waits for selection to settle.
+    local socket=require('socket')
+    local real_sleep=socket.sleep
+    menu=function()
+        local id=token()
+        socket.sleep=function()
+            socket.sleep=real_sleep
+            assert(sh.preview('disable',id))
+        end
+        local count=calls
+        assert(sh.preview('comments',id))
+        assert(calls==count+1 and current.shader=='', 'outdated preview applied after newer selection')
+        return nil
+    end
+    local result, failure=sh.select()
+    socket.sleep=real_sleep
+    assert(not result and not failure); unchanged(before)
+    print('PASS: rapid selections apply only the latest preview')
 
     -- A second menu must keep the first menu's original snapshot, not its preview.
     local nested = false
