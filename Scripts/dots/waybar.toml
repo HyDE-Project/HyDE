@@ -28,3 +28,8 @@ action = "sync"
 source_root = "Configs/.local/share/waybar"
 target_root = "${XDG_DATA_HOME}/waybar"
 paths = ["includes", "modules", "styles", "layouts", "menus"]
+# swaync_config (Scripts/dots/swaync-config.toml) owns this one file, since it
+# only exists when that optional dot is deployed; claiming it here too made
+# every swaync_config deploy fail with "File conflict: .../menus/swaync.xml
+# (owned by waybar)" (#2103).
+ignored_paths = ["menus/swaync.xml"]
