@@ -71,12 +71,20 @@ pacman = [
 
 ]
 yay = [
-  "hyprquery", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
+  # theme.switch.sh calls `hyq --dump ... --schema ... --export lua`, added in
+  # HyDE-Project/hyprquery commit 3f860f2 (2026-05-05), 11 commits past the
+  # v0.6.8 tag -- the newest tag there is, and it predates --dump, so only the
+  # -git package (which this bare name resolves to via its `provides`) can
+  # ever satisfy this. An older/un-rebuilt hyprquery-git silently falls back
+  # to its pre-dump CLI, where --dump isn't a known flag and --query becomes
+  # mandatory instead, so hyq itself fails with "--query is required" and
+  # theme.switch.sh can't tell the user why (#2098).
+  "hyprquery\\>=0.6.8.r11", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
   "wlogout", # logout menu
 
 ]
 paru = [
-  "hyprquery", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
+  "hyprquery\\>=0.6.8.r11", # A CLI utility for querying configuration values from hypr-related configuration. Using native hyprlang lib.
   "wlogout", # logout menu
 
 ]

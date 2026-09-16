@@ -24,6 +24,13 @@ M.dict = {
     ["log-viewer"] = "text/x-log"
 }
 
+local KEYWORD_APP_ENV = {
+    ["web-browser"] = "DESKTOP_APP_BROWSER",
+    ["text-editor"] = "DESKTOP_APP_EDITOR",
+    ["code-editor"] = "DESKTOP_APP_EDITOR",
+    ["file-manager"] = "DESKTOP_APP_EXPLORER"
+}
+
 local LOG_LEVELS = {error = 1, warn = 2, info = 3, debug = 4}
 local current_log_level = LOG_LEVELS.info
 
@@ -101,6 +108,54 @@ local function file_exists(path)
         return true
     end
     return false
+end
+
+local function get_option_value(command, option_pattern)
+    if not command or command == "" then
+        return nil
+    end
+    return command:match(option_pattern .. '%s+"([^"]+)"') or command:match(option_pattern .. "%s+'([^']+)'") or
+        command:match(option_pattern .. "%s+([^%s]+)")
+end
+
+function M.get_configured_app_for_keyword(keyword)
+    local env_name = KEYWORD_APP_ENV[keyword]
+    if not env_name then
+        return nil
+    end
+
+    local configured_cmd = os.getenv(env_name)
+    if not configured_cmd or configured_cmd == "" then
+        return nil
+    end
+
+    local with_app = get_option_value(configured_cmd, "%-%-with")
+    if with_app and with_app ~= "" then
+        return with_app
+    end
+
+    local fallback_app = get_option_value(configured_cmd, "%-%-fall")
+    if fallback_app and fallback_app ~= "" then
+        return fallback_app
+    end
+
+    if configured_cmd:match("^%s*hyde%-shell%s+open%s+") then
+        return nil
+    end
+
+    return configured_cmd:match("^%s*([^%s]+)")
+end
+
+local function appinfo_from_candidate(candidate, source_label)
+    if not candidate or candidate == "" then
+        return nil
+    end
+    local appinfo, err = M.appinfo_from_desktop(candidate)
+    if appinfo then
+        return appinfo
+    end
+    log("debug", source_label or "candidate", "app not resolvable:", candidate, err or "")
+    return nil
 end
 
 function M.resolve_mime(input)
@@ -672,14 +727,19 @@ function M.cli_main(argv)
         else
             chosen_mime = mime
             if not chosen_appinfo then
-                local appinfo, aerr = M.find_default_app_for_mime(mime)
-                if not appinfo then
-                    io.stderr:write("No default app for mime " .. mime .. ": " .. tostring(aerr) .. "\n")
-                    if fallback_cmd then
-                        M.run_fallback(fallback_cmd, dry_run)
+                if fallback_cmd then
+                    chosen_appinfo = appinfo_from_candidate(fallback_cmd, "fallback")
+                end
+                if not chosen_appinfo then
+                    local appinfo, aerr = M.find_default_app_for_mime(mime)
+                    if not appinfo then
+                        io.stderr:write("No default app for mime " .. mime .. ": " .. tostring(aerr) .. "\n")
+                        if fallback_cmd then
+                            M.run_fallback(fallback_cmd, dry_run)
+                        end
+                    else
+                        chosen_appinfo = appinfo
                     end
-                else
-                    chosen_appinfo = appinfo
                 end
             end
 
@@ -715,6 +775,15 @@ function M.cli_main(argv)
             end
         else
             local appinfo = chosen_appinfo
+            if not appinfo then
+                local configured_app = M.get_configured_app_for_keyword(inp)
+                if configured_app then
+                    appinfo = appinfo_from_candidate(configured_app, "configured")
+                end
+            end
+            if not appinfo and fallback_cmd then
+                appinfo = appinfo_from_candidate(fallback_cmd, "fallback")
+            end
             if not appinfo then
                 local a, aerr = M.find_default_app_for_mime(mime)
                 if not a then

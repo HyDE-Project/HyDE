@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Python environment: `uv sync` now targets the HyDE-managed venv at `~/.local/state/hyde/python_env` instead of creating a project-local `.venv`; also forces `--link-mode copy` to avoid silent reflink failures on ext4 that left packages uninstalled
 - Hypridle: use Lua DPMS dispatchers so idle screen-off and resume work with the Hyprland Lua config parser
 - Theme import: `theme.import.py`'s fzf preview no longer crashes with an `AttributeError` when previewing a theme name that isn't in the cached gallery data
+- Theme: `theme.switch.sh` now logs `hyq`'s own error output to `~/.cache/hyde/logs/theme.switch.sh.log` when it fails to dump `hypr.theme` to Lua, instead of discarding it; the generic "could not dump hypr.theme" message previously left no way to tell why, and this runtime script has no log file at all otherwise since it never goes through install.sh's `HYDE_LOG` (#2098)
 
 ## v26.08.21
 
