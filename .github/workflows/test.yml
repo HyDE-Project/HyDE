@@ -28,7 +28,7 @@ jobs:
       - name: Install test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lua5.4 shellcheck fish
+          sudo apt-get install -y --no-install-recommends lua5.4 lua-filesystem lua-socket lua-argparse lua-dkjson shellcheck fish
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
 
@@ -41,6 +41,9 @@ jobs:
 
       - name: Run the test suite
         run: sh tests/run.sh
+
+      - name: Check shader state and consent
+        run: lua .github/scripts/test_shaders.lua
 
       - name: Check hyde-shell open app priority
         run: sh .github/scripts/test_open_priority.sh

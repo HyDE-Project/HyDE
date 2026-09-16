@@ -36,6 +36,8 @@ this is an "include" file.
 */
 
 #version 300 es
+// Requires explicit confirmation in the selector: disabling damage tracking
+// greatly increases GPU usage. The previous setting is restored on shader switch.
 #define HYPRLAND_HOOK debug:damage_tracking false
 
 #ifndef OLED_MONITOR
