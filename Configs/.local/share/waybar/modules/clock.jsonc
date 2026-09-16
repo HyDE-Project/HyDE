@@ -1,6 +1,7 @@
 {
   "clock": {
     "format": "{:L%X}",
+    "interval": 1,
     "rotate": 0,
     "format-alt": "{:L%X \udb80\udced %x}",
     "tooltip-format": "<span>{calendar}</span>",
