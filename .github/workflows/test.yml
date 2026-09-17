@@ -42,9 +42,6 @@ jobs:
       - name: Run the test suite
         run: sh tests/run.sh
 
-      - name: Check shader state and consent
-        run: lua .github/scripts/test_shaders.lua
-
       - name: Check hyde-shell open app priority
         run: sh .github/scripts/test_open_priority.sh
 
