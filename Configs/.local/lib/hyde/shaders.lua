@@ -545,10 +545,12 @@ function M.select(opts)
     local restored, restore_err = locked(function()
         local menu = read_menu()
         if not menu or menu.token ~= token then return nil, "shader menu was replaced by another selection" end
-        os.remove(MENU_FILE)
         local preview = runtime_state()
         local result, failure = apply_config(before.shader, before.damage)
-        if result and preview and preview.shader ~= before.shader then discard(preview.shader) end
+        if result then
+            os.remove(MENU_FILE)
+            if preview and preview.shader ~= before.shader then discard(preview.shader) end
+        end
         return result, failure
     end)
     if not restored then return nil, restore_err end

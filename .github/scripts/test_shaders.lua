@@ -216,6 +216,26 @@ local ok, err = xpcall(function()
     _G.hl={config=config}; dofile(sh.state_file); _G.hl=nil
     assert(current.shader=='' and current.damage==2)
     print('PASS: metadata is stored as data; missing compiled cache restores safely')
+
+    -- Regression: a restore that fails to re-apply the Hyprland config must not discard the
+    -- crash-recovery menu file. It used to be removed unconditionally before apply_config was
+    -- even attempted, so a failed (or crashed) restore left nothing for the next select() to
+    -- recover the pre-menu shader/damage from.
+    current = {shader='', damage=2}
+    assert(sh.set('static'))
+    before = snapshot()
+    local menu_file = xdg.runtime..'/hyde/shaders/preview'
+    menu = function() rejection = true; return nil end
+    local failed, failed_err = sh.select()
+    assert(not failed and failed_err, 'a rejected restore must surface an error')
+    assert(current.shader == before.runtime.shader, 'a rejected restore must leave the still-applied preview alone')
+    local recovered = require('dkjson').decode(read(menu_file))
+    assert(recovered and recovered.shader == before.runtime.shader and recovered.damage == before.runtime.damage,
+        'the menu file must survive a failed restore so a crashed/rejected select() can still recover')
+    menu = function() return nil end
+    assert(not sh.select()); unchanged(before)
+    assert(not io.open(menu_file), 'a successful restore must still clean up the menu file')
+    print('PASS: a rejected restore keeps the crash-recovery menu file instead of discarding it')
 end, debug.traceback)
 remove_tree(root)
 if not ok then error(err,0) end
