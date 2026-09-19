@@ -1,0 +1,13 @@
+{
+  "custom/caffeine": {
+    "return-type": "json",
+    "format": "{}",
+    "rotate": 0,
+    "justify": "center",
+    "exec": "hyde-shell caffeine -rq",
+    "on-click": "hyde-shell caffeine -t -P waybar,21",
+    "interval": "once",
+    "signal": 21,
+    "tooltip": true
+  }
+}

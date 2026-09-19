@@ -40,7 +40,7 @@
         "orientation": "inherit",
         "modules": [
             "wlr/taskbar",
-            "idle_inhibitor",
+            "custom/caffeine",
             "clock"
         ]
     },
