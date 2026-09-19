@@ -13,13 +13,26 @@
 # background process independent of Waybar's lifecycle. hypridle.conf already
 # has `ignore_systemd_inhibit = false`, so it respects this natively -- no
 # custom Wayland idle-inhibit protocol client needed.
+# Checked before hyde-shell/globalcontrol.sh is sourced below: that source
+# sets its own XDG_RUNTIME_DIR fallback ("/run/user/$(id -u)"), which would
+# make this check unreachable. A shared, world-writable fallback like
+# /tmp/hyde would let another local user pre-plant that path (a directory
+# they own, or a symlink) and read or interfere with this user's caffeine
+# state and inhibitor pid (CWE-377). XDG_RUNTIME_DIR is always set on a
+# normal systemd/logind-managed session, so its absence means a broken or
+# unusual environment -- fail clearly instead of degrading into that risk.
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    echo "Error: XDG_RUNTIME_DIR is not set, refusing to use a shared fallback location" >&2
+    exit 1
+fi
+
 if ! source "$(which hyde-shell)"; then
     echo "[$0] :: Error: hyde-shell not found."
     echo "[$0] :: Is HyDE installed?"
     exit 1
 fi
 
-state_dir="${XDG_RUNTIME_DIR:-/tmp}/hyde"
+state_dir="$XDG_RUNTIME_DIR/hyde"
 state_file="$state_dir/caffeine"
 lock_file="$state_dir/caffeine.lock"
 mkdir -p "$state_dir"
