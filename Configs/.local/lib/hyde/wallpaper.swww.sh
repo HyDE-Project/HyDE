@@ -4,20 +4,10 @@
 notify-send "DEPRECATION NOTICE: swww backend is deprecated, please switch to awww or other supported backends. See 'hyde-shell wallpaper --help' for more info."
 
 selected_wall="${1:-"$$HYDE_CACHE_HOME/wall.set"}"
-lockFile="$XDG_RUNTIME_DIR/hyde/$(basename "$0").lock"
-if [ -e "$lockFile" ]; then
-    cat << EOF
-
-Error: Another instance of $(basename "$0") is running.
-If you are sure that no other instance is running, remove the lock file:
-    $lockFile
-EOF
-    exit 1
-fi
-touch "$lockFile"
-trap 'rm -f ${lockFile}' EXIT
 scrDir="$(dirname "$(realpath "$0")")"
 source "$scrDir/globalcontrol.sh"
+wallpaper_acquire_lock 15
+trap 'flock -u "$WALLPAPER_LOCK_FD"' EXIT
 case "$WALLPAPER_SET_FLAG" in
     p)
         xtrans=$WALLPAPER_SWWW_TRANSITION_PREV
@@ -49,4 +39,4 @@ xtrans=$WALLPAPER_SWWW_TRANSITION_DEFAULT
 [ -z "$wallFramerate" ] && wallFramerate=60
 [ -z "$wallTransDuration" ] && wallTransDuration=0.4
 print_log -sec "wallpaper" -stat "apply" "$selected_wall"
-swww img "$(readlink -f "$selected_wall")" --transition-bezier .43,1.19,1,.4 --transition-type "$xtrans" --transition-duration "$wallTransDuration" --transition-fps "$wallFramerate" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")" &
+timeout 30 swww img "$(readlink -f "$selected_wall")" --transition-bezier .43,1.19,1,.4 --transition-type "$xtrans" --transition-duration "$wallTransDuration" --transition-fps "$wallFramerate" --invert-y --transition-pos "$(hyprctl cursorpos | grep -E '^[0-9]' || echo "0,0")"

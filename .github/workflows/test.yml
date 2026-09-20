@@ -17,10 +17,51 @@ jobs:
     name: Configuration and script checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source repository
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
           submodules: recursive
+
+      - name: Resolve test repository and branch
+        id: resolve-tests
+        env:
+          REPO_OWNER: HyDE-Project
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name || '' }}
+          FORK_OWNER: ${{ github.event.pull_request.head.repo.owner.login || '' }}
+          REPO_FULL: ${{ github.repository }}
+        run: |
+          set -eu
+
+          target_owner="$REPO_OWNER"
+          target_branch="main"
+
+          branch_exists() {
+            git ls-remote --heads --exit-code "https://github.com/$1/tests.git" "refs/heads/$2" >/dev/null 2>&1
+          }
+
+          if branch_exists "$REPO_OWNER" "$BRANCH_NAME"; then
+            target_owner="$REPO_OWNER"
+            target_branch="$BRANCH_NAME"
+          elif [ "$EVENT_NAME" = "pull_request" ] && [ -n "$HEAD_REPO" ] && [ "$HEAD_REPO" != "$REPO_FULL" ] && [ -n "$FORK_OWNER" ] && branch_exists "$FORK_OWNER" "$BRANCH_NAME"; then
+            target_owner="$FORK_OWNER"
+            target_branch="$BRANCH_NAME"
+          fi
+
+          echo "owner=$target_owner" >> "$GITHUB_OUTPUT"
+          echo "branch=$target_branch" >> "$GITHUB_OUTPUT"
+          echo "Using tests from $target_owner/tests:$target_branch"
+
+      - name: Checkout tests repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.resolve-tests.outputs.owner }}/tests
+          ref: ${{ steps.resolve-tests.outputs.branch }}
+          path: tests
+          persist-credentials: false
+          fetch-depth: 1
 
       - name: Require test suite
         run: test -f tests/run.sh
@@ -28,7 +69,7 @@ jobs:
       - name: Install test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lua5.4 shellcheck fish
+          sudo apt-get install -y --no-install-recommends lua5.4 lua-filesystem lua-socket lua-argparse lua-dkjson shellcheck fish
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
 
@@ -42,6 +83,9 @@ jobs:
       - name: Run the test suite
         run: sh tests/run.sh
 
+      - name: Check hyde-shell open app priority
+        run: sh .github/scripts/test_open_priority.sh
+
   coverage:
     name: Shell coverage
     runs-on: ubuntu-latest
@@ -49,10 +93,51 @@ jobs:
     env:
       KCOV_VERSION: v43
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout source repository
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
           submodules: recursive
+
+      - name: Resolve test repository and branch
+        id: resolve-tests
+        env:
+          REPO_OWNER: HyDE-Project
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name || '' }}
+          FORK_OWNER: ${{ github.event.pull_request.head.repo.owner.login || '' }}
+          REPO_FULL: ${{ github.repository }}
+        run: |
+          set -eu
+
+          target_owner="$REPO_OWNER"
+          target_branch="main"
+
+          branch_exists() {
+            git ls-remote --heads --exit-code "https://github.com/$1/tests.git" "refs/heads/$2" >/dev/null 2>&1
+          }
+
+          if branch_exists "$REPO_OWNER" "$BRANCH_NAME"; then
+            target_owner="$REPO_OWNER"
+            target_branch="$BRANCH_NAME"
+          elif [ "$EVENT_NAME" = "pull_request" ] && [ -n "$HEAD_REPO" ] && [ "$HEAD_REPO" != "$REPO_FULL" ] && [ -n "$FORK_OWNER" ] && branch_exists "$FORK_OWNER" "$BRANCH_NAME"; then
+            target_owner="$FORK_OWNER"
+            target_branch="$BRANCH_NAME"
+          fi
+
+          echo "owner=$target_owner" >> "$GITHUB_OUTPUT"
+          echo "branch=$target_branch" >> "$GITHUB_OUTPUT"
+          echo "Using tests from $target_owner/tests:$target_branch"
+
+      - name: Checkout tests repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.resolve-tests.outputs.owner }}/tests
+          ref: ${{ steps.resolve-tests.outputs.branch }}
+          path: tests
+          persist-credentials: false
+          fetch-depth: 1
 
       - name: Install test and coverage dependencies
         run: |

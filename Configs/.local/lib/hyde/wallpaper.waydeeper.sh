@@ -3,21 +3,8 @@
 scrDir="$(dirname "$(realpath "$0")")"
 source "$scrDir/globalcontrol.sh"
 
-lockDir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
-mkdir -p "$lockDir"
-lockFile="$lockDir/$(basename "$0").lock"
-
-if ! ( set -o noclobber; : > "$lockFile" ) 2>/dev/null; then
-    cat << EOF
-
-Error: Another instance of $(basename "$0") is running.
-If you are sure that no other instance is running, remove the lock file:
-    $lockFile
-EOF
-    exit 1
-fi
-touch "$lockFile"
-trap 'rm -f "${lockFile}"' EXIT
+wallpaper_acquire_lock 30
+trap 'flock -u "$WALLPAPER_LOCK_FD"' EXIT
 
 selected_wall="${1:-"$HYDE_CACHE_HOME/wall.set"}"
 selected_wall="$(readlink -f "$selected_wall")"
@@ -101,7 +88,8 @@ fi
 
 # Set wallpaper on all monitors (waydeeper handles multi-monitor by default)
 print_log -sec "wallpaper" -stat "apply" "$selected_wall"
-"${waydeeper_args[@]}" &
+timeout 60 "${waydeeper_args[@]}"
+set_status=$?
 
 # Start daemon if not already running
 if ! pgrep -f "waydeeper daemon" &>/dev/null; then
@@ -109,3 +97,5 @@ if ! pgrep -f "waydeeper daemon" &>/dev/null; then
     waydeeper daemon &
     disown
 fi
+
+exit "$set_status"

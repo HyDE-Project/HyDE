@@ -5,7 +5,6 @@ package.path = package.path .. ";" .. root .. "?.lua;" .. root .. "?/init.lua;"
 require("luautils.init")
 require("luautils.theme.parser")
 
-local rofi = require("luautils.selector.rofi")
 local sh = require("shaders")
 
 local current = sh.current() or {}
@@ -19,22 +18,16 @@ for i, item in ipairs(sh.list) do
     end
 end
 
-local selected =
-    rofi.select(
-    sh.list,
-    {
-        env_prefix = "ROFI_SHADER",
-        prioritize = {"00-disable", "disable", "Disable Shader"},
-        current_name = current_name,
-        current_icon = current_icon,
-        current_row = current_row,
-        prompt = "Select shader",
-        placeholder = "Shaders...",
-        on_selection_changed = sh.rofi_opts and sh.rofi_opts.on_selection_changed,
-        on_menu_canceled = sh.rofi_opts and sh.rofi_opts.on_menu_canceled
-    }
-)
-
-if selected and selected ~= "" then
-    sh.set(selected)
+local item, err = sh.select({
+    env_prefix = "ROFI_SHADER",
+    prioritize = {"00-disable", "disable", "Disable Shader"},
+    current_name = current_name,
+    current_icon = current_icon,
+    current_row = current_row,
+    prompt = "Select shader",
+    placeholder = "Shaders..."
+})
+if err then
+    io.stderr:write("Error: " .. tostring(err) .. "\n")
+    os.exit(1)
 end

@@ -506,6 +506,49 @@ wallbash_state_is_complete() {
     done
     return 0
 }
+##
+# Serializes wallpaper-backend invocations (awww/swww/waydeeper/hyprpaper) so
+# concurrent theme/wallpaper switches apply in order instead of racing.
+#
+# A plain "does the lock file exist" check-then-touch lock has two problems:
+# the check and the touch aren't atomic, and once a second invocation sees
+# the file it gives up immediately instead of waiting its turn, so its own
+# wallpaper apply is silently skipped while the rest of the theme still
+# switches. flock instead blocks the caller until the current holder exits,
+# and releases itself automatically (even on a crash) since it is tied to
+# the open file descriptor, not the file's mere existence on disk -- so,
+# unlike the old lock, deleting the lock file while it's held does not help
+# and should not be suggested: unlinking it just lets a second invocation
+# open and lock a *new* inode at the same path, running concurrently with
+# whatever still holds the old one.
+#
+# Callers must hold the lock for as long as their actual apply command
+# runs, not just until it's been backgrounded, or two overlapping switches
+# can still race to be the one left on screen.
+#
+# The lock file name is fixed (not derived from $0): "which wallpaper is on
+# screen" is one shared resource regardless of which backend script touches
+# it, so a switch to backend A must still serialize against one still
+# in-flight on backend B, e.g. right after WALLPAPER_BACKEND changes.
+#
+# Globals:
+#   Sets WALLPAPER_LOCK_FD, to be released via `flock -u "$WALLPAPER_LOCK_FD"`
+# Arguments:
+#   $1 - seconds to wait for a held lock before giving up (default: 15)
+# Returns:
+#   0 once the lock is held; exits 1 after printing an error on timeout
+##
+wallpaper_acquire_lock() {
+    local timeout="${1:-15}"
+    local lockDir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hyde"
+    mkdir -p "$lockDir"
+    exec {WALLPAPER_LOCK_FD}>"$lockDir/wallpaper.lock"
+    if ! flock -w "$timeout" "$WALLPAPER_LOCK_FD"; then
+        echo "Error: Another wallpaper backend is still running after waiting ${timeout}s." >&2
+        exit 1
+    fi
+}
+
 toml_write() {
     local config_file=$1
     local group=$2
