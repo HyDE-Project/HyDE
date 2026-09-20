@@ -14,9 +14,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
 
 ### Fixed
+- Installer: `theme.switch.sh` no longer fails with "HyDE: command not found" during `install.sh -r` by sourcing `globalcontrol.sh` directly when `hyde-shell init` is unavailable
+- Dependencies: removed unreliable version constraint `hyprquery>=0.6.8.r11`. Advise users to update `yay -Sy hyprquery`.
+
+### Fixed
 - Waybar: honor an optional `$WAYBAR_LAYOUT` in `hypr.theme` during color/theme updates, selecting the layout and matching stylesheet temporarily. Restore the previous layout and independently selected CSS when leaving themes with a preset, preserving them across repeated updates and preset-to-preset switches. Fix theme setting lookup for names containing spaces such as `Mac OS`.
 - Waybar: repair the macOS preset, remove its blocking wallpaper decoder, use an accessible semantic palette, and restore spacing between HyDE menu icons and labels
-- Hyprland: prevent window borders from being clipped when snapping to monitor edges in 0-gap workflows 
+- Hyprland: prevent window borders from being clipped when snapping to monitor edges in 0-gap workflows
 - Hyprland: windows that cannot join a group, such as pyprland's dropdown terminal, get the same border colors as every other window; `general.col.nogroup_border` and `nogroup_border_active` were never set, so those windows kept Hyprland's magenta and yellow defaults whatever the theme or wallbash mode
 - Hyprland: the dropdown terminal (`SUPER + ALT + T`) no longer reappears and fades out after sliding off-screen when an animation preset is active; pyprland's `no_anim` rule for the `pypr_noanim` tag is registered at runtime and was lost on every config reload, so it is now declared in `window_rules.lua`
 - Waybar, wlogout: fix logout button behavior

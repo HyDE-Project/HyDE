@@ -499,7 +499,11 @@ EOF
 	"${scrDir}/restore_thm.sh"
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
+		# Initialize HyDE environment from deployed dotfiles so scripts don't need hyde-shell init
 		export PATH="$HOME/.local/lib/hyde:$HOME/.local/bin:${PATH}"
+		export HYDE_SHELL_INIT=1
+		# shellcheck disable=SC1091
+		source "$HOME/.local/lib/hyde/globalcontrol.sh"
 		if ! "$HOME/.local/lib/hyde/wallpaper/cache.sh" commence -t ""; then
 			print_log -err "[theme] " -crit "ERROR" "Wallpaper cache was not generated"
 			theme_failed=1
