@@ -503,7 +503,10 @@ EOF
 		export PATH="$HOME/.local/lib/hyde:$HOME/.local/bin:${PATH}"
 		export HYDE_SHELL_INIT=1
 		# shellcheck disable=SC1091
-		source "$HOME/.local/lib/hyde/globalcontrol.sh"
+		if ! source "$HOME/.local/lib/hyde/globalcontrol.sh"; then
+			print_log -err "[theme] " -crit "ERROR" "HyDE environment could not be initialized"
+			theme_failed=1
+		fi
 		if ! "$HOME/.local/lib/hyde/wallpaper/cache.sh" commence -t ""; then
 			print_log -err "[theme] " -crit "ERROR" "Wallpaper cache was not generated"
 			theme_failed=1
