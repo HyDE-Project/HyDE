@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 - Installer: `theme.switch.sh` no longer fails with "HyDE: command not found" during `install.sh -r` by sourcing `globalcontrol.sh` directly when `hyde-shell init` is unavailable
 - Dependencies: removed unreliable version constraint `hyprquery>=0.6.8.r11`. Advise users to update `yay -Sy hyprquery`.
+- Wallpaper: `theme.switch.sh` no longer hangs forever when the awww/swww daemon is running but unresponsive. The daemon health-check (`<backend> query`, and `<backend> restore` after a restart) ran as a plain foreground call with no bound, unlike the apply command it precedes; a stalled daemon left it blocking indefinitely. It is now wrapped in `timeout`, the same treatment the apply command already had.
 
 ### Fixed
 - Waybar: honor an optional `$WAYBAR_LAYOUT` in `hypr.theme` during color/theme updates, selecting the layout and matching stylesheet temporarily. Restore the previous layout and independently selected CSS when leaving themes with a preset, preserving them across repeated updates and preset-to-preset switches. Fix theme setting lookup for names containing spaces such as `Mac OS`.
