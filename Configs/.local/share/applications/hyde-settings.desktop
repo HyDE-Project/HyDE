@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=HyDE Settings
+Name[de]=HyDE-Einstellungen
+Comment=System tools and HyDE appearance in one place
+Exec=hyde-shell app -t scope -- hyde-shell settings
+Icon=preferences-system
+Terminal=false
+Categories=Settings;DesktopSettings;
+Keywords=HyDE;Settings;Audio;Display;Network;Bluetooth;
+StartupWMClass=org.hyde.Settings

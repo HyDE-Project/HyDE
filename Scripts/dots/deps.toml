@@ -2,6 +2,8 @@
 # Core pacman dependencies imported from Scripts/pkg_core.lst
 pacman = [
   # System
+  "python-gobject", # HyDE Settings GTK introspection
+  "gtk3", # HyDE Settings toolkit
   "lua", # for lua runtime
   "luarocks", # Core scripts lib
   "libgirepository", # headers and pkg-config data the lgi rock is built against

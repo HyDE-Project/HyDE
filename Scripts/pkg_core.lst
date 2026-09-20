@@ -41,6 +41,8 @@ wl-clip-persist                                        # Keep Wayland clipboard 
 hyprsunset                                             # blue light filter
 
 # --------------------------------------------------- // Dependencies
+python-gobject                                         # HyDE Settings GTK introspection
+gtk3                                                   # HyDE Settings toolkit
 lua                                                    # lua interpreter, required by the hyprland configuration
 hyprpolkitagent                                        # authentication agent
 xdg-desktop-portal-hyprland                            # xdg desktop portal for hyprland

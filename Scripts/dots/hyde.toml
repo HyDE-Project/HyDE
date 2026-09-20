@@ -101,6 +101,13 @@ source_root = "Configs/.local/bin"
 target_root = "${HOME}/.local/bin"
 paths = ["hyde-shell", "hydectl"]
 
+# Deploy only this launcher; never clean the user's applications directory.
+[[hyde.files]]
+action = "sync"
+source_root = "Configs/.local/share"
+target_root = "${XDG_DATA_HOME}"
+paths = ["applications/hyde-settings.desktop"]
+
 [grimblast]
 version = "26.08.17"
 source = "blob+https://raw.githubusercontent.com/hyprwm/contrib/refs/heads/main/grimblast/grimblast"

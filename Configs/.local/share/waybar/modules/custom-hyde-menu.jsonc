@@ -6,6 +6,7 @@
     "menu": "on-click-right",
     "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/hyde-menu.xml",
     "menu-actions": {
+      "settings": "hyde-shell app -t scope -- hyde-shell settings",
       "animations-select": "hyde-shell animations --select",
       "wallpaper-select": "hyde-shell app -t scope -- wallpaper.sh --select --global",
       "wallpaper-next": "hyde-shell app -t scope -- wallpaper.sh --next --global",
