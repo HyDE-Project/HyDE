@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Firewall
+Comment=Configure the UFW firewall
+Exec=hyde-shell app -t scope -- kcmshell6 firewall
+Icon=security-high-symbolic
+Terminal=false
+NoDisplay=true
