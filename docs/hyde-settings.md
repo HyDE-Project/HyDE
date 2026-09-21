@@ -237,14 +237,21 @@ manage the same backend (both drive `ufw` here).
 Known limitation: `plasma-firewall` 6.7.5's rule list can render empty even
 when `ufw` has active rules -- verified the rules parse correctly through
 `ufw`'s own Python library (`UFWBackendIptables.get_rules()`), so the data
-is there; the bug is in plasma-firewall's own KAuth helper or QML list view.
+is there; moving the mouse over the (empty-looking) table makes the rows
+appear. Root cause: `RuleListModel::setProfile()` loads the rules via
+`beginResetModel()`/`endResetModel()` asynchronously, after `TableView` has
+already laid out against the still-empty model; `QQuickTableView` doesn't
+reliably relayout on a bare `modelReset()`, and the hover handler's
+`cellAtPosition()` call incidentally forces the relayout that reveals the
+rows. Reported upstream as
+[plasma-firewall#28](https://invent.kde.org/plasma/plasma-firewall/-/issues/28).
 Not the same issue as the KDE-tracked "Add rule" dialog list bug
 ([bugs.kde.org #461726](https://bugs.kde.org/show_bug.cgi?id=461726)), which
-was fixed in Plasma Firewall 5.27 -- that one's long resolved by 6.7.5, this
-is an unfiled, separate rendering gap. Kept anyway over `gufw` because a
-Wayland-safe launch that sometimes under-displays rules beats one that never
-opens a window at all; adding and removing rules is unaffected, and `ufw
-status verbose` in a terminal is the reliable fallback for viewing them.
+was fixed in Plasma Firewall 5.27 -- that one's long resolved by 6.7.5. Kept
+anyway over `gufw` because a Wayland-safe launch that sometimes
+under-displays rules beats one that never opens a window at all; adding and
+removing rules is unaffected, and `ufw status verbose` in a terminal is
+the reliable fallback for viewing them.
 
 ## Testing
 
