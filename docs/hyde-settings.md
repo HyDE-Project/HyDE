@@ -237,13 +237,14 @@ manage the same backend (both drive `ufw` here).
 Known limitation: `plasma-firewall` 6.7.5's rule list can render empty even
 when `ufw` has active rules -- verified the rules parse correctly through
 `ufw`'s own Python library (`UFWBackendIptables.get_rules()`), so the data
-is there; the bug is in plasma-firewall's own KAuth helper or QML list view,
-matching the KDE-tracked "Add rule" dialog list bug
-([bugs.kde.org #461726](https://bugs.kde.org/show_bug.cgi?id=461726)). Kept
-anyway over `gufw` because a Wayland-safe launch that sometimes
-under-displays rules beats one that never opens a window at all; adding and
-removing rules is unaffected, and `ufw status verbose` in a terminal is
-the reliable fallback for viewing them.
+is there; the bug is in plasma-firewall's own KAuth helper or QML list view.
+Not the same issue as the KDE-tracked "Add rule" dialog list bug
+([bugs.kde.org #461726](https://bugs.kde.org/show_bug.cgi?id=461726)), which
+was fixed in Plasma Firewall 5.27 -- that one's long resolved by 6.7.5, this
+is an unfiled, separate rendering gap. Kept anyway over `gufw` because a
+Wayland-safe launch that sometimes under-displays rules beats one that never
+opens a window at all; adding and removing rules is unaffected, and `ufw
+status verbose` in a terminal is the reliable fallback for viewing them.
 
 ## Testing
 
