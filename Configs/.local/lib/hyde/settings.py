@@ -144,16 +144,21 @@ def command_output(argv):
         return ""
 
 
-def user_conf_path():
-    """Same file HyDE's own shell scripts source for user overrides."""
-    return xdg_path("XDG_STATE_HOME", ".local/state") / "hyde/config"
+def user_state_path():
+    """HyDE's own persistent runtime-state file -- the same one globalcontrol.sh's
+    set_conf() writes (HYDE_THEME, HYPR_LAYOUT, ...). Unlike $XDG_STATE_HOME/hyde/config,
+    this file is never regenerated wholesale by config.lua, so a value written here
+    survives the next config.toml edit or daemon restart instead of being silently
+    dropped (config.lua rebuilds that other file's contents entirely from config.toml
+    on every change, keeping only keys config.toml itself defines)."""
+    return xdg_path("XDG_STATE_HOME", ".local/state") / "hyde/staterc"
 
 
-def read_user_conf(key):
-    # Written by write_user_conf() below via shlex.quote(); shlex.split()
+def read_user_state(key):
+    # Written by write_user_state() below via shlex.quote(); shlex.split()
     # is the matching unquote, so values with $, `, ", or spaces (e.g. a
     # geocoded place name) round-trip instead of corrupting the parse.
-    match = re.search(rf"^export {re.escape(key)}=(.*)$", read_text(user_conf_path()), re.M)
+    match = re.search(rf"^{re.escape(key)}=(.*)$", read_text(user_state_path()), re.M)
     if not match:
         return ""
     try:
@@ -163,21 +168,83 @@ def read_user_conf(key):
     return parts[0] if parts else ""
 
 
-def write_user_conf(key, value):
-    path = user_conf_path()
-    # globalcontrol.sh sources this file; some values here (WEATHER_LOCATION_LABEL)
-    # come from an external geocoding API. shlex.quote() single-quotes the value,
-    # which bash performs no expansion inside of -- unlike the previous bare
-    # export KEY="value" -- so an API response can't inject shell commands.
+def write_user_state(key, value):
+    path = user_state_path()
+    # globalcontrol.sh's export_hyde_config() sources this file; some values
+    # here (WEATHER_LOCATION_LABEL) come from an external geocoding API.
+    # shlex.quote() single-quotes the value, which bash performs no expansion
+    # inside of, so an API response can't inject shell commands.
     # A literal newline would still round-trip through a real shell (single
-    # quotes preserve it), but read_user_conf()'s line-based regex can't see
+    # quotes preserve it), but read_user_state()'s line-based regex can't see
     # past it -- these are one-line display values, so collapse it instead.
     value = re.sub(r"[\r\n]+", " ", value)
-    line = f"export {key}={shlex.quote(value)}"
-    lines = [line_ for line_ in read_text(path).splitlines() if not line_.startswith(f"export {key}=")]
+    line = f"{key}={shlex.quote(value)}"
+    lines = [line_ for line_ in read_text(path).splitlines() if not line_.startswith(f"{key}=")]
     lines.append(line)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n")
+
+
+def config_toml_path():
+    return xdg_path("XDG_CONFIG_HOME", ".config") / "hyde/config.toml"
+
+
+def _weather_section_span(text):
+    header = re.search(r"^\[weather\][ \t]*$", text, re.M)
+    if not header:
+        return None
+    start = header.end()
+    next_header = re.search(r"^\[", text[start:], re.M)
+    end = start + next_header.start() if next_header else len(text)
+    return start, end
+
+
+def read_weather_location():
+    """config.toml's [weather] location is the actual source of truth --
+    config.lua's watcher regenerates and exports WEATHER_LOCATION from it on
+    every change, so reading that generated file here would race the daemon
+    right after write_weather_location() runs."""
+    try:
+        text = config_toml_path().read_text()
+    except OSError:
+        return ""
+    span = _weather_section_span(text)
+    if not span:
+        return ""
+    match = re.search(r'^[ \t]*location[ \t]*=[ \t]*"((?:[^"\\]|\\.)*)"', text[span[0]:span[1]], re.M)
+    return match[1].replace('\\"', '"').replace("\\\\", "\\") if match else ""
+
+
+def write_weather_location(value):
+    """Set [weather] location in config.toml (creating the section if it's
+    missing) instead of the generated env file. config.lua's watcher notices
+    the edit, regenerates WEATHER_LOCATION, and reloads Hyprland -- the same
+    path every other HyDE setting change already goes through."""
+    path = config_toml_path()
+    try:
+        text = path.read_text()
+    except OSError:
+        text = ""
+    escaped = value.replace("\\", "\\\\").replace('"', '\\"')
+    new_line = f'location = "{escaped}"'
+    span = _weather_section_span(text)
+    if not span:
+        if text.strip():
+            text = text if text.endswith("\n") else text + "\n"
+            text += f"\n[weather]\n{new_line}\n"
+        else:
+            text = f"[weather]\n{new_line}\n"
+    else:
+        start, end = span
+        section = text[start:end]
+        key_match = re.search(r"^[ \t]*location[ \t]*=.*$", section, re.M)
+        if key_match:
+            section = section[:key_match.start()] + new_line + section[key_match.end():]
+        else:
+            section = section.rstrip("\n") + f"\n{new_line}\n"
+        text = text[:start] + section + text[end:]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
 
 
 def geocode_search(query):
@@ -497,7 +564,7 @@ def create_application():
             self.info = None
             # Restored across a full cold start (not just a re-present of the
             # existing window); an unknown/stale saved value falls back safely.
-            saved_category = read_user_conf("HYDE_SETTINGS_LAST_CATEGORY")
+            saved_category = read_user_state("HYDE_SETTINGS_LAST_CATEGORY")
             self.category = saved_category if saved_category in CATEGORIES else CATEGORIES[0]
             self.last_query = ""
             self.positions = {}
@@ -631,7 +698,7 @@ def create_application():
                 return
             self.save_position()
             self.category = CATEGORIES[row.get_index()]
-            write_user_conf("HYDE_SETTINGS_LAST_CATEGORY", self.category)
+            write_user_state("HYDE_SETTINGS_LAST_CATEGORY", self.category)
             self.search.handler_block_by_func(self.search_changed)
             self.search.set_text("")
             self.search.handler_unblock_by_func(self.search_changed)
@@ -706,7 +773,7 @@ def create_application():
             # get_string("Name") reads the desktop file's base, non-localized key.
             is_selector = available and any("select" in arg for arg in entry.target)
             if entry.title == "Weather location":
-                current = read_user_conf("WEATHER_LOCATION_LABEL") or read_user_conf("WEATHER_LOCATION")
+                current = read_user_state("WEATHER_LOCATION_LABEL") or read_weather_location()
                 detail = f"Current: {current}" if current else "Not set -- Waybar falls back to your network location"
             else:
                 detail = (
@@ -793,9 +860,9 @@ def create_application():
 
             def row_activated(_listbox, row):
                 place = row.place
-                write_user_conf("WEATHER_LOCATION", f"{place['latitude']},{place['longitude']}")
+                write_weather_location(f"{place['latitude']},{place['longitude']}")
                 label = ", ".join(str(part) for part in (place.get("name"), place.get("admin1"), place.get("country")) if part)
-                write_user_conf("WEATHER_LOCATION_LABEL", label)
+                write_user_state("WEATHER_LOCATION_LABEL", label)
                 dialog.response(Gtk.ResponseType.OK)
 
             results.connect("row-activated", row_activated)
