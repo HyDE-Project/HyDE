@@ -13,6 +13,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import unicodedata
 import urllib.parse
@@ -144,6 +145,29 @@ def command_output(argv):
         return ""
 
 
+def atomic_write_text(path, text):
+    """Same-directory temp file + os.replace(), matching config.lua's own
+    write_lines_to_file()/make_temp_filename() pattern. Both files this is used
+    for are read by something else while HyDE is running (globalcontrol.sh
+    sourcing staterc, config.lua's inotify watcher on config.toml), which a
+    plain path.write_text() could hand a truncated, briefly-empty file to."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.")
+    tmp_path = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "w") as stream:
+            stream.write(text)
+        try:
+            tmp_path.chmod(path.stat().st_mode & 0o777)
+        except OSError:
+            pass  # target doesn't exist yet (first write) -- keep mkstemp's mode
+        os.replace(tmp_path, path)
+    except OSError:
+        tmp_path.unlink(missing_ok=True)
+        raise
+
+
 def user_state_path():
     """HyDE's own persistent runtime-state file -- the same one globalcontrol.sh's
     set_conf() writes (HYDE_THEME, HYPR_LAYOUT, ...). Unlike $XDG_STATE_HOME/hyde/config,
@@ -182,14 +206,16 @@ def write_user_state(key, value):
     lines = [line_ for line_ in read_text(path).splitlines() if not line_.startswith(f"{key}=")]
     lines.append(line)
     try:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text("\n".join(lines) + "\n")
+        atomic_write_text(path, "\n".join(lines) + "\n")
+        return True
     except OSError:
         # Best-effort persistence, same as command_output()'s probes: a full
         # disk or an unwritable state dir must not abort the caller (the UI
         # action that triggered this write, e.g. switching category, has
-        # already happened and still needs to render).
-        pass
+        # already happened and still needs to render). row_activated() below
+        # is the one caller where losing this write matters to the user, and
+        # it checks the return value instead of ignoring it like this one.
+        return False
 
 
 def config_toml_path():
@@ -251,12 +277,14 @@ def write_weather_location(value):
             section = section.rstrip("\n") + f"\n{new_line}\n"
         text = text[:start] + section + text[end:]
     try:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text)
+        atomic_write_text(path, text)
+        return True
     except OSError:
-        # Best-effort persistence, same as write_user_state(): an unwritable
-        # config dir must not abort the caller (closing the location dialog).
-        pass
+        # Unlike write_user_state(), losing this write matters: it's the
+        # user's actual chosen location, not cosmetic UI state, so the caller
+        # (row_activated() below) checks this return value and reports the
+        # failure instead of closing the dialog as if it had succeeded.
+        return False
 
 
 def geocode_search(query):
@@ -452,6 +480,15 @@ def readable_foreground(fg, bg, minimum=4.5):
     with solid black and solid white; if either leaves `fg` under `minimum` against
     `bg`, return `fg` made fully opaque so its readability stops depending on the
     backdrop at all, instead of silently failing WCAG AA on some wallpapers.
+
+    Known limitation: this only fixes translucency-driven contrast loss, which is
+    what every case seen so far has been (see test_readable_foreground's real
+    Waybar values). It does not guarantee `minimum` is met -- if a Wallbash
+    palette ever derives `fg` and `bg` as the same (or too similar) opaque
+    colour, forcing full opacity changes nothing, since the contrast ratio never
+    depended on alpha in that case. Fixing that would mean picking a different
+    RGB for `fg` (e.g. falling back to a fixed light/dark colour), which is a
+    separate, bigger design decision -- not attempted here.
     """
     worst = min(
         _contrast_ratio(_composite(fg, (*_composite(bg, backdrop), 1.0)), _composite(bg, backdrop))
@@ -872,7 +909,9 @@ def create_application():
 
             def row_activated(_listbox, row):
                 place = row.place
-                write_weather_location(f"{place['latitude']},{place['longitude']}")
+                if not write_weather_location(f"{place['latitude']},{place['longitude']}"):
+                    status.set_text("Could not save the location -- check disk space and permissions.")
+                    return
                 label = ", ".join(str(part) for part in (place.get("name"), place.get("admin1"), place.get("country")) if part)
                 write_user_state("WEATHER_LOCATION_LABEL", label)
                 # custom-weather.jsonc polls every 3600s and listens on signal
