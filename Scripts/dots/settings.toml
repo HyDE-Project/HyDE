@@ -1,0 +1,21 @@
+# HyDE Settings hub, pulled from its own repo instead of living directly in
+# this one -- https://github.com/Delcado19/hyde-settings
+[hyde-settings]
+source = "https://github.com/Delcado19/hyde-settings/archive/refs/heads/main.tar.gz"
+action = "sync"
+owner = "Delcado19"
+
+[[hyde-settings.dependency]]
+pacman = ["python-gobject", "gtk3"]
+
+[[hyde-settings.files]]
+action = "sync"
+source_root = "hyde-settings-main"
+target_root = "${HOME}/.local/lib/hyde"
+paths = ["settings.py", "settings.sh"]
+
+[[hyde-settings.files]]
+action = "sync"
+source_root = "applications"
+target_root = "${XDG_DATA_HOME}/applications"
+paths = ["hyde-settings.desktop", "hyde-default-apps.desktop", "hyde-firewall.desktop"]

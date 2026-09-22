@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=File Associations
-Comment=Choose which app opens each file type
-Exec=hyde-shell app -t scope -- kcmshell6 filetypes
-TryExec=kcmshell6
-Icon=preferences-desktop-apps-symbolic
-Terminal=false
-NoDisplay=true

@@ -15,6 +15,7 @@
     include = [
         "../dots/deps.toml",
         "../dots/hyde.toml",
+        "../dots/settings.toml",
         "../dots/hyprland.toml",
         "../dots/wallbash.toml",
         "../dots/waybar.toml",
