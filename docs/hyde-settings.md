@@ -89,7 +89,10 @@ ever makes on its own) and saves the chosen coordinates into `config.toml`'s
 `[weather]` `location` key -- the same key documented for manual editing in
 HyDE's own config schema -- so `hyde-shell config`'s watcher picks it up and
 exports it the normal way; the human-readable label shown in this hub is a
-separate, UI-only value in `$XDG_STATE_HOME/hyde/staterc`.
+separate, UI-only value in `$XDG_STATE_HOME/hyde/staterc`. Picking a location
+also sends Waybar's weather module its refresh signal (`pkill -RTMIN+10
+waybar`, the same one `custom-weather.jsonc`'s own click handler uses), so it
+doesn't wait out its 3600s poll interval showing the old location.
 Accounts is likewise built in rather than an external tool, deliberately: it
 only reads the signed-in user's own passwd/group record (never other
 accounts, never a password) and never creates, deletes or elevates a user.
@@ -229,7 +232,12 @@ launch, so it just prints `--help` and exits without opening anything.
 requiring one HyDE has no generic value for. Ship a small HyDE `.desktop`
 wrapping it (`hyde-default-apps.desktop` for `kcmshell6 filetypes`, here)
 rather than a raw upstream ID when the upstream ID needs an argv HyDE can't
-supply.
+supply. Give that wrapper its own `TryExec` naming the wrapped binary
+(`kcmshell6`, not `hyde-shell`): without it, GIO only checks that the outer
+`hyde-shell` command resolves, so the entry shows as available -- and its
+"Requires" hint disappears -- even when the wrapped tool itself isn't
+installed. Add the new file to `Scripts/dots/hyde.toml`'s sync paths too;
+shipping it in the repo alone never deploys it to a real install.
 
 Also check whether the tool re-execs its whole GUI as root instead of
 authorizing individual actions: `gufw`'s `Exec=gufw` runs `pkexec
