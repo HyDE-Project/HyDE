@@ -599,7 +599,10 @@ def desktop_info(entry):
         # panels, all on Hyprland). Only Hidden=true ("treat as uninstalled")
         # disqualifies a match; the constructor above already rejects entries
         # whose Exec binary cannot be found on PATH at all.
-        if app and not app.get_is_hidden():
+        # get_boolean("Hidden") reads the same key get_is_hidden() wraps, but
+        # portably: CI's PyGObject/GioUnix binding requires an argument for
+        # get_is_hidden() and raises TypeError without one, uncaught here.
+        if app and not app.get_boolean("Hidden"):
             return app
     return None
 
@@ -937,7 +940,14 @@ def create_application():
                 if not write_weather_location(f"{place['latitude']},{place['longitude']}"):
                     status.set_text("Could not save the location -- check disk space and permissions.")
                     return
-                label = ", ".join(str(part) for part in (place.get("name"), place.get("admin1"), place.get("country")) if part)
+                # The manual "exact coordinates" entry has no country/admin1
+                # (nothing geocoded it), so the name/admin1/country label
+                # would just read "Exact coordinates" -- show the coordinates
+                # themselves instead, since that's the only identifying detail.
+                if place.get("country"):
+                    label = ", ".join(str(part) for part in (place.get("name"), place.get("admin1"), place.get("country")) if part)
+                else:
+                    label = f"{place['latitude']:.4f}, {place['longitude']:.4f}"
                 write_user_state("WEATHER_LOCATION_LABEL", label)
                 # custom-weather.jsonc polls every 3600s and listens on signal
                 # 10 for an immediate refresh (its own on-click runs this same
