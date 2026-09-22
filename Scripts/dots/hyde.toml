@@ -101,12 +101,12 @@ source_root = "Configs/.local/bin"
 target_root = "${HOME}/.local/bin"
 paths = ["hyde-shell", "hydectl"]
 
-# Deploy only this launcher; never clean the user's applications directory.
+# Deploy only these launchers; never clean the user's applications directory.
 [[hyde.files]]
 action = "sync"
 source_root = "Configs/.local/share"
 target_root = "${XDG_DATA_HOME}"
-paths = ["applications/hyde-settings.desktop"]
+paths = ["applications/hyde-settings.desktop", "applications/hyde-default-apps.desktop", "applications/hyde-firewall.desktop"]
 
 [grimblast]
 version = "26.08.17"
