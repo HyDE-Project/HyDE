@@ -18,7 +18,7 @@
   //  ? Declaring the groups
   "group/pill#2": {
     "orientation": "inherit",
-    "modules": ["custom/hyprsunset", "idle_inhibitor"]
+    "modules": ["custom/hyprsunset", "custom/caffeine"]
   },
   "group/pill#1": {
     "orientation": "inherit",

@@ -22,9 +22,9 @@ EOF
 #--------------------------------#
 # import variables and functions #
 #--------------------------------#
-scrDir="$(dirname "$(realpath "$0")")"
+installDir="$(dirname "$(realpath "$0")")"
 # shellcheck disable=SC1091
-if ! source "${scrDir}/global_fn.sh"; then
+if ! source "${installDir}/global_fn.sh"; then
 	echo "Error: unable to source global_fn.sh..."
 	exit 1
 fi
@@ -155,7 +155,7 @@ if has_operation "pre"; then
 
 EOF
 
-	"${scrDir}/install_pre.sh"
+	"${installDir}/install_pre.sh"
 	exit 0
 fi
 
@@ -168,7 +168,7 @@ fi
 # since the rest of that script rewrites the bootloader and pacman
 # configuration and has no business running on a restore.
 if has_operation "install" && has_operation "restore"; then
-	"${scrDir}/install_pre.sh" || exit 1
+	"${installDir}/install_pre.sh" || exit 1
 elif has_operation "install" || has_operation "restore"; then
 	setup_python_env || exit 1
 fi
@@ -263,7 +263,7 @@ EOF
 	#------------------------------------#
 	# install AUR helper via pacman first #
 	#------------------------------------#
-	"${scrDir}/install_aur.sh" "${getAur:-${aurhlpr:-yay-bin}}" 2>&1
+	"${installDir}/install_aur.sh" "${getAur:-${aurhlpr:-yay-bin}}" 2>&1
 
 	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
 
@@ -280,7 +280,7 @@ EOF
 		# dependency step with nothing to install.
 		[global]
 		include = [
-		    "${scrDir}/dots-groups/core.toml",
+		    "${installDir}/dots-groups/core.toml",
 		]
 
 		[[global.dependency]]
@@ -344,7 +344,7 @@ EOF
 	cat > "${core_toml}" <<-TOML
 		[global]
 		include = [
-		    "${scrDir}/dots-groups/core.toml",
+		    "${installDir}/dots-groups/core.toml",
 		]
 
 		[[global.dependency]]
@@ -369,7 +369,7 @@ EOF
 	cat > "${extra_toml}" <<-TOML
 		[global]
 		include = [
-		    "${scrDir}/dots-groups/extra.toml",
+		    "${installDir}/dots-groups/extra.toml",
 		]
 
 		[[global.dependency]]
@@ -415,7 +415,7 @@ EOF
 		print_log -y "[SHELL] " -b "dry-run :: " "Would install ${myShell:-the chosen shell}"
 	elif chk_shell "${myShell:-}"; then
 		print_log -g "[SHELL] " -b "install :: " "${myShell}..."
-		"${deez_exe}" deps --install --config "${scrDir}/dots-groups/shell.toml" \
+		"${deez_exe}" deps --install --config "${installDir}/dots-groups/shell.toml" \
 			--source "${cloneDir}" --dots "${myShell}" || {
 			print_log -err "[SHELL] " -crit "ERROR" "${myShell} installation failed"
 			exit 1
@@ -462,7 +462,7 @@ EOF
 		# manifest/cache in time to take effect in this same run. Safe to call
 		# twice: applied migrations are tracked in migrationStateFile, so the
 		# real end-of-restore run below just finds nothing new pending here.
-		migrationDir="${scrDir}/migrations"
+		migrationDir="${installDir}/migrations"
 		migrationStateFile="${XDG_STATE_HOME:-${HOME}/.local/state}/hyde/migration/applied"
 		run_pending_migrations "${migrationDir}" "${migrationStateFile}"
 
@@ -472,20 +472,20 @@ EOF
 		# shape, so they are exactly what should still run. The failure is
 		# carried to the end of the restore and reported there.
 		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing core dotfiles..."
-		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/core.toml" dots --skip-git --deploy all || {
+		"${deez_exe}" --source "${cloneDir}" --config "${installDir}/dots-groups/core.toml" dots --skip-git --deploy all || {
 			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Core dotfiles deployed with failures"
 			deploy_failed=1
 		}
 
 		print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing extra dotfiles..."
-		"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/extra.toml" dots --skip-git --deploy || {
+		"${deez_exe}" --source "${cloneDir}" --config "${installDir}/dots-groups/extra.toml" dots --skip-git --deploy || {
 			print_log -err "[DEEZ-DOTS] " -crit "ERROR" "Extra dotfiles deployed with failures"
 			deploy_failed=1
 		}
 
 		if chk_shell "${myShell:-}"; then
 			print_log -g "[DEEZ-DOTS] " -b "deploy :: " "Installing ${myShell} dotfiles..."
-			"${deez_exe}" --source "${cloneDir}" --config "${scrDir}/dots-groups/shell.toml" dots --skip-git --deploy "${myShell}" || {
+			"${deez_exe}" --source "${cloneDir}" --config "${installDir}/dots-groups/shell.toml" dots --skip-git --deploy "${myShell}" || {
 				print_log -err "[DEEZ-DOTS] " -crit "ERROR" "${myShell} dotfiles deployed with failures"
 				deploy_failed=1
 			}
@@ -496,10 +496,16 @@ EOF
 		fi
 	fi
 
-	"${scrDir}/restore_thm.sh"
+	"${installDir}/restore_thm.sh"
 	print_log -g "[generate] " "cache ::" "Wallpapers..."
 	if [ "${flg_DryRun}" -ne 1 ]; then
-		# Initialize HyDE environment from deployed dotfiles so scripts don't need hyde-shell init
+		# Initialize HyDE environment from deployed dotfiles so scripts don't need hyde-shell init.
+		# LIB_DIR/SHARE_DIR match hyde-shell's own resolution (BIN_DIR/../lib, BIN_DIR/../share
+		# with BIN_DIR=$HOME/.local/bin) -- theme.switch.sh sources "$LIB_DIR/hyde/globalcontrol.sh"
+		# and "$SHARE_DIR/hyde/env-theme" itself, unconditionally, so skipping hyde-shell here
+		# without also setting these left both empty and both sources failing.
+		export LIB_DIR="$HOME/.local/lib"
+		export SHARE_DIR="$HOME/.local/share"
 		export PATH="$HOME/.local/lib/hyde:$HOME/.local/bin:${PATH}"
 		export HYDE_SHELL_INIT=1
 		# shellcheck disable=SC1091
@@ -538,7 +544,7 @@ if has_operation "install" && has_operation "restore"; then
 
 EOF
 
-	"${scrDir}/install_pst.sh"
+	"${installDir}/install_pst.sh"
 fi
 
 #---------------------------#
@@ -547,7 +553,7 @@ fi
 if has_operation "restore"; then
 
 	# migrationDir="$(realpath "$(dirname "$(realpath "$0")")/../migrations")"
-	migrationDir="${scrDir}/migrations"
+	migrationDir="${installDir}/migrations"
 
 	if [ ! -d "${migrationDir}" ]; then
 		print_log -warn "Migrations" "Directory not found: ${migrationDir}"
@@ -574,7 +580,7 @@ if has_operation "services"; then
 
 EOF
 
-	"${scrDir}/restore_svc.sh"
+	"${installDir}/restore_svc.sh"
 fi
 
 # Reported here rather than where it happened, so the theme, the migrations and
