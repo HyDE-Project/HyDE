@@ -287,6 +287,21 @@ def write_weather_location(value):
         return False
 
 
+COORDINATE_PATTERN = re.compile(r"^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$")
+
+
+def parse_coordinates(query):
+    """A bare "lat,lon" pair, if query is one and both values are in range --
+    lets the weather dialog accept exact coordinates directly instead of a
+    place name, bypassing wttr.in's own nearest-station name resolution
+    entirely (which can differ noticeably from the place actually searched)."""
+    match = COORDINATE_PATTERN.match(query)
+    if not match:
+        return None
+    lat, lon = float(match[1]), float(match[2])
+    return (lat, lon) if -90 <= lat <= 90 and -180 <= lon <= 180 else None
+
+
 def geocode_search(query):
     """Open-Meteo's free geocoding endpoint; no key, used only for this search dialog."""
     url = "https://geocoding-api.open-meteo.com/v1/search?" + urllib.parse.urlencode({"name": query, "count": 8, "format": "json"})
@@ -887,12 +902,22 @@ def create_application():
             area = dialog.get_content_area()
             area.set_spacing(8)
             area.set_border_width(12)
-            search = Gtk.SearchEntry(placeholder_text="Search for a city…")
+            # wttr.in reports the *nearest weather station's* own name, which
+            # can be a noticeably different, less familiar place than the one
+            # searched -- exact coordinates route straight to a station near
+            # that point instead of through wttr.in's own name resolution.
+            hint = self.label("wttr.in shows the name of the nearest weather station, which "
+                               "can differ from the place you pick below. Type exact coordinates "
+                               "as \"lat,lon\" (e.g. New York: 40.7128,-74.0060) instead of a name "
+                               "to bypass that.", "subtitle")
+            area.pack_start(hint, False, False, 0)
+            search = Gtk.SearchEntry(placeholder_text="Search for a city, or type \"lat,lon\"…")
             area.pack_start(search, False, False, 0)
             status_row = Gtk.Box(spacing=8)
             spinner = Gtk.Spinner()
             status_row.pack_start(spinner, False, False, 0)
             status = self.label("Type at least 2 characters.", "subtitle")
+            status.set_name("weather-status")  # disambiguates from the static hint label above for tests
             status_row.pack_start(status, False, False, 0)
             area.pack_start(status_row, False, False, 0)
             results = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)
@@ -936,6 +961,7 @@ def create_application():
                         row = Gtk.ListBoxRow()
                         row.place = place
                         label = ", ".join(str(part) for part in (place.get("name"), place.get("admin1"), place.get("country")) if part)
+                        label += f" ({place['latitude']:.4f}, {place['longitude']:.4f})"
                         row.add(self.label(label))
                         results.add(row)
                     results.show_all()
@@ -959,6 +985,14 @@ def create_application():
                 state["generation"] += 1
                 query = search.get_text().strip()
                 clear_results()
+
+                coordinates = parse_coordinates(query)
+                if coordinates:
+                    spinner.stop()
+                    lat, lon = coordinates
+                    show_results(state["generation"], [{"latitude": lat, "longitude": lon, "name": "Exact coordinates"}])
+                    return
+
                 if len(query) < 2:
                     spinner.stop()
                     status.set_text("Type at least 2 characters.")
