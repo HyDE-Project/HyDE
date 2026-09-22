@@ -875,6 +875,11 @@ def create_application():
                 write_weather_location(f"{place['latitude']},{place['longitude']}")
                 label = ", ".join(str(part) for part in (place.get("name"), place.get("admin1"), place.get("country")) if part)
                 write_user_state("WEATHER_LOCATION_LABEL", label)
+                # custom-weather.jsonc polls every 3600s and listens on signal
+                # 10 for an immediate refresh (its own on-click runs this same
+                # command) -- without it Waybar keeps showing the old
+                # location's weather for up to an hour.
+                command_output(["pkill", "-RTMIN+10", "waybar"])
                 dialog.response(Gtk.ResponseType.OK)
 
             results.connect("row-activated", row_activated)
