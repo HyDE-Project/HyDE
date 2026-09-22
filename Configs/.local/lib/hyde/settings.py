@@ -181,8 +181,15 @@ def write_user_state(key, value):
     line = f"{key}={shlex.quote(value)}"
     lines = [line_ for line_ in read_text(path).splitlines() if not line_.startswith(f"{key}=")]
     lines.append(line)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("\n".join(lines) + "\n")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("\n".join(lines) + "\n")
+    except OSError:
+        # Best-effort persistence, same as command_output()'s probes: a full
+        # disk or an unwritable state dir must not abort the caller (the UI
+        # action that triggered this write, e.g. switching category, has
+        # already happened and still needs to render).
+        pass
 
 
 def config_toml_path():
@@ -243,8 +250,13 @@ def write_weather_location(value):
         else:
             section = section.rstrip("\n") + f"\n{new_line}\n"
         text = text[:start] + section + text[end:]
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text)
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+    except OSError:
+        # Best-effort persistence, same as write_user_state(): an unwritable
+        # config dir must not abort the caller (closing the location dialog).
+        pass
 
 
 def geocode_search(query):
