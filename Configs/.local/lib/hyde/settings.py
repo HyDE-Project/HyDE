@@ -9,6 +9,7 @@ from pathlib import Path
 import platform
 import pwd
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -149,13 +150,30 @@ def user_conf_path():
 
 
 def read_user_conf(key):
-    match = re.search(rf'^export {re.escape(key)}="([^"]*)"$', read_text(user_conf_path()), re.M)
-    return match[1] if match else ""
+    # Written by write_user_conf() below via shlex.quote(); shlex.split()
+    # is the matching unquote, so values with $, `, ", or spaces (e.g. a
+    # geocoded place name) round-trip instead of corrupting the parse.
+    match = re.search(rf"^export {re.escape(key)}=(.*)$", read_text(user_conf_path()), re.M)
+    if not match:
+        return ""
+    try:
+        parts = shlex.split(match[1])
+    except ValueError:
+        return ""
+    return parts[0] if parts else ""
 
 
 def write_user_conf(key, value):
     path = user_conf_path()
-    line = f'export {key}="{value}"'
+    # globalcontrol.sh sources this file; some values here (WEATHER_LOCATION_LABEL)
+    # come from an external geocoding API. shlex.quote() single-quotes the value,
+    # which bash performs no expansion inside of -- unlike the previous bare
+    # export KEY="value" -- so an API response can't inject shell commands.
+    # A literal newline would still round-trip through a real shell (single
+    # quotes preserve it), but read_user_conf()'s line-based regex can't see
+    # past it -- these are one-line display values, so collapse it instead.
+    value = re.sub(r"[\r\n]+", " ", value)
+    line = f"export {key}={shlex.quote(value)}"
     lines = [line_ for line_ in read_text(path).splitlines() if not line_.startswith(f"export {key}=")]
     lines.append(line)
     path.parent.mkdir(parents=True, exist_ok=True)
