@@ -46,8 +46,12 @@ are no nested settings pages. Category scroll positions are retained for the
 lifetime of the window. Opening another tool leaves search and scroll intact.
 Repeated activation presents the existing window using the session D-Bus. The
 last selected category also survives a full quit and relaunch, stored as
-`HYDE_SETTINGS_LAST_CATEGORY` in `$XDG_STATE_HOME/hyde/config`; an unrecognised
-or missing value falls back to the first category.
+`HYDE_SETTINGS_LAST_CATEGORY` in `$XDG_STATE_HOME/hyde/staterc` -- the same
+file HyDE's own shell scripts use for persistent runtime state (`HYDE_THEME`
+and friends), not `$XDG_STATE_HOME/hyde/config`, which `hyde-shell config`
+fully regenerates from `config.toml` on every change and would otherwise
+silently drop it; an unrecognised or missing value falls back to the first
+category.
 
 ## Available areas and tools
 
@@ -81,8 +85,11 @@ running, which HyDE does not start on its own; HyDE's own Workflows stays
 the authoritative place for idle/lock/suspend behaviour on Hyprland.
 Weather location is a built-in search, not an external tool: typing a city
 queries Open-Meteo's free geocoding API (the only network request this app
-ever makes on its own) and saves the chosen coordinates for Waybar's weather
-module.
+ever makes on its own) and saves the chosen coordinates into `config.toml`'s
+`[weather]` `location` key -- the same key documented for manual editing in
+HyDE's own config schema -- so `hyde-shell config`'s watcher picks it up and
+exports it the normal way; the human-readable label shown in this hub is a
+separate, UI-only value in `$XDG_STATE_HOME/hyde/staterc`.
 Accounts is likewise built in rather than an external tool, deliberately: it
 only reads the signed-in user's own passwd/group record (never other
 accounts, never a password) and never creates, deletes or elevates a user.
