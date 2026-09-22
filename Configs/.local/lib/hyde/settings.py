@@ -905,6 +905,14 @@ def create_application():
                 if state["timeout"]:
                     GLib.source_remove(state["timeout"])
                     state["timeout"] = 0
+                # Bumped on every change, not just when a debounced search
+                # actually fires: this is what invalidates an in-flight
+                # request the moment the query is cleared/shortened below 2
+                # characters below -- otherwise that request's generation
+                # would still match state["generation"] when its result
+                # arrives, and show_results() would repopulate the list the
+                # user just cleared.
+                state["generation"] += 1
                 query = search.get_text().strip()
                 clear_results()
                 if len(query) < 2:
@@ -914,7 +922,6 @@ def create_application():
 
                 def fire():
                     state["timeout"] = 0
-                    state["generation"] += 1
                     spinner.start()
                     status.set_text("Searching…")
                     threading.Thread(target=run_search, args=(state["generation"], query), daemon=True).start()
