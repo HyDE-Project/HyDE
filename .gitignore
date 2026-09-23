@@ -20,3 +20,6 @@ build
 *ignore_me*
 *ignore-me*
 *IGNORE_ME*
+
+# graphify knowledge-graph cache (local, machine-specific, regenerable via /graphify)
+graphify-out/
