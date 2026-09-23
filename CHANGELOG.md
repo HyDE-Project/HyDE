@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## Unreleased
 
 ### Added
-- Settings: add a searchable system and HyDE tool hub with live Waybar colours and a copyable system overview. Pulled from its own [hyde-settings](https://github.com/Delcado19/hyde-settings) repo; see its manual there.
+- Settings: add a searchable system and HyDE tool hub with live Waybar colours and a copyable system overview. Optional: offered with the other extra dots during `install.sh` and launched from the app launcher (`hyde-settings.desktop`). Pulled from its own [hyde-settings](https://github.com/Delcado19/hyde-settings) repo; see its manual there.
 - Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
 - Waybar: add VSCodium and Chromium icon rules to window module
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk

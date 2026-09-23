@@ -2,11 +2,6 @@
 
 <interface>
     <object class="GtkMenu" id="menu">
-        <child>
-            <object class="GtkMenuItem" id="settings">
-                <property name="label">Settings</property>
-            </object>
-        </child>
 
         <child>
             <object class="GtkMenuItem" id="animation_menu">
