@@ -92,11 +92,21 @@ def get_file_hash(filepath):
     return sha256.hexdigest()
 
 
-def find_layout_files():
-    """Recursively find all layout files in the specified directories."""
+def find_layout_files(include_backups=False):
+    """Recursively find all layout files in the specified directories.
+
+    backup_layout() writes its copies to layouts/backup/ inside a layout
+    directory, so a plain walk returns them as layouts. They sort before most
+    names ("backup/..."), which made the fallbacks that take layouts[0] or
+    match config.jsonc by hash settle on a backup, and --next/--prev then
+    crashed on it (HyDE-Project/HyDE#2133). Only list_layouts(), which shows
+    backups as their own entry, asks for them.
+    """
     layouts = []
     for layout_dir in LAYOUT_DIRS:
-        for root, _, files in os.walk(layout_dir):
+        for root, dirs, files in os.walk(layout_dir):
+            if not include_backups:
+                dirs[:] = [d for d in dirs if d != "backup"]
             for file in files:
                 if file.endswith(".jsonc") and file not in LAYOUT_IGNORE:
                     layouts.append(os.path.join(root, file))
@@ -393,6 +403,10 @@ def handle_layout_navigation(option):
         logger.error("Current layout not found in state file.")
         return
 
+    if not layout_list:
+        logger.error("No layouts found.")
+        return
+
     if current_layout not in layout_list:
         logger.warning("Current layout file not found, re-caching layouts.")
         current_layout = get_current_layout_from_config()
@@ -400,7 +414,12 @@ def handle_layout_navigation(option):
             logger.error("Failed to recache current layout.")
             return
 
-    current_index = layout_list.index(current_layout)
+    # A backup applied from the backup menu is the current layout but not in
+    # the cycle, so start the cycle from its ends rather than crash (#2133).
+    if current_layout in layout_list:
+        current_index = layout_list.index(current_layout)
+    else:
+        current_index = -1 if option == "--next" else 0
     if option == "--next":
         next_index = (current_index + 1) % len(layout_list)
         set_layout(layout_list[next_index])
@@ -416,7 +435,7 @@ def handle_layout_navigation(option):
 
 def list_layouts():
     """List all layouts with their matching styles and backups."""
-    layouts = find_layout_files()
+    layouts = find_layout_files(include_backups=True)
     layout_style_pairs = []
     backup_layouts = []
 
