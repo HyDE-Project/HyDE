@@ -28,6 +28,11 @@ if ! source "${installDir}/global_fn.sh"; then
 	echo "Error: unable to source global_fn.sh..."
 	exit 1
 fi
+# shellcheck disable=SC1091
+if ! source "${installDir}/hypr_autogen.sh"; then
+	echo "Error: unable to source hypr_autogen.sh..."
+	exit 1
+fi
 
 #------------------#
 # evaluate options #
