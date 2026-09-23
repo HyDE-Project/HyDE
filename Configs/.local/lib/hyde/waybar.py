@@ -92,6 +92,16 @@ def get_file_hash(filepath):
     return sha256.hexdigest()
 
 
+def in_backup_dir(path, root):
+    """Whether path lies in a "backup" directory below root.
+
+    Only the part below root counts: a home that itself sits under a directory
+    named backup must not turn every layout into a backup (#2133).
+    """
+    relative = os.path.relpath(path, start=root)
+    return "backup" in Path(relative).parts[:-1]
+
+
 def find_layout_files(include_backups=False):
     """Recursively find all layout files in the specified directories.
 
@@ -391,13 +401,9 @@ def handle_layout_navigation(option):
     layout_list = [
         layout["layout"] for layout in layouts_data["layouts"] if not layout.get("is_backup_entry")
     ]
-    current_layout = None
-
-    with open(STATE_FILE, "r") as file:
-        for line in file:
-            if line.startswith("WAYBAR_LAYOUT_PATH="):
-                current_layout = line.split("=")[1].strip()
-                break
+    # get_state_value splits on the first "=" only, so a path containing one
+    # stays whole, and a missing state file is not an error (#2133).
+    current_layout = get_state_value("WAYBAR_LAYOUT_PATH")
 
     if not current_layout:
         logger.error("Current layout not found in state file.")
@@ -443,7 +449,7 @@ def list_layouts():
         for layout_dir in LAYOUT_DIRS:
             if layout.startswith(layout_dir):
                 relative_path = os.path.relpath(layout, start=layout_dir)
-                if "/backup/" in layout or "\\backup\\" in layout:
+                if in_backup_dir(layout, layout_dir):
                     name = relative_path.replace(".jsonc", "")
                     backup_layouts.append(
                         {
@@ -630,7 +636,7 @@ def rofi_file_selector(
         pattern = os.path.join(d, f"**/*{extension}") if recursive else os.path.join(d, f"*{extension}")
         found = [
             f for f in glob.glob(pattern, recursive=recursive)
-            if "/backup/" not in f and "\\backup\\" not in f
+            if not in_backup_dir(f, d)
         ]
         files.extend(found)
         file_roots.extend([d] * len(found))
