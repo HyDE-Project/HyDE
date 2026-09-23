@@ -405,14 +405,19 @@ def handle_layout_navigation(option):
     # stays whole, and a missing state file is not an error (#2133).
     current_layout = get_state_value("WAYBAR_LAYOUT_PATH")
 
-    if not current_layout:
-        logger.error("Current layout not found in state file.")
-        return
-
+    # Checked first: with no layouts there is nothing to cycle, whatever the
+    # state file says.
     if not layout_list:
         logger.error("No layouts found.")
         return
 
+    if not current_layout:
+        logger.error("Current layout not found in state file.")
+        return
+
+    # The re-cache result is the current layout: a hash match is the layout
+    # config.jsonc really holds, and without one the fallback has just copied
+    # the first layout into config.jsonc. Either way cycling continues from it.
     if current_layout not in layout_list:
         logger.warning("Current layout file not found, re-caching layouts.")
         current_layout = get_current_layout_from_config()
