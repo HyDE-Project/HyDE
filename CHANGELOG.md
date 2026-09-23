@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
 
 ### Fixed
+- Icons: the waybar mute state, the media-player/Spotify menus, the hyprlock VLC icon, the keybinds hint, `sensorsinfo.py` and the `chaotic_aur.sh` help no longer show CJK characters (e.g. 婢 instead of a muted speaker, #2132). They used Nerd Fonts v2 Material Design codepoints (U+F900 and up), which v3 dropped, so the font fell back to real CJK glyphs; they now use the matching v3 codepoints
 - Installer: `theme.switch.sh` no longer fails with "HyDE: command not found" during `install.sh -r` by sourcing `globalcontrol.sh` directly when `hyde-shell init` is unavailable
 - Dependencies: removed unreliable version constraint `hyprquery>=0.6.8.r11`. Advise users to update `yay -Sy hyprquery`.
 - Wallpaper: `theme.switch.sh` no longer hangs forever when the awww/swww daemon is running but unresponsive. The daemon health-check (`<backend> query`, and `<backend> restore` after a restart) ran as a plain foreground call with no bound, unlike the apply command it precedes; a stalled daemon left it blocking indefinitely. It is now wrapped in `timeout`, the same treatment the apply command already had.

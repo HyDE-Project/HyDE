@@ -82,7 +82,7 @@ mpris_icon() {
         ["default"]=""
         ["spotify"]=""
         ["firefox"]=""
-        ["vlc"]="嗢"
+        ["vlc"]="󰕼"
         ["google-chrome"]=""
         ["opera"]=""
         ["brave"]="")
