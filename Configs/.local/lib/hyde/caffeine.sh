@@ -9,10 +9,11 @@
 #
 # Fix: track the on/off state in a small state file (`$XDG_RUNTIME_DIR`, since
 # it is inherently boot/session-scoped, not a persistent user preference), and
-# do the actual inhibiting with `systemd-inhibit --what=idle:sleep`, a plain
-# background process independent of Waybar's lifecycle. hypridle.conf already
-# has `ignore_systemd_inhibit = false`, so it respects this natively -- no
-# custom Wayland idle-inhibit protocol client needed.
+# do the actual inhibiting with `systemd-inhibit --what=idle:sleep`, a
+# background process detached from Waybar's process group and cgroup (see
+# start_inhibitor). hypridle.conf already has `ignore_systemd_inhibit = false`,
+# so it respects this natively -- no custom Wayland idle-inhibit protocol
+# client needed.
 # Checked before hyde-shell/globalcontrol.sh is sourced below: that source
 # sets its own XDG_RUNTIME_DIR fallback ("/run/user/$(id -u)"), which would
 # make this check unreachable. A shared, world-writable fallback like
@@ -166,15 +167,42 @@ start_inhibitor() {
         echo "Error: systemd-inhibit not found, cannot activate Caffeine mode" >&2
         return 1
     fi
+    # Waybar runs on-click commands as their own process group and, on every
+    # SIGUSR2 hot-reload (layout switch, theme change), destroys its modules
+    # with killpg() on those groups -- which silently took the inhibitor down
+    # with it, since a background job inherits its parent's group. `setsid`
+    # gives it its own session/group. A stop or crash-restart of Waybar's
+    # systemd unit (KillMode=control-group) would still kill it, so when a
+    # user manager is reachable it also gets its own transient scope.
+    # Both setsid (not a group leader here) and `systemd-run --scope` exec in
+    # place, so $! ends up being the systemd-inhibit pid itself.
+    local scope=()
+    systemctl --user show-environment >/dev/null 2>&1 &&
+        scope=(systemd-run --user --scope --quiet --collect --)
     # Detached from this script's own stdio: a caller that captures this
     # script's output (command substitution, a pipe) would otherwise hang
     # forever, since the backgrounded, disowned process still holds that
     # fd open long after this script itself has exited.
-    systemd-inhibit --what=idle:sleep --who=HyDE --why="Caffeine mode" sleep infinity \
-        </dev/null >/dev/null 2>&1 &
+    setsid "${scope[@]}" systemd-inhibit --what=idle:sleep --who=HyDE --why="Caffeine mode" \
+        sleep infinity </dev/null >/dev/null 2>&1 &
     disown
     inhibitor_pid=$!
-    intended=1
+    # Wait for that exec chain to land on systemd-inhibit: the waybar refresh
+    # this toggle triggers runs `--read` right away, and reconcile_state would
+    # treat a pid still named setsid/systemd-run as not ours and reset to off.
+    local _
+    for _ in {1..100}; do
+        if [ "$(ps -p "$inhibitor_pid" -o comm= 2>/dev/null)" = "systemd-inhibit" ]; then
+            intended=1
+            return 0
+        fi
+        kill -0 "$inhibitor_pid" 2>/dev/null || break
+        sleep 0.02
+    done
+    echo "Error: the idle inhibitor did not start" >&2
+    kill "$inhibitor_pid" 2>/dev/null
+    inhibitor_pid=""
+    return 1
 }
 
 stop_inhibitor() {
