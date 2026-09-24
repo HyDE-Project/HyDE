@@ -22,7 +22,7 @@ load_hypr_vars() {
         MONOSPACE_FONT_SIZE CODE_THEME; do
         # Sizes are queried as strings too: an `[int]` hint makes hyq fail on
         # a `$VAR = 24` variable, which would drop a size override silently.
-        value=$(hyq "$file" -Q "\$$name[string]" 2>/dev/null)
+        value=$(hyq "$file" -Q "\$${name}[string]" 2>/dev/null)
         [[ -n ${value} ]] && printf -v "__$name" '%s' "${value}"
     done
 }
