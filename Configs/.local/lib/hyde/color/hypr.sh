@@ -24,6 +24,31 @@ eval "$(hyq "$HYDE_THEME_DIR/hypr.theme" \
     -Q '$MONOSPACE_FONT_SIZE[int]' \
     -Q '$CODE_THEME[string]')"
 
+# The user's [hyprland] overrides from config.toml (converted into the state
+# hyprland.conf) win over the theme, exactly as in theme.switch.sh. Without
+# this the Lua ui state written below kept the theme's own GTK theme and
+# color/dconf.lua wrote it back into gsettings on every wallbash run, so
+# GTK3 apps (Firefox, blueman) ignored the override, see HyDE#2132.
+# hyq exports every queried variable, empty when the file does not define
+# it, so empty assignments are dropped to keep the theme's values.
+hypr_state_file="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprland.conf"
+if [[ -f ${hypr_state_file} ]]; then
+    eval "$(hyq "$hypr_state_file" \
+        --export env \
+        -Q '$GTK_THEME[string]' \
+        -Q '$COLOR_SCHEME[string]' \
+        -Q '$ICON_THEME[string]' \
+        -Q '$CURSOR_THEME[string]' \
+        -Q '$CURSOR_SIZE[int]' \
+        -Q '$FONT[string]' \
+        -Q '$FONT_SIZE[int]' \
+        -Q '$DOCUMENT_FONT[string]' \
+        -Q '$DOCUMENT_FONT_SIZE[int]' \
+        -Q '$MONOSPACE_FONT[string]' \
+        -Q '$MONOSPACE_FONT_SIZE[int]' \
+        -Q '$CODE_THEME[string]' 2>/dev/null | grep -v '=""$')"
+fi
+
 # This is for older themes that do not define the above variables
 [[ -z ${__GTK_THEME} ]] && __GTK_THEME=$(get_hyprConf "GTK_THEME")
 [[ -z ${__COLOR_SCHEME} ]] && __COLOR_SCHEME=$(get_hyprConf "COLOR_SCHEME")
