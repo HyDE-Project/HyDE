@@ -19,9 +19,12 @@ case $ARGPARSE_ACTION in
         # argument on to the lockscreen: hyprlock.sh happens to know --select,
         # but any other lockscreen just started -- locking the screen instead of
         # offering a choice. Only a wrapper script can provide a selector, so
-        # hand over to one that mentions --select and never start a lock here.
+        # hand over only to one that declares --select through argparse.sh
+        # (as hyprlock.sh does) and never start a lock here. A mere mention of
+        # the flag, e.g. in a comment, doesn't count.
         wrapper=$(command -v "$lockscreen.sh" 2>/dev/null)
-        if [[ -n $wrapper ]] && grep -q -- "--select" "$wrapper" 2>/dev/null; then
+        if [[ -n $wrapper ]] &&
+            grep -qE -- '^[[:space:]]*argparse[[:space:]]+"([^"]*,)?--select(,[^"]*)?"' "$wrapper" 2>/dev/null; then
             exec "$wrapper" --select
         fi
         echo "Error: no layout selector for lockscreen '$lockscreen'" >&2
