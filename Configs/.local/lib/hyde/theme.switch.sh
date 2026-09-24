@@ -46,12 +46,16 @@ load_hypr_variables() {
     # Like the export, a variable the file does not define ends up empty.
     # Everything is queried as a string: an `[int]` hint makes hyq fail on a
     # `$VAR = 24` variable, and the value is only ever used as text here.
-    local name
+    local name value
     for name in GTK_THEME ICON_THEME CURSOR_THEME CURSOR_SIZE FONT FONT_SIZE \
         FONT_STYLE DOCUMENT_FONT DOCUMENT_FONT_SIZE MONOSPACE_FONT \
         MONOSPACE_FONT_SIZE; do
-        printf -v "__$name" '%s' \
-            "$(hyq "$hypr_file" -Q "\$${name}[string]" 2>/dev/null)"
+        value=$(hyq "$hypr_file" -Q "\$${name}[string]" 2>/dev/null)
+        # Sizes are spliced into sed commands and config files below, where
+        # anything but a plain integer (a newline, `/`, `&`) changes their
+        # meaning: treat such a value as not set.
+        [[ ${name} == *_SIZE && ! ${value} =~ ^[0-9]*$ ]] && value=
+        printf -v "__$name" '%s' "${value}"
     done
     GTK_THEME=${__GTK_THEME:-$GTK_THEME}
     ICON_THEME=${__ICON_THEME:-$ICON_THEME}
