@@ -51,7 +51,7 @@ load_hypr_variables() {
         FONT_STYLE DOCUMENT_FONT DOCUMENT_FONT_SIZE MONOSPACE_FONT \
         MONOSPACE_FONT_SIZE; do
         printf -v "__$name" '%s' \
-            "$(hyq "$hypr_file" -Q "\$$name[string]" 2>/dev/null)"
+            "$(hyq "$hypr_file" -Q "\$${name}[string]" 2>/dev/null)"
     done
     GTK_THEME=${__GTK_THEME:-$GTK_THEME}
     ICON_THEME=${__ICON_THEME:-$ICON_THEME}
