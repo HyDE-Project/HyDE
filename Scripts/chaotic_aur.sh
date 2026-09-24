@@ -278,9 +278,9 @@ case "$1" in
     cat <<HELP
 Invalid option: $1
 Usage: $0 [option]
-    --install [fresh]  ﯦ  Install chaotic AUR ('fresh' assumes a fresh install)
-    --uninstall        ﯦ  Uninstall chaotic AUR ( requires you to run $0 --revert after)
-    --revert           ﯦ  Reinstall orphaned chaotic AUR packages
+    --install [fresh]  󰛨  Install chaotic AUR ('fresh' assumes a fresh install)
+    --uninstall        󰛨  Uninstall chaotic AUR ( requires you to run $0 --revert after)
+    --revert           󰛨  Reinstall orphaned chaotic AUR packages
 HELP
     ;;
 esac

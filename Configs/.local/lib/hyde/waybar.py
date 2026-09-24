@@ -39,18 +39,22 @@ if shutil.which("waybar") is None:
 HAS_SYSTEMD = os.path.isdir("/run/systemd/system")
 
 
+# The system entries were written without a leading "/", so they resolved
+# against the current directory instead of /usr: system-wide modules, layouts
+# and includes were never found, and a stray ./usr/share/waybar tree in the
+# directory waybar.py ran from was read instead.
 MODULE_DIRS = [
     os.path.join(str(xdg_config_home()), "waybar", "modules"),
     os.path.join(str(xdg_data_home()), "waybar", "modules"),
-    os.path.join("usr", "local", "share", "waybar", "modules"),
-    os.path.join("usr", "share", "waybar", "modules"),
+    os.path.join("/usr", "local", "share", "waybar", "modules"),
+    os.path.join("/usr", "share", "waybar", "modules"),
 ]
 
 LAYOUT_DIRS = [
     os.path.join(str(xdg_config_home()), "waybar", "layouts"),
     os.path.join(str(xdg_data_home()), "waybar", "layouts"),
-    os.path.join("usr", "local", "share", "waybar", "layouts"),
-    os.path.join("usr", "share", "waybar", "layouts"),
+    os.path.join("/usr", "local", "share", "waybar", "layouts"),
+    os.path.join("/usr", "share", "waybar", "layouts"),
 ]
 
 LAYOUT_IGNORE = ["test.jsonc", "dock#sample.jsonc"]
@@ -63,8 +67,8 @@ STYLE_DIRS = [
 INCLUDES_DIRS = [
     os.path.join(str(xdg_config_home()), "waybar", "includes"),
     os.path.join(str(xdg_data_home()), "waybar", "includes"),
-    os.path.join("usr", "local", "share", "waybar", "includes"),
-    os.path.join("usr", "share", "waybar", "includes"),
+    os.path.join("/usr", "local", "share", "waybar", "includes"),
+    os.path.join("/usr", "share", "waybar", "includes"),
 ]
 
 CONFIG_JSONC = Path(os.path.join(str(xdg_config_home()), "waybar", "config.jsonc"))
