@@ -23,6 +23,9 @@ load_hypr_vars() {
         # Sizes are queried as strings too: an `[int]` hint makes hyq fail on
         # a `$VAR = 24` variable, which would drop a size override silently.
         value=$(hyq "$file" -Q "\$${name}[string]" 2>/dev/null)
+        # The sizes end up unquoted in the Lua ui state below, so anything but
+        # a plain integer would be written into the file as code.
+        [[ ${name} == *_SIZE && ! ${value} =~ ^[0-9]*$ ]] && continue
         [[ -n ${value} ]] && printf -v "__$name" '%s' "${value}"
     done
 }
@@ -52,6 +55,12 @@ hypr_state_file="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprland.conf"
 [[ -z ${__MONOSPACE_FONT} ]] && __MONOSPACE_FONT=$(get_hyprConf "MONOSPACE_FONT")
 [[ -z ${__MONOSPACE_FONT_SIZE} ]] && __MONOSPACE_FONT_SIZE=$(get_hyprConf "MONOSPACE_FONT_SIZE[int]")
 [[ -z ${__CODE_THEME} ]] && __CODE_THEME=$(get_hyprConf "CODE_THEME")
+
+# get_hyprConf above falls back to the raw file text, so a size can still be
+# anything here, and the ui state writes sizes unquoted: drop non-integers.
+for _size in __CURSOR_SIZE __FONT_SIZE __DOCUMENT_FONT_SIZE __MONOSPACE_FONT_SIZE; do
+    [[ ${!_size} =~ ^[0-9]*$ ]] || printf -v "$_size" ''
+done
 
 # Faster: assigns escaped result to a variable instead of using subshell
 lua_quote_to() {
