@@ -9,45 +9,34 @@ cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
 HYDE_THEME="${HYDE_THEME:-}"
 HYDE_THEME_DIR="${HYDE_THEME_DIR:-$confDir/hyde/themes/$HYDE_THEME}"
 enableWallDcol="${enableWallDcol:-0}"
-eval "$(hyq "$HYDE_THEME_DIR/hypr.theme" \
-    --export env \
-    -Q '$GTK_THEME[string]' \
-    -Q '$COLOR_SCHEME[string]' \
-    -Q '$ICON_THEME[string]' \
-    -Q '$CURSOR_THEME[string]' \
-    -Q '$CURSOR_SIZE[int]' \
-    -Q '$FONT[string]' \
-    -Q '$FONT_SIZE[int]' \
-    -Q '$DOCUMENT_FONT[string]' \
-    -Q '$DOCUMENT_FONT_SIZE[int]' \
-    -Q '$MONOSPACE_FONT[string]' \
-    -Q '$MONOSPACE_FONT_SIZE[int]' \
-    -Q '$CODE_THEME[string]')"
+# Loads the interface variables of a hyprlang file into __NAME variables.
+# hyq's `--export env` output is not shell-safe: it does not escape `$(...)`,
+# backticks or quotes in a value, so evaluating it runs whatever a downloaded
+# theme's hypr.theme or a config.toml value contains (CWE-78). Each value is
+# queried on its own and assigned as data instead. Empty results are skipped,
+# so a variable the file does not define keeps what an earlier source set.
+load_hypr_vars() {
+    local file=$1 spec value
+    for spec in GTK_THEME:string COLOR_SCHEME:string ICON_THEME:string \
+        CURSOR_THEME:string CURSOR_SIZE:int FONT:string FONT_SIZE:int \
+        DOCUMENT_FONT:string DOCUMENT_FONT_SIZE:int MONOSPACE_FONT:string \
+        MONOSPACE_FONT_SIZE:int CODE_THEME:string; do
+        value=$(hyq "$file" -Q "\$${spec%%:*}[${spec##*:}]" 2>/dev/null)
+        [[ -n ${value} ]] && printf -v "__${spec%%:*}" '%s' "${value}"
+    done
+}
+__GTK_THEME= __COLOR_SCHEME= __ICON_THEME= __CURSOR_THEME= __CURSOR_SIZE=
+__FONT= __FONT_SIZE= __DOCUMENT_FONT= __DOCUMENT_FONT_SIZE=
+__MONOSPACE_FONT= __MONOSPACE_FONT_SIZE= __CODE_THEME=
+load_hypr_vars "$HYDE_THEME_DIR/hypr.theme"
 
 # The user's [hyprland] overrides from config.toml (converted into the state
 # hyprland.conf) win over the theme, exactly as in theme.switch.sh. Without
 # this the Lua ui state written below kept the theme's own GTK theme and
 # color/dconf.lua wrote it back into gsettings on every wallbash run, so
 # GTK3 apps (Firefox, blueman) ignored the override, see HyDE#2132.
-# hyq exports every queried variable, empty when the file does not define
-# it, so empty assignments are dropped to keep the theme's values.
 hypr_state_file="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprland.conf"
-if [[ -f ${hypr_state_file} ]]; then
-    eval "$(hyq "$hypr_state_file" \
-        --export env \
-        -Q '$GTK_THEME[string]' \
-        -Q '$COLOR_SCHEME[string]' \
-        -Q '$ICON_THEME[string]' \
-        -Q '$CURSOR_THEME[string]' \
-        -Q '$CURSOR_SIZE[int]' \
-        -Q '$FONT[string]' \
-        -Q '$FONT_SIZE[int]' \
-        -Q '$DOCUMENT_FONT[string]' \
-        -Q '$DOCUMENT_FONT_SIZE[int]' \
-        -Q '$MONOSPACE_FONT[string]' \
-        -Q '$MONOSPACE_FONT_SIZE[int]' \
-        -Q '$CODE_THEME[string]' 2>/dev/null | grep -v '=""$')"
-fi
+[[ -f ${hypr_state_file} ]] && load_hypr_vars "$hypr_state_file"
 
 # This is for older themes that do not define the above variables
 [[ -z ${__GTK_THEME} ]] && __GTK_THEME=$(get_hyprConf "GTK_THEME")
