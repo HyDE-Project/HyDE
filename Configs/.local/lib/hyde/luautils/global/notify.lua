@@ -38,6 +38,7 @@ function M.send(summary, body, opts)
     local icon = opts.icon or ''
     local timeout = tonumber(opts.timeout) or 5000
     local replace_id = tonumber(opts.replace_id) or 0
+    local synchronous = opts.synchronous -- string: x-canonical-private-synchronous key
 
     -- Call notify-send in background with & so we don't block.
     if has_notify_send() then
@@ -45,8 +46,12 @@ function M.send(summary, body, opts)
         if icon ~= '' then
             icon_flag = ' -i ' .. sh_quote(icon)
         end
-        local cmd = string.format('notify-send -a "HyDE Power" -t %d -r %d -u %s%s %s %s >/dev/null 2>&1 &',
-            timeout, replace_id, tostring(urgency), icon_flag, sh_quote(summary or ''), sh_quote(body or ''))
+        local sync_flag = ''
+        if synchronous and synchronous ~= '' then
+            sync_flag = ' -h string:x-canonical-private-synchronous:' .. sh_quote(synchronous)
+        end
+        local cmd = string.format('notify-send -a "HyDE Power" -t %d -r %d -u %s%s%s %s %s >/dev/null 2>&1 &',
+            timeout, replace_id, tostring(urgency), icon_flag, sync_flag, sh_quote(summary or ''), sh_quote(body or ''))
         -- Use sh -c to ensure & is interpreted by the shell
         os.execute('sh -c ' .. sh_quote(cmd))
         return true
