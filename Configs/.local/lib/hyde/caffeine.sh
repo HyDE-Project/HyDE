@@ -10,10 +10,13 @@
 # Fix: track the on/off state in a small state file (`$XDG_RUNTIME_DIR`, since
 # it is inherently boot/session-scoped, not a persistent user preference), and
 # do the actual inhibiting with `systemd-inhibit --what=idle:sleep`, a
-# background process detached from Waybar's cgroup and process group (see
-# start_inhibitor). hypridle.conf already has `ignore_systemd_inhibit = false`,
-# so it respects this natively -- no custom Wayland idle-inhibit protocol
-# client needed.
+# background process in its own session and, when a systemd user manager is
+# reachable, its own cgroup (see start_inhibitor). Without a reachable manager
+# it stays in the caller's cgroup. Waybar can only run as a systemd unit
+# through that manager, so this matters only if it is briefly unreachable
+# while Caffeine mode is toggled. hypridle.conf already has
+# `ignore_systemd_inhibit = false`, so it respects this natively -- no custom
+# Wayland idle-inhibit protocol client needed.
 # Checked before hyde-shell/globalcontrol.sh is sourced below: that source
 # sets its own XDG_RUNTIME_DIR fallback ("/run/user/$(id -u)"), which would
 # make this check unreachable. A shared, world-writable fallback like
