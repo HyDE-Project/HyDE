@@ -77,7 +77,11 @@ failed=0
 # treated as different, so it is never removed.
 same_as_backup() {
     if [ -L "$1" ] && [ -L "$2" ]; then
-        [ "$(readlink -- "$1")" = "$(readlink -- "$2")" ]
+        # A trailing "x" keeps the command substitution from stripping
+        # trailing newlines, so "target" and "target<newline>" differ; a
+        # failed read never counts as a match.
+        set -- "$(readlink -- "$1" && printf x)" "$(readlink -- "$2" && printf x)"
+        [ "$1" != "" ] && [ "$1" = "$2" ]
     elif [ ! -L "$1" ] && [ ! -L "$2" ] && [ -f "$1" ] && [ -f "$2" ]; then
         cmp -s -- "$1" "$2"
     else
