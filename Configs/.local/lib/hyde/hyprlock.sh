@@ -1,5 +1,5 @@
 #! /bin/bash
-if ! source "$(which hyde-shell)"; then
+if ! source "$(command -v hyde-shell)"; then
     echo "Error: hyde-shell not found."
     echo "Is HyDE installed?"
     exit 1

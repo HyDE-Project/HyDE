@@ -26,7 +26,7 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then
     exit 1
 fi
 
-if ! source "$(which hyde-shell)"; then
+if ! source "$(command -v hyde-shell)"; then
     echo "[$0] :: Error: hyde-shell not found."
     echo "[$0] :: Is HyDE installed?"
     exit 1
