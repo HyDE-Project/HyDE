@@ -16,13 +16,14 @@ enableWallDcol="${enableWallDcol:-0}"
 # queried on its own and assigned as data instead. Empty results are skipped,
 # so a variable the file does not define keeps what an earlier source set.
 load_hypr_vars() {
-    local file=$1 spec value
-    for spec in GTK_THEME:string COLOR_SCHEME:string ICON_THEME:string \
-        CURSOR_THEME:string CURSOR_SIZE:int FONT:string FONT_SIZE:int \
-        DOCUMENT_FONT:string DOCUMENT_FONT_SIZE:int MONOSPACE_FONT:string \
-        MONOSPACE_FONT_SIZE:int CODE_THEME:string; do
-        value=$(hyq "$file" -Q "\$${spec%%:*}[${spec##*:}]" 2>/dev/null)
-        [[ -n ${value} ]] && printf -v "__${spec%%:*}" '%s' "${value}"
+    local file=$1 name value
+    for name in GTK_THEME COLOR_SCHEME ICON_THEME CURSOR_THEME CURSOR_SIZE \
+        FONT FONT_SIZE DOCUMENT_FONT DOCUMENT_FONT_SIZE MONOSPACE_FONT \
+        MONOSPACE_FONT_SIZE CODE_THEME; do
+        # Sizes are queried as strings too: an `[int]` hint makes hyq fail on
+        # a `$VAR = 24` variable, which would drop a size override silently.
+        value=$(hyq "$file" -Q "\$$name[string]" 2>/dev/null)
+        [[ -n ${value} ]] && printf -v "__$name" '%s' "${value}"
     done
 }
 __GTK_THEME= __COLOR_SCHEME= __ICON_THEME= __CURSOR_THEME= __CURSOR_SIZE=
