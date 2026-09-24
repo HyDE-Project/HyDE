@@ -34,11 +34,11 @@ regenerate = false  # Forces regeneration of depth maps & meshes.
 # Global rofi configuration.
 [rofi]
 scale = 10  # Rofi default scaling.
-# 'hyde-shell hyprlock select' configuration.
+# 'hyde-shell hyprlock --select' configuration.
 [rofi.hyprlock]
 scale = 10  # Scaling for hyprlock.
 
-# 'animation.sh select' configuration.
+# 'hyde-shell animations --select' configuration.
 [rofi.animation]
 scale = 10  # Scaling for animation.
 
@@ -166,7 +166,7 @@ show_today = true  # Show detailed description of today in tooltip.
 forecast_days = 3  # Number of days to show forecast (0-3).
 location = ""  # Location/coordinates string for the weather output.
 
-# 'cava.sh stdout' configuration.
+# 'hyde-shell cava stdout' configuration.
 [cava.stdout]
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
@@ -174,7 +174,7 @@ range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
 bar_array = ["░", "▒", "▓", "█"]  # Bar array for stdout preset.
 
-# 'cava.sh hyprlock' configuration.
+# 'hyde-shell cava hyprlock' configuration.
 [cava.hyprlock]
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.
@@ -182,7 +182,7 @@ range = 7  # Number of bars minus one.
 standby = "🎶"  # Standby character for cava.
 bar_array = ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]  # Bar array for hyprlock preset.
 
-# 'cava.sh waybar' configuration.
+# 'hyde-shell cava waybar' configuration.
 [cava.waybar]
 bar = "▁▂▃▄▅▆▇█"  # Bar characters for cava.
 width = 20  # Width of the cava output.

@@ -137,7 +137,7 @@ description = "Rofi default scaling."
 type = "integer"
 
 [properties.rofi.properties.hyprlock]
-description = "'hyde-shell hyprlock select' configuration."
+description = "'hyde-shell hyprlock --select' configuration."
 type = "object"
 
 [properties.rofi.properties.hyprlock.properties.scale]
@@ -146,7 +146,7 @@ description = "Scaling for hyprlock."
 type = "integer"
 
 [properties.rofi.properties.animation]
-description = "'animation.sh select' configuration."
+description = "'hyde-shell animations --select' configuration."
 type = "object"
 
 [properties.rofi.properties.animation.properties.scale]
@@ -605,7 +605,7 @@ description = "Location/coordinates string for the weather output."
 type = "string"
 
 [properties."cava.stdout"]
-description = "'cava.sh stdout' configuration."
+description = "'hyde-shell cava stdout' configuration."
 type = "object"
 
 [properties."cava.stdout".properties.bar]
@@ -637,7 +637,7 @@ type = "array"
 type = "string"
 
 [properties."cava.hyprlock"]
-description = "'cava.sh hyprlock' configuration."
+description = "'hyde-shell cava hyprlock' configuration."
 type = "object"
 
 [properties."cava.hyprlock".properties.bar]
@@ -669,7 +669,7 @@ type = "array"
 type = "string"
 
 [properties."cava.waybar"]
-description = "'cava.sh waybar' configuration."
+description = "'hyde-shell cava waybar' configuration."
 type = "object"
 
 [properties."cava.waybar".properties.bar]
