@@ -190,7 +190,7 @@ def get_sensor_data(result_sensors, page=0):
         if data["powers"]:
             has_data = True
             power_columns = format_columns(data["powers"])
-            device_parts.append("       臘 Powers:\n        " + "\n        ".join(power_columns))
+            device_parts.append("       󰐧 Powers:\n        " + "\n        ".join(power_columns))
         if has_data:
             tooltip_parts.append("\n".join(device_parts))
             tooltip_parts.append("\n")  # Add a newline after each device's information
