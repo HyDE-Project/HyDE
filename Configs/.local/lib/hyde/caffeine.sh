@@ -10,7 +10,7 @@
 # Fix: track the on/off state in a small state file (`$XDG_RUNTIME_DIR`, since
 # it is inherently boot/session-scoped, not a persistent user preference), and
 # do the actual inhibiting with `systemd-inhibit --what=idle:sleep`, a
-# background process detached from Waybar's process group and cgroup (see
+# background process detached from Waybar's cgroup and process group (see
 # start_inhibitor). hypridle.conf already has `ignore_systemd_inhibit = false`,
 # so it respects this natively -- no custom Wayland idle-inhibit protocol
 # client needed.
@@ -167,13 +167,14 @@ start_inhibitor() {
         echo "Error: systemd-inhibit not found, cannot activate Caffeine mode" >&2
         return 1
     fi
-    # Waybar runs on-click commands as their own process group and, on every
-    # SIGUSR2 hot-reload (layout switch, theme change), destroys its modules
-    # with killpg() on those groups -- which silently took the inhibitor down
-    # with it, since a background job inherits its parent's group. `setsid`
-    # gives it its own session/group. A stop or crash-restart of Waybar's
-    # systemd unit (KillMode=control-group) would still kill it, so when a
-    # user manager is reachable it also gets its own transient scope.
+    # A Waybar reload (layout switch, theme change) runs `systemctl --user kill
+    # -s SIGUSR2` on Waybar's unit, which signals every process in its cgroup,
+    # and a stop or crash-restart of the unit (KillMode=control-group) kills
+    # them all. Started from Waybar's on-click, the inhibitor sat in that
+    # cgroup and died with every reload. So when a user manager is reachable
+    # it gets its own transient scope, which is what keeps it alive. `setsid`
+    # additionally takes it out of the on-click's process group, which Waybar
+    # may killpg() when it tears a module down.
     # Both setsid (not a group leader here) and `systemd-run --scope` exec in
     # place, so $! ends up being the systemd-inhibit pid itself.
     local scope=()
