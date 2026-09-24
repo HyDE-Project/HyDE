@@ -139,7 +139,7 @@
                     "type": "integer"
                 },
                 "hyprlock": {
-                    "description": "'hyde-shell hyprlock select' configuration.",
+                    "description": "'hyde-shell hyprlock --select' configuration.",
                     "type": "object",
                     "properties": {
                         "scale": {
@@ -150,7 +150,7 @@
                     }
                 },
                 "animation": {
-                    "description": "'animation.sh select' configuration.",
+                    "description": "'hyde-shell animations --select' configuration.",
                     "type": "object",
                     "properties": {
                         "scale": {
@@ -684,7 +684,7 @@
             }
         },
         "cava.stdout": {
-            "description": "'cava.sh stdout' configuration.",
+            "description": "'hyde-shell cava stdout' configuration.",
             "type": "object",
             "properties": {
                 "bar": {
@@ -723,7 +723,7 @@
             }
         },
         "cava.hyprlock": {
-            "description": "'cava.sh hyprlock' configuration.",
+            "description": "'hyde-shell cava hyprlock' configuration.",
             "type": "object",
             "properties": {
                 "bar": {
@@ -766,7 +766,7 @@
             }
         },
         "cava.waybar": {
-            "description": "'cava.sh waybar' configuration.",
+            "description": "'hyde-shell cava waybar' configuration.",
             "type": "object",
             "properties": {
                 "bar": {
