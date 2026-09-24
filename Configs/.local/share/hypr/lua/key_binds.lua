@@ -244,7 +244,7 @@ hl.bind(MOD .. " + CONTROL + S", hl.dsp.exec_cmd(hyde.sh.screenshot.ocr()), _F)
 _F = {description = "[Theming and Wallpaper] next global wallpaper"}
 hl.bind(MOD .. "+ ALT + Right", hl.dsp.exec_cmd(hyde.sh.wallpaper("--next")), _F)
 _F = {description = "[Theming and Wallpaper] previous global wallpaper"}
-hl.bind(MOD .. "+ ALT + Left", hl.dsp.exec_cmd(hyde.sh.wallpaper("--prev")), _F)
+hl.bind(MOD .. "+ ALT + Left", hl.dsp.exec_cmd(hyde.sh.wallpaper("--previous")), _F)
 _F = {description = "[Theming and Wallpaper] next Waybar layout"}
 hl.bind(MOD .. "+ ALT + Up", hl.dsp.exec_cmd("hyde-shell waybar --next"), _F)
 _F = {description = "[Theming and Wallpaper] previous Waybar layout"}
