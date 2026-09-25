@@ -1,13 +1,24 @@
 local color = check_require("lua_state.colors") or {}
 
+-- `group deny` windows (pyprland scratchpads) use the nogroup border colors,
+-- so keep those equal to the normal ones.
+local function border_colors(active, inactive)
+	return {
+		active_border = active,
+		inactive_border = inactive,
+		nogroup_border_active = active,
+		nogroup_border = inactive
+	}
+end
+
 if next(color) then
 	hl.config(
 		{
 			general = {
-				col = {
-					active_border = {colors = {color._pry4_rgba, color._4xa1_rgba}, angle = 45},
-					inactive_border = {colors = {color._pry1_rgba, color._pry2_rgba}, angle = 45}
-				}
+				col = border_colors(
+					{colors = {color._pry4_rgba, color._4xa1_rgba}, angle = 45},
+					{colors = {color._pry1_rgba, color._pry2_rgba}, angle = 45}
+				)
 			},
 			group = {
 				groupbar = {
@@ -51,7 +62,13 @@ end
 -- Note this is translated by hyprquery from hyprlang to lua
 local theme_config = check_require("lua_state.hypr_theme") or {}
 if type(theme_config) == "table" then
-    hl.config(theme_config)
+	-- Derive the nogroup border colors unless the theme sets them.
+	local col = theme_config.general and theme_config.general.col
+	if type(col) == "table" and col.active_border then
+		col.nogroup_border_active = col.nogroup_border_active or col.active_border
+		col.nogroup_border = col.nogroup_border or col.inactive_border or col.active_border
+	end
+	hl.config(theme_config)
 end
 
 -- Load the HyDE's ui config
@@ -95,10 +112,10 @@ if wallbash_mode ~= "theme" and next(color) then
 	hl.config(
 		{
 			general = {
-				col = {
-					active_border = {colors = {color._pry4_rgba, color._4xa1_rgba}, angle = 45},
-					inactive_border = {colors = {color._pry1_rgba, color._pry2_rgba}, angle = 45}
-				}
+				col = border_colors(
+					{colors = {color._pry4_rgba, color._4xa1_rgba}, angle = 45},
+					{colors = {color._pry1_rgba, color._pry2_rgba}, angle = 45}
+				)
 			},
 			group = {
 				groupbar = {

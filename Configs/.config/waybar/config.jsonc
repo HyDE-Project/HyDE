@@ -7,9 +7,9 @@
   "passthrough": false,
   "reload_style_on_change": true,
   "include": [
-    "$XDG_CONFIG_HOME/waybar/modules/*json*", // This can be used on waybar-git
-    "$XDG_DATA_HOME/waybar/modules/*json*" // This can be used on waybar-git
-    // "$XDG_CONFIG_HOME/waybar/includes/includes.json" // This will be deprecated if waybar 0.12.0 is released on debian
+    "modules/*json*", // Resolve relative to this config for stable Waybar releases.
+    "$XDG_DATA_HOME/waybar/modules/*json*" // Also support waybar-git's data modules.
+    // "$XDG_CONFIG_HOME/waybar/includes/includes.json" // Deprecated on newer Waybar releases.
   ],
   // ? Groups per side
   "modules-left": ["group/leaf-inverse"],

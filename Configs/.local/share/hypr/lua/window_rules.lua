@@ -125,7 +125,8 @@ hl.window_rule(
     float = true,
     move = "(monitor_w*0.73) (monitor_h*0.72)",
     size = "(monitor_w*0.25) (monitor_h*0.25)",
-    pin = true
+    pin = true,
+	opacity = "1.0"
   }
 )
 
@@ -162,6 +163,19 @@ hl.window_rule(
     opacity = 0.0,
     float = true,
     workspace = "special:xwayland_video_bridge silent"
+  }
+)
+
+-- Pyprland tags scratchpad windows `pypr_noanim` while teleporting them off-screen on hide.
+-- It registers this no_anim rule itself via `hyprctl eval`, but rules added at runtime do
+-- not survive `hyprctl reload`, so declare it here. See hyprland-community/pyprland#221.
+hl.window_rule(
+  {
+    name = "pypr_noanim",
+    match = {
+      tag = "pypr_noanim"
+    },
+    no_anim = true
   }
 )
 

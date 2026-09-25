@@ -4,10 +4,12 @@ pre_command = "echo 'Pre commands '"
 post_command = "echo 'HyDE backed up!'"
 
 [[waybar.dependency]]
-pacman = ["waybar"]
-yay = ["waybar"]
-paru = ["waybar"]
-dnf = ["waybar"]
+# Escape the comparison operator because deez-dots executes package commands
+# through a shell; the package manager receives `waybar>=0.15.0`.
+pacman = ["waybar\\>=0.15.0"]
+yay = ["waybar\\>=0.15.0"]
+paru = ["waybar\\>=0.15.0"]
+dnf = ["waybar\\>=0.15.0"]
 
 [[waybar.files]]
 action = "preserve"

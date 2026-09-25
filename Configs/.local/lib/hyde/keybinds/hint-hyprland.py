@@ -6,6 +6,83 @@ import os
 from collections import defaultdict
 import time
 
+# Bit -> modifier name Hyprland reports in a bind's modmask. Same table
+# map_modDisplay() below uses for display purposes; kept separate because the
+# ordering rules differ (this one has to match hyde/binds.lua's canonicalize,
+# alphabetical, not the display order below).
+_MODIFIER_BITS = {
+    64: "SUPER",
+    32: "HYPER",
+    16: "META",
+    8: "ALT",
+    4: "CTRL",
+    2: "CAPSLOCK",
+    1: "SHIFT",
+}
+
+
+def canonical_combo(modmask, key):
+    """Mirrors hyde/binds.lua's canonicalize(): decompose modmask into
+    modifier names, sort them alphabetically, append the upper-cased key,
+    join with " + ". Returns None for a bind with no key at all (a bare
+    modmask, which Hyprland never emits for a real bind and canonicalize()
+    itself also treats as empty).
+
+    This has to reproduce that algorithm exactly, not just resemble it --
+    it is the lookup key into the cache hyde/binds.lua writes, computed
+    independently on the other side of a file, in a different language.
+    """
+    if not isinstance(key, str) or key == "":
+        return None
+    if not isinstance(modmask, int):
+        return None
+
+    mods = sorted(name for bit, name in _MODIFIER_BITS.items() if modmask & bit)
+    mods.append(key.upper())
+    return " + ".join(mods)
+
+
+def _escape_lua_string(value):
+    """Escapes a string for embedding inside a double-quoted Lua string
+    literal. A raw newline would both break Lua's own quoted-string syntax
+    (unlike a [[ ]] long string, "..." can't contain one literally) and trip
+    keybinds_hint.sh's own single-line check on the dispatch field, so it's
+    escaped like backslash/quote rather than assumed never to appear.
+    """
+    return (
+        value.replace("\\", "\\\\")
+        .replace('"', '\\"')
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
+    )
+
+
+def load_bind_commands():
+    """Reads the combo->command cache hyde/binds.lua writes on every config
+    load (see Configs/.local/share/hypr/lua/hyde/binds.lua). Missing file,
+    unreadable file, malformed JSON, or JSON that isn't a flat string->string
+    object all resolve to an empty map -- __lua binds simply stay
+    unresolved, which is the existing, already-correct fallback behavior for
+    binds that can't be reduced to one command at all.
+    """
+    cache_home = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
+    cache_path = os.path.join(cache_home, "hyde", "lua_bind_commands.json")
+
+    try:
+        with open(cache_path, "r") as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+    if not isinstance(data, dict):
+        return {}
+
+    return {
+        key: value
+        for key, value in data.items()
+        if isinstance(key, str) and isinstance(value, str)
+    }
+
 
 def get_hyprctl_binds():
     while True:
@@ -333,8 +410,10 @@ def generate_rofi(binds):
     return rofi_str
 
 
-def expand_meta_data(binds_data):
+def expand_meta_data(binds_data, bind_commands=None):
     submap_keys = {}
+    if bind_commands is None:
+        bind_commands = {}
 
     # First pass: collect submap keys
     for bind in binds_data:
@@ -347,6 +426,21 @@ def expand_meta_data(binds_data):
         bind["key"] = map_codeDisplay(bind["keycode"], bind["key"])
         bind["key_display"] = map_keyDisplay(bind["key"])
         bind["mod_display"] = map_modDisplay(bind["modmask"])
+
+        # A Lua-registered bind (#1996): hyprctl only ever exposes it as an
+        # opaque "__lua" registry reference, which Hyprland itself has no way
+        # to dispatch from the outside. If hyde/binds.lua's cache has the
+        # command this exact combo was built from, rewrite it into a fresh
+        # exec_cmd call instead -- that runs the same way any other dispatch
+        # does. A combo the cache doesn't have (window/workspace operations,
+        # or any bind not built from hl.dsp.exec_cmd) is left exactly as it
+        # was; that's the documented limit, not a bug.
+        if bind["dispatcher"] == "__lua":
+            combo = canonical_combo(bind["modmask"], bind["key"])
+            command = bind_commands.get(combo) if combo else None
+            if command:
+                bind["dispatcher"] = f'hl.dsp.exec_cmd("{_escape_lua_string(command)}")'
+                bind["arg"] = ""
 
         # Handle submaps
         if bind["dispatcher"] == "submap":
@@ -399,7 +493,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     binds_data = get_hyprctl_binds()
     if binds_data:
-        expand_meta_data(binds_data)
+        expand_meta_data(binds_data, load_bind_commands())
         if args.show_unbind:
             duplicated_binds = find_duplicated_binds(binds_data)
             for (mod_display, key_display), binds in duplicated_binds.items():

@@ -6,6 +6,10 @@ favorites_file="$cache_dir/landing/cliphist_favorites"
 [ -f "$HOME/.cliphist_favorites" ] && favorites_file="$HOME/.cliphist_favorites"
 cliphist_style="${ROFI_CLIPHIST_STYLE:-clipboard}"
 
+# shellcheck disable=SC1091
+[[ -f "${LIB_DIR}/hyde/shutils/l10n.sh" ]] && source "${LIB_DIR}/hyde/shutils/l10n.sh"
+
+
 process_deletion() {
     while IFS= read -r line; do
         echo "$line"
@@ -17,7 +21,7 @@ process_deletion() {
             break
         elif [ -n "$line" ]; then
             cliphist delete <<< "$line"
-            notify-send "Deleted" "$line"
+            notify-send "${_T["Deleted"]:-Deleted}" "$line"
         fi
     done
     exit 0
@@ -60,7 +64,7 @@ check_content() {
         img_idx=$(awk -F '\t' '{print $1}' <<< "$line")
         local temp_preview="$XDG_RUNTIME_DIR/hyde/pastebin-preview_$img_idx"
         wl-paste > "$temp_preview"
-        notify-send -a "Pastebin:" "Preview: $img_idx" -i "$temp_preview" -t 2000
+        notify-send -a "${_T["Pastebin:"]:-Pastebin:}" "${_T["Preview:"]:-Preview:} $img_idx" -i "$temp_preview" -t 2000
         return 1
     fi
 }
@@ -130,8 +134,8 @@ prepare_favorites_for_display() {
 }
 cliphist_cmd() {
     if [[ $CLIPHIST_IMAGE_HISTORY != true ]]; then
-        echo -e ":f:a:v:\t📌 Favorites"
-        echo -e ":o:p:t:\t⚙️ Options"
+        echo -e ":f:a:v:\t📌 ${_T["Favorites"]:-Favorites}"
+        echo -e ":o:p:t:\t⚙️ ${_T["Options"]:-Options}"
         cliphist list
     else
         HYDE_CLIPHIST_IMAGE_ONLY=true cliphist.image.py
@@ -139,9 +143,9 @@ cliphist_cmd() {
 }
 show_history() {
     local selected_item
-    rofi_args=(" 📜 History..." -multi-select -i -display-columns 2 -selected-row 2)
+    rofi_args=(" 📜 ${_T["History..."]:-History...}" -multi-select -i -display-columns 2 -selected-row 2)
     if [[ $CLIPHIST_IMAGE_HISTORY == true ]]; then
-        rofi_args=(" 🏞️ Image History | Alt+S to Scan" -display-columns 2
+        rofi_args=(" 🏞️ ${_T["Image History | Alt+S to Scan"]:-Image History | Alt+S to Scan}" -display-columns 2
             -show-icons -eh 3
             -theme-str 'listview { lines: 4; columns: 2; }'
             -theme-str 'element { enabled: true; orientation: vertical; spacing: 0%; padding: 0%; cursor: pointer; background-color: transparent; text-color: @main-fg; horizontal-align: 0.5; }'
@@ -167,17 +171,17 @@ show_history() {
 
 delete_items() {
     local selected_item
-    selected_item="$(cliphist list | run_rofi " 🗑️ Delete" -multi-select -i -display-columns 2)"
+    selected_item="$(cliphist list | run_rofi " 🗑️ ${_T["Delete"]:-Delete}" -multi-select -i -display-columns 2)"
     handle_special_commands "${selected_item##*$'\n'}"
     process_deletion <<< "$selected_item"
 }
 view_favorites() {
     prepare_favorites_for_display || {
-        notify-send "No favorites."
+        notify-send "${_T["No favorites."]:-No favorites.}"
         return
     }
     local selected_item
-    selected_item=$(printf "%s\n" "${decoded_lines[@]}" | run_rofi "📌 View Favorites") || exit 0
+    selected_item=$(printf "%s\n" "${decoded_lines[@]}" | run_rofi "📌 ${_T["View Favorites"]:-View Favorites}") || exit 0
     if [ -n "$selected_item" ]; then
         handle_special_commands "${selected_item##*$'\n'}"
         local index
@@ -186,36 +190,36 @@ view_favorites() {
             local selected_encoded_favorite="${favorites[$((index - 1))]}"
             echo "$selected_encoded_favorite" | base64 --decode | wl-copy
             paste_string "$@"
-            notify-send "Copied to clipboard."
+            notify-send "${_T["Copied to clipboard."]:-Copied to clipboard.}"
         else
-            notify-send "Error: Selected favorite not found."
+            notify-send "${_T["Error: Selected favorite not found."]:-Error: Selected favorite not found.}"
         fi
     fi
 }
 add_to_favorites() {
     ensure_favorites_dir
     local item
-    item=$(cliphist list | run_rofi "➕ Add to Favorites...") || exit 0
+    item=$(cliphist list | run_rofi "➕ ${_T["Add to Favorites..."]:-Add to Favorites...}") || exit 0
     if [ -n "$item" ]; then
         local full_item
         full_item=$(echo "$item" | cliphist decode)
         local encoded_item
         encoded_item=$(echo "$full_item" | base64 -w 0)
         if [ -f "$favorites_file" ] && grep -Fxq "$encoded_item" "$favorites_file"; then
-            notify-send "Item is already in favorites."
+            notify-send "${_T["Item is already in favorites."]:-Item is already in favorites.}"
         else
             echo "$encoded_item" >> "$favorites_file"
-            notify-send "Added to favorites."
+            notify-send "${_T["Added to favorites."]:-Added to favorites.}"
         fi
     fi
 }
 delete_from_favorites() {
     prepare_favorites_for_display || {
-        notify-send "No favorites to remove."
+        notify-send "${_T["No favorites to remove."]:-No favorites to remove.}"
         return
     }
     local selected_favorite
-    selected_favorite=$(printf "%s\n" "${decoded_lines[@]}" | run_rofi "➖ Remove from Favorites...") || exit 0
+    selected_favorite=$(printf "%s\n" "${decoded_lines[@]}" | run_rofi "➖ ${_T["Remove from Favorites..."]:-Remove from Favorites...}") || exit 0
     if [ -n "$selected_favorite" ]; then
         local index
         index=$(printf "%s\n" "${decoded_lines[@]}" | grep -nxF "$selected_favorite" | cut -d: -f1)
@@ -226,35 +230,40 @@ delete_from_favorites() {
             else
                 grep -vF -x "$selected_encoded_favorite" "$favorites_file" > "$favorites_file.tmp" && mv "$favorites_file.tmp" "$favorites_file"
             fi
-            notify-send "Item removed from favorites."
+            notify-send "${_T["Item removed from favorites."]:-Item removed from favorites.}"
         else
-            notify-send "Error: Selected favorite not found."
+            notify-send "${_T["Error: Selected favorite not found."]:-Error: Selected favorite not found.}"
         fi
     fi
 }
 clear_favorites() {
     if [ -f "$favorites_file" ] && [ -s "$favorites_file" ]; then
         local confirm
-        confirm=$(echo -e "Yes\nNo" | run_rofi "☢️ Clear All Favorites?") || exit 0
-        if [ "$confirm" = "Yes" ]; then
+        local yes_str="${_T["Yes"]:-Yes}"
+        confirm=$(echo -e "${yes_str}\n${_T["No"]:-No}" | run_rofi "☢️ ${_T["Clear All Favorites?"]:-Clear All Favorites?}") || exit 0
+        if [ "$confirm" = "$yes_str" ]; then
             : > "$favorites_file"
-            notify-send "All favorites have been deleted."
+            notify-send "${_T["All favorites have been deleted."]:-All favorites have been deleted.}"
         fi
     else
-        notify-send "No favorites to delete."
+        notify-send "${_T["No favorites to delete."]:-No favorites to delete.}"
     fi
 }
 manage_favorites() {
+    local opt_add="${_T["Add to Favorites"]:-Add to Favorites}"
+    local opt_del="${_T["Delete from Favorites"]:-Delete from Favorites}"
+    local opt_clr="${_T["Clear All Favorites"]:-Clear All Favorites}"
+
     local manage_action
-    manage_action=$(echo -e "Add to Favorites\nDelete from Favorites\nClear All Favorites" | run_rofi "📓 Manage Favorites") || exit 0
+    manage_action=$(echo -e "${opt_add}\n${opt_del}\n${opt_clr}" | run_rofi "📓 ${_T["Manage Favorites"]:-Manage Favorites}") || exit 0
     case "$manage_action" in
-        "Add to Favorites")
+        "$opt_add")
             add_to_favorites
             ;;
-        "Delete from Favorites")
+        "$opt_del")
             delete_from_favorites
             ;;
-        "Clear All Favorites")
+        "$opt_clr")
             clear_favorites
             ;;
         *)
@@ -266,21 +275,22 @@ manage_favorites() {
 }
 clear_history() {
     local selected_item
-    selected_item=$(echo -e "Yes\nNo" | run_rofi "☢️ Clear Clipboard History?")
+    local yes_str="${_T["Yes"]:-Yes}"
+    selected_item=$(echo -e "${yes_str}\n${_T["No"]:-No}" | run_rofi "☢️ ${_T["Clear Clipboard History?"]:-Clear Clipboard History?}")
     handle_special_commands "${selected_item##*$'\n'}"
-    if [ "$selected_item" = "Yes" ]; then
+    if [ "$selected_item" = "$yes_str" ]; then
         cliphist wipe
-        notify-send "Clipboard history cleared."
+        notify-send "${_T["Clipboard history cleared."]:-Clipboard history cleared.}"
     fi
 }
 main_menu_options() {
     cat <<- EOF
-		History:::<sub>(Alt+C)</sub>
-		Image History:::<sub>(Alt+V)</sub>
-		Delete Item:::<sub>(Alt+D)</sub>
-		Clear History:::<sub>(Alt+W)</sub>
-		View Favorites:::<sub>(Alt+N)</sub>
-		Manage Favorites:::<sub>(Alt+O)</sub>
+		${_T["History"]:-History}:::<sub>(Alt+C)</sub>
+		${_T["Image History"]:-Image History}:::<sub>(Alt+V)</sub>
+		${_T["Delete Item"]:-Delete Item}:::<sub>(Alt+D)</sub>
+		${_T["Clear History"]:-Clear History}:::<sub>(Alt+W)</sub>
+		${_T["View Favorites"]:-View Favorites}:::<sub>(Alt+N)</sub>
+		${_T["Manage Favorites"]:-Manage Favorites}:::<sub>(Alt+O)</sub>
 	EOF
 }
 
@@ -294,18 +304,18 @@ ocr_scan() {
     local index
     index="$(HYDE_CLIPHIST_IMAGE_ONLY=1 "${LIB_DIR}/hyde/cliphist.image.py" | head -n1)"
     [[ -n $index ]] || {
-        send_notifs "OCR Error" "No images in clipboard history..." -r 9
+        send_notifs "${_T["OCR Error"]:-OCR Error}" "${_T["No images in clipboard history..."]:-No images in clipboard history...}" -r 9
         exit 1
     }
 
     mkdir -p "$runtime_dir"
     cliphist decode "$index" > "${image_path}"
     if [ ! -s "${image_path}" ]; then
-        notify-send "OCR Error" "No image data in clipboard -r 9"
+        notify-send "${_T["OCR Error"]:-OCR Error}" "${_T["No image data in clipboard -r 9"]:-No image data in clipboard -r 9}"
         exit 1
     fi
     print_log -g "Scanning ${image_path}"
-    send_notifs "OCR" "Scanning latest image from clipboard..." -i "${image_path}" -r 9
+    send_notifs "${_T["OCR"]:-OCR}" "${_T["Scanning latest image from clipboard..."]:-Scanning latest image from clipboard...}" -i "${image_path}" -r 9
     ocr_extract "$image_path"
 
 }
@@ -332,10 +342,18 @@ main() {
     unset CLIPHIST_IMAGE_HISTORY # prevent image history side effects
 
     if [ -z "$ACTION" ]; then
+        # Localized options for menu matching
+        local opt_hist="${_T["History"]:-History}"
+        local opt_imgh="${_T["Image History"]:-Image History}"
+        local opt_del="${_T["Delete Item"]:-Delete Item}"
+        local opt_clr="${_T["Clear History"]:-Clear History}"
+        local opt_vfav="${_T["View Favorites"]:-View Favorites}"
+        local opt_mfav="${_T["Manage Favorites"]:-Manage Favorites}"
+
         # No arguments provided, show menu
         local main_action
         main_action=$(
-            main_menu_options | run_rofi "🔎 Options (Alt O)" \
+            main_menu_options | run_rofi "🔎 ${_T["Options (Alt O)"]:-Options (Alt O)}" \
                 -display-column-separator ":::" \
                 -display-columns 1,2 \
                 -markup-rows
@@ -345,12 +363,12 @@ main() {
         main_action="${main_action%%:::*}"
 
         case "$main_action" in
-            "History") ACTION=copy ;;
-            "Image History") ACTION=image_history ;;
-            "Delete Item") ACTION=delete ;;
-            "Clear History") ACTION=wipe ;;
-            "View Favorites") ACTION=favorites ;;
-            "Manage Favorites") ACTION=manage_fav ;;
+            "$opt_hist") ACTION=copy ;;
+            "$opt_imgh") ACTION=image_history ;;
+            "$opt_del") ACTION=delete ;;
+            "$opt_clr") ACTION=wipe ;;
+            "$opt_vfav") ACTION=favorites ;;
+            "$opt_mfav") ACTION=manage_fav ;;
             *) exit 0 ;;
         esac
     fi

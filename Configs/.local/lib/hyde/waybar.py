@@ -11,7 +11,6 @@ import time
 import sys
 import hashlib
 import signal
-import shlex
 
 from pathlib import Path
 
@@ -344,6 +343,36 @@ def set_layout(layout):
 
     logger.error(f"Layout {layout} not found")
     sys.exit(1)
+
+
+def apply_theme_layout():
+    """Temporarily apply a theme preset, preserving the user's layout/CSS pair."""
+    theme_layout = get_value_from_hypr_theme("$WAYBAR_LAYOUT")
+    saved_layout = get_state_value("WAYBAR_PRE_THEME_LAYOUT")
+    if theme_layout:
+        # Validate before saving anything; a missing preset must not claim the bar.
+        pair = next((p for p in list_layouts()["layouts"]
+                     if theme_layout in (p["name"], p["layout"]) and p["style"]), None)
+        if not pair:
+            logger.warning(f"Theme Waybar layout not found: {theme_layout}")
+            return
+        if not saved_layout:
+            # Save only on entry, not on wallpaper reloads or preset-to-preset switches.
+            set_state_value("WAYBAR_PRE_THEME_LAYOUT", get_current_layout_from_config())
+            set_state_value("WAYBAR_PRE_THEME_STYLE", get_state_value("WAYBAR_STYLE_PATH") or
+                            resolve_style_path(get_current_layout_from_config()))
+        _apply_layout(pair["layout"], pair["style"], theme_layout)
+    elif saved_layout:
+        if not os.path.isfile(saved_layout):
+            logger.warning(f"Cannot restore missing Waybar layout: {saved_layout}")
+            return
+        saved_style = get_state_value("WAYBAR_PRE_THEME_STYLE")
+        if not saved_style or not os.path.isfile(saved_style):
+            saved_style = resolve_style_path(saved_layout)
+        _apply_layout(saved_layout, saved_style, os.path.basename(saved_layout))
+        # Clear only after restoration succeeds; the next entry saves a fresh pair.
+        set_state_value("WAYBAR_PRE_THEME_LAYOUT", "")
+        set_state_value("WAYBAR_PRE_THEME_STYLE", "")
 
 
 def handle_layout_navigation(option):
@@ -953,7 +982,8 @@ def get_value_from_hypr_theme(variable_name):
     logger.debug(f"Found hypr.theme at {hypr_theme_path}")
 
     try:
-        cmd = ["hyq", shlex.quote(hypr_theme_path), "--query", variable_name]
+        # argv already preserves spaces in theme names such as "Mac OS".
+        cmd = ["hyq", hypr_theme_path, "--query", variable_name]
         logger.debug(f"Running command: {' '.join(cmd)}")
 
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -1099,6 +1129,11 @@ def update_style(style_path):
         )
 
     if not style_path:
+        # Keep explicitly selected/restored CSS instead of deriving it from the layout.
+        style_path = get_state_value("WAYBAR_STYLE_PATH")
+        if style_path and not os.path.isfile(style_path):
+            style_path = None
+    if not style_path:
         current_layout = get_current_layout_from_config()
         logger.debug(f"Detected current layout: '{current_layout}'")
         if not current_layout:
@@ -1109,6 +1144,8 @@ def update_style(style_path):
         logger.error(f"Cannot reconcile style path: {style_path}")
         sys.exit(1)
     write_style_file(style_filepath, style_path)
+
+    set_state_value("WAYBAR_STYLE_PATH", style_path)
 
 
 def watch_waybar():
@@ -1283,6 +1320,9 @@ def main():
         sys.exit(0)
 
     if args.update:
+        # The color/theme hook uses --update; a theme may opt into a paired
+        # layout and stylesheet (Mac OS: HyDE #2089 / hyde-gallery #127).
+        apply_theme_layout()
         update_icon_size()
         update_border_radius()
         generate_includes()

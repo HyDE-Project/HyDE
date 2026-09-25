@@ -406,13 +406,29 @@ get_rofi_pos() {
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
     readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
     eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
-        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" ")))"')"
+        "monRes=(\(.width) \(.height) \(.scale) \(.x) \(.y)) offRes=(\(.reserved | join(" "))) monTransform=\(.transform // 0)"')"
+    # hyprctl reports width/height as the monitor's pre-transform mode, not
+    # swapped for a 90/270-degree rotation (verified against a headless test
+    # output: transform=1 left width/height unchanged) -- so on a portrait
+    # monitor these still carried its landscape resolution, landing rofi
+    # menus off-screen near the bottom/right (#975).
+    if ((monTransform % 2 == 1)); then
+        local mon_swap="${monRes[0]}"
+        monRes[0]="${monRes[1]}"
+        monRes[1]="$mon_swap"
+    fi
     monRes[2]="$(get_monitor_scale "${monRes[2]}")"
     monRes[0]=$((monRes[0] * 100 / monRes[2]))
     monRes[1]=$((monRes[1] * 100 / monRes[2]))
     curPos[0]=$((curPos[0] - monRes[3]))
     curPos[1]=$((curPos[1] - monRes[4]))
-    offRes=("${offRes// / }")
+    # offRes is already a correctly-parsed 4-element array from the eval
+    # above ("${offRes// / }" with no index means offRes[0]: a no-op
+    # substitution that then collapsed the whole array down to that one
+    # element, discarding offRes[1..3] -- so any menu anchored north, east,
+    # or south of the cursor ignored reserved space on that edge (e.g. a
+    # bar) entirely. Caught by a reserved-margin test case with no HyDE
+    # issue number of its own; found while testing #975's fix.
     if [ "${curPos[0]}" -ge "$((monRes[0] / 2))" ]; then
         local x_pos="east"
         local x_off="-$((monRes[0] - curPos[0] - offRes[2]))"

@@ -11,10 +11,12 @@ cache_dir="${HYDE_CACHE_HOME:-$HOME/.cache/hyde}"
 recent_data="$cache_dir/landing/show_emoji.recent"
 save_recent_entry() {
     local emoji_line="$1"
+    local tmp_recent
+    tmp_recent="$(mktemp "$(dirname "$recent_data")/.recent.XXXXXX")"
     {
         echo "$emoji_line"
         cat "$recent_data"
-    } | awk '!seen[$0]++' > temp && mv temp "$recent_data"
+    } | awk '!seen[$0]++' > "$tmp_recent" && mv "$tmp_recent" "$recent_data"
 }
 setup_rofi_config() {
     local font_scale="$ROFI_EMOJI_SCALE"

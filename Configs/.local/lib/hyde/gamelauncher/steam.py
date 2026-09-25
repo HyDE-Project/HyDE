@@ -127,7 +127,9 @@ def fetch_icon(appid: int, cache_dir: Path) -> str:
 def should_exclude_game(name: str) -> bool:
     """Determine if a game should be excluded based on its name."""
     return (
-        re.search(r"(?i)\b(proton|steam runtime|steamworks|steam client|steam)\b", name) is not None
+        "\t" in name
+        or re.search(r"(?i)\b(proton|steam runtime|steamworks|steam client|steam)\b", name)
+        is not None
     )
 
 

@@ -1,18 +1,42 @@
 #!/usr/bin/env bash
 # Source this file in any script that needs localization support. It sets up the _T associative array with translations based on the user's locale.
 
-# Extract the system locale and set DESKTOP_LANG to the first two characters (language code)
-_raw_sys_lang="${LC_ALL:-${LANG:-en}}"
-export DESKTOP_LANG="${DESKTOP_LANG:-${_raw_sys_lang:0:2}}"
-export DESKTOP_LANG="${DESKTOP_LANG,,}"
-#? Handles edge cases where locale is set to "C" or "POSIX" which are not actual languages
-[[ "$DESKTOP_LANG" == "c" || "$DESKTOP_LANG" == "po" ]] && export DESKTOP_LANG="en"
+# Resolve the effective locale with app overrides first, then desktop/system defaults.
+_raw_sys_lang="${HYDE_LANG:-${DESKTOP_LANG:-${LC_ALL:-${LC_MESSAGES:-${LANG:-en_US}}}}}"
+_raw_sys_lang="${_raw_sys_lang%%.*}" # Remove encoding suffix (e.g., .UTF-8)
+_raw_sys_lang="${_raw_sys_lang%%@*}" # Remove modifier suffix (e.g., @calendar)
+_raw_sys_lang="${_raw_sys_lang//_/-}"
+_raw_sys_lang="${_raw_sys_lang,,}"
 
-# Initialize the _T associative array for translations
-declare -A _T 2>/dev/null || : # Localization support
-[[ -f "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${DESKTOP_LANG}.sh" ]] && source "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${DESKTOP_LANG}.sh"
-[[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.sh" ]] && source "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${DESKTOP_LANG}.sh"
+# Keep the full tag for region-aware packs, but normalize the app language to the primary code.
+case "$_raw_sys_lang" in
+""|c|posix)
+    export DESKTOP_LOCALE="en"
+    export DESKTOP_LANG="en"
+    ;;
+*)
+    export DESKTOP_LOCALE="$_raw_sys_lang"
+    export DESKTOP_LANG="${_raw_sys_lang%%-*}"
+    [[ -z "$DESKTOP_LANG" ]] && export DESKTOP_LANG="en"
+    ;;
+esac
 
+# Initialize translation lookup table
+declare -A _T 2>/dev/null || true
+
+# Load translation dictionaries (full locale first, then primary language).
+_loc_keys=("$DESKTOP_LOCALE")
+[[ "$DESKTOP_LANG" != "$DESKTOP_LOCALE" ]] && _loc_keys+=("$DESKTOP_LANG")
+for _loc_key in "${_loc_keys[@]}"; do
+    for _loc_file in \
+        "${XDG_DATA_HOME:-$HOME/.local/share}/hyde/locale/${_loc_key}.sh" \
+        "${XDG_CONFIG_HOME:-$HOME/.config}/hyde/locale/${_loc_key}.sh"
+    do
+        [[ -r "$_loc_file" ]] && source "$_loc_file"
+    done
+done
+unset _loc_file
+unset _loc_key
 # method overrides for localization
 
 # Locale-aware notification handler
@@ -30,7 +54,7 @@ send_notifs() {
 }
 
 # Locale-aware logging handler
-print_log_L() {
+print_T() {
     while (("$#")); do
         case "$1" in
         -r | +r | -g | +g | -y | +y | -b | +b | -m | +m | -c | +c | -wt | +w | -n | +n | -stat | -crit | -warn | -sec | -err)
@@ -69,4 +93,5 @@ print_log_L() {
     echo "" >&2
 }
 
-export -f send_notifs print_log_L
+
+export -f send_notifs print_T
