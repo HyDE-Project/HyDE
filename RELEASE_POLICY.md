@@ -1,199 +1,186 @@
-## Release & Branching Policy - Fortnightly Releases
+## Release & Branching Policy - Monthly Releases
 
-[Jump To Calendar](#fortnightly-release-calendar-for-2025)
+[Jump To Calendar](#monthly-release-calendar-2026)
 
-#### Key Points
+### Key Points
 
-1. **🛠️Development** - All development and PRs target `dev`.
-2. **🚫Freeze Week** - On Freeze Week the `dev` branch is merged into the `rc` (release-candidate) branch which is then *frozen* allowing only bug fixes and stabilisation.
-3. **✅Release Week** - On Release Week the `rc` branch is merged into `master`.
-4. **📦Shapshots** -  Snapshots are only created when `master` is stable.
-5. **🔄Schedule** - Freeze Weeks And Release Weeks alternate **every Friday** beginning with Release Week. This means that every *odd* Friday is a Release Week and every *even* Friday is a Freeze Week.
+1. **Development** - All development and PRs target `dev`.
+2. **Freeze Period** - During the last week of each month, `dev` is merged into `rc` (release-candidate) which is then *frozen* allowing only bug fixes and stabilization.
+3. **Release Week** - Last week of the month: `rc` is merged into `master` after validation.
+4. **Snapshots** - Snapshots are created when `master` is stable (typically end of release week).
+5. **Schedule** - Monthly cycle: 3 weeks open development → 1 week freeze/testing → merge at month-end → snapshot early next month.
 
-> [!NOTE] 
-> The `dev` branch is always open for new features and development *every* week, regardless of the release cycle. Only the `rc` branch is frozen for testing and bug fixes for release preparation during Freeze Week.
+> [!NOTE]
+> The `dev` branch is always open for new features and development during the first 3 weeks of each month. Only during the **Freeze Week** (last week of month) is the `rc` branch frozen for testing and bug fixes. At month-end, `rc` is merged to `master`. Snapshot releases happen early the next month. This gives ~3 weeks for human testers to validate changes properly.
 
 ---
 
-## Weekly Breakdown
+## Monthly Cycle Breakdown
 
-| Phase                                     | Dev Branch Status   | RC Branch Status   | Allowed Changes                                                            | Description               |
-| ------------------------------------------| ------------------- | ------------------ | ---------------------------------------------------------------------------| ------------------------- |
-| **Freeze Week** (during odd weeks)        | ✅**OPEN**          | 🚫**FROZEN**       | ❌ No new features in `rc`<br>✅ Bug fixes in `rc`<br>✅ All dev in `dev`  | Testing and validation    |
-| **Merge Friday** (on odd Fridays)         | ✅**OPEN**          | 🔄**MERGING**      | 🔄 Merge `rc` to master                                                    | Deploy stable code        |
-| **Stabilization Week** (after merge)      | ✅**OPEN**          | ✅**OPEN**         | ✅ All development in `dev`<br>🔧 Critical hotfixes in `rc`                | Monitor master & develop  |
-| **Snapshot Release**                      | ✅**OPEN**          | 📦**RELEASE**      | 📦 Create release                                                          | When `master` is stable   |
+| Phase                              | Dev Branch | RC Branch    | Master Branch | Allowed Changes                                                    | Focus                          |
+| ----------------------------------| ---------- | ------------ | ------------- | ------------------------------------------------------------------ | ------------------------------ |
+| **Weeks 1-3** (Development)       | **OPEN**   | **OPEN**     | **Stable**    | **All features in `dev`**<br>**Bug fixes in `rc`**                 | Active development & iteration |
+| **Week 4** (Freeze & Test)        | **OPEN**   | **FROZEN**   | **Stable**    | **No new features in `rc`**<br>**Bug fixes only in `rc`**          | Human testing & validation     |
+| **Month End** (Merge)             | **OPEN**   | **MERGING**  | **RECEIVING** | **Merge `rc` → `master`**<br>**Critical hotfixes in `rc`**         | Deploy stable code             |
+| **Month Start** (Snapshot)        | **OPEN**   | **OPEN**     | **RELEASE**   | **Create snapshot release**                                        | Ship when stable               |
 
 ---
 
 ## In-Depth Monthly Timeline
 
-| Period                         | Dev Status          | RC Status           | Master Status          | Activity                    | Focus                  |
-| -------------------------------| --------------------| --------------------| ---------------------- | --------------------------- | ---------------------- |
-| **During 1st Week**            | ✅**OPEN**          | 🚫**FROZEN**        | 🔧 Previous fixes      | Testing & validation        | 🧪 Prepare for merge   |
-| **1st Friday**                 | ✅**OPEN**          | 🔄**MERGING**       | 📥 Receives new code   | Merge `rc` → `master`       | 🔄 Deploy              |
-| **During 2nd Week**            | ✅**OPEN**          | ✅**OPEN**          | 🔧 Hotfixes only       | Active development          | 🚀 New features to dev |
-| **2nd Friday**                 | ✅**OPEN**          | ✅**OPEN**          | 📦**SNAPSHOT**         | Release when stable         | 📦 Release             |
-| **During 3rd Week**            | ✅**OPEN**          | 🚫**FROZEN**        | 🔧 Minor fixes only    | Testing & validation        | 🧪 Prepare for merge   |
-| **3rd Friday**                 | ✅**OPEN**          | 🔄**MERGING**       | 📥 Receives new code   | Merge `rc` → `master`       | 🔄 Deploy              |
-| **During 4th Week**            | ✅**OPEN**          | ✅**OPEN**          | 🔧 Hotfixes only       | Active development          | 🚀 New features to dev |
-| **4th Friday**                 | ✅**OPEN**          | ✅**OPEN**          | 📦**SNAPSHOT**         | Release when stable         | 📦 Release             |
+| Period                      | Dev Status   | RC Status    | Master Status | Activity                          | Focus                    |
+| --------------------------- | ------------ | ------------ | ------------- | --------------------------------- | ------------------------ |
+| **Week 1** (Days 1-7)       | **OPEN**     | **OPEN**     | **Stable**    | New features, refactors, patches  | **Feature development**  |
+| **Week 2** (Days 8-14)      | **OPEN**     | **OPEN**     | **Stable**    | Continued development, reviews    | **Iteration & review**   |
+| **Week 3** (Days 15-21)     | **OPEN**     | **OPEN**     | **Stable**    | Polish, edge cases, docs          | **Polish & harden**      |
+| **Week 4** (Days 22-28/31)  | **OPEN**     | **FROZEN**   | **Stable**    | **Human testing only**<br>Bug fixes | **Testing & validation** |
+| **Month End** (Days 28-31)  | **OPEN**     | **MERGING**  | **RECEIVING** | Merge `rc` → `master`             | **Deploy & verify**      |
+| **Month Start** (Days 1-3)  | **OPEN**     | **OPEN**     | **RELEASE**   | Snapshot when stable              | **Ship it**              |
 
-**Freeze periods: allows ~2 weeks per month (handles variable month lengths)**
+**Freeze period: 1 week per month (last week) — dedicated to human testing**
 
 ---
 
-## Versioning YY.M.W
+## Versioning YY.M.D
 
-We use **year.month.week** format (`YY.M.W`) instead of traditional semantic versioning for several reasons:
+We use **year.month.day** format (`YY.M.D`) where:
 
-- **Release-cycle aligned:** Matches our fortnightly release schedule perfectly
-- **Time-based clarity:** Instantly shows when a release was made
-- **Predictable progression:** Always `.1` then `.3` each month
-- **No arbitrary numbers:** No confusion about what constitutes "major" vs "minor"
-- **User-friendly:** Easy to understand - `25.7.1` = "1st Week of July 2025"
-remote: Counting objects: 100% (1/1), done.
-remote: Total 1 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
-Unpacking objects: 100% (1/1), 869 bytes | 869.00 KiB/s, done.
-From https://github.com/HyDE-Project/HyDE
+- **YY.M** = Year.Month of the scheduled monthly release (e.g., `26.9` = September 2026)
+- **D** = Day counter for iterations on that month's release (starts at 0)
+
+Examples:
+- `26.9.0` — Initial September 2026 release
+- `26.9.1` — First hotfix/patch to September release
+- `26.9.2` — Second hotfix/patch, etc.
+- `26.10.0` — Initial October 2026 release (next month)
+
+Benefits:
+- **Release-cycle aligned:** `YY.M` matches monthly schedule; `D` tracks post-release iterations
+- **Time-based clarity:** `26.9` = September 2026 at a glance
+- **Hotfix friendly:** No versioning debates — just increment the day counter
+- **Semantic clarity:** `.0` = initial release, `.1+` = patches/hotfixes
+- **No arbitrary numbers:** No "major/minor/patch" semantics to argue about
 
 ---
 
 ## Pull Requests
 
-- *Must* be made against`dev` branch
+- **Must** be made against `dev` branch
 - Should be reviewed and approved by at least one other developer before merging
-- Can be created anytime, but should be merged to`dev` branch before releasing on`master` branch
-- Should not be merged directly into`master` branch
-- Should be merged within the release window for`master` branch
+- Can be created anytime, but should be merged to `dev` before the Freeze Week
+- Should not be merged directly into `master` branch
+- Features merged during Freeze Week must wait for next cycle (exception: critical bug fixes)
 
 ---
 
-# FLOWCHART 
+# FLOWCHART
 
-Here are some visuals to help you understand the flowchart better.
-
-## Development Flow
+## Development Flow (Monthly)
 
 ```mermaid
 graph TD
-    A[Normal Development<br/>✅ All PRs to dev] --> B{Even Friday?}
-    B -->|Yes| C[🔄 DEV → RC<br/>rc frozen<br/>🧪 Testing Phase]
+    A[Weeks 1-3: Development<br/>All PRs to dev] --> B{Last week of month?}
+    B -->|Yes| C[DEV to RC<br/>rc frozen<br/>Human Testing Phase]
     B -->|No| A
-    
-    C --> D[🔄 MERGE DAY<br/>Odd Friday<br/>rc → master]
-    D --> E[✅ DEV & RC REOPEN<br/>New features to dev]
-    E --> F[📦 SNAPSHOT RELEASE<br/>Even Friday<br/>Whenever master stable]
-    F --> G[🔄 Prep Next Cycle]
+
+    C --> D[MONTH END<br/>rc to master]
+    D --> E[DEV and RC REOPEN<br/>New features to dev]
+    E --> F[SNAPSHOT RELEASE<br/>Month Start<br/>When master stable]
+    F --> G[Prep Next Cycle]
     G --> A
-    
-    style A fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
-    style C fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737
-    style D fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
-    style E fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
-    style F fill:#c79bf0,stroke:#252737,stroke-width:2px,color:#252737
-    style G fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737
+
+    classDef dev fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
+    classDef freeze fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737
+    classDef merge fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
+    classDef release fill:#c79bf0,stroke:#252737,stroke-width:2px,color:#252737
+
+    class A,E,G dev
+    class C freeze
+    class D merge
+    class F release
 ```
 
 ## Branch Flow
 
 ```mermaid
 graph LR
-    subgraph "Dev Branch"
-        DEV[dev branch] --> RC[🔄 MERGE<br/>to rc]
-        RC --> FROZEN[🚫 rc FROZEN<br/>fixes only]
-        FROZEN --> MERGE[🔄 MERGING<br/>rc to master]
-        MERGE --> OPEN[✅ OPEN<br/>all dev]
-        OPEN --> RC
-    end
-    
-    subgraph "RC Branch"
-        RC2[rc branch] --> FROZEN2[🚫 FROZEN<br/>fixes only]
-        FROZEN2 --> MERGE2[🔄 MERGING<br/>to master]
-        MERGE2 --> OPEN2[✅ OPEN<br/>accepts new dev]
-        OPEN2 --> RC2
-    end
-    
-    subgraph "Master Branch"
-        MASTER[master branch] --> PREV[🔧 Previous fixes]
-        PREV --> RECEIVE[📥 RECEIVES<br/>new code]
-        RECEIVE --> RELEASE[📦 RELEASE<br/>whenever stable]
-        RELEASE --> PREV
-    end
-    
-    MERGE -.-> RECEIVE
+    DEV[dev branch] --> RC_MERGE[MERGE to rc / Month End]
+    RC_MERGE --> RC_FROZEN[rc FROZEN / Week 4: fixes only]
+    RC_FROZEN --> MERGE_MASTER[MERGING rc to master / Month End]
+    MERGE_MASTER --> OPEN[OPEN / all dev resumes]
+    OPEN --> RC_MERGE
+
+    RC2[rc branch] --> FROZEN2[FROZEN / Week 4: fixes only]
+    FROZEN2 --> MERGE2[MERGING to master / Month End]
+    MERGE2 --> OPEN2[OPEN / accepts new dev]
+    OPEN2 --> RC2
+
+    MASTER[master branch] --> STABLE[Stable / Previous release]
+    STABLE --> RECEIVE[RECEIVES new code / Month End]
+    RECEIVE --> RELEASE[RELEASE / when verified stable]
+    RELEASE --> STABLE
+
+    MERGE_MASTER -.-> RECEIVE
     MERGE2 -.-> RECEIVE
-    
-    style DEV fill:#252737,stroke:#a9b1d6,stroke-width:2px,color:#a9b1d6
-    style RC fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
-    style FROZEN fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737
-    style MERGE fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
-    style OPEN fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
-    style RC2 fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
-    style FROZEN2 fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737
-    style MERGE2 fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
-    style OPEN2 fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
-    style MASTER fill:#252737,stroke:#a9b1d6,stroke-width:2px,color:#a9b1d6
-    style PREV fill:#c79bf0,stroke:#252737,stroke-width:2px,color:#252737
-    style RECEIVE fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
-    style RELEASE fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
+
+    classDef dev fill:#a9b1d6,stroke:#252737,stroke-width:2px,color:#252737
+    classDef freeze fill:#ebbcba,stroke:#252737,stroke-width:2px,color:#252737
+    classDef merge fill:#a9b1dc,stroke:#252737,stroke-width:2px,color:#252737
+    classDef stable fill:#c79bf0,stroke:#252737,stroke-width:2px,color:#252737
+    classDef dark fill:#252737,stroke:#a9b1d6,stroke-width:2px,color:#a9b1d6
+
+    class DEV,OPEN,OPEN2 dev
+    class RC_FROZEN,FROZEN2 freeze
+    class RC_MERGE,MERGE_MASTER,MERGE2 merge
+    class STABLE,RELEASE stable
+    class MASTER,DEV dark
 ```
 
-## Fortnightly Release Schedule
+## Monthly Release Schedule
 
 ```mermaid
 gantt
-    title Monthly Release Schedule
-    dateFormat  X
-    axisFormat %a %d
+    title Monthly Release Cycle
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d
 
-    section Week 1
-    ✅ Dev Open                :devopen1, 1, 7d
-    🔄 Dev → RC                :devrc1, 2, 1d
-    🚫 RC Freeze & Testing     :rctest1, 3, 5d
+    section Week 1 (Days 1–7)
+    Development Open          :dev1, 2026-01-01, 7d
 
-    section Week 2
-    ✅ Dev Open                :devopen2, 8, 7d
-    🔄 RC → Master (Friday)    :rcmaster1, 9, 1d
-    🧪 Master Testing          :mastertest1, 10, 3d
-    📦 Snapshot (Friday)       :release1, 14, 1d
+    section Week 2 (Days 8–14)
+    Development Open          :dev2, after dev1, 7d
 
-    section Week 3
-    ✅ Dev Open                :devopen3, 15, 7d
-    🔄 Dev → RC                :devrc2, 16, 1d
-    🚫 RC Freeze & Testing     :rctest2, 17, 5d
+    section Week 3 (Days 15–21)
+    Development Open          :dev3, after dev2, 7d
 
-    section Week 4
-    ✅ Dev Open                :devopen4, 22, 7d
-    🔄 RC → Master (Friday)    :rcmaster2, 23, 1d
-    🧪 Master Testing          :mastertest2, 24, 3d
-    📦 Snapshot (Friday)       :release2, 1, 1d
+    section Week 4 (Days 22–28/31)
+    Dev → RC Merge            :devrc, after dev3, 1d
+    Freeze & Human Testing    :freeze, after devrc, 7d
+    RC → Master Merge         :rcmaster, after freeze, 1d
+
+    section Snapshot (Next Month Days 1–3)
+    Master Verification       :verify, after rcmaster, 2d
+    Snapshot Release          :release, after verify, 1d
 ```
-# Fortnightly Release Calendar for 2025
 
-| Month     | Freeze Week  | Merge Friday | Snapshot     | Week | Tag     |
-|-----------|--------------|--------------|--------------|-------|---------|
-| Jan       | 2024-12-27   | 2025-01-03   | 2025-01-10   | W1    | 25.1.1  |
-|           | 2025-01-10   | 2025-01-17   | 2025-01-24   | W3    | 25.1.3  |
-| Feb       | 2025-01-31   | 2025-02-07   | 2025-02-14   | W1    | 25.2.1  |
-|           | 2025-02-14   | 2025-02-21   | 2025-02-28   | W3    | 25.2.3  |
-| Mar       | 2025-02-28   | 2025-03-07   | 2025-03-14   | W1    | 25.3.1  |
-|           | 2025-03-14   | 2025-03-21   | 2025-03-28   | W3    | 25.3.3  |
-| Apr       | 2025-03-28   | 2025-04-04   | 2025-04-11   | W1    | 25.4.1  |
-|           | 2025-04-11   | 2025-04-18   | 2025-04-25   | W3    | 25.4.3  |
-| May       | 2025-04-25   | 2025-05-02   | 2025-05-09   | W1    | 25.5.1  |
-|           | 2025-05-09   | 2025-05-16   | 2025-05-23   | W3    | 25.5.3  |
-| Jun       | 2025-05-30   | 2025-06-06   | 2025-06-13   | W1    | 25.6.1  |
-|           | 2025-06-13   | 2025-06-20   | 2025-06-27   | W3    | 25.6.3  |
-| Jul       | 2025-06-27   | 2025-07-04   | 2025-07-11   | W1    | 25.7.1  |
-|           | 2025-07-11   | 2025-07-18   | 2025-07-25   | W3    | 25.7.3  |
-| Aug       | 2025-07-25   | 2025-08-01   | 2025-08-08   | W1    | 25.8.1  |
-|           | 2025-08-08   | 2025-08-15   | 2025-08-22   | W3    | 25.8.3  |
-| Sep       | 2025-08-29   | 2025-09-05   | 2025-09-12   | W1    | 25.9.1  |
-|           | 2025-09-12   | 2025-09-19   | 2025-09-26   | W3    | 25.9.3  |
-| Oct       | 2025-09-26   | 2025-10-03   | 2025-10-10   | W1    | 25.10.1 |
-|           | 2025-10-10   | 2025-10-17   | 2025-10-24   | W3    | 25.10.3 |
-| Nov       | 2025-10-31   | 2025-11-07   | 2025-11-14   | W1    | 25.11.1 |
-|           | 2025-11-14   | 2025-11-21   | 2025-11-28   | W3    | 25.11.3 |
-| Dec       | 2025-11-28   | 2025-12-05   | 2025-12-12   | W1    | 25.12.1 |
-|           | 2025-12-12   | 2025-12-19   | 2025-12-26   | W3    | 25.12.3 |
+# Monthly Release Calendar 2026+
+
+| Month | Freeze Week Starts | Merge to Master | Snapshot Release | Version Tag |
+|-------|-------------------|-----------------|------------------|-------------|
+| **Sep 2026** (monthly begins) | **2026-09-28** | **2026-09-30** | **2026-10-02** | **26.9.0** |
+| Oct 2026 | 2026-10-26 | 2026-10-30 | 2026-11-02 | 26.10.0 |
+| Nov 2026 | 2026-11-30 | 2026-11-30 | 2026-12-02 | 26.11.0 |
+| Dec 2026 | 2026-12-28 | 2026-12-31 | 2027-01-04 | 26.12.0 |
+| Jan 2027 | 2027-01-25 | 2027-01-29 | 2027-02-01 | 27.1.0 |
+| Feb 2027 | 2027-02-22 | 2027-02-26 | 2027-03-01 | 27.2.0 |
+| Mar 2027 | 2027-03-29 | 2027-03-31 | 2027-04-02 | 27.3.0 |
+| Apr 2027 | 2027-04-26 | 2027-04-30 | 2027-05-03 | 27.4.0 |
+| May 2027 | 2027-05-31 | 2027-05-31 | 2027-06-02 | 27.5.0 |
+| Jun 2027 | 2027-06-28 | 2027-06-30 | 2027-07-02 | 27.6.0 |
+| Jul 2027 | 2027-07-26 | 2027-07-30 | 2027-08-02 | 27.7.0 |
+| Aug 2027 | 2027-08-30 | 2027-08-31 | 2027-09-02 | 27.8.0 |
+| Sep 2027 | 2027-09-27 | 2027-09-30 | 2027-10-01 | 27.9.0 |
+
+---
+
+**Note:** Jan–Aug 2026 used fortnightly releases (YY.M.W). Monthly (YY.M.D) begins Sep 2026 with `26.9.0`.
