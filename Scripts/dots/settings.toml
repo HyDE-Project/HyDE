@@ -7,6 +7,7 @@
 source = "https://github.com/Delcado19/hyde-settings/archive/refs/tags/v0.1.0.tar.gz"
 action = "sync"
 owner = "Delcado19"
+description = "Searchable hub for HyDE's own tools and the system settings programs (audio, displays, network, appearance, ...)"
 version = "0.1.0"
 
 [[hyde-settings.dependency]]
