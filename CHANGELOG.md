@@ -14,6 +14,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Waybar: add VSCodium and Chromium icon rules to window module
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
 
+### Changed
+
+- Scripts: refactor hyde-shell open to use config.toml , mime . --fallback resolution handling.
+
+
 ### Fixed
 - Theme: `theme.switch.sh` no longer `eval`s hyq's `--export env` output when it reads a theme's `hypr.theme` and the state `hyprland.conf`. That output does not escape `$(...)`, backticks or quotes, so a downloaded theme could run commands whenever it was applied (same class as the `color/hypr.sh` fix in #2147). The values are read one by one and assigned as data. Side effects: the cursor and font sizes of a theme are now actually read (the `[int]` query failed on `$VAR = 24` variables, leaving them empty), and `FONT_STYLE` is no longer set to `_STYLE` by a prefix match on `$FONT`. Size values that are not plain integers are ignored, since they are spliced into `sed` commands and config files
 - Theme: a `[hyprland] gtk_theme` (or icon, cursor, font, ...) override in `config.toml` now reaches gsettings too (#2132). `color/hypr.sh` read only the theme's own `hypr.theme` for the Lua ui state that `color/dconf.lua` writes into gsettings on every wallbash run, so the override changed the GTK4 symlink but GTK3 apps that follow gsettings (Firefox, blueman) stayed on the theme's GTK theme. It now applies the state `hyprland.conf` on top of the theme, like `theme.switch.sh`. It also no longer `eval`s hyq's `--export env` output, which does not escape `$(...)`, backticks or quotes: a downloaded theme's `hypr.theme` (or a `config.toml` value) could run commands whenever the wallbash colors were applied; the values are now read one by one and assigned as data, sizes included (an `[int]` query failed on `$VAR = 24` variables). Sizes must be plain integers: they are written unquoted into the Lua ui state, and a theme value like `1, os.execute(...)` would have ended up there as code (also via the older raw-text fallback)
