@@ -98,6 +98,12 @@ preprocess_substitutions() {
     INVERTED_SED_SCRIPT=$(create_wallbash_substitutions true)
     export NORMAL_SED_SCRIPT INVERTED_SED_SCRIPT
 }
+# wallbash_trace - debug logging helper (safe to call anytime)
+wallbash_trace() {
+    [[ $LOG_LEVEL == debug ]] || return 0
+    type print_log >/dev/null 2>&1 && print_log -sec wallbash -stat "DEBUG: $1" "${2:-}"
+}
+
 fn_wallbash() {
     local temp_target_file exec_command template wallbash_dirs_array
     template="$1"
@@ -132,7 +138,11 @@ fn_wallbash() {
         done
     fi
     [ -z "$target_file" ] && eval target_file="$(head -1 "$template" | awk -F '|' '{print $1}')"
-    [ ! -d "$(dirname "$target_file")" ] && print_log -sec "wallbash" -warn "skip 'missing directory'" "$target_file // Do you have the dependency installed?" && wallbash_trace "skip missing dir" "template=$template target=$target_file" && return 0
+    if [ ! -d "$(dirname "$target_file")" ]; then
+        print_log -sec "wallbash" -warn "skip 'missing directory'" "$target_file // Do you have the dependency installed?"
+        wallbash_trace "skip missing dir" "template=$template target=$target_file"
+        return 0
+    fi
     export wallbashScripts="$WALLBASH_SCRIPTS"
     export WALLBASH_SCRIPTS confDir hydeConfDir cacheDir thmbDir dcolDir iconsDir themesDir fontsDir wallbashDirs enableWallDcol HYDE_THEME_DIR HYDE_THEME GTK_ICON GTK_THEME CURSOR_THEME
     export -f pkg_installed print_log
@@ -170,9 +180,6 @@ scrDir="$(dirname "$(realpath "$0")")"
 export scrDir
 source "$scrDir/globalcontrol.sh"
 confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
-
-# wallbash rendering debug helper
-wallbash_trace() { [[ $LOG_LEVEL == debug ]] && print_log -sec wallbash -stat "DEBUG: $1" "${2:-}"; }
 
 wallbash_image="$1"
 wallbash_trace "session start" "image=$wallbash_image"
