@@ -22,6 +22,10 @@
         "../dots/hyprsunset.toml",
         "../dots/fastfetch.toml",
         "../dots/swaync-config.toml",
+        # Optional (HyDE#2129): offered in the extra-dots selection, not
+        # deployed unconditionally. Launched from the app launcher through
+        # the .desktop entry it ships, so nothing in core depends on it.
+        "../dots/settings.toml",
     ]
 
 # Loads an array of package manager commands
