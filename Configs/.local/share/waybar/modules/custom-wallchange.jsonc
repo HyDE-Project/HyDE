@@ -3,9 +3,9 @@
         "format": "\udb80\udd8a {0}",
         "rotate": 0,
         "tooltip-format": "\udb80\udd8a Switch wallpaper",
-        "on-click": "hyde-shell wallpaper -n",
-        "on-click-right": "hyde-shell wallpaper -p",
-        "on-click-middle": "hyde-shell wallpaper --select", 
+        "on-click": "hyde-shell app -t scope -- wallpaper.sh --next --global",
+        "on-click-right": "hyde-shell app -t scope -- wallpaper.sh --previous --global",
+        "on-click-middle": "hyde-shell app -t scope -- wallpaper.sh --select --global", 
         "interval": 86400,
         "tooltip": true
     }

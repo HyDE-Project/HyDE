@@ -57,9 +57,24 @@ else
         branch=${git_repo#*tree/}
         git_repo=${git_repo%/tree/*}
     else
-        branches_array=$(curl -s "https://api.github.com/repos/${git_repo#*://*/}/branches" | jq -r '.[].name')
-        branches_array=($branches_array)
-        if [[ ${#branches_array[@]} -le 1 ]]; then
+        # git protocol operations (unlike the GitHub REST API) are not subject
+        # to the 60 req/hour unauthenticated-caller limit, so branches are
+        # listed via `git ls-remote` instead of `curl .../branches | jq`
+        # (issue #2118: bulk theme imports were hitting that limit, and the
+        # unauthenticated curl/jq call also failed silently on error, leaving
+        # branch empty and `git clone -b ""` failing with an opaque message).
+        if ! branch_refs=$(git ls-remote --heads "$git_repo" 2>/dev/null); then
+            print_log -r "[ERROR] " "Could not reach '$git_repo' to list its branches"
+            exit 1
+        fi
+        branches_array=()
+        while IFS= read -r ref_line; do
+            [[ -n $ref_line ]] && branches_array+=("${ref_line#*refs/heads/}")
+        done <<<"$branch_refs"
+        if [[ ${#branches_array[@]} -eq 0 ]]; then
+            print_log -r "[ERROR] " "'$git_repo' has no branches"
+            exit 1
+        elif [[ ${#branches_array[@]} -eq 1 ]]; then
             branch=${branches_array[0]}
         else
             echo "Select a Branch"

@@ -24,7 +24,7 @@
             </object>
         </child>
         <child>
-            <object class="GtkMenuItem" id="close">
+            <object class="GtkMenuItem" id="close-all">
                 <property name="label">󰱞  Close</property>
             </object>
         </child>

@@ -10,7 +10,7 @@
             "favorites": "hyde-shell cliphist --favorites",
             "history": "hyde-shell cliphist --copy",
             "delete-history": "hyde-shell cliphist --delete",
-            "manage-favorites": "hyde-shell cliphist 'Manage Favorites'",
+            "manage-favorites": "hyde-shell cliphist --manage-fav",
             "clear-history": "hyde-shell cliphist --wipe"
         },
         "interval": 86400,

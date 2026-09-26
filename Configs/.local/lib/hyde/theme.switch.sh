@@ -40,19 +40,23 @@ EOF
 }
 load_hypr_variables() {
     local hypr_file="$1"
-    eval "$(hyq "$hypr_file" \
-        --export env \
-        -Q '$GTK_THEME[string]' \
-        -Q '$ICON_THEME[string]' \
-        -Q '$CURSOR_THEME[string]' \
-        -Q '$CURSOR_SIZE[int]' \
-        -Q '$FONT[string]' \
-        -Q '$FONT_SIZE[int]' \
-        -Q '$FONT_STYLE[string]' \
-        -Q '$DOCUMENT_FONT[string]' \
-        -Q '$DOCUMENT_FONT_SIZE[int]' \
-        -Q '$MONOSPACE_FONT[string]' \
-        -Q '$MONOSPACE_FONT_SIZE[int]')"
+    # Each value is queried on its own and assigned as data. hyq's `--export
+    # env` output does not escape `$(...)`, backticks or quotes, so evaluating
+    # it ran whatever a downloaded theme's hypr.theme contained (CWE-78).
+    # Like the export, a variable the file does not define ends up empty.
+    # Everything is queried as a string: an `[int]` hint makes hyq fail on a
+    # `$VAR = 24` variable, and the value is only ever used as text here.
+    local name value
+    for name in GTK_THEME ICON_THEME CURSOR_THEME CURSOR_SIZE FONT FONT_SIZE \
+        FONT_STYLE DOCUMENT_FONT DOCUMENT_FONT_SIZE MONOSPACE_FONT \
+        MONOSPACE_FONT_SIZE; do
+        value=$(hyq "$hypr_file" -Q "\$${name}[string]" 2>/dev/null)
+        # Sizes are spliced into sed commands and config files below, where
+        # anything but a plain integer (a newline, `/`, `&`) changes their
+        # meaning: treat such a value as not set.
+        [[ ${name} == *_SIZE && ! ${value} =~ ^[0-9]*$ ]] && value=
+        printf -v "__$name" '%s' "${value}"
+    done
     GTK_THEME=${__GTK_THEME:-$GTK_THEME}
     ICON_THEME=${__ICON_THEME:-$ICON_THEME}
     CURSOR_THEME=${__CURSOR_THEME:-$CURSOR_THEME}
@@ -108,13 +112,30 @@ if [[ -r $HYPRLAND_CONFIG ]]; then
         print_log -sec "theme" -stat "dump" "hypr.theme to lua"
         theme_state="$XDG_STATE_HOME/hyde/lua_state/hypr_theme.lua"
         theme_buffer="$(mktemp)"
-        if hyq --dump "$HYDE_THEME_DIR/hypr.theme" --schema "$XDG_DATA_HOME/hypr/schema/hyprland-lua.json" --export lua >"$theme_buffer" &&
+        theme_dump_err="$(mktemp)"
+        if hyq --dump "$HYDE_THEME_DIR/hypr.theme" --schema "$XDG_DATA_HOME/hypr/schema/hyprland-lua.json" --export lua >"$theme_buffer" 2>"$theme_dump_err" &&
             [ -s "$theme_buffer" ] &&
             mv "$theme_buffer" "$theme_state"; then
-            :
+            rm -f "$theme_dump_err"
         else
             rm -f "$theme_buffer"
             print_log -sec "theme" -crit "error" "could not dump hypr.theme, $theme_state keeps the previous theme"
+            [ -s "$theme_dump_err" ] && print_log -sec "theme" -r "$(cat "$theme_dump_err")"
+            # theme.switch.sh runs at session runtime (hyde-shell reload, the
+            # theme menu, ...), where print_log only writes to the terminal --
+            # there is no HYDE_LOG here, that only exists inside install.sh.
+            # hyq's own stderr is the only thing that says *why* the dump
+            # failed (missing binary, an outdated hyq/hyprquery predating
+            # --dump/--schema/--export, a bad schema, ...), and without a file
+            # it is gone the moment the terminal scrolls, see HyDE#2098.
+            theme_dump_log="$cacheDir/logs/theme.switch.sh.log"
+            mkdir -p "$(dirname "$theme_dump_log")"
+            {
+                printf '%s :: could not dump hypr.theme, %s keeps the previous theme\n' \
+                    "$(date -Iseconds)" "$theme_state"
+                [ -s "$theme_dump_err" ] && cat "$theme_dump_err"
+            } >>"$theme_dump_log"
+            rm -f "$theme_dump_err"
             exit 1
         fi
     fi

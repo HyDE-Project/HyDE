@@ -2,7 +2,7 @@
   "pulseaudio": {
     "format": "{icon} {volume}",
     "rotate": 0,
-    "format-muted": "婢",
+    "format-muted": "󰖁",
     "on-click": "pavucontrol-qt -t 3 || pavucontrol -t 3",
     "on-click-right": "hyde-shell volumecontrol -s ''",
     "on-click-middle": "hyde-shell volumecontrol -o m",

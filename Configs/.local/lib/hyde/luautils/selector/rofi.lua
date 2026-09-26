@@ -7,6 +7,7 @@
 
 local hyprctl = require("luautils.hypr.hyprctl")
 local pos = require("luautils.rofi.pos") -- Corrected Path
+local xdg = require("luautils.xdg")
 
 local M = {}
 
@@ -46,6 +47,29 @@ local function normalize_priority(value)
     end
 
     return nil
+end
+
+--- Reads the `window { width: ...em; height: ...em; }` fields straight out of
+-- the resolved theme's .rasi file, so the overflow-clamp estimate below tracks
+-- whatever theme is actually rendered instead of assuming the "clipboard"
+-- dropdown size. Returns nil, nil if the theme file can't be found or parsed.
+local function theme_window_em(theme)
+    if not theme or theme == "" then
+        return nil, nil
+    end
+    local path = (theme:find("[/.]rasi$") or theme:find("/")) and theme or
+        (xdg.data .. "/hyde/rofi/themes/" .. theme .. ".rasi")
+    local f = io.open(path, "r")
+    if not f then
+        return nil, nil
+    end
+    local content = f:read("*a")
+    f:close()
+    local block = content:match("window%s*{([^}]*)}")
+    if not block then
+        return nil, nil
+    end
+    return tonumber(block:match("width:%s*([%d.]+)em")), tonumber(block:match("height:%s*([%d.]+)em"))
 end
 
 local function item_matches_priority(item, priorities)
@@ -96,19 +120,33 @@ function M.select(items, opts)
         items = rest
     end
 
-    -- 1. Correctly call the positioning logic from the rofi/pos.lua path
-    local pos_override = ""
-    if opts.follow_cursor ~= false then
-        local rofi_pos = pos.get_rofi_pos()
-        if rofi_pos and rofi_pos.str ~= "" then
-            pos_override = string.format("-theme-str %s", shell_quote(rofi_pos.str))
-        end
-    end
-
     local hypr = opts.hypr or get_hypr_borders()
     local font = opts.font or getenv(prefix, "FONT", "JetBrainsMono Nerd Font")
     local scale = tonumber(opts.scale or getenv(prefix, "SCALE", "10")) or 10
     local theme = opts.theme or getenv(prefix, "STYLE", "clipboard")
+
+    -- Window size isn't known until rofi renders it, so the overflow clamp in
+    -- pos.lua is fed an em->px estimate (1em ~= scale pt ~= scale*4/3 px) read
+    -- from the resolved theme's own width/height (falling back to the shared
+    -- dropdown themes' 23em x 30em when the theme file is missing or doesn't
+    -- set them). Callers can still override via min_width_em/min_height_em;
+    -- this remains an approximation, not an exact measurement of the rendered
+    -- window.
+    local pos_override = ""
+    if opts.follow_cursor ~= false then
+        local px_per_em = scale * (4 / 3)
+        local theme_width_em, theme_height_em = theme_window_em(theme)
+        local rofi_pos =
+            pos.get_rofi_pos(
+            {
+                min_width = (opts.min_width_em or theme_width_em or 23) * px_per_em,
+                min_height = (opts.min_height_em or theme_height_em or 30) * px_per_em
+            }
+        )
+        if rofi_pos and rofi_pos.str ~= "" then
+            pos_override = string.format("-theme-str %s", shell_quote(rofi_pos.str))
+        end
+    end
     local prompt = opts.prompt or getenv(prefix, "PROMPT", "Select")
     local placeholder = opts.placeholder or getenv(prefix, "PLACEHOLDER", "Type to filter...")
 

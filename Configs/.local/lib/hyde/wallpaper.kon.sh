@@ -45,8 +45,8 @@ if [ ! -z "$setTheme" ] && [ ! -z "$setWall" ]; then
     "$scrDir/theme.switch.sh" -s "$setTheme"
     notify-send -a "HyDE Alert" -i "$thmbDir/$inwallHash.sqre" "Wallpaper set in $setTheme"
 else
-    echo -e "[Desktop Entry]\nType=Service\nMimeType=image/png;image/jpeg;image/jpg;image/gif\nActions=Menu-Refresh$(printf ";%s" "${thmList[@]}")\nX-KDE-Submenu=Set As Wallpaper...\n\n[Desktop Action Menu-Refresh]\nName=.: Refresh List :.\nExec=$scrName" > "$kmenuDesk"
+    echo -e "[Desktop Entry]\nType=Service\nMimeType=image/png;image/jpeg;image/jpg;image/gif\nActions=Menu-Refresh$(printf ";%s" "${thmList[@]}")\nX-KDE-Submenu=Set As Wallpaper...\n\n[Desktop Action Menu-Refresh]\nName=.: Refresh List :.\nExec=hyde-shell $scrName" > "$kmenuDesk"
     for i in "${!thmList[@]}"; do
-        echo -e "\n[Desktop Action ${thmList[i]}]\nName=${thmList[i]}\nExec=$scrName -t \"${thmList[i]}\" -w %u" >> "$kmenuDesk"
+        echo -e "\n[Desktop Action ${thmList[i]}]\nName=${thmList[i]}\nExec=hyde-shell $scrName -t \"${thmList[i]}\" -w %u" >> "$kmenuDesk"
     done
 fi

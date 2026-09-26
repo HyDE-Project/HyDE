@@ -2,27 +2,68 @@
 
 local root = debug.getinfo(1, "S").source:match("^@(.*/)") or "./"
 package.path = package.path .. ";" .. root .. "?.lua;" .. root .. "?/init.lua;"
-local ok_luautils, _ = pcall(require, "luautils.init")
+pcall(require, "luautils.init")
 
 local lgi = require "lgi"
 local Gio = lgi.Gio
 local GLib = lgi.GLib
+local ok_toml, tinytoml = pcall(require, "luautils.toml")
 
 local M = {}
 
-M.dict = {
-    ["file-manager"] = "inode/directory",
-    ["text-editor"] = "text/plain",
-    ["web-browser"] = "text/html",
-    ["image-viewer"] = "image/webp",
-    ["video-player"] = "video/mp4",
-    ["pdf-viewer"] = "application/pdf",
-    ["archive-manager"] = "application/x-compressed-tar",
-    ["word-processor"] = "application/msword",
-    ["font-manager"] = "font/ttf",
-    ["code-editor"] = "text/x-csrc",
-    ["log-viewer"] = "text/x-log"
+local KEYWORD_SPECS = {
+    ["file-manager"] = {
+        mime = "inode/directory",
+        config_key = "explorer"
+    },
+    ["text-editor"] = {
+        mime = "text/plain",
+        config_key = "editor"
+    },
+    ["web-browser"] = {
+        mime = "text/html",
+        config_key = "browser"
+    },
+    ["image-viewer"] = {
+        mime = "image/webp",
+        config_key = "image_viewer"
+    },
+    ["video-player"] = {
+        mime = "video/mp4",
+        config_key = "video_player"
+    },
+    ["pdf-viewer"] = {
+        mime = "application/pdf",
+        config_key = "pdf_viewer"
+    },
+    ["archive-manager"] = {
+        mime = "application/x-compressed-tar",
+        config_key = "archive_manager"
+    },
+    ["word-processor"] = {
+        mime = "application/msword",
+        config_key = "word_processor"
+    },
+    ["font-manager"] = {
+        mime = "font/ttf",
+        config_key = "font_manager"
+    },
+    ["code-editor"] = {
+        mime = "text/x-csrc",
+        config_key = "editor"
+    },
+    ["log-viewer"] = {
+        mime = "text/x-log",
+        config_key = "log_viewer"
+    }
 }
+
+M.dict = {}
+local MIME_TO_KEYWORD = {}
+for keyword, spec in pairs(KEYWORD_SPECS) do
+    M.dict[keyword] = spec.mime
+    MIME_TO_KEYWORD[spec.mime] = keyword
+end
 
 local LOG_LEVELS = {error = 1, warn = 2, info = 3, debug = 4}
 local current_log_level = LOG_LEVELS.info
@@ -83,11 +124,11 @@ local function file_exists(path)
         return false
     end
     if is_uri(path) then
-        local f, ferr = safe_call(Gio.File.new_for_uri, path)
+        local f = safe_call(Gio.File.new_for_uri, path)
         if not f then
             return false
         end
-        local info, ierr =
+        local info =
             safe_call(
             function()
                 return f:query_info("standard::type", Gio.FileQueryInfoFlags.NONE, nil)
@@ -101,6 +142,112 @@ local function file_exists(path)
         return true
     end
     return false
+end
+
+local function get_option_value(command, option_pattern)
+    if not command or command == "" then
+        return nil
+    end
+    return command:match(option_pattern .. '%s+"([^"]+)"') or command:match(option_pattern .. "%s+'([^']+)'") or
+        command:match(option_pattern .. "%s+([^%s]+)")
+end
+
+local desktop_app_cache = {}
+
+local function get_desktop_app_config_table()
+    local explicit = os.getenv("HYDE_CONFIG_TOML")
+    local path
+    if explicit and explicit ~= "" then
+        path = explicit
+    else
+        local home = os.getenv("HOME") or ""
+        path = home .. "/.config/hyde/config.toml"
+    end
+
+    if desktop_app_cache[path] then
+        return desktop_app_cache[path]
+    end
+
+    if not ok_toml or not tinytoml or type(tinytoml.parse) ~= "function" then
+        log("warn", "luautils.toml parser is unavailable; desktop.app mapping disabled")
+        desktop_app_cache[path] = {}
+        return desktop_app_cache[path]
+    end
+
+    if not file_exists(path) then
+        desktop_app_cache[path] = {}
+        return desktop_app_cache[path]
+    end
+
+    local parsed, perr =
+        safe_call(
+        function()
+        return tinytoml.parse(path)
+        end
+    )
+    if not parsed then
+        log("warn", "Failed to parse config TOML:", path, perr or "")
+        desktop_app_cache[path] = {}
+        return desktop_app_cache[path]
+    end
+
+    local desktop = type(parsed.desktop) == "table" and parsed.desktop or {}
+    local app = type(desktop.app) == "table" and desktop.app or {}
+    desktop_app_cache[path] = app
+    return desktop_app_cache[path]
+end
+
+local function get_first_command_word(configured_cmd)
+    if not configured_cmd or configured_cmd == "" then
+        return nil
+    end
+    return configured_cmd:match("^%s*([^%s]+)")
+end
+
+function M.get_configured_app_for_keyword(keyword)
+    local spec = keyword and keyword ~= "" and KEYWORD_SPECS[keyword] or nil
+    local configured_cmd = spec and get_desktop_app_config_table()[spec.config_key] or nil
+    if not configured_cmd or configured_cmd == "" then
+        return nil
+    end
+
+    local with_app = get_option_value(configured_cmd, "%-%-with")
+    if with_app and with_app ~= "" then
+        return with_app
+    end
+
+    local fallback_app = get_option_value(configured_cmd, "%-%-fall")
+    if fallback_app and fallback_app ~= "" then
+        return fallback_app
+    end
+
+    if configured_cmd:match("^%s*hyde%-shell%s+") then
+        return nil
+    end
+
+    return get_first_command_word(configured_cmd)
+end
+
+function M.keyword_for_input(input, resolved_mime)
+    if input and M.dict[input] then
+        return input
+    end
+    if resolved_mime and MIME_TO_KEYWORD[resolved_mime] then
+        return MIME_TO_KEYWORD[resolved_mime]
+    end
+    return nil
+end
+
+local function appinfo_from_candidate(candidate, source_label)
+    if not candidate or candidate == "" then
+        return nil
+    end
+    local appinfo, err = M.appinfo_from_desktop(candidate)
+    if appinfo then
+        return appinfo
+    end
+    log("debug", source_label or "candidate", "app not resolvable:", candidate, err or "")
+    return nil
 end
 
 function M.resolve_mime(input)
@@ -130,7 +277,7 @@ function M.resolve_mime(input)
         else
             log("debug", "query_info failed for", input, ":", ierr)
         end
-        local guessed, uncertain = safe_call(Gio.content_type_guess, input, nil)
+        local guessed = safe_call(Gio.content_type_guess, input, nil)
         if guessed and guessed ~= "" then
             log("debug", "Guessed MIME for", input, "->", guessed)
             return guessed
@@ -165,16 +312,16 @@ function M.appinfo_from_desktop(desktop_name)
     local desktop_info = Gio.DesktopAppInfo
     if desktop_info then
         if desktop_name:match("/") then
-            local info, ierr = safe_call(desktop_info.new_from_filename, desktop_name)
+            local info = safe_call(desktop_info.new_from_filename, desktop_name)
             if info then
                 log("debug", "Created DesktopAppInfo from filename:", desktop_name)
                 return info
             else
-                log("debug", "DesktopAppInfo.new_from_filename failed:", ierr)
+                log("debug", "DesktopAppInfo.new_from_filename failed:", info)
             end
         end
 
-        local info, ierr = safe_call(desktop_info.new, desktop_name)
+        local info = safe_call(desktop_info.new, desktop_name)
         if info then
             log("debug", "Created DesktopAppInfo by id:", desktop_name)
             return info
@@ -225,7 +372,7 @@ function M.set_default_app_for_mime(appinfo, mime, dry_run)
         log("info", "Dry-run: would set", appinfo:get_id() or appinfo:get_name(), "as default for", mime)
         return true
     end
-    local ok, err =
+    local _, err =
         safe_call(
         function()
             appinfo:set_as_default_for_type(mime)
@@ -256,7 +403,7 @@ function M.launch_app_for_files(appinfo, paths, std_only, dry_run)
         log("info", "Dry-run: would launch", appinfo:get_id() or appinfo:get_name(), "with", table.concat(paths, ", "))
         return true
     end
-    local ok, err =
+    local _, err =
         safe_call(
         function()
             appinfo:launch(gio_files, nil)
@@ -514,7 +661,7 @@ function M.cli_main(argv)
 
     local ctx, holders, have_option_entries = build_option_context_with_detection()
 
-    local parsed = nil
+    local parsed
     if have_option_entries then
         io.stderr:write("debug: using GLib option entries\n")
         local ok, parse_err =
@@ -590,7 +737,13 @@ function M.cli_main(argv)
             print_usage(argv[0])
             io.write("\nOptions:\n")
             io.write(
-                "  --with <app.desktop>\n  --set-default\n  --set-only\n  --std\n  --mime <pattern>\n  --fall <command>\n  --verbose\n  --log-level <error|warn|info|debug>\n  --dry-run\n"
+                "  --with <app.desktop>\n  --set-default\n  --set-only\n"
+            )
+            io.write(
+                "  --std\n  --mime <pattern>\n  --fall <command>\n"
+            )
+            io.write(
+                "  --verbose\n  --log-level <error|warn|info|debug>\n  --dry-run\n"
             )
         end
         return 0
@@ -638,7 +791,6 @@ function M.cli_main(argv)
     local set_only = parsed.set_only
     local fallback_cmd = parsed.fallback
     local chosen_appinfo = nil
-    local chosen_mime = nil
 
     if parsed.with then
         local appinfo, aerr = M.appinfo_from_desktop(parsed.with)
@@ -670,16 +822,35 @@ function M.cli_main(argv)
                 M.run_fallback(fallback_cmd, dry_run)
             end
         else
-            chosen_mime = mime
             if not chosen_appinfo then
-                local appinfo, aerr = M.find_default_app_for_mime(mime)
-                if not appinfo then
-                    io.stderr:write("No default app for mime " .. mime .. ": " .. tostring(aerr) .. "\n")
+                -- Hierarchy: 1) config.toml mapping 2) mime default 3) --fall
+                local keyword = M.keyword_for_input(file_group[1], mime)
+                if keyword then
+                    local configured_app = M.get_configured_app_for_keyword(keyword)
+                    if configured_app then
+                        chosen_appinfo = appinfo_from_candidate(configured_app, "configured")
+                    end
+                end
+
+                if not chosen_appinfo then
+                    local appinfo, aerr = M.find_default_app_for_mime(mime)
+                    if not appinfo then
+                        log("debug", "No default app for mime", mime, tostring(aerr))
+                    else
+                        chosen_appinfo = appinfo
+                    end
+                end
+
+                if not chosen_appinfo and fallback_cmd then
+                    chosen_appinfo = appinfo_from_candidate(fallback_cmd, "fallback")
+                end
+
+                if not chosen_appinfo then
                     if fallback_cmd then
                         M.run_fallback(fallback_cmd, dry_run)
+                    else
+                        io.stderr:write("No configured/default app for mime " .. mime .. " and no --fall provided\n")
                     end
-                else
-                    chosen_appinfo = appinfo
                 end
             end
 
@@ -716,39 +887,54 @@ function M.cli_main(argv)
         else
             local appinfo = chosen_appinfo
             if not appinfo then
+                -- Hierarchy: 1) config.toml mapping 2) mime default 3) --fall
+                local keyword = M.keyword_for_input(inp, mime)
+                local configured_app = M.get_configured_app_for_keyword(keyword)
+                if configured_app then
+                    appinfo = appinfo_from_candidate(configured_app, "configured")
+                end
+            end
+            if not appinfo then
                 local a, aerr = M.find_default_app_for_mime(mime)
                 if not a then
-                    io.stderr:write("No default app for mime " .. mime .. ": " .. tostring(aerr) .. "\n")
-                    if fallback_cmd then
-                        M.run_fallback(fallback_cmd, dry_run)
-                    end
-                    goto continue_nonfile
-                end
-                appinfo = a
-            end
-
-            if parsed.set_default then
-                local ok, serr = M.set_default_app_for_mime(appinfo, mime, dry_run)
-                if not ok then
-                    io.stderr:write("Warning: could not set default: " .. tostring(serr) .. "\n")
+                    log("debug", "No default app for mime", mime, tostring(aerr))
+                else
+                    appinfo = a
                 end
             end
 
-            if set_only then
-                log("info", "--set-only specified; skipping launch for input", inp)
+            if not appinfo and fallback_cmd then
+                appinfo = appinfo_from_candidate(fallback_cmd, "fallback")
+            end
+
+            if not appinfo then
+                if fallback_cmd then
+                    M.run_fallback(fallback_cmd, dry_run)
+                else
+                    io.stderr:write("No configured/default app for mime " .. mime .. " and no --fall provided\n")
+                end
             else
-                local ok, lerr = M.launch_app_for_files(appinfo, {}, parsed.std, dry_run)
-                if not ok then
-                    io.stderr:write(
-                        "Error launching app for input '" .. tostring(inp) .. "': " .. tostring(lerr) .. "\n"
-                    )
-                    if fallback_cmd then
-                        M.run_fallback(fallback_cmd, dry_run)
+                if parsed.set_default then
+                    local ok, serr = M.set_default_app_for_mime(appinfo, mime, dry_run)
+                    if not ok then
+                        io.stderr:write("Warning: could not set default: " .. tostring(serr) .. "\n")
+                    end
+                end
+
+                if set_only then
+                    log("info", "--set-only specified; skipping launch for input", inp)
+                else
+                    local ok, lerr = M.launch_app_for_files(appinfo, {}, parsed.std, dry_run)
+                    if not ok then
+                        io.stderr:write(
+                            "Error launching app for input '" .. tostring(inp) .. "': " .. tostring(lerr) .. "\n"
+                        )
+                        if fallback_cmd then
+                            M.run_fallback(fallback_cmd, dry_run)
+                        end
                     end
                 end
             end
-
-            ::continue_nonfile::
         end
     end
 

@@ -140,7 +140,7 @@
                         </child>
 
                         <child>
-                            <object class="GtkMenuItem" id="waybar-layout-prev">
+                            <object class="GtkMenuItem" id="waybar-layout-previous">
                                 <property name="label">&#x2003;Previous Layout</property>
                             </object>
                         </child>

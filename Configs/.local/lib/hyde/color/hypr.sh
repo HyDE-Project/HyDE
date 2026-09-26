@@ -9,20 +9,38 @@ cacheDir="${cacheDir:-$XDG_CACHE_HOME/hyde}"
 HYDE_THEME="${HYDE_THEME:-}"
 HYDE_THEME_DIR="${HYDE_THEME_DIR:-$confDir/hyde/themes/$HYDE_THEME}"
 enableWallDcol="${enableWallDcol:-0}"
-eval "$(hyq "$HYDE_THEME_DIR/hypr.theme" \
-    --export env \
-    -Q '$GTK_THEME[string]' \
-    -Q '$COLOR_SCHEME[string]' \
-    -Q '$ICON_THEME[string]' \
-    -Q '$CURSOR_THEME[string]' \
-    -Q '$CURSOR_SIZE[int]' \
-    -Q '$FONT[string]' \
-    -Q '$FONT_SIZE[int]' \
-    -Q '$DOCUMENT_FONT[string]' \
-    -Q '$DOCUMENT_FONT_SIZE[int]' \
-    -Q '$MONOSPACE_FONT[string]' \
-    -Q '$MONOSPACE_FONT_SIZE[int]' \
-    -Q '$CODE_THEME[string]')"
+# Loads the interface variables of a hyprlang file into __NAME variables.
+# hyq's `--export env` output is not shell-safe: it does not escape `$(...)`,
+# backticks or quotes in a value, so evaluating it runs whatever a downloaded
+# theme's hypr.theme or a config.toml value contains (CWE-78). Each value is
+# queried on its own and assigned as data instead. Empty results are skipped,
+# so a variable the file does not define keeps what an earlier source set.
+load_hypr_vars() {
+    local file=$1 name value
+    for name in GTK_THEME COLOR_SCHEME ICON_THEME CURSOR_THEME CURSOR_SIZE \
+        FONT FONT_SIZE DOCUMENT_FONT DOCUMENT_FONT_SIZE MONOSPACE_FONT \
+        MONOSPACE_FONT_SIZE CODE_THEME; do
+        # Sizes are queried as strings too: an `[int]` hint makes hyq fail on
+        # a `$VAR = 24` variable, which would drop a size override silently.
+        value=$(hyq "$file" -Q "\$${name}[string]" 2>/dev/null)
+        # The sizes end up unquoted in the Lua ui state below, so anything but
+        # a plain integer would be written into the file as code.
+        [[ ${name} == *_SIZE && ! ${value} =~ ^[0-9]*$ ]] && continue
+        [[ -n ${value} ]] && printf -v "__$name" '%s' "${value}"
+    done
+}
+__GTK_THEME= __COLOR_SCHEME= __ICON_THEME= __CURSOR_THEME= __CURSOR_SIZE=
+__FONT= __FONT_SIZE= __DOCUMENT_FONT= __DOCUMENT_FONT_SIZE=
+__MONOSPACE_FONT= __MONOSPACE_FONT_SIZE= __CODE_THEME=
+load_hypr_vars "$HYDE_THEME_DIR/hypr.theme"
+
+# The user's [hyprland] overrides from config.toml (converted into the state
+# hyprland.conf) win over the theme, exactly as in theme.switch.sh. Without
+# this the Lua ui state written below kept the theme's own GTK theme and
+# color/dconf.lua wrote it back into gsettings on every wallbash run, so
+# GTK3 apps (Firefox, blueman) ignored the override, see HyDE#2132.
+hypr_state_file="${XDG_STATE_HOME:-$HOME/.local/state}/hyde/hyprland.conf"
+[[ -f ${hypr_state_file} ]] && load_hypr_vars "$hypr_state_file"
 
 # This is for older themes that do not define the above variables
 [[ -z ${__GTK_THEME} ]] && __GTK_THEME=$(get_hyprConf "GTK_THEME")
@@ -37,6 +55,12 @@ eval "$(hyq "$HYDE_THEME_DIR/hypr.theme" \
 [[ -z ${__MONOSPACE_FONT} ]] && __MONOSPACE_FONT=$(get_hyprConf "MONOSPACE_FONT")
 [[ -z ${__MONOSPACE_FONT_SIZE} ]] && __MONOSPACE_FONT_SIZE=$(get_hyprConf "MONOSPACE_FONT_SIZE[int]")
 [[ -z ${__CODE_THEME} ]] && __CODE_THEME=$(get_hyprConf "CODE_THEME")
+
+# get_hyprConf above falls back to the raw file text, so a size can still be
+# anything here, and the ui state writes sizes unquoted: drop non-integers.
+for _size in __CURSOR_SIZE __FONT_SIZE __DOCUMENT_FONT_SIZE __MONOSPACE_FONT_SIZE; do
+    [[ ${!_size} =~ ^[0-9]*$ ]] || printf -v "$_size" ''
+done
 
 # Faster: assigns escaped result to a variable instead of using subshell
 lua_quote_to() {
