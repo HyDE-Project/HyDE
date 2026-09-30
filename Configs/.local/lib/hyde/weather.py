@@ -213,6 +213,7 @@ def _clamped(value: object, low: int, high: int, suffix: str) -> str:
 
 
 def _temp(entry: dict[str, str], key_c: str, key_f: str) -> str:
+    """Temperature in the chosen unit, taken from the Celsius or Fahrenheit key and clamped."""
     low, high = TEMP_RANGE[temp_unit]
     if temp_unit == "c":
         return _clamped(entry.get(key_c), low, high, "°C")
@@ -236,6 +237,7 @@ def _width(text: str) -> int:
 
 
 def _pad(text: str, width: int, right: bool) -> str:
+    """Pads to a width in terminal cells, on the left for right-aligned columns."""
     gap = " " * max(0, width - _width(text))
     return gap + text if right else text + gap
 
@@ -251,6 +253,7 @@ def _icon(entry: dict[str, str]) -> str:
 
 
 def get_description(entry: dict[str, str]) -> str:
+    """Description in WEATHER_LANG if wttr.in sent one, else the English text; empty if neither."""
     lang = cast(dict[str, object], entry).get(f"lang_{weather_lang}")
     if isinstance(lang, list) and lang and isinstance(lang[0], dict):
         value = lang[0].get("value")
@@ -263,9 +266,10 @@ def get_description(entry: dict[str, str]) -> str:
 
 
 def _astronomy(day: dict[str, object], key: str) -> str:
+    """Sunrise or sunset as text for the tooltip (escaped, since an unparsable value passes through)."""
     astro = day.get("astronomy")
     if isinstance(astro, list) and astro and isinstance(astro[0], dict) and key in astro[0]:
-        return get_timestamp(str(astro[0][key]))
+        return _esc(get_timestamp(str(astro[0][key])))
     return DASH
 
 
@@ -290,6 +294,7 @@ _PERCENT_KEYS = ("chanceofovercast", "chanceofrain", "chanceofsunshine", "chance
 
 
 def _slot_row(hour: dict[str, str]) -> list[str]:
+    """One table row as raw cell texts: hour, icon, temperature, sky, four chances, rare events."""
     h = _hour_of(hour.get("time"))
     return [
         DASH if h is None else str(h),
@@ -338,8 +343,10 @@ def build_forecast(weather: WttrResponse, now_hour: int, forecast_days: int) -> 
                     widths[c] = max(widths[c], _width(cell))
 
     def line(cells: list[str]) -> str:
+        """Joins cells into one row. Pad first, escape after: an entity such as &amp; is longer
+        than the one cell Pango draws for it, so padding the escaped text would skew the row."""
         parts = [
-            (cells[c] or " " * widths[c]) if c == icon_col else _pad(_esc(cells[c]), widths[c], right[c])
+            (cells[c] or " " * widths[c]) if c == icon_col else _esc(_pad(cells[c], widths[c], right[c]))
             for c in range(len(cells))
         ]
         return "  ".join(parts).rstrip()
@@ -462,6 +469,7 @@ def print_weather_unavailable() -> None:
 
 
 def main() -> None:
+    """Prints the Waybar JSON (text and tooltip) for the current weather."""
     global weather_lang, temp_unit, time_format, windspeed_unit
 
     ### Variables ###
