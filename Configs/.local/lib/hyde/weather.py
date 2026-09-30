@@ -365,14 +365,14 @@ def build_facts(weather: WttrResponse) -> str:
     """Current conditions: bold headline, then label/value pairs with aligned values."""
     current = weather["current_condition"][0]
     pairs = [
-        ("Feels like:", get_feels_like(current)),
-        ("Location:", f"{get_city_name(weather)}, {get_country_name(weather)}"),
-        ("Wind:", get_wind_speed(current)),
-        ("Humidity:", _clamped(current.get("humidity"), 0, 100, "%")),
+        ("Feels like", get_feels_like(current)),
+        ("Location", f"{get_city_name(weather)}, {get_country_name(weather)}"),
+        ("Wind", get_wind_speed(current)),
+        ("Humidity", _clamped(current.get("humidity"), 0, 100, "%")),
     ]
     width = max(len(label) for label, _ in pairs)
     lines = [f"<b>{_esc(get_description(current))} {get_temperature(current)}</b>"]
-    lines += [f"{label.ljust(width)}  {_esc(value)}" for label, value in pairs]
+    lines += [f"{label.ljust(width)}   {_esc(value)}" for label, value in pairs]
     return "\n".join(lines)
 
 
