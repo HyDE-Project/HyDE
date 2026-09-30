@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Scripts: refactor hyde-shell open to use config.toml , mime . --fallback resolution handling.
+- Weather: the Waybar tooltip is now a table with aligned columns. Current conditions line up their values; each day has a bold title and a summary line with high, low, sunrise and sunset in bold, then one row per 3-hour slot with hour, icon, temperature, sky, cloud / rain / sun / wind chances and, only when above 0, fog, frost, snow and thunder. All days share one set of column widths, numbers are right-aligned under their heading, and the hour is shown without a leading zero. Commas are gone. Temperatures are limited to -99..99 °C (-99..199 °F) and percentages to 0..100, and a missing or non-numeric value shows as `–` instead of breaking the tooltip (a missing field used to raise `KeyError`, so the bar showed nothing). Text from wttr.in is escaped before it goes into the markup, and wind now reads `11 km/h` instead of `11Km/h`. The column headings use `WEATHER_CHANCE_LABEL_OVERCAST`, `_RAIN`, `_SUNSHINE` and `_WIND`; their defaults changed from `Overcast` / `Sunshine` to `Clouds` / `Sun` so the heading does not read like a sky description. Needs a monospace tooltip font, which the shipped Waybar style sets
 
 
 ### Fixed
