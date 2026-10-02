@@ -1061,6 +1061,13 @@ def update_border_radius():
 
     border_radius = os.getenv("WAYBAR_BORDER_RADIUS")
     logger.debug(f"WAYBAR_BORDER_RADIUS environment variable: {border_radius}")
+    # The env value is a string; a non-numeric one falls through to the lookups
+    # below instead of crashing the comparison further down.
+    try:
+        border_radius = int(border_radius) if border_radius else None
+    except ValueError:
+        logger.debug(f"Ignoring non-numeric WAYBAR_BORDER_RADIUS: '{border_radius}'")
+        border_radius = None
 
     if not border_radius:
         # Try hypr.theme via the shared helper (uses "decoration:rounding" as the query key)
@@ -1187,6 +1194,15 @@ def watch_waybar():
     if is_waybar_running_for_current_user():
         logger.debug("Waybar already active.")
         return
+
+    # Session autostart only ever runs --watch. defaults.css imports
+    # border-radius.css and global.css from ~/.config/waybar/includes, and this
+    # is the one place they get generated on a clean install; without them
+    # waybar exits 1 and systemd gives up with start-limit-hit
+    # (HyDE-Project/HyDE#2160).
+    update_border_radius()
+    generate_includes()
+    update_global_css()
 
     if HAS_SYSTEMD:
         subprocess.run([
