@@ -1049,7 +1049,9 @@ def update_border_radius():
     logger.debug("Directory for border-radius.css ensured")
 
     # An earlier stub (no template available then) is replaced once one exists.
-    if not os.path.exists(css_filepath) or "pt" not in Path(css_filepath).read_text():
+    if not os.path.exists(css_filepath) or "pt" not in Path(css_filepath).read_text(
+        encoding="utf-8", errors="replace"
+    ):
         for includes_dir in INCLUDES_DIRS:
             template_path = os.path.join(includes_dir, "border-radius.css")
             if template_path == css_filepath:
@@ -1063,7 +1065,7 @@ def update_border_radius():
             # defaults.css @imports this file and Waybar exits on a missing
             # import, so leave an empty stylesheet (square corners) rather than
             # nothing (HyDE-Project/HyDE#2160).
-            with open(css_filepath, "w") as file:
+            with open(css_filepath, "w", encoding="utf-8") as file:
                 file.write("/* border-radius template not found; HyDE writes this file */\n")
             return
 
@@ -1110,14 +1112,14 @@ def update_border_radius():
 
     logger.debug(f"Final border radius value: {border_radius}")
 
-    with open(css_filepath, "r") as file:
+    with open(css_filepath, "r", encoding="utf-8", errors="replace") as file:
         content = file.read()
     logger.debug(f"Read {len(content)} bytes from {css_filepath}")
 
     updated_content = re.sub(r"\d+pt", f"{border_radius}pt", content)
     logger.debug("Applied border radius value to CSS content")
 
-    with open(css_filepath, "w") as file:
+    with open(css_filepath, "w", encoding="utf-8") as file:
         file.write(updated_content)
     logger.debug(f"Successfully updated border radius in {css_filepath}")
 
@@ -1136,7 +1138,7 @@ def generate_includes():
             loaded = json.load(file)
         if isinstance(loaded, dict):
             includes_data = loaded
-    except (json.JSONDecodeError, FileNotFoundError):
+    except (json.JSONDecodeError, UnicodeDecodeError, FileNotFoundError):
         pass
 
     includes = []
@@ -1214,9 +1216,14 @@ def watch_waybar():
     # is the one place they get generated on a clean install; without them
     # waybar exits 1 and systemd gives up with start-limit-hit
     # (HyDE-Project/HyDE#2160).
-    update_border_radius()
-    generate_includes()
-    update_global_css()
+    try:
+        update_border_radius()
+        generate_includes()
+        update_global_css()
+    except OSError as e:
+        # e.g. a read-only config directory: still start the bar, the CSS
+        # may already be in place from an earlier run.
+        logger.error(f"Could not prepare the Waybar includes: {e}")
 
     if HAS_SYSTEMD:
         subprocess.run([
