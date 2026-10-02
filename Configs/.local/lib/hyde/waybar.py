@@ -1119,11 +1119,17 @@ def generate_includes():
 
     Path(includes_file).parent.mkdir(parents=True, exist_ok=True)
 
-    if os.path.exists(includes_file):
+    # An empty, truncated or non-object includes.json is rebuilt from scratch;
+    # this now runs on the --watch autostart path, where raising would keep
+    # Waybar from starting at all (HyDE-Project/HyDE#2160).
+    includes_data = {"include": []}
+    try:
         with open(includes_file, "r") as file:
-            includes_data = json.load(file)
-    else:
-        includes_data = {"include": []}
+            loaded = json.load(file)
+        if isinstance(loaded, dict):
+            includes_data = loaded
+    except (json.JSONDecodeError, FileNotFoundError):
+        pass
 
     includes = []
     for directory in MODULE_DIRS:
