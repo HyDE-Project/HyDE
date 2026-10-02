@@ -38,6 +38,7 @@ class CurrentCondition(TypedDict):
     windspeedKmph: str
     windspeedMiles: str
     humidity: str
+    localObsDateTime: str
 
 
 class HourlyPoint(TypedDict):
@@ -185,6 +186,22 @@ def get_timestamp(time_str: str) -> str:
         return f"{(h % 12) or 12:02d}:{m:02d} {'AM' if h < 12 else 'PM'}"
     except Exception:
         return time_str
+
+
+def get_location_hour(weather: WttrResponse, fallback: int) -> int:
+    """Current hour (0-23) at the weather location, from `localObsDateTime`
+    ("2026-09-30 08:15 PM", always 12-hour English). wttr.in's hourly slots use
+    that clock, so the first-day cutoff must too, not the host's (#2159).
+    Returns `fallback` (the host hour) when the field is missing or malformed."""
+    try:
+        _, clock, suffix = weather["current_condition"][0]["localObsDateTime"].split()
+        h, m = (int(x) for x in clock.split(":"))
+        suffix = suffix.upper()
+        if suffix not in ("AM", "PM") or not 1 <= h <= 12 or not 0 <= m < 60:
+            return fallback
+        return h % 12 + (12 if suffix == "PM" else 0)
+    except (KeyError, IndexError, TypeError, ValueError, AttributeError):
+        return fallback
 
 
 DASH = "–"
@@ -557,7 +574,7 @@ def main() -> None:
     parts = []
     if show_today_details:
         parts.append(build_facts(weather))
-    parts.append(build_forecast(weather, datetime.now().hour, forecast_days))
+    parts.append(build_forecast(weather, get_location_hour(weather, datetime.now().hour), forecast_days))
     data["tooltip"] = "\n\n".join(p for p in parts if p)
 
     print(json.dumps(data))

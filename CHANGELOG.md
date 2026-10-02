@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
 ### Fixed
+- Weather: the tooltip drops the first day's past slots by the weather location's clock (`localObsDateTime`) instead of the host's, so a host in another timezone no longer hides current slots or keeps past ones (#2159). It falls back to the host hour when the field is missing or malformed
 - Notifications: swaync loads `~/.config/swaync/user-style.css` again. The `@import` for it in the shipped `style.css` was missing its closing `;`, so GTK dropped the rule as an unterminated block and custom swaync styles were silently ignored
 - Notifications: with wallbash off (theme mode), the swaync popup and control center border now use the theme's own window border colour. No theme ships a swaync theme file, so the border was always taken from the wallpaper's colours, which clashes with the theme where the two differ (Gruvbox Retro showed a rust orange border next to its teal windows)
 - Keybinds: pressing Enter in the keybind hint menu (`SUPER+/`) now runs every bind, not only the ones that launch a command (follow-up to #2068). Window and workspace binds such as closing, floating, fullscreen, focus, resize and switching workspaces failed with a Lua syntax error, since Hyprland lists them over `hyprctl` only as an opaque `__lua` reference. HyDE now keeps each bind's action and the menu runs it through `hyprctl dispatch 'hyde.binds.action("SUPER + Q")'`. Mouse binds (drag and resize window) still can't be run from the menu, as they only act on a drag
