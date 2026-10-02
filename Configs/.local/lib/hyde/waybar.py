@@ -1048,15 +1048,23 @@ def update_border_radius():
     Path(css_filepath).parent.mkdir(parents=True, exist_ok=True)
     logger.debug("Directory for border-radius.css ensured")
 
-    if not os.path.exists(css_filepath):
+    # An earlier stub (no template available then) is replaced once one exists.
+    if not os.path.exists(css_filepath) or "pt" not in Path(css_filepath).read_text():
         for includes_dir in INCLUDES_DIRS:
             template_path = os.path.join(includes_dir, "border-radius.css")
+            if template_path == css_filepath:
+                continue
             if os.path.exists(template_path):
                 logger.debug(f"Found template at {template_path}, copying to {css_filepath}")
                 shutil.copyfile(template_path, css_filepath)
                 break
         else:
             logger.error("Template for border-radius.css not found in INCLUDES_DIRS")
+            # defaults.css @imports this file and Waybar exits on a missing
+            # import, so leave an empty stylesheet (square corners) rather than
+            # nothing (HyDE-Project/HyDE#2160).
+            with open(css_filepath, "w") as file:
+                file.write("/* border-radius template not found; HyDE writes this file */\n")
             return
 
     border_radius = os.getenv("WAYBAR_BORDER_RADIUS")
