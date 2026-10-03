@@ -276,6 +276,9 @@ for prefix in "${!archive_map[@]}"; do
             print_log "The above error can be ignored if the '$tgtDir' is not writable..."
         fi
     fi
+    # Candy/Corners hardcode an English 12h clock; follow the system locale.
+    # A failure here must not abort the theme patch.
+    [ "$prefix" = "Sddm" ] && { "$script_dir/sddm.locale.sh" "$tgtDir/$tgtChk" || true; }
 done
 confDir=${XDG_CONFIG_HOME:-"$HOME/.config"}
 theme_wallpapers="$confDir/hyde/themes/$THEME_NAME/wallpapers"

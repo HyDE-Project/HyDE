@@ -35,6 +35,11 @@ if pkg_installed sddm; then
             sudo touch /etc/sddm.conf.d/the_hyde_project.conf
             sudo cp /etc/sddm.conf.d/the_hyde_project.conf /etc/sddm.conf.d/backup_the_hyde_project.conf
             sudo cp /usr/share/sddm/themes/${sddmtheme}/the_hyde_project.conf /etc/sddm.conf.d/
+
+            # Candy/Corners hardcode an English 12h clock; lay HyDE's
+            # locale-following copy over the extracted theme.
+            HYDE_SDDM_OVERLAY="${cloneDir}/Configs/.local/share/hyde/sddm" \
+                "${cloneDir}/Configs/.local/lib/hyde/sddm.locale.sh" "/usr/share/sddm/themes/${sddmtheme}"
         fi
 
         print_log -g "[DISPLAYMANAGER] " -b " :: " "sddm configured with ${sddmtheme} theme..."
