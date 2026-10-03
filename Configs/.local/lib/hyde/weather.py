@@ -3,6 +3,9 @@
 import os
 import sys
 import json
+import html
+import math
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 import locale
@@ -35,6 +38,7 @@ class CurrentCondition(TypedDict):
     windspeedKmph: str
     windspeedMiles: str
     humidity: str
+    localObsDateTime: str
 
 
 class HourlyPoint(TypedDict):
@@ -139,74 +143,21 @@ def get_weather_icon(weatherinstance: CurrentCondition | HourlyPoint) -> str:
     return WEATHER_CODES.get(weatherinstance["weatherCode"], "☁️ ")
 
 
-def get_description(weatherinstance: CurrentCondition | HourlyPoint) -> str:
-    """Returns the weather description in the specified language, or falls back to English if not available."""
-    lang_key = f"lang_{weather_lang}"
-    translated = cast(dict[str, object], weatherinstance).get(lang_key)
-    if isinstance(translated, list) and translated and isinstance(translated[0], dict):
-        value = translated[0].get("value")
-        if isinstance(value, str):
-            return value
-
-    return weatherinstance["weatherDesc"][0]["value"]
-
-
 def get_temperature(weatherinstance: CurrentCondition) -> str:
     """Returns the current temperature in the specified unit (C or F)."""
-    if temp_unit == "c":
-        return weatherinstance["temp_C"] + "°C"
-
-    return weatherinstance["temp_F"] + "°F"
-
-
-def get_temperature_hour(weatherinstance: HourlyPoint) -> str:
-    """Returns the temperature for a specific hour in the specified unit (C or F)."""
-    if temp_unit == "c":
-        return weatherinstance["tempC"] + "°C"
-
-    return weatherinstance["tempF"] + "°F"
+    return _temp(cast(dict[str, str], weatherinstance), "temp_C", "temp_F")
 
 
 def get_feels_like(weatherinstance: CurrentCondition) -> str:
     """Returns the "feels like" temperature in the specified unit (C or F)."""
-    if temp_unit == "c":
-        return weatherinstance["FeelsLikeC"] + "°C"
-
-    return weatherinstance["FeelsLikeF"] + "°F"
+    return _temp(cast(dict[str, str], weatherinstance), "FeelsLikeC", "FeelsLikeF")
 
 
 def get_wind_speed(weatherinstance: CurrentCondition) -> str:
     """Returns the wind speed in the specified unit (km/h or mph)."""
     if windspeed_unit == "km/h":
-        return weatherinstance["windspeedKmph"] + "Km/h"
-
-    return weatherinstance["windspeedMiles"] + "Mph"
-
-
-def get_max_temp(day: WeatherDay) -> str:
-    """Returns the maximum temperature for the day in the specified unit (C or F)."""
-    if temp_unit == "c":
-        return day["maxtempC"] + "°C"
-
-    return day["maxtempF"] + "°F"
-
-
-def get_min_temp(day: WeatherDay) -> str:
-    """Returns the minimum temperature for the day in the specified unit (C or F)."""
-    if temp_unit == "c":
-        return day["mintempC"] + "°C"
-
-    return day["mintempF"] + "°F"
-
-
-def get_sunrise(day: WeatherDay) -> str:
-    """Returns the sunrise time for the day, formatted according to the specified time format (12h or 24h)."""
-    return get_timestamp(day["astronomy"][0]["sunrise"])
-
-
-def get_sunset(day: WeatherDay) -> str:
-    """Returns the sunset time for the day, formatted according to the specified time format (12h or 24h)."""
-    return get_timestamp(day["astronomy"][0]["sunset"])
+        return _clamped(weatherinstance.get("windspeedKmph"), 0, 999, " km/h")
+    return _clamped(weatherinstance.get("windspeedMiles"), 0, 999, " mph")
 
 
 def get_city_name(weather: WttrResponse) -> str:
@@ -217,18 +168,6 @@ def get_city_name(weather: WttrResponse) -> str:
 def get_country_name(weather: WttrResponse) -> str:
     """Returns the country name from the weather data."""
     return weather["nearest_area"][0]["country"][0]["value"]
-
-
-def format_time(time: str) -> str:
-    """Formats the time string according to the specified time format (12h or 24h)."""
-    return (time.replace("00", "")).ljust(3)
-
-
-def format_temp(temp: str) -> str:
-    """Formats the temperature string, adding a leading space if it's positive for better alignment."""
-    if temp[0] != "-":
-        temp = " " + temp
-    return temp.ljust(5)
 
 
 def get_timestamp(time_str: str) -> str:
@@ -249,26 +188,216 @@ def get_timestamp(time_str: str) -> str:
         return time_str
 
 
-def format_chances(hour: HourlyPoint) -> str:
-    """Formats the chance of various weather events for a specific hour."""
-    chances: dict[str, str] = {
+def get_location_hour(weather: WttrResponse, fallback: int) -> int:
+    """Current hour (0-23) at the weather location, from `localObsDateTime`
+    ("2026-09-30 08:15 PM", always 12-hour English). wttr.in's hourly slots use
+    that clock, so the first-day cutoff must too, not the host's (#2159).
+    Returns `fallback` (the host hour) when the field is missing or malformed."""
+    try:
+        _, clock, suffix = weather["current_condition"][0]["localObsDateTime"].split()
+        h, m = (int(x) for x in clock.split(":"))
+        suffix = suffix.upper()
+        if suffix not in ("AM", "PM") or not 1 <= h <= 12 or not 0 <= m < 60:
+            return fallback
+        return h % 12 + (12 if suffix == "PM" else 0)
+    except (KeyError, IndexError, TypeError, ValueError, AttributeError):
+        return fallback
+
+
+DASH = "–"
+# Range shown in the forecast table: a junk or absurd reading must not widen a column.
+# Fahrenheit needs more headroom than Celsius (a 100 °F day is ordinary).
+TEMP_RANGE = {"c": (-99, 99), "f": (-99, 199)}
+
+
+def _number(value: object) -> float | None:
+    """Reads a number from a number or numeric string; None for anything else (incl. NaN/inf)."""
+    if isinstance(value, bool):
+        return None
+    try:
+        n = float(str(value).strip())
+    except ValueError:
+        return None
+    return n if math.isfinite(n) else None
+
+
+def _clamped(value: object, low: int, high: int, suffix: str) -> str:
+    """Rounds into [low, high] and appends the suffix; DASH when the input is not a number."""
+    n = _number(value)
+    if n is None:
+        return DASH
+    return f"{max(low, min(high, round(n)))}{suffix}"
+
+
+def _temp(entry: dict[str, str], key_c: str, key_f: str) -> str:
+    """Temperature in the chosen unit, taken from the Celsius or Fahrenheit key and clamped."""
+    low, high = TEMP_RANGE[temp_unit]
+    if temp_unit == "c":
+        return _clamped(entry.get(key_c), low, high, "°C")
+    return _clamped(entry.get(key_f), low, high, "°F")
+
+
+def _hour_of(time_value: object) -> int | None:
+    """wttr.in reports slot times as 0, 300 ... 2100; None when it is anything else."""
+    n = _number(time_value)
+    if n is None or not 0 <= n < 2400:
+        return None
+    return int(n) // 100
+
+
+def _width(text: str) -> int:
+    """Terminal cells a string occupies: wide (CJK) characters count twice, combining marks none."""
+    return sum(
+        0 if unicodedata.combining(c) else 2 if unicodedata.east_asian_width(c) in "WF" else 1
+        for c in text
+    )
+
+
+def _pad(text: str, width: int, right: bool) -> str:
+    """Pads to a width in terminal cells, on the left for right-aligned columns."""
+    gap = " " * max(0, width - _width(text))
+    return gap + text if right else text + gap
+
+
+def _esc(text: object) -> str:
+    """wttr.in text goes into Pango markup; an & or < in a description would break the tooltip."""
+    return html.escape(str(text), quote=False)
+
+
+def _icon(entry: dict[str, str]) -> str:
+    """Icon without the trailing space WEATHER_CODES carries; the table sets its own gaps."""
+    return WEATHER_CODES.get(str(entry.get("weatherCode")), "☁️ ").strip()
+
+
+def get_description(entry: dict[str, str]) -> str:
+    """Description in WEATHER_LANG if wttr.in sent one, else the English text; empty if neither."""
+    lang = cast(dict[str, object], entry).get(f"lang_{weather_lang}")
+    if isinstance(lang, list) and lang and isinstance(lang[0], dict):
+        value = lang[0].get("value")
+        if isinstance(value, str):
+            return value.strip()
+    desc = entry.get("weatherDesc")
+    if isinstance(desc, list) and desc and isinstance(desc[0], dict):  # type: ignore[index]
+        return str(desc[0].get("value", "")).strip()  # type: ignore[index]
+    return ""
+
+
+def _astronomy(day: dict[str, object], key: str) -> str:
+    """Sunrise or sunset as text for the tooltip (escaped, since an unparsable value passes through)."""
+    astro = day.get("astronomy")
+    if isinstance(astro, list) and astro and isinstance(astro[0], dict) and key in astro[0]:
+        return _esc(get_timestamp(str(astro[0][key])))
+    return DASH
+
+
+def _rare_events(hour: dict[str, str]) -> str:
+    """Events without a column of their own, only when above 0, separated by spacing (no commas)."""
+    events = {
         "chanceoffog": os.getenv("WEATHER_CHANCE_LABEL_FOG", "Fog"),
         "chanceoffrost": os.getenv("WEATHER_CHANCE_LABEL_FROST", "Frost"),
-        "chanceofovercast": os.getenv("WEATHER_CHANCE_LABEL_OVERCAST", "Overcast"),
-        "chanceofrain": os.getenv("WEATHER_CHANCE_LABEL_RAIN", "Rain"),
         "chanceofsnow": os.getenv("WEATHER_CHANCE_LABEL_SNOW", "Snow"),
-        "chanceofsunshine": os.getenv("WEATHER_CHANCE_LABEL_SUNSHINE", "Sunshine"),
         "chanceofthunder": os.getenv("WEATHER_CHANCE_LABEL_THUNDER", "Thunder"),
-        "chanceofwindy": os.getenv("WEATHER_CHANCE_LABEL_WIND", "Wind"),
     }
+    found = []
+    for key, label in events.items():
+        n = _number(hour.get(key))
+        if n is not None and n > 0:
+            found.append(f"{label} {_clamped(n, 0, 100, '%')}")
+    return "   ".join(found)
 
-    conditions = [
-        f"{chances[event]} {hour[event]}%"  # type: ignore[literal-required]
-        for event in chances
-        if int(hour.get(event, 0))  # type: ignore[call-overload]
-        > 0
+
+# One column per chance that matters in daily life; the rest goes into the last column.
+_PERCENT_KEYS = ("chanceofovercast", "chanceofrain", "chanceofsunshine", "chanceofwindy")
+
+
+def _slot_row(hour: dict[str, str]) -> list[str]:
+    """One table row as raw cell texts: hour, icon, temperature, sky, four chances, rare events."""
+    h = _hour_of(hour.get("time"))
+    return [
+        DASH if h is None else str(h),
+        _icon(hour),
+        _temp(hour, "tempC", "tempF"),
+        get_description(hour),
+        *(_clamped(hour.get(k), 0, 100, "%") for k in _PERCENT_KEYS),
+        _rare_events(hour),
     ]
-    return ", ".join(conditions)
+
+
+def build_forecast(weather: WttrResponse, now_hour: int, forecast_days: int) -> str:
+    """The forecast as Pango markup with aligned columns (hour, icon, temperature, sky, four
+    chances, rare events). Every day shares one set of column widths so rows line up across days.
+    Numbers are right-aligned, headings follow their column. Needs a monospace tooltip font."""
+    days = [d for d in weather.get("weather", [])[:forecast_days] if isinstance(d, dict)]
+    rows_per_day = []
+    for i, day in enumerate(days):
+        rows = []
+        for hour in day.get("hourly") or []:
+            if not isinstance(hour, dict):
+                continue
+            h = _hour_of(hour.get("time"))
+            # today: drop slots that are more than two hours past
+            if i == 0 and h is not None and h < now_hour - 2:
+                continue
+            rows.append(_slot_row(hour))
+        rows_per_day.append(rows)
+
+    heads = [
+        "Hour", "", "Temp", "Sky",
+        os.getenv("WEATHER_CHANCE_LABEL_OVERCAST", "Clouds"),
+        os.getenv("WEATHER_CHANCE_LABEL_RAIN", "Rain"),
+        os.getenv("WEATHER_CHANCE_LABEL_SUNSHINE", "Sun"),
+        os.getenv("WEATHER_CHANCE_LABEL_WIND", "Wind"),
+        "",
+    ]
+    right = [True, False, True, False, True, True, True, True, False]
+    icon_col = 1
+    widths = [_width(h) for h in heads]
+    widths[icon_col] = 2  # an emoji takes two cells, whatever its code points
+    for rows in rows_per_day:
+        for row in rows:
+            for c, cell in enumerate(row):
+                if c != icon_col:
+                    widths[c] = max(widths[c], _width(cell))
+
+    def line(cells: list[str]) -> str:
+        """Joins cells into one row. Pad first, escape after: an entity such as &amp; is longer
+        than the one cell Pango draws for it, so padding the escaped text would skew the row."""
+        parts = [
+            (cells[c] or " " * widths[c]) if c == icon_col else _esc(_pad(cells[c], widths[c], right[c]))
+            for c in range(len(cells))
+        ]
+        return "  ".join(parts).rstrip()
+
+    out = []
+    for i, day in enumerate(days):
+        if i:
+            out.append("")
+        title = ("Today, ", "Tomorrow, ")[i] if i < 2 else ""
+        out.append(f"<b>{title}{_esc(day.get('date', DASH))}</b>")
+        out.append(
+            f"⬆️ <b>{_temp(day, 'maxtempC', 'maxtempF')}</b> "
+            f"⬇️ <b>{_temp(day, 'mintempC', 'mintempF')}</b> "
+            f"🌅 <b>{_astronomy(day, 'sunrise')}</b> "
+            f"🌇 <b>{_astronomy(day, 'sunset')}</b>"
+        )
+        out.append(line(heads))
+        out.extend(line(row) for row in rows_per_day[i])
+    return "\n".join(out)
+
+
+def build_facts(weather: WttrResponse) -> str:
+    """Current conditions: bold headline, then label/value pairs with aligned values."""
+    current = weather["current_condition"][0]
+    pairs = [
+        ("Feels like", get_feels_like(current)),
+        ("Location", f"{get_city_name(weather)}, {get_country_name(weather)}"),
+        ("Wind", get_wind_speed(current)),
+        ("Humidity", _clamped(current.get("humidity"), 0, 100, "%")),
+    ]
+    width = max(len(label) for label, _ in pairs)
+    lines = [f"<b>{_esc(get_description(current))} {get_temperature(current)}</b>"]
+    lines += [f"{label.ljust(width)}   {_esc(value)}" for label, value in pairs]
+    return "\n".join(lines)
 
 
 def _parse_lang_code(raw: str) -> str:
@@ -357,6 +486,7 @@ def print_weather_unavailable() -> None:
 
 
 def main() -> None:
+    """Prints the Waybar JSON (text and tooltip) for the current weather."""
     global weather_lang, temp_unit, time_format, windspeed_unit
 
     ### Variables ###
@@ -441,34 +571,11 @@ def main() -> None:
         data["text"] += f" | {get_city_name(weather)}, {get_country_name(weather)}"
 
     # waybar tooltip
-    data["tooltip"] = ""
+    parts = []
     if show_today_details:
-        data["tooltip"] += (
-            f"<b>{get_description(current_weather)} {get_temperature(current_weather)}</b>\n"
-        )
-        data["tooltip"] += f"Feels like: {get_feels_like(current_weather)}\n"
-        data["tooltip"] += f"Location: {get_city_name(weather)}, {get_country_name(weather)}\n"
-        data["tooltip"] += f"Wind: {get_wind_speed(current_weather)}\n"
-        data["tooltip"] += f"Humidity: {current_weather['humidity']}%\n"
-    # Get the weather forecast for the next 2 days
-    for i in range(forecast_days):
-        day_instance = weather["weather"][i]
-        data["tooltip"] += "\n<b>"
-        if i == 0:
-            data["tooltip"] += "Today, "
-        if i == 1:
-            data["tooltip"] += "Tomorrow, "
-        data["tooltip"] += f"{day_instance['date']}</b>\n"
-        data["tooltip"] += f"⬆️ {get_max_temp(day_instance)} ⬇️ {get_min_temp(day_instance)} "
-        data["tooltip"] += f"🌅 {get_sunrise(day_instance)} 🌇 {get_sunset(day_instance)}\n"
-        # Get the hourly forecast for the day
-        for hour in day_instance["hourly"]:
-            if i == 0:
-                if int(format_time(hour["time"])) < datetime.now().hour - 2:
-                    continue
-            data["tooltip"] += (
-                f"{format_time(hour['time'])} {get_weather_icon(hour)} {format_temp(get_temperature_hour(hour))} {get_description(hour)}, {format_chances(hour)}\n"
-            )
+        parts.append(build_facts(weather))
+    parts.append(build_forecast(weather, get_location_hour(weather, datetime.now().hour), forecast_days))
+    data["tooltip"] = "\n\n".join(p for p in parts if p)
 
     print(json.dumps(data))
 

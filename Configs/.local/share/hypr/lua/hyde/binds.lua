@@ -212,9 +212,21 @@ hyde.binds._active = hyde.binds._active or {}
 -- way. Associate each command with the action returned by hl.dsp.exec_cmd so
 -- delayed and unrelated hl.bind calls cannot consume each other's commands.
 -- A bind built any other way -- a plain Lua function, a native dispatcher
--- called directly -- has no matching entry and stays unresolved, which is the
--- documented limit: those can't be reduced to one command.
+-- called directly -- has no matching entry; it is run through
+-- hyde.binds.action below instead.
 hyde.binds._commands = hyde.binds._commands or {}
+
+-- Every bind's action by canonical combo, for the binds above that can't be
+-- reduced to one command (window and workspace operations). `hyprctl
+-- dispatch` evaluates its argument in this same Lua state and hl.dispatch
+-- accepts the same actions hl.bind does, so the keybind-hint menu runs one
+-- with `hyprctl dispatch 'hyde.binds.action("SUPER + Q")'`. An unknown combo
+-- returns a no-op, so a stale hint cache does nothing instead of erroring.
+hyde.binds._actions = hyde.binds._actions or {}
+
+hyde.binds.action = function(combo)
+    return hyde.binds._actions[combo] or function() end
+end
 
 local pending_commands = setmetatable({}, {__mode = "k"})
 if type(hl.dsp) == "table" and is_callable(hl.dsp.exec_cmd) then
@@ -261,6 +273,7 @@ hl.bind = function(keycombo, action, ...)
         else
             hyde.binds._commands[canonical] = nil
         end
+        hyde.binds._actions[canonical] = action
     end
 
     return orig_add(keycombo, action, ...)

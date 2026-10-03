@@ -1048,19 +1048,36 @@ def update_border_radius():
     Path(css_filepath).parent.mkdir(parents=True, exist_ok=True)
     logger.debug("Directory for border-radius.css ensured")
 
-    if not os.path.exists(css_filepath):
+    # An earlier stub (no template available then) is replaced once one exists.
+    if not os.path.exists(css_filepath) or "pt" not in Path(css_filepath).read_text(
+        encoding="utf-8", errors="replace"
+    ):
         for includes_dir in INCLUDES_DIRS:
             template_path = os.path.join(includes_dir, "border-radius.css")
+            if template_path == css_filepath:
+                continue
             if os.path.exists(template_path):
                 logger.debug(f"Found template at {template_path}, copying to {css_filepath}")
                 shutil.copyfile(template_path, css_filepath)
                 break
         else:
             logger.error("Template for border-radius.css not found in INCLUDES_DIRS")
+            # defaults.css @imports this file and Waybar exits on a missing
+            # import, so leave an empty stylesheet (square corners) rather than
+            # nothing (HyDE-Project/HyDE#2160).
+            with open(css_filepath, "w", encoding="utf-8") as file:
+                file.write("/* border-radius template not found; HyDE writes this file */\n")
             return
 
     border_radius = os.getenv("WAYBAR_BORDER_RADIUS")
     logger.debug(f"WAYBAR_BORDER_RADIUS environment variable: {border_radius}")
+    # The env value is a string; a non-numeric one falls through to the lookups
+    # below instead of crashing the comparison further down.
+    try:
+        border_radius = int(border_radius) if border_radius else None
+    except ValueError:
+        logger.debug(f"Ignoring non-numeric WAYBAR_BORDER_RADIUS: '{border_radius}'")
+        border_radius = None
 
     if not border_radius:
         # Try hypr.theme via the shared helper (uses "decoration:rounding" as the query key)
@@ -1095,14 +1112,14 @@ def update_border_radius():
 
     logger.debug(f"Final border radius value: {border_radius}")
 
-    with open(css_filepath, "r") as file:
+    with open(css_filepath, "r", encoding="utf-8", errors="replace") as file:
         content = file.read()
     logger.debug(f"Read {len(content)} bytes from {css_filepath}")
 
     updated_content = re.sub(r"\d+pt", f"{border_radius}pt", content)
     logger.debug("Applied border radius value to CSS content")
 
-    with open(css_filepath, "w") as file:
+    with open(css_filepath, "w", encoding="utf-8") as file:
         file.write(updated_content)
     logger.debug(f"Successfully updated border radius in {css_filepath}")
 
@@ -1112,11 +1129,17 @@ def generate_includes():
 
     Path(includes_file).parent.mkdir(parents=True, exist_ok=True)
 
-    if os.path.exists(includes_file):
+    # An empty, truncated or non-object includes.json is rebuilt from scratch;
+    # this now runs on the --watch autostart path, where raising would keep
+    # Waybar from starting at all (HyDE-Project/HyDE#2160).
+    includes_data = {"include": []}
+    try:
         with open(includes_file, "r") as file:
-            includes_data = json.load(file)
-    else:
-        includes_data = {"include": []}
+            loaded = json.load(file)
+        if isinstance(loaded, dict):
+            includes_data = loaded
+    except (json.JSONDecodeError, UnicodeDecodeError, FileNotFoundError):
+        pass
 
     includes = []
     for directory in MODULE_DIRS:
@@ -1187,6 +1210,20 @@ def watch_waybar():
     if is_waybar_running_for_current_user():
         logger.debug("Waybar already active.")
         return
+
+    # Session autostart only ever runs --watch. defaults.css imports
+    # border-radius.css and global.css from ~/.config/waybar/includes, and this
+    # is the one place they get generated on a clean install; without them
+    # waybar exits 1 and systemd gives up with start-limit-hit
+    # (HyDE-Project/HyDE#2160).
+    try:
+        update_border_radius()
+        generate_includes()
+        update_global_css()
+    except OSError as e:
+        # e.g. a read-only config directory: still start the bar, the CSS
+        # may already be in place from an earlier run.
+        logger.error(f"Could not prepare the Waybar includes: {e}")
 
     if HAS_SYSTEMD:
         subprocess.run([
