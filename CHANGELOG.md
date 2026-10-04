@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
 ### Fixed
+- Fish: defer Alt+number history lookups until the key is pressed, avoiding repeated history scans during startup and allowing shortcuts to use entries added later
 - Submodules: `.gitmodules` tracked `language-packs` on a `master` branch that `HyDE-Project/language-packs` does not have (its only branch is `main`), so `git submodule update --remote language-packs` found nothing to follow. It now tracks `main`
 - SDDM: the bundled Candy and Corners greeter themes show date and time in the system locale. Both hardcoded an English 12h format in `theme.conf` (`hh:mm A`), so a 24h locale still read `05:05 PM` on the login screen. The formats are blank now (fixed in HyDE-Project/sddm-themes#4, the archives in `Source/arcs/` are refreshed to match), and Corners' `DateTimePanel.qml` falls back to Qt's locale-aware short time and long date, since Qt renders a blank format as an empty string. `install_pst.sh` extracts the selected theme when SDDM is installed and `/etc/sddm.conf.d/backup_the_hyde_project.conf` does not exist yet, or when `HYDE_INSTALL_SDDM=true` is set; an already configured system keeps its old theme config until then
 - Notifications: swaync loads `~/.config/swaync/user-style.css` again. The `@import` for it in the shipped `style.css` was missing its closing `;`, so GTK dropped the rule as an unterminated block and custom swaync styles were silently ignored
