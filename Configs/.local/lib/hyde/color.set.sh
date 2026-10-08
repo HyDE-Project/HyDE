@@ -50,6 +50,8 @@ create_wallbash_substitutions() {
     local use_inverted=$1
     local sed_script
     sed_script="s|<wallbash_mode>|$($use_inverted && printf "%s" "${dcol_invt:-light}" || printf "%s" "${dcol_mode:-dark}")|g;"
+    [ -n "${dcol_ansi_black:-}" ] && sed_script+="s|<wallbash_ansi_black>|${dcol_ansi_black}|g;"
+    [ -n "${dcol_ansi_white:-}" ] && sed_script+="s|<wallbash_ansi_white>|${dcol_ansi_white}|g;"
     for i in {1..4}; do
         if $use_inverted; then
             rev_i=$((5 - i))
