@@ -550,7 +550,10 @@ def signal_handler(sig, frame):
 def _signal_waybar(sig):
     """Send a signal to the waybar process/unit (systemd or pkill)."""
     if HAS_SYSTEMD:
-        subprocess.run(["systemctl", "--user", "kill", "-s", sig, UNIT_NAME])
+        # --kill-who=main: systemctl kill defaults to "all", which signals every
+        # process in the unit's cgroup (bwrap, image loaders, module scripts, ...),
+        # not just Waybar. Those don't handle SIGUSR2 and get killed. Fixes #2184.
+        subprocess.run(["systemctl", "--user", "kill", "--kill-who=main", "-s", sig, UNIT_NAME])
     else:
         subprocess.run(["pkill", f"-{sig}", "-u", str(os.getuid()), "-x", "waybar"])
 
