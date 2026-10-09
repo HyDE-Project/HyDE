@@ -16,7 +16,7 @@
   },
   "group/pill#left2": {
     "orientation": "inherit",
-    "modules": ["idle_inhibitor", "clock"]
+    "modules": ["custom/caffeine", "clock"]
   },
   "group/pill#left3": {
     "orientation": "inherit",

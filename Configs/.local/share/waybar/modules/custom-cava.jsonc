@@ -6,7 +6,7 @@
     "hide-empty": true,
     "return-type": "json",
     "tooltip": true,
-    "on-click": "pkill -f 'cava.py waybar"
+    "on-click": "pkill -f 'cava.py waybar'"
     // "signal": 15// did no work
   }
 }

@@ -30,7 +30,7 @@
     "group/pill#center": {
         "orientation": "inherit",
         "modules": [
-            "idle_inhibitor",
+            "custom/caffeine",
             "clock"
         ]
     },

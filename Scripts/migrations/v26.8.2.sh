@@ -9,8 +9,9 @@
 # still names a script that was moved aside, and the close-window binds still
 # call one that no longer exists.
 #
-# Nothing is deleted here. Everything is moved into a backup directory, which
-# for most of these files is the only copy of settings the user wrote.
+# Nothing is deleted here unless an identical copy is already kept. Everything
+# is moved into a backup directory, which for most of these files is the only
+# copy of settings the user wrote.
 #
 # This runs only when the Lua entry point is in place. Moving hyprland.conf out
 # of the way while nothing else can be found would leave Hyprland to generate a
@@ -67,7 +68,26 @@ hyde/templates/hypr
 "
 
 moved=0
+removed=0
 failed=0
+
+# Whether a leftover is the same thing as the copy already kept: two symlinks
+# with the same target, or two regular files with the same bytes. Anything
+# else (directories, a file against a link, content that can't be read) is
+# treated as different, so it is never removed.
+same_as_backup() {
+    if [ -L "$1" ] && [ -L "$2" ]; then
+        # A trailing "x" keeps the command substitution from stripping
+        # trailing newlines, so "target" and "target<newline>" differ; a
+        # failed read never counts as a match.
+        set -- "$(readlink -- "$1" && printf x)" "$(readlink -- "$2" && printf x)"
+        [ "$1" != "" ] && [ "$1" = "$2" ]
+    elif [ ! -L "$1" ] && [ ! -L "$2" ] && [ -f "$1" ] && [ -f "$2" ]; then
+        cmp -s -- "$1" "$2"
+    else
+        return 1
+    fi
+}
 
 move_leftover() {
     src="$1"
@@ -83,6 +103,15 @@ move_leftover() {
     # A rerun after the file was restored would otherwise destroy the copy kept
     # by the first run, so an occupied destination is reported and left alone.
     if [ -e "${dst}" ] || [ -L "${dst}" ]; then
+        # Unless the leftover is identical to that copy: then nothing can be
+        # lost by removing it. nwg-displays, for one, creates an empty
+        # hypr/monitors.conf every time it starts, which otherwise kept this
+        # migration failing, and so re-running, on every restore.
+        if same_as_backup "${src}" "${dst}" && rm -f -- "${src}"; then
+            echo "  removed ${rel}, identical to its backup"
+            removed=$((removed + 1))
+            return 0
+        fi
         echo "  skipped ${rel}, a backup already exists at ${dst}" >&2
         failed=$((failed + 1))
         return 0
@@ -114,6 +143,10 @@ done
 if [ "${moved}" -gt 0 ]; then
     echo "Moved ${moved} hyprlang leftover(s) to ${backup_dir}"
     echo "They are the only copy of what you had configured before the Lua release."
+fi
+
+if [ "${removed}" -gt 0 ]; then
+    echo "Removed ${removed} hyprlang leftover(s) identical to the copy already in ${backup_dir}"
 fi
 
 if [ "${failed}" -gt 0 ]; then

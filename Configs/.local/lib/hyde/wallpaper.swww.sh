@@ -21,10 +21,10 @@ esac
 selected_wall="$1"
 [ -z "$selected_wall" ] && echo "No input wallpaper" && exit 1
 selected_wall="$(readlink -f "$selected_wall")"
-if ! swww query &> /dev/null; then
+if ! timeout 15 swww query &> /dev/null; then
     swww-daemon --format xrgb &
     disown
-    swww query && swww restore
+    timeout 15 swww query && timeout 15 swww restore
 fi
 is_video=$(file --mime-type -b "$selected_wall" | grep -c '^video/')
 if [ "$is_video" -eq 1 ]; then

@@ -1,5 +1,5 @@
 #! /bin/bash
-if ! source "$(which hyde-shell)"; then
+if ! source "$(command -v hyde-shell)"; then
     echo "Error: hyde-shell not found."
     echo "Is HyDE installed?"
     exit 1
@@ -82,7 +82,7 @@ mpris_icon() {
         ["default"]=""
         ["spotify"]=""
         ["firefox"]=""
-        ["vlc"]="嗢"
+        ["vlc"]="󰕼"
         ["google-chrome"]=""
         ["opera"]=""
         ["brave"]="")

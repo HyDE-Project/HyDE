@@ -47,7 +47,7 @@ icon_override=$(gsettings get org.gnome.desktop.interface icon-theme | sed "s/'/
 icon_override="configuration {icon-theme: \"$icon_override\";}"
 selected=$(printf '%s\n' "$output" | rofi -dmenu -markup -markup-rows -p \
     -theme-str "entry { placeholder: \"\t⌨️ Keybindings \";}" \
-    " Keybinds \t\tﴕ Description" \
+    " Keybinds \t\t󰠗 Description" \
     -p -i \
     -display-columns 1 \
     -display-column-separator ":::" \

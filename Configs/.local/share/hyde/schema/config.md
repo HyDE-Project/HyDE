@@ -61,7 +61,7 @@ Cava visualizer configuration.
 
 ### [cava.hyprlock]
 
-'cava.sh hyprlock' configuration.
+'hyde-shell cava hyprlock' configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -73,7 +73,7 @@ Cava visualizer configuration.
 
 ### [cava.stdout]
 
-'cava.sh stdout' configuration.
+'hyde-shell cava stdout' configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -85,7 +85,7 @@ Cava visualizer configuration.
 
 ### [cava.waybar]
 
-'cava.sh waybar' configuration.
+'hyde-shell cava waybar' configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -262,7 +262,7 @@ Global rofi configuration.
 
 ### [rofi.animation]
 
-'animation.sh select' configuration.
+'hyde-shell animations --select' configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
@@ -308,7 +308,7 @@ glyph-picker.sh configuration.
 
 ### [rofi.hyprlock]
 
-'hyde-shell hyprlock select' configuration.
+'hyde-shell hyprlock --select' configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |

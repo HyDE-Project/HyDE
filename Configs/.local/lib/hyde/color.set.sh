@@ -18,9 +18,10 @@ rgba_to_rgb() {
     fi
 }
 
+    # shellcheck disable=SC1091
 load_dconf_kdeglobals() {
-    source "$SHARE_DIR/hyde/env-theme"
-    source "$LIB_DIR/hyde/color/hypr.sh"
+    source "${SHARE_DIR}/hyde/env-theme"
+    source "${LIB_DIR}/hyde/color/hypr.sh"
 
     #? Do not change when users has active plasma session installed
     #? This fixes kde connect and similar app color issues
@@ -97,6 +98,12 @@ preprocess_substitutions() {
     INVERTED_SED_SCRIPT=$(create_wallbash_substitutions true)
     export NORMAL_SED_SCRIPT INVERTED_SED_SCRIPT
 }
+# wallbash_trace - debug logging helper (safe to call anytime)
+wallbash_trace() {
+    [[ $LOG_LEVEL == debug ]] || return 0
+    type print_log >/dev/null 2>&1 && print_log -sec wallbash -stat "DEBUG: $1" "${2:-}"
+}
+
 fn_wallbash() {
     local temp_target_file exec_command template wallbash_dirs_array
     template="$1"
@@ -107,7 +114,7 @@ fn_wallbash() {
         local template_name
         template_name="${template##*/}"
         template_name="${template_name%.*}"
-        dcolTemplate=$(find -H "${wallbash_dirs_array[@]}" -type f -path "*/theme*" -name "$template_name.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
+        dcolTemplate=$(find -H "${wallbash_dirs_array[@]}" \( -type f -o -type l \) -path "*/theme*" -name "$template_name.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
         if [[ -n $dcolTemplate ]]; then
             eval target_file="$(head -1 "$dcolTemplate" | awk -F '|' '{print $1}')"
             exec_command="$(head -1 "$dcolTemplate" | awk -F '|' '{print $2}')"
@@ -116,8 +123,8 @@ fn_wallbash() {
     fi
     if [[ $LOG_LEVEL == "debug" ]]; then
         print_log -sec "wallbash" -stat "Template:" " $template"
-        print_log -sec "wallbash" -stat "Wallbash Directories:" " ${wallbash_dirs_array[*]}"
-        print_log -sec "wallbash" -stat "Wallbash Scripts:" " $WALLBASH_SCRIPTS"
+        print_log -sec "wallbash" -stat "Directories:" " ${wallbash_dirs_array[*]}"
+        print_log -sec "wallbash" -stat "Scripts:" " $WALLBASH_SCRIPTS"
     fi
     [ -f "$HYDE_STATE_HOME/state" ] && source "$HYDE_STATE_HOME/state"
     [ -f "$HYDE_STATE_HOME/config" ] && source "$HYDE_STATE_HOME/config"
@@ -125,12 +132,17 @@ fn_wallbash() {
         for skip in "${WALLBASH_SKIP_TEMPLATE[@]}"; do
             if [[ $template =~ $skip ]]; then
                 print_log -sec "wallbash" -warn "skip '$skip' template " "Template: $template"
+                wallbash_trace "skip matched" "rule=$skip template=$template"
                 return 0
             fi
         done
     fi
     [ -z "$target_file" ] && eval target_file="$(head -1 "$template" | awk -F '|' '{print $1}')"
-    [ ! -d "$(dirname "$target_file")" ] && print_log -sec "wallbash" -warn "skip 'missing directory'" "$target_file // Do you have the dependency installed?" && return 0
+    if [ ! -d "$(dirname "$target_file")" ]; then
+        print_log -sec "wallbash" -warn "skip 'missing directory'" "$target_file // Do you have the dependency installed?"
+        wallbash_trace "skip missing dir" "template=$template target=$target_file"
+        return 0
+    fi
     export wallbashScripts="$WALLBASH_SCRIPTS"
     export WALLBASH_SCRIPTS confDir hydeConfDir cacheDir thmbDir dcolDir iconsDir themesDir fontsDir wallbashDirs enableWallDcol HYDE_THEME_DIR HYDE_THEME GTK_ICON GTK_THEME CURSOR_THEME
     export -f pkg_installed print_log
@@ -144,26 +156,33 @@ fn_wallbash() {
     fi
     if [ ! -s "$temp_target_file" ] || [ -c "$target_file" ]; then
         rm -f "$temp_target_file"
+        wallbash_trace "discard empty/chardev" "template=$template target=$target_file"
     elif [ -e "$target_file" ] && [ ! -f "$target_file" ]; then
         rm -f "$temp_target_file"
         print_log -sec "wallbash" -err "write" "$target_file is not a regular file, refusing to render $template"
+        wallbash_trace "write_fail not regular file" "template=$template target=$target_file"
         return 1
     elif ! mv "$temp_target_file" "$target_file"; then
         rm -f "$temp_target_file"
         print_log -sec "wallbash" -err "write" "could not write $target_file from $template"
+        wallbash_trace "write_fail mv failed" "template=$template target=$target_file"
         return 1
     fi
+    wallbash_trace "write_ok" "template=$template target=$target_file"
     [ -z "$exec_command" ] || {
         [[ $LOG_LEVEL == "debug" ]] && print_log -sec "wallbash" -stat "Exec command:" " $exec_command from $WALLBASH_SCRIPTS"
         bash -c "$exec_command" &
         disown
+        wallbash_trace "exec_spawn" "template=$template cmd=$exec_command"
     }
 }
 scrDir="$(dirname "$(realpath "$0")")"
 export scrDir
 source "$scrDir/globalcontrol.sh"
 confDir="${XDG_CONFIG_HOME:-$(xdg-user-dir CONFIG)}"
+
 wallbash_image="$1"
+wallbash_trace "session start" "image=$wallbash_image"
 dcol_colors=""
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -231,11 +250,11 @@ done
 WALLBASH_DIRS="${WALLBASH_DIRS%:}"
 if [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then PATH="$HOME/.local/bin:$PATH"; fi
 export WALLBASH_DIRS PATH
-export -f fn_wallbash print_log pkg_installed create_wallbash_substitutions preprocess_substitutions rgba_to_rgb
+export -f fn_wallbash print_log pkg_installed create_wallbash_substitutions preprocess_substitutions rgba_to_rgb wallbash_trace
 if [ -n "$dcol_colors" ]; then
     set -a
     source "$dcol_colors"
-    print_log -sec "wallbash" -stat "single instance" "Wallbash Colors: $dcol_colors"
+    print_log -sec "wallbash" -stat "single instance" "Colors: $dcol_colors"
     set +a
 fi
 if [ -n "$single_template" ]; then
@@ -244,20 +263,20 @@ if [ -n "$single_template" ]; then
 fi
 render_failures=0
 [ -t 1 ] && "$scrDir/wallbash.print.colors.sh"
-print_log -sec "wallbash" -stat "wallbash directories" " $WALLBASH_DIRS"
+print_log -sec "wallbash" -stat "directories" " $WALLBASH_DIRS"
 if [ "$enableWallDcol" -eq 0 ] && [[ $reload_flag -eq 1 ]]; then
     print_log -sec "wallbash" -stat "apply $dcol_mode colors" "$HYDE_THEME theme"
     mapfile -d '' -t deployList < <(find -H "$HYDE_THEME_DIR" -type f -name "*.theme" -print0)
     while read -r pKey; do
         fKey="$(find -H "$HYDE_THEME_DIR" -type f -name "$(basename "${pKey%.dcol}.theme")")"
         [ -z "$fKey" ] && deployList+=("$pKey")
-    done < <(find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
+    done < <(find -H "${wallbashDirs[@]}" \( -type f -o -type l \) -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++')
     parallel fn_wallbash {} "${wallbashDirs[@]}" ::: "${deployList[@]}" || render_failures=$((render_failures + $?))
 elif [ "$enableWallDcol" -gt 0 ]; then
     print_log -sec "wallbash" -stat "apply $dcol_mode colors" "Wallbash theme"
-    find -H "${wallbashDirs[@]}" -type f -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
+    find -H "${wallbashDirs[@]}" \( -type f -o -type l \) -path "*/theme*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
 fi
-find -H "${wallbashDirs[@]}" -type f -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
+find -H "${wallbashDirs[@]}" \( -type f -o -type l \) -path "*/always*" -name "*.dcol" 2>/dev/null | awk '!seen[substr($0, match($0, /[^/]+$/))]++' | parallel fn_wallbash {} "${wallbashDirs[@]}" || render_failures=$((render_failures + $?))
 if [ "$render_failures" -ne 0 ]; then
     print_log -sec "wallbash" -err "render" "one or more templates failed, the colour state is incomplete"
     exit 1
