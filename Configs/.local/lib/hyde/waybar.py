@@ -165,7 +165,14 @@ def _staterc_lock():
     setting is worse than the rare race. Never delete staterc.lock.
     """
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(STATE_FILE.with_name("staterc.lock"), "a") as lock:
+    try:
+        lock = open(STATE_FILE.with_name("staterc.lock"), "a")
+    except OSError as exc:
+        # e.g. left root-owned by a sudo run; staterc.sh writes on too.
+        logger.warning(f"cannot open staterc.lock ({exc}), writing without the lock")
+        yield
+        return
+    with lock:
         deadline = time.monotonic() + 10
         while True:
             try:
@@ -176,6 +183,9 @@ def _staterc_lock():
                     logger.warning("staterc is still locked after 10s, writing without the lock")
                     break
                 time.sleep(0.05)
+            except OSError as exc:
+                logger.warning(f"cannot lock staterc.lock ({exc}), writing without the lock")
+                break
         yield
 
 
