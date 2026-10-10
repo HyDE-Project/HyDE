@@ -1,0 +1,26 @@
+# HyDE Settings hub, pulled from its own repo instead of living directly in
+# this one -- https://github.com/HyDE-Project/settings-gtk
+# Pinned to a tagged release, not a branch: an untagged "main" archive would
+# let a future push to that repo change what gets deployed here without a
+# corresponding, reviewed commit in this one.
+[hyde-settings]
+source = "https://github.com/HyDE-Project/settings-gtk/archive/refs/tags/v0.1.0.tar.gz"
+action = "sync"
+owner = "HyDE-Project"
+description = "Searchable hub for HyDE's own tools and the system settings programs (audio, displays, network, appearance, ...)"
+version = "0.1.0"
+
+[[hyde-settings.dependency]]
+pacman = ["python-gobject", "gtk3"]
+
+[[hyde-settings.files]]
+action = "sync"
+source_root = "settings-gtk-0.1.0"
+target_root = "${HOME}/.local/lib/hyde"
+paths = ["settings.py", "settings.sh"]
+
+[[hyde-settings.files]]
+action = "sync"
+source_root = "applications"
+target_root = "${XDG_DATA_HOME}/applications"
+paths = ["hyde-settings.desktop", "hyde-default-apps.desktop", "hyde-firewall.desktop"]
