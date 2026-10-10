@@ -527,11 +527,14 @@ def _atomic_write(path, data):
         else:
             with os.fdopen(fd, "w", encoding="utf-8") as file:
                 file.write(data)
-        # mkstemp creates the file as 0600; keep the mode the old file had.
+        # mkstemp creates the file as 0600; keep the mode the old file had, or
+        # give a new file the mode open(..., "w") would (0666 minus the umask).
         if os.path.exists(path):
             shutil.copymode(path, tmp_path)
         else:
-            os.chmod(tmp_path, 0o644)
+            umask = os.umask(0)
+            os.umask(umask)
+            os.chmod(tmp_path, 0o666 & ~umask)
         os.replace(tmp_path, path)
     except BaseException:
         if os.path.exists(tmp_path):
