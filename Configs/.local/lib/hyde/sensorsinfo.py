@@ -67,11 +67,12 @@ PAGE_FILE = "/tmp/sensorinfo_page"
 
 
 def get_current_page(total_pages):
-    if os.path.exists(PAGE_FILE):
+    try:
         with open(PAGE_FILE, "r", encoding="utf-8") as f:
             page = int(f.read().strip())
-            return page % total_pages
-    return 0
+    except (FileNotFoundError, ValueError):
+        return 0
+    return page % total_pages
 
 
 def save_current_page(page):
