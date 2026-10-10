@@ -38,10 +38,12 @@ staterc="$state_dir/staterc"
 mkdir -p "$state_dir" || exit 1
 
 # A writer that can't get the lock in time still writes: losing the setting
-# is worse than the rare race it would otherwise wait out.
-if exec {lock_fd}>"$state_dir/staterc.lock" 2>/dev/null; then
-    flock -w 10 "$lock_fd" ||
-        echo "staterc.sh: staterc is still locked after 10s, writing without the lock" >&2
+# is worse than the rare race it would otherwise wait out. The braces keep
+# 2>/dev/null to the open: on a bare exec it would silence the whole script.
+lock_wait=${STATERC_LOCK_WAIT:-10}
+if { exec {lock_fd}>"$state_dir/staterc.lock"; } 2>/dev/null; then
+    flock -w "$lock_wait" "$lock_fd" ||
+        echo "staterc.sh: staterc is still locked after ${lock_wait}s, writing without the lock" >&2
 else
     echo "staterc.sh: cannot open staterc.lock, writing without the lock" >&2
 fi
