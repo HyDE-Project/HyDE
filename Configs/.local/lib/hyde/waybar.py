@@ -210,6 +210,22 @@ def _replace_state_file(text):
         raise
 
 
+def _add_missing_state_values(values):
+    """Add the keys of values that staterc still lacks, in one locked step.
+
+    Returns the keys added. A key another writer set in the meantime is kept.
+    """
+    with _staterc_lock():
+        text = STATE_FILE.read_text() if STATE_FILE.exists() else ""
+        present = {line.split("=", 1)[0] for line in text.splitlines() if "=" in line}
+        added = [key for key in values if key not in present]
+        if added:
+            if text and not text.endswith("\n"):
+                text += "\n"
+            _replace_state_file(text + "".join(f"{key}={values[key]}\n" for key in added))
+    return added
+
+
 def set_state_value(key, value):
     """Set or update a value in the state file, removing any duplicates."""
     with _staterc_lock():
@@ -307,10 +323,10 @@ def get_current_layout_from_config():
 def ensure_state_file():
     """Ensure the state file has the necessary entries.
 
-    The values are worked out first and written one by one through
-    set_state_value(), which takes the staterc lock. Holding the lock here
-    would deadlock: get_current_layout_from_config() writes staterc too
-    (HyDE-Project/HyDE#2194).
+    The values are worked out first, then added in one locked step that skips
+    any key another writer set in the meantime. Holding the lock while working
+    them out would deadlock: get_current_layout_from_config() writes staterc
+    too (HyDE-Project/HyDE#2194).
     """
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
@@ -332,8 +348,12 @@ def ensure_state_file():
         if not missing:
             return
         logger.debug("State file is missing entries, updating it")
+        # A layout already in staterc is the one to describe; look it up only
+        # when the path itself is missing.
         current_layout = (
-            get_current_layout_from_config() if "WAYBAR_LAYOUT_PATH" in missing else None
+            get_current_layout_from_config()
+            if "WAYBAR_LAYOUT_PATH" in missing
+            else get_state_value("WAYBAR_LAYOUT_PATH")
         )
         if not current_layout:
             return
@@ -343,10 +363,8 @@ def ensure_state_file():
         "WAYBAR_LAYOUT_NAME": os.path.basename(current_layout).replace(".jsonc", ""),
         "WAYBAR_STYLE_PATH": resolve_style_path(current_layout),
     }
-    for key in keys:
-        if key in missing:
-            set_state_value(key, values[key])
-            logger.debug(f"Added {key}={values[key]}")
+    for key in _add_missing_state_values({key: values[key] for key in keys if key in missing}):
+        logger.debug(f"Added {key}={values[key]}")
 
 
 def resolve_style_path(layout_path):
