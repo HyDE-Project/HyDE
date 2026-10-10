@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # TODO:Refactor. This what happens when you just want it to work lol.
+import contextlib
+import fcntl
 import json
 import os
 import glob
@@ -11,6 +13,7 @@ import time
 import sys
 import hashlib
 import signal
+import tempfile
 
 from pathlib import Path
 
@@ -152,35 +155,98 @@ def get_config_value(key, default=None):
     return default
 
 
+@contextlib.contextmanager
+def _staterc_lock():
+    """Hold the flock on staterc.lock that staterc.sh (set_conf, Lua) takes too.
+
+    Unlocked, two writers rewriting staterc at once could wipe it down to one
+    line (HyDE-Project/HyDE#2194). fcntl.flock is the same lock as the
+    flock command. A writer still waiting after 10s writes anyway: losing the
+    setting is worse than the rare race. Never delete staterc.lock.
+    """
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        lock = open(STATE_FILE.with_name("staterc.lock"), "a")
+    except OSError as exc:
+        # e.g. left root-owned by a sudo run; staterc.sh writes on too.
+        logger.warning(f"cannot open staterc.lock ({exc}), writing without the lock")
+        yield
+        return
+    with lock:
+        deadline = time.monotonic() + 10
+        while True:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if time.monotonic() >= deadline:
+                    logger.warning("staterc is still locked after 10s, writing without the lock")
+                    break
+                time.sleep(0.05)
+            except OSError as exc:
+                logger.warning(f"cannot lock staterc.lock ({exc}), writing without the lock")
+                break
+        yield
+
+
+def _replace_state_file(text):
+    """Replace staterc with text in one step, so no reader sees it half written."""
+    fd, tmp_path = tempfile.mkstemp(dir=STATE_FILE.parent, prefix=".staterc.")
+    try:
+        with os.fdopen(fd, "w") as file:
+            file.write(text)
+        # mkstemp creates the file as 0600; keep the old mode, or give a new
+        # file what open(..., "w") would (0666 minus the umask).
+        if STATE_FILE.exists():
+            shutil.copymode(STATE_FILE, tmp_path)
+        else:
+            umask = os.umask(0)
+            os.umask(umask)
+            os.chmod(tmp_path, 0o666 & ~umask)
+        os.replace(tmp_path, STATE_FILE)
+    except BaseException:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        raise
+
+
+def _add_missing_state_values(values):
+    """Add the keys of values that staterc still lacks, in one locked step.
+
+    Returns the keys added. A key another writer set in the meantime is kept.
+    """
+    with _staterc_lock():
+        text = STATE_FILE.read_text() if STATE_FILE.exists() else ""
+        present = {line.split("=", 1)[0] for line in text.splitlines() if "=" in line}
+        added = [key for key in values if key not in present]
+        if added:
+            if text and not text.endswith("\n"):
+                text += "\n"
+            _replace_state_file(text + "".join(f"{key}={values[key]}\n" for key in added))
+    return added
+
+
 def set_state_value(key, value):
     """Set or update a value in the state file, removing any duplicates."""
-    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-
-    if not STATE_FILE.exists():
-        with open(STATE_FILE, "w") as file:
-            file.write(f"{key}={value}\n")
-        return True
-
-    existing_lines = []
-    seen_keys = set()
-    if os.path.exists(STATE_FILE):
-        with open(STATE_FILE, "r") as file:
-            for line in file:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    current_key = line.split("=", 1)[0]
-                    if current_key not in seen_keys and current_key != key:
+    with _staterc_lock():
+        existing_lines = []
+        seen_keys = set()
+        if STATE_FILE.exists():
+            with open(STATE_FILE, "r") as file:
+                for line in file:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        current_key = line.split("=", 1)[0]
+                        if current_key not in seen_keys and current_key != key:
+                            existing_lines.append(line)
+                            seen_keys.add(current_key)
+                    except Exception:
                         existing_lines.append(line)
-                        seen_keys.add(current_key)
-                except Exception:
-                    existing_lines.append(line)
 
-    existing_lines.append(f"{key}={value}")
-
-    with open(STATE_FILE, "w") as file:
-        file.write("\n".join(existing_lines) + "\n")
+        existing_lines.append(f"{key}={value}")
+        _replace_state_file("\n".join(existing_lines) + "\n")
 
     return True
 
@@ -255,53 +321,50 @@ def get_current_layout_from_config():
 
 
 def ensure_state_file():
-    """Ensure the state file has the necessary entries."""
+    """Ensure the state file has the necessary entries.
+
+    The values are worked out first, then added in one locked step that skips
+    any key another writer set in the meantime. Holding the lock while working
+    them out would deadlock: get_current_layout_from_config() writes staterc
+    too (HyDE-Project/HyDE#2194).
+    """
     STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     logger.debug(f"Ensuring state file exists at: {STATE_FILE}")
 
+    keys = ("WAYBAR_LAYOUT_PATH", "WAYBAR_LAYOUT_NAME", "WAYBAR_STYLE_PATH")
     if not STATE_FILE.exists():
         logger.debug("State file does not exist, creating it")
         current_layout = get_current_layout_from_config()
-        layout_name = (
-            os.path.basename(current_layout).replace(".jsonc", "") if current_layout else ""
-        )
-        style_path = resolve_style_path(current_layout) if current_layout else ""
-
-        with open(STATE_FILE, "w") as file:
-            if current_layout:
-                file.write(f"WAYBAR_LAYOUT_PATH={current_layout}\n")
-                file.write(f"WAYBAR_LAYOUT_NAME={layout_name}\n")
-                file.write(f"WAYBAR_STYLE_PATH={style_path}\n")
-                logger.debug(f"Created state file with layout: {current_layout}")
-            else:
-                logger.warning("No layout found to write to state file")
-        return
-
-    with open(STATE_FILE, "r") as file:
-        lines = file.readlines()
-
-    layout_path_exists = any(line.startswith("WAYBAR_LAYOUT_PATH=") for line in lines)
-    layout_name_exists = any(line.startswith("WAYBAR_LAYOUT_NAME=") for line in lines)
-    style_path_exists = any(line.startswith("WAYBAR_STYLE_PATH=") for line in lines)
-
-    if not layout_path_exists or not layout_name_exists or not style_path_exists:
+        if not current_layout:
+            STATE_FILE.touch()
+            logger.warning("No layout found to write to state file")
+            return
+        missing = set(keys)
+    else:
+        with open(STATE_FILE, "r") as file:
+            lines = file.readlines()
+        missing = {key for key in keys if not any(line.startswith(f"{key}=") for line in lines)}
+        if not missing:
+            return
         logger.debug("State file is missing entries, updating it")
-        current_layout = get_current_layout_from_config() if not layout_path_exists else None
-        if current_layout:
-            layout_name = os.path.basename(current_layout).replace(".jsonc", "")
-            style_path = resolve_style_path(current_layout)
+        # A layout already in staterc is the one to describe; look it up only
+        # when the path itself is missing.
+        current_layout = (
+            get_current_layout_from_config()
+            if "WAYBAR_LAYOUT_PATH" in missing
+            else get_state_value("WAYBAR_LAYOUT_PATH")
+        )
+        if not current_layout:
+            return
 
-            with open(STATE_FILE, "a") as file:
-                if not layout_path_exists:
-                    file.write(f"WAYBAR_LAYOUT_PATH={current_layout}\n")
-                    logger.debug(f"Added WAYBAR_LAYOUT_PATH={current_layout}")
-                if not layout_name_exists:
-                    file.write(f"WAYBAR_LAYOUT_NAME={layout_name}\n")
-                    logger.debug(f"Added WAYBAR_LAYOUT_NAME={layout_name}")
-                if not style_path_exists:
-                    file.write(f"WAYBAR_STYLE_PATH={style_path}\n")
-                    logger.debug(f"Added WAYBAR_STYLE_PATH={style_path}")
+    values = {
+        "WAYBAR_LAYOUT_PATH": current_layout,
+        "WAYBAR_LAYOUT_NAME": os.path.basename(current_layout).replace(".jsonc", ""),
+        "WAYBAR_STYLE_PATH": resolve_style_path(current_layout),
+    }
+    for key in _add_missing_state_values({key: values[key] for key in keys if key in missing}):
+        logger.debug(f"Added {key}={values[key]}")
 
 
 def resolve_style_path(layout_path):
