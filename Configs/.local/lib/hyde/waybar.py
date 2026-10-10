@@ -11,6 +11,7 @@ import time
 import sys
 import hashlib
 import signal
+import tempfile
 
 from pathlib import Path
 
@@ -220,7 +221,7 @@ def get_current_layout_from_config():
         set_state_value("WAYBAR_LAYOUT_PATH", layout)
         set_state_value("WAYBAR_LAYOUT_NAME", layout_name)
 
-        shutil.copyfile(layout, CONFIG_JSONC)
+        _atomic_copy(layout, CONFIG_JSONC)
         logger.debug(f"Created config.jsonc with first layout: {layout}")
         return layout
 
@@ -248,7 +249,7 @@ def get_current_layout_from_config():
         set_state_value("WAYBAR_LAYOUT_PATH", layout)
         set_state_value("WAYBAR_LAYOUT_NAME", layout_name)
 
-        shutil.copyfile(layout, CONFIG_JSONC)
+        _atomic_copy(layout, CONFIG_JSONC)
         logger.debug(f"Updated config.jsonc with layout: {layout}")
 
     return layout
@@ -338,15 +339,21 @@ def resolve_style_path(layout_path):
     return os.path.join(STYLE_DIRS[0], "defaults.css")
 
 
+# Set once _apply_layout() has regenerated the files and restarted Waybar, so
+# main() doesn't do both again for the same run.
+_layout_applied = False
+
+
 def _apply_layout(layout_path, style_path, notify_label):
     """Shared: copy layout, update state, regenerate CSS/includes, notify, restart."""
+    global _layout_applied
     layout_name = os.path.basename(layout_path).replace(".jsonc", "")
     set_state_value("WAYBAR_LAYOUT_PATH", layout_path)
     set_state_value("WAYBAR_LAYOUT_NAME", layout_name)
     set_state_value("WAYBAR_STYLE_PATH", style_path)
 
     style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
-    shutil.copyfile(layout_path, CONFIG_JSONC)
+    _atomic_copy(layout_path, CONFIG_JSONC)
     write_style_file(style_filepath, style_path)
     update_icon_size()
     update_border_radius()
@@ -354,6 +361,7 @@ def _apply_layout(layout_path, style_path, notify_label):
     update_global_css()
     notify.send("Waybar", f"Layout changed to {notify_label}", replace_id=9)
     restart_waybar()
+    _layout_applied = True
 
 
 def set_layout(layout):
@@ -503,6 +511,43 @@ def modify_json_key(data, key, value):
     return data
 
 
+def _atomic_write(path, data):
+    """Replace path with data in one step: write a temp file next to it, then rename.
+
+    Waybar reads its config and CSS files while HyDE rewrites them; a plain
+    open(..., "w") lets it see an empty or half-written file (HyDE-Project/HyDE#2184).
+    """
+    # Write through a symlinked config instead of replacing the link.
+    path = os.path.realpath(path)
+    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(path), prefix=f".{os.path.basename(path)}.")
+    try:
+        if isinstance(data, bytes):
+            with os.fdopen(fd, "wb") as file:
+                file.write(data)
+        else:
+            with os.fdopen(fd, "w", encoding="utf-8") as file:
+                file.write(data)
+        # mkstemp creates the file as 0600; keep the mode the old file had, or
+        # give a new file the mode open(..., "w") would (0666 minus the umask).
+        if os.path.exists(path):
+            shutil.copymode(path, tmp_path)
+        else:
+            umask = os.umask(0)
+            os.umask(umask)
+            os.chmod(tmp_path, 0o666 & ~umask)
+        os.replace(tmp_path, path)
+    except BaseException:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+        raise
+
+
+def _atomic_copy(src, dst):
+    """shutil.copyfile() through _atomic_write()."""
+    with open(src, "rb") as file:
+        _atomic_write(dst, file.read())
+
+
 def write_style_file(style_filepath, source_filepath):
     """Override the style file with the given source style."""
     wallbash_gtk_css_file = os.path.join(str(xdg_cache_home()), "hyde", "wallbash", "gtk.css")
@@ -537,8 +582,7 @@ def write_style_file(style_filepath, source_filepath):
     /* Users who want to override the current style add/edit 'user-style.css' */
     @import "user-style.css";
     """
-    with open(style_filepath, "w") as file:
-        file.write(style_css)
+    _atomic_write(style_filepath, style_css)
     logger.debug(f"Successfully wrote style to '{style_filepath}'")
 
 
@@ -623,7 +667,25 @@ def kill_waybar():
 
 
 def restart_waybar():
-    """Reload Waybar if running to prevent the hiding bug, otherwise start it."""
+    """Restart Waybar to load the new config, or start it if it isn't running.
+
+    With systemd the unit is restarted instead of hot-reloaded with SIGUSR2
+    (HyDE-Project/HyDE#2184): systemctl kill signals every process in the unit's
+    cgroup, not only Waybar; Waybar's reload handler can crash and leaks memory
+    on each reload; and a Waybar started a moment earlier by a concurrent call
+    is killed by the signal before it installs its handler. systemd serializes
+    concurrent restarts. reset-failed clears the start limit (5 starts in 10 s),
+    which fast layout switching would otherwise hit, leaving no bar.
+    """
+    if HAS_SYSTEMD:
+        logger.debug(f"Restarting {UNIT_NAME}...")
+        subprocess.run(["systemctl", "--user", "reset-failed", UNIT_NAME], capture_output=True)
+        result = subprocess.run(["systemctl", "--user", "restart", UNIT_NAME], capture_output=True)
+        # The unit is transient and --collect'ed, so it may not exist anymore.
+        if result.returncode != 0:
+            run_waybar()
+        return
+
     if is_waybar_running_for_current_user():
         logger.debug("Hot-reloading Waybar config via SIGUSR2...")
         _signal_waybar("SIGUSR2")
@@ -872,8 +934,7 @@ def update_icon_size():
 
     includes_data.update(updated_entries)
 
-    with open(includes_file, "w") as file:
-        json.dump(includes_data, file, indent=4)
+    _atomic_write(includes_file, json.dumps(includes_data, indent=4))
     logger.debug(
         f"Successfully updated icon sizes and appended to '{includes_file}' with {len(updated_entries)} entries."
     )
@@ -911,8 +972,7 @@ def update_global_css():
 }}
 """
 
-    with open(global_css_path, "w") as file:
-        file.write(global_css_content)
+    _atomic_write(global_css_path, global_css_content)
     logger.debug(f"Successfully generated global CSS at '{global_css_path}'")
 
 
@@ -1065,15 +1125,14 @@ def update_border_radius():
                 continue
             if os.path.exists(template_path):
                 logger.debug(f"Found template at {template_path}, copying to {css_filepath}")
-                shutil.copyfile(template_path, css_filepath)
+                _atomic_copy(template_path, css_filepath)
                 break
         else:
             logger.error("Template for border-radius.css not found in INCLUDES_DIRS")
             # defaults.css @imports this file and Waybar exits on a missing
             # import, so leave an empty stylesheet (square corners) rather than
             # nothing (HyDE-Project/HyDE#2160).
-            with open(css_filepath, "w", encoding="utf-8") as file:
-                file.write("/* border-radius template not found; HyDE writes this file */\n")
+            _atomic_write(css_filepath, "/* border-radius template not found; HyDE writes this file */\n")
             return
 
     border_radius = os.getenv("WAYBAR_BORDER_RADIUS")
@@ -1126,8 +1185,7 @@ def update_border_radius():
     updated_content = re.sub(r"\d+pt", f"{border_radius}pt", content)
     logger.debug("Applied border radius value to CSS content")
 
-    with open(css_filepath, "w", encoding="utf-8") as file:
-        file.write(updated_content)
+    _atomic_write(css_filepath, updated_content)
     logger.debug(f"Successfully updated border radius in {css_filepath}")
 
 
@@ -1162,8 +1220,7 @@ def generate_includes():
     position = position.strip().strip('"').strip("'") if position else "top"
     includes_data["position"] = position
 
-    with open(includes_file, "w") as file:
-        json.dump(includes_data, file, indent=4)
+    _atomic_write(includes_file, json.dumps(includes_data, indent=4))
     logger.debug(
         f"Successfully updated '{includes_file}' with {len(includes)} entries and position '{position}'."
     )
@@ -1171,7 +1228,7 @@ def generate_includes():
 
 def update_config(config_path):
     config_jsonc = os.path.join(str(xdg_config_home()), "waybar", "config.jsonc")
-    shutil.copyfile(config_path, config_jsonc)
+    _atomic_copy(config_path, config_jsonc)
     logger.debug(f"Successfully copied config from '{config_path}' to '{config_jsonc}'")
 
 
@@ -1183,8 +1240,7 @@ def update_style(style_path):
     Path(user_style_filepath).parent.mkdir(parents=True, exist_ok=True)
 
     if not os.path.exists(user_style_filepath):
-        with open(user_style_filepath, "w") as file:
-            file.write("/* User custom styles */\n")
+        _atomic_write(user_style_filepath, "/* User custom styles */\n")
         logger.debug(f"Created '{user_style_filepath}'")
 
     if not os.path.exists(theme_style_filepath):
@@ -1267,7 +1323,7 @@ def main():
             if not CONFIG_JSONC.exists():
                 logger.debug("Config file missing, creating from layout path")
                 CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(layout_path, CONFIG_JSONC)
+                _atomic_copy(layout_path, CONFIG_JSONC)
                 logger.debug("Created config.jsonc from state file layout")
             else:
                 config_hash = get_file_hash(CONFIG_JSONC)
@@ -1279,7 +1335,7 @@ def main():
                     backup_layout(layout_name)
 
                 try:
-                    shutil.copyfile(layout_path, CONFIG_JSONC)
+                    _atomic_copy(layout_path, CONFIG_JSONC)
                     logger.debug("Updated config.jsonc with layout from state file")
                 except Exception as e:
                     logger.error(f"Failed to update config.jsonc: {e}")
@@ -1303,7 +1359,7 @@ def main():
                         if get_file_hash(CONFIG_JSONC) != get_file_hash(found_layout):
                             backup_layout(layout_name)
 
-                    shutil.copyfile(found_layout, CONFIG_JSONC)
+                    _atomic_copy(found_layout, CONFIG_JSONC)
                     logger.debug("Updated config.jsonc with layout by name")
                 else:
                     logger.error(f"Could not find layout by name: {layout_name}")
@@ -1315,7 +1371,7 @@ def main():
                         set_state_value("WAYBAR_LAYOUT_PATH", first_layout)
                         set_state_value("WAYBAR_LAYOUT_NAME", first_layout_name)
                         CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
-                        shutil.copyfile(first_layout, CONFIG_JSONC)
+                        _atomic_copy(first_layout, CONFIG_JSONC)
                         logger.debug(f"Used first available layout: {first_layout}")
         else:
             # No layout path in state file or layout path is empty
@@ -1323,7 +1379,7 @@ def main():
             current_layout = get_current_layout_from_config()
             if current_layout:
                 CONFIG_JSONC.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copyfile(current_layout, CONFIG_JSONC)
+                _atomic_copy(current_layout, CONFIG_JSONC)
                 logger.debug(f"Created config.jsonc from determined layout: {current_layout}")
     else:
         logger.debug("State file not found, creating it")
@@ -1440,6 +1496,12 @@ def main():
 
     if args.watch:
         watch_waybar()
+    elif _layout_applied and not args.style:
+        # --set/--next/--prev, --select-layout and a theme preset already did
+        # this in _apply_layout(). Doing it again restarted Waybar twice per
+        # switch, and with the old SIGUSR2 reload the second round of writes
+        # hit the files while Waybar was still reading them (#2184).
+        return
     else:
         update_icon_size()
         update_border_radius()
