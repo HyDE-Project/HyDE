@@ -299,7 +299,8 @@ get_aurhlpr() {
         aurhlpr="paru"
     fi
 }
-# Locked, atomic and literal; shared with Lua's staterc_set (see staterc.sh).
+# Locked, atomic and escaped so `source` reads values back; shared with
+# Lua's staterc_set (see staterc.sh).
 set_conf() {
     "$scrDir/staterc.sh" set "$1" "$2"
 }
