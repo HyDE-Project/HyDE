@@ -416,6 +416,7 @@ def _apply_layout(layout_path, style_path, notify_label):
 
     style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
     _atomic_copy(layout_path, CONFIG_JSONC)
+    ensure_user_style()
     write_style_file(style_filepath, style_path)
     update_icon_size()
     update_border_radius()
@@ -1294,16 +1295,21 @@ def update_config(config_path):
     logger.debug(f"Successfully copied config from '{config_path}' to '{config_jsonc}'")
 
 
-def update_style(style_path):
-    style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
+def ensure_user_style():
+    """Create the user-style.css that style.css imports, if it is missing."""
     user_style_filepath = os.path.join(str(xdg_config_home()), "waybar", "user-style.css")
-    theme_style_filepath = os.path.join(str(xdg_config_home()), "waybar", "theme.css")
-
     Path(user_style_filepath).parent.mkdir(parents=True, exist_ok=True)
 
     if not os.path.exists(user_style_filepath):
         _atomic_write(user_style_filepath, "/* User custom styles */\n")
         logger.debug(f"Created '{user_style_filepath}'")
+
+
+def update_style(style_path):
+    style_filepath = os.path.join(str(xdg_config_home()), "waybar", "style.css")
+    theme_style_filepath = os.path.join(str(xdg_config_home()), "waybar", "theme.css")
+
+    ensure_user_style()
 
     if not os.path.exists(theme_style_filepath):
         logger.error(
@@ -1522,11 +1528,13 @@ def main():
         # The color/theme hook uses --update; a theme may opt into a paired
         # layout and stylesheet (Mac OS: HyDE #2089 / hyde-gallery #127).
         apply_theme_layout()
-        update_icon_size()
-        update_border_radius()
-        generate_includes()
-        update_global_css()
-        logger.debug("Updating config and style...")
+        if not _layout_applied:
+            # A preset already refreshed the files and restarted Waybar.
+            update_icon_size()
+            update_border_radius()
+            generate_includes()
+            update_global_css()
+            logger.debug("Updating config and style...")
     if args.update_global_css:
         update_global_css()
     if args.update_icon_size:
@@ -1559,10 +1567,11 @@ def main():
     if args.watch:
         watch_waybar()
     elif _layout_applied and not args.style:
-        # --set/--next/--prev, --select-layout and a theme preset already did
-        # this in _apply_layout(). Doing it again restarted Waybar twice per
-        # switch, and with the old SIGUSR2 reload the second round of writes
-        # hit the files while Waybar was still reading them (#2184).
+        # --set/--next/--prev, --select-layout and a theme preset (--update)
+        # already did this in _apply_layout(), user-style.css included. Doing
+        # it again restarted Waybar twice per switch, and with the old SIGUSR2
+        # reload the second round of writes hit the files while Waybar was
+        # still reading them (#2184).
         return
     else:
         update_icon_size()
