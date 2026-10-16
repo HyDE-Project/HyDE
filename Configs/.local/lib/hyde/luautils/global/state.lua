@@ -36,16 +36,23 @@ end
 local staterc_path = xdg.state .. "/hyde/staterc"
 
 --- Read a value from staterc. Returns the unquoted string or nil.
+-- staterc.sh escapes \ " $ and the backtick inside the double quotes
+-- (HyDE-Project/HyDE#2197); undo that the way `source` does, so a line
+-- written by an older HyDE reads the same too. An unquoted value is kept as is.
 function S.staterc_get(key)
     local f = io.open(staterc_path, "r")
     if not f then
         return nil
     end
     for line in f:lines() do
-        local v = line:match("^" .. key .. '="?(.-)"%s*$') or line:match("^" .. key .. "=(.-)%s*$")
-        if v then
+        local raw = line:match("^" .. key .. "=(.-)%s*$")
+        if raw then
             f:close()
-            return v
+            local quoted = raw:match('^"(.*)"$')
+            if quoted then
+                return (quoted:gsub('\\([\\"$`])', "%1"))
+            end
+            return raw
         end
     end
     f:close()

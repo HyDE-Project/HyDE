@@ -12,9 +12,13 @@
 # and the result replaces staterc with a rename, so a script sourcing it
 # never sees half a file.
 #
-# The value is written literally: it reaches awk through the environment,
-# not through sed's c command, which ate backslashes ("a\nb" became two
-# lines). A key present twice is collapsed instead of appended again.
+# The value reaches awk through the environment, not through sed's c
+# command, which ate backslashes ("a\nb" became two lines). Scripts read
+# staterc with `source`, so \ " $ and the backtick are escaped with a
+# backslash, which is what bash undoes inside double quotes: a theme name
+# with $(...) in it is read back as text, not run (HyDE-Project/HyDE#2197).
+# A value with a newline can't fit on one line and is refused. A key
+# present twice is collapsed instead of appended again.
 #
 # Do not delete staterc.lock while it is held: the lock lives on the open
 # file, so a second writer would lock a new file at the same path and run
@@ -32,6 +36,16 @@ if [[ ! "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
     echo "staterc.sh: invalid key '$key'" >&2
     exit 2
 fi
+value=$3
+if [[ "$value" == *[$'\n\r']* ]]; then
+    echo "staterc.sh: the value for '$key' contains a newline" >&2
+    exit 2
+fi
+bs=\\
+value=${value//"$bs"/"$bs$bs"}
+value=${value//'"'/"$bs\""}
+value=${value//'$'/"$bs\$"}
+value=${value//'`'/"$bs\`"}
 
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hyde"
 staterc="$state_dir/staterc"
@@ -54,7 +68,7 @@ trap 'rm -f "$tmp"' EXIT
 # Replace the first KEY= line, drop later duplicates, append if absent.
 src=/dev/null
 [ -f "$staterc" ] && src=$staterc
-STATERC_VALUE=$3 awk -v key="$key" '
+STATERC_VALUE=$value awk -v key="$key" '
     BEGIN { line = key "=\"" ENVIRON["STATERC_VALUE"] "\"" }
     index($0, key "=") == 1 { if (!done) { print line; done = 1 }; next }
     { print }

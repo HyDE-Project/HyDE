@@ -130,6 +130,30 @@ def find_layout_files(include_backups=False):
     return sorted(layouts)
 
 
+def _quote_state_value(value):
+    """Quote value for staterc the way staterc.sh does.
+
+    staterc is read with `source`, so \\ " $ and the backtick are escaped
+    with a backslash, which bash undoes inside double quotes; a value with
+    $(...) in it is read back as text, not run (HyDE-Project/HyDE#2197).
+    """
+    value = str(value)
+    if "\n" in value or "\r" in value:
+        raise ValueError(f"staterc value contains a newline: {value!r}")
+    return '"' + re.sub(r'([\\"$`])', r"\\\1", value) + '"'
+
+
+def _unquote_state_value(raw):
+    """Read a staterc value back as `source` would.
+
+    An unquoted value, as older waybar.py versions wrote, is kept as is.
+    """
+    raw = raw.strip()
+    if len(raw) >= 2 and raw[0] == raw[-1] == '"':
+        return re.sub(r'\\([\\"$`])', r"\1", raw[1:-1])
+    return raw
+
+
 def get_state_value(key, default=None):
     """Get a value from the state file."""
     if not STATE_FILE.exists():
@@ -138,7 +162,7 @@ def get_state_value(key, default=None):
     with open(STATE_FILE, "r") as file:
         for line in file:
             if line.startswith(f"{key}="):
-                return line.split("=", 1)[1].strip()
+                return _unquote_state_value(line.split("=", 1)[1])
     return default
 
 
@@ -215,6 +239,7 @@ def _add_missing_state_values(values):
 
     Returns the keys added. A key another writer set in the meantime is kept.
     """
+    quoted = {key: _quote_state_value(value) for key, value in values.items()}
     with _staterc_lock():
         text = STATE_FILE.read_text() if STATE_FILE.exists() else ""
         present = {line.split("=", 1)[0] for line in text.splitlines() if "=" in line}
@@ -222,12 +247,13 @@ def _add_missing_state_values(values):
         if added:
             if text and not text.endswith("\n"):
                 text += "\n"
-            _replace_state_file(text + "".join(f"{key}={values[key]}\n" for key in added))
+            _replace_state_file(text + "".join(f"{key}={quoted[key]}\n" for key in added))
     return added
 
 
 def set_state_value(key, value):
     """Set or update a value in the state file, removing any duplicates."""
+    quoted = _quote_state_value(value)
     with _staterc_lock():
         existing_lines = []
         seen_keys = set()
@@ -245,7 +271,7 @@ def set_state_value(key, value):
                     except Exception:
                         existing_lines.append(line)
 
-        existing_lines.append(f"{key}={value}")
+        existing_lines.append(f"{key}={quoted}")
         _replace_state_file("\n".join(existing_lines) + "\n")
 
     return True
