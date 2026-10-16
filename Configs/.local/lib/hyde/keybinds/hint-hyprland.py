@@ -433,13 +433,17 @@ def expand_meta_data(binds_data, bind_commands=None):
         # command this exact combo was built from, rewrite it into a fresh
         # exec_cmd call instead -- that runs the same way any other dispatch
         # does. A combo the cache doesn't have (window/workspace operations,
-        # or any bind not built from hl.dsp.exec_cmd) is left exactly as it
-        # was; that's the documented limit, not a bug.
+        # or any bind not built from hl.dsp.exec_cmd) runs the bind's own
+        # action, which hyde/binds.lua keeps by combo. Mouse binds only act
+        # on a drag, so they are left as they were.
         if bind["dispatcher"] == "__lua":
             combo = canonical_combo(bind["modmask"], bind["key"])
             command = bind_commands.get(combo) if combo else None
             if command:
                 bind["dispatcher"] = f'hl.dsp.exec_cmd("{_escape_lua_string(command)}")'
+                bind["arg"] = ""
+            elif combo and not bind["key"].startswith("mouse:"):
+                bind["dispatcher"] = f'hyde.binds.action("{_escape_lua_string(combo)}")'
                 bind["arg"] = ""
 
         # Handle submaps
