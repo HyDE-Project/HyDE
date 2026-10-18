@@ -1,7 +1,11 @@
 {
   "custom/caffeine": {
     "return-type": "json",
-    "format": "{}",
+    // Trailing space: the Nerd Font coffee-cup glyphs render ~4px wider than
+    // their logical advance, bleeding into whatever sits to the right in the
+    // same pill group (#2206). Mirrors custom/hyprsunset's "{0} " fix for
+    // the identical overflow next to this module.
+    "format": "{} ",
     "rotate": 0,
     "justify": "center",
     "exec": "hyde-shell caffeine -rq",
