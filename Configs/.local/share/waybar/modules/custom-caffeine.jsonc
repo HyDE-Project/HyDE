@@ -1,10 +1,11 @@
 {
   "custom/caffeine": {
     "return-type": "json",
-    // Trailing space: the Nerd Font coffee-cup glyphs render ~4px wider than
-    // their logical advance, bleeding into whatever sits to the right in the
-    // same pill group (#2206). Mirrors custom/hyprsunset's "{0} " fix for
-    // the identical overflow next to this module.
+    // Trailing space: the Nerd Font coffee-cup glyphs render ~3px wider than
+    // their logical advance (measured with Pango at the bar's 10px font
+    // size), bleeding into whatever module a layout places right after this
+    // one (#2206) -- e.g. clock in hyprdots/11.jsonc. custom/hyprsunset's
+    // format already ends in a space for the same kind of overflow.
     "format": "{} ",
     "rotate": 0,
     "justify": "center",

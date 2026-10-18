@@ -16,7 +16,10 @@
     ]
   },
   "backlight#eyecare": {
-    "format": "<span size='large'>{icon}</span>",
+    // Trailing space: this icon's ink runs past its logical advance width
+    // (same overflow measured for the caffeine/mediaplayer icons, #2206),
+    // bleeding into custom/hyprsunset right after it in this drawer.
+    "format": "<span size='large'>{icon}</span> ",
     "format-icons": ["", "", "", "", "", "", "", "", ""],
     "on-click": "hyde-shell hyprsunset -t -P waybar:19",
     "on-scroll-up": "hyde-shell brightnesscontrol i 1",
