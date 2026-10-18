@@ -20,24 +20,20 @@
       "custom/mediaplayer-next"
     ]
   },
-  // Each control glyph below renders ~3px wider than its logical advance
-  // (measured with Pango at the bar's 10px font size), so a bare icon
-  // bleeds into the next drawer button with no gap between them (#2206).
-  // The trailing space gives each one the room its own ink needs.
   "custom/mediaplayer-play-pause": {
-    "format": "󰐌 ",
+    "format": "󰐌",
     "tooltip": true,
     "tooltip-format": "play/pause",
     "on-click": "playerctl play-pause"
   },
   "custom/mediaplayer-next": {
-    "format": "󰙡 ",
+    "format": "󰙡",
     "tooltip": true,
     "tooltip-format": "next",
     "on-click": "playerctl next"
   },
   "custom/mediaplayer-previous": {
-    "format": "󰙣 ",
+    "format": "󰙣",
     "tooltip": true,
     "tooltip-format": "previous",
     "on-click": "playerctl previous"
