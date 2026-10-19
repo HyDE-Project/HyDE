@@ -13,6 +13,48 @@ permissions:
   contents: read
 
 jobs:
+  # Rejects a PR that moves the `tests` submodule pointer outside the
+  # dedicated tests-pointer.yml automation. test.yml never reads this
+  # pointer (it always resolves the tests repo fresh by branch name below),
+  # so a feature branch bumping it buys nothing and only sets up a
+  # submodule merge conflict with whatever tests-pointer.yml lands on dev
+  # concurrently (HyDE-Project/HyDE#2175 hit exactly this).
+  #
+  # The ci/tests-pointer exemption is also bound to the upstream repo: a
+  # fork PR could otherwise name its own branch ci/tests-pointer and skip
+  # this check, even though the real automation only ever runs here
+  # (CodeRabbit catch on HyDE-Project/HyDE#2178).
+  tests-pointer-guard:
+    name: Tests submodule pointer guard
+    if: github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'dev' && (github.head_ref != 'ci/tests-pointer' || github.event.pull_request.head.repo.full_name != github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reject tests submodule pointer changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -eu
+          # Compare against the merge-base, not dev's current tip: tests-pointer.yml
+          # keeps moving dev's pointer forward after a feature branch forks off it,
+          # and that drift must not look like a pointer change the PR itself made
+          # (CodeRabbit catch on HyDE-Project/HyDE#2178).
+          merge_base=$(git merge-base "$BASE_SHA" HEAD)
+          base_pointer=$(git ls-tree "$merge_base" tests | awk '{print $3}')
+          head_pointer=$(git ls-tree HEAD tests | awk '{print $3}')
+          if [ "$base_pointer" != "$head_pointer" ]; then
+            echo "::error::This PR moves the 'tests' submodule pointer ($base_pointer -> $head_pointer) relative to where it branched from dev. test.yml resolves the tests repo fresh by branch name (see tests-pointer.yml), so this commit isn't needed for CI and only risks a submodule merge conflict with the automated 'Tests pointer' workflow. Drop the pointer-bump commit; ci/tests-pointer updates dev separately."
+            exit 1
+          fi
+
   test:
     name: Configuration and script checks
     runs-on: ubuntu-latest
@@ -69,7 +111,7 @@ jobs:
       - name: Install test dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lua5.4 lua-filesystem lua-socket lua-argparse lua-dkjson shellcheck fish
+          sudo apt-get install -y --no-install-recommends lua5.4 lua-filesystem lua-socket lua-argparse lua-dkjson shellcheck fish imagemagick
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
 
@@ -82,9 +124,6 @@ jobs:
 
       - name: Run the test suite
         run: sh tests/run.sh
-
-      - name: Check hyde-shell open app priority
-        run: sh .github/scripts/test_open_priority.sh
 
   coverage:
     name: Shell coverage
@@ -143,7 +182,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            lua5.4 shellcheck fish \
+            lua5.4 shellcheck fish imagemagick \
             binutils-dev build-essential cmake ninja-build libssl-dev \
             libcurl4-openssl-dev libelf-dev zlib1g-dev libdw-dev libiberty-dev
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua

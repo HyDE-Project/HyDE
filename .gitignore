@@ -12,6 +12,8 @@ Configs/.config/uwsm/*
 ./.*
 build
 
+.venv/
+
 # Local agent worktrees, never part of the tree
 .claude/
 

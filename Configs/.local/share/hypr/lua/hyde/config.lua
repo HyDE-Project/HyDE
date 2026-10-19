@@ -33,14 +33,6 @@ function hyde.config.exec(path)
 		if type(cmd) ~= "string" or cmd == "" then
 			return
 		end
-		if type(hl.notification.create) == "function" then
-			hl.notification.create(
-				{
-					text = "Launching " .. cmd,
-					timeout = 1000
-				}
-			)
-		end
 		if type(hl.dsp.exec_cmd) == "function" then
 			hl.dispatch(hl.dsp.exec_cmd(cmd))
 		end
@@ -54,7 +46,7 @@ local function merge_config(dest, src, opts)
 		if type(v) == "table" and type(dest[k]) == "table" then
 			merge_config(dest[k], v, opts)
 		elseif opts and opts.skip_empty and (v == "" or v == nil) then
-			-- preserve existing destination value when source is empty
+			dest[k] = dest[k] -- preserve existing destination value when source is empty
 		else
 			dest[k] = v
 		end
@@ -93,8 +85,8 @@ function hyde.config.load_toml(filename)
 		-- error("TOML parser not available")
 		return -- Silent failure if TOML parser is not available, as this is an optional feature
 	end
-	local ok, data = pcall(toml.parse, filename)
-	if not ok then
+	local parsed_ok, data = pcall(toml.parse, filename)
+	if not parsed_ok then
 		error("Failed to parse TOML: " .. tostring(data))
 	end
 
