@@ -5,7 +5,11 @@ wallpaper_acquire_lock 15
 trap 'flock -u "$WALLPAPER_LOCK_FD"' EXIT
 
 if [[ ! -f "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/hyprpaper.lock" ]]; then
-    systemctl --user start hyprpaper.service || setsid hyprpaper &
+    # Detached from our stdio: a daemon holding the caller's stdout keeps a
+    # "$(wallpaper.sh ...)" capture open forever, which froze the installer (#2156).
+    # The whole list: it runs in a background subshell that holds the same
+    # output while it waits for hyprpaper.
+    { systemctl --user start hyprpaper.service || setsid hyprpaper; } </dev/null &>/dev/null &
     sleep 1
 fi
 selected_wall="${1:-${XDG_CACHE_HOME:-$HOME/.cache}/hyde/wall.set}"
