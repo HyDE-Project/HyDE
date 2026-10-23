@@ -325,7 +325,13 @@ wallpaper_failure_is_fatal() {
 
 wallpaper_status=0
 if [ "$quiet" = true ]; then
-    wallpaper_output="$("$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global 2>&1)" || wallpaper_status=$?
+    # Captured through a file, not "$(...)": a substitution waits until every
+    # process holding its pipe exits, so a wallpaper daemon the backend starts
+    # would block it forever and freeze the installer (#2156).
+    wallpaper_log="$(mktemp)"
+    "$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global >"$wallpaper_log" 2>&1 || wallpaper_status=$?
+    wallpaper_output="$(cat "$wallpaper_log")"
+    rm -f "$wallpaper_log"
 else
     "$LIB_DIR/hyde/wallpaper.sh" -s "$theme_wallpaper" --global || wallpaper_status=$?
 fi

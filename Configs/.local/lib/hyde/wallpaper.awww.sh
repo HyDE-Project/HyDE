@@ -18,7 +18,9 @@ selected_wall="$1"
 [ -z "$selected_wall" ] && echo "No input wallpaper" && exit 1
 selected_wall="$(readlink -f "$selected_wall")"
 if ! timeout 15 awww query &> /dev/null; then
-    awww-daemon --format xrgb &
+    # Detached from our stdio: a daemon holding the caller's stdout keeps a
+    # "$(wallpaper.sh ...)" capture open forever, which froze the installer (#2156).
+    awww-daemon --format xrgb </dev/null &>/dev/null &
     disown
     timeout 15 awww query && timeout 15 awww restore
 fi
