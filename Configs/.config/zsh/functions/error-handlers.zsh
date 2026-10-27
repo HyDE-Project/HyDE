@@ -18,6 +18,12 @@ function command_not_found_handler {
             printf "  %s\n" "${entry}"
         done
 
+     printf "Install %s? [y/N] " "$1"
+        read -r reply
+        if [[ "$reply" =~ ^[Yy]$ ]]; then
+            "${PM_COMMAND[@]}" install "$1"
+        fi
+
     fi
     return 127
 }

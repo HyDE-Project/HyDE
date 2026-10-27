@@ -504,14 +504,16 @@ dependencies = [
 amd = [
     { name = "pyamdgpuinfo" },
 ]
-dev = [
-    { name = "pre-commit" },
-    { name = "prek" },
-]
 wayland = [
     { name = "pygobject" },
     { name = "pyqt6" },
     { name = "pywayland" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pre-commit" },
+    { name = "prek" },
 ]
 
 [package.metadata]
@@ -520,8 +522,6 @@ requires-dist = [
     { name = "hererocks", specifier = ">=0.25.1" },
     { name = "inotify-simple" },
     { name = "loguru", specifier = "==0.7.3" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.6.2" },
-    { name = "prek", marker = "extra == 'dev'", specifier = ">=0.4.1" },
     { name = "pulsectl", specifier = "==24.12.0" },
     { name = "pyamdgpuinfo", marker = "extra == 'amd'" },
     { name = "pygobject", marker = "extra == 'wayland'" },
@@ -533,7 +533,13 @@ requires-dist = [
     { name = "websockets", specifier = ">=16.0" },
     { name = "xdg-prefs", git = "https://github.com/rchaput/xdg-prefs" },
 ]
-provides-extras = ["amd", "wayland", "dev"]
+provides-extras = ["amd", "wayland"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pre-commit", specifier = ">=4.6.2" },
+    { name = "prek", specifier = ">=0.4.1" },
+]
 
 [[package]]
 name = "identify"
