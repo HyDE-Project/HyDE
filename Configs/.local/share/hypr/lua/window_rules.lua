@@ -6,6 +6,7 @@
 -- 2. Pinned windows (picture-in-picture, etc)
 -- 3. And common modals that are floating anyway but should be centered (file choosers, etc)
 
+local hl = _G.hl
 local util = _G.hyde.utils
 
 local floating =
@@ -13,6 +14,7 @@ local floating =
   {
     class = {
       "Bitwarden",
+      "org\\.hyde\\.Settings",
       "org.keepassxc.KeePassXC",
       "hyprland-share-picker",
       "blueman-manager",
