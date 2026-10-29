@@ -23,12 +23,10 @@ local floating =
       "qt6ct",
       "qt[56]ct",
       "nwg-(look|displays)",
-      "org\\.kde\\.ark",
       "org\\.pulseaudio\\.pavucontrol",
       "nm-(applet|connection-editor)",
       "hyprpolkitagent",
       "console-dropdown",
-      "org\\.kde\\.dolphin",
       ".*dialog.*",
       "[Xx]dg-desktop-portal-gtk",
       "org\\.freedesktop\\.impl\\.portal\\.desktop\\.(hyprland|gtk)"
@@ -180,9 +178,11 @@ hl.window_rule(
 )
 
 -- filemanagers
+-- No `float = false` here (#2211): as the last rule it won over every file-manager
+-- window, so dialogs (Properties, Copying, ...) tiled despite the title rules above.
+-- Main windows tile by default; Dolphin and Ark are deliberately not in `floating.class`.
 hl.window_rule({
 	name = "filemanagers-fullscreen",
 	match = { class = "^(.*dolphin.*)$|^(.*pcmanfm-qt.*)$|^(.*nemo.*)$|^(.*ark.*)$|.*Nautilus.*" },
 	opaque = true,
-	float = false,
 })
