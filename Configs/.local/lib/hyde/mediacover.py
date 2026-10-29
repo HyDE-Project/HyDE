@@ -123,9 +123,9 @@ def pick_player(players, wanted, allowed=None):
     """Choose a player from (name, status) pairs, like mediaplayer.py does.
 
     With --player, that player regardless of status. Otherwise only players in
-    MEDIAPLAYER_PLAYERS (allowed) count, plasma-browser-integration never does
-    (it mirrors the browser's own player), and the first Playing one wins,
-    else the first one at all.
+    MEDIAPLAYER_PLAYERS (allowed) count, in that order as in mediaplayer.py,
+    plasma-browser-integration never does (it mirrors the browser's own
+    player), and the first Playing one wins, else the first one at all.
     """
     if wanted:
         return wanted if any(name == wanted for name, _status in players) else None
@@ -134,6 +134,8 @@ def pick_player(players, wanted, allowed=None):
         for name, status in players
         if name != "plasma-browser-integration" and (allowed is None or name in allowed)
     ]
+    if allowed:
+        players.sort(key=lambda player: allowed.index(player[0]))
     for name, status in players:
         if status == "Playing":
             return name
@@ -205,21 +207,20 @@ def cursor_placement():
 
 
 def configured(key, state_home):
-    """A HyDE setting: the environment first, then $XDG_STATE_HOME/hyde/config
+    """A HyDE setting from $XDG_STATE_HOME/hyde/config, else the environment.
 
-    (generated from config.toml), which mediaplayer.py reads the same way.
+    The config (generated from config.toml) wins over an inherited value, as
+    in mediaplayer.py, whose load_env_file overwrites os.environ with it.
     """
-    if os.environ.get(key):
-        return os.environ[key]
     try:
         text = (pathlib.Path(state_home) / "hyde/config").read_text(encoding="utf-8")
     except OSError:
-        return None
+        text = ""
     for line in text.splitlines():
         line = line.strip().removeprefix("export ").strip()
         if line.startswith(key + "="):
             return line.split("=", 1)[1].strip().strip('"')
-    return None
+    return os.environ.get(key) or None
 
 
 def theme_colors():
