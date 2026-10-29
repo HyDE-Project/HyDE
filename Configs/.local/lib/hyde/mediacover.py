@@ -42,8 +42,8 @@ def art_path(url, cache_dir):
     """Resolve an mpris:artUrl to a local image file, or None.
 
     file:// URLs are used in place. http(s) URLs are downloaded once into
-    cache_dir under a hash of the URL, so reopening the popup or a track
-    change back to a known album does not fetch again. Any failure (bad
+    cache_dir under a hash of the URL; prune_cache keeps only the cover on
+    screen, so the hash just avoids refetching it. Any failure (bad
     scheme, 404, timeout, oversized body) gives None, never a partial file.
     """
     if not url:
@@ -56,8 +56,6 @@ def art_path(url, cache_dir):
         return None
 
     cache_dir = pathlib.Path(cache_dir)
-    # ponytail: the cache is never pruned (~100 KB per album); add an
-    # age/size cap if it ever matters.
     target = cache_dir / hashlib.sha1(url.encode()).hexdigest()
     if target.is_file():
         return target
@@ -75,6 +73,27 @@ def art_path(url, cache_dir):
         return None
     finally:
         tmp.unlink(missing_ok=True)
+
+
+def art_cache_dir(runtime_dir):
+    """Where downloaded art goes: the runtime dir (tmpfs, wiped at logout)."""
+    return pathlib.Path(runtime_dir) / "hyde/mediacover"
+
+
+def prune_cache(cache_dir, keep=None):
+    """Delete every downloaded cover except keep.
+
+    Runs on start (leftovers of a killed popup), on every cover change and on
+    exit, so at most the cover on screen is ever stored. Only files inside
+    cache_dir are deleted; file:// art from the player is never touched.
+    """
+    try:
+        entries = list(pathlib.Path(cache_dir).iterdir())
+    except OSError:
+        return
+    for entry in entries:
+        if entry != keep:
+            entry.unlink(missing_ok=True)
 
 
 def pick_player(players, wanted):
@@ -192,9 +211,10 @@ def main():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import pyutils.python_env as python_env
     import pyutils.wrapper.libnotify as notify
-    from pyutils.xdg_base_dirs import xdg_cache_home, xdg_runtime_dir
+    from pyutils.xdg_base_dirs import xdg_runtime_dir
 
-    runtime = (xdg_runtime_dir() or pathlib.Path("/tmp")) / "hyde"
+    runtime_dir = xdg_runtime_dir() or pathlib.Path("/tmp")
+    runtime = runtime_dir / "hyde"
     runtime.mkdir(parents=True, exist_ok=True)
     pidfile = runtime / "mediacover.pid"
     if close_running(pidfile):
@@ -228,7 +248,8 @@ def main():
         notify.send("Media", "No active player", icon="audio-x-generic")
         return 0
     player = Playerctl.Player.new(chosen)
-    art_cache = xdg_cache_home() / "hyde/mediacover"
+    art_cache = art_cache_dir(runtime_dir)
+    prune_cache(art_cache)  # leftovers of a popup that was killed
 
     pidfile.write_text(str(os.getpid()))
 
@@ -306,6 +327,7 @@ def main():
             pix = pix.new_subpixbuf((pix.get_width() - side) // 2, (pix.get_height() - side) // 2, side, side)
             pix = pix.scale_simple(SIZE, SIZE, GdkPixbuf.InterpType.BILINEAR)
         state["pixbuf"] = pix
+        prune_cache(art_cache, keep=path)  # drop the previous track's cover
         noart.set_visible(pix is None)
         canvas.queue_draw()
         return False
@@ -359,6 +381,7 @@ def main():
     try:
         Gtk.main()
     finally:
+        prune_cache(art_cache)
         # Only drop the pidfile if it is still ours (a toggle removes it first).
         try:
             if pidfile.read_text().strip() == str(os.getpid()):
