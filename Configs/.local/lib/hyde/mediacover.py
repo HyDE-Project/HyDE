@@ -22,6 +22,7 @@ can be tested headless (tests/test_media_cover.sh).
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
 import pathlib
@@ -48,7 +49,10 @@ def art_path(url, cache_dir):
     """
     if not url:
         return None
-    parsed = urllib.parse.urlparse(url)
+    try:
+        parsed = urllib.parse.urlparse(url)
+    except ValueError:  # e.g. "http://[abc" (PR #2215 review)
+        return None
     if parsed.scheme == "file":
         path = pathlib.Path(urllib.parse.unquote(parsed.path))
         return path if path.is_file() else None
@@ -69,10 +73,29 @@ def art_path(url, cache_dir):
         tmp.write_bytes(data)
         os.replace(tmp, target)
         return target
-    except (OSError, ValueError):
+    # http.client.InvalidURL (spaces) and BadStatusLine (non-HTTP reply) are
+    # neither OSError nor ValueError; uncaught they would kill the fetch thread
+    # and leave the previous track's cover up (PR #2215 review).
+    except (OSError, ValueError, http.client.HTTPException):
         return None
     finally:
         tmp.unlink(missing_ok=True)
+
+
+def base_dir(runtime_dir, cache_home):
+    """XDG_RUNTIME_DIR, or the user's own cache dir when it is unset.
+
+    Never the shared /tmp: another local user could pre-create /tmp/hyde with
+    symlinks that prune_cache and the pidfile write would follow (PR #2215
+    review). The cache dir is still pruned, it just isn't tmpfs.
+    """
+    return runtime_dir or cache_home
+
+
+def allowed_players(value):
+    """MEDIAPLAYER_PLAYERS ("spotify,vlc") as a list, or None for no limit."""
+    names = [name.strip() for name in (value or "").split(",") if name.strip()]
+    return names or None
 
 
 def art_cache_dir(runtime_dir):
@@ -96,14 +119,21 @@ def prune_cache(cache_dir, keep=None):
             entry.unlink(missing_ok=True)
 
 
-def pick_player(players, wanted):
-    """Choose a player from (name, status) pairs.
+def pick_player(players, wanted, allowed=None):
+    """Choose a player from (name, status) pairs, like mediaplayer.py does.
 
-    With --player, that player regardless of status; otherwise the first one
-    that is Playing, else the first one at all.
+    With --player, that player regardless of status. Otherwise only players in
+    MEDIAPLAYER_PLAYERS (allowed) count, plasma-browser-integration never does
+    (it mirrors the browser's own player), and the first Playing one wins,
+    else the first one at all.
     """
     if wanted:
         return wanted if any(name == wanted for name, _status in players) else None
+    players = [
+        (name, status)
+        for name, status in players
+        if name != "plasma-browser-integration" and (allowed is None or name in allowed)
+    ]
     for name, status in players:
         if status == "Playing":
             return name
@@ -174,6 +204,24 @@ def cursor_placement():
     return None
 
 
+def configured(key, state_home):
+    """A HyDE setting: the environment first, then $XDG_STATE_HOME/hyde/config
+
+    (generated from config.toml), which mediaplayer.py reads the same way.
+    """
+    if os.environ.get(key):
+        return os.environ[key]
+    try:
+        text = (pathlib.Path(state_home) / "hyde/config").read_text(encoding="utf-8")
+    except OSError:
+        return None
+    for line in text.splitlines():
+        line = line.strip().removeprefix("export ").strip()
+        if line.startswith(key + "="):
+            return line.split("=", 1)[1].strip().strip('"')
+    return None
+
+
 def theme_colors():
     """@define-color lines from Waybar's theme.css (wallbash), if present."""
     config = pathlib.Path(os.environ.get("XDG_CONFIG_HOME", pathlib.Path.home() / ".config"))
@@ -211,9 +259,9 @@ def main():
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import pyutils.python_env as python_env
     import pyutils.wrapper.libnotify as notify
-    from pyutils.xdg_base_dirs import xdg_runtime_dir
+    from pyutils.xdg_base_dirs import xdg_cache_home, xdg_runtime_dir, xdg_state_home
 
-    runtime_dir = xdg_runtime_dir() or pathlib.Path("/tmp")
+    runtime_dir = base_dir(xdg_runtime_dir(), xdg_cache_home())
     runtime = runtime_dir / "hyde"
     runtime.mkdir(parents=True, exist_ok=True)
     pidfile = runtime / "mediacover.pid"
@@ -243,7 +291,8 @@ def main():
         except GLib.Error:
             continue
         candidates.append((name.name, status))
-    chosen = pick_player(candidates, args.player)
+    allowed = allowed_players(configured("MEDIAPLAYER_PLAYERS", xdg_state_home()))
+    chosen = pick_player(candidates, args.player, allowed)
     if not chosen:
         notify.send("Media", "No active player", icon="audio-x-generic")
         return 0
