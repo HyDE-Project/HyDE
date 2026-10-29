@@ -209,18 +209,20 @@ def cursor_placement():
 def configured(key, state_home):
     """A HyDE setting from $XDG_STATE_HOME/hyde/config, else the environment.
 
-    The config (generated from config.toml) wins over an inherited value, as
-    in mediaplayer.py, whose load_env_file overwrites os.environ with it.
+    The config (generated from config.toml) wins over an inherited value, and
+    a repeated assignment uses the last one, as in mediaplayer.py, whose
+    load_env_file writes every line into os.environ in turn.
     """
     try:
         text = (pathlib.Path(state_home) / "hyde/config").read_text(encoding="utf-8")
     except OSError:
         text = ""
+    value = None
     for line in text.splitlines():
         line = line.strip().removeprefix("export ").strip()
         if line.startswith(key + "="):
-            return line.split("=", 1)[1].strip().strip('"')
-    return os.environ.get(key) or None
+            value = line.split("=", 1)[1].strip().strip('"')
+    return value if value is not None else os.environ.get(key) or None
 
 
 def theme_colors():
