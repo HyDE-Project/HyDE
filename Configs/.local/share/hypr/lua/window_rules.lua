@@ -183,6 +183,7 @@ hl.window_rule(
 -- Main windows tile by default; Dolphin and Ark are deliberately not in `floating.class`.
 hl.window_rule({
 	name = "filemanagers-fullscreen",
-	match = { class = "^(.*dolphin.*)$|^(.*pcmanfm-qt.*)$|^(.*nemo.*)$|^(.*ark.*)$|.*Nautilus.*" },
+	-- Exact app ids: the old `.*ark.*` / `.*dolphin.*` also caught darktable, dolphin-emu, ...
+	match = { class = "^((org\\.kde\\.)?dolphin|pcmanfm-qt|[Nn]emo|(org\\.kde\\.)?ark|(org\\.gnome\\.)?[Nn]autilus)$" },
 	opaque = true,
 })
