@@ -5,8 +5,9 @@ Waybar tooltips are Pango text and cannot show images, so "Show Cover" in the
 modules' right-click menu runs this script instead: a borderless layer-shell
 window under the bar with the current track's cover, title, artist and album.
 It follows track changes while open and is deliberately non-modal: it stays
-up while you keep working, and closes on a click on it, Esc (once it has
-focus), the player going away, or running it again (one popup at a time).
+up while you keep working, and closes on a click on it, Esc while the pointer
+is over it (Hyprland's focus follows the mouse onto the popup), the player
+going away, or running it again (one popup at a time).
 Closing on focus loss is not possible: Hyprland hands an on-demand layer
 surface the keyboard on map and takes it back right away, which would close
 the popup instantly.
@@ -32,7 +33,7 @@ import urllib.request
 
 SIZE = 300  # cover edge in logical px
 EDGE_GAP = 8  # min distance from the monitor edge
-TOP_GAP = 6  # distance below the bar
+BAR_GAP = 6  # distance from the bar
 DOWNLOAD_TIMEOUT = 5  # seconds
 MAX_ART_BYTES = 10 * 1024 * 1024  # mpris:artUrl is remote content; cap it
 
@@ -55,6 +56,8 @@ def art_path(url, cache_dir):
         return None
 
     cache_dir = pathlib.Path(cache_dir)
+    # ponytail: the cache is never pruned (~100 KB per album); add an
+    # age/size cap if it ever matters.
     target = cache_dir / hashlib.sha1(url.encode()).hexdigest()
     if target.is_file():
         return target
@@ -77,15 +80,11 @@ def art_path(url, cache_dir):
 def pick_player(players, wanted):
     """Choose a player from (name, status) pairs.
 
-    With --player, that player (or one of its instances, e.g.
-    chromium.instance42) regardless of status; otherwise the first one that is
-    Playing, else the first one at all.
+    With --player, that player regardless of status; otherwise the first one
+    that is Playing, else the first one at all.
     """
     if wanted:
-        for name, _status in players:
-            if name == wanted or name.startswith(wanted + "."):
-                return name
-        return None
+        return wanted if any(name == wanted for name, _status in players) else None
     for name, status in players:
         if status == "Playing":
             return name
@@ -100,6 +99,15 @@ def popup_margin(cursor_x, monitor_x, monitor_width, size=SIZE):
     margin = cursor_x - monitor_x - size // 2
     margin = min(margin, monitor_width - size - EDGE_GAP)
     return max(EDGE_GAP if monitor_width >= size + 2 * EDGE_GAP else 0, margin)
+
+
+def popup_edge(cursor_y, monitor_y, monitor_height):
+    """Screen edge to open at: the bar's, judged by the cursor's half.
+
+    WAYBAR_POSITION can put the bar at the bottom; the click that opened the
+    menu was on the bar, so the cursor's half of the monitor names its edge.
+    """
+    return "top" if cursor_y - monitor_y < monitor_height / 2 else "bottom"
 
 
 def close_running(pidfile):
@@ -128,20 +136,22 @@ def close_running(pidfile):
     return True
 
 
-def cursor_margin():
-    """Popup left margin from Hyprland's cursor and focused monitor, or None."""
+def cursor_placement():
+    """(left margin, edge) from Hyprland's cursor and its monitor, or None."""
     try:
-        x = int(subprocess.run(["hyprctl", "cursorpos"], capture_output=True, text=True, timeout=2)
-                .stdout.split(",")[0])
+        x, y = (int(v) for v in subprocess.run(["hyprctl", "cursorpos"], capture_output=True,
+                                                text=True, timeout=2).stdout.split(","))
         monitors = json.loads(subprocess.run(["hyprctl", "-j", "monitors"], capture_output=True,
                                              text=True, timeout=2).stdout)
     except (OSError, ValueError, IndexError, subprocess.SubprocessError):
         return None
     for mon in monitors:
-        # ponytail: ignores rotated monitors (transform 1/3 swap width/height).
+        # ponytail: ignores rotated monitors (transform 1/3 swap width/height)
+        # and side bars (WAYBAR_POSITION left/right open at the top edge).
         width = round(mon["width"] / mon.get("scale", 1))
-        if mon["x"] <= x < mon["x"] + width:
-            return popup_margin(x, mon["x"], width)
+        height = round(mon["height"] / mon.get("scale", 1))
+        if mon["x"] <= x < mon["x"] + width and mon["y"] <= y < mon["y"] + height:
+            return popup_margin(x, mon["x"], width), popup_edge(y, mon["y"], height)
     return None
 
 
@@ -235,12 +245,13 @@ def main():
     GtkLayerShell.init_for_window(win)
     GtkLayerShell.set_namespace(win, "hyde-mediacover")
     GtkLayerShell.set_layer(win, GtkLayerShell.Layer.TOP)
-    GtkLayerShell.set_anchor(win, GtkLayerShell.Edge.TOP, True)
-    GtkLayerShell.set_margin(win, GtkLayerShell.Edge.TOP, TOP_GAP)
-    margin = cursor_margin()
-    if margin is not None:  # otherwise centred horizontally
+    placement = cursor_placement()
+    edge = GtkLayerShell.Edge.BOTTOM if placement and placement[1] == "bottom" else GtkLayerShell.Edge.TOP
+    GtkLayerShell.set_anchor(win, edge, True)
+    GtkLayerShell.set_margin(win, edge, BAR_GAP)
+    if placement is not None:  # otherwise centred horizontally
         GtkLayerShell.set_anchor(win, GtkLayerShell.Edge.LEFT, True)
-        GtkLayerShell.set_margin(win, GtkLayerShell.Edge.LEFT, margin)
+        GtkLayerShell.set_margin(win, GtkLayerShell.Edge.LEFT, placement[0])
     GtkLayerShell.set_keyboard_mode(win, GtkLayerShell.KeyboardMode.ON_DEMAND)
 
     frame = Gtk.Box(name="frame")
