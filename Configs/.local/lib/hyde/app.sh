@@ -27,5 +27,9 @@ done
 # of that group, so a reload can no longer reach it (HyDE-Project/HyDE#2217,
 # the non-systemd counterpart to the #2141 fix). `-f` is required: this
 # process is the group leader Waybar's fork made it, and plain `setsid`
-# refuses to run on one.
-exec setsid -f "$@"
+# refuses to run on one. `-w` makes this wrapper wait for the command and
+# relay its exit status, matching the "-S both" systemd path on the other
+# branch above; without it, callers like hyprlock.sh's `--test` path that
+# run app.sh synchronously and clean up right after it returns (e.g. deleting
+# a temp config) raced the detached command, which hadn't started yet.
+exec setsid -f -w "$@"
