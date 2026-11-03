@@ -112,7 +112,7 @@ Desktop application launcher defaults.
 | --- | ----------- | ------- |
 | browser | Browser launcher command. | hyde-shell open --fall firefox web-browser |
 | editor | Editor launcher command. | hyde-shell open --fall code-oss code-editor |
-| explorer | File manager launcher command. | hyde-shell open --fall dolphin file-manager |
+| explorer | File manager launcher command. | thunar |
 | lockscreen | Lockscreen command. | hyde-shell lock-session |
 | quickapps | Command used for quickapps. | kitty |
 | terminal | Terminal launcher command. | hyde-shell app -T |

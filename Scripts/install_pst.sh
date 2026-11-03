@@ -51,14 +51,14 @@ else
     print_log -y "[DISPLAYMANAGER] " -b " :: " "sddm is not installed..."
 fi
 
-# dolphin
-if pkg_installed dolphin && pkg_installed xdg-utils; then
-    print_log -c "[FILEMANAGER] " -b "detected :: " "dolphin"
-    xdg-mime default org.kde.dolphin.desktop inode/directory
+# thunar
+if pkg_installed thunar && pkg_installed xdg-utils; then
+    print_log -c "[FILEMANAGER] " -b "detected :: " "thunar"
+    xdg-mime default thunar.desktop inode/directory
     print_log -g "[FILEMANAGER] " -b " :: " "setting $(xdg-mime query default "inode/directory") as default file explorer..."
 
 else
-    print_log -y "[FILEMANAGER]" -b " :: " "dolphin is not installed..."
+    print_log -y "[FILEMANAGER]" -b " :: " "thunar is not installed..."
     print_log -y "[FILEMANAGER]" -b " :: " "Setting $(xdg-mime query default "inode/directory") as default file explorer..."
 fi
 

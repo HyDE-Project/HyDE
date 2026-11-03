@@ -52,7 +52,7 @@
   },
   "custom/text#file": {
     "format": "File",
-    "on-click": "hyde-shell open --fall dolphin file-manager"
+    "on-click": "thunar"
   },
   "custom/text#edit": {
     "format": "Edit",

@@ -112,14 +112,7 @@ S|${HOME}/.config/vim/colors|wallbash.vim|vim
 S|${HOME}/.config/vim|hyde.vim|vim
 
  File Explorer 
-P|${HOME}/.local/state|dolphinstaterc|dolphin
-P|${HOME}/.config|baloofilerc|dolphin
-S|${HOME}/.config/menus|applications.menu|dolphin
-S|${HOME}/.config|dolphinrc|dolphin
-S|${HOME}/.config|kdeglobals|dolphin
-S|${HOME}/.local/share/kio/servicemenus|hydewallpaper.desktop|dolphin
-S|${HOME}/.local/share/kxmlgui5|dolphin|dolphin
-S|${HOME}/.local/share|dolphin|dolphin
+P|${HOME}/.config|baloofilerc|ark
 
  Input 
 P|${HOME}/.config|libinput-gestures.conf|libinput-gestures

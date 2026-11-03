@@ -34,6 +34,9 @@ local floating =
     title = {
       "Progress Dialog — Dolphin",
       "Copying — Dolphin",
+      "Copying files",
+      "Moving files",
+      "Deleting files",
       "Choose Files",
       "Save As",
       "Confirm to replace files",
@@ -184,6 +187,6 @@ hl.window_rule(
 hl.window_rule({
 	name = "filemanagers-fullscreen",
 	-- Exact app ids: the old `.*ark.*` / `.*dolphin.*` also caught darktable, dolphin-emu, ...
-	match = { class = "^((org\\.kde\\.)?dolphin|pcmanfm-qt|[Nn]emo|(org\\.kde\\.)?ark|(org\\.gnome\\.)?[Nn]autilus)$" },
+	match = { class = "^((org\\.kde\\.)?dolphin|thunar|pcmanfm-qt|[Nn]emo|(org\\.kde\\.)?ark|(org\\.gnome\\.)?[Nn]autilus)$" },
 	opaque = true,
 })

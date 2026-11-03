@@ -1173,7 +1173,7 @@
                             "type": "string"
                         },
                         "explorer": {
-                            "default": "hyde-shell open --fall dolphin file-manager",
+                            "default": "thunar",
                             "description": "File manager launcher command.",
                             "type": "string"
                         },

@@ -281,7 +281,7 @@ sddm_theme = ""  # sddm theme used by HyDE.
 quickapps = "kitty"  # Command used for quickapps.
 browser = "hyde-shell open --fall firefox web-browser"  # Browser launcher command.
 editor = "hyde-shell open --fall code-oss code-editor"  # Editor launcher command.
-explorer = "hyde-shell open --fall dolphin file-manager"  # File manager launcher command.
+explorer = "thunar"  # File manager launcher command.
 terminal = "hyde-shell app -T"  # Terminal launcher command.
 lockscreen = "hyde-shell lock-session"  # Lockscreen command.
 

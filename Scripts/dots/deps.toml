@@ -45,9 +45,6 @@ pacman = [
   "parallel", # for parallel processing
   "jq", # for json processing
   "imagemagick", # for image processing
-  "qt5-imageformats", # for dolphin image thumbnails
-  "ffmpegthumbs", # for dolphin video thumbnails
-  "kde-cli-tools", # for dolphin file type defaults
   "libnotify", # for notifications
   "noto-fonts-emoji", # emoji font
   # Theming
@@ -60,6 +57,8 @@ pacman = [
   "qt6-wayland", # wayland support in qt6
   # Applications
   "firefox", # browser
+  "thunar", # xfce file manager
+  "tumbler", # thumbnail service for thunar
   "ark", # kde file archiver
   "unzip", # extracting zip files
   # No text editor: HyDE runs none of its own, and the one it configures
