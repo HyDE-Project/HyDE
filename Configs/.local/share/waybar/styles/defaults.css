@@ -270,6 +270,20 @@ window.popup decoration {
     min-width: 1.11em;
 }
 
+/* These Nerd Font glyphs render ~3px wider than their logical advance
+   width (measured with Pango at the bar's 10px font size), so without
+   extra room they bleed into whatever sits right after them (#2206).
+   padding-right (not a trailing space in the module's "format") keeps
+   that room out of the label text, so "justify": "center" still centers
+   the glyph itself instead of "glyph + space" as one lopsided string. */
+#custom-caffeine,
+#backlight.eyecare,
+#custom-mediaplayer-play-pause,
+#custom-mediaplayer-next,
+#custom-mediaplayer-previous {
+    padding-right: 0.3em;
+}
+
 #temperature,
 #temperature.warning,
 #temperature.critical {

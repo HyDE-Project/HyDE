@@ -132,6 +132,7 @@ get_hashmap() {
             "jpg"
             "jpeg"
             "png"
+            "webp"
             "${WALLPAPER_FILETYPES[@]}")
         if [ -n "$WALLPAPER_OVERRIDE_FILETYPES" ]; then
             supported_files=("${WALLPAPER_OVERRIDE_FILETYPES[@]}")
@@ -299,15 +300,10 @@ get_aurhlpr() {
         aurhlpr="paru"
     fi
 }
+# Locked, atomic and escaped so `source` reads values back; shared with
+# Lua's staterc_set (see staterc.sh).
 set_conf() {
-    local varName="$1"
-    local varData="$2"
-    touch "$XDG_STATE_HOME/hyde/staterc"
-    if [ "$(grep -c "^$varName=" "$XDG_STATE_HOME/hyde/staterc")" -eq 1 ]; then
-        sed -i "/^$varName=/c$varName=\"$varData\"" "$XDG_STATE_HOME/hyde/staterc"
-    else
-        echo "$varName=\"$varData\"" >>"$XDG_STATE_HOME/hyde/staterc"
-    fi
+    "$scrDir/staterc.sh" set "$1" "$2"
 }
 set_hash() {
     local hashImage="$1"
@@ -591,7 +587,7 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete
+export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
 
 ##
 # Fails the source when the generated-state directories could not be created,

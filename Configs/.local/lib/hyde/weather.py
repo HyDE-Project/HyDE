@@ -291,10 +291,11 @@ def _astronomy(day: dict[str, object], key: str) -> str:
 
 
 def _rare_events(hour: dict[str, str]) -> str:
-    """Events without a column of their own, only when above 0, separated by spacing (no commas)."""
+    """Events without a column of their own, only when above 0, separated by spacing (no commas).
+    Fog/Frost used to live here too, but a row with both present (e.g. foggy and frosty at once)
+    could get long enough to cross the GTK tooltip's wrap width and break the table's alignment —
+    they got their own columns instead, see _PERCENT_KEYS."""
     events = {
-        "chanceoffog": os.getenv("WEATHER_CHANCE_LABEL_FOG", "Fog"),
-        "chanceoffrost": os.getenv("WEATHER_CHANCE_LABEL_FROST", "Frost"),
         "chanceofsnow": os.getenv("WEATHER_CHANCE_LABEL_SNOW", "Snow"),
         "chanceofthunder": os.getenv("WEATHER_CHANCE_LABEL_THUNDER", "Thunder"),
     }
@@ -307,11 +308,11 @@ def _rare_events(hour: dict[str, str]) -> str:
 
 
 # One column per chance that matters in daily life; the rest goes into the last column.
-_PERCENT_KEYS = ("chanceofovercast", "chanceofrain", "chanceofsunshine", "chanceofwindy")
+_PERCENT_KEYS = ("chanceofovercast", "chanceofrain", "chanceofsunshine", "chanceofwindy", "chanceoffog", "chanceoffrost")
 
 
 def _slot_row(hour: dict[str, str]) -> list[str]:
-    """One table row as raw cell texts: hour, icon, temperature, sky, four chances, rare events."""
+    """One table row as raw cell texts: hour, icon, temperature, sky, six chances, rare events."""
     h = _hour_of(hour.get("time"))
     return [
         DASH if h is None else str(h),
@@ -324,9 +325,11 @@ def _slot_row(hour: dict[str, str]) -> list[str]:
 
 
 def build_forecast(weather: WttrResponse, now_hour: int, forecast_days: int) -> str:
-    """The forecast as Pango markup with aligned columns (hour, icon, temperature, sky, four
+    """The forecast as Pango markup with aligned columns (hour, icon, temperature, sky, six
     chances, rare events). Every day shares one set of column widths so rows line up across days.
-    Numbers are right-aligned, headings follow their column. Needs a monospace tooltip font."""
+    Numbers are right-aligned, headings follow their column. Needs a monospace tooltip font.
+    Fog and Frost are columns rather than rare events: a row with both at once used to push the
+    unlabeled trailing text past the GTK tooltip's wrap width, breaking the table mid-row."""
     days = [d for d in weather.get("weather", [])[:forecast_days] if isinstance(d, dict)]
     rows_per_day = []
     for i, day in enumerate(days):
@@ -347,9 +350,11 @@ def build_forecast(weather: WttrResponse, now_hour: int, forecast_days: int) -> 
         os.getenv("WEATHER_CHANCE_LABEL_RAIN", "Rain"),
         os.getenv("WEATHER_CHANCE_LABEL_SUNSHINE", "Sun"),
         os.getenv("WEATHER_CHANCE_LABEL_WIND", "Wind"),
+        os.getenv("WEATHER_CHANCE_LABEL_FOG", "Fog"),
+        os.getenv("WEATHER_CHANCE_LABEL_FROST", "Frost"),
         "",
     ]
-    right = [True, False, True, False, True, True, True, True, False]
+    right = [True, False, True, False, True, True, True, True, True, True, False]
     icon_col = 1
     widths = [_width(h) for h in heads]
     widths[icon_col] = 2  # an emoji takes two cells, whatever its code points
@@ -366,7 +371,10 @@ def build_forecast(weather: WttrResponse, now_hour: int, forecast_days: int) -> 
             (cells[c] or " " * widths[c]) if c == icon_col else _esc(_pad(cells[c], widths[c], right[c]))
             for c in range(len(cells))
         ]
-        return "  ".join(parts).rstrip()
+        # One space, not two: six chance columns plus Sky made the two-space table wide
+        # enough to cross the Waybar tooltip's GTK wrap width on every row, not just
+        # outliers (HyDE-Project/HyDE weather tooltip report, 2026-10-16).
+        return " ".join(parts).rstrip()
 
     out = []
     for i, day in enumerate(days):
