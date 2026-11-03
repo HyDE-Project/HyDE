@@ -132,6 +132,7 @@ get_hashmap() {
             "jpg"
             "jpeg"
             "png"
+            "webp"
             "${WALLPAPER_FILETYPES[@]}")
         if [ -n "$WALLPAPER_OVERRIDE_FILETYPES" ]; then
             supported_files=("${WALLPAPER_OVERRIDE_FILETYPES[@]}")
@@ -586,7 +587,7 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete
+export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
 
 ##
 # Fails the source when the generated-state directories could not be created,
