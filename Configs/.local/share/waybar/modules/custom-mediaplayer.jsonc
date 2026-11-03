@@ -18,7 +18,9 @@
       "shuffle": "playerctl shuffle toggle",
       "repeat": "playerctl loop Track",
       "loop": "playerctl loop Playlist",
-      "disable-loop": "playerctl loop None"
+      "disable-loop": "playerctl loop None",
+      // Album-art popup; Waybar tooltips cannot show images (#2153)
+      "cover": "hyde-shell mediacover"
     },
     "restart-interval": 5
   }

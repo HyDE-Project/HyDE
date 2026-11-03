@@ -48,5 +48,10 @@
                 <property name="label">  Open Spotify</property>
             </object>
         </child>
+        <child>
+            <object class="GtkMenuItem" id="cover">
+                <property name="label">󰋩  Show Cover</property>
+            </object>
+        </child>
     </object>
 </interface>
