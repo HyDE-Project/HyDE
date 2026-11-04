@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## Unreleased
 
 ### Added
+
+- Hyprland: Added blur variant profile selector. Add your own in ~/.config/hypr/blurs/
 - Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
 - Waybar: add VSCodium and Chromium icon rules to window module
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
@@ -20,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
 ### Fixed
+- Hyprland: Update deez manifest.****
 - Waybar: custom modules keep their spacing on current `waybar-git`. Since Waybar's [#5340](https://github.com/Alexays/Waybar/pull/5340), which is not in any release yet, a custom module puts the `.module` class on a box around its label instead of on the label, so `defaults.css`'s `label.module` padding and margin no longer applied: custom modules sat flush against each other and wide Nerd Font glyphs were clipped at the edge. The rule now also matches `label.text-button`, a class Waybar sets only on a custom module's label. Waybar 0.15.0 and older are unaffected; there that label has both classes, so the rule applies to it once, as before
 - Package manager: interactive `pm` commands (`upgrade`, `install`, `remove`, `fetch`, `info`, `file-query`, `list-updates`), including the upgrade run from the Waybar update module, keep the user's locale (#2219). `ManagerContext.run()` in `pm.py` set `LANG=C` and `LC_ALL=C` for every command, so flatpak printed `?` in place of every multibyte character of its progress bar and pacman's bar no longer rendered the way it does in the user's locale. The C locale is now set only for the commands whose output `pm.py` captures and parses, such as `count-updates` and the package lists
 - Waybar: on-click commands (`custom/wallchange`, `custom/theme`, ...) no longer get killed mid-run on non-systemd setups when the click itself triggers a Waybar reload (#2217, the non-systemd counterpart to #2216/#2193). Without systemd, `restart_waybar()` still hot-reloads Waybar with SIGUSR2, and Waybar's module teardown kills the process group of any on-click command it started, the same mechanism #2141 worked around for Caffeine. `hyde-shell app`'s non-systemd fallback now runs the command through `setsid -f -w`, taking it out of that process group before Waybar can reach it while still waiting for it and relaying its exit status, matching the systemd path's `-S both`; without `-w`, synchronous callers like hyprlock.sh's `--test` path raced the detached command and could delete its temp config before it was read.
