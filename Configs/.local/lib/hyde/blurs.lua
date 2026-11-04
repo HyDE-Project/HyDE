@@ -7,6 +7,7 @@ require("luautils.init")
 local xdg = require("luautils.xdg")
 local common = require("luautils.selector.common")
 local lfs = require("lfs")
+local hyprctl = require("luautils.hypr.hyprctl")
 
 local state_file = xdg.state .. "/hyde/lua_state/blurs.lua"
 local first_time = not lfs.attributes(state_file)
@@ -59,8 +60,8 @@ local M =
         },
         on_set = function()
             if first_time then
-                local ok = os.execute("hyprctl reload >/dev/null 2>&1")
-                if ok == true or ok == 0 then
+                local ok = hyprctl.reload()
+                if ok then
                     first_time = false
                 end
             end
