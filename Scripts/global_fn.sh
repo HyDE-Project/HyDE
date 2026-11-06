@@ -74,7 +74,7 @@ login_shell() {
 }
 
 shell_listed() {
-    local wanted listed
+    local wanted wanted_name listed
     local shells="${2:-/etc/shells}"
     # shell_listed_match carries the literal /etc/shells entry back to the
     # caller: chsh checks that file by exact string, not by resolved path, so
@@ -84,6 +84,7 @@ shell_listed() {
     shell_listed_match=""
     # The same shell is listed under /bin or /usr/bin, so both sides resolve.
     wanted="$(realpath -e "${1}" 2>/dev/null)" || return 1
+    wanted_name="$(basename -- "${1}")"
     if [ ! -f "${shells}" ]; then
         shell_listed_match="${1}"
         return 0
@@ -93,7 +94,12 @@ shell_listed() {
         listed="${listed%%#*}"
         listed="${listed//[[:space:]]/}"
         [ -n "${listed}" ] || continue
-        if [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ]; then
+        # Require the same name, not just the same resolved file: a
+        # restricted alias (rzsh is the same binary as zsh) must never stand
+        # in for the plain shell just because it comes first and resolves
+        # to the same target.
+        if [ "$(basename -- "${listed}")" = "${wanted_name}" ] &&
+            [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ]; then
             shell_listed_match="${listed}"
             return 0
         fi
