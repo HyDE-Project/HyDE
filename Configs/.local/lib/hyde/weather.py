@@ -324,12 +324,15 @@ def _slot_row(hour: dict[str, str]) -> list[str]:
 
 
 def build_forecast(weather: WttrResponse, now_hour: int, forecast_days: int) -> str:
-    """The forecast as Pango markup with aligned columns (hour, icon, temperature, sky, seven
-    chances, rare events). Every day shares one set of column widths so rows line up across days.
-    Numbers are right-aligned, headings follow their column. Needs a monospace tooltip font.
+    """The forecast as Pango markup with aligned columns (hour, icon, temperature, sky, chances,
+    rare events). Every day shares one set of column widths so rows line up across days. Numbers
+    are right-aligned, headings follow their column. Needs a monospace tooltip font.
     Fog, Frost and Snow are columns rather than rare events: a row with more than one at once used
     to push the unlabeled trailing text past the GTK tooltip's wrap width, breaking the table
-    mid-row (HyDE-Project/HyDE weather tooltip report, 2026-11-06)."""
+    mid-row (HyDE-Project/HyDE weather tooltip report, 2026-11-06).
+    A chance column that is 0% for every row of every requested day is dropped entirely: a
+    region without fog, frost or snow (or without clouds, for that matter) shouldn't permanently
+    pay tooltip width for a column it never uses (HyDE-Project/HyDE#2224 review)."""
     days = [d for d in weather.get("weather", [])[:forecast_days] if isinstance(d, dict)]
     rows_per_day = []
     for i, day in enumerate(days):
@@ -356,7 +359,14 @@ def build_forecast(weather: WttrResponse, now_hour: int, forecast_days: int) -> 
         "",
     ]
     right = [True, False, True, False, True, True, True, True, True, True, True, False]
-    icon_col = 1
+    chance_cols = range(4, 4 + len(_PERCENT_KEYS))
+    all_rows = [row for rows in rows_per_day for row in rows]
+    dead_cols = {c for c in chance_cols if all(row[c] == "0%" for row in all_rows)} if all_rows else set()
+    keep = [c for c in range(len(heads)) if c not in dead_cols]
+    heads = [heads[c] for c in keep]
+    right = [right[c] for c in keep]
+    rows_per_day = [[[row[c] for c in keep] for row in rows] for rows in rows_per_day]
+    icon_col = keep.index(1)
     widths = [_width(h) for h in heads]
     widths[icon_col] = 2  # an emoji takes two cells, whatever its code points
     for rows in rows_per_day:
