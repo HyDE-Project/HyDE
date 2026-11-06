@@ -76,15 +76,27 @@ login_shell() {
 shell_listed() {
     local wanted listed
     local shells="${2:-/etc/shells}"
+    # shell_listed_match carries the literal /etc/shells entry back to the
+    # caller: chsh checks that file by exact string, not by resolved path, so
+    # e.g. /usr/sbin/fish (root's PATH, usrmerge symlink) passes this
+    # realpath-based check but chsh still rejects it unless /usr/bin/fish --
+    # the entry actually listed -- is what gets passed to it (HyDE#2221).
+    shell_listed_match=""
     # The same shell is listed under /bin or /usr/bin, so both sides resolve.
     wanted="$(realpath -e "${1}" 2>/dev/null)" || return 1
-    [ -f "${shells}" ] || return 0
+    if [ ! -f "${shells}" ]; then
+        shell_listed_match="${1}"
+        return 0
+    fi
     # The guard keeps a last line that carries no trailing newline.
     while IFS= read -r listed || [ -n "${listed}" ]; do
         listed="${listed%%#*}"
         listed="${listed//[[:space:]]/}"
         [ -n "${listed}" ] || continue
-        [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ] && return 0
+        if [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ]; then
+            shell_listed_match="${listed}"
+            return 0
+        fi
     done < "${shells}"
     return 1
 }
