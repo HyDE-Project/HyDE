@@ -7,6 +7,7 @@
     "menu-file": "${HYDE_WAYBAR_MENU_DIR:-$XDG_DATA_HOME/waybar/menus}/hyde-menu.xml",
     "menu-actions": {
       "animations-select": "hyde-shell animations --select",
+      "blurs-select": "hyde-shell blurs --select",
       "wallpaper-select": "hyde-shell app -t scope -- wallpaper.sh --select --global",
       "wallpaper-next": "hyde-shell app -t scope -- wallpaper.sh --next --global",
       "wallpaper-previous": "hyde-shell app -t scope -- wallpaper.sh --previous --global",

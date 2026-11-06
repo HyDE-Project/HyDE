@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 import os
-import gi
+import pyutils.python_env as python_env
+
+# gi (PyGObject) is only declared under the optional "wayland" extra in
+# pyproject.toml, so the managed venv doesn't have it unless something pulls
+# it in -- v_import installs it on first use instead of crashing (#1552).
+python_env.v_import("gi", extra="wayland")
+
+import gi  # noqa: E402
 
 gi.require_version("Playerctl", "2.0")
 from gi.repository import Playerctl, GLib  # noqa: E402
@@ -213,6 +220,9 @@ def on_player_appeared(manager, player, selected_players=None):
         if not hasattr(manager, "_polling") or not manager._polling:
             manager._polling = True
             GLib.timeout_add_seconds(1, poll_if_players, manager)
+        if not getattr(manager, "_refresh_timer_active", False):
+            manager._refresh_timer_active = True
+            GLib.timeout_add_seconds(5, refresh_player_names, manager)
         update_positions(manager)  # Force immediate update when a new player appears
     else:
         logger.debug("New player appeared, but it's not the selected player, skipping")
@@ -252,6 +262,32 @@ def init_player(manager, name):
     return player
 
 
+def refresh_player_names(manager):
+    """
+    Forces Playerctl to re-check its DBus name list, catching a missed
+    name-appeared/vanished signal. Runs on its own 5s GLib timer rather than
+    counting position-polling ticks, so it stays a 5s safety net regardless
+    of what the 1s poll interval below happens to be, and stops on its own
+    once position polling stops.
+
+    _refresh_timer_active (separate from _polling) tracks whether *this*
+    timer instance is still alive: a rapid vanish-then-appear cycle can flip
+    _polling False then True again before this timer's own next tick sees
+    it, and gating the start-site on _polling alone would then start a
+    second, redundant 5s source that never gets stopped. Clearing the flag
+    only when this callback actually self-stops keeps at most one instance
+    running at a time.
+    """
+    if not getattr(manager, "_polling", False):
+        manager._refresh_timer_active = False
+        return False  # matches poll_if_players: stop once polling has ended
+    try:
+        manager.props.player_names  # This triggers a refresh in Playerctl
+    except Exception as e:
+        logger.warning(f"Could not refresh player names: {e}")
+    return True
+
+
 def update_positions(manager):
     """
     This is the callback run once every second.
@@ -259,11 +295,6 @@ def update_positions(manager):
     updates the tooltip, and rewrites the output to stdout.
     Returns True to keep polling, or False to stop polling if no players.
     """
-    # Refresh the player list in case new players appeared after startup
-    try:
-        manager.props.player_names  # This triggers a refresh in Playerctl
-    except Exception as e:
-        logger.warning(f"Could not refresh player names: {e}")
     if manager.props.players:
         tooltip_text = ""
         for player in manager.props.players:
@@ -304,15 +335,6 @@ def update_positions(manager):
         p_name = player.props.player_name
         track = players_data[p_name]["track"]
         artist = players_data[p_name]["artist"]
-        duration_seconds = players_data[p_name]["duration"]
-        try:
-            loop_status = player.get_loop_status()
-        except Exception:
-            loop_status = None
-        try:
-            shuffle_status = player.get_shuffle()
-        except Exception:
-            shuffle_status = None
         write_output(track, artist, player.props.status == "Playing", player, tooltip_text)
         return True  # Keep polling if there are players
     else:
@@ -473,6 +495,8 @@ def main():
     if manager.props.players:
         manager._polling = True
         GLib.timeout_add_seconds(1, poll_if_players, manager)
+        manager._refresh_timer_active = True
+        GLib.timeout_add_seconds(5, refresh_player_names, manager)
     else:
         manager._polling = False
     loop.run()

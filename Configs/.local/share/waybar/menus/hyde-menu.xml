@@ -23,6 +23,24 @@
 
 
         <child>
+            <object class="GtkMenuItem" id="blurs_menu">
+                <property name="label">󰵢&#x2003;Blurs</property>
+                <child type="submenu">
+                    <object class="GtkMenu">
+
+                        <child>
+                            <object class="GtkMenuItem" id="blurs-select">
+                                <property name="label">&#x2003;Select Blur</property>
+                            </object>
+                        </child>
+
+                    </object>
+                </child>
+            </object>
+        </child>
+
+
+        <child>
             <object class="GtkMenuItem" id="wallpaper_menu">
                 <property name="label">󰸉&#x2003;Wallpaper</property>
                 <child type="submenu">
