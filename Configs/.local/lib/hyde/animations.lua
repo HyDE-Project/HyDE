@@ -7,6 +7,10 @@ require("luautils.init")
 local xdg = require("luautils.xdg")
 local lfs = require("lfs")
 local common = require("luautils.selector.common")
+local hyprctl = require("luautils.hypr.hyprctl")
+
+local state_file = xdg.state .. "/hyde/lua_state/animations.lua"
+local first_time = not lfs.attributes(state_file)
 
 -- Write $XDG_CONFIG_HOME/hypr/animations.conf after selection
 local function write_animations_conf(item)
@@ -21,6 +25,13 @@ local function write_animations_conf(item)
     f:write("$ANIMATION_PATH=./animations/", item.key, ".conf\n")
     f:write("source = $ANIMATION_PATH\n")
     f:close()
+
+    if first_time then
+        local ok = hyprctl.reload()
+        if ok then
+            first_time = false
+        end
+    end
 end
 
 local M =
