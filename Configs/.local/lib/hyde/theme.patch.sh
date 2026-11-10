@@ -130,17 +130,17 @@ if [ -f "$FAV_THEME_DIR/theme.dcol" ]; then
 fi
 [[ $LOG_LEVEL == "debug" ]] && print_log -n "[debug] " "restore_list: $restore_list"
 readonly restore_list
-wallpapers=$(find -H "$FAV_THEME_DIR" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) ! -path "*/logo/*")
+wallpapers=$(find -H "$FAV_THEME_DIR" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \) ! -path "*/logo/*")
 wpCount="$(wc -l <<<"$wallpapers")"
 {
     [ -z "$wallpapers" ] && print_log -r "[ERROR] " "No wallpapers found" && exit_flag=true
 } || {
-    readonly wallpapers && print_log -g "\n[pass]  " "wallpapers :: [count] $wpCount (.gif+.jpg+.jpeg+.png)"
+    readonly wallpapers && print_log -g "\n[pass]  " "wallpapers :: [count] $wpCount (.gif+.jpg+.jpeg+.png+.webp)"
 }
 # Walk $THEME_DIR once for all tar archives instead of per-prefix
 all_tar_files=$(find -H "$THEME_DIR" -type f -name "*.tar.*" 2>/dev/null)
 if [ -d "$FAV_THEME_DIR/logo" ]; then
-    logos=$(find -H "$FAV_THEME_DIR/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \))
+    logos=$(find -H "$FAV_THEME_DIR/logo" -type f \( -iname "*.gif" -o -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" \))
     logosCount="$(wc -l <<<"$logos")"
     {
         [ -z "$logos" ] && print_log -y "[note] " "No logos found"
