@@ -135,6 +135,18 @@ export flg_ThemeInstall=$theme_install
 HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
 export HYDE_LOG
 
+# The package list key used by deez-dots follows the package manager detected
+# on the host. Fedora has no AUR and its packages are described with dnf
+# entries in the same TOML files.
+if command -v dnf >/dev/null 2>&1 && ! command -v pacman >/dev/null 2>&1; then
+	package_manager="dnf"
+else
+	# Preserve the installer's existing Arch default on hosts that do not
+	# expose a package manager in PATH (including the test harness).
+	package_manager="pacman"
+fi
+export package_manager
+
 if [ $dry_run -eq 1 ]; then
 	print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
 fi
