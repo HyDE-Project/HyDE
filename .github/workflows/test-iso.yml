@@ -1,0 +1,118 @@
+name: Test ISO builders
+
+on:
+  pull_request:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+jobs:
+  fedora-iso:
+    name: Fedora ISO configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate Kickstart on Fedora 45
+        run: |
+          docker run --rm \
+            -i \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" \
+            -w /workspace \
+            fedora:45 \
+            bash -euo pipefail <<'CONTAINER'
+          dnf install -y pykickstart
+          python3 - <<'PY'
+          from pathlib import Path
+
+          template = Path("Scripts/iso/fedora/kickstart.ks.in").read_text()
+          replacements = {
+              "@DISK@": "nvme0n1",
+              "@USER@": "hyde",
+              "@HYDE_REPO_URL@": "https://github.com/HyDE-Project/HyDE.git",
+              "@HYDE_REPO_BRANCH@": "dev",
+              "@PASSWORD_HASH@": "$6$test$placeholder",
+          }
+          for key, value in replacements.items():
+              template = template.replace(key, value)
+          Path("/tmp/hyde-ks.cfg").write_text(template)
+          PY
+          ksvalidator -v F45 /tmp/hyde-ks.cfg
+          bash -n Scripts/iso/fedora/build-iso.sh
+          Scripts/iso/fedora/build-iso.sh --help >/dev/null
+          CONTAINER
+
+  arch-iso:
+    name: Arch ISO configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check builder and generated archinstall configuration
+        run: |
+          docker run --rm \
+            -i \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" \
+            -w /workspace \
+            archlinux:base-devel \
+            bash -euo pipefail <<'CONTAINER'
+          pacman -Syu --noconfirm archinstall
+          bash -n Scripts/iso/arch/build-iso.sh Scripts/iso/arch/auto-install.sh
+          Scripts/iso/arch/build-iso.sh --help >/dev/null
+          python3 - <<'PY'
+          import base64
+          import json
+          import pathlib
+          import re
+          import subprocess
+          import tempfile
+
+          source = pathlib.Path("Scripts/iso/arch/auto-install.sh").read_text()
+          code = source.split("<<'PY'\n", 1)[1].split("\nPY\n", 1)[0]
+          with tempfile.TemporaryDirectory() as directory:
+              root = pathlib.Path(directory)
+              fake_device = root / "sys/class/block/vda"
+              fake_device.mkdir(parents=True)
+              (fake_device / "size").write_text(str(80 * 1024 * 1024 * 1024 // 512))
+              config = root / "source.json"
+              password_hash = subprocess.check_output([
+                  "openssl", "passwd", "-6", "-salt", "ci-salt", "test-password"
+              ], text=True).strip()
+              config.write_text(json.dumps({
+                  "target_disk": "/dev/vda",
+                  "hyde_user": "hyde",
+                  "hyde_repository": "https://github.com/HyDE-Project/HyDE.git",
+                  "hyde_branch": "dev",
+                  "password_hash": password_hash,
+              }))
+              code = code.replace(
+                  "pathlib.Path(\"/sys/class/block\",",
+                  "pathlib.Path(" + repr(str(root / "sys/class/block")) + ",",
+              )
+              subprocess.run([
+                  "python3", "-c", code, str(config), str(root / "config.json"), str(root / "log")
+              ], check=True)
+              generated = json.loads((root / "config.json").read_text())
+              credentials = json.loads((root / "config.json.creds").read_text())
+              disk = generated["disk_config"]["device_modifications"][0]
+              assert disk["device"] == "/dev/vda" and disk["wipe"] is True
+              assert [part["mountpoint"] for part in disk["partitions"]] == ["/boot", "/"]
+              assert disk["partitions"][0]["size"]["value"] == 1024
+              assert credentials["users"][0]["enc_password"] == password_hash
+              subprocess.run([
+                  "archinstall", "--dry-run", "--silent", "--config", str(root / "config.json"),
+                  "--creds", str(root / "config.json.creds"),
+              ], check=True)
+              blobs = re.findall(r"printf '%s' '([^']+)'", generated["custom_commands"][0])
+              assert len(blobs) == 2
+              firstboot = base64.b64decode(blobs[0]).decode()
+              unit = base64.b64decode(blobs[1]).decode()
+              (root / "firstboot.sh").write_text(firstboot)
+              subprocess.run(["bash", "-n", str(root / "firstboot.sh")], check=True)
+              assert "TimeoutStartSec=infinity" in unit
+          PY
+          CONTAINER

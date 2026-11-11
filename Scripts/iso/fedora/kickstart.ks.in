@@ -1,0 +1,84 @@
+# Fedora text-mode installation with HyDE installed on the first boot.
+text
+skipx
+eula --agreed
+lang en_US.UTF-8
+keyboard --vckeymap=us
+timezone Europe/Rome --utc
+network --bootproto=dhcp --device=link --activate --onboot=yes
+url --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch"
+repo --name=updates --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&arch=$basearch"
+
+ignoredisk --only-use=@DISK@
+clearpart --all --initlabel --disklabel=gpt --drives=@DISK@
+autopart --type=btrfs
+bootloader --timeout=1
+
+rootpw --lock
+user --name=@USER@ --groups=wheel --password=@PASSWORD_HASH@ --iscrypted --gecos="HyDE user"
+firewall --enabled --service=ssh
+services --enabled=NetworkManager,sshd
+reboot
+
+%packages
+@core
+git
+sudo
+gcc
+cmake
+make
+gcc-c++
+cargo
+pkgconf-pkg-config
+python3-pip
+python3-devel
+zlib-devel
+libjpeg-turbo-devel
+pciutils
+%end
+
+%post --log=/root/hyde-kickstart-post.log
+cat > /usr/local/sbin/hyde-autoinstall <<'HYDE_INSTALL'
+#!/usr/bin/bash
+set -euo pipefail
+
+hyde_user='@USER@'
+hyde_repo_url='@HYDE_REPO_URL@'
+hyde_repo_branch='@HYDE_REPO_BRANCH@'
+hyde_home="$(getent passwd "$hyde_user" | cut -d: -f6)"
+hyde_repo="$hyde_home/HyDE"
+
+if [[ ! -d "$hyde_repo/.git" ]]; then
+    runuser -u "$hyde_user" -- git clone --depth=1 --branch "$hyde_repo_branch" "$hyde_repo_url" "$hyde_repo"
+fi
+chown -R "$hyde_user:$hyde_user" "$hyde_repo"
+runuser -u "$hyde_user" -- env HOME="$hyde_home" bash -lc "cd '$hyde_repo' && ./Scripts/install.sh --defaults --restore --services"
+
+rm -f /etc/sudoers.d/hyde-autoinstall
+systemctl disable hyde-autoinstall.service
+HYDE_INSTALL
+chmod 0755 /usr/local/sbin/hyde-autoinstall
+
+cat > /etc/sudoers.d/hyde-autoinstall <<'SUDOERS'
+@USER@ ALL=(ALL) NOPASSWD: ALL
+SUDOERS
+chmod 0440 /etc/sudoers.d/hyde-autoinstall
+visudo -cf /etc/sudoers.d/hyde-autoinstall
+
+cat > /etc/systemd/system/hyde-autoinstall.service <<'UNIT'
+[Unit]
+Description=Install HyDE after the first boot
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+TimeoutStartSec=infinity
+ExecStart=/usr/local/sbin/hyde-autoinstall
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl enable hyde-autoinstall.service
+%end
