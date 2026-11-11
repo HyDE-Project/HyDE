@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
 - Waybar: add VSCodium and Chromium icon rules to window module
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
+- Notifications: popup position can be set with `position` under `[notification]` in `~/.config/hyde/config.toml`, for both dunst and swaync. Accepts `top-left`, `top-center`, `top-right`, `center-left`, `center`, `center-right`, `bottom-left`, `bottom-center` and `bottom-right`. For swaync it also moves the control center. Leaving it unset keeps the position from `dunst.conf` / swaync's `config.json` (top right by default)
 
 ### Changed
 
