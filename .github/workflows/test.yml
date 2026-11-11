@@ -110,8 +110,51 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lua5.4 lua-filesystem lua-socket lua-argparse lua-dkjson shellcheck fish imagemagick
+          # Ubuntu-hosted runners may use a multi-line mirror+file URI whose
+          # Azure archive hostname sometimes fails DNS. Replace the complete
+          # Deb822 URI field, including continuation lines, before apt runs.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          sources = Path("/etc/apt/sources.list.d/ubuntu.sources")
+          stanzas = sources.read_text().strip().split("\n\n")
+          rewritten = []
+          for stanza in stanzas:
+              suites = re.search(r"(?m)^Suites:\s*(.*)$", stanza)
+              if not suites:
+                  rewritten.append(stanza)
+                  continue
+              uri = "https://security.ubuntu.com/ubuntu" if "noble-security" in suites.group(1) else "https://archive.ubuntu.com/ubuntu"
+              output = []
+              skip_uri_continuation = False
+              for line in stanza.splitlines():
+                  if skip_uri_continuation and (not line or line[0].isspace()):
+                      continue
+                  skip_uri_continuation = False
+                  if line.startswith("URIs:"):
+                      output.append(f"URIs: {uri}")
+                      skip_uri_continuation = True
+                  else:
+                      output.append(line)
+              rewritten.append("\n".join(output))
+          content = "\n\n".join(rewritten) + "\n"
+          if "mirror+file:" in content:
+              raise SystemExit("Ubuntu source still contains a mirror+file URI")
+          sources.write_text(content)
+          PY
+          for attempt in 1 2 3; do
+            if sudo apt-get -o APT::Update::Error-Mode=any -o Acquire::Retries=1 -o Acquire::ForceIPv4=true -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update && \
+              sudo apt-get -o Acquire::Retries=1 -o Acquire::ForceIPv4=true -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y --no-install-recommends \
+                lua5.4 lua-filesystem lua-socket lua-argparse lua-dkjson shellcheck fish imagemagick; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Failed to install test dependencies after $attempt attempts." >&2
+              exit 1
+            fi
+            sleep $((attempt * 15))
+          done
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
 
@@ -180,11 +223,53 @@ jobs:
 
       - name: Install test and coverage dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            lua5.4 shellcheck fish imagemagick \
-            binutils-dev build-essential cmake ninja-build libssl-dev \
-            libcurl4-openssl-dev libelf-dev zlib1g-dev libdw-dev libiberty-dev
+          # Ubuntu-hosted runners may use a multi-line mirror+file URI whose
+          # Azure archive hostname sometimes fails DNS. Replace the complete
+          # Deb822 URI field, including continuation lines, before apt runs.
+          sudo python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          sources = Path("/etc/apt/sources.list.d/ubuntu.sources")
+          stanzas = sources.read_text().strip().split("\n\n")
+          rewritten = []
+          for stanza in stanzas:
+              suites = re.search(r"(?m)^Suites:\s*(.*)$", stanza)
+              if not suites:
+                  rewritten.append(stanza)
+                  continue
+              uri = "https://security.ubuntu.com/ubuntu" if "noble-security" in suites.group(1) else "https://archive.ubuntu.com/ubuntu"
+              output = []
+              skip_uri_continuation = False
+              for line in stanza.splitlines():
+                  if skip_uri_continuation and (not line or line[0].isspace()):
+                      continue
+                  skip_uri_continuation = False
+                  if line.startswith("URIs:"):
+                      output.append(f"URIs: {uri}")
+                      skip_uri_continuation = True
+                  else:
+                      output.append(line)
+              rewritten.append("\n".join(output))
+          content = "\n\n".join(rewritten) + "\n"
+          if "mirror+file:" in content:
+              raise SystemExit("Ubuntu source still contains a mirror+file URI")
+          sources.write_text(content)
+          PY
+          for attempt in 1 2 3; do
+            if sudo apt-get -o APT::Update::Error-Mode=any -o Acquire::Retries=1 -o Acquire::ForceIPv4=true -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update && \
+              sudo apt-get -o Acquire::Retries=1 -o Acquire::ForceIPv4=true -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y --no-install-recommends \
+                lua5.4 shellcheck fish imagemagick \
+                binutils-dev build-essential cmake ninja-build libssl-dev \
+                libcurl4-openssl-dev libelf-dev zlib1g-dev libdw-dev libiberty-dev; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "Failed to install test and coverage dependencies after $attempt attempts." >&2
+              exit 1
+            fi
+            sleep $((attempt * 15))
+          done
           sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
           sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
 
