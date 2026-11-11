@@ -91,6 +91,7 @@ dnf = [
   "brightnessctl",
   "playerctl",
   "udisks2",
+  "pciutils",
   # Build tools for Fedora-only upstream builds of awww and hyprquery
   "cargo",
   "cmake",
