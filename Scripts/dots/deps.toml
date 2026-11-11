@@ -98,6 +98,7 @@ dnf = [
   "gcc-c++",
   "pkgconf-pkg-config",
   "hyprutils-devel",
+  "lz4-devel",
   "libxkbcommon-devel",
   "wayland-devel",
   "wayland-protocols-devel",

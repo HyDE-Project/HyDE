@@ -271,7 +271,8 @@ jobs:
               test "$status" -ne 0
               tail -n 8 /tmp/fedora-transaction.log
               dnf install -y git cargo cmake make gcc-c++ pkgconf-pkg-config \
-                hyprutils-devel libxkbcommon-devel wayland-devel wayland-protocols-devel scdoc
+                hyprutils-devel lz4-devel libxkbcommon-devel wayland-devel \
+                wayland-protocols-devel scdoc
               git clone --depth=1 https://github.com/HyDE-Project/hyprquery.git /tmp/hyprquery
               cmake -S /tmp/hyprquery -B /tmp/hyprquery/build \
                 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/hyprquery-install
