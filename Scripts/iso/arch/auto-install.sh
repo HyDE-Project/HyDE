@@ -77,9 +77,14 @@ else
 fi
 cd "$repo"
 HOME=/root HYDE_NO_REBOOT_PROMPT=1 ./Scripts/install.sh --defaults --restore --services
-install -d -m 0755 /etc/skel
+install -d -m 0755 /etc/skel/.local
 for item in .config .local/bin .local/lib .local/share .bashrc .zshrc .zprofile .bash_profile; do
-    [[ -e "/root/$item" ]] && cp -a "/root/$item" /etc/skel/
+    [[ -e "/root/$item" ]] || continue
+    if [[ "$item" == .local/* ]]; then
+        cp -a "/root/$item" "/etc/skel/$item"
+    else
+        cp -a "/root/$item" /etc/skel/
+    fi
 done
 chown -R root:root /etc/skel
 install -d -m 0755 /usr/share/wayland-sessions /etc/sddm.conf.d

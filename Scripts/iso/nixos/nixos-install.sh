@@ -25,10 +25,15 @@ target_disk="$(readlink -f -- "$target_disk")"
 }
 
 for _ in {1..120}; do
-    if getent hosts cache.nixos.org >/dev/null 2>&1; then break; fi
+    if curl --fail --silent --show-error --connect-timeout 5 --max-time 15 \
+        https://cache.nixos.org/nix-cache-info >/dev/null 2>&1; then break; fi
     sleep 2
 done
-getent hosts cache.nixos.org >/dev/null || { echo "No network connection; connect wired Ethernet and reboot."; exit 1; }
+curl --fail --silent --show-error --connect-timeout 5 --max-time 15 \
+    https://cache.nixos.org/nix-cache-info >/dev/null || {
+    echo "Cannot reach cache.nixos.org; connect wired Ethernet and retry before installation."
+    exit 1
+}
 
 case "$(basename "$target_disk")" in
     nvme*n*|mmcblk*) partition_prefix="${target_disk}p" ;;
@@ -51,12 +56,16 @@ cp -a /etc/hyde-installer-source/. /mnt/etc/nixos/
 
 nixos-generate-config --root /mnt --show-hardware-config \
     > /mnt/etc/nixos/Scripts/iso/nixos/hardware-configuration.nix
+install -d -m 0700 /mnt/var/lib
+install -m 0600 <(printf '%s\n' "$root_password_hash") /mnt/var/lib/hyde-root-password
 python3 - "$settings" /mnt/etc/nixos/Scripts/iso/nixos/install-settings.json <<'PY'
 import json
 import pathlib
 import sys
 source, destination = map(pathlib.Path, sys.argv[1:])
-destination.write_text(json.dumps(json.loads(source.read_text()), indent=2) + "\n")
+settings = json.loads(source.read_text())
+settings.pop("rootPasswordHash", None)
+destination.write_text(json.dumps(settings, indent=2) + "\n")
 PY
 
 NIX_CONFIG='experimental-features = nix-command flakes' \

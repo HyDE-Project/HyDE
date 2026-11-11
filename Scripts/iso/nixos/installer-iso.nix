@@ -16,6 +16,7 @@
   services.getty.autologinUser = lib.mkForce "root";
 
   environment.systemPackages = with pkgs; [
+    curl
     gptfdisk
     dosfstools
     e2fsprogs

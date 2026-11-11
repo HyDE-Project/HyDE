@@ -16,7 +16,9 @@ Suggested release descriptions:
 
 Each builder asks for the root password twice; the generated ISO retains its
 salted hash. Temporary build-file cleanup does not remove the copy embedded in
-the ISO. Do not distribute personal installation media or reuse an existing
+the ISO. The NixOS installer provisions the installed root account from a
+root-only file and removes the hash from the installed flake before evaluating
+it. Do not distribute personal installation media or reuse an existing
 password. The target disk is selected at build time, then fully erased and
 formatted automatically when the ISO boots. The installed system starts HyDE
 setup as root and asks whether to create a normal desktop account or continue

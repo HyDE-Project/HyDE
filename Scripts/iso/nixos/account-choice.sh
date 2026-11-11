@@ -4,7 +4,7 @@ set -euo pipefail
 config_dir=/etc/nixos
 account_config="$config_dir/Scripts/iso/nixos/account.nix"
 marker=/var/lib/hyde-account-choice.done
-default_user="$(python3 -c 'import json; print(json.load(open("/etc/hyde-iso-settings.json"))["defaultUser"])')"
+default_user="$(python3 -c 'import json; print(json.load(open("/etc/nixos/Scripts/iso/nixos/install-settings.json"))["defaultUser"])')"
 
 printf '\nHyDE is ready. Create a normal user account? [Y/n] '
 read -r create_user

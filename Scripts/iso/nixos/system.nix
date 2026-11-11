@@ -60,10 +60,6 @@ in
 {
   assertions = [
     {
-      assertion = isoSettings.targetDisk != "" && isoSettings.rootPasswordHash != "";
-      message = "Build the NixOS ISO with Scripts/iso/nixos/build-iso.sh to set its disk and root password.";
-    }
-    {
       assertion = missingPackages == [ ];
       message = "Missing Nixpkgs packages required by HyDE: ${lib.concatStringsSep ", " (lib.filter (name: lib.attrByPath (lib.splitString "." name) null pkgs == null) requiredPackages)}";
     }
@@ -82,7 +78,7 @@ in
   boot.zfs.forceImportRoot = false;
 
   users.mutableUsers = true;
-  users.users.root.initialHashedPassword = isoSettings.rootPasswordHash;
+  users.users.root.hashedPasswordFile = "/var/lib/hyde-root-password";
   users.users.root.shell = pkgs.zsh;
   users.defaultUserShell = pkgs.zsh;
   programs.zsh.enable = true;
