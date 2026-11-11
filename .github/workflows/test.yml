@@ -211,3 +211,65 @@ jobs:
           flags: shell
           name: shell
           fail_ci_if_error: false
+
+  arch:
+    name: Arch package metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Parse Arch metadata in Arch Linux
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" \
+            -w /workspace \
+            archlinux:base-devel \
+            bash -euo pipefail -c '
+              pacman -Sy --noconfirm --needed python
+              python3 .github/scripts/package-metadata.py pacman >/tmp/arch-packages
+              mapfile -t packages </tmp/arch-packages
+              pacman -Sp --noconfirm --needed "${packages[@]}" >/tmp/arch-transaction.log
+              bash -n Scripts/install.sh Scripts/install_pre.sh Scripts/install_pst.sh \
+                Scripts/restore_shl.sh Scripts/global_fn.sh
+              test -s /tmp/arch-packages
+            '
+
+  fedora:
+    name: Fedora 45 package metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Resolve Fedora packages in Fedora 45
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" \
+            -w /workspace \
+            fedora:45 \
+            bash -euo pipefail -c '
+              dnf install -y dnf5-plugins python3
+              dnf copr enable -y nett00n/hyprland
+              dnf copr enable -y atim/starship
+              python3 .github/scripts/package-metadata.py dnf >/tmp/fedora-packages
+              mapfile -t packages </tmp/fedora-packages
+              set +e
+              dnf install --assumeno "${packages[@]}" >/tmp/fedora-transaction.log 2>&1
+              status=$?
+              set -e
+              if grep -Eq "No match for argument|Failed to resolve the transaction|Problem:" /tmp/fedora-transaction.log; then
+                cat /tmp/fedora-transaction.log
+                exit 1
+              fi
+              grep -q "Transaction Summary" /tmp/fedora-transaction.log
+              grep -q "Operation aborted by the user" /tmp/fedora-transaction.log
+              test "$status" -ne 0
+              tail -n 8 /tmp/fedora-transaction.log
+              bash -n Scripts/install.sh Scripts/install_pre.sh Scripts/install_pst.sh \
+                Scripts/restore_shl.sh Scripts/global_fn.sh
+            '

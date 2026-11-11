@@ -159,6 +159,24 @@ has_operation() {
 	[[ " ${operations[*]} " =~ " ${op} " ]]
 }
 
+enable_fedora_hyprland_repo() {
+	[ "${package_manager}" = "dnf" ] || return 0
+	[ "${flg_DryRun}" -eq 0 ] || return 0
+	if ! dnf copr --help >/dev/null 2>&1; then
+		sudo dnf install -y dnf5-plugins >/dev/null 2>&1 ||
+			sudo dnf install -y dnf-plugins-core || return 1
+	fi
+	local copr_repo
+	for copr_repo in nett00n/hyprland atim/starship; do
+		if ! dnf copr list 2>/dev/null | grep -q "${copr_repo}"; then
+			sudo dnf copr enable -y "${copr_repo}" || {
+				print_log -err "COPR" "Unable to enable ${copr_repo}, required for Fedora packages."
+				return 1
+			}
+		fi
+	done
+}
+
 #--------------------#
 # pre-install script #
 #--------------------
@@ -255,7 +273,7 @@ EOF
 	fi
 
 	# Only an explicit choice counts; an installed package is not an answer.
-	if ! chk_shell "${myShell:-}"; then
+	if ! chk_shell "${myShell:-}" && [ "${use_default:-}" != "--noconfirm" ]; then
 		print_log -c "Shell :: "
 		for i in "${!shlList[@]}"; do
 			print_log -sec "$((i + 1))" " ${shlList[$i]} "
@@ -275,6 +293,9 @@ EOF
 			;;
 		esac
 		print_log -sec "shell" -stat "detected" "${myShell}"
+	fi
+	if ! chk_shell "${myShell:-}"; then
+		export myShell="zsh"
 	fi
 
 	#------------------------------------#
@@ -631,10 +652,8 @@ if has_operation "install"; then
 	print_log -g "Installation" " :: " "COMPLETED!"
 fi
 print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
-if has_operation "install" ||
-	has_operation "restore" ||
-	has_operation "services" &&
-	[ $dry_run -ne 1 ]; then
+if { has_operation "install" || has_operation "restore" || has_operation "services"; } &&
+	[ $dry_run -ne 1 ] && [ "${use_default:-}" != "--noconfirm" ]; then
 
 	if [[ -z "${HYPRLAND_CONFIG:-}" ]] || [[ ! -f "${HYPRLAND_CONFIG}" ]]; then
 		print_log -warn "Hyprland config not found! Might be a new install or upgrade."

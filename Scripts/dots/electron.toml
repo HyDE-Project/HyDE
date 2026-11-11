@@ -4,6 +4,8 @@
 
 [[electron-flags.dependency]]
     pacman = [ "electron" ]
+    # Fedora does not ship electron in its enabled repositories.
+    dnf = []
 
 [[electron-flags.files]]
     action      = "preserve"
