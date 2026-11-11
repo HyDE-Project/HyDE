@@ -229,6 +229,7 @@ Notification script configuration.
 | --- | ----------- | ------- |
 | font | Font for notifications. | mononoki Nerd Font |
 | font_size | Font size for notifications. | 10 |
+| position | Position of notification popups (dunst and swaync): top-left, top-center, top-right, center-left, center, center-right, bottom-left, bottom-center, bottom-right. | top-right |
 
 ### [qt5]
 
