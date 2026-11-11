@@ -301,8 +301,9 @@ EOF
 		]
 
 		[[global.dependency]]
-		${package_manager:-pacman} = [
+		pacman = [
 	TOML
+	sed -i "s/^pacman = /${package_manager} = /" "${core_toml}"
 
 # TODO: This is arch specific; A separate install script should be written
 	if nvidia_detect; then
@@ -365,9 +366,10 @@ EOF
 		]
 
 		[[global.dependency]]
-		${package_manager:-pacman} = [
+		pacman = [
 	TOML
-	if nvidia_detect && [ "${flg_Nvidia}" -eq 1 ]; then
+	sed -i "s/^pacman = /${package_manager} = /" "${core_toml}"
+	if [ "${package_manager}" = "pacman" ] && nvidia_detect && [ "${flg_Nvidia}" -eq 1 ]; then
 		cat /usr/lib/modules/*/pkgbase 2>/dev/null | while read -r kernel; do
 			echo "\"${kernel}-headers\","
 		done >> "${core_toml}"
@@ -390,8 +392,9 @@ EOF
 		]
 
 		[[global.dependency]]
-		${package_manager:-pacman} = [
+		pacman = [
 	TOML
+	sed -i "s/^pacman = /${package_manager} = /" "${extra_toml}"
 	# starship is needed for both zsh and fish prompts
 	echo "\"starship\"," >> "${extra_toml}"
 	echo "]" >> "${extra_toml}"
