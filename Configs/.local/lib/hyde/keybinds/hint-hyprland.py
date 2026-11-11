@@ -61,9 +61,10 @@ def load_bind_commands():
     """Reads the combo->command cache hyde/binds.lua writes on every config
     load (see Configs/.local/share/hypr/lua/hyde/binds.lua). Missing file,
     unreadable file, malformed JSON, or JSON that isn't a flat string->string
-    object all resolve to an empty map -- __lua binds simply stay
-    unresolved, which is the existing, already-correct fallback behavior for
-    binds that can't be reduced to one command at all.
+    object all resolve to an empty map -- Lua binds whose dispatcher hyprctl
+    reports opaquely (__lua, HL.Dispatcher(exec_cmd)) then fall back to the
+    bind's own action, dispatched through hyde.binds.action(combo), rather
+    than to a reconstructed exec_cmd call.
     """
     cache_home = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
     cache_path = os.path.join(cache_home, "hyde", "lua_bind_commands.json")
@@ -410,6 +411,17 @@ def generate_rofi(binds):
     return rofi_str
 
 
+# Dispatcher values hyprctl reports for a Lua bind built from hl.dsp.exec_cmd
+# -- the only Lua binds hyde/binds.lua's command cache can reconstruct, since
+# the reported value is just an opaque registry handle rather than a command:
+#   - older Hyprland:   "__lua"
+#   - Hyprland >= 0.57: the constructor name, "HL.Dispatcher(exec_cmd)"
+# Matched exactly on purpose: other Lua dispatchers hyprctl reports in the
+# same family (HL.Dispatcher(window), HL.Dispatcher(workspace), ...) carry no
+# command the cache could rebuild, so they stay exactly as reported.
+_CACHE_RECOVERABLE_DISPATCHERS = frozenset({"__lua", "HL.Dispatcher(exec_cmd)"})
+
+
 def expand_meta_data(binds_data, bind_commands=None):
     submap_keys = {}
     if bind_commands is None:
@@ -428,15 +440,17 @@ def expand_meta_data(binds_data, bind_commands=None):
         bind["mod_display"] = map_modDisplay(bind["modmask"])
 
         # A Lua-registered bind (#1996): hyprctl only ever exposes it as an
-        # opaque "__lua" registry reference, which Hyprland itself has no way
-        # to dispatch from the outside. If hyde/binds.lua's cache has the
-        # command this exact combo was built from, rewrite it into a fresh
-        # exec_cmd call instead -- that runs the same way any other dispatch
-        # does. A combo the cache doesn't have (window/workspace operations,
-        # or any bind not built from hl.dsp.exec_cmd) runs the bind's own
-        # action, which hyde/binds.lua keeps by combo. Mouse binds only act
-        # on a drag, so they are left as they were.
-        if bind["dispatcher"] == "__lua":
+        # opaque registry reference -- "__lua" on older builds, the Lua
+        # constructor name "HL.Dispatcher(exec_cmd)" on 0.57+ -- which
+        # Hyprland itself has no way to dispatch from the outside. If
+        # hyde/binds.lua's cache has the command this exact combo was built
+        # from, rewrite it into a fresh exec_cmd call instead -- that runs the
+        # same way any other dispatch does. A combo the cache doesn't have
+        # (window/workspace operations, or any bind not built from
+        # hl.dsp.exec_cmd) runs the bind's own action, which hyde/binds.lua
+        # keeps by combo. Mouse binds only act on a drag, so they are left as
+        # they were.
+        if bind["dispatcher"] in _CACHE_RECOVERABLE_DISPATCHERS:
             combo = canonical_combo(bind["modmask"], bind["key"])
             command = bind_commands.get(combo) if combo else None
             if command:
