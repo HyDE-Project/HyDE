@@ -97,6 +97,7 @@ dnf = [
   "make",
   "gcc-c++",
   "pkgconf-pkg-config",
+  "hyprutils-devel",
   "libxkbcommon-devel",
   "wayland-devel",
   "wayland-protocols-devel",
