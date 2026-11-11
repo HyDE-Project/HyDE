@@ -9,6 +9,7 @@ import tomllib
 
 
 def main() -> int:
+    """Print sorted package names for the requested package manager."""
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} PACKAGE_MANAGER", file=sys.stderr)
         return 2
@@ -18,6 +19,7 @@ def main() -> int:
     packages: set[str] = set()
 
     def collect(value: object) -> None:
+        """Recursively collect string packages for the selected manager."""
         if isinstance(value, dict):
             manager_packages = value.get(package_manager)
             if isinstance(manager_packages, list):
