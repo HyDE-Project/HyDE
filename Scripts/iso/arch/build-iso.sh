@@ -37,6 +37,11 @@ done
 [[ -n "$target_disk" ]] || { usage >&2; exit 2; }
 [[ "$target_disk" =~ ^/dev/disk/by-id/[A-Za-z0-9._:+-]+$ ]] || { echo "Use a persistent whole-disk /dev/disk/by-id identity." >&2; exit 2; }
 [[ "$target_disk" != *-part[0-9]* ]] || { echo "Select a whole disk, not a partition." >&2; exit 2; }
+disk_id="${target_disk##*/}"
+if [[ "$disk_id" == nvme-* && ! "$disk_id" =~ ^nvme-(eui|uuid)\. && ! "$disk_id" =~ _[0-9]+$ ]]; then
+    echo "Use a namespace-specific NVMe identity or a WWN identity." >&2
+    exit 2
+fi
 [[ "$hyde_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] || { echo "Invalid username." >&2; exit 2; }
 [[ "$hyde_repository" =~ ^https://[A-Za-z0-9._/-]+\.git$ ]] || { echo "Invalid repository URL." >&2; exit 2; }
 [[ "$hyde_branch" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "Invalid branch." >&2; exit 2; }

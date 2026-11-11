@@ -30,7 +30,7 @@ passwd "$username"
 cat > "$account_config" <<NIX
 { ... }:
 {
-  users.users.$username = {
+  users.users."$username" = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "video" "input" ];
   };

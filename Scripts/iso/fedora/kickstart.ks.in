@@ -64,11 +64,11 @@ cd "$hyde_repo"
 HOME=/root HYDE_NO_REBOOT_PROMPT=1 ./Scripts/install.sh --defaults --restore --services
 
 install -d -m 0755 /usr/share/wayland-sessions /etc/sddm.conf.d
-install -d -m 0755 /etc/skel/.local
+install -d -m 0755 /etc/skel/.local /etc/skel/.local/bin /etc/skel/.local/lib /etc/skel/.local/share
 for item in .config .local/bin .local/lib .local/share .bashrc .zshrc .zprofile .bash_profile; do
     [[ -e "/root/$item" ]] || continue
     if [[ "$item" == .local/* ]]; then
-        cp -a "/root/$item" "/etc/skel/$item"
+        cp -aT "/root/$item" "/etc/skel/$item"
     else
         cp -a "/root/$item" /etc/skel/
     fi
@@ -101,6 +101,12 @@ else
     done
     useradd --create-home --skel=/etc/skel --groups=wheel,video,audio,input --shell=/bin/bash "$login_user"
     passwd "$login_user"
+    login_home="$(getent passwd "$login_user" | cut -d: -f6)"
+    install -d -o "$login_user" -g "$login_user" "$login_home/.local/state"
+    runtime_dir="$login_home/.local/state/runtime"
+    install -d -m 0700 -o "$login_user" -g "$login_user" "$runtime_dir"
+    runuser -u "$login_user" -- env HOME="$login_home" XDG_STATE_HOME="$login_home/.local/state" XDG_RUNTIME_DIR="$runtime_dir" PATH="$login_home/.local/bin:$PATH" hyde-shell luainit
+    rm -rf -- "$runtime_dir"
     cat > /etc/sudoers.d/10-wheel <<'SUDOERS'
 %wheel ALL=(ALL) ALL
 SUDOERS

@@ -78,10 +78,11 @@ fi
 cd "$repo"
 HOME=/root HYDE_NO_REBOOT_PROMPT=1 ./Scripts/install.sh --defaults --restore --services
 install -d -m 0755 /etc/skel/.local
+install -d -m 0755 /etc/skel/.local/bin /etc/skel/.local/lib /etc/skel/.local/share
 for item in .config .local/bin .local/lib .local/share .bashrc .zshrc .zprofile .bash_profile; do
     [[ -e "/root/$item" ]] || continue
     if [[ "$item" == .local/* ]]; then
-        cp -a "/root/$item" "/etc/skel/$item"
+        cp -aT "/root/$item" "/etc/skel/$item"
     else
         cp -a "/root/$item" /etc/skel/
     fi
