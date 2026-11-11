@@ -99,7 +99,10 @@ elif ! shell_listed "${shellPath}"; then
     print_log -sec "SHELL" -err "error" "${shellPath} is not listed in /etc/shells, leaving the login shell alone..."
 elif [[ "$(login_shell)" != "${myShell}" ]]; then
     print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
-    [ ${flg_DryRun} -eq 1 ] || chsh -s "${shellPath}"
+    # chsh matches /etc/shells by exact string, so pass the entry
+    # shell_listed found there, not shellPath's possibly-equivalent-but-
+    # unlisted form (e.g. /usr/sbin/fish via root's PATH on usrmerge, HyDE#2221).
+    [ ${flg_DryRun} -eq 1 ] || chsh -s "${shell_listed_match}"
 else
     print_log -sec "SHELL" -stat "exist" "${myShell} is already set as shell..."
 fi
