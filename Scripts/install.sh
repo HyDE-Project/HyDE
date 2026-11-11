@@ -168,7 +168,8 @@ enable_fedora_hyprland_repo() {
 	fi
 	local copr_repo
 	for copr_repo in nett00n/hyprland atim/starship; do
-		if ! dnf copr list 2>/dev/null | grep -q "${copr_repo}"; then
+		local enabled_repo="copr:copr.fedorainfracloud.org:${copr_repo//\//:}"
+		if ! dnf repolist --enabled 2>/dev/null | grep -Fq "${enabled_repo}"; then
 			sudo dnf copr enable -y "${copr_repo}" || {
 				print_log -err "COPR" "Unable to enable ${copr_repo}, required for Fedora packages."
 				return 1
