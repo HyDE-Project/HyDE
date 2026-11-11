@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Hyprland: Added blur variant profile selector. Add your own in ~/.config/hypr/blurs/
 - Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
 - Waybar: add VSCodium and Chromium icon rules to window module
+- Waybar: new, optional `custom/lact` module — experimental cross-vendor GPU monitoring via the [LACT](https://github.com/ilya-zlobintsev/LACT) daemon, shown separately from (and independent of) the existing `gpuinfo` module so both can be compared side by side. Reports every detected GPU at once, each with its own temperature-colored reading. Installed and enabled with `./install.sh --lact`, or on request during a normal install
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
 - Notifications: popup position can be set with `position` under `[notification]` in `~/.config/hyde/config.toml`, for both dunst and swaync. Accepts `top-left`, `top-center`, `top-right`, `center-left`, `center`, `center-right`, `bottom-left`, `bottom-center` and `bottom-right`. For swaync it also moves the control center. Leaving it unset keeps the position from `dunst.conf` / swaync's `config.json` (top right by default)
 
