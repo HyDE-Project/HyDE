@@ -228,7 +228,7 @@ jobs:
             -w /workspace \
             archlinux:base-devel \
             bash -euo pipefail -c '
-              pacman -Sy --noconfirm --needed python
+              pacman -Syu --noconfirm --needed python
               python3 .github/scripts/package-metadata.py pacman >/tmp/arch-packages
               mapfile -t packages </tmp/arch-packages
               pacman -Sp --noconfirm --needed "${packages[@]}" >/tmp/arch-transaction.log
@@ -270,6 +270,17 @@ jobs:
               grep -q "Operation aborted by the user" /tmp/fedora-transaction.log
               test "$status" -ne 0
               tail -n 8 /tmp/fedora-transaction.log
+              dnf install -y git cargo cmake make gcc-c++ pkgconf-pkg-config \
+                libxkbcommon-devel wayland-devel wayland-protocols-devel scdoc
+              git clone --depth=1 https://github.com/HyDE-Project/hyprquery.git /tmp/hyprquery
+              cmake -S /tmp/hyprquery -B /tmp/hyprquery/build \
+                -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/hyprquery-install
+              cmake --build /tmp/hyprquery/build --parallel 2
+              test -x /tmp/hyprquery/build/bin/hyq
+              git clone --depth=1 --branch=v0.12.1 https://codeberg.org/LGFae/awww.git /tmp/awww
+              cargo build --manifest-path /tmp/awww/Cargo.toml --release --jobs 2
+              test -x /tmp/awww/target/release/awww
+              test -x /tmp/awww/target/release/awww-daemon
               bash -n Scripts/install.sh Scripts/install_pre.sh Scripts/install_pst.sh \
                 Scripts/restore_shl.sh Scripts/global_fn.sh
             '

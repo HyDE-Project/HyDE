@@ -94,6 +94,7 @@ dnf = [
   # Build tools for Fedora-only upstream builds of awww and hyprquery
   "cargo",
   "cmake",
+  "make",
   "gcc-c++",
   "pkgconf-pkg-config",
   "libxkbcommon-devel",
