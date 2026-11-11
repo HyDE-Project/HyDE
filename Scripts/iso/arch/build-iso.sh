@@ -6,7 +6,7 @@ usage() {
 Usage: build-iso.sh --disk DEVICE [options]
 
 Options:
-  --disk DEVICE       Disk to erase during installation, e.g. /dev/nvme0n1
+  --disk DEVICE       Disk to erase (prefer /dev/disk/by-id/...)
   --user NAME         First-boot account (default: hyde)
   --hyde-repository URL  HyDE Git repository (default: upstream)
   --hyde-branch NAME     HyDE branch (default: dev)
@@ -35,12 +35,15 @@ while (($#)); do
     esac
 done
 [[ -n "$target_disk" ]] || { usage >&2; exit 2; }
-[[ "$target_disk" =~ ^/dev/(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+)$ ]] || { echo "Invalid disk path." >&2; exit 2; }
+[[ "$target_disk" =~ ^/dev/(disk/by-id/[A-Za-z0-9._:+-]+|(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+))$ ]] || { echo "Invalid disk path." >&2; exit 2; }
+[[ "$target_disk" != *-part[0-9]* ]] || { echo "Select a whole disk, not a partition." >&2; exit 2; }
 [[ "$hyde_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] || { echo "Invalid username." >&2; exit 2; }
 [[ "$hyde_repository" =~ ^https://[A-Za-z0-9._/-]+\.git$ ]] || { echo "Invalid repository URL." >&2; exit 2; }
 [[ "$hyde_branch" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "Invalid branch." >&2; exit 2; }
 [[ -d /usr/share/archiso/configs/releng ]] || { echo "Install archiso on an Arch Linux build host." >&2; exit 1; }
 command -v mkarchiso >/dev/null || { echo "mkarchiso not found." >&2; exit 1; }
+[[ -b "$target_disk" ]] || { echo "Target disk is not available on this build host: $target_disk" >&2; exit 2; }
+[[ "$(lsblk -dn -o TYPE -- "$target_disk")" == disk ]] || { echo "The target must be a whole disk." >&2; exit 2; }
 
 read -rsp "Password for ${hyde_user}: " password; echo
 read -rsp "Repeat password: " password_repeat; echo

@@ -38,10 +38,17 @@ jobs:
           }
           for key, value in replacements.items():
               template = template.replace(key, value)
+          assert "rootpw --iscrypted $6$test$placeholder" in template
+          assert "user --name=" not in template
           Path("/tmp/hyde-ks.cfg").write_text(template)
+          start = template.index("cat > /usr/local/sbin/hyde-firstboot <<'HYDE_FIRSTBOOT'\n")
+          start = template.index("\n", start) + 1
+          end = template.index("\nHYDE_FIRSTBOOT", start)
+          Path("/tmp/hyde-firstboot.sh").write_text(template[start:end] + "\n")
           PY
           ksvalidator -v F45 /tmp/hyde-ks.cfg
           bash -n Scripts/iso/fedora/build-iso.sh
+          bash -n /tmp/hyde-firstboot.sh
           Scripts/iso/fedora/build-iso.sh --help >/dev/null
           CONTAINER
 
@@ -70,7 +77,9 @@ jobs:
           import re
           import subprocess
           import tempfile
-
+          from pathlib import Path
+          from types import SimpleNamespace
+          from unittest.mock import patch
           source = pathlib.Path("Scripts/iso/arch/auto-install.sh").read_text()
           code = source.split("<<'PY'\n", 1)[1].split("\nPY\n", 1)[0]
           with tempfile.TemporaryDirectory() as directory:
@@ -102,7 +111,21 @@ jobs:
               assert disk["device"] == "/dev/vda" and disk["wipe"] is True
               assert [part["mountpoint"] for part in disk["partitions"]] == ["/boot", "/"]
               assert disk["partitions"][0]["size"]["value"] == 1024
-              assert credentials["users"][0]["enc_password"] == password_hash
+              assert disk["partitions"][1]["size"]["value"] == 80 * 1024 - 1026
+              assert credentials["root_enc_password"] == password_hash
+              from archinstall.lib.disk.device_handler import device_handler
+              from archinstall.lib.models.device import DiskLayoutConfiguration, PartitionTable, SectorSize, Size, Unit
+
+              fixture_device = SimpleNamespace(device_info=SimpleNamespace(
+                  path=Path("/dev/vda"),
+                  total_size=Size(80 * 1024, Unit.MiB, SectorSize.default()),
+              ))
+              with patch.object(device_handler, "get_device", return_value=fixture_device), \
+                   patch.object(device_handler, "_partition_table", PartitionTable.GPT):
+                  parsed = DiskLayoutConfiguration.parse_arg(generated["disk_config"])
+              parsed_partitions = parsed.device_modifications[0].partitions
+              assert [str(part.mountpoint) for part in parsed_partitions] == ["/boot", "/"]
+              assert [part.length.value for part in parsed_partitions] == [1024, 80 * 1024 - 1026]
               subprocess.run([
                   "archinstall", "--dry-run", "--silent", "--config", str(root / "config.json"),
                   "--creds", str(root / "config.json.creds"),
@@ -113,6 +136,36 @@ jobs:
               unit = base64.b64decode(blobs[1]).decode()
               (root / "firstboot.sh").write_text(firstboot)
               subprocess.run(["bash", "-n", str(root / "firstboot.sh")], check=True)
+              assert "--skel=/etc/skel" in firstboot
               assert "TimeoutStartSec=infinity" in unit
           PY
           CONTAINER
+
+  nixos-iso:
+    name: NixOS ISO configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: experimental-features = nix-command flakes
+      - name: Prepare disposable test settings
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          Path("Scripts/iso/nixos/install-settings.json").write_text(json.dumps({
+              "targetDisk": "/dev/vda",
+              "rootPasswordHash": "$6$ci-salt$84kpokiRmp5aQtKcYyAgbcrevX28noHZWpBVLjnczjSSCiguac7NDiBaVX43FzNjINtyqpLktqjIabUq8T4nH0",
+              "defaultUser": "hyde",
+          }, indent=2) + "\n")
+          PY
+      - name: Evaluate target system and installer ISO
+        run: |
+          nix eval --no-write-lock-file .#nixosConfigurations.hyde.config.system.build.toplevel.drvPath
+          nix eval --no-write-lock-file .#nixosConfigurations.hydeIso.config.system.build.isoImage.drvPath
+          bash -n Scripts/iso/nixos/build-iso.sh Scripts/iso/nixos/nixos-install.sh Scripts/iso/nixos/account-choice.sh
+          Scripts/iso/nixos/build-iso.sh --help >/dev/null

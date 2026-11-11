@@ -7,9 +7,9 @@ Usage: build-iso.sh --source Fedora-Everything-netinst.iso --disk DEVICE [option
 
 Options:
   --source PATH       Fedora netinstall ISO to customize
-  --disk DEVICE       Installation target, such as /dev/nvme0n1 or sda
+  --disk DEVICE       Installation target (prefer /dev/disk/by-id/...)
   --user NAME         First-boot account (default: hyde)
-  --hyde-repository URL  HyDE repository to install (default: upstream)
+  --hyde-repository URL  HyDE repository to install (default: Fedora support fork)
   --hyde-branch NAME     HyDE branch to install (default: feat/fedora-install)
   --output PATH       Output ISO path (default: Fedora-HyDE-autoinstall.iso)
   -h, --help          Show this help
@@ -47,11 +47,24 @@ if [[ ! -f "$source_iso" ]]; then
     echo "Fedora ISO not found: $source_iso" >&2
     exit 1
 fi
+if ! [[ "$target_disk" =~ ^(/dev/disk/by-id/[A-Za-z0-9._:+-]+|/dev/(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+)|(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+))$ ]] || [[ "$target_disk" == *-part[0-9]* ]]; then
+    echo "Invalid target disk; use a whole disk or /dev/disk/by-id identity." >&2
+    exit 2
+fi
+if [[ "$target_disk" == /dev/disk/by-id/* ]]; then
+    kickstart_disk="$target_disk"
+else
+    kickstart_disk="${target_disk##*/}"
+    target_disk="/dev/$kickstart_disk"
+fi
 if ! command -v mkksiso >/dev/null 2>&1; then
     echo "mkksiso is missing; install Fedora's lorax package first." >&2
     exit 1
 fi
 command -v openssl >/dev/null 2>&1 || { echo "openssl is required." >&2; exit 1; }
+command -v lsblk >/dev/null 2>&1 || { echo "lsblk is required to validate the target disk." >&2; exit 1; }
+[[ -b "$target_disk" ]] || { echo "Target disk is not available on this build host: $target_disk" >&2; exit 2; }
+[[ "$(lsblk -dn -o TYPE -- "$target_disk")" == disk ]] || { echo "The target must be a whole disk." >&2; exit 2; }
 if ! [[ "$hyde_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
     echo "Invalid Linux username: $hyde_user" >&2
     exit 2
@@ -65,11 +78,6 @@ if ! [[ "$hyde_branch" =~ ^[A-Za-z0-9._/-]+$ ]]; then
     exit 2
 fi
 
-target_disk="${target_disk##*/}"
-if ! [[ "$target_disk" =~ ^[a-zA-Z0-9_-]+$ ]]; then
-    echo "Invalid disk identifier: $target_disk" >&2
-    exit 2
-fi
 if [[ "$(realpath -m "$source_iso")" == "$(realpath -m "$output_iso")" ]]; then
     echo "The output ISO must be different from the source ISO." >&2
     exit 2
@@ -94,7 +102,7 @@ trap 'rm -rf -- "$temp_dir"' EXIT
 kickstart="$temp_dir/ks.cfg"
 
 sed \
-    -e "s|@DISK@|$target_disk|g" \
+    -e "s|@DISK@|$kickstart_disk|g" \
     -e "s|@USER@|$hyde_user|g" \
     -e "s|@HYDE_REPO_URL@|$hyde_repository|g" \
     -e "s|@HYDE_REPO_BRANCH@|$hyde_branch|g" \

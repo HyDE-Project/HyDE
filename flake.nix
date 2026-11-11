@@ -8,6 +8,14 @@
   outputs =
     { self, nixpkgs }:
     let
+      isoSettings = builtins.fromJSON (builtins.readFile ./Scripts/iso/nixos/install-settings.json);
+      nixosSystem = system: modules: nixpkgs.lib.nixosSystem {
+        inherit system modules;
+        specialArgs = {
+          inherit isoSettings;
+          repoRoot = ./.;
+        };
+      };
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -17,6 +25,14 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f system);
     in
     {
+      nixosConfigurations = {
+        hyde = nixosSystem "x86_64-linux" [ ./Scripts/iso/nixos/target.nix ];
+        hydeIso = nixosSystem "x86_64-linux" [
+          (nixpkgs.outPath + "/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix")
+          ./Scripts/iso/nixos/installer-iso.nix
+        ];
+      };
+
       apps = forAllSystems (
         system:
         let
