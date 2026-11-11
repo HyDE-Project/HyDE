@@ -301,7 +301,7 @@ EOF
 		]
 
 		[[global.dependency]]
-		pacman = [
+		${package_manager:-pacman} = [
 	TOML
 
 # TODO: This is arch specific; A separate install script should be written
@@ -365,7 +365,7 @@ EOF
 		]
 
 		[[global.dependency]]
-		pacman = [
+		${package_manager:-pacman} = [
 	TOML
 	if nvidia_detect && [ "${flg_Nvidia}" -eq 1 ]; then
 		cat /usr/lib/modules/*/pkgbase 2>/dev/null | while read -r kernel; do
@@ -390,7 +390,7 @@ EOF
 		]
 
 		[[global.dependency]]
-		pacman = [
+		${package_manager:-pacman} = [
 	TOML
 	# starship is needed for both zsh and fish prompts
 	echo "\"starship\"," >> "${extra_toml}"
