@@ -5,6 +5,11 @@ import json
 import time
 from pyutils.compositor import HyprctlWrapper
 
+try:
+    from session.compositor.hyprland_layout import reposition_window as _layout_reposition_window
+except Exception:
+    _layout_reposition_window = None
+
 """Hyprland compositor backend for session save/restore."""
 
 
@@ -107,6 +112,12 @@ class HyprlandBackend:
         self._transient_rules: list[str] = []
         self._dispatch_count: int = 0
         self._animations_prev: int | None = None
+        self._layout_enabled = os.environ.get("HYDE_SESSION_HYPR_LAYOUT", "1").lower() not in {
+            "0",
+            "false",
+            "no",
+            "off",
+        }
 
     @staticmethod
     def _ipc_json(endpoint: str):
@@ -381,78 +392,53 @@ class HyprlandBackend:
             + ")"
         )
 
-        is_float = bool(saved.get("floating", False))
+        if self._layout_enabled and _layout_reposition_window is not None:
+            try:
+                _layout_reposition_window(self, addr, saved)
+                return
+            except Exception:
+                # Fall through to a minimal backend-local restore path.
+                pass
 
-        if is_float:
-            self._wait_for_window_mapped(addr=addr, pid=saved.get("pid"), timeout=0.6)
+        self._reposition_basic(addr, saved)
 
+    def _reposition_basic(self, addr: str, saved: dict) -> None:
+        """Fallback geometry restore used when layout module is disabled or fails."""
         target_pos = saved.get("at", [0, 0])
         target_size = saved.get("size", [0, 0])
         fs = saved.get("fullscreenClient", saved.get("fullscreen", 0))
+        is_float = bool(saved.get("floating", False))
 
-        if not is_float:
-            x, y = target_pos
-            if x is not None and y is not None:
-                self._lua_dispatch(
-                    "hl.dsp.window.move("
-                    + self._lua_window_args(addr, {"x": x, "y": y, "exact": True})
-                    + ")"
-                )
-
-            if fs in (1, 2):
-                self._lua_dispatch(
-                    "hl.dsp.window.fullscreen_state("
-                    + self._lua_window_args(addr, {"internal": fs, "client": fs})
-                    + ")"
-                )
-            if saved.get("pinned", False):
-                self._lua_dispatch(
-                    "hl.dsp.window.pin(" + self._lua_window_args(addr, {}) + ")"
-                )
-            return
-
-        start = time.monotonic()
-        interval = 0.08
-        while True:
+        if is_float:
             self._lua_dispatch(
                 "hl.dsp.window.float("
                 + self._lua_window_args(addr, {"action": "set"})
                 + ")"
             )
             w, h = target_size
-            x, y = target_pos
             if w > 0 and h > 0:
                 self._lua_dispatch(
                     "hl.dsp.window.resize("
                     + self._lua_window_args(addr, {"x": w, "y": h, "exact": True})
                     + ")"
                 )
+
+        x, y = target_pos
+        if x is not None and y is not None:
             self._lua_dispatch(
                 "hl.dsp.window.move("
                 + self._lua_window_args(addr, {"x": x, "y": y, "exact": True})
                 + ")"
             )
-            if fs in (1, 2):
-                self._lua_dispatch(
-                    "hl.dsp.window.fullscreen_state("
-                    + self._lua_window_args(addr, {"internal": fs, "client": fs})
-                    + ")"
-                )
-            if saved.get("pinned", False):
-                self._lua_dispatch(
-                    "hl.dsp.window.pin(" + self._lua_window_args(addr, {}) + ")"
-                )
 
-            clients = self.get_clients()
-            client = next((c for c in clients if c.get("address") == addr), None)
-            if client:
-                pos = client.get("at", [None, None])
-                size = client.get("size", [None, None])
-                if list(pos) == list(target_pos) and list(size) == list(target_size):
-                    break
-            if time.monotonic() - start > 1.2:
-                break
-            time.sleep(interval)
+        if fs in (1, 2):
+            self._lua_dispatch(
+                "hl.dsp.window.fullscreen_state("
+                + self._lua_window_args(addr, {"internal": fs, "client": fs})
+                + ")"
+            )
+        if saved.get("pinned", False):
+            self._lua_dispatch("hl.dsp.window.pin(" + self._lua_window_args(addr, {}) + ")")
 
     @staticmethod
     def _command_from_exec_dispatch(cmd: str) -> str | None:
