@@ -195,6 +195,11 @@ EOF
 	exit 0
 fi
 
+if { has_operation "install" || has_operation "restore"; } && ! enable_fedora_hyprland_repo; then
+	print_log -err "[COPR] " -crit "ERROR" "Unable to prepare Fedora repositories."
+	exit 1
+fi
+
 # Both branches below run out of the Python environment, and the revisions they
 # run are the ones this checkout's lock pins. Without this step a restore
 # deploys with whatever was installed last time, so a corrected pin never

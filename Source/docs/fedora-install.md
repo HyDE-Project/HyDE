@@ -1,7 +1,9 @@
 # Fedora installation
 
-HyDE's installer supports Fedora systems that use DNF. Install Git, clone HyDE,
-then run the regular installer:
+HyDE's Fedora installer path supports Fedora 44 and newer systems that use DNF.
+Fedora 43 ships Waybar 0.14, which does not load every wildcard include used by
+HyDE's Waybar layout; Fedora 44 and newer ship Waybar 0.15 or newer. Install
+Git, clone HyDE, then run the regular installer:
 
 ```bash
 sudo dnf install git

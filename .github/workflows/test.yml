@@ -317,8 +317,10 @@ jobs:
               python3 .github/scripts/package-metadata.py pacman >/tmp/arch-packages
               mapfile -t packages </tmp/arch-packages
               pacman -Sp --noconfirm --needed "${packages[@]}" >/tmp/arch-transaction.log
-              bash -n Scripts/install.sh Scripts/install_pre.sh Scripts/install_pst.sh \
-                Scripts/restore_shl.sh Scripts/global_fn.sh
+              for script in Scripts/install.sh Scripts/install_pre.sh Scripts/install_pst.sh \
+                Scripts/restore_shl.sh Scripts/global_fn.sh; do
+                bash -n "$script"
+              done
               test -s /tmp/arch-packages
             '
 
@@ -367,6 +369,8 @@ jobs:
               cargo build --manifest-path /tmp/awww/Cargo.toml --release --jobs 2
               test -x /tmp/awww/target/release/awww
               test -x /tmp/awww/target/release/awww-daemon
-              bash -n Scripts/install.sh Scripts/install_pre.sh Scripts/install_pst.sh \
-                Scripts/restore_shl.sh Scripts/global_fn.sh
+              for script in Scripts/install.sh Scripts/install_pre.sh Scripts/install_pst.sh \
+                Scripts/restore_shl.sh Scripts/global_fn.sh; do
+                bash -n "$script"
+              done
             '
