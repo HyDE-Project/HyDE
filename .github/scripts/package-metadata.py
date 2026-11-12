@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print package names declared for one package manager in Scripts/dots."""
+"""CI helper that prints manager-specific package names from Scripts/dots."""
 
 from __future__ import annotations
 
