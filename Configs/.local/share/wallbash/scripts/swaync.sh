@@ -4,6 +4,10 @@
 #   - notification popup gap from the screen edge  <- general:gaps_out (theme.css)
 #   - control center margin from the screen edge   <- general:gaps_out (config.json)
 #   - corner rounding                               <- decoration:rounding (theme.css)
+#   - popup / control center border colour          <- general:col.active_border
+#     (theme.css, theme mode only)
+# and with [notification] position from config.toml:
+#   - popup / control center position               <- positionX / positionY (config.json)
 # Values are pulled once per theme reload via hyq. The theme.css values are
 # stamped over the tagged placeholders below (do not hand-edit those values,
 # they are overwritten every time this runs). The config.json margins are
@@ -32,6 +36,23 @@ if [ -f "$theme_css" ]; then
     sed -i -E "s#padding: [0-9]+px( [0-9]+px){0,3};([[:space:]]*/\* hyde:gaps_out \*/)#padding: ${gaps_css};\2#" "$theme_css"
 fi
 
+# [notification] position in config.toml -> positionX / positionY
+# Unset (or invalid) leaves whatever is in config.json.
+notif_pos="${NOTIFICATION_POSITION,,}"
+pos_x="" pos_y=""
+case "$notif_pos" in
+"") ;;
+center) pos_y=center pos_x=center ;;
+top | bottom) pos_y=$notif_pos pos_x=center ;;
+left | right) pos_y=center pos_x=$notif_pos ;;
+left-center | right-center) pos_y=center pos_x=${notif_pos%%-*} ;;
+*-*) pos_y=${notif_pos%%-*} pos_x=${notif_pos#*-} ;;
+esac
+if ! [[ $pos_y =~ ^(top|center|bottom)$ && $pos_x =~ ^(left|center|right)$ ]]; then
+    [ -n "$notif_pos" ] && echo "[wallbash] swaync :: Warning: unknown notification position '${NOTIFICATION_POSITION}', ignoring." >&2
+    pos_x="" pos_y=""
+fi
+
 if [ -f "$config_json" ] && command -v jq &>/dev/null; then
     # Same 1/2/3/4-value CSS shorthand Hyprland itself parses gaps_out with
     # 1 -> all sides
@@ -47,11 +68,25 @@ if [ -f "$config_json" ] && command -v jq &>/dev/null; then
     esac
     config_tmp="$(mktemp)"
     if jq --argjson t "$gap_top" --argjson r "$gap_right" --argjson b "$gap_bottom" --argjson l "$gap_left" \
-        '."control-center-margin-top"=$t | ."control-center-margin-right"=$r | ."control-center-margin-bottom"=$b | ."control-center-margin-left"=$l' \
+        --arg x "$pos_x" --arg y "$pos_y" \
+        '."control-center-margin-top"=$t | ."control-center-margin-right"=$r | ."control-center-margin-bottom"=$b | ."control-center-margin-left"=$l
+        | if $x != "" then .positionX=$x | .positionY=$y else . end' \
         "$config_json" >"$config_tmp"; then
         mv "$config_tmp" "$config_json"
     else
         rm -f "$config_tmp"
+    fi
+fi
+
+# general:col.active_border -> border colours, in theme mode only. The
+# template renders them from the wallpaper's colours, which in theme mode
+# leaves the notification border on the wallpaper's accent instead of the
+# theme's own. The first colour of the gradient is used, as CSS takes one.
+if [ -f "$theme_css" ] && [ "${enableWallDcol:-1}" -eq 0 ]; then
+    active_border="$(hyq_query "general:col.active_border")"
+    if [[ $active_border =~ rgba?\(([0-9A-Fa-f]{6})[0-9A-Fa-f]{0,2}\) ]]; then
+        border_hex="${BASH_REMATCH[1]}"
+        sed -i -E "s#^(@define-color (sw-cc-border-color|sw-noti-window-br)) \#[0-9A-Fa-f]{6};#\1 \#${border_hex};#" "$theme_css"
     fi
 fi
 

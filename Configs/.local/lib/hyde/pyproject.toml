@@ -18,6 +18,11 @@ dependencies = [
 [project.optional-dependencies]
 amd = ["pyamdgpuinfo"]
 wayland = ["pywayland", "PyGObject", "PyQt6"]
+
+# Dev tooling lives in a dependency group, not an extra: `uv sync` never
+# installs or prunes a group unless it is named, so a user install cannot
+# remove it. Install with: uv sync --group dev
+[dependency-groups]
 dev = ["pre-commit>=4.6.2", "prek>=0.4.1"]
 
 [tool.ruff]

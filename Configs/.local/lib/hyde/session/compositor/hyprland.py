@@ -2,7 +2,6 @@ from __future__ import annotations
 import os
 import socket
 import json
-import subprocess
 import time
 from pyutils.compositor import HyprctlWrapper
 
@@ -480,16 +479,7 @@ class HyprlandBackend:
         if not self._transient_rules:
             return
 
-        count = len(self._transient_rules)
-
-        subprocess.Popen(
-            ["sh", "-c", "sleep 15; hyprctl reload config-only >/dev/null 2>&1"],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            start_new_session=True,
-        )
-        print(f"  ({count} transient rules — config reload in ~15s)")
+        self._transient_rules.clear()
 
     @staticmethod
     def _group_rule(client: dict) -> str | None:

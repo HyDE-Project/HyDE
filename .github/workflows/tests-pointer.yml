@@ -1,0 +1,227 @@
+name: Tests pointer
+
+# Keeps the `tests` submodule on dev pointing at HyDE-Project/tests main.
+# test.yml never reads this pointer: it always resolves `tests` fresh by
+# branch name (falling back to main), for every push and PR alike. The
+# pointer only matters to whoever clones HyDE and runs
+# `git submodule update --init` -- it should land them on a `tests` commit
+# this code has actually been run against, not an arbitrary stale one. It
+# used to be bumped by hand after every tests merge.
+#
+# When the pointer is behind, this moves it to tests/main, runs the suite
+# against that, and only if it passes opens (or updates) a PR from
+# `ci/tests-pointer` into dev. It never pushes to dev itself.
+#
+# Split into two jobs so the write-capable token is never in the same
+# workspace as code fetched from the tests repo (CodeRabbit review on
+# HyDE-Project/HyDE#2177, CWE-269): `validate` only has `contents: read`,
+# disables the checkout's persisted credential, and is the one that runs
+# tests/run.sh against the fetched tests commit -- a compromised tests/main
+# would find nothing writable there. `reconcile` gets the write token but
+# never executes anything from the tests repo; it only re-checks-out the
+# already-validated commit by its SHA (a metadata operation, not code
+# execution) to stage the pointer bump, then commits, pushes and manages
+# the PR.
+#
+# The PR's head commit is pushed with the workflow token, so GitHub holds its
+# own Tests/CI runs as `action_required` with no jobs queued until a
+# maintainer clicks "Approve and run workflows" in the Checks tab (verified
+# end to end against a real PR before this was proposed). That's why the
+# suite runs here first, and this run is linked from the PR body as the
+# real check.
+
+on:
+  push:
+    branches:
+      - dev
+  # Merges in the tests repo don't trigger anything here. Scheduled and
+  # manual runs start from the default branch, so they check out dev
+  # explicitly below. GitHub only fires `schedule`/`workflow_dispatch` from a
+  # workflow file that exists on the repo's default branch (currently
+  # `master`), so until this reaches master, only the push-to-dev trigger is
+  # live -- merging this file into dev is itself the first run.
+  schedule:
+    - cron: "23 4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: tests-pointer
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: dev
+  TESTS_REPO: HyDE-Project/tests
+  TESTS_BRANCH: main
+  PR_BRANCH: ci/tests-pointer
+
+jobs:
+  validate:
+    name: Validate the new tests/main pointer
+    # Only the upstream repository; forks never run this.
+    if: github.repository == 'HyDE-Project/HyDE'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      up_to_date: ${{ steps.compare.outputs.up_to_date }}
+      current: ${{ steps.compare.outputs.current }}
+      latest: ${{ steps.compare.outputs.latest }}
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Compare the pointer with tests main
+        id: compare
+        run: |
+          set -eu
+          current=$(git ls-tree HEAD tests | awk '{print $3}')
+          latest=$(git ls-remote "https://github.com/$TESTS_REPO.git" "refs/heads/$TESTS_BRANCH" | cut -f1)
+          # An empty answer is a lookup failure, not "nothing to do".
+          if [ -z "$current" ] || [ -z "$latest" ]; then
+            echo "::error::could not read the pointer ('$current') or $TESTS_REPO $TESTS_BRANCH ('$latest')"
+            exit 1
+          fi
+          echo "current=$current" >>"$GITHUB_OUTPUT"
+          echo "latest=$latest" >>"$GITHUB_OUTPUT"
+          # A mismatch isn't necessarily "behind": a feature branch can merge
+          # into dev carrying a newer tests commit before that same commit
+          # reaches tests/main itself (#2175 did, moments before tests/main
+          # caught up), which otherwise looks exactly like "needs a bump" and
+          # moves the pointer backward (closed as wrong in #2179). Only bump
+          # when $current is a genuine, strict ancestor of $latest -- every
+          # other case (equal, $current ahead, diverged, or the fetch below
+          # failing) leaves the pointer alone instead of guessing, since
+          # guessing "needs a bump" is the unsafe default that caused #2179
+          # (CodeRabbit catch on #2181: that includes the fetch-failure case
+          # too, not just a plain direction mismatch).
+          if [ "$current" = "$latest" ]; then
+            echo "up_to_date=true" >>"$GITHUB_OUTPUT"
+            echo "tests already points at $TESTS_BRANCH ($latest)"
+          elif ! git fetch --quiet "https://github.com/$TESTS_REPO.git" "$current" "$latest"; then
+            # Neither "true" nor "false": reconcile's "close an obsolete
+            # pointer PR" step is gated on up_to_date == 'true', so that
+            # value must mean "confirmed current", not "couldn't tell" --
+            # otherwise a transient fetch failure here could close and
+            # delete a still-valid, pending pointer PR (CodeRabbit catch on
+            # #2181). "unknown" matches neither gate, so every reconcile
+            # step sits out this run and the next trigger re-evaluates.
+            echo "::warning::could not fetch $current and/or $latest from $TESTS_REPO to check ancestry; leaving the pointer and any pending PR as-is for now"
+            echo "up_to_date=unknown" >>"$GITHUB_OUTPUT"
+          elif git merge-base --is-ancestor "$current" "$latest"; then
+            echo "up_to_date=false" >>"$GITHUB_OUTPUT"
+            echo "tests points at $current, $TESTS_BRANCH is $latest"
+          else
+            echo "up_to_date=true" >>"$GITHUB_OUTPUT"
+            if git merge-base --is-ancestor "$latest" "$current"; then
+              echo "tests already points at $current, which is ahead of $TESTS_BRANCH ($latest)"
+            else
+              echo "::warning::tests pointer ($current) and $TESTS_BRANCH ($latest) have diverged; leaving the pointer as-is"
+            fi
+          fi
+
+      - name: Fetch the new tests commit
+        if: steps.compare.outputs.up_to_date == 'false'
+        env:
+          LATEST: ${{ steps.compare.outputs.latest }}
+        run: |
+          set -eu
+          git submodule update --init tests
+          git -C tests fetch --quiet "https://github.com/$TESTS_REPO.git" "$TESTS_BRANCH"
+          git -C tests checkout --quiet --detach "$LATEST"
+
+      - name: Install test dependencies
+        if: steps.compare.outputs.up_to_date == 'false'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends lua5.4 lua-filesystem lua-socket lua-argparse lua-dkjson shellcheck fish
+          sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
+          sudo ln -sf /usr/bin/luac5.4 /usr/local/bin/luac
+
+      # A failure stops here: no PR is opened for a pointer that breaks dev.
+      # This step, and everything upstream of it in this job, runs with a
+      # read-only token and no persisted git credential -- see the header.
+      - name: Run the test suite against the new pointer
+        if: steps.compare.outputs.up_to_date == 'false'
+        run: sh tests/run.sh
+
+  reconcile:
+    name: Open or update the pointer PR
+    needs: validate
+    if: github.repository == 'HyDE-Project/HyDE'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CURRENT: ${{ needs.validate.outputs.current }}
+      LATEST: ${{ needs.validate.outputs.latest }}
+    steps:
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 1
+
+      - name: Close an obsolete pointer PR
+        if: needs.validate.outputs.up_to_date == 'true'
+        run: |
+          set -eu
+          pr=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$PR_BRANCH" --base "$TARGET_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr close "$pr" --repo "$GITHUB_REPOSITORY" --delete-branch \
+              --comment "\`$TARGET_BRANCH\` already points \`tests\` at $TESTS_BRANCH, closing."
+          fi
+
+      # Re-checking out $LATEST by its already-validated SHA is a metadata
+      # operation, not code execution -- unlike the validate job, nothing
+      # here runs anything the tests repo ships.
+      - name: Re-stage the validated pointer
+        if: needs.validate.outputs.up_to_date == 'false'
+        run: |
+          set -eu
+          git submodule update --init tests
+          git -C tests fetch --quiet "https://github.com/$TESTS_REPO.git" "$TESTS_BRANCH"
+          git -C tests checkout --quiet --detach "$LATEST"
+          # A unique delimiter, so no commit subject can end the value early.
+          delim="TESTS_LOG_$(date +%s%N)"
+          {
+            echo "TESTS_LOG<<$delim"
+            if git -C tests merge-base --is-ancestor "$CURRENT" "$LATEST" 2>/dev/null; then
+              git -C tests log --oneline --no-decorate "$CURRENT..$LATEST"
+            else
+              echo "(the previous pointer $CURRENT is not on $TESTS_BRANCH)"
+            fi
+            echo "$delim"
+          } >>"$GITHUB_ENV"
+
+      - name: Open or update the pointer PR
+        if: needs.validate.outputs.up_to_date == 'false'
+        run: |
+          set -eu
+          short=$(printf '%.7s' "$LATEST")
+          title="chore(tests): point tests at $TESTS_BRANCH ($short)"
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git checkout --quiet -B "$PR_BRANCH"
+          git add tests
+          git commit --quiet -m "$title" -m "$TESTS_LOG"
+          git push --quiet --force origin "$PR_BRANCH"
+
+          body=$(printf '%s\n\n%s\n\n```\n%s\n```\n\n%s\n' \
+            "Moves the \`tests\` submodule on \`$TARGET_BRANCH\` from \`$CURRENT\` to \`$TESTS_REPO\` $TESTS_BRANCH \`$LATEST\`." \
+            "New in tests since the previous pointer:" \
+            "$TESTS_LOG" \
+            "The full suite passed against the new pointer in the \`validate\` job of [this run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID), which is the real check: opened by the \`tests-pointer\` workflow, this PR's own Tests/CI runs land as \`action_required\` with no jobs queued, since their head commit was pushed with the workflow token. A maintainer has to open the Checks tab and click \"Approve and run workflows\" once per push to this branch before they execute.")
+
+          pr=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$PR_BRANCH" --base "$TARGET_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
+            echo "updated #$pr"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --base "$TARGET_BRANCH" --head "$PR_BRANCH" --title "$title" --body "$body"
+          fi

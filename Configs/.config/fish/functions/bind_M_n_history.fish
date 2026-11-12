@@ -1,11 +1,6 @@
 function bind_M_n_history
     for i in (seq 9)
-        set -l command
-        if test (count $history) -ge $i
-            set command "commandline -r \$history[$i]"
-        else
-            set command "echo \"No history found for number $i\""
-        end
+        set -l command "set -q history[$i] && commandline -r \$history[$i] || echo \"No history found for number $i\""
 
         if contains fish_vi_key_bindings $fish_key_bindings
             bind -M default \e$i "$command"
@@ -15,4 +10,3 @@ function bind_M_n_history
         end
     end
 end
-

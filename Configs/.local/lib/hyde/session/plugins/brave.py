@@ -4,8 +4,6 @@ Brave runs as a Flatpak (``com.brave.Browser``) which **forks**, so
 Hyprland's PID-based exec-rule tracking doesn't work.  This plugin
 uses transient named windowrules matched by ``initialClass`` instead.
 
-The windowrule is cleaned up after restore via a config-only reload
-(handled by session.py's main cleanup logic).
 """
 
 import sys
