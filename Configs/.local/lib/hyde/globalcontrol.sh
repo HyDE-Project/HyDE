@@ -461,7 +461,7 @@ EOF
     [ -n "$ignore_class" ] && echo "$ignore_class" >>"$ignore_paste_file" && print_log -y "[ignore]" "'$ignore_class'" && exit 0
     class=$(hyprctl -j activewindow | jq -r '.initialClass')
     if ! grep -q "$class" "$ignore_paste_file"; then
-        hyprctl -q dispatch exec 'wtype -M ctrl V -m ctrl'
+        wtype -M ctrl V -m ctrl
     fi
 }
 is_hovered() {
