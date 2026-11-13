@@ -1,0 +1,156 @@
+# Fedora text-mode installation with HyDE installed on the first boot.
+text
+skipx
+eula --agreed
+lang en_US.UTF-8
+keyboard --vckeymap=us
+timezone Europe/Rome --utc
+network --bootproto=dhcp --device=link --activate --onboot=yes
+url --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch"
+repo --name=updates --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&arch=$basearch"
+
+ignoredisk --only-use=@DISK@
+clearpart --all --initlabel --disklabel=gpt --drives=@DISK@
+autopart --type=btrfs
+bootloader --timeout=1
+
+rootpw --iscrypted @PASSWORD_HASH@
+firewall --enabled --service=ssh
+services --enabled=NetworkManager,sshd
+reboot
+
+%packages
+@core
+git
+sudo
+gcc
+cmake
+make
+gcc-c++
+cargo
+pkgconf-pkg-config
+python3-pip
+python3-devel
+zlib-devel
+libjpeg-turbo-devel
+pciutils
+%end
+
+%post --log=/root/hyde-kickstart-post.log
+cat > /usr/local/sbin/hyde-firstboot <<'HYDE_FIRSTBOOT'
+#!/usr/bin/bash
+set -euo pipefail
+
+hyde_repo_url='@HYDE_REPO_URL@'
+hyde_repo_branch='@HYDE_REPO_BRANCH@'
+default_user='@USER@'
+hyde_repo=/root/HyDE
+
+if [[ -e "$hyde_repo" && ! -d "$hyde_repo/.git" ]]; then
+    mv "$hyde_repo" "$hyde_repo.incomplete.$(date +%s)"
+fi
+if [[ -d "$hyde_repo/.git" ]]; then
+    git -C "$hyde_repo" remote set-url origin "$hyde_repo_url"
+    git -C "$hyde_repo" fetch --depth=1 origin "$hyde_repo_branch"
+    git -C "$hyde_repo" checkout --detach FETCH_HEAD
+else
+    clone_dir="/root/.HyDE.clone.$$"
+    trap 'rm -rf -- "$clone_dir"' EXIT
+    git clone --depth=1 --branch "$hyde_repo_branch" "$hyde_repo_url" "$clone_dir"
+    mv "$clone_dir" "$hyde_repo"
+    trap - EXIT
+fi
+cd "$hyde_repo"
+HOME=/root HYDE_NO_REBOOT_PROMPT=1 ./Scripts/install.sh --defaults --restore --services
+
+install -d -m 0755 /usr/share/wayland-sessions /etc/sddm.conf.d
+install -d -m 0755 /etc/skel/.local /etc/skel/.local/bin /etc/skel/.local/lib /etc/skel/.local/share
+for item in .config .local/bin .local/lib .local/share .bashrc .zshrc .zprofile .bash_profile; do
+    [[ -e "/root/$item" ]] || continue
+    if [[ "$item" == .local/* ]]; then
+        cp -aT "/root/$item" "/etc/skel/$item"
+    else
+        cp -a "/root/$item" /etc/skel/
+    fi
+done
+chown -R root:root /etc/skel
+
+cat > /usr/share/wayland-sessions/hyde-root.desktop <<'SESSION'
+[Desktop Entry]
+Name=HyDE (root)
+Comment=HyDE session running as root
+Exec=Hyprland --i-am-really-stupid
+Type=Application
+SESSION
+
+printf '
+HyDE is ready. Create a normal user now? [Y/n] '
+read -r create_user
+if [[ "$create_user" =~ ^[Nn]$ ]]; then
+    login_user=root
+    login_session=hyde-root.desktop
+else
+    while :; do
+        printf 'Username [%s]: ' "$default_user"
+        read -r login_user
+        login_user="${login_user:-$default_user}"
+        if [[ "$login_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] && ! id "$login_user" >/dev/null 2>&1; then
+            break
+        fi
+        echo 'Invalid or already existing username; use lowercase letters, digits, _ or -.'
+    done
+    useradd --create-home --skel=/etc/skel --groups=wheel,video,audio,input --shell=/bin/bash "$login_user"
+    passwd "$login_user"
+    login_home="$(getent passwd "$login_user" | cut -d: -f6)"
+    install -d -o "$login_user" -g "$login_user" "$login_home/.local/state"
+    runtime_dir="$login_home/.local/state/runtime"
+    install -d -m 0700 -o "$login_user" -g "$login_user" "$runtime_dir"
+    runuser -u "$login_user" -- env HOME="$login_home" XDG_STATE_HOME="$login_home/.local/state" XDG_RUNTIME_DIR="$runtime_dir" PATH="$login_home/.local/bin:$PATH" hyde-shell luainit
+    rm -rf -- "$runtime_dir"
+    cat > /etc/sudoers.d/10-wheel <<'SUDOERS'
+%wheel ALL=(ALL) ALL
+SUDOERS
+    chmod 0440 /etc/sudoers.d/10-wheel
+    visudo -cf /etc/sudoers.d/10-wheel
+    login_session=hyprland.desktop
+fi
+
+cat > /etc/sddm.conf.d/20-hyde-autologin.conf <<SDDM
+[Users]
+AllowRootLogin=true
+
+[Autologin]
+User=$login_user
+Session=$login_session
+Relogin=true
+SDDM
+systemctl enable sddm.service
+systemctl disable hyde-firstboot.service
+HYDE_FIRSTBOOT
+chmod 0755 /usr/local/sbin/hyde-firstboot
+
+cat > /etc/systemd/system/hyde-firstboot.service <<'UNIT'
+[Unit]
+Description=Configure HyDE and choose the login account
+Wants=network-online.target
+After=network-online.target
+Before=display-manager.service
+
+[Service]
+Type=oneshot
+TimeoutStartSec=infinity
+StandardInput=tty
+StandardOutput=tty
+StandardError=journal
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+ExecStart=/usr/local/sbin/hyde-firstboot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl enable hyde-firstboot.service
+%end

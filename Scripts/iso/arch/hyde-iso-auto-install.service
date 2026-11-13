@@ -1,0 +1,13 @@
+[Unit]
+Description=Unattended HyDE Arch Linux installation
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/root/hyde-iso-config.json
+
+[Service]
+Type=oneshot
+TimeoutStartSec=infinity
+ExecStart=/usr/local/bin/hyde-iso-auto-install
+
+[Install]
+WantedBy=multi-user.target
