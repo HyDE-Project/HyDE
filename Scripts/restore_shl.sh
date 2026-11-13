@@ -23,7 +23,11 @@ fi
 
 # add zsh plugins
 if [ "${myShell}" = "zsh" ] && pkg_installed zsh; then
-    prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
+    if [ "${use_default:-}" = "--noconfirm" ]; then
+        PROMPT_INPUT="n"
+    else
+        prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
+    fi
     PROMPT_INPUT="${PROMPT_INPUT:-y}"
     if [[ "${PROMPT_INPUT}" == "y" || "${PROMPT_INPUT}" == "yes" ]]; then
         if ! pkg_installed oh-my-zsh-git; then

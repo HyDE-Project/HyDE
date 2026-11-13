@@ -135,6 +135,18 @@ export flg_ThemeInstall=$theme_install
 HYDE_LOG="$(date +'%y%m%d_%Hh%Mm%Ss')"
 export HYDE_LOG
 
+# The package list key used by deez-dots follows the package manager detected
+# on the host. Fedora has no AUR and its packages are described with dnf
+# entries in the same TOML files.
+if command -v dnf >/dev/null 2>&1 && ! command -v pacman >/dev/null 2>&1; then
+	package_manager="dnf"
+else
+	# Preserve the installer's existing Arch default on hosts that do not
+	# expose a package manager in PATH (including the test harness).
+	package_manager="pacman"
+fi
+export package_manager
+
 if [ $dry_run -eq 1 ]; then
 	print_log -n "[test-run] " -b "enabled :: " "Testing without executing"
 fi
@@ -145,6 +157,25 @@ fi
 has_operation() {
 	local op="$1"
 	[[ " ${operations[*]} " =~ " ${op} " ]]
+}
+
+enable_fedora_hyprland_repo() {
+	[ "${package_manager}" = "dnf" ] || return 0
+	[ "${flg_DryRun}" -eq 0 ] || return 0
+	if ! dnf copr --help >/dev/null 2>&1; then
+		sudo dnf install -y dnf5-plugins >/dev/null 2>&1 ||
+			sudo dnf install -y dnf-plugins-core || return 1
+	fi
+	local copr_repo
+	for copr_repo in nett00n/hyprland atim/starship; do
+		local enabled_repo="copr:copr.fedorainfracloud.org:${copr_repo//\//:}"
+		if ! dnf repolist --enabled 2>/dev/null | grep -Fq "${enabled_repo}"; then
+			sudo dnf copr enable -y "${copr_repo}" || {
+				print_log -err "COPR" "Unable to enable ${copr_repo}, required for Fedora packages."
+				return 1
+			}
+		fi
+	done
 }
 
 #--------------------#
@@ -162,6 +193,11 @@ EOF
 
 	"${installDir}/install_pre.sh"
 	exit 0
+fi
+
+if { has_operation "install" || has_operation "restore"; } && ! enable_fedora_hyprland_repo; then
+	print_log -err "[COPR] " -crit "ERROR" "Unable to prepare Fedora repositories."
+	exit 1
 fi
 
 # Both branches below run out of the Python environment, and the revisions they
@@ -243,7 +279,7 @@ EOF
 	fi
 
 	# Only an explicit choice counts; an installed package is not an answer.
-	if ! chk_shell "${myShell:-}"; then
+	if ! chk_shell "${myShell:-}" && [ "${use_default:-}" != "--noconfirm" ]; then
 		print_log -c "Shell :: "
 		for i in "${!shlList[@]}"; do
 			print_log -sec "$((i + 1))" " ${shlList[$i]} "
@@ -263,6 +299,9 @@ EOF
 			;;
 		esac
 		print_log -sec "shell" -stat "detected" "${myShell}"
+	fi
+	if ! chk_shell "${myShell:-}"; then
+		export myShell="zsh"
 	fi
 
 	#------------------------------------#
@@ -291,6 +330,7 @@ EOF
 		[[global.dependency]]
 		pacman = [
 	TOML
+	sed -i "s/^pacman = /${package_manager} = /" "${core_toml}"
 
 # TODO: This is arch specific; A separate install script should be written
 	if nvidia_detect; then
@@ -355,7 +395,8 @@ EOF
 		[[global.dependency]]
 		pacman = [
 	TOML
-	if nvidia_detect && [ "${flg_Nvidia}" -eq 1 ]; then
+	sed -i "s/^pacman = /${package_manager} = /" "${core_toml}"
+	if [ "${package_manager}" = "pacman" ] && nvidia_detect && [ "${flg_Nvidia}" -eq 1 ]; then
 		cat /usr/lib/modules/*/pkgbase 2>/dev/null | while read -r kernel; do
 			echo "\"${kernel}-headers\","
 		done >> "${core_toml}"
@@ -380,6 +421,7 @@ EOF
 		[[global.dependency]]
 		pacman = [
 	TOML
+	sed -i "s/^pacman = /${package_manager} = /" "${extra_toml}"
 	# starship is needed for both zsh and fish prompts
 	echo "\"starship\"," >> "${extra_toml}"
 	echo "]" >> "${extra_toml}"
@@ -616,10 +658,8 @@ if has_operation "install"; then
 	print_log -g "Installation" " :: " "COMPLETED!"
 fi
 print_log -b "Log" " :: " -y "View logs at ${cacheDir}/logs/${HYDE_LOG}"
-if has_operation "install" ||
-	has_operation "restore" ||
-	has_operation "services" &&
-	[ $dry_run -ne 1 ]; then
+if { has_operation "install" || has_operation "restore" || has_operation "services"; } &&
+	[ $dry_run -ne 1 ] && [ "${use_default:-}" != "--noconfirm" ]; then
 
 	if [[ -z "${HYPRLAND_CONFIG:-}" ]] || [[ ! -f "${HYPRLAND_CONFIG}" ]]; then
 		print_log -warn "Hyprland config not found! Might be a new install or upgrade."
