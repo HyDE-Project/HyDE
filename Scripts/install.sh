@@ -666,13 +666,19 @@ if { has_operation "install" || has_operation "restore" || has_operation "servic
 		print_log -warn "Please reboot the system to apply new changes."
 	fi
 
-	print_log -stat "HyDE" "It is not recommended to use newly installed or upgraded HyDE without rebooting the system. Do you want to reboot the system? (y/N)"
-	read -r answer
-
-	if [[ "$answer" == [Yy] ]]; then
-		echo "Rebooting system"
-		systemctl reboot
+	if [[ "${HYDE_NO_REBOOT_PROMPT:-0}" == "1" ]]; then
+		echo "Automated setup: skipping the reboot prompt"
 	else
-		echo "The system will not reboot"
+		print_log -stat "HyDE" "It is not recommended to use newly installed or upgraded HyDE without rebooting the system. Do you want to reboot the system? (y/N)"
+		if ! IFS= read -r answer; then
+			answer=""
+		fi
+
+		if [[ "$answer" == [Yy] ]]; then
+			echo "Rebooting system"
+			systemctl reboot
+		else
+			echo "The system will not reboot"
+		fi
 	fi
 fi
