@@ -201,23 +201,24 @@ if [[ ${HYDE_ZSH_NO_PLUGINS} != "1" ]]; then
         # Loads the buggy deferred oh-my-zsh plugin system by HyDE // This is only for oh-my-zsh and compatibility
         _load_deferred_plugin_system_by_hyde
         _load_prompt # This disables transient prompts sadly
-    elif source $ZDOTDIR/plugin.zsh >/dev/null 2>&1; then
+    elif [[ -r $ZDOTDIR/plugin.zsh ]] && source "$ZDOTDIR/plugin.zsh"; then
         # Load plugins from the user's plugin.zsh file
         # This is useful for users who want to use their own plugin system
-        source $ZDOTDIR/plugin.zsh
         _load_prompt
         _load_functions
         _load_completions
     elif [[ -r $ZSH/oh-my-zsh.sh ]]; then
-        # Load oh-my-zsh if it exists in the ZSH directory
-        #  Default if the $ZDOTDIR/plugin.zsh file does not exist or returns an error
-        source $ZSH/oh-my-zsh.sh
+        # Fall back to Oh My Zsh if the custom plugin file is absent or fails.
+        source "$ZSH/oh-my-zsh.sh"
         _load_prompt
         _load_functions
         _load_completions
     else
         echo "No plugin system found. Please install a plugin system or create a $ZDOTDIR/plugin.zsh file."
         echo "You can use $ZDOTDIR/plugin.zsh file to load your own plugins."
+        _load_prompt
+        _load_functions
+        _load_completions
     fi
 else
     # Load user plugins if they exist

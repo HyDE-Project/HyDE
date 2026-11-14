@@ -49,7 +49,7 @@
     update    = "paru -Syu"
 
 [[global.package_managers]]
-    install   = "sudo dnf install"
+    install   = "sudo dnf install -y"
     name      = "dnf"
     query     = "dnf list installed"
     uninstall = "sudo dnf remove"

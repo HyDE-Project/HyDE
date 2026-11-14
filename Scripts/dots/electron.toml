@@ -4,6 +4,9 @@
 
 [[electron-flags.dependency]]
     pacman = [ "electron" ]
+    # bash is present on Fedora and keeps this dependency block selectable
+    # without trying to install Electron from a repository Fedora does not ship.
+    dnf = [ "bash" ]
 
 [[electron-flags.files]]
     action      = "preserve"

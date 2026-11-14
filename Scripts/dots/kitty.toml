@@ -3,6 +3,7 @@
 
 [[kitty.dependency]]
     pacman = [ "kitty" ] # Dependency for kitty
+    dnf = ["kitty"]
 
 [[kitty.files]]
     action      = "sync"
