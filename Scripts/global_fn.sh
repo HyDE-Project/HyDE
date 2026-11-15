@@ -299,6 +299,20 @@ run_pending_migrations() {
     [ -d "${migrationDir}" ] || return 0
     find "${migrationDir}" -maxdepth 1 -type f | grep -q . || return 0
 
+    # A dry run (install.sh -t) only lists what is pending: running a migration
+    # changes the user's files, and recording it would make the next real run
+    # skip it.
+    if [ "${flg_DryRun:-0}" -eq 1 ]; then
+        while read -r migrationFile; do
+            [ -n "${migrationFile}" ] || continue
+            [ -f "${stateFile}" ] && grep -qxF "${migrationFile}" "${stateFile}" && continue
+            pending=$((pending + 1))
+            print_log -y "[MIGRATION] " -b "dry-run :: " "Would run ${migrationFile}"
+        done < <(find "${migrationDir}" -maxdepth 1 -type f -printf '%f\n' | sort -V)
+        [ "${pending}" -gt 0 ] || echo "No outstanding migrations in ${migrationDir}."
+        return 0
+    fi
+
     mkdir -p "$(dirname "${stateFile}")"
     [ -f "${stateFile}" ] || : >"${stateFile}"
 
