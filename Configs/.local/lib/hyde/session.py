@@ -12,6 +12,7 @@ Usage:
 
 import configparser
 import json
+import math
 import os
 import re
 import shlex
@@ -634,6 +635,114 @@ def restore(src: Path, *, apply_snapshot: bool = True, dry_run: bool = False) ->
 
         return candidates.pop(0)
 
+    def _coord_tuple(client: dict) -> tuple[float, float]:
+        at = client.get("at", [0, 0])
+        if not isinstance(at, (list, tuple)) or len(at) < 2:
+            return (0.0, 0.0)
+        x = at[0] if isinstance(at[0], (int, float)) else 0.0
+        y = at[1] if isinstance(at[1], (int, float)) else 0.0
+        return (float(x), float(y))
+
+    def _text_score(saved_text: str, live_text: str) -> int:
+        if not saved_text or not live_text:
+            return 0
+        if saved_text == live_text:
+            return 50
+        if saved_text in live_text or live_text in saved_text:
+            return 30
+        return 0
+
+    def _edge_score(saved: dict, live: dict) -> tuple[int, float]:
+        score = 0
+
+        # Strong identity when both snapshots agree on exact address.
+        if saved.get("address") and saved.get("address") == live.get("address"):
+            score += 1000
+
+        if saved.get("class") and saved.get("class") == live.get("class"):
+            score += 180
+        if saved.get("initialClass") and saved.get("initialClass") == live.get("initialClass"):
+            score += 220
+
+        score += _text_score(saved.get("title", ""), live.get("title", ""))
+        score += _text_score(saved.get("initialTitle", ""), live.get("initialTitle", ""))
+
+        saved_ws = saved.get("workspace", {})
+        live_ws = live.get("workspace", {})
+        if saved_ws and live_ws:
+            if saved_ws.get("id") == live_ws.get("id"):
+                score += 120
+            if saved_ws.get("name") and saved_ws.get("name") == live_ws.get("name"):
+                score += 80
+
+        grouped_saved = saved.get("grouped", [])
+        grouped_live = live.get("grouped", [])
+        if isinstance(grouped_saved, list) and isinstance(grouped_live, list):
+            if len(grouped_saved) > 1 and len(grouped_live) > 1:
+                score += 30
+
+        sx, sy = _coord_tuple(saved)
+        lx, ly = _coord_tuple(live)
+        dist = math.hypot(sx - lx, sy - ly)
+        return score, dist
+
+    def _assign_live_windows(saved_list: list[dict], live_list: list[dict]) -> dict[int, dict]:
+        """Assign saved windows to live windows for one class using global scoring.
+
+        The highest-confidence edges are claimed first; ties prefer the live
+        window already closest to the target position.
+        """
+        if not saved_list or not live_list:
+            return {}
+
+        edges: list[tuple[int, float, int, int]] = []
+        for si, saved_client in enumerate(saved_list):
+            plugin = find_plugin(saved_client.get("initialClass", ""))
+            for li, live_client in enumerate(live_list):
+                if plugin:
+                    verdict = call_match_running(plugin, saved_client, live_client)
+                    if verdict is False:
+                        continue
+                else:
+                    verdict = None
+
+                score, dist = _edge_score(saved_client, live_client)
+                if verdict is True:
+                    score += 400
+
+                if score <= 0:
+                    continue
+                edges.append((score, dist, si, li))
+
+        edges.sort(key=lambda e: (-e[0], e[1], e[2], e[3]))
+
+        assigned_saved: set[int] = set()
+        assigned_live: set[int] = set()
+        result: dict[int, dict] = {}
+
+        for score, _dist, si, li in edges:
+            if score <= 0 or si in assigned_saved or li in assigned_live:
+                continue
+            assigned_saved.add(si)
+            assigned_live.add(li)
+            result[id(saved_list[si])] = live_list[li]
+
+        return result
+
+    preassigned_targets: dict[int, dict] = {}
+    if apply_snapshot:
+        saved_by_class: dict[str, list[dict]] = {}
+        for saved_client in clients:
+            iclass = saved_client.get("initialClass", "")
+            if iclass:
+                saved_by_class.setdefault(iclass, []).append(saved_client)
+
+        for iclass, saved_entries in saved_by_class.items():
+            live_entries = live_by_class.get(iclass, [])
+            if not live_entries:
+                continue
+            preassigned_targets.update(_assign_live_windows(saved_entries, live_entries))
+
     try:
         for c in clients:
             pid = c.get("pid", 0)
@@ -661,12 +770,16 @@ def restore(src: Path, *, apply_snapshot: bool = True, dry_run: bool = False) ->
             # ── Apply-snapshot mode: try to move an existing window first ─
             if apply_snapshot:
                 iclass = c.get("initialClass", "")
-                cands = [
-                    w
-                    for w in live_by_class.get(iclass, [])
-                    if w.get("address") not in used_live_addrs
-                ]
-                target = _pick_live_target(c, cands)
+                target = preassigned_targets.get(id(c))
+                if target and target.get("address") in used_live_addrs:
+                    target = None
+                if target is None:
+                    cands = [
+                        w
+                        for w in live_by_class.get(iclass, [])
+                        if w.get("address") not in used_live_addrs
+                    ]
+                    target = _pick_live_target(c, cands)
 
                 if target:
                     addr = target.get("address", "")

@@ -7,6 +7,10 @@ require("luautils.init")
 local xdg = require("luautils.xdg")
 local lfs = require("lfs")
 local common = require("luautils.selector.common")
+local hyprctl = require("luautils.hypr.hyprctl")
+
+local state_file = xdg.state .. "/hyde/lua_state/layouts.lua"
+local first_time = not lfs.attributes(state_file)
 
 local function write_layouts_conf(item)
     local conf_dir = xdg.config .. "/hypr"
@@ -18,6 +22,13 @@ local function write_layouts_conf(item)
     local f = assert(io.open(conf_dir .. "/layouts.conf", "w"))
     f:write("source = ./layouts/" .. item.key .. ".conf\n")
     f:close()
+
+    if first_time then
+        local ok = hyprctl.reload()
+        if ok then
+            first_time = false
+        end
+    end
 end
 
 local M =
