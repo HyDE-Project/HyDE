@@ -91,13 +91,24 @@ class HyprctlWrapper:
         return f"{font_override} {r_override}"
 
     @staticmethod
-    def get_rofi_pos() -> str:
+    def get_rofi_pos(section: str | None = None) -> str:
         """
         Get the rofi position based on the cursor position and monitor configuration.
+
+        Args:
+            section: rofi menu name; reads ROFI_<SECTION>_FOLLOW_CURSOR
+                ([rofi.<section>] follow_cursor), falling back to
+                ROFI_FOLLOW_CURSOR ([rofi] follow_cursor). Defaults to true.
+                When disabled, rofi is centered.
 
         Returns:
             The formatted rofi position string.
         """
+        follow = os.environ.get("ROFI_FOLLOW_CURSOR", "true")
+        if section:
+            follow = os.environ.get(f"ROFI_{section.upper()}_FOLLOW_CURSOR", follow)
+        if follow.lower() not in ("true", "1"):
+            return "window{location:center;anchor:center;x-offset:0px;y-offset:0px;}"
         cursor_pos = json.loads(HyprctlWrapper._send("j/cursorpos"))
         monitors = json.loads(HyprctlWrapper._send("j/monitors"))
 

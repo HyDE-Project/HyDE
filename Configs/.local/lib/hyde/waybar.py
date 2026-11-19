@@ -835,7 +835,7 @@ def rofi_file_selector(
     hyprland = HYPRLAND.HyprctlWrapper()
     try:
         override_string = hyprland.get_rofi_override_string()
-        rofi_pos_string = hyprland.get_rofi_pos()
+        rofi_pos_string = hyprland.get_rofi_pos("waybar")
         rofi_flags = [
             "-p", prompt,
             "-select", current_name,
@@ -974,7 +974,7 @@ def handle_backup_display():
 
     hyprland = HYPRLAND.HyprctlWrapper()
     override_string = hyprland.get_rofi_override_string()
-    rofi_pos_string = hyprland.get_rofi_pos()
+    rofi_pos_string = hyprland.get_rofi_pos("waybar")
 
     rofi_flags = [
         "-p", "Select a backup to try:",
