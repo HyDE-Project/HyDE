@@ -4,6 +4,7 @@ local M = {}
 -- pulls the anchor back so the window's far edge never crosses the opposite safe
 -- boundary (e.g. a tall menu opened near the top no longer grows off the bottom).
 -- required may be 0/nil when the caller doesn't know the window size.
+-- Returns the anchor side and the distance (>= 0) from that edge.
 local function resolve_axis(rel, dim, safe_start, safe_end, required)
     required = required or 0
     local at_end = rel >= (dim / 2)
@@ -17,7 +18,7 @@ local function resolve_axis(rel, dim, safe_start, safe_end, required)
             far_edge = math.max(near_edge, safe_start + required)
         end
         dir_is_end = true
-        offset = far_edge - (dim - safe_end)
+        offset = (dim - safe_end) - far_edge
     else
         local near_edge = rel
         local far_edge = near_edge + required
@@ -29,7 +30,36 @@ local function resolve_axis(rel, dim, safe_start, safe_end, required)
         offset = near_edge - safe_start
     end
 
-    return dir_is_end, offset
+    return dir_is_end, math.max(0, offset)
+end
+
+-- rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) treats
+-- x-offset/y-offset of east/south locations as an inward distance from that
+-- edge, i.e. the opposite sign of the documented behavior
+-- (https://github.com/davatorium/rofi/issues/2364).
+local offset_inward_cache
+function M.offset_inward()
+    if offset_inward_cache ~= nil then
+        return offset_inward_cache
+    end
+    local function run(cmd)
+        local p = io.popen(cmd .. " 2>/dev/null")
+        if not p then
+            return ""
+        end
+        local out = p:read("*a") or ""
+        p:close()
+        return out
+    end
+    local major, minor = run("rofi -v"):match("(%d+)%.(%d+)")
+    major, minor = tonumber(major), tonumber(minor)
+    if not major or major < 2 or (major == 2 and minor < 1) then
+        offset_inward_cache = false
+    else
+        local cfg = "\n" .. run("rofi -dump-config")
+        offset_inward_cache = not cfg:find("\n%s*click%-to%-exit:%s*false")
+    end
+    return offset_inward_cache
 end
 
 function M.get_rofi_pos(opts)
@@ -75,6 +105,10 @@ function M.get_rofi_pos(opts)
 
     local x_is_east, x_off = resolve_axis(rel_x, l_w, safe_lft, safe_rgt, opts.min_width)
     local y_is_south, y_off = resolve_axis(rel_y, l_h, safe_top, safe_bot, opts.min_height)
+    if not M.offset_inward() then
+        x_off = x_is_east and -x_off or x_off
+        y_off = y_is_south and -y_off or y_off
+    end
     local x_dir = x_is_east and "east" or "west"
     local y_dir = y_is_south and "south" or "north"
 
@@ -111,12 +145,12 @@ local function self_test()
     -- Same overflow, mirrored: cursor near the bottom/right.
     is_end, off = resolve_axis(900, 1000, 0, 0, 950)
     assert(is_end, "cursor in second half anchors at the end edge")
-    eq(off, -50, "offset should shrink so the window's near edge stays on-screen")
+    eq(off, 50, "offset should shrink so the window's near edge stays on-screen")
 
     -- Window bigger than the whole safe area: best-effort, pinned to the start.
     is_end, off = resolve_axis(100, 1000, 0, 0, 1200)
     assert(not is_end)
-    eq(off, -200, "oversized window is pinned at the start edge, ceiling case")
+    eq(off, 0, "oversized window is pinned at the start edge, ceiling case")
 
     print("pos.lua self-test OK")
 end

@@ -398,6 +398,21 @@ get_monitor_scale() {
         printf "%d", scale * 100 + 0.5
     }'
 }
+##
+# rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) treats
+# x-offset/y-offset of east/south locations as an inward distance from that
+# edge, i.e. the opposite sign of the documented behavior
+# (https://github.com/davatorium/rofi/issues/2364).
+# Returns 0 when that inverted behavior applies.
+##
+rofi_offset_inward() {
+    local ver
+    ver="$(rofi -v 2>/dev/null)" || return 1
+    [[ $ver =~ ([0-9]+)\.([0-9]+) ]] || return 1
+    local major="${BASH_REMATCH[1]}" minor="${BASH_REMATCH[2]}"
+    ((major > 2 || (major == 2 && minor >= 1))) || return 1
+    ! rofi -dump-config 2>/dev/null | grep -Eq '^[[:space:]]*click-to-exit:[[:space:]]*false'
+}
 get_rofi_pos() {
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
     readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
@@ -427,17 +442,25 @@ get_rofi_pos() {
     # issue number of its own; found while testing #975's fix.
     if [ "${curPos[0]}" -ge "$((monRes[0] / 2))" ]; then
         local x_pos="east"
-        local x_off="-$((monRes[0] - curPos[0] - offRes[2]))"
+        local x_off="$((monRes[0] - curPos[0] - offRes[2]))"
     else
         local x_pos="west"
         local x_off="$((curPos[0] - offRes[0]))"
     fi
     if [ "${curPos[1]}" -ge "$((monRes[1] / 2))" ]; then
         local y_pos="south"
-        local y_off="-$((monRes[1] - curPos[1] - offRes[3]))"
+        local y_off="$((monRes[1] - curPos[1] - offRes[3]))"
     else
         local y_pos="north"
         local y_off="$((curPos[1] - offRes[1]))"
+    fi
+    # x_off/y_off are distances from the anchored edge; keep the menu on-screen
+    # and express them the way the installed rofi expects (see rofi_offset_inward).
+    ((x_off < 0)) && x_off=0
+    ((y_off < 0)) && y_off=0
+    if ! rofi_offset_inward; then
+        [[ $x_pos == east ]] && x_off=$((-x_off))
+        [[ $y_pos == south ]] && y_off=$((-y_off))
     fi
     local coordinates="window{location:$x_pos $y_pos;anchor:$x_pos $y_pos;x-offset:${x_off}px;y-offset:${y_off}px;}"
     echo "$coordinates"
@@ -587,7 +610,7 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
+export -f get_hyprConf get_monitor_scale rofi_offset_inward get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
 
 ##
 # Fails the source when the generated-state directories could not be created,

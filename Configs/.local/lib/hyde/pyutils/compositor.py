@@ -1,7 +1,32 @@
 import os
+import re
 import json
 import socket as _socket
+import subprocess
+from functools import lru_cache
 from typing import Union, Any
+
+
+@lru_cache(maxsize=1)
+def rofi_offset_inward() -> bool:
+    """
+    rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) treats
+    x-offset/y-offset of east/south locations as an inward distance from that
+    edge, i.e. the opposite sign of the documented behavior
+    (https://github.com/davatorium/rofi/issues/2364).
+
+    Returns:
+        True when that inverted behavior applies.
+    """
+    try:
+        ver = subprocess.run(["rofi", "-v"], capture_output=True, text=True, timeout=2).stdout
+        match = re.search(r"(\d+)\.(\d+)", ver)
+        if not match or (int(match[1]), int(match[2])) < (2, 1):
+            return False
+        cfg = subprocess.run(["rofi", "-dump-config"], capture_output=True, text=True, timeout=2).stdout
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return not re.search(r"^\s*click-to-exit:\s*false", cfg, re.MULTILINE)
 
 
 class HyprctlWrapper:
@@ -120,18 +145,24 @@ class HyprctlWrapper:
 
         if cur_pos[0] >= mon_res[0] // 2:
             x_pos = "east"
-            x_off = -(mon_res[0] - cur_pos[0] - off_res[2])
+            x_off = mon_res[0] - cur_pos[0] - off_res[2]
         else:
             x_pos = "west"
             x_off = cur_pos[0] - off_res[0]
 
         if cur_pos[1] >= mon_res[1] // 2:
             y_pos = "south"
-            y_off = -(mon_res[1] - cur_pos[1] - off_res[3])
+            y_off = mon_res[1] - cur_pos[1] - off_res[3]
         else:
             y_pos = "north"
             y_off = cur_pos[1] - off_res[1]
 
+        # x_off/y_off are distances from the anchored edge; keep the menu
+        # on-screen and express them the way the installed rofi expects.
+        x_off, y_off = max(0, x_off), max(0, y_off)
+        if not rofi_offset_inward():
+            x_off = -x_off if x_pos == "east" else x_off
+            y_off = -y_off if y_pos == "south" else y_off
         coordinates = (
             f"window{{location:{x_pos} {y_pos};"
             f"anchor:{x_pos} {y_pos};"

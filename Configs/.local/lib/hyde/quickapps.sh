@@ -28,17 +28,25 @@ curPos[0]=$((curPos[0] - monRes[3]))
 curPos[1]=$((curPos[1] - monRes[4]))
 if [ "${curPos[0]}" -ge "$((monRes[0] / 2))" ]; then
     x_pos="east"
-    x_off="-$((monRes[0] - curPos[0] - offRes[2]))"
+    x_off="$((monRes[0] - curPos[0] - offRes[2]))"
 else
     x_pos="west"
     x_off="$((curPos[0] - offRes[0]))"
 fi
 if [ "${curPos[1]}" -ge "$((monRes[1] / 2))" ]; then
     y_pos="south"
-    y_off="-$((monRes[1] - curPos[1] - offRes[3]))"
+    y_off="$((monRes[1] - curPos[1] - offRes[3]))"
 else
     y_pos="north"
     y_off="$((curPos[1] - offRes[1]))"
+fi
+# x_off/y_off are distances from the anchored edge; keep the dock on-screen
+# and express them the way the installed rofi expects (see rofi_offset_inward).
+((x_off < 0)) && x_off=0
+((y_off < 0)) && y_off=0
+if ! rofi_offset_inward; then
+    [[ $x_pos == east ]] && x_off=$((-x_off))
+    [[ $y_pos == south ]] && y_off=$((-y_off))
 fi
 hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
 dockHeight=$((monRes[0] * 3 / 100))
