@@ -40,8 +40,8 @@ else
     y_pos="north"
     y_off="$((curPos[1] - offRes[1]))"
 fi
-# see rofi_offset_inward in globalcontrol.sh
-if rofi_offset_inward; then
+# see rofi_offset_inward in globalcontrol.sh; quickapps runs rofi with -config quickapps
+if rofi_offset_inward quickapps; then
     [[ $x_pos == east ]] && x_off=$((-x_off))
     [[ $y_pos == south ]] && y_off=$((-y_off))
 fi

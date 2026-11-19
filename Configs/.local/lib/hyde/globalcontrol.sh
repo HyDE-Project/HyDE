@@ -402,6 +402,8 @@ get_monitor_scale() {
 # rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) applies
 # x-offset/y-offset of east/south locations with the opposite sign of the
 # documented behavior (https://github.com/davatorium/rofi/issues/2364).
+# Usage: rofi_offset_inward [config]; pass the -config name the caller gives
+# rofi, since such a config replaces the user's default one.
 # Returns 0 when that inverted behavior applies.
 ##
 rofi_offset_inward() {
@@ -410,7 +412,7 @@ rofi_offset_inward() {
     [[ $ver =~ ([0-9]+)\.([0-9]+) ]] || return 1
     local major="${BASH_REMATCH[1]}" minor="${BASH_REMATCH[2]}"
     ((major > 2 || (major == 2 && minor >= 1))) || return 1
-    ! rofi -dump-config 2>/dev/null | grep -Eq '^[[:space:]]*click-to-exit:[[:space:]]*false'
+    ! rofi ${1:+-config "$1"} -dump-config 2>/dev/null | grep -Eq '^[[:space:]]*click-to-exit:[[:space:]]*false'
 }
 get_rofi_pos() {
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
