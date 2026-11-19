@@ -399,10 +399,9 @@ get_monitor_scale() {
     }'
 }
 ##
-# rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) treats
-# x-offset/y-offset of east/south locations as an inward distance from that
-# edge, i.e. the opposite sign of the documented behavior
-# (https://github.com/davatorium/rofi/issues/2364).
+# rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) applies
+# x-offset/y-offset of east/south locations with the opposite sign of the
+# documented behavior (https://github.com/davatorium/rofi/issues/2364).
 # Returns 0 when that inverted behavior applies.
 ##
 rofi_offset_inward() {
@@ -442,23 +441,19 @@ get_rofi_pos() {
     # issue number of its own; found while testing #975's fix.
     if [ "${curPos[0]}" -ge "$((monRes[0] / 2))" ]; then
         local x_pos="east"
-        local x_off="$((monRes[0] - curPos[0] - offRes[2]))"
+        local x_off="-$((monRes[0] - curPos[0] - offRes[2]))"
     else
         local x_pos="west"
         local x_off="$((curPos[0] - offRes[0]))"
     fi
     if [ "${curPos[1]}" -ge "$((monRes[1] / 2))" ]; then
         local y_pos="south"
-        local y_off="$((monRes[1] - curPos[1] - offRes[3]))"
+        local y_off="-$((monRes[1] - curPos[1] - offRes[3]))"
     else
         local y_pos="north"
         local y_off="$((curPos[1] - offRes[1]))"
     fi
-    # x_off/y_off are distances from the anchored edge; keep the menu on-screen
-    # and express them the way the installed rofi expects (see rofi_offset_inward).
-    ((x_off < 0)) && x_off=0
-    ((y_off < 0)) && y_off=0
-    if ! rofi_offset_inward; then
+    if rofi_offset_inward; then
         [[ $x_pos == east ]] && x_off=$((-x_off))
         [[ $y_pos == south ]] && y_off=$((-y_off))
     fi
