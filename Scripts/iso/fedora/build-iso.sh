@@ -71,6 +71,9 @@ sed \
 
 mkdir -p "$(dirname -- "$output_iso")"
 mkksiso --ks "$kickstart" "$source_iso" "$output_iso"
-sha256sum "$output_iso" > "${output_iso}.sha256"
+(
+    cd -- "$(dirname -- "$output_iso")"
+    sha256sum "$(basename -- "$output_iso")" > "$(basename -- "$output_iso").sha256"
+)
 echo "Created $output_iso"
 echo "Checksum: ${output_iso}.sha256"
