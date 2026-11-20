@@ -26,6 +26,10 @@ The HyDE source defaults to upstream commit
 `ca9ed884b8885b0c504e1fdc4edb806226a9c19b`. Use `--hyde-repository` and
 `--hyde-branch` to select another source or revision.
 
+The repository's **Build HyDEOS ISO** workflow downloads and verifies the Fedora
+45 source image, builds `HyDEOS.iso`, and makes the image and SHA-256 file
+available as a 30-day GitHub Actions artifact.
+
 ## Public distribution
 
 The installed system replaces Fedora's branded release packages with the

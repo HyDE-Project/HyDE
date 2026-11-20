@@ -3,6 +3,7 @@ name: Test HyDEOS Fedora ISO
 on:
   pull_request:
     paths:
+      - '.github/workflows/build-hydeos-iso.yml'
       - '.github/workflows/test-iso.yml'
       - 'Scripts/iso/**'
       - 'Scripts/install.sh'
@@ -15,6 +16,7 @@ on:
   push:
     branches: [dev]
     paths:
+      - '.github/workflows/build-hydeos-iso.yml'
       - '.github/workflows/test-iso.yml'
       - 'Scripts/iso/**'
       - 'Scripts/install.sh'
