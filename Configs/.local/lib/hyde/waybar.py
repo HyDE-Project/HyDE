@@ -89,7 +89,10 @@ def source_env_file(filepath):
                     # ~/.local/state/hyde/config writes `export KEY="value"`
                     line = line.strip().removeprefix("export ")
                     key, value = line.split("=", 1)
-                    os.environ[key] = value.strip("\"'")
+                    value = value.strip()
+                    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+                        value = value[1:-1]
+                    os.environ[key] = value
 
 
 def get_file_hash(filepath):
