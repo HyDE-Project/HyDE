@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Waybar: add VSCodium and Chromium icon rules to window module
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
 - Notifications: popup position can be set with `position` under `[notification]` in `~/.config/hyde/config.toml`, for both dunst and swaync. Accepts `top-left`, `top-center`, `top-right`, `center-left`, `center`, `center-right`, `bottom-left`, `bottom-center` and `bottom-right`. For swaync it also moves the control center. Leaving it unset keeps the position from `dunst.conf` / swaync's `config.json` (top right by default)
+- Rofi: each rofi menu can open centered on screen instead of at the cursor, set with `follow_cursor` in `~/.config/hyde/config.toml`. `[rofi] follow_cursor` applies to all menus, and `follow_cursor` under a menu's own section overrides it for that menu: `[rofi.cliphist]`, `[rofi.emoji]`, `[rofi.glyph]`, `[rofi.hyprlock]`, `[rofi.animation]`, and the new `[rofi.quickapps]`, `[rofi.waybar]`, `[rofi.layout]`, `[rofi.workflow]`, `[rofi.shader]` and `[rofi.blur]` sections. Both default to `true`, so menus still open at the cursor unless one is set to `false`
 
 ### Changed
 
