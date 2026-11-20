@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and verify the ISO
         run: |
-          docker run --rm --privileged \
+          docker run --rm --privileged -i \
             -v "$GITHUB_WORKSPACE:/workspace" \
             -w /workspace \
             fedora:45 \
