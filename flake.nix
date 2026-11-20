@@ -3,13 +3,14 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-iso.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs =
-    { self, nixpkgs }:
+    { self, nixpkgs, nixpkgs-iso }:
     let
       isoSettings = builtins.fromJSON (builtins.readFile ./Scripts/iso/nixos/install-settings.json);
-      nixosSystem = system: modules: nixpkgs.lib.nixosSystem {
+      nixosSystem = system: modules: nixpkgs-iso.lib.nixosSystem {
         inherit system modules;
         specialArgs = {
           inherit isoSettings;

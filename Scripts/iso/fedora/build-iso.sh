@@ -7,24 +7,24 @@ Usage: build-iso.sh --source Fedora-Everything-netinst.iso --disk DEVICE [option
 
 Options:
   --source PATH       Fedora netinstall ISO to customize
-  --disk DEVICE       Installation target (prefer /dev/disk/by-id/...)
+  --disk DEVICE       Persistent /dev/disk/by-id identity to erase at boot
   --user NAME         First-boot account (default: hyde)
-  --hyde-repository URL  HyDE repository to install (default: Fedora support fork)
-  --hyde-branch NAME     HyDE branch to install (default: feat/fedora-install)
-  --output PATH       Output ISO path (default: Fedora-HyDE-autoinstall.iso)
+  --hyde-repository URL  HyDE repository to install (default: upstream)
+  --hyde-branch REF      HyDE ref to install (default: pinned upstream commit)
+  --output PATH       Output ISO path (default: HyDEOS-Fedora.iso)
   -h, --help          Show this help
 
-The password is requested twice while building and embedded as a salted hash.
-The installer erases the selected disk and needs a wired DHCP connection.
+The first-boot prompt sets the normal-user password. The installer erases the
+selected disk after explicit confirmation and needs a wired DHCP connection.
 EOF
 }
 
 source_iso=""
 target_disk=""
 hyde_user="hyde"
-hyde_repository="https://github.com/kairosci/HyDE.git"
-hyde_branch="feat/fedora-install"
-output_iso="Fedora-HyDE-autoinstall.iso"
+hyde_repository="https://github.com/HyDE-Project/HyDE.git"
+hyde_branch="ca9ed884b8885b0c504e1fdc4edb806226a9c19b"
+output_iso="HyDEOS-Fedora.iso"
 
 while (($#)); do
     case "$1" in
@@ -47,24 +47,15 @@ if [[ ! -f "$source_iso" ]]; then
     echo "Fedora ISO not found: $source_iso" >&2
     exit 1
 fi
-if ! [[ "$target_disk" =~ ^(/dev/disk/by-id/[A-Za-z0-9._:+-]+|/dev/(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+)|(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+))$ ]] || [[ "$target_disk" == *-part[0-9]* ]]; then
-    echo "Invalid target disk; use a whole disk or /dev/disk/by-id identity." >&2
+if ! [[ "$target_disk" =~ ^/dev/disk/by-id/[A-Za-z0-9._:+-]+$ ]] || [[ "$target_disk" == *-part[0-9]* ]]; then
+    echo "Use a persistent whole-disk /dev/disk/by-id identity." >&2
     exit 2
 fi
-if [[ "$target_disk" == /dev/disk/by-id/* ]]; then
-    kickstart_disk="$target_disk"
-else
-    kickstart_disk="${target_disk##*/}"
-    target_disk="/dev/$kickstart_disk"
-fi
+kickstart_disk="$target_disk"
 if ! command -v mkksiso >/dev/null 2>&1; then
     echo "mkksiso is missing; install Fedora's lorax package first." >&2
     exit 1
 fi
-command -v openssl >/dev/null 2>&1 || { echo "openssl is required." >&2; exit 1; }
-command -v lsblk >/dev/null 2>&1 || { echo "lsblk is required to validate the target disk." >&2; exit 1; }
-[[ -b "$target_disk" ]] || { echo "Target disk is not available on this build host: $target_disk" >&2; exit 2; }
-[[ "$(lsblk -dn -o TYPE -- "$target_disk")" == disk ]] || { echo "The target must be a whole disk." >&2; exit 2; }
 if ! [[ "$hyde_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
     echo "Invalid Linux username: $hyde_user" >&2
     exit 2
@@ -83,19 +74,6 @@ if [[ "$(realpath -m "$source_iso")" == "$(realpath -m "$output_iso")" ]]; then
     exit 2
 fi
 
-read -rsp "Password for ${hyde_user}: " password
-echo
-read -rsp "Repeat password: " password_repeat
-echo
-if [[ -z "$password" || "$password" != "$password_repeat" ]]; then
-    echo "Passwords are empty or do not match." >&2
-    exit 2
-fi
-password_salt="$(openssl rand -hex 8)"
-password_hash="$(printf '%s\n' "$password" | openssl passwd -6 -salt "$password_salt" -stdin)"
-unset password_salt
-unset password password_repeat
-
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 temp_dir="$(mktemp -d)"
 trap 'rm -rf -- "$temp_dir"' EXIT
@@ -106,9 +84,7 @@ sed \
     -e "s|@USER@|$hyde_user|g" \
     -e "s|@HYDE_REPO_URL@|$hyde_repository|g" \
     -e "s|@HYDE_REPO_BRANCH@|$hyde_branch|g" \
-    -e "s|@PASSWORD_HASH@|$password_hash|g" \
     "$script_dir/kickstart.ks.in" > "$kickstart"
-unset password_hash
 
 mkdir -p "$(dirname -- "$output_iso")"
 mkksiso --ks "$kickstart" "$source_iso" "$output_iso"

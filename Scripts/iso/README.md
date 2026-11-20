@@ -1,31 +1,21 @@
-# HyDE operating system installers
+# HyDEOS installers
 
-These builders create installation ISOs for systems based on Fedora Linux,
-Arch Linux, and NixOS. The corresponding operating system projects and their
-contributors retain their names, trademarks, copyrights, and software licenses.
-HyDE packages and configures the desktop environment; it does not claim
-ownership of the underlying operating systems or other upstream software.
-Release descriptions for each image should identify its base as Fedora Linux,
-Arch Linux, or NixOS.
+These builders create personal HyDEOS installation media based on Arch Linux,
+Fedora Linux, and NixOS. This is a per-machine installer, not a distributable
+ISO. Do not publish generated images. Distribution names, trademarks,
+copyrights, and software licenses remain with their respective owners. Before
+any public distribution, review the [Fedora Remix guidelines](https://fedoraproject.org/wiki/Remix),
+[Arch Linux trademark policy](https://terms.archlinux.org/docs/trademark-policy/),
+and corresponding source obligations for bundled software.
 
-Suggested release descriptions:
+The target disk identity is selected at build time and checked again in the
+installer. Builders do not require the target disk to be connected to the
+build host. Before any disk changes, the installer requires the operator to type
+`ERASE`. It creates a normal desktop account during first-boot setup; root is
+not offered as a graphical session. The account password is entered at first
+boot and is not embedded in the ISO.
 
-- Fedora image: “HyDE installer, based on Fedora Linux.”
-- Arch image: “HyDE installer, based on Arch Linux.”
-- NixOS image: “HyDE installer, based on NixOS.”
-
-Each builder asks for the root password twice; the generated ISO retains its
-salted hash. Temporary build-file cleanup does not remove the copy embedded in
-the ISO. The NixOS installer provisions the installed root account from a
-root-only file and removes the hash from the installed flake before evaluating
-it. Do not distribute personal installation media or reuse an existing
-password. The target disk is selected at build time, then fully erased and
-formatted automatically when the ISO boots. The installed system starts HyDE
-setup as root and asks whether to create a normal desktop account or continue
-using root. Creating an account asks for a username and password. New accounts
-inherit the same HyDE configuration as root from `/etc/skel`.
-
-Use wired Ethernet for unattended OS installation and HyDE setup. Wi-Fi setup
+Use wired Ethernet for OS installation and HyDE setup. Wi-Fi setup
 is not part of the automated flow. Never select the USB drive containing the
 ISO as the target disk. Prefer a persistent `/dev/disk/by-id/...` path so the
 selected disk stays identifiable across boots. Back up important data before
@@ -40,14 +30,14 @@ ISO, then run:
 Scripts/iso/fedora/build-iso.sh \
   --source Fedora-Everything-netinst.iso \
   --disk /dev/disk/by-id/wwn-0xYOUR_DISK_ID \
-  --output Fedora-HyDE.iso
+  --output HyDEOS-Fedora.iso
 ```
 
 The Kickstart installs Fedora in text mode with a Btrfs layout. On first boot,
-the system clones HyDE and applies its existing defaults to `/root`. The default
-source is the `kairosci/HyDE` `feat/fedora-install` branch containing the Fedora
-integration from PR #2232. Use `--hyde-repository` and `--hyde-branch` to select
-another source.
+the system clones upstream HyDE and applies its existing defaults to the new
+user. The default source is pinned to upstream commit
+`ca9ed884b8885b0c504e1fdc4edb806226a9c19b`. Use `--hyde-repository` and
+`--hyde-branch` to select another source or revision.
 
 ## Arch Linux
 
@@ -61,9 +51,9 @@ Scripts/iso/arch/build-iso.sh \
   --output ./out
 ```
 
-The live ISO starts `archinstall` with an unattended configuration. The target
-system gets HyDE's existing defaults applied to `/root` on first boot. If the
-installation fails, the live environment log is at
+The live ISO starts `archinstall` after the erase confirmation. The configured
+normal user receives HyDE's defaults on first boot. The output image is named
+`HyDEOS-Arch.iso`. If installation fails, the live environment log is at
 `/var/log/hyde-iso-install.log`.
 
 ## NixOS
@@ -76,17 +66,9 @@ system closure during installation.
 ```bash
 Scripts/iso/nixos/build-iso.sh \
   --disk /dev/disk/by-id/wwn-0xYOUR_DISK_ID \
-  --output NixOS-HyDE.iso
+  --output HyDEOS-NixOS.iso
 ```
 
-The installer writes the HyDE NixOS configuration to the selected disk and
-boots into the root HyDE session. On first login, choose whether to create a
-normal user with the same default configuration or keep using root.
-
-## Root session
-
-The root option is available because HyDE is first configured for `/root`.
-Hyprland normally blocks root sessions; choosing to remain root starts its
-session with `--i-am-really-stupid`. The normal account path uses the standard
-Hyprland session. Fedora and Arch copy the root defaults to `/etc/skel`; NixOS
-provides the same defaults through its system configuration.
+The installer writes the HyDE NixOS configuration to the selected disk. On
+first boot, it creates a normal user with the default HyDE configuration and
+reboots into that user's desktop session.

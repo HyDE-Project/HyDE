@@ -11,7 +11,6 @@ read_setting() {
 
 target_disk="$(read_setting targetDisk)"
 disk_identity="$target_disk"
-root_password_hash="$(read_setting rootPasswordHash)"
 default_user="$(read_setting defaultUser)"
 
 [[ -d /sys/firmware/efi ]] || { echo "Boot this ISO in UEFI mode."; exit 1; }
@@ -40,7 +39,12 @@ case "$(basename "$target_disk")" in
     *) partition_prefix="$target_disk" ;;
 esac
 
-echo "Selected target $disk_identity resolves to $target_disk; the entire disk will be erased."
+echo "Selected target $disk_identity resolves to $target_disk."
+printf 'This image will erase this disk. Type ERASE within 30 seconds to continue: '
+if ! read -r -t 30 confirmation || [[ "$confirmation" != ERASE ]]; then
+    echo 'Installation cancelled; the target disk was not changed.'
+    exit 1
+fi
 sgdisk --zap-all \
     --new=1:1MiB:+1GiB --typecode=1:ef00 --change-name=1:EFI \
     --new=2:0:0 --typecode=2:8300 --change-name=2:NixOS \
@@ -56,15 +60,12 @@ cp -a /etc/hyde-installer-source/. /mnt/etc/nixos/
 
 nixos-generate-config --root /mnt --show-hardware-config \
     > /mnt/etc/nixos/Scripts/iso/nixos/hardware-configuration.nix
-install -d -m 0700 /mnt/var/lib
-install -m 0600 <(printf '%s\n' "$root_password_hash") /mnt/var/lib/hyde-root-password
 python3 - "$settings" /mnt/etc/nixos/Scripts/iso/nixos/install-settings.json <<'PY'
 import json
 import pathlib
 import sys
 source, destination = map(pathlib.Path, sys.argv[1:])
 settings = json.loads(source.read_text())
-settings.pop("rootPasswordHash", None)
 destination.write_text(json.dumps(settings, indent=2) + "\n")
 PY
 

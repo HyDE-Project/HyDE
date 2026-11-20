@@ -2,8 +2,32 @@ name: Test ISO builders
 
 on:
   pull_request:
+    paths:
+      - '.github/workflows/test-iso.yml'
+      - 'Scripts/iso/**'
+      - 'Scripts/install.sh'
+      - 'Scripts/install_pre.sh'
+      - 'Scripts/install_aur.sh'
+      - 'Scripts/global_fn.sh'
+      - 'Scripts/dots-groups/**'
+      - 'Scripts/dots/**'
+      - 'Configs/**'
+      - 'flake.nix'
+      - 'flake.lock'
   push:
     branches: [dev]
+    paths:
+      - '.github/workflows/test-iso.yml'
+      - 'Scripts/iso/**'
+      - 'Scripts/install.sh'
+      - 'Scripts/install_pre.sh'
+      - 'Scripts/install_aur.sh'
+      - 'Scripts/global_fn.sh'
+      - 'Scripts/dots-groups/**'
+      - 'Scripts/dots/**'
+      - 'Configs/**'
+      - 'flake.nix'
+      - 'flake.lock'
 
 permissions:
   contents: read
@@ -30,25 +54,28 @@ jobs:
 
           template = Path("Scripts/iso/fedora/kickstart.ks.in").read_text()
           replacements = {
-              "@DISK@": "nvme0n1",
+              "@DISK@": "/dev/disk/by-id/wwn-0x123",
               "@USER@": "hyde",
               "@HYDE_REPO_URL@": "https://github.com/HyDE-Project/HyDE.git",
-              "@HYDE_REPO_BRANCH@": "dev",
-              "@PASSWORD_HASH@": "$6$test$placeholder",
+              "@HYDE_REPO_BRANCH@": "ca9ed884b8885b0c504e1fdc4edb806226a9c19b",
           }
           for key, value in replacements.items():
               template = template.replace(key, value)
-          assert "rootpw --iscrypted $6$test$placeholder" in template
+          assert "rootpw --lock" in template
           assert "user --name=" not in template
           Path("/tmp/hyde-ks.cfg").write_text(template)
           start = template.index("cat > /usr/local/sbin/hyde-firstboot <<'HYDE_FIRSTBOOT'\n")
           start = template.index("\n", start) + 1
           end = template.index("\nHYDE_FIRSTBOOT", start)
           Path("/tmp/hyde-firstboot.sh").write_text(template[start:end] + "\n")
+          pre_start = template.index("%pre --erroronfail --interpreter=/bin/bash\n") + len("%pre --erroronfail --interpreter=/bin/bash\n")
+          pre_end = template.index("\n%end", pre_start)
+          Path("/tmp/hyde-pre.sh").write_text(template[pre_start:pre_end] + "\n")
           PY
           ksvalidator -v F45 /tmp/hyde-ks.cfg
           bash -n Scripts/iso/fedora/build-iso.sh
           bash -n /tmp/hyde-firstboot.sh
+          bash -n /tmp/hyde-pre.sh
           Scripts/iso/fedora/build-iso.sh --help >/dev/null
           CONTAINER
 
@@ -88,15 +115,11 @@ jobs:
               fake_device.mkdir(parents=True)
               (fake_device / "size").write_text(str(80 * 1024 * 1024 * 1024 // 512))
               config = root / "source.json"
-              password_hash = subprocess.check_output([
-                  "openssl", "passwd", "-6", "-salt", "ci-salt", "test-password"
-              ], text=True).strip()
               config.write_text(json.dumps({
                   "target_disk": "/dev/vda",
                   "hyde_user": "hyde",
                   "hyde_repository": "https://github.com/HyDE-Project/HyDE.git",
                   "hyde_branch": "dev",
-                  "password_hash": password_hash,
               }))
               code = code.replace(
                   "pathlib.Path(\"/sys/class/block\",",
@@ -112,7 +135,9 @@ jobs:
               assert [part["mountpoint"] for part in disk["partitions"]] == ["/boot", "/"]
               assert disk["partitions"][0]["size"]["value"] == 1024
               assert disk["partitions"][1]["size"]["value"] == 80 * 1024 - 1026
-              assert credentials["root_enc_password"] == password_hash
+              assert credentials["users"][0]["username"] == "hyde"
+              assert credentials["users"][0]["sudo"] is True
+              assert credentials["users"][0]["enc_password"].startswith("$6$")
               from archinstall.lib.disk.device_handler import device_handler
               from archinstall.lib.models.device import DiskLayoutConfiguration, PartitionTable, SectorSize, Size, Unit
 
@@ -136,8 +161,10 @@ jobs:
               unit = base64.b64decode(blobs[1]).decode()
               (root / "firstboot.sh").write_text(firstboot)
               subprocess.run(["bash", "-n", str(root / "firstboot.sh")], check=True)
-              assert "--skel=/etc/skel" in firstboot
-              assert "TimeoutStartSec=infinity" in unit
+              assert "runuser -u" in firstboot
+              assert "TimeoutStartSec=2h" in unit
+              assert "hyde-shell luainit" in firstboot
+              assert "--i-am-really-stupid" not in firstboot
           PY
           CONTAINER
 
@@ -159,7 +186,6 @@ jobs:
 
           Path("Scripts/iso/nixos/install-settings.json").write_text(json.dumps({
               "targetDisk": "/dev/vda",
-              "rootPasswordHash": "$6$ci-salt$84kpokiRmp5aQtKcYyAgbcrevX28noHZWpBVLjnczjSSCiguac7NDiBaVX43FzNjINtyqpLktqjIabUq8T4nH0",
               "defaultUser": "hyde",
           }, indent=2) + "\n")
           PY

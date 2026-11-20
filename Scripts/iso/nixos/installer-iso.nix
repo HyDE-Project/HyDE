@@ -1,9 +1,9 @@
-{ lib, pkgs, repoRoot, isoSettings, ... }:
+{ config, lib, pkgs, repoRoot, isoSettings, ... }:
 {
   assertions = [
     {
-      assertion = isoSettings.targetDisk != "" && isoSettings.rootPasswordHash != "";
-      message = "Build this image with Scripts/iso/nixos/build-iso.sh to select a target disk and root password.";
+      assertion = isoSettings.targetDisk != "";
+      message = "Build this image with Scripts/iso/nixos/build-iso.sh to select a target disk.";
     }
   ];
 
@@ -11,8 +11,7 @@
   networking.hostName = "hyde-installer";
   networking.networkmanager.enable = true;
   networking.useDHCP = lib.mkDefault true;
-  time.timeZone = "Europe/Rome";
-  users.users.root.initialHashedPassword = lib.mkForce isoSettings.rootPasswordHash;
+  time.timeZone = "UTC";
   services.getty.autologinUser = lib.mkForce "root";
 
   environment.systemPackages = with pkgs; [
@@ -22,6 +21,8 @@
     e2fsprogs
     git
     python3
+    parted
+    util-linux
   ];
   environment.etc."hyde-iso-settings.json".text = builtins.toJSON isoSettings;
   environment.etc."hyde-installer-source".source = repoRoot;
@@ -34,8 +35,17 @@
     unitConfig.ConditionPathExists = "/etc/hyde-iso-settings.json";
     serviceConfig = {
       Type = "oneshot";
-      TimeoutStartSec = "infinity";
+      TimeoutStartSec = "5min";
+      StandardInput = "tty";
+      StandardOutput = "tty";
+      StandardError = "journal";
+      TTYPath = "/dev/tty1";
+      TTYReset = true;
+      TTYVHangup = true;
+      TTYVTDisallocate = true;
       ExecStart = "${pkgs.bash}/bin/bash ${./nixos-install.sh}";
     };
+    unitConfig.Conflicts = "getty@tty1.service";
+    path = [ config.system.path ];
   };
 }

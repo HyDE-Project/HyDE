@@ -6,22 +6,22 @@ usage() {
 Usage: build-iso.sh --disk DEVICE [options]
 
 Options:
-  --disk DEVICE       Persistent /dev/disk/by-id identity of the disk to erase
+  --disk DEVICE       Persistent /dev/disk/by-id identity to erase at boot
   --user NAME         First-boot account (default: hyde)
   --hyde-repository URL  HyDE Git repository (default: upstream)
-  --hyde-branch NAME     HyDE branch (default: dev)
+  --hyde-branch REF      HyDE ref (default: pinned upstream commit)
   --output DIRECTORY  Output directory (default: ./out)
   -h, --help          Show this help
 
-Build on Arch Linux with archiso installed. The password is requested twice.
-The ISO requires UEFI boot and a wired DHCP network for unattended setup.
+Build on Arch Linux with archiso installed. A normal-user password is set at
+first boot. The ISO requires UEFI boot and a wired DHCP network.
 USAGE
 }
 
 target_disk=""
 hyde_user="hyde"
 hyde_repository="https://github.com/HyDE-Project/HyDE.git"
-hyde_branch="dev"
+hyde_branch="ca9ed884b8885b0c504e1fdc4edb806226a9c19b"
 output_dir="out"
 while (($#)); do
     case "$1" in
@@ -47,15 +47,6 @@ fi
 [[ "$hyde_branch" =~ ^[A-Za-z0-9._/-]+$ ]] || { echo "Invalid branch." >&2; exit 2; }
 [[ -d /usr/share/archiso/configs/releng ]] || { echo "Install archiso on an Arch Linux build host." >&2; exit 1; }
 command -v mkarchiso >/dev/null || { echo "mkarchiso not found." >&2; exit 1; }
-[[ -b "$target_disk" ]] || { echo "Target disk is not available on this build host: $target_disk" >&2; exit 2; }
-[[ "$(lsblk -dn -o TYPE -- "$target_disk")" == disk ]] || { echo "The target must be a whole disk." >&2; exit 2; }
-
-read -rsp "Password for ${hyde_user}: " password; echo
-read -rsp "Repeat password: " password_repeat; echo
-[[ -n "$password" && "$password" == "$password_repeat" ]] || { echo "Passwords are empty or do not match." >&2; exit 2; }
-password_hash="$(printf '%s\n' "$password" | openssl passwd -6 -stdin)"
-unset password password_repeat
-
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "$script_dir/../../.." && pwd)"
 output_dir="$(realpath -m "$output_dir")"
@@ -76,7 +67,7 @@ cat >> "$profile/packages.x86_64" <<'PACKAGES'
 archinstall
 base-devel
 git
-openssh
+openssl
 pciutils
 sudo
 PACKAGES
@@ -91,16 +82,17 @@ cat > "$temp_dir/build-config.json" <<JSON
   "hyde_user": "$hyde_user",
   "hyde_repository": "$hyde_repository",
   "hyde_branch": "$hyde_branch",
-  "target_disk": "$target_disk",
-  "password_hash": "$password_hash"
+  "target_disk": "$target_disk"
 }
 JSON
-unset password_hash
 install -m 0600 "$temp_dir/build-config.json" "$profile/airootfs/root/hyde-iso-config.json"
 
 mkdir -p "$output_dir"
 "${root_command[@]}" mkarchiso -v -w "$temp_dir/work" -o "$output_dir" "$profile"
 iso_path="$(find "$output_dir" -maxdepth 1 -type f -name '*.iso' -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
 [[ -n "$iso_path" ]] || { echo "mkarchiso produced no ISO." >&2; exit 1; }
+named_iso="$output_dir/HyDEOS-Arch.iso"
+mv -- "$iso_path" "$named_iso"
+iso_path="$named_iso"
 sha256sum "$iso_path" > "${iso_path}.sha256"
 echo "Created $iso_path (checksum: ${iso_path}.sha256)"

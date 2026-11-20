@@ -23,12 +23,19 @@ disk_identity="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))[
 target_disk="$(readlink -f -- "$disk_identity")"
 [[ -b "$target_disk" ]] || { echo "Target identity did not resolve to a block device: $disk_identity"; exit 1; }
 [[ "$(lsblk -dn -o TYPE -- "$target_disk")" == disk ]] || { echo "Target must be a whole disk: $target_disk"; exit 1; }
-echo "Selected target $disk_identity resolves to $target_disk; archinstall will erase it."
+echo "Selected target $disk_identity resolves to $target_disk."
+printf 'This image will erase this disk. Type ERASE within 30 seconds to continue: '
+if ! read -r -t 30 confirmation || [[ "$confirmation" != ERASE ]]; then
+    echo 'Installation cancelled; the target disk was not changed.'
+    exit 1
+fi
 
 HYDE_TARGET_DISK="$target_disk" python - "$config" /run/hyde-archinstall "$log" <<'PY'
 import json
 import os
 import pathlib
+import secrets
+import subprocess
 import sys
 import uuid
 
@@ -60,7 +67,8 @@ set -euo pipefail
 hyde_repo=@REPOSITORY@
 hyde_branch=@BRANCH@
 default_user=@USER@
-repo=/root/HyDE
+repo=/usr/local/src/HyDE
+install -d -m 0755 /usr/local/src
 if [[ -e "$repo" && ! -d "$repo/.git" ]]; then
     mv "$repo" "$repo.incomplete.$(date +%s)"
 fi
@@ -69,68 +77,42 @@ if [[ -d "$repo/.git" ]]; then
     git -C "$repo" fetch --depth=1 origin "$hyde_branch"
     git -C "$repo" checkout --detach FETCH_HEAD
 else
-    clone_dir="/root/.HyDE.clone.$$"
+    clone_dir="/usr/local/src/.HyDE.clone.$$"
     trap 'rm -rf -- "$clone_dir"' EXIT
-    git clone --depth=1 --branch "$hyde_branch" "$hyde_repo" "$clone_dir"
+    git clone --depth=1 --no-checkout "$hyde_repo" "$clone_dir"
+    git -C "$clone_dir" fetch --depth=1 origin "$hyde_branch"
+    git -C "$clone_dir" checkout --detach FETCH_HEAD
     mv "$clone_dir" "$repo"
     trap - EXIT
 fi
 cd "$repo"
-HOME=/root HYDE_NO_REBOOT_PROMPT=1 ./Scripts/install.sh --defaults --restore --services
-install -d -m 0755 /etc/skel/.local
-install -d -m 0755 /etc/skel/.local/bin /etc/skel/.local/lib /etc/skel/.local/share
-for item in .config .local/bin .local/lib .local/share .bashrc .zshrc .zprofile .bash_profile; do
-    [[ -e "/root/$item" ]] || continue
-    if [[ "$item" == .local/* ]]; then
-        cp -aT "/root/$item" "/etc/skel/$item"
-    else
-        cp -a "/root/$item" /etc/skel/
-    fi
-done
-chown -R root:root /etc/skel
-install -d -m 0755 /usr/share/wayland-sessions /etc/sddm.conf.d
-cat > /usr/share/wayland-sessions/hyde-root.desktop <<'SESSION'
-[Desktop Entry]
-Name=HyDE (root)
-Comment=HyDE session running as root
-Exec=Hyprland --i-am-really-stupid
-Type=Application
-SESSION
-
-printf '\\nHyDE is ready. Create a normal user now? [Y/n] '
-read -r create_user
-if [[ "$create_user" =~ ^[Nn]$ ]]; then
-    login_user=root
-    login_session=hyde-root.desktop
-else
-    while :; do
-        printf 'Username [%s]: ' "$default_user"
-        read -r login_user
-        login_user="${login_user:-$default_user}"
-        if [[ "$login_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] && ! id "$login_user" >/dev/null 2>&1; then
-            break
-        fi
-        echo 'Invalid or already existing username; use lowercase letters, digits, _ or -.'
-    done
-    useradd --create-home --skel=/etc/skel --groups=wheel,video,audio,input --shell=/bin/bash "$login_user"
-    passwd "$login_user"
-    install -d -m 0750 /etc/sudoers.d
-    printf '%%wheel ALL=(ALL:ALL) ALL\\n' > /etc/sudoers.d/10-wheel
-    chmod 0440 /etc/sudoers.d/10-wheel
-    visudo -cf /etc/sudoers.d/10-wheel
-    login_session=hyprland.desktop
-fi
+login_user="$default_user"
+id "$login_user" >/dev/null 2>&1 || { echo "archinstall did not create $login_user."; exit 1; }
+login_home="$(getent passwd "$login_user" | cut -d: -f6)"
+timeout 300 passwd "$login_user"
+install -d -m 0750 /etc/sudoers.d
+printf '%s ALL=(ALL:ALL) NOPASSWD: ALL\\n' "$login_user" > /etc/sudoers.d/00-hyde-firstboot
+chmod 0440 /etc/sudoers.d/00-hyde-firstboot
+visudo -cf /etc/sudoers.d/00-hyde-firstboot
+trap 'rm -f /etc/sudoers.d/00-hyde-firstboot' EXIT
+runuser -u "$login_user" -- env HOME="$login_home" USER="$login_user" LOGNAME="$login_user" PATH="$login_home/.local/bin:$PATH" HYDE_NO_REBOOT_PROMPT=1 "$repo/Scripts/install.sh" --defaults --restore --services
+runuser -u "$login_user" -- env HOME="$login_home" PATH="$login_home/.local/bin:$PATH" hyde-shell luainit
+rm -f /etc/sudoers.d/00-hyde-firstboot
+trap - EXIT
+printf '%%wheel ALL=(ALL:ALL) ALL\\n' > /etc/sudoers.d/10-wheel
+chmod 0440 /etc/sudoers.d/10-wheel
+visudo -cf /etc/sudoers.d/10-wheel
 cat > /etc/sddm.conf.d/20-hyde-autologin.conf <<SDDM
-[Users]
-AllowRootLogin=true
-
 [Autologin]
 User=$login_user
-Session=$login_session
+Session=hyprland.desktop
 Relogin=true
 SDDM
+install -d -m 0755 /etc/sddm.conf.d
 systemctl enable sddm.service
+systemctl set-default graphical.target
 systemctl disable hyde-autoinstall.service
+reboot
 """.replace("@USER@", config["hyde_user"]).replace("@REPOSITORY@", config["hyde_repository"]).replace("@BRANCH@", config["hyde_branch"])
 
 import base64
@@ -140,10 +122,11 @@ Description=Configure HyDE and choose the login account
 Wants=network-online.target
 After=network-online.target
 Before=display-manager.service
+Conflicts=getty@tty1.service
 
 [Service]
 Type=oneshot
-TimeoutStartSec=infinity
+TimeoutStartSec=2h
 StandardInput=tty
 StandardOutput=tty
 StandardError=journal
@@ -175,7 +158,7 @@ result = {
             "wipe": True,
         }],
     },
-    "hostname": "hyde",
+    "hostname": "hydeos",
     "kernels": ["linux"],
     "locale_config": {"kb_layout": "us", "sys_enc": "UTF-8", "sys_lang": "en_US"},
     "network_config": {"type": "nm"},
@@ -185,15 +168,23 @@ result = {
     "services": ["NetworkManager"],
     "silent": True,
     "swap": {"enabled": True, "algorithm": "zstd"},
-    "timezone": "Europe/Rome",
+    "timezone": "UTC",
     "custom_commands": [
         "printf '%s' '" + encoded + "' | base64 -d > /usr/local/sbin/hyde-autoinstall && printf '%s' '" + encoded_unit + "' | base64 -d > /etc/systemd/system/hyde-autoinstall.service && chmod 0755 /usr/local/sbin/hyde-autoinstall && systemctl enable hyde-autoinstall.service",
     ],
 }
 pathlib.Path(destination).write_text(json.dumps(result, indent=2) + "\n")
-credentials = {"root_enc_password": config["password_hash"]}
-pathlib.Path(destination + ".creds").write_text(json.dumps(credentials, indent=2) + "\n")
-pathlib.Path(destination + ".creds").chmod(0o600)
+temporary_password = secrets.token_hex(32)
+password_hash = subprocess.check_output(
+    ["openssl", "passwd", "-6", "-stdin"], input=temporary_password + "\n", text=True
+).strip()
+del temporary_password
+credentials = {
+    "users": [{"username": config["hyde_user"], "enc_password": password_hash, "sudo": True}]
+}
+creds_path = pathlib.Path(destination + ".creds")
+creds_path.write_text(json.dumps(credentials, indent=2) + "\n")
+creds_path.chmod(0o600)
 PY
 
 archinstall --config /run/hyde-archinstall --creds /run/hyde-archinstall.creds --silent

@@ -4,8 +4,8 @@ skipx
 eula --agreed
 lang en_US.UTF-8
 keyboard --vckeymap=us
-timezone Europe/Rome --utc
-network --bootproto=dhcp --device=link --activate --onboot=yes
+timezone UTC --utc
+network --hostname=hydeos --bootproto=dhcp --device=link --activate --onboot=yes
 url --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch"
 repo --name=updates --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&arch=$basearch"
 
@@ -14,10 +14,21 @@ clearpart --all --initlabel --disklabel=gpt --drives=@DISK@
 autopart --type=btrfs
 bootloader --timeout=1
 
-rootpw --iscrypted @PASSWORD_HASH@
-firewall --enabled --service=ssh
-services --enabled=NetworkManager,sshd
+rootpw --lock
+firewall --enabled
+services --enabled=NetworkManager
 reboot
+
+%pre --erroronfail --interpreter=/bin/bash
+exec </dev/tty3 >/dev/tty3 2>&1
+printf '\nThis image will erase @DISK@. Type ERASE within 30 seconds to continue: '
+if ! read -r -t 30 answer || [[ "$answer" != ERASE ]]; then
+    echo 'Installation cancelled; the target disk was not changed.'
+    exit 1
+fi
+[[ -b @DISK@ ]] || { echo 'Target disk is unavailable.'; exit 1; }
+[[ "$(lsblk -dn -o TYPE -- @DISK@)" == disk ]] || { echo 'Target must be a whole disk.'; exit 1; }
+%end
 
 %packages
 @core
@@ -44,7 +55,8 @@ set -euo pipefail
 hyde_repo_url='@HYDE_REPO_URL@'
 hyde_repo_branch='@HYDE_REPO_BRANCH@'
 default_user='@USER@'
-hyde_repo=/root/HyDE
+hyde_repo=/usr/local/src/HyDE
+install -d -m 0755 /usr/local/src
 
 if [[ -e "$hyde_repo" && ! -d "$hyde_repo/.git" ]]; then
     mv "$hyde_repo" "$hyde_repo.incomplete.$(date +%s)"
@@ -54,78 +66,61 @@ if [[ -d "$hyde_repo/.git" ]]; then
     git -C "$hyde_repo" fetch --depth=1 origin "$hyde_repo_branch"
     git -C "$hyde_repo" checkout --detach FETCH_HEAD
 else
-    clone_dir="/root/.HyDE.clone.$$"
+    clone_dir="/usr/local/src/.HyDE.clone.$$"
     trap 'rm -rf -- "$clone_dir"' EXIT
-    git clone --depth=1 --branch "$hyde_repo_branch" "$hyde_repo_url" "$clone_dir"
+    git clone --depth=1 --no-checkout "$hyde_repo_url" "$clone_dir"
+    git -C "$clone_dir" fetch --depth=1 origin "$hyde_repo_branch"
+    git -C "$clone_dir" checkout --detach FETCH_HEAD
     mv "$clone_dir" "$hyde_repo"
     trap - EXIT
 fi
 cd "$hyde_repo"
-HOME=/root HYDE_NO_REBOOT_PROMPT=1 ./Scripts/install.sh --defaults --restore --services
-
-install -d -m 0755 /usr/share/wayland-sessions /etc/sddm.conf.d
-install -d -m 0755 /etc/skel/.local /etc/skel/.local/bin /etc/skel/.local/lib /etc/skel/.local/share
-for item in .config .local/bin .local/lib .local/share .bashrc .zshrc .zprofile .bash_profile; do
-    [[ -e "/root/$item" ]] || continue
-    if [[ "$item" == .local/* ]]; then
-        cp -aT "/root/$item" "/etc/skel/$item"
-    else
-        cp -a "/root/$item" /etc/skel/
+install -d -m 0755 /usr/local/src
+install -d -m 0755 /home
+while :; do
+    printf '\nUsername [%s]: ' "$default_user"
+    if ! read -r -t 300 login_user; then
+        echo 'No account was created; first-boot setup timed out.'
+        exit 1
     fi
-done
-chown -R root:root /etc/skel
-
-cat > /usr/share/wayland-sessions/hyde-root.desktop <<'SESSION'
-[Desktop Entry]
-Name=HyDE (root)
-Comment=HyDE session running as root
-Exec=Hyprland --i-am-really-stupid
-Type=Application
-SESSION
-
-printf '
-HyDE is ready. Create a normal user now? [Y/n] '
-read -r create_user
-if [[ "$create_user" =~ ^[Nn]$ ]]; then
-    login_user=root
-    login_session=hyde-root.desktop
-else
-    while :; do
-        printf 'Username [%s]: ' "$default_user"
-        read -r login_user
-        login_user="${login_user:-$default_user}"
-        if [[ "$login_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] && ! id "$login_user" >/dev/null 2>&1; then
+    login_user="${login_user:-$default_user}"
+    if [[ "$login_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
+        if ! id "$login_user" >/dev/null 2>&1 || [[ "$(getent passwd "$login_user" | cut -d: -f6)" == "/home/$login_user" ]]; then
             break
         fi
-        echo 'Invalid or already existing username; use lowercase letters, digits, _ or -.'
-    done
-    useradd --create-home --skel=/etc/skel --groups=wheel,video,audio,input --shell=/bin/bash "$login_user"
-    passwd "$login_user"
-    login_home="$(getent passwd "$login_user" | cut -d: -f6)"
-    install -d -o "$login_user" -g "$login_user" "$login_home/.local/state"
-    runtime_dir="$login_home/.local/state/runtime"
-    install -d -m 0700 -o "$login_user" -g "$login_user" "$runtime_dir"
-    runuser -u "$login_user" -- env HOME="$login_home" XDG_STATE_HOME="$login_home/.local/state" XDG_RUNTIME_DIR="$runtime_dir" PATH="$login_home/.local/bin:$PATH" hyde-shell luainit
-    rm -rf -- "$runtime_dir"
-    cat > /etc/sudoers.d/10-wheel <<'SUDOERS'
+    fi
+    echo 'Invalid or already existing username; use lowercase letters, digits, _ or -.'
+done
+if ! id "$login_user" >/dev/null 2>&1; then
+    useradd --create-home --groups=wheel,video,audio,input --shell=/bin/bash "$login_user"
+fi
+login_home="$(getent passwd "$login_user" | cut -d: -f6)"
+timeout 300 passwd "$login_user"
+printf '%s ALL=(ALL:ALL) NOPASSWD: ALL\n' "$login_user" > /etc/sudoers.d/00-hyde-firstboot
+chmod 0440 /etc/sudoers.d/00-hyde-firstboot
+visudo -cf /etc/sudoers.d/00-hyde-firstboot
+trap 'rm -f /etc/sudoers.d/00-hyde-firstboot' EXIT
+runuser -u "$login_user" -- env HOME="$login_home" USER="$login_user" LOGNAME="$login_user" PATH="$login_home/.local/bin:$PATH" HYDE_NO_REBOOT_PROMPT=1 "$hyde_repo/Scripts/install.sh" --defaults --restore --services
+runuser -u "$login_user" -- env HOME="$login_home" PATH="$login_home/.local/bin:$PATH" hyde-shell luainit
+rm -f /etc/sudoers.d/00-hyde-firstboot
+trap - EXIT
+cat > /etc/sudoers.d/10-wheel <<'SUDOERS'
 %wheel ALL=(ALL) ALL
 SUDOERS
-    chmod 0440 /etc/sudoers.d/10-wheel
-    visudo -cf /etc/sudoers.d/10-wheel
-    login_session=hyprland.desktop
-fi
+chmod 0440 /etc/sudoers.d/10-wheel
+visudo -cf /etc/sudoers.d/10-wheel
 
 cat > /etc/sddm.conf.d/20-hyde-autologin.conf <<SDDM
-[Users]
-AllowRootLogin=true
-
 [Autologin]
 User=$login_user
-Session=$login_session
+Session=hyprland.desktop
 Relogin=true
 SDDM
+install -d -m 0755 /etc/sddm.conf.d
 systemctl enable sddm.service
+systemctl set-default graphical.target
 systemctl disable hyde-firstboot.service
+reboot
 HYDE_FIRSTBOOT
 chmod 0755 /usr/local/sbin/hyde-firstboot
 
@@ -135,10 +130,11 @@ Description=Configure HyDE and choose the login account
 Wants=network-online.target
 After=network-online.target
 Before=display-manager.service
+Conflicts=getty@tty1.service
 
 [Service]
 Type=oneshot
-TimeoutStartSec=infinity
+TimeoutStartSec=2h
 StandardInput=tty
 StandardOutput=tty
 StandardError=journal

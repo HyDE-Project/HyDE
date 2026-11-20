@@ -1,8 +1,5 @@
 { ... }:
 {
-  services.displayManager.autoLogin = {
-    enable = true;
-    user = "root";
-  };
-  services.displayManager.defaultSession = "hyde-root";
+  services.displayManager.autoLogin.enable = false;
+  services.displayManager.defaultSession = "hyprland";
 }
