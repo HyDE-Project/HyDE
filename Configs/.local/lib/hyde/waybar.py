@@ -86,8 +86,10 @@ def source_env_file(filepath):
         with open(filepath) as file:
             for line in file:
                 if line.strip() and not line.startswith("#"):
-                    key, value = line.strip().split("=", 1)
-                    os.environ[key] = value.strip("'")
+                    # ~/.local/state/hyde/config writes `export KEY="value"`
+                    line = line.strip().removeprefix("export ")
+                    key, value = line.split("=", 1)
+                    os.environ[key] = value.strip("\"'")
 
 
 def get_file_hash(filepath):
