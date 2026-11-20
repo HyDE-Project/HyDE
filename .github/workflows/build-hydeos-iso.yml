@@ -2,6 +2,18 @@ name: Build HyDEOS ISO
 
 on:
   workflow_dispatch:
+  push:
+    branches: ['feat/**']
+    paths:
+      - '.github/workflows/build-hydeos-iso.yml'
+      - 'Scripts/iso/**'
+      - 'Scripts/install.sh'
+      - 'Scripts/install_pre.sh'
+      - 'Scripts/install_aur.sh'
+      - 'Scripts/global_fn.sh'
+      - 'Scripts/dots-groups/**'
+      - 'Scripts/dots/**'
+      - 'Configs/**'
 
 permissions:
   contents: read
