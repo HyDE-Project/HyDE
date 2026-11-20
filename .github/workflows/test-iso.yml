@@ -12,8 +12,6 @@ on:
       - 'Scripts/dots-groups/**'
       - 'Scripts/dots/**'
       - 'Configs/**'
-      - 'flake.nix'
-      - 'flake.lock'
   push:
     branches: [dev]
     paths:
@@ -26,8 +24,6 @@ on:
       - 'Scripts/dots-groups/**'
       - 'Scripts/dots/**'
       - 'Configs/**'
-      - 'flake.nix'
-      - 'flake.lock'
 
 permissions:
   contents: read
