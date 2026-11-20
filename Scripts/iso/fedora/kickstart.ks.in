@@ -1,6 +1,4 @@
-# Fedora text-mode installation with HyDE installed on the first boot.
-text
-skipx
+# HyDEOS: Fedora-based community remix, installed through Anaconda.
 eula --agreed
 lang en_US.UTF-8
 keyboard --vckeymap=us
@@ -9,29 +7,19 @@ network --hostname=hydeos --bootproto=dhcp --device=link --activate --onboot=yes
 url --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch"
 repo --name=updates --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&arch=$basearch"
 
-ignoredisk --only-use=@DISK@
-clearpart --all --initlabel --disklabel=gpt --drives=@DISK@
-autopart --type=btrfs
-bootloader --timeout=1
-
 rootpw --lock
 firewall --enabled
 services --enabled=NetworkManager
 reboot
 
-%pre --erroronfail --interpreter=/bin/bash
-exec </dev/tty3 >/dev/tty3 2>&1
-printf '\nThis image will erase @DISK@. Type ERASE within 30 seconds to continue: '
-if ! read -r -t 30 answer || [[ "$answer" != ERASE ]]; then
-    echo 'Installation cancelled; the target disk was not changed.'
-    exit 1
-fi
-[[ -b @DISK@ ]] || { echo 'Target disk is unavailable.'; exit 1; }
-[[ "$(lsblk -dn -o TYPE -- @DISK@)" == disk ]] || { echo 'Target must be a whole disk.'; exit 1; }
-%end
-
 %packages
 @core
+-fedora-logos
+-fedora-release
+-fedora-release-notes
+generic-logos
+generic-release
+generic-release-notes
 git
 sudo
 gcc
@@ -54,7 +42,6 @@ set -euo pipefail
 
 hyde_repo_url='@HYDE_REPO_URL@'
 hyde_repo_branch='@HYDE_REPO_BRANCH@'
-default_user='@USER@'
 hyde_repo=/usr/local/src/HyDE
 install -d -m 0755 /usr/local/src
 
@@ -78,12 +65,12 @@ cd "$hyde_repo"
 install -d -m 0755 /usr/local/src
 install -d -m 0755 /home
 while :; do
-    printf '\nUsername [%s]: ' "$default_user"
+    printf '\nUsername [hyde]: '
     if ! read -r -t 300 login_user; then
         echo 'No account was created; first-boot setup timed out.'
         exit 1
     fi
-    login_user="${login_user:-$default_user}"
+    login_user="${login_user:-hyde}"
     if [[ "$login_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
         if ! id "$login_user" >/dev/null 2>&1 || [[ "$(getent passwd "$login_user" | cut -d: -f6)" == "/home/$login_user" ]]; then
             break

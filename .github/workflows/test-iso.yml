@@ -1,4 +1,4 @@
-name: Test ISO builders
+name: Test HyDEOS Fedora ISO
 
 on:
   pull_request:
@@ -34,7 +34,7 @@ permissions:
 
 jobs:
   fedora-iso:
-    name: Fedora ISO configuration
+    name: HyDEOS Kickstart and first-boot configuration
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,144 +54,23 @@ jobs:
 
           template = Path("Scripts/iso/fedora/kickstart.ks.in").read_text()
           replacements = {
-              "@DISK@": "/dev/disk/by-id/wwn-0x123",
-              "@USER@": "hyde",
               "@HYDE_REPO_URL@": "https://github.com/HyDE-Project/HyDE.git",
               "@HYDE_REPO_BRANCH@": "ca9ed884b8885b0c504e1fdc4edb806226a9c19b",
           }
           for key, value in replacements.items():
               template = template.replace(key, value)
           assert "rootpw --lock" in template
-          assert "user --name=" not in template
+          assert "ignoredisk" not in template and "clearpart" not in template
+          assert "generic-logos" in template
+          assert "@DISK@" not in template and "@USER@" not in template
           Path("/tmp/hyde-ks.cfg").write_text(template)
           start = template.index("cat > /usr/local/sbin/hyde-firstboot <<'HYDE_FIRSTBOOT'\n")
           start = template.index("\n", start) + 1
           end = template.index("\nHYDE_FIRSTBOOT", start)
           Path("/tmp/hyde-firstboot.sh").write_text(template[start:end] + "\n")
-          pre_start = template.index("%pre --erroronfail --interpreter=/bin/bash\n") + len("%pre --erroronfail --interpreter=/bin/bash\n")
-          pre_end = template.index("\n%end", pre_start)
-          Path("/tmp/hyde-pre.sh").write_text(template[pre_start:pre_end] + "\n")
           PY
           ksvalidator -v F45 /tmp/hyde-ks.cfg
           bash -n Scripts/iso/fedora/build-iso.sh
           bash -n /tmp/hyde-firstboot.sh
-          bash -n /tmp/hyde-pre.sh
           Scripts/iso/fedora/build-iso.sh --help >/dev/null
           CONTAINER
-
-  arch-iso:
-    name: Arch ISO configuration
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Check builder and generated archinstall configuration
-        run: |
-          docker run --rm \
-            -i \
-            -v "$GITHUB_WORKSPACE:/workspace:ro" \
-            -w /workspace \
-            archlinux:base-devel \
-            bash -euo pipefail <<'CONTAINER'
-          pacman -Syu --noconfirm archinstall
-          bash -n Scripts/iso/arch/build-iso.sh Scripts/iso/arch/auto-install.sh
-          Scripts/iso/arch/build-iso.sh --help >/dev/null
-          python3 - <<'PY'
-          import base64
-          import json
-          import pathlib
-          import re
-          import subprocess
-          import tempfile
-          from pathlib import Path
-          from types import SimpleNamespace
-          from unittest.mock import patch
-          source = pathlib.Path("Scripts/iso/arch/auto-install.sh").read_text()
-          code = source.split("<<'PY'\n", 1)[1].split("\nPY\n", 1)[0]
-          with tempfile.TemporaryDirectory() as directory:
-              root = pathlib.Path(directory)
-              fake_device = root / "sys/class/block/vda"
-              fake_device.mkdir(parents=True)
-              (fake_device / "size").write_text(str(80 * 1024 * 1024 * 1024 // 512))
-              config = root / "source.json"
-              config.write_text(json.dumps({
-                  "target_disk": "/dev/vda",
-                  "hyde_user": "hyde",
-                  "hyde_repository": "https://github.com/HyDE-Project/HyDE.git",
-                  "hyde_branch": "dev",
-              }))
-              code = code.replace(
-                  "pathlib.Path(\"/sys/class/block\",",
-                  "pathlib.Path(" + repr(str(root / "sys/class/block")) + ",",
-              )
-              subprocess.run([
-                  "python3", "-c", code, str(config), str(root / "config.json"), str(root / "log")
-              ], check=True)
-              generated = json.loads((root / "config.json").read_text())
-              credentials = json.loads((root / "config.json.creds").read_text())
-              disk = generated["disk_config"]["device_modifications"][0]
-              assert disk["device"] == "/dev/vda" and disk["wipe"] is True
-              assert [part["mountpoint"] for part in disk["partitions"]] == ["/boot", "/"]
-              assert disk["partitions"][0]["size"]["value"] == 1024
-              assert disk["partitions"][1]["size"]["value"] == 80 * 1024 - 1026
-              assert credentials["users"][0]["username"] == "hyde"
-              assert credentials["users"][0]["sudo"] is True
-              assert credentials["users"][0]["enc_password"].startswith("$6$")
-              from archinstall.lib.disk.device_handler import device_handler
-              from archinstall.lib.models.device import DiskLayoutConfiguration, PartitionTable, SectorSize, Size, Unit
-
-              fixture_device = SimpleNamespace(device_info=SimpleNamespace(
-                  path=Path("/dev/vda"),
-                  total_size=Size(80 * 1024, Unit.MiB, SectorSize.default()),
-              ))
-              with patch.object(device_handler, "get_device", return_value=fixture_device), \
-                   patch.object(device_handler, "_partition_table", PartitionTable.GPT):
-                  parsed = DiskLayoutConfiguration.parse_arg(generated["disk_config"])
-              parsed_partitions = parsed.device_modifications[0].partitions
-              assert [str(part.mountpoint) for part in parsed_partitions] == ["/boot", "/"]
-              assert [part.length.value for part in parsed_partitions] == [1024, 80 * 1024 - 1026]
-              subprocess.run([
-                  "archinstall", "--dry-run", "--silent", "--config", str(root / "config.json"),
-                  "--creds", str(root / "config.json.creds"),
-              ], check=True)
-              blobs = re.findall(r"printf '%s' '([^']+)'", generated["custom_commands"][0])
-              assert len(blobs) == 2
-              firstboot = base64.b64decode(blobs[0]).decode()
-              unit = base64.b64decode(blobs[1]).decode()
-              (root / "firstboot.sh").write_text(firstboot)
-              subprocess.run(["bash", "-n", str(root / "firstboot.sh")], check=True)
-              assert "runuser -u" in firstboot
-              assert "TimeoutStartSec=2h" in unit
-              assert "hyde-shell luainit" in firstboot
-              assert "--i-am-really-stupid" not in firstboot
-          PY
-          CONTAINER
-
-  nixos-iso:
-    name: NixOS ISO configuration
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: cachix/install-nix-action@v31
-        with:
-          extra_nix_config: experimental-features = nix-command flakes
-      - name: Prepare disposable test settings
-        run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          Path("Scripts/iso/nixos/install-settings.json").write_text(json.dumps({
-              "targetDisk": "/dev/vda",
-              "defaultUser": "hyde",
-          }, indent=2) + "\n")
-          PY
-      - name: Evaluate target system and installer ISO
-        run: |
-          nix eval --no-write-lock-file .#nixosConfigurations.hyde.config.system.build.toplevel.drvPath
-          nix eval --no-write-lock-file .#nixosConfigurations.hydeIso.config.system.build.isoImage.drvPath
-          bash -n Scripts/iso/nixos/build-iso.sh Scripts/iso/nixos/nixos-install.sh Scripts/iso/nixos/account-choice.sh
-          Scripts/iso/nixos/build-iso.sh --help >/dev/null

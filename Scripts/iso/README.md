@@ -1,74 +1,40 @@
-# HyDEOS installers
+# HyDEOS
 
-These builders create personal HyDEOS installation media based on Arch Linux,
-Fedora Linux, and NixOS. This is a per-machine installer, not a distributable
-ISO. Do not publish generated images. Distribution names, trademarks,
-copyrights, and software licenses remain with their respective owners. Before
-any public distribution, review the [Fedora Remix guidelines](https://fedoraproject.org/wiki/Remix),
-[Arch Linux trademark policy](https://terms.archlinux.org/docs/trademark-policy/),
-and corresponding source obligations for bundled software.
+HyDEOS is a public, Fedora-based desktop installer image. This project currently
+builds one ISO, named `HyDEOS.iso`. It installs Fedora Linux and then configures
+HyDE for the account chosen during first boot. HyDEOS is a community project and
+is not an official Fedora product.
 
-The target disk identity is selected at build time and checked again in the
-installer. Builders do not require the target disk to be connected to the
-build host. Before any disk changes, the installer requires the operator to type
-`ERASE`. It creates a normal desktop account during first-boot setup; root is
-not offered as a graphical session. The account password is entered at first
-boot and is not embedded in the ISO.
+## Build
 
-Use wired Ethernet for OS installation and HyDE setup. Wi-Fi setup
-is not part of the automated flow. Never select the USB drive containing the
-ISO as the target disk. Prefer a persistent `/dev/disk/by-id/...` path so the
-selected disk stays identifiable across boots. Back up important data before
-booting the generated image.
-
-## Fedora Linux
-
-Build on Fedora with `lorax` installed. Download the Fedora Everything netinstall
-ISO, then run:
+Build on Fedora Linux with `lorax` installed. Download the Fedora Everything
+netinstall ISO and run:
 
 ```bash
 Scripts/iso/fedora/build-iso.sh \
   --source Fedora-Everything-netinst.iso \
-  --disk /dev/disk/by-id/wwn-0xYOUR_DISK_ID \
-  --output HyDEOS-Fedora.iso
+  --output HyDEOS.iso
 ```
 
-The Kickstart installs Fedora in text mode with a Btrfs layout. On first boot,
-the system clones upstream HyDE and applies its existing defaults to the new
-user. The default source is pinned to upstream commit
+The resulting image starts Anaconda. Choose the installation disk and review
+the storage changes in Anaconda before starting installation. Use wired
+Ethernet with DHCP for Fedora and HyDE setup. On first boot, HyDEOS asks for a
+Linux username and password, installs HyDE for that user, and starts its
+desktop session. No account password or target disk is embedded in the ISO.
+
+The HyDE source defaults to upstream commit
 `ca9ed884b8885b0c504e1fdc4edb806226a9c19b`. Use `--hyde-repository` and
 `--hyde-branch` to select another source or revision.
 
-## Arch Linux
+## Public distribution
 
-Build on Arch Linux with `archiso` installed. The installer requires UEFI boot,
-Secure Boot disabled, and a target disk of at least 20 GiB. It creates a 1 GiB
-EFI partition and uses the remaining disk for an ext4 root partition.
+The installed system replaces Fedora's branded release packages with the
+generic equivalents, as required for a modified Fedora Remix. The Fedora
+installer source image may still show Fedora branding; HyDEOS is identified as
+a Fedora-based community project and does not claim to be an official Fedora
+release. See the [Fedora Remix guidance](https://fedoraproject.org/wiki/Remix).
 
-```bash
-Scripts/iso/arch/build-iso.sh \
-  --disk /dev/disk/by-id/wwn-0xYOUR_DISK_ID \
-  --output ./out
-```
-
-The live ISO starts `archinstall` after the erase confirmation. The configured
-normal user receives HyDE's defaults on first boot. The output image is named
-`HyDEOS-Arch.iso`. If installation fails, the live environment log is at
-`/var/log/hyde-iso-install.log`.
-
-## NixOS
-
-Build on NixOS or another Linux system with Nix flakes enabled. The installer
-requires UEFI boot, wired networking, and a target disk of at least 20 GiB. It
-creates a 1 GiB EFI partition and an ext4 root partition. NixOS downloads the
-system closure during installation.
-
-```bash
-Scripts/iso/nixos/build-iso.sh \
-  --disk /dev/disk/by-id/wwn-0xYOUR_DISK_ID \
-  --output HyDEOS-NixOS.iso
-```
-
-The installer writes the HyDE NixOS configuration to the selected disk. On
-first boot, it creates a normal user with the default HyDE configuration and
-reboots into that user's desktop session.
+Before publishing an image, include its SHA-256 checksum and the notices and
+corresponding source required by the licenses of the software it contains.
+HyDEOS uses Fedora Linux software and HyDE; their names, marks, copyrights, and
+licenses remain with their respective owners.
