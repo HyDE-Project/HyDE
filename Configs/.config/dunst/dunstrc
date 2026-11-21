@@ -37,6 +37,11 @@ frame_color = "#f38ba8"
 icon = "/home/khing/.local/share/icons/Wallbash-Icon/critical.svg"
 timeout = 0
 
+[app2unit_error]
+appname = "^app2unit$"
+msg_urgency = critical
+timeout = 10
+
 # ------------------------------------------------------------------------------
 
 [global]
