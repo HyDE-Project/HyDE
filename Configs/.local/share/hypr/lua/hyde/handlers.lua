@@ -195,3 +195,76 @@ hyde.handle.follow_cursor_quadrant = function(win, opts)
 
     hl.dispatch(hl.dsp.window.move({window = win, x = math.floor(tx), y = math.floor(ty), exact = true}))
 end
+
+-- Connector name prefixes of built-in (laptop) screens, as in /sys/class/drm
+local builtin_screen_prefixes = {"eDP-", "LVDS-", "DSI-"}
+
+--- Lists the connected built-in screens, or returns nil when any other screen
+-- is plugged in. Reads the kernel's connector status, which is there before
+-- Hyprland sets up its outputs and also covers outputs it has disabled.
+local function lone_builtin_screens()
+    local p = io.popen("grep -lx connected /sys/class/drm/card*-*/status 2>/dev/null")
+    if not p then
+        return nil
+    end
+    local builtin = {}
+    for path in p:lines() do
+        local output = path:match("/card%d+%-(.-)/status$")
+        if output then
+            local is_builtin = false
+            for _, prefix in ipairs(builtin_screen_prefixes) do
+                if output:sub(1, #prefix) == prefix then
+                    is_builtin = true
+                end
+            end
+            if not is_builtin then
+                p:close()
+                return nil
+            end
+            builtin[#builtin + 1] = output
+        end
+    end
+    p:close()
+    return builtin
+end
+
+--- Keeps a built-in screen on while no other screen is plugged in (#720).
+-- A laptop screen turned off while docked (e.g. from nwg-displays, which saves
+-- the "disabled" rule to monitors.lua) stayed off after the external monitor was
+-- unplugged, and after every reboot, leaving no screen to turn it back on from.
+-- Call it while the config loads, after monitors.lua: a rule added later is not
+-- applied until the next reload.
+hyde.handle.builtin_screen_fallback = function()
+    local builtin = lone_builtin_screens() or {}
+    for _, output in ipairs(builtin) do
+        -- Monitor rules merge, so this only undoes "disabled" and keeps the saved layout
+        hl.monitor({output = output, disabled = false})
+    end
+    hyde.handle.builtin_screen_forced = #builtin > 0
+end
+
+--- Reloads the config when the last screen is gone, so that
+-- hyde.handle.builtin_screen_fallback() turns the built-in one back on.
+hyde.handle.no_screen_left = function()
+    for _, mon in ipairs(hl.get_monitors()) do
+        -- Hyprland adds FALLBACK when no real output is left
+        if mon.name ~= "FALLBACK" then
+            return
+        end
+    end
+    -- Only when the reload turns one on: an external screen the kernel still
+    -- lists keeps the laptop one off, and reloading for it would gain nothing
+    local builtin = lone_builtin_screens()
+    if builtin and #builtin > 0 then
+        hl.dispatch(hl.dsp.exec_cmd("hyprctl reload"))
+    end
+end
+
+--- Reloads the config when a screen is plugged in after
+-- hyde.handle.builtin_screen_fallback() turned the built-in one on, so that the
+-- saved layout applies again (e.g. the laptop screen off while docked).
+hyde.handle.screen_plugged = function()
+    if hyde.handle.builtin_screen_forced and not lone_builtin_screens() then
+        hl.dispatch(hl.dsp.exec_cmd("hyprctl reload"))
+    end
+end
