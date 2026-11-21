@@ -81,6 +81,16 @@ frame_color = "#f38ba8"
 icon = "${iconsDir}/Wallbash-Icon/critical.svg"
 timeout = 0
 
+# app2unit reports launch errors (e.g. "Executable not found" after a typo in
+# the rofi launcher) as critical notifications, which the section above never
+# expires, so they stayed on screen until logout (#2246). app2unit is fetched
+# from upstream as-is, so expire them here instead; other critical
+# notifications stay sticky. Must come after [urgency_critical] to override it.
+[app2unit_error]
+appname = "^app2unit\$"
+msg_urgency = critical
+timeout = 10
+
 # ------------------------------------------------------------------------------
 
 WARN
