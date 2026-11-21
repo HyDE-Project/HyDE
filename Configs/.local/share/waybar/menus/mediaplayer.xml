@@ -44,5 +44,10 @@
         </child>
 
 
+        <child>
+            <object class="GtkMenuItem" id="cover">
+                <property name="label">󰋩  Show Cover</property>
+            </object>
+        </child>
     </object>
 </interface>
