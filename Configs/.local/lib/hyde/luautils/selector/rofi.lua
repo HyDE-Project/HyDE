@@ -133,7 +133,15 @@ function M.select(items, opts)
     -- this remains an approximation, not an exact measurement of the rendered
     -- window.
     local pos_override = ""
-    if opts.follow_cursor ~= false then
+    -- opts.follow_cursor wins; otherwise read <env_prefix>_FOLLOW_CURSOR, then
+    -- ROFI_FOLLOW_CURSOR ([rofi.<section>] / [rofi] follow_cursor in config.toml).
+    -- Defaults to following the cursor; when disabled the menu is centered.
+    local follow_cursor = opts.follow_cursor
+    if follow_cursor == nil then
+        local v = string.lower(getenv(prefix, "FOLLOW_CURSOR", "true"))
+        follow_cursor = v == "true" or v == "1"
+    end
+    if follow_cursor then
         local px_per_em = scale * (4 / 3)
         local theme_width_em, theme_height_em = theme_window_em(theme)
         local rofi_pos =
@@ -146,6 +154,12 @@ function M.select(items, opts)
         if rofi_pos and rofi_pos.str ~= "" then
             pos_override = string.format("-theme-str %s", shell_quote(rofi_pos.str))
         end
+    else
+        pos_override =
+            string.format(
+            "-theme-str %s",
+            shell_quote("window{location:center;anchor:center;x-offset:0px;y-offset:0px;}")
+        )
     end
     local prompt = opts.prompt or getenv(prefix, "PROMPT", "Select")
     local placeholder = opts.placeholder or getenv(prefix, "PLACEHOLDER", "Type to filter...")

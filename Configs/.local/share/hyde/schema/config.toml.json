@@ -138,6 +138,11 @@
                     "description": "Rofi default scaling.",
                     "type": "integer"
                 },
+                "follow_cursor": {
+                    "default": true,
+                    "description": "Place rofi menus at the cursor; false centers them on screen. Default for all menus; override per menu with [rofi.<menu>] follow_cursor.",
+                    "type": "boolean"
+                },
                 "hyprlock": {
                     "description": "'hyde-shell hyprlock --select' configuration.",
                     "type": "object",
@@ -146,6 +151,11 @@
                             "default": 10,
                             "description": "Scaling for hyprlock.",
                             "type": "integer"
+                        },
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the hyprlock layout selector at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
                         }
                     }
                 },
@@ -157,6 +167,11 @@
                             "default": 10,
                             "description": "Scaling for animation.",
                             "type": "integer"
+                        },
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the animation selector at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
                         }
                     }
                 },
@@ -168,6 +183,11 @@
                             "default": 10,
                             "description": "Scaling for glyph picker.",
                             "type": "integer"
+                        },
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the glyph picker at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
                         },
                         "args": {
                             "default": [
@@ -252,6 +272,11 @@
                             "default": 10,
                             "description": "Scaling for cliphist.",
                             "type": "integer"
+                        },
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the clipboard history at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
                         }
                     }
                 },
@@ -288,6 +313,11 @@
                             "default": 10,
                             "description": "Scaling for emoji picker.",
                             "type": "integer"
+                        },
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the emoji picker at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
                         },
                         "args": {
                             "default": [
@@ -381,6 +411,72 @@
                             "default": "JetBrainsMono Nerd Font",
                             "description": "Font for bookmarks.",
                             "type": "string"
+                        }
+                    }
+                },
+                "quickapps": {
+                    "description": "quickapps.sh configuration.",
+                    "type": "object",
+                    "properties": {
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the quickapps dock at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "waybar": {
+                    "description": "'hyde-shell waybar --select' configuration.",
+                    "type": "object",
+                    "properties": {
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the waybar layout selector at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "layout": {
+                    "description": "'hyde-shell layouts --select' configuration.",
+                    "type": "object",
+                    "properties": {
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the layout selector at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "workflow": {
+                    "description": "'hyde-shell workflows --select' configuration.",
+                    "type": "object",
+                    "properties": {
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the workflow selector at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "shader": {
+                    "description": "'hyde-shell shaders --select' configuration.",
+                    "type": "object",
+                    "properties": {
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the shader selector at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "blur": {
+                    "description": "'hyde-shell blurs --select' configuration.",
+                    "type": "object",
+                    "properties": {
+                        "follow_cursor": {
+                            "default": true,
+                            "description": "Place the blur selector at the cursor. Falls back to rofi.follow_cursor.",
+                            "type": "boolean"
                         }
                     }
                 }
@@ -897,6 +993,11 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "terminal": {
+                    "default": "",
+                    "description": "Terminal used to launch a console monitor. Falls back to TERMINAL.",
+                    "type": "string"
                 }
             }
         },

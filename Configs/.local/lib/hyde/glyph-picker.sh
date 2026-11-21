@@ -26,7 +26,7 @@ setup_rofi_config() {
     local hypr_border=${hypr_border:-"$(hyprctl -j getoption decoration:rounding | jq '.int')"}
     local wind_border=$((hypr_border * 3 / 2))
     local elem_border=$((hypr_border == 0 ? 5 : hypr_border))
-    rofi_position=$(get_rofi_pos)
+    rofi_position=$(get_rofi_pos glyph)
     local hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
     r_override="window{border:${hypr_width}px;border-radius:${wind_border}px;}listview{border-radius:${elem_border}px;} element{border-radius:${elem_border}px;}"
     rofi_args+=(

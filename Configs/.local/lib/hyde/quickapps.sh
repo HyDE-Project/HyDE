@@ -40,6 +40,10 @@ else
     y_pos="north"
     y_off="$((curPos[1] - offRes[1]))"
 fi
+# [rofi.quickapps] / [rofi] follow_cursor = false centers the dock
+if ! rofi_follow_cursor quickapps; then
+    x_pos="center" y_pos="" x_off=0 y_off=0
+fi
 hypr_width=${hypr_width:-"$(hyprctl -j getoption general:border_size | jq '.int')"}
 dockHeight=$((monRes[0] * 3 / 100))
 dockWidth=$((dockHeight * appCount))
