@@ -34,17 +34,21 @@ regenerate = false  # Forces regeneration of depth maps & meshes.
 # Global rofi configuration.
 [rofi]
 scale = 10  # Rofi default scaling.
+follow_cursor = true  # Place rofi menus at the cursor; false centers them on screen. Default for all menus; override per menu with [rofi.<menu>] follow_cursor.
 # 'hyde-shell hyprlock --select' configuration.
 [rofi.hyprlock]
 scale = 10  # Scaling for hyprlock.
+follow_cursor = true  # Place the hyprlock layout selector at the cursor. Falls back to rofi.follow_cursor.
 
 # 'hyde-shell animations --select' configuration.
 [rofi.animation]
 scale = 10  # Scaling for animation.
+follow_cursor = true  # Place the animation selector at the cursor. Falls back to rofi.follow_cursor.
 
 # glyph-picker.sh configuration.
 [rofi.glyph]
 scale = 10  # Scaling for glyph picker.
+follow_cursor = true  # Place the glyph picker at the cursor. Falls back to rofi.follow_cursor.
 args = ["-multi-select"]  # Additional arguments for glyph picker.
 
 # rofilaunch.sh configuration.
@@ -62,6 +66,7 @@ filebrowser_style = "style_1"  # Style for filebrowser mode.
 # cliphist.sh configuration.
 [rofi.cliphist]
 scale = 10  # Scaling for cliphist.
+follow_cursor = true  # Place the clipboard history at the cursor. Falls back to rofi.follow_cursor.
 
 # wallpaper select configuration.
 [rofi.wallpaper]
@@ -72,6 +77,7 @@ column_count = 3  # Number of columns for wallpaper selector.
 [rofi.emoji]
 style = 1  # Style for emoji picker.
 scale = 10  # Scaling for emoji picker.
+follow_cursor = true  # Place the emoji picker at the cursor. Falls back to rofi.follow_cursor.
 args = ["-multi-select"]  # Additional arguments for emoji picker.
 
 # themeselect.sh configuration.
@@ -92,6 +98,30 @@ style = ""  # Style for rofi bookmarks.
 args = []  # Additional arguments for bookmarks.
 scale = 10  # Scaling for bookmarks.
 font = "JetBrainsMono Nerd Font"  # Font for bookmarks.
+
+# quickapps.sh configuration.
+[rofi.quickapps]
+follow_cursor = true  # Place the quickapps dock at the cursor. Falls back to rofi.follow_cursor.
+
+# 'hyde-shell waybar --select' configuration.
+[rofi.waybar]
+follow_cursor = true  # Place the waybar layout selector at the cursor. Falls back to rofi.follow_cursor.
+
+# 'hyde-shell layouts --select' configuration.
+[rofi.layout]
+follow_cursor = true  # Place the layout selector at the cursor. Falls back to rofi.follow_cursor.
+
+# 'hyde-shell workflows --select' configuration.
+[rofi.workflow]
+follow_cursor = true  # Place the workflow selector at the cursor. Falls back to rofi.follow_cursor.
+
+# 'hyde-shell shaders --select' configuration.
+[rofi.shader]
+follow_cursor = true  # Place the shader selector at the cursor. Falls back to rofi.follow_cursor.
+
+# 'hyde-shell blurs --select' configuration.
+[rofi.blur]
+follow_cursor = true  # Place the blur selector at the cursor. Falls back to rofi.follow_cursor.
 
 
 # wlogout configuration.
@@ -332,3 +362,4 @@ prefix_paused = "  "  # Prefix for paused media.
 max_length = 70  # Max length of song and artist string.
 standby_text = "  Music"  # To display on standby.
 artist_track_separator = "  "  # Separator symbols to display between artist and track.
+

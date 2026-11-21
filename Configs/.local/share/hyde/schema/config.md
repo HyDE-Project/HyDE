@@ -259,6 +259,7 @@ Global rofi configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+| follow_cursor | Place rofi menus at the cursor; false centers them on screen. Default for all menus; override per menu with [rofi.<menu>] follow_cursor. | true |
 | scale | Rofi default scaling. | 10 |
 
 ### [rofi.animation]
@@ -267,7 +268,16 @@ Global rofi configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+| follow_cursor | Place the animation selector at the cursor. Falls back to rofi.follow_cursor. | true |
 | scale | Scaling for animation. | 10 |
+
+### [rofi.blur]
+
+'hyde-shell blurs --select' configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| follow_cursor | Place the blur selector at the cursor. Falls back to rofi.follow_cursor. | true |
 
 ### [rofi.bookmarks]
 
@@ -286,6 +296,7 @@ cliphist.sh configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+| follow_cursor | Place the clipboard history at the cursor. Falls back to rofi.follow_cursor. | true |
 | scale | Scaling for cliphist. | 10 |
 
 ### [rofi.emoji]
@@ -295,6 +306,7 @@ emoji-picker.sh configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | args | Additional arguments for emoji picker. | ["-multi-select"] |
+| follow_cursor | Place the emoji picker at the cursor. Falls back to rofi.follow_cursor. | true |
 | scale | Scaling for emoji picker. | 10 |
 | style | Style for emoji picker. | 1 |
 
@@ -305,6 +317,7 @@ glyph-picker.sh configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | args | Additional arguments for glyph picker. | ["-multi-select"] |
+| follow_cursor | Place the glyph picker at the cursor. Falls back to rofi.follow_cursor. | true |
 | scale | Scaling for glyph picker. | 10 |
 
 ### [rofi.hyprlock]
@@ -313,6 +326,7 @@ glyph-picker.sh configuration.
 
 | Key | Description | Default |
 | --- | ----------- | ------- |
+| follow_cursor | Place the hyprlock layout selector at the cursor. Falls back to rofi.follow_cursor. | true |
 | scale | Scaling for hyprlock. | 10 |
 
 ### [rofi.launch]
@@ -330,6 +344,30 @@ rofilaunch.sh configuration.
 | scale | Scaling for launch. | 5 |
 | window_args | Additional arguments for window mode. | [] |
 | window_style | Style for window mode. | style_1 |
+
+### [rofi.layout]
+
+'hyde-shell layouts --select' configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| follow_cursor | Place the layout selector at the cursor. Falls back to rofi.follow_cursor. | true |
+
+### [rofi.quickapps]
+
+quickapps.sh configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| follow_cursor | Place the quickapps dock at the cursor. Falls back to rofi.follow_cursor. | true |
+
+### [rofi.shader]
+
+'hyde-shell shaders --select' configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| follow_cursor | Place the shader selector at the cursor. Falls back to rofi.follow_cursor. | true |
 
 ### [rofi.theme]
 
@@ -349,6 +387,14 @@ wallpaper select configuration.
 | column_count | Number of columns for wallpaper selector. | 3 |
 | scale | Scaling for wallpaper. | 10 |
 
+### [rofi.waybar]
+
+'hyde-shell waybar --select' configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| follow_cursor | Place the waybar layout selector at the cursor. Falls back to rofi.follow_cursor. | true |
+
 ### [rofi.websearch]
 
 hyde-shell rofi.websearch.sh configuration.
@@ -359,6 +405,14 @@ hyde-shell rofi.websearch.sh configuration.
 | font | Font for websearch. | JetBrainsMono Nerd Font |
 | scale | Scaling for websearch. | 10 |
 | style | Style for rofi websearch. |  |
+
+### [rofi.workflow]
+
+'hyde-shell workflows --select' configuration.
+
+| Key | Description | Default |
+| --- | ----------- | ------- |
+| follow_cursor | Place the workflow selector at the cursor. Falls back to rofi.follow_cursor. | true |
 
 ### [rofi.keybind.hint]
 
@@ -398,6 +452,7 @@ sysmonlaunch.sh configuration.
 | --- | ----------- | ------- |
 | commands | Fallback command options. | [""] |
 | execute | Default command to execute. |  |
+| terminal | Terminal used to launch a console monitor. Falls back to TERMINAL. |  |
 
 ### [volume]
 
@@ -490,3 +545,4 @@ wlogout configuration.
 | Key | Description | Default |
 | --- | ----------- | ------- |
 | style | Style for wlogout. | 2 |
+

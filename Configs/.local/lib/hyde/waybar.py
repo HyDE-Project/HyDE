@@ -86,8 +86,13 @@ def source_env_file(filepath):
         with open(filepath) as file:
             for line in file:
                 if line.strip() and not line.startswith("#"):
-                    key, value = line.strip().split("=", 1)
-                    os.environ[key] = value.strip("'")
+                    # ~/.local/state/hyde/config writes `export KEY="value"`
+                    line = line.strip().removeprefix("export ")
+                    key, value = line.split("=", 1)
+                    value = value.strip()
+                    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+                        value = value[1:-1]
+                    os.environ[key] = value
 
 
 def get_file_hash(filepath):
@@ -835,7 +840,7 @@ def rofi_file_selector(
     hyprland = HYPRLAND.HyprctlWrapper()
     try:
         override_string = hyprland.get_rofi_override_string()
-        rofi_pos_string = hyprland.get_rofi_pos()
+        rofi_pos_string = hyprland.get_rofi_pos("waybar")
         rofi_flags = [
             "-p", prompt,
             "-select", current_name,
@@ -974,7 +979,7 @@ def handle_backup_display():
 
     hyprland = HYPRLAND.HyprctlWrapper()
     override_string = hyprland.get_rofi_override_string()
-    rofi_pos_string = hyprland.get_rofi_pos()
+    rofi_pos_string = hyprland.get_rofi_pos("waybar")
 
     rofi_flags = [
         "-p", "Select a backup to try:",

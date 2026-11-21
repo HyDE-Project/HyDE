@@ -6,6 +6,12 @@ All notable changes to 'HyDE' will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
+## Unreleased
+
+### Added
+
+- Rofi: each rofi menu can open centered on screen instead of at the cursor, set with `follow_cursor` in `~/.config/hyde/config.toml`. `[rofi] follow_cursor` applies to all menus, and `follow_cursor` under a menu's own section overrides it for that menu: `[rofi.cliphist]`, `[rofi.emoji]`, `[rofi.glyph]`, `[rofi.hyprlock]`, `[rofi.animation]`, and the new `[rofi.quickapps]`, `[rofi.waybar]`, `[rofi.layout]`, `[rofi.workflow]`, `[rofi.shader]` and `[rofi.blur]` sections. Both default to `true`, so menus still open at the cursor unless one is set to `false`
+
 ## v26.11.12
 
 ### Added
