@@ -17,18 +17,6 @@
 -- TODO: check the Hyprland bind flags documentation periodically and
 -- update the dedup field list when new relevant bind flags are added.
 
--- type(x) == "function" misses the common binding pattern of a table made
--- callable via a __call metamethod, which is what hl.dsp.exec_cmd turns out
--- to be (both the native one and the test stub in tests/lua/bind_harness.lua
--- model it that way).
-local function is_callable(value)
-    if type(value) == "function" then
-        return true
-    end
-    local mt = getmetatable(value)
-    return type(mt) == "table" and type(mt.__call) == "function"
-end
-
 local function trim(str)
     return str and str:gsub("^%s+", ""):gsub("%s+$", "") or ""
 end
@@ -82,8 +70,8 @@ local function canonicalize(keycombo)
     return table.concat(modifiers, " + ")
 end
 
--- Minimal encoder for a flat string->string table -- the only shape
--- hyde.binds._commands ever holds. Not a general JSON encoder: no nesting,
+-- Minimal encoder for a flat string->string table -- the shape of the action
+-- manifest hyde.binds exports. Not a general JSON encoder: no nesting,
 -- no numbers, no booleans. Written locally instead of pulling in
 -- Configs/.local/lib/hyde/luautils/json.lua because that tree is not on
 -- package.path here -- this file runs inside Hyprland's own embedded Lua,
@@ -204,39 +192,45 @@ hyde.binds.canonicalize = canonicalize
 -- the original spelling has to be kept around to remove a bind again.
 hyde.binds._active = hyde.binds._active or {}
 
--- Resolves __lua binds back to a launchable command for the keybind-hint
--- menu (#1996). Hyprland exposes every hl.bind() action over hyprctl as an
--- opaque "__lua" registry reference with no way to invoke it externally,
--- except by re-emitting a fresh hl.dsp.exec_cmd("...") call -- so
--- hint-hyprland.py needs the original command string for binds built that
--- way. Associate each command with the action returned by hl.dsp.exec_cmd so
--- delayed and unrelated hl.bind calls cannot consume each other's commands.
--- A bind built any other way -- a plain Lua function, a native dispatcher
--- called directly -- has no matching entry and stays unresolved, which is the
--- documented limit: those can't be reduced to one command.
-hyde.binds._commands = hyde.binds._commands or {}
+-- Every registered bind's own action, keyed by the Lua registry reference
+-- Hyprland reports for it over `hyprctl binds` (handle.arg). The reference is
+-- what identifies one bind: a combo can carry a press and a release bind, the
+-- same combo repeats across submaps, and Hyprland reuses a reference once its
+-- bind is gone. `token` pins one registration, so a hint cache from an earlier
+-- load -- or from a reference that was since rebound -- is refused instead of
+-- running another bind's action.
+--
+-- `hyprctl dispatch` evaluates its argument in this same Lua state and
+-- hl.dispatch accepts the same actions hl.bind does, so the keybind-hint menu
+-- runs a bind with `hyde.binds.action("<ref>", "<token>")`.
+hyde.binds._actions = {}
 
-local pending_commands = setmetatable({}, {__mode = "k"})
-if type(hl.dsp) == "table" and is_callable(hl.dsp.exec_cmd) then
-    local orig_exec_cmd = hl.dsp.exec_cmd
-    hl.dsp.exec_cmd = function(command, ...)
-        local action = orig_exec_cmd(command, ...)
-        if action ~= nil then
-            pending_commands[action] = command
-        end
-        return action
+-- Unique per loaded module, so tokens of an earlier load never match again.
+local generation = tostring({}) .. ":" .. tostring(os.clock())
+local sequence = 0
+
+hyde.binds.action = function(ref, token)
+    local entry = hyde.binds._actions[tostring(ref)]
+    if entry == nil or entry.token ~= token then
+        error("hyde.binds.action: stale or unknown bind reference " .. tostring(ref) .. ", reopen the keybind hint")
     end
+    if type(entry.handle.is_enabled) ~= "function" then
+        error("hyde.binds.action: this Hyprland exposes no bind state for " .. tostring(ref))
+    end
+    local enabled = entry.handle:is_enabled()
+    if enabled == nil then
+        error("hyde.binds.action: bind reference " .. tostring(ref) .. " has expired")
+    end
+    if not enabled then
+        error("hyde.binds.action: bind reference " .. tostring(ref) .. " is disabled")
+    end
+    return entry.action
 end
 
 local orig_add = hl.bind
+local warned_missing_ref = false
 
 hl.bind = function(keycombo, action, ...)
-    local command
-    if action ~= nil then
-        command = pending_commands[action]
-        pending_commands[action] = nil
-    end
-
     local normalized = hyde.binds.normalize(keycombo)
     local opts = find_options(...)
     local signature = serialize_flags(opts)
@@ -254,16 +248,31 @@ hl.bind = function(keycombo, action, ...)
         keycombo = normalized
     end
 
-    if normalized ~= "" then
-        local canonical = canonicalize(keycombo)
-        if type(command) == "string" and command ~= "" then
-            hyde.binds._commands[canonical] = command
+    local handle = orig_add(keycombo, action, ...)
+
+    if handle ~= nil and action ~= nil then
+        local ref = handle.arg
+        if ref == nil then
+            -- Older Hyprland exposes no registry reference, so there is
+            -- nothing the hint menu could replay. Say so once rather than
+            -- guessing an identity from the combo.
+            if not warned_missing_ref then
+                warned_missing_ref = true
+                io.stderr:write(
+                    "hyde.binds: hl.bind() exposes no handle.arg; the keybind hint cannot replay Lua binds\n"
+                )
+            end
         else
-            hyde.binds._commands[canonical] = nil
+            sequence = sequence + 1
+            hyde.binds._actions[tostring(ref)] = {
+                action = action,
+                handle = handle,
+                token = generation .. ":" .. sequence
+            }
         end
     end
 
-    return orig_add(keycombo, action, ...)
+    return handle
 end
 
 -- Written once per full config (re)load, not per-bind: hl.bind() runs on the
@@ -272,23 +281,47 @@ end
 -- the last call matters. "config.reloaded" covers every later
 -- `hyprctl reload`; "hyprland.start" covers the very first load, which never
 -- fires as a reload.
-local function write_commands_cache()
+local function _write_actions_cache()
     if type(hyde.path) ~= "table" or type(hyde.path.cache) ~= "string" then
         return
     end
 
-    local file = io.open(hyde.path.cache .. "/hyde/lua_bind_commands.json", "w")
+    local tokens = {}
+    for ref, entry in pairs(hyde.binds._actions) do
+        tokens[ref] = entry.token
+    end
+
+    -- The hint script only ever reads a finished manifest, so write beside it
+    -- and rename: a failure leaves the previous load's manifest intact
+    -- instead of truncating it.
+    local manifest_path = hyde.path.cache .. "/hyde/lua_bind_actions.json"
+    local tmp_path = manifest_path .. ".tmp"
+    local file, open_error = io.open(tmp_path, "w")
     if not file then
+        io.stderr:write("hyde.binds: cannot write " .. tmp_path .. ": " .. tostring(open_error) .. "\n")
         return
     end
 
-    file:write(encode_flat_string_map(hyde.binds._commands))
-    file:close()
+    local written, write_error = file:write(encode_flat_string_map(tokens))
+    local closed, close_error = file:close()
+    if not written or not closed then
+        os.remove(tmp_path)
+        io.stderr:write(
+            "hyde.binds: cannot write " .. tmp_path .. ": " .. tostring(write_error or close_error) .. "\n"
+        )
+        return
+    end
+
+    local renamed, rename_error = os.rename(tmp_path, manifest_path)
+    if not renamed then
+        os.remove(tmp_path)
+        io.stderr:write("hyde.binds: cannot replace " .. manifest_path .. ": " .. tostring(rename_error) .. "\n")
+    end
 end
 
-hyde.binds._write_commands_cache = write_commands_cache
+hyde.binds._write_actions_cache = _write_actions_cache
 
 if type(hl.on) == "function" then
-    hl.on("hyprland.start", write_commands_cache)
-    hl.on("config.reloaded", write_commands_cache)
+    hl.on("hyprland.start", _write_actions_cache)
+    hl.on("config.reloaded", _write_actions_cache)
 end

@@ -61,7 +61,7 @@ def fetch_theme_preview_path(theme):
         images = []
         for root, dirs, files in os.walk(theme_dir):
             for file in files:
-                if file.lower().endswith((".png", ".jpg", ".jpeg", ".gif")):
+                if file.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp")):
                     images.append(os.path.join(root, file))
         if images:
             return images

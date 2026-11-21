@@ -56,9 +56,11 @@ class ManagerContext:
     ) -> subprocess.CompletedProcess[str]:
         if env is None:
             env = os.environ.copy()
-        # Always force LANG and LC_ALL to C for predictable output
-        env["LANG"] = "C"
-        env["LC_ALL"] = "C"
+        # Force LANG and LC_ALL to C only when the output is captured and parsed.
+        # Interactive commands keep the user's locale so progress bars render.
+        if capture:
+            env["LANG"] = "C"
+            env["LC_ALL"] = "C"
         # Support PACKAGE_MANAGER_NO_CONFIRM for all package_managers
         if self.no_confirm:
             env["PACKAGE_MANAGER_NO_CONFIRM"] = "1"

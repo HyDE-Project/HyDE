@@ -6,40 +6,17 @@ import os
 from collections import defaultdict
 import time
 
-# Bit -> modifier name Hyprland reports in a bind's modmask. Same table
-# map_modDisplay() below uses for display purposes; kept separate because the
-# ordering rules differ (this one has to match hyde/binds.lua's canonicalize,
-# alphabetical, not the display order below).
-_MODIFIER_BITS = {
-    64: "SUPER",
-    32: "HYPER",
-    16: "META",
-    8: "ALT",
-    4: "CTRL",
-    2: "CAPSLOCK",
-    1: "SHIFT",
-}
+# Dispatcher labels hyprctl reports for a bind whose action is a Lua registry
+# reference rather than a named dispatcher: "__lua" on older builds, and on
+# 0.57+ the handler's own tostring() -- "HL.Dispatcher(exec_cmd)",
+# "function: 0x..." and friends. Such a bind is identified by its registry
+# reference (the reported arg), which hyde/binds.lua's manifest keys on.
+_LUA_HANDLER_PREFIXES = ("HL.", "function: ", "table: ")
 
 
-def canonical_combo(modmask, key):
-    """Mirrors hyde/binds.lua's canonicalize(): decompose modmask into
-    modifier names, sort them alphabetically, append the upper-cased key,
-    join with " + ". Returns None for a bind with no key at all (a bare
-    modmask, which Hyprland never emits for a real bind and canonicalize()
-    itself also treats as empty).
-
-    This has to reproduce that algorithm exactly, not just resemble it --
-    it is the lookup key into the cache hyde/binds.lua writes, computed
-    independently on the other side of a file, in a different language.
-    """
-    if not isinstance(key, str) or key == "":
-        return None
-    if not isinstance(modmask, int):
-        return None
-
-    mods = sorted(name for bit, name in _MODIFIER_BITS.items() if modmask & bit)
-    mods.append(key.upper())
-    return " + ".join(mods)
+def _is_lua_handler(dispatcher):
+    """Reports whether a reported dispatcher is a Lua registry reference."""
+    return dispatcher == "__lua" or dispatcher.startswith(_LUA_HANDLER_PREFIXES)
 
 
 def _escape_lua_string(value):
@@ -57,16 +34,19 @@ def _escape_lua_string(value):
     )
 
 
-def load_bind_commands():
-    """Reads the combo->command cache hyde/binds.lua writes on every config
-    load (see Configs/.local/share/hypr/lua/hyde/binds.lua). Missing file,
-    unreadable file, malformed JSON, or JSON that isn't a flat string->string
-    object all resolve to an empty map -- __lua binds simply stay
-    unresolved, which is the existing, already-correct fallback behavior for
-    binds that can't be reduced to one command at all.
+def load_bind_actions():
+    """Reads the registry-reference -> token manifest hyde/binds.lua writes on
+    every config load.
+
+    Missing file, unreadable file, malformed JSON, or JSON that isn't a flat
+    string->string map all resolve to an empty map, so the hint leaves those
+    entries as hyprctl reported them instead of dispatching something guessed.
+    Keys must be the decimal registry references Hyprland reports, and tokens
+    are generated printable ASCII, so anything else is refused rather than
+    pasted into the single-line dispatch field.
     """
     cache_home = os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache")
-    cache_path = os.path.join(cache_home, "hyde", "lua_bind_commands.json")
+    cache_path = os.path.join(cache_home, "hyde", "lua_bind_actions.json")
 
     try:
         with open(cache_path, "r") as f:
@@ -80,7 +60,11 @@ def load_bind_commands():
     return {
         key: value
         for key, value in data.items()
-        if isinstance(key, str) and isinstance(value, str)
+        if isinstance(key, str)
+        and key.isdigit()
+        and isinstance(value, str)
+        and value
+        and value.isprintable()
     }
 
 
@@ -410,10 +394,12 @@ def generate_rofi(binds):
     return rofi_str
 
 
-def expand_meta_data(binds_data, bind_commands=None):
+def expand_meta_data(binds_data, bind_actions=None):
+    """Fills in the display metadata hyprctl leaves out, and rewrites a Lua
+    registry reference into the expression that replays that exact bind."""
     submap_keys = {}
-    if bind_commands is None:
-        bind_commands = {}
+    if bind_actions is None:
+        bind_actions = {}
 
     # First pass: collect submap keys
     for bind in binds_data:
@@ -427,19 +413,28 @@ def expand_meta_data(binds_data, bind_commands=None):
         bind["key_display"] = map_keyDisplay(bind["key"])
         bind["mod_display"] = map_modDisplay(bind["modmask"])
 
-        # A Lua-registered bind (#1996): hyprctl only ever exposes it as an
-        # opaque "__lua" registry reference, which Hyprland itself has no way
-        # to dispatch from the outside. If hyde/binds.lua's cache has the
-        # command this exact combo was built from, rewrite it into a fresh
-        # exec_cmd call instead -- that runs the same way any other dispatch
-        # does. A combo the cache doesn't have (window/workspace operations,
-        # or any bind not built from hl.dsp.exec_cmd) is left exactly as it
-        # was; that's the documented limit, not a bug.
-        if bind["dispatcher"] == "__lua":
-            combo = canonical_combo(bind["modmask"], bind["key"])
-            command = bind_commands.get(combo) if combo else None
-            if command:
-                bind["dispatcher"] = f'hl.dsp.exec_cmd("{_escape_lua_string(command)}")'
+        # A Lua-registered bind: hyprctl reports only a registry reference,
+        # never something it can dispatch from the outside. hyde/binds.lua's
+        # manifest maps that reference to the token of the registration that
+        # owns it, so the expression replaying exactly that bind's own action
+        # -- window rules and every other argument intact -- is built here. A
+        # reference the manifest does not cover -- an older load, a bind that
+        # was since removed -- is left exactly as reported. Mouse binds only
+        # act on a drag, so they are left as they were: hyprctl reports the
+        # mouse flag for both a mouse: key and a drag declared over a normal
+        # key.
+        if (
+            _is_lua_handler(bind["dispatcher"])
+            and not bind.get("mouse")
+            and not bind["key"].startswith("mouse:")
+        ):
+            ref = str(bind["arg"])
+            token = bind_actions.get(ref)
+            if token:
+                bind["dispatcher"] = (
+                    f'hyde.binds.action("{_escape_lua_string(ref)}", '
+                    f'"{_escape_lua_string(token)}")'
+                )
                 bind["arg"] = ""
 
         # Handle submaps
@@ -493,7 +488,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     binds_data = get_hyprctl_binds()
     if binds_data:
-        expand_meta_data(binds_data, load_bind_commands())
+        expand_meta_data(binds_data, load_bind_actions())
         if args.show_unbind:
             duplicated_binds = find_duplicated_binds(binds_data)
             for (mod_display, key_display), binds in duplicated_binds.items():

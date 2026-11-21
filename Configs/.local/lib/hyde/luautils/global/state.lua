@@ -36,45 +36,57 @@ end
 local staterc_path = xdg.state .. "/hyde/staterc"
 
 --- Read a value from staterc. Returns the unquoted string or nil.
+-- staterc.sh escapes \ " $ and the backtick inside the double quotes
+-- (HyDE-Project/HyDE#2197); undo that the way `source` does, so a line
+-- written by an older HyDE reads the same too. An unquoted value is kept as is.
 function S.staterc_get(key)
     local f = io.open(staterc_path, "r")
     if not f then
         return nil
     end
     for line in f:lines() do
-        local v = line:match("^" .. key .. '="?(.-)"%s*$') or line:match("^" .. key .. "=(.-)%s*$")
-        if v then
+        local raw = line:match("^" .. key .. "=(.-)%s*$")
+        if raw then
             f:close()
-            return v
+            local quoted = raw:match('^"(.*)"$')
+            if quoted then
+                return (quoted:gsub('\\([\\"$`])', "%1"))
+            end
+            return raw
         end
     end
     f:close()
     return nil
 end
 
+local function sh_quote(s)
+    return "'" .. tostring(s):gsub("'", "'\\''") .. "'"
+end
+
+-- staterc.sh sits next to luautils/; found from this file's own path, like
+-- luautils/init.lua finds HYDE_SCRIPTS_PATH, else where globalcontrol.sh
+-- puts $scrDir.
+local function find_staterc_helper()
+    local src = debug.getinfo(1, "S").source
+    local dir = src:sub(1, 1) == "@" and src:sub(2):match("(.*/)luautils/global/state%.lua$")
+    if dir then
+        return dir .. "staterc.sh"
+    end
+    return (os.getenv("LIB_DIR") or (os.getenv("HOME") .. "/.local/lib")) .. "/hyde/staterc.sh"
+end
+local staterc_helper = find_staterc_helper()
+
 --- Write (or replace) a key in staterc in bash KEY="value" format.
+-- Goes through staterc.sh, which locks staterc against waybar.py and
+-- set_conf() and replaces it atomically (HyDE-Project/HyDE#2194).
+-- Raises an error if the write fails or the key is not a shell variable name.
 function S.staterc_set(key, value)
-    ensure_dir(xdg.state .. "/hyde")
-    local lines = {}
-    local found = false
-    local f = io.open(staterc_path, "r")
-    if f then
-        for line in f:lines() do
-            if line:match("^" .. key .. "=") then
-                lines[#lines + 1] = key .. '="' .. tostring(value) .. '"'
-                found = true
-            else
-                lines[#lines + 1] = line
-            end
-        end
-        f:close()
+    -- Pass xdg.state on, so the helper writes the staterc this module reads.
+    local ok = os.execute("XDG_STATE_HOME=" .. sh_quote(xdg.state) .. " " .. sh_quote(staterc_helper)
+        .. " set " .. sh_quote(key) .. " " .. sh_quote(value))
+    if ok ~= true and ok ~= 0 then
+        error("staterc_set failed: " .. tostring(key))
     end
-    if not found then
-        lines[#lines + 1] = key .. '="' .. tostring(value) .. '"'
-    end
-    local out = assert(io.open(staterc_path, "w"))
-    out:write(table.concat(lines, "\n") .. "\n")
-    out:close()
 end
 
 -- ── lua_state (fast Lua-only cache, per-selector .lua stub files) ─────────────

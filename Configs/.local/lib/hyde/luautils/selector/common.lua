@@ -32,6 +32,7 @@ local lfs = require("lfs")
 local xdg = require("luautils.xdg")
 local state = require("luautils.global.state")
 local rofi = require("luautils.selector.rofi")
+local hyprctl = require("luautils.hypr.hyprctl")
 
 local M = {}
 
@@ -320,7 +321,7 @@ function M.run(module, opts)
             io.stderr:write("Error: reload failed\n")
             os.exit(1)
         end
-        os.execute("hyprctl reload >/dev/null 2>&1")
+        hyprctl.reload()
         print_item(item)
     elseif cli.select then
         if not module.list or #module.list == 0 then

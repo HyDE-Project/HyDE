@@ -94,7 +94,9 @@ set_status=$?
 # Start daemon if not already running
 if ! pgrep -f "waydeeper daemon" &>/dev/null; then
     print_log -sec "wallpaper" -stat "starting waydeeper daemon"
-    waydeeper daemon &
+    # Detached from our stdio: a daemon holding the caller's stdout keeps a
+    # "$(wallpaper.sh ...)" capture open forever, which froze the installer (#2156).
+    waydeeper daemon </dev/null &>/dev/null &
     disown
 fi
 

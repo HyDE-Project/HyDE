@@ -11,9 +11,10 @@ active_tab_background     #<wallbash_pry3>
 inactive_tab_foreground   #<wallbash_pry3>
 inactive_tab_background   #<wallbash_pry1>
 
-# black
-color0      #<wallbash_1xa1>
-color8      #<wallbash_1xa4>
+# black -- anchored near-black regardless of hue (#2185), not the accent curve:
+# apps like nmtui/newt assume these slots contrast against color7/15
+color0      #<wallbash_ansi_black>
+color8      #<wallbash_ansi_black>
 
 # red
 color1      #<wallbash_4xa9>
@@ -39,6 +40,6 @@ color13     #<wallbash_2xa7>
 color6      #<wallbash_3xa7>
 color14     #<wallbash_3xa7>
 
-# white
-color7      #<wallbash_4xa9>
-color15     #<wallbash_4xa8>
+# white -- anchored near-white regardless of hue (#2185), see color0/8 above
+color7      #<wallbash_ansi_white>
+color15     #<wallbash_ansi_white>

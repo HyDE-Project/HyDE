@@ -224,9 +224,9 @@ send_notification() {
 }
 
 # Icons match the values the old native idle_inhibitor module shipped
-# (format-icons "activated"/"deactivated"), kept as JSON \u escapes so this
-# stays plain ASCII in the script and lets waybar's own JSON parser decode
-# them, same as it already does for the .jsonc module definitions.
+# (format-icons "activated"/"deactivated"), kept here as literal UTF-8
+# glyphs rather than JSON \u escapes -- printf passes them through as-is
+# and waybar's JSON parser reads raw UTF-8 in a string the same way.
 generate_status() {
     local icon alt tooltip
     if [ "$intended" -eq 1 ]; then
