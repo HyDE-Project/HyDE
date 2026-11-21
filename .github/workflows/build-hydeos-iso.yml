@@ -1,0 +1,55 @@
+name: Build HyDEOS ISO
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feat/**']
+    paths:
+      - '.github/workflows/build-hydeos-iso.yml'
+      - 'Scripts/iso/**'
+      - 'Scripts/install.sh'
+      - 'Scripts/install_pre.sh'
+      - 'Scripts/install_aur.sh'
+      - 'Scripts/global_fn.sh'
+      - 'Scripts/dots-groups/**'
+      - 'Scripts/dots/**'
+      - 'Configs/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Fedora 45 HyDEOS image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Build and verify the ISO
+        run: |
+          docker run --rm --privileged -i \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            -w /workspace \
+            fedora:45 \
+            bash -euo pipefail <<'CONTAINER'
+          dnf install -y lorax curl
+          source_iso=/tmp/Fedora-Everything-netinst-x86_64-45-1.4.iso
+          curl --fail --location --retry 3 \
+            --output "$source_iso" \
+            https://download.fedoraproject.org/pub/fedora/linux/releases/45/Everything/x86_64/iso/Fedora-Everything-netinst-x86_64-45-1.4.iso
+          echo '42abc36792f91575b2f541db19110cc661864819031e57cd5f5c9ec764ebbddf  /tmp/Fedora-Everything-netinst-x86_64-45-1.4.iso' | sha256sum --check
+          mkdir -p /workspace/out
+          Scripts/iso/fedora/build-iso.sh \
+            --source "$source_iso" \
+            --output /workspace/out/HyDEOS.iso
+          CONTAINER
+
+      - name: Upload HyDEOS ISO and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: HyDEOS
+          path: out/HyDEOS.iso*
+          if-no-files-found: error
+          retention-days: 30

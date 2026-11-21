@@ -20,6 +20,12 @@ flg_Nvidia=${flg_Nvidia:-1}
 # changes that follow here.
 setup_python_env || exit 1
 
+# Bootloader and pacman tweaks are Arch-specific. Fedora's package setup is
+# handled by install.sh and must not probe pacman or offer Chaotic-AUR.
+if [ "${package_manager:-pacman}" != "pacman" ]; then
+    exit 0
+fi
+
 # grub
 if [ "${flg_Grub}" -eq 1 ] && pkg_installed grub && [ -f /boot/grub/grub.cfg ]; then
     print_log -sec "bootloader" -b "detected :: " "grub..."
@@ -108,7 +114,7 @@ fi
 if grep -q '\[chaotic-aur\]' /etc/pacman.conf; then
     print_log -sec "CHAOTIC-AUR" -stat "skipped" "Chaotic AUR entry found in pacman.conf..."
 else
-    prompt_timer 120 "Would you like to install Chaotic AUR? [y/n] | q to quit "
+    prompt_timer 120 "Would you like to install Chaotic AUR? [y/N] | q to quit "
     is_chaotic_aur=false
 
     case "${PROMPT_INPUT}" in
@@ -123,7 +129,7 @@ else
         exit 1
         ;;
     *)
-        is_chaotic_aur=true
+        is_chaotic_aur=false
         ;;
     esac
     if [ "${is_chaotic_aur}" == true ]; then

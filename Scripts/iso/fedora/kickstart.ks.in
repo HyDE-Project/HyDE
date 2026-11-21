@@ -1,0 +1,139 @@
+# HyDEOS: Fedora-based community remix, installed through Anaconda.
+eula --agreed
+lang en_US.UTF-8
+keyboard --vckeymap=us
+timezone UTC --utc
+network --hostname=hydeos --bootproto=dhcp --device=link --activate --onboot=yes
+url --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&arch=$basearch"
+repo --name=updates --mirrorlist="https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&arch=$basearch"
+
+rootpw --lock
+firewall --enabled
+services --enabled=NetworkManager
+reboot
+
+%packages
+@core
+-fedora-logos
+-fedora-release
+-fedora-release-notes
+generic-logos
+generic-release
+generic-release-notes
+git
+sudo
+gcc
+cmake
+make
+gcc-c++
+cargo
+pkgconf-pkg-config
+python3-pip
+python3-devel
+zlib-devel
+libjpeg-turbo-devel
+pciutils
+%end
+
+%post --log=/root/hyde-kickstart-post.log
+cat > /usr/local/sbin/hyde-firstboot <<'HYDE_FIRSTBOOT'
+#!/usr/bin/bash
+set -euo pipefail
+
+hyde_repo_url='@HYDE_REPO_URL@'
+hyde_repo_branch='@HYDE_REPO_BRANCH@'
+hyde_repo=/usr/local/src/HyDE
+install -d -m 0755 /usr/local/src
+
+if [[ -e "$hyde_repo" && ! -d "$hyde_repo/.git" ]]; then
+    mv "$hyde_repo" "$hyde_repo.incomplete.$(date +%s)"
+fi
+if [[ -d "$hyde_repo/.git" ]]; then
+    git -C "$hyde_repo" remote set-url origin "$hyde_repo_url"
+    git -C "$hyde_repo" fetch --depth=1 origin "$hyde_repo_branch"
+    git -C "$hyde_repo" checkout --detach FETCH_HEAD
+else
+    clone_dir="/usr/local/src/.HyDE.clone.$$"
+    trap 'rm -rf -- "$clone_dir"' EXIT
+    git clone --depth=1 --no-checkout "$hyde_repo_url" "$clone_dir"
+    git -C "$clone_dir" fetch --depth=1 origin "$hyde_repo_branch"
+    git -C "$clone_dir" checkout --detach FETCH_HEAD
+    mv "$clone_dir" "$hyde_repo"
+    trap - EXIT
+fi
+cd "$hyde_repo"
+install -d -m 0755 /usr/local/src
+install -d -m 0755 /home
+while :; do
+    printf '\nUsername [hyde]: '
+    if ! read -r -t 300 login_user; then
+        echo 'No account was created; first-boot setup timed out.'
+        exit 1
+    fi
+    login_user="${login_user:-hyde}"
+    if [[ "$login_user" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]]; then
+        if ! id "$login_user" >/dev/null 2>&1 || [[ "$(getent passwd "$login_user" | cut -d: -f6)" == "/home/$login_user" ]]; then
+            break
+        fi
+    fi
+    echo 'Invalid or already existing username; use lowercase letters, digits, _ or -.'
+done
+if ! id "$login_user" >/dev/null 2>&1; then
+    useradd --create-home --groups=wheel,video,audio,input --shell=/bin/bash "$login_user"
+fi
+login_home="$(getent passwd "$login_user" | cut -d: -f6)"
+timeout 300 passwd "$login_user"
+printf '%s ALL=(ALL:ALL) NOPASSWD: ALL\n' "$login_user" > /etc/sudoers.d/00-hyde-firstboot
+chmod 0440 /etc/sudoers.d/00-hyde-firstboot
+visudo -cf /etc/sudoers.d/00-hyde-firstboot
+trap 'rm -f /etc/sudoers.d/00-hyde-firstboot' EXIT
+runuser -u "$login_user" -- env HOME="$login_home" USER="$login_user" LOGNAME="$login_user" PATH="$login_home/.local/bin:$PATH" HYDE_NO_REBOOT_PROMPT=1 "$hyde_repo/Scripts/install.sh" --defaults --restore --services
+runuser -u "$login_user" -- env HOME="$login_home" PATH="$login_home/.local/bin:$PATH" hyde-shell luainit
+rm -f /etc/sudoers.d/00-hyde-firstboot
+trap - EXIT
+cat > /etc/sudoers.d/10-wheel <<'SUDOERS'
+%wheel ALL=(ALL) ALL
+SUDOERS
+chmod 0440 /etc/sudoers.d/10-wheel
+visudo -cf /etc/sudoers.d/10-wheel
+
+cat > /etc/sddm.conf.d/20-hyde-autologin.conf <<SDDM
+[Autologin]
+User=$login_user
+Session=hyprland.desktop
+Relogin=true
+SDDM
+install -d -m 0755 /etc/sddm.conf.d
+systemctl enable sddm.service
+systemctl set-default graphical.target
+systemctl disable hyde-firstboot.service
+reboot
+HYDE_FIRSTBOOT
+chmod 0755 /usr/local/sbin/hyde-firstboot
+
+cat > /etc/systemd/system/hyde-firstboot.service <<'UNIT'
+[Unit]
+Description=Configure HyDE and choose the login account
+Wants=network-online.target
+After=network-online.target
+Before=display-manager.service
+Conflicts=getty@tty1.service
+
+[Service]
+Type=oneshot
+TimeoutStartSec=2h
+StandardInput=tty
+StandardOutput=tty
+StandardError=journal
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+ExecStart=/usr/local/sbin/hyde-firstboot
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl enable hyde-firstboot.service
+%end

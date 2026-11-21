@@ -1,0 +1,74 @@
+name: Test HyDEOS Fedora ISO
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/build-hydeos-iso.yml'
+      - '.github/workflows/test-iso.yml'
+      - 'Scripts/iso/**'
+      - 'Scripts/install.sh'
+      - 'Scripts/install_pre.sh'
+      - 'Scripts/install_aur.sh'
+      - 'Scripts/global_fn.sh'
+      - 'Scripts/dots-groups/**'
+      - 'Scripts/dots/**'
+      - 'Configs/**'
+  push:
+    branches: [dev]
+    paths:
+      - '.github/workflows/build-hydeos-iso.yml'
+      - '.github/workflows/test-iso.yml'
+      - 'Scripts/iso/**'
+      - 'Scripts/install.sh'
+      - 'Scripts/install_pre.sh'
+      - 'Scripts/install_aur.sh'
+      - 'Scripts/global_fn.sh'
+      - 'Scripts/dots-groups/**'
+      - 'Scripts/dots/**'
+      - 'Configs/**'
+
+permissions:
+  contents: read
+
+jobs:
+  fedora-iso:
+    name: HyDEOS Kickstart and first-boot configuration
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate Kickstart on Fedora 45
+        run: |
+          docker run --rm \
+            -i \
+            -v "$GITHUB_WORKSPACE:/workspace:ro" \
+            -w /workspace \
+            fedora:45 \
+            bash -euo pipefail <<'CONTAINER'
+          dnf install -y pykickstart
+          python3 - <<'PY'
+          from pathlib import Path
+
+          template = Path("Scripts/iso/fedora/kickstart.ks.in").read_text()
+          replacements = {
+              "@HYDE_REPO_URL@": "https://github.com/HyDE-Project/HyDE.git",
+              "@HYDE_REPO_BRANCH@": "ca9ed884b8885b0c504e1fdc4edb806226a9c19b",
+          }
+          for key, value in replacements.items():
+              template = template.replace(key, value)
+          assert "rootpw --lock" in template
+          assert "ignoredisk" not in template and "clearpart" not in template
+          assert "generic-logos" in template
+          assert "@DISK@" not in template and "@USER@" not in template
+          Path("/tmp/hyde-ks.cfg").write_text(template)
+          start = template.index("cat > /usr/local/sbin/hyde-firstboot <<'HYDE_FIRSTBOOT'\n")
+          start = template.index("\n", start) + 1
+          end = template.index("\nHYDE_FIRSTBOOT", start)
+          Path("/tmp/hyde-firstboot.sh").write_text(template[start:end] + "\n")
+          PY
+          ksvalidator -v F45 /tmp/hyde-ks.cfg
+          bash -n Scripts/iso/fedora/build-iso.sh
+          bash -n /tmp/hyde-firstboot.sh
+          Scripts/iso/fedora/build-iso.sh --help >/dev/null
+          CONTAINER

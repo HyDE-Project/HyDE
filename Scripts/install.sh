@@ -233,6 +233,7 @@ EOF
 	#----------------#
 	echo ""
 
+	if [ "${package_manager}" = "pacman" ]; then
 	# Step 1: Check if any AUR helper is installed
 	if chk_list "aurhlpr" "${aurList[@]}"; then
 		# Step 2: Show detected helper and ask user to confirm
@@ -278,6 +279,8 @@ EOF
 		esac
 	fi
 
+	fi
+
 	# Only an explicit choice counts; an installed package is not an answer.
 	if ! chk_shell "${myShell:-}" && [ "${use_default:-}" != "--noconfirm" ]; then
 		print_log -c "Shell :: "
@@ -307,7 +310,9 @@ EOF
 	#------------------------------------#
 	# install AUR helper via pacman first #
 	#------------------------------------#
-	"${installDir}/install_aur.sh" "${getAur:-${aurhlpr:-yay-bin}}" 2>&1
+	if [ "${package_manager}" = "pacman" ]; then
+		"${installDir}/install_aur.sh" "${getAur:-${aurhlpr:-yay-bin}}" 2>&1
+	fi
 
 	deez_exe="${HOME}/.local/state/hyde/python_env/bin/deez"
 
