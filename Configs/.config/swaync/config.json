@@ -28,6 +28,12 @@
       "state": "muted",
       "urgency": "Low",
       "app-name": "Spotify"
+    },
+    "app2unit-error": {
+      "state": "enabled",
+      "app-name": "^app2unit$",
+      "urgency": "Critical",
+      "override-urgency": "normal"
     }
   },
   "widgets": [
