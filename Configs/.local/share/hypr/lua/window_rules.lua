@@ -156,6 +156,8 @@ hl.window_rule(
     no_focus = true,
     no_anim = true,
     no_blur = true,
+    no_wobble = true,
+    no_shadow = true,
     no_follow_mouse = true,
     max_size = {1, 1},
     opacity = 0.0,

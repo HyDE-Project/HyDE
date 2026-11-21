@@ -38,13 +38,13 @@ local move_window = function(dir, pix)
     end
 end
 
-local togglefloating = function()
-    -- TODO unused
-    -- $ToggleFloatingMax = hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact 85% 85%; dispatch centerwindow"
-    hl.dsp.window.float({action = "toggle"})()
-    hl.dsp.window.resize({width = "85%", height = "85%"})()
-    hl.dsp.window.center()()
-end
+-- local togglefloating = function()
+--     -- TODO unused
+--     -- $ToggleFloatingMax = hyprctl --batch "dispatch togglefloating; dispatch resizeactive exact 85% 85%; dispatch centerwindow"
+--     hl.dsp.window.float({action = "toggle"})()
+--     hl.dsp.window.resize({width = "85%", height = "85%"})()
+--     hl.dsp.window.center()()
+-- end
 
 _F = {description = "[Launcher|Apps] terminal emulator"}
 -- hyde.config.exec resolves "app.terminal" at keypress time, not at bind
@@ -63,7 +63,6 @@ hl.bind(MOD .. " + C", hyde.config.exec("app.editor"), _F)
 _F = {description = "[Launcher|Apps] system monitor"}
 hl.bind("CTRL + SHIFT + ESCAPE", hl.dsp.exec_cmd("hyde-shell system.monitor.sh"), _F)
 
-local _wm = "Window Management"
 _F = {description = "[Window Management] close focused window"}
 hl.bind(MOD .. " + Q", hl.dsp.window.close(), _F)
 _F = {description = "[Window Management] close focused window"}
@@ -118,7 +117,7 @@ _F = {description = "[Window Management|alt-tab window switcher] cycle next", tr
 hl.bind("ALT+TAB", hl.dsp.exec_cmd(hyde.sh.altab("--next")), _F)
 _F = {description = "[Window Management|alt-tab window switcher] cycle previous", transparent = true}
 hl.bind("ALT+SHIFT+TAB", hl.dsp.exec_cmd(hyde.sh.altab("--prev")), _F)
-_F = {description = "[Window Management|alt-tab window switcher] switch", release = true, transparent = true}
+_F = {description = "[Window Management|alt-tab window switcher] switch", release = true, transparent = true, non_consuming = true}
 hl.bind("ALT + ALT_R", hl.dsp.exec_cmd(hyde.sh.altab("--apply")), _F)
 hl.bind("ALT + ALT_L", hl.dsp.exec_cmd(hyde.sh.altab("--apply")), _F)
 

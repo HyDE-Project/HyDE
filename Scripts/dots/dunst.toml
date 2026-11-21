@@ -4,6 +4,7 @@
 
 [[dunst.dependency]]
     pacman = [ "dunst" ]
+    dnf = ["dunst"]
 
 [[dunst.files]]
     action      = "sync"

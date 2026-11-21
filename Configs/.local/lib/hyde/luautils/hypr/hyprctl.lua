@@ -12,7 +12,7 @@ local function trim(s)
 end
 
 local function get_runtime_dir()
-    return os.getenv("XDG_RUNTIME_DIR") or "/tmp"
+    return xdg.runtime or "/tmp"
 end
 
 local function get_instance_signature()
@@ -116,7 +116,13 @@ M.exec = hyprctl
 M.json = hyprctl_json
 M.command = hyprctl
 M.json_command = hyprctl_json_cmd
+M.is_runtime_active = function()
+    return get_instance_signature() ~= ""
+end
 M.reload = function(config_only)
+    if not M.is_runtime_active() then
+        return true, "skipped: outside Hyprland runtime"
+    end
     if config_only then
         return hyprctl("reload", config_only)
     end

@@ -23,7 +23,11 @@ fi
 
 # add zsh plugins
 if [ "${myShell}" = "zsh" ] && pkg_installed zsh; then
-    prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
+    if [ "${use_default:-}" = "--noconfirm" ]; then
+        PROMPT_INPUT="n"
+    else
+        prompt_timer 120 "Pre install zsh plugins using oh-my-zsh? [y/n] | q to quit "
+    fi
     PROMPT_INPUT="${PROMPT_INPUT:-y}"
     if [[ "${PROMPT_INPUT}" == "y" || "${PROMPT_INPUT}" == "yes" ]]; then
         if ! pkg_installed oh-my-zsh-git; then
@@ -99,7 +103,10 @@ elif ! shell_listed "${shellPath}"; then
     print_log -sec "SHELL" -err "error" "${shellPath} is not listed in /etc/shells, leaving the login shell alone..."
 elif [[ "$(login_shell)" != "${myShell}" ]]; then
     print_log -sec "SHELL" -stat "change" "shell to ${myShell}..."
-    [ ${flg_DryRun} -eq 1 ] || chsh -s "${shellPath}"
+    # chsh matches /etc/shells by exact string, so pass the entry
+    # shell_listed found there, not shellPath's possibly-equivalent-but-
+    # unlisted form (e.g. /usr/sbin/fish via root's PATH on usrmerge, HyDE#2221).
+    [ ${flg_DryRun} -eq 1 ] || chsh -s "${shell_listed_match}"
 else
     print_log -sec "SHELL" -stat "exist" "${myShell} is already set as shell..."
 fi

@@ -6,6 +6,7 @@ require("luautils.init")
 
 local argparse = require("luautils.argparse")
 local notify = require("luautils.global.notify")
+local hyprctl = require("luautils.hypr.hyprctl")
 
 local ok_lfs, lfs = pcall(require, "lfs")
 if not ok_lfs then
@@ -386,11 +387,17 @@ local function write_lines_to_file(filename, lines)
 end
 
 local function run_hyprctl_reload()
-    local ok, exit_type, exit_code = os.execute("hyprctl reload")
+    local ok, result = hyprctl.reload()
     if not ok then
-        logError("hyprctl reload failed: %s %s", tostring(exit_type), tostring(exit_code))
+        logError("hyprctl reload failed: %s", tostring(result))
         return false
     end
+
+    if result == "skipped: outside Hyprland runtime" then
+        logDebug("hyprctl reload skipped (outside Hyprland runtime)")
+        return true
+    end
+
     logInfo("hyprctl reload executed successfully")
     return true
 end
@@ -407,12 +414,12 @@ local function parse_config_files(tomlFile, envFile, hyprFile, hyprEnvFile, expo
         return false
     end
 
-    local tomlContent, err = load_toml_file(tomlFile)
+    local tomlContent = load_toml_file(tomlFile)
     if not tomlContent then
         return false
     end
 
-    local success1, success2, success3 = false, false, false
+    local success1, success2, success3
 
     -- env
     do

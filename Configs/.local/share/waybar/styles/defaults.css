@@ -146,8 +146,13 @@ window#waybar.bottom .modules-right {
 
 }
 
+/*
+label.text-button: label of a custom module; since Waybar #5340 .module sits on its parent box
+*/
 window#waybar.top label.module,
-window#waybar.bottom label.module {
+window#waybar.bottom label.module,
+window#waybar.top label.text-button,
+window#waybar.bottom label.text-button {
     padding-left: 0.2em;
     padding-right: 0.2em;
     margin-left: 0.2em;
@@ -155,7 +160,9 @@ window#waybar.bottom label.module {
 }
 
 window#waybar.left label.module,
-window#waybar.right label.module {
+window#waybar.right label.module,
+window#waybar.left label.text-button,
+window#waybar.right label.text-button {
     padding-top: 0.2em;
     padding-bottom: 0.2em;
     margin-top: 0.2em;

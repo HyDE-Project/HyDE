@@ -90,6 +90,7 @@ if user_config_path then
 end
 
 check_require("lua_state.animations")
+check_require("lua_state.blurs")
 check_require("lua_state.shaders")
 check_require("lua_state.layouts")
 
