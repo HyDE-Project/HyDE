@@ -398,6 +398,22 @@ get_monitor_scale() {
         printf "%d", scale * 100 + 0.5
     }'
 }
+##
+# rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) applies
+# x-offset/y-offset of east/south locations with the opposite sign of the
+# documented behavior (https://github.com/davatorium/rofi/issues/2364).
+# Usage: rofi_offset_inward [config]; pass the -config name the caller gives
+# rofi, since such a config replaces the user's default one.
+# Returns 0 when that inverted behavior applies.
+##
+rofi_offset_inward() {
+    local ver
+    ver="$(rofi -v 2>/dev/null)" || return 1
+    [[ $ver =~ ([0-9]+)\.([0-9]+) ]] || return 1
+    local major="${BASH_REMATCH[1]}" minor="${BASH_REMATCH[2]}"
+    ((major > 2 || (major == 2 && minor >= 1))) || return 1
+    ! rofi ${1:+-config "$1"} -dump-config 2>/dev/null | grep -Eq '^[[:space:]]*click-to-exit:[[:space:]]*false'
+}
 get_rofi_pos() {
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
     readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
@@ -438,6 +454,10 @@ get_rofi_pos() {
     else
         local y_pos="north"
         local y_off="$((curPos[1] - offRes[1]))"
+    fi
+    if rofi_offset_inward; then
+        [[ $x_pos == east ]] && x_off=$((-x_off))
+        [[ $y_pos == south ]] && y_off=$((-y_off))
     fi
     local coordinates="window{location:$x_pos $y_pos;anchor:$x_pos $y_pos;x-offset:${x_off}px;y-offset:${y_off}px;}"
     echo "$coordinates"
@@ -587,7 +607,7 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
+export -f get_hyprConf get_monitor_scale rofi_offset_inward get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
 
 ##
 # Fails the source when the generated-state directories could not be created,

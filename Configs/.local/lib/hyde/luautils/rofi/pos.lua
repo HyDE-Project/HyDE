@@ -32,6 +32,35 @@ local function resolve_axis(rel, dim, safe_start, safe_end, required)
     return dir_is_end, offset
 end
 
+-- rofi >= 2.1.0 on Wayland with click-to-exit enabled (its default) applies
+-- x-offset/y-offset of east/south locations with the opposite sign of the
+-- documented behavior (https://github.com/davatorium/rofi/issues/2364).
+-- Returns true when that inverted behavior applies.
+local offset_inward_cache
+function M.offset_inward()
+    if offset_inward_cache ~= nil then
+        return offset_inward_cache
+    end
+    local function run(cmd)
+        local p = io.popen(cmd .. " 2>/dev/null")
+        if not p then
+            return ""
+        end
+        local out = p:read("*a") or ""
+        p:close()
+        return out
+    end
+    local major, minor = run("rofi -v"):match("(%d+)%.(%d+)")
+    major, minor = tonumber(major), tonumber(minor)
+    if not major or major < 2 or (major == 2 and minor < 1) then
+        offset_inward_cache = false
+    else
+        local cfg = "\n" .. run("rofi -dump-config")
+        offset_inward_cache = not cfg:find("\n%s*click%-to%-exit:%s*false")
+    end
+    return offset_inward_cache
+end
+
 function M.get_rofi_pos(opts)
     opts = opts or {}
     local hyprctl = require("luautils.hypr.hyprctl")
@@ -75,6 +104,10 @@ function M.get_rofi_pos(opts)
 
     local x_is_east, x_off = resolve_axis(rel_x, l_w, safe_lft, safe_rgt, opts.min_width)
     local y_is_south, y_off = resolve_axis(rel_y, l_h, safe_top, safe_bot, opts.min_height)
+    if M.offset_inward() then
+        x_off = x_is_east and -x_off or x_off
+        y_off = y_is_south and -y_off or y_off
+    end
     local x_dir = x_is_east and "east" or "west"
     local y_dir = y_is_south and "south" or "north"
 
