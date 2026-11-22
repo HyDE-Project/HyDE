@@ -1,0 +1,359 @@
+#!/usr/bin/env lua
+-- Standalone LACT Waybar module. Deliberately independent from gpuinfo.sh/
+-- gpuinfo.lua: no shared file, no shared state, no require("gpuinfo") --
+-- see the architecture note for why (hyde-shell resolves a bare "gpuinfo"
+-- command to a *.lua file before *.sh, so shipping any file named
+-- gpuinfo.lua here would silently replace the existing, untouched
+-- gpuinfo.sh for every custom/gpuinfo* module).
+local root = debug.getinfo(1, "S").source:match("^@(.*/)") or "./"
+package.path = package.path .. ";" .. root .. "?.lua;" .. root .. "?/init.lua;"
+require("luautils.init")
+
+local json = require("luautils.json")
+
+local M = {}
+
+-- Shown for any value the daemon doesn't report (no sensor, no power
+-- readout). A plain dash reads cleaner than "N/A", especially in the paired
+-- "current / max" fields, where "N/A/N/A" was hard to parse (#2096 review).
+local MISSING = "–"
+
+-- Same helper as #1901/PR #2060's altab.lua/batterynotify.lua/dconf.lua: a
+-- lone "'...'" wrap doesn't survive an apostrophe inside the path itself.
+local function shell_quote(value)
+    value = tostring(value)
+    value = value:gsub("'", "'\\''")
+    return "'" .. value .. "'"
+end
+
+local function clamp(value, low, high)
+    if value < low then
+        return low
+    end
+    if value > high then
+        return high
+    end
+    return value
+end
+
+local locale_fahrenheit
+
+local function locale_uses_fahrenheit()
+    if locale_fahrenheit ~= nil then
+        return locale_fahrenheit
+    end
+    local handle = io.popen("locale -k LC_MEASUREMENT 2>/dev/null")
+    local line = handle and handle:read("*l") or nil
+    if handle then
+        handle:close()
+    end
+    locale_fahrenheit = line and line:match("^measurement=2") ~= nil or false
+    return locale_fahrenheit
+end
+
+--- Formats a Celsius sensor reading according to LC_MEASUREMENT, same as
+--- the (never-merged) gpuinfo.lua rewrite's version of this function.
+function M.format_temperature(value, fahrenheit)
+    if value == nil or tostring(value) == "" or tostring(value) == "[N/A]" then
+        return MISSING
+    end
+    local numeric = tonumber(value)
+    if not numeric then
+        return tostring(value)
+    end
+    if fahrenheit == nil then
+        fahrenheit = locale_uses_fahrenheit()
+    end
+    if fahrenheit then
+        return string.format("%.0f°F", numeric * 9 / 5 + 32)
+    end
+    return string.format("%.0f°C", numeric)
+end
+
+--- Ported 1:1 from gpuinfo.lua's map_floor: given a "threshold:value,
+--- threshold:value, ..., default" spec string and a numeric value, returns
+--- the value for the highest threshold the number clears, or the default.
+function M.map_floor(spec, value)
+    local items = {}
+    for item in spec:gmatch("[^,]+") do
+        items[#items + 1] = item:match("^%s*(.-)%s*$")
+    end
+    local default_val
+    if items[#items] and not items[#items]:find(":") then
+        default_val = table.remove(items)
+    end
+    local num = tonumber(value)
+    for _, item in ipairs(items) do
+        local key, val = item:match("^([^:]+):(.*)$")
+        local key_num = key and tonumber(key)
+        if num and key_num and num > key_num then
+            return val
+        end
+    end
+    return default_val or " "
+end
+
+-- GPU-realistic temperature-to-color bands, deliberately not copy-pasted
+-- from the CPU scale in styles/classes/cpuinfo.css: modern GPUs commonly
+-- run 65-80°C under completely normal load (many NVIDIA cards are designed
+-- to sit near ~83-90°C without issue, AMD junction temps can normally reach
+-- ~100-110°C), so a scale that turns orange at 60°C (fine for CPUs) would
+-- flag routine GPU load as a warning. Colors are applied inline per GPU via
+-- Pango markup (same mechanism as sensorsinfo.py/mediaplayer.py already use
+-- in this repo) rather than a shared Waybar CSS class, so multiple GPUs in
+-- one tooltip/bar can each show their own real temperature color instead of
+-- one bucket winning for the whole widget.
+-- Only warnings are colored: below 75°C the text keeps the theme's own
+-- color. The former cold blue (#4169e1) and the critical dark red (#8b0000)
+-- were hard to read on dark themes (#2096 review).
+local TEMP_COLOR_BANDS = {
+    {95, "#ff2020"}, -- critical
+    {85, "#ff4500"}, -- hot
+    {75, "#ffa500"}, -- warm, still normal for many GPUs
+}
+
+local function temp_color(value)
+    local numeric = tonumber(value)
+    if not numeric then
+        return nil
+    end
+    for _, band in ipairs(TEMP_COLOR_BANDS) do
+        if numeric >= band[1] then
+            return band[2]
+        end
+    end
+    return nil
+end
+
+local function colorize(text, color)
+    if color and color ~= "" then
+        return "<span color='" .. color .. "'>" .. text .. "</span>"
+    end
+    return text
+end
+
+-- tonumber first: LACT can answer null/missing for a field the driver
+-- doesn't expose, and a malformed daemon response could pass a raw string
+-- straight through. Never let a bad value break the "always valid JSON"
+-- contract waybar's return-type:json depends on.
+-- Waybar renders this module's tooltip/text as Pango markup (custom/lact.jsonc
+-- doesn't set "escape": true, matching gpuinfo's own modules), and every
+-- value here ends up inside a <span> generated by colorize(). A raw '<', '>'
+-- or '&' in a daemon-supplied string -- a GPU name, vendor, or family --
+-- would corrupt that markup instead of rendering literally.
+local function pango_escape(value)
+    local text = tostring(value)
+    text = text:gsub("&", "&amp;")
+    text = text:gsub("<", "&lt;")
+    text = text:gsub(">", "&gt;")
+    return text
+end
+
+local function value_or_dash(value, suffix)
+    local text = value == nil and "" or tostring(value)
+    if text == "" or text == "[N/A]" or text == "null" then
+        return MISSING
+    end
+    return pango_escape(text) .. (suffix or "")
+end
+
+-- lactd reports power as raw floats ("60.014 / 175.0 W" on an RTX 2070,
+-- #2096 NVIDIA test); whole watts are precise enough for a tooltip.
+local function watts_or_dash(value)
+    local numeric = tonumber(value)
+    if numeric then
+        return string.format("%.0f", numeric)
+    end
+    return value_or_dash(value)
+end
+
+--- Parses lact_gpuinfo.py's stdout. Always returns a list (possibly empty)
+--- of device field-tables -- malformed JSON, a missing/wrong-typed
+--- "devices" key, or a non-table entry inside it all degrade to "skip it"
+--- rather than raising, so one bad device (or a fully unavailable daemon)
+--- never takes down the whole poll.
+function M.parse_lact_output(output)
+    local ok, decoded = pcall(json.decode, output or "")
+    if not ok or type(decoded) ~= "table" or type(decoded.devices) ~= "table" then
+        return {}
+    end
+    local devices = {}
+    for _, device in ipairs(decoded.devices) do
+        if type(device) == "table" then
+            devices[#devices + 1] = device
+        end
+    end
+    return devices
+end
+
+--- Assembles the waybar custom/lact JSON object from every GPU LACT
+--- reported (Task per the 2026-09-13 "combined display" decision: no
+--- toggling between vendors, every detected GPU is shown at once). Always
+--- produces valid JSON, even with zero devices or a device missing every
+--- field.
+function M.generate_json(devices)
+    devices = type(devices) == "table" and devices or {}
+
+    -- Fixed icons, not temperature-mood-varying like gpuinfo's: the color
+    -- already signals "how hot" (see TEMP_COLOR_BANDS), so the icon here
+    -- only needs to say "this is a temperature/clock/fan reading". Written
+    -- as \u{} escapes rather than typed glyphs -- a literal Nerd Font
+    -- Private Use Area character in this file's source has silently come
+    -- out blank before (caught in review comparing the live tooltip against
+    -- what glyph.db says these codepoints render as).
+    -- The former --emoji variant (🌡️, two codepoints incl. VS16) rendered
+    -- at a different width than these glyphs and misaligned its line, so
+    -- only Nerd Font icons are used (#2096 review).
+    local thermo_icon = "\u{f050f}" -- md-thermometer
+    -- Bar text and tooltip header identify the module as GPU monitoring
+    -- (#2096 review: "GPU" rather than the daemon's name "LACT").
+    local gpu_icon = "\u{f08ae}" -- md-expansion_card
+    local header = gpu_icon .. " GPU"
+    local chip_icon = "\u{f061a}" -- md-chip
+    local fan_icon = "\u{f0210}" -- md-fan
+    local util_lv = "90:, 60:󰓅, 30:󰾅, 󰾆"
+
+    if #devices == 0 then
+        return json.encode({
+            text = gpu_icon .. " " .. MISSING,
+            tooltip = header .. "\nNo GPU reported by lactd",
+            class = {"temp-0", "util-0"},
+            percentage = 0,
+            alt = "0",
+        })
+    end
+
+    local bar_parts = {}
+    local tooltip_blocks = {}
+    local hottest_temp
+
+    for index, fields in ipairs(devices) do
+        fields = type(fields) == "table" and fields or {}
+
+        local temp_num = tonumber(fields.temperature)
+        local temp_val = temp_num and math.floor(temp_num) or nil
+        local temp_display = M.format_temperature(temp_val)
+        local color = temp_val and temp_color(clamp(temp_val, -999, 999)) or nil
+
+        bar_parts[#bar_parts + 1] = colorize(temp_display, color)
+
+        if temp_val then
+            local temp_clamped = clamp(temp_val, 0, 999)
+            if not hottest_temp or temp_clamped > hottest_temp then
+                hottest_temp = temp_clamped
+            end
+        end
+
+        local gpu_label = pango_escape(fields.primary_gpu or ("GPU " .. tostring(index)))
+        if fields.vendor or fields.family then
+            local label_parts = {}
+            if fields.vendor then
+                label_parts[#label_parts + 1] = pango_escape(fields.vendor)
+            end
+            if fields.family then
+                label_parts[#label_parts + 1] = pango_escape(fields.family)
+            end
+            label_parts[#label_parts + 1] = gpu_label
+            gpu_label = table.concat(label_parts, " ")
+        end
+
+        local speedo_icon = M.map_floor(util_lv, tonumber(fields.utilization) or 0)
+        local current_clock = fields.current_clock_speed or fields.core_clock
+
+        local block = {gpu_label}
+        -- Every sensor lactd reports gets its own line (NVIDIA: GPU, GPU
+        -- Hotspot, VRAM), labelled as lactd names it; the bar keeps the one
+        -- main reading in fields.temperature (#2096 review).
+        local sensor_lines = 0
+        if type(fields.temperatures) == "table" then
+            for _, sensor in ipairs(fields.temperatures) do
+                local value = type(sensor) == "table" and tonumber(sensor.value) or nil
+                if value then
+                    local floored = math.floor(value)
+                    block[#block + 1] = thermo_icon .. " " .. pango_escape(sensor.label or "Temperature") .. ": "
+                        .. colorize(M.format_temperature(floored), temp_color(clamp(floored, -999, 999)))
+                    sensor_lines = sensor_lines + 1
+                end
+            end
+        end
+        if sensor_lines == 0 then
+            block[#block + 1] = thermo_icon .. " Temperature: " .. colorize(temp_display, color)
+        end
+        local rest = {
+            speedo_icon .. " Utilization: " .. value_or_dash(fields.utilization, "%"),
+            chip_icon .. " Clock Speed: " .. value_or_dash(current_clock) .. " / " .. value_or_dash(fields.max_clock_speed) .. " MHz",
+            "\u{f1a89}" .. " Power Usage: " .. watts_or_dash(fields.power_usage) .. " / " .. watts_or_dash(fields.power_limit) .. " W",
+        }
+        for _, line in ipairs(rest) do
+            block[#block + 1] = line
+        end
+        -- Only when the daemon actually reported a fan reading (present but
+        -- 0 RPM is a real, meaningful "fan is off" answer on some cards, not
+        -- a missing value) -- unlike temperature/clock/power there is no
+        -- sensible N/A fallback line to show for a GPU with no fan sensor
+        -- at all (blower-less cards, most laptop iGPUs).
+        if fields.fan_speed ~= nil then
+            -- 0 RPM is a real reading (zero-RPM fan stop at low load), not a
+            -- missing one, so it keeps its number; "stopped" only states what
+            -- was measured, since a stalled fan would read 0 as well (#2096
+            -- NVIDIA test: users took a bare "0 RPM" for a read failure).
+            local fan_text = value_or_dash(fields.fan_speed, " RPM")
+            if tonumber(fields.fan_speed) == 0 then
+                fan_text = "0 RPM (stopped)"
+            end
+            block[#block + 1] = fan_icon .. " Fan Speed: " .. fan_text
+        end
+
+        tooltip_blocks[#tooltip_blocks + 1] = table.concat(block, "\n")
+    end
+
+    local temp_pct = clamp(hottest_temp or 0, 0, 100)
+    local temp_bucket = clamp(math.floor(temp_pct / 5) * 5, 0, 100)
+
+    return json.encode({
+        text = gpu_icon .. " " .. table.concat(bar_parts, " / "),
+        tooltip = header .. "\n\n" .. table.concat(tooltip_blocks, "\n\n"),
+        class = {"temp-" .. temp_bucket},
+        percentage = temp_pct,
+        alt = tostring(temp_bucket),
+    })
+end
+
+--- CLI entry point. `opts` (all optional, used by tests to avoid touching
+--- the real machine): print_fn, warn_fn, lact_cmd, lact_output.
+--- Takes no options: the former --emoji/--reset click actions only swapped
+--- one tooltip icon, which was barely noticeable, so they were dropped along
+--- with their state file (#2096 review).
+function M.cli_main(argv, opts)
+    opts = opts or {}
+    local print_fn = opts.print_fn or print
+    local warn_fn = opts.warn_fn or function(s) io.stderr:write(s, "\n") end
+
+    for _, a in ipairs(argv) do
+        if a ~= nil and a ~= "" then
+            warn_fn("Unknown argument: " .. tostring(a))
+        end
+    end
+
+    local lact_output = opts.lact_output
+    if not lact_output then
+        local lact_cmd = opts.lact_cmd or (root .. "lact_gpuinfo.py")
+        local handle = io.popen(shell_quote(lact_cmd) .. " 2>/dev/null")
+        lact_output = handle and handle:read("*a") or ""
+        if handle then
+            handle:close()
+        end
+    end
+
+    local devices = M.parse_lact_output(lact_output)
+    print_fn(M.generate_json(devices))
+    return 0
+end
+
+local arg_count = #arg
+local vararg_count = select("#", ...)
+if arg_count == vararg_count and (vararg_count == 0 or select(1, ...) == arg[1]) then
+    os.exit(M.cli_main(arg))
+end
+
+return M

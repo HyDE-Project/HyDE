@@ -1,0 +1,11 @@
+{
+  "custom/lact": {
+    "exec-if": "test -S /run/lactd.sock",
+    "exec": "hyde-shell lact",
+    "return-type": "json",
+    "format": "{0}",
+    "interval": 5,
+    "tooltip": true,
+    "max-length": 1000
+  }
+}

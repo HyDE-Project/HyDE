@@ -162,6 +162,27 @@ nvidia_detect() {
     fi
 }
 
+# Whether LACT would have anything to show on this machine, checked before
+# LACT itself is installed (HyDE-Project/HyDE#2096 review): lactd reads GPU
+# temperature/power from the card's hwmon directory (amdgpu, i915/xe dGPUs),
+# so a GPU without one -- e.g. a Kaby Lake HD 620 iGPU -- only yields dashes.
+# NVIDIA cards are read through the proprietary driver's NVML instead, which
+# this installer sets up itself, so the vendor ID alone is enough there --
+# and nvidia_detect (lspci) also finds a card no driver has bound yet, as on
+# a first install before the NVIDIA driver is loaded (#2096 CodeRabbit review).
+# LACT_DRM_ROOT only exists so the test suite can point this at a fake sysfs.
+lact_gpu_supported() {
+    local card vendor
+    nvidia_detect && return 0
+    for card in "${LACT_DRM_ROOT:-/sys/class/drm}"/card[0-9]*; do
+        [ -r "${card}/device/vendor" ] || continue
+        vendor="$(<"${card}/device/vendor")"
+        [ "${vendor}" = "0x10de" ] && return 0
+        compgen -G "${card}/device/hwmon/hwmon*/temp*_input" >/dev/null && return 0
+    done
+    return 1
+}
+
 prompt_timer() {
     set +e
     unset PROMPT_INPUT
