@@ -98,6 +98,12 @@ def device_fields(device_id, fallback_name):
     clock_data = clock_table.get("value", {}) if isinstance(clock_table, dict) else {}
     clock_range = clock_data.get("gpu_clock_range", []) if isinstance(clock_data, dict) else []
     clock_range = clock_range if isinstance(clock_range, list) else []
+    # AMD/NVIDIA tables carry gpu_clock_range; Intel's table has none and
+    # reports its hardware maximum as rp0_freq instead (LACT's
+    # IntelClocksTable), which previously left the max clock blank (#2096).
+    max_clock = clock_range[-1] if clock_range else None
+    if max_clock is None and isinstance(clock_data, dict):
+        max_clock = clock_data.get("rp0_freq")
 
     return {
         "primary_gpu": pci.get("model") or fallback_name,
@@ -106,7 +112,7 @@ def device_fields(device_id, fallback_name):
         "temperature": primary_temp,
         "utilization": stats.get("busy_percent"),
         "current_clock_speed": clock.get("gpu_clockspeed"),
-        "max_clock_speed": clock_range[-1] if clock_range else None,
+        "max_clock_speed": max_clock,
         "power_usage": power.get("current"),
         "power_limit": first_value(power, "cap_current", "cap_max"),
         "fan_speed": fan.get("speed_current"),

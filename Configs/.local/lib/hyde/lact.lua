@@ -13,10 +13,10 @@ local json = require("luautils.json")
 
 local M = {}
 
--- Fixed marker while custom/lact is experimental, so it can run side by side
--- with custom/gpuinfo without the two being mistaken for each other. Remove
--- once LACT is no longer considered a test/comparison module.
-local TEST_MARKER = "🧪"
+-- Shown for any value the daemon doesn't report (no sensor, no power
+-- readout). A plain dash reads cleaner than "N/A", especially in the paired
+-- "current / max" fields, where "N/A/N/A" was hard to parse (#2096 review).
+local MISSING = "–"
 
 -- Same helper as #1901/PR #2060's altab.lua/batterynotify.lua/dconf.lua: a
 -- lone "'...'" wrap doesn't survive an apostrophe inside the path itself.
@@ -34,50 +34,6 @@ local function clamp(value, low, high)
         return high
     end
     return value
-end
-
---- Path to lact.lua's own state file. Only ever holds the --emoji
---- preference -- there is no vendor/priority state, since generate_json
---- always reports every GPU LACT knows about (no toggling between them).
-function M.state_path()
-    local runtime_dir = os.getenv("XDG_RUNTIME_DIR")
-    if runtime_dir and runtime_dir ~= "" then
-        return runtime_dir .. "/hyde-lact.json"
-    end
-    -- No XDG_RUNTIME_DIR (already user-scoped when set): fall back to /tmp,
-    -- scoped by uid so two users on the same machine don't collide.
-    local handle = io.popen("id -u 2>/dev/null")
-    local uid = handle and handle:read("*l") or "0"
-    if handle then
-        handle:close()
-    end
-    return "/tmp/hyde-" .. (uid ~= "" and uid or "0") .. "-lact.json"
-end
-
---- Always returns a table -- a missing or corrupt state file degrades to
---- {} rather than erroring, same contract as gpuinfo.lua's read_state.
-function M.read_state()
-    local f = io.open(M.state_path(), "r")
-    if not f then
-        return {}
-    end
-    local content = f:read("*a")
-    f:close()
-    local ok, decoded = pcall(json.decode, content)
-    if ok and type(decoded) == "table" then
-        return decoded
-    end
-    return {}
-end
-
-function M.write_state(state)
-    local f = io.open(M.state_path(), "w")
-    if not f then
-        return false
-    end
-    f:write(json.encode(state))
-    f:close()
-    return true
 end
 
 local locale_fahrenheit
@@ -99,7 +55,7 @@ end
 --- the (never-merged) gpuinfo.lua rewrite's version of this function.
 function M.format_temperature(value, fahrenheit)
     if value == nil or tostring(value) == "" or tostring(value) == "[N/A]" then
-        return "N/A"
+        return MISSING
     end
     local numeric = tonumber(value)
     if not numeric then
@@ -192,10 +148,10 @@ local function pango_escape(value)
     return text
 end
 
-local function value_or_na(value, suffix)
+local function value_or_dash(value, suffix)
     local text = value == nil and "" or tostring(value)
     if text == "" or text == "[N/A]" or text == "null" then
-        return "N/A"
+        return MISSING
     end
     return pango_escape(text) .. (suffix or "")
 end
@@ -224,8 +180,7 @@ end
 --- toggling between vendors, every detected GPU is shown at once). Always
 --- produces valid JSON, even with zero devices or a device missing every
 --- field.
-function M.generate_json(devices, opts)
-    opts = opts or {}
+function M.generate_json(devices)
     devices = type(devices) == "table" and devices or {}
 
     -- Fixed icons, not temperature-mood-varying like gpuinfo's: the color
@@ -235,15 +190,18 @@ function M.generate_json(devices, opts)
     -- Private Use Area character in this file's source has silently come
     -- out blank before (caught in review comparing the live tooltip against
     -- what glyph.db says these codepoints render as).
-    local thermo_icon_fixed = opts.emoji and "🌡️" or "\u{f050f}" -- md-thermometer
+    -- The former --emoji variant (🌡️, two codepoints incl. VS16) rendered
+    -- at a different width than these glyphs and misaligned its line, so
+    -- only Nerd Font icons are used (#2096 review).
+    local thermo_icon = "\u{f050f}" -- md-thermometer
     local chip_icon = "\u{f061a}" -- md-chip
     local fan_icon = "\u{f0210}" -- md-fan
     local util_lv = "90:, 60:󰓅, 30:󰾅, 󰾆"
 
     if #devices == 0 then
         return json.encode({
-            text = TEST_MARKER .. " N/A",
-            tooltip = TEST_MARKER .. " LACT (Testphase)\nNo GPU reported by lactd",
+            text = thermo_icon .. " " .. MISSING,
+            tooltip = "LACT\nNo GPU reported by lactd",
             class = {"temp-0", "util-0"},
             percentage = 0,
             alt = "0",
@@ -289,10 +247,10 @@ function M.generate_json(devices, opts)
 
         local block = {
             gpu_label,
-            thermo_icon_fixed .. " Temperature: " .. colorize(temp_display, color),
-            speedo_icon .. " Utilization: " .. value_or_na(fields.utilization, "%"),
-            chip_icon .. " Clock Speed: " .. value_or_na(current_clock) .. "/" .. value_or_na(fields.max_clock_speed) .. " MHz",
-            "\u{f1a89}" .. " Power Usage: " .. value_or_na(fields.power_usage) .. "/" .. value_or_na(fields.power_limit) .. " W",
+            thermo_icon .. " Temperature: " .. colorize(temp_display, color),
+            speedo_icon .. " Utilization: " .. value_or_dash(fields.utilization, "%"),
+            chip_icon .. " Clock Speed: " .. value_or_dash(current_clock) .. " / " .. value_or_dash(fields.max_clock_speed) .. " MHz",
+            "\u{f1a89}" .. " Power Usage: " .. value_or_dash(fields.power_usage) .. " / " .. value_or_dash(fields.power_limit) .. " W",
         }
         -- Only when the daemon actually reported a fan reading (present but
         -- 0 RPM is a real, meaningful "fan is off" answer on some cards, not
@@ -300,7 +258,7 @@ function M.generate_json(devices, opts)
         -- sensible N/A fallback line to show for a GPU with no fan sensor
         -- at all (blower-less cards, most laptop iGPUs).
         if fields.fan_speed ~= nil then
-            block[#block + 1] = fan_icon .. " Fan Speed: " .. value_or_na(fields.fan_speed, " RPM")
+            block[#block + 1] = fan_icon .. " Fan Speed: " .. value_or_dash(fields.fan_speed, " RPM")
         end
 
         tooltip_blocks[#tooltip_blocks + 1] = table.concat(block, "\n")
@@ -310,8 +268,8 @@ function M.generate_json(devices, opts)
     local temp_bucket = clamp(math.floor(temp_pct / 5) * 5, 0, 100)
 
     return json.encode({
-        text = TEST_MARKER .. " " .. table.concat(bar_parts, "/"),
-        tooltip = TEST_MARKER .. " LACT (Testphase)\n\n" .. table.concat(tooltip_blocks, "\n\n"),
+        text = thermo_icon .. " " .. table.concat(bar_parts, " / "),
+        tooltip = "LACT\n\n" .. table.concat(tooltip_blocks, "\n\n"),
         class = {"temp-" .. temp_bucket},
         percentage = temp_pct,
         alt = tostring(temp_bucket),
@@ -319,34 +277,19 @@ function M.generate_json(devices, opts)
 end
 
 --- CLI entry point. `opts` (all optional, used by tests to avoid touching
---- the real machine): print_fn, warn_fn, state, lact_cmd, lact_output.
+--- the real machine): print_fn, warn_fn, lact_cmd, lact_output.
+--- Takes no options: the former --emoji/--reset click actions only swapped
+--- one tooltip icon, which was barely noticeable, so they were dropped along
+--- with their state file (#2096 review).
 function M.cli_main(argv, opts)
     opts = opts or {}
     local print_fn = opts.print_fn or print
     local warn_fn = opts.warn_fn or function(s) io.stderr:write(s, "\n") end
 
-    local state = opts.state or M.read_state()
-    local reset = false
-    local emoji_flag = false
-
     for _, a in ipairs(argv) do
-        if a == "--reset" then
-            reset = true
-        elseif a == "--emoji" then
-            emoji_flag = true
-        elseif a ~= nil and a ~= "" then
+        if a ~= nil and a ~= "" then
             warn_fn("Unknown argument: " .. tostring(a))
         end
-    end
-
-    if reset then
-        state = {}
-    end
-    if emoji_flag then
-        state.emoji = true
-    end
-    if reset or emoji_flag then
-        M.write_state(state)
     end
 
     local lact_output = opts.lact_output
@@ -360,7 +303,7 @@ function M.cli_main(argv, opts)
     end
 
     local devices = M.parse_lact_output(lact_output)
-    print_fn(M.generate_json(devices, {emoji = state.emoji}))
+    print_fn(M.generate_json(devices))
     return 0
 end
 

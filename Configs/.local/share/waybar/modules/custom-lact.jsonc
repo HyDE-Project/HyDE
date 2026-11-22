@@ -6,8 +6,6 @@
     "format": "{0}",
     "interval": 5,
     "tooltip": true,
-    "max-length": 1000,
-    "on-click": "hyde-shell lact --emoji",
-    "on-click-right": "hyde-shell lact --reset"
+    "max-length": 1000
   }
 }

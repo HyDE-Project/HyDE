@@ -49,7 +49,8 @@ Options:
     -s, --services         Enable system services
     -p, --pre              Run pre-install only (Python environment setup)
     -n, --no-nvidia        Ignore nvidia actions
-    --lact                 Install and enable LACT (experimental, cross-vendor GPU monitoring)
+    --lact                 Install and enable LACT (experimental, cross-vendor GPU monitoring;
+                           skipped unless an NVIDIA GPU or a GPU temperature sensor is found)
     -h, --shell            Re-evaluate shell configuration
     -m, --no-theme         Skip theme installation
     -t, --test             Test run (dry-run)
@@ -150,6 +151,18 @@ if [ "${lact}" -eq 2 ] && {
 }; then
 	lact=1
 	print_log -g "[LACT] " -b "detected :: " "already installed; enabling lactd"
+fi
+
+# Neither offer LACT nor honor --lact on a machine where lactd would have
+# nothing to report (see lact_gpu_supported), so it never runs just to show
+# dashes (HyDE-Project/HyDE#2096 review). An already-installed LACT (above)
+# is left alone: that user opted in before.
+if { [ "${lact}" -eq 2 ] || [ "${lact_explicit}" -eq 1 ]; } && ! lact_gpu_supported; then
+	if [ "${lact_explicit}" -eq 1 ]; then
+		print_log -warn "LACT" "No NVIDIA GPU or GPU temperature sensor found; skipping --lact"
+	fi
+	lact=0
+	lact_explicit=0
 fi
 
 if [ "${lact}" -eq 2 ]; then
