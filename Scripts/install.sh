@@ -740,6 +740,11 @@ EOF
 		if [ "${flg_DryRun}" -ne 1 ]; then
 			sudo systemctl enable --now lactd.service || print_log -warn "LACT" "Failed to enable lactd.service"
 		fi
+	elif [ "${flg_Lact:-0}" -eq 1 ] && [ "${flg_DryRun}" -ne 1 ]; then
+		# Only the install/restore steps add the lact package, so e.g. a
+		# services-only `-s --lact` has no unit to enable: say so instead of
+		# skipping silently (#2096 CodeRabbit review).
+		print_log -warn "LACT" "lactd.service not found; install the lact package first (e.g. ./install.sh -i --lact)"
 	fi
 fi
 
