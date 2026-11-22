@@ -194,14 +194,18 @@ function M.generate_json(devices)
     -- at a different width than these glyphs and misaligned its line, so
     -- only Nerd Font icons are used (#2096 review).
     local thermo_icon = "\u{f050f}" -- md-thermometer
+    -- Bar text and tooltip header identify the module as GPU monitoring
+    -- (#2096 review: "GPU" rather than the daemon's name "LACT").
+    local gpu_icon = "\u{f08ae}" -- md-expansion_card
+    local header = gpu_icon .. " GPU"
     local chip_icon = "\u{f061a}" -- md-chip
     local fan_icon = "\u{f0210}" -- md-fan
     local util_lv = "90:, 60:󰓅, 30:󰾅, 󰾆"
 
     if #devices == 0 then
         return json.encode({
-            text = thermo_icon .. " " .. MISSING,
-            tooltip = "LACT\nNo GPU reported by lactd",
+            text = gpu_icon .. " " .. MISSING,
+            tooltip = header .. "\nNo GPU reported by lactd",
             class = {"temp-0", "util-0"},
             percentage = 0,
             alt = "0",
@@ -268,8 +272,8 @@ function M.generate_json(devices)
     local temp_bucket = clamp(math.floor(temp_pct / 5) * 5, 0, 100)
 
     return json.encode({
-        text = thermo_icon .. " " .. table.concat(bar_parts, " / "),
-        tooltip = "LACT\n\n" .. table.concat(tooltip_blocks, "\n\n"),
+        text = gpu_icon .. " " .. table.concat(bar_parts, " / "),
+        tooltip = header .. "\n\n" .. table.concat(tooltip_blocks, "\n\n"),
         class = {"temp-" .. temp_bucket},
         percentage = temp_pct,
         alt = tostring(temp_bucket),
