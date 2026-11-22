@@ -82,9 +82,19 @@ def device_fields(device_id, fallback_name):
 
     temps = stats.get("temps", {})
     temps = temps if isinstance(temps, dict) else {}
-    primary_temp = next(
-        (v.get("current") for v in temps.values() if isinstance(v, dict) and v.get("primary")),
-        None,
+    sensors = {
+        name: entry
+        for name, entry in temps.items()
+        if isinstance(entry, dict) and isinstance(entry.get("current"), (int, float))
+    }
+    # The bar shows one main reading. On NVIDIA lactd marks GPU, GPU Hotspot
+    # and VRAM all as "primary", but only GPU is not display_only, so prefer
+    # that instead of whichever primary entry the daemon happens to list
+    # first (#2096 NVIDIA test); fall back to any primary, then any sensor.
+    main_sensor = (
+        next((e for e in sensors.values() if e.get("primary") and not e.get("display_only")), None)
+        or next((e for e in sensors.values() if e.get("primary")), None)
+        or next(iter(sensors.values()), None)
     )
 
     power = stats.get("power", {})
@@ -109,7 +119,13 @@ def device_fields(device_id, fallback_name):
         "primary_gpu": pci.get("model") or fallback_name,
         "vendor": short_vendor_name(pci.get("vendor")),
         "family": drm.get("family_name"),
-        "temperature": primary_temp,
+        "temperature": main_sensor["current"] if main_sensor else None,
+        # Every sensor for one tooltip line each: the main one first, the
+        # rest in daemon order.
+        "temperatures": [
+            {"label": name, "value": e["current"]}
+            for name, e in sorted(sensors.items(), key=lambda item: item[1] is not main_sensor)
+        ],
         "utilization": stats.get("busy_percent"),
         "current_clock_speed": clock.get("gpu_clockspeed"),
         "max_clock_speed": max_clock,

@@ -103,13 +103,14 @@ end
 -- in this repo) rather than a shared Waybar CSS class, so multiple GPUs in
 -- one tooltip/bar can each show their own real temperature color instead of
 -- one bucket winning for the whole widget.
+-- Only warnings are colored: below 75°C the text keeps the theme's own
+-- color. The former cold blue (#4169e1) and the critical dark red (#8b0000)
+-- were hard to read on dark themes (#2096 review).
 local TEMP_COLOR_BANDS = {
-    {95, "#8b0000"}, -- critical
+    {95, "#ff2020"}, -- critical
     {85, "#ff4500"}, -- hot
     {75, "#ffa500"}, -- warm, still normal for many GPUs
-    {45, ""}, -- neutral / normal operating range
 }
-local TEMP_COLOR_COLD = "#4169e1"
 
 local function temp_color(value)
     local numeric = tonumber(value)
@@ -121,7 +122,7 @@ local function temp_color(value)
             return band[2]
         end
     end
-    return TEMP_COLOR_COLD
+    return nil
 end
 
 local function colorize(text, color)
@@ -154,6 +155,16 @@ local function value_or_dash(value, suffix)
         return MISSING
     end
     return pango_escape(text) .. (suffix or "")
+end
+
+-- lactd reports power as raw floats ("60.014 / 175.0 W" on an RTX 2070,
+-- #2096 NVIDIA test); whole watts are precise enough for a tooltip.
+local function watts_or_dash(value)
+    local numeric = tonumber(value)
+    if numeric then
+        return string.format("%.0f", numeric)
+    end
+    return value_or_dash(value)
 end
 
 --- Parses lact_gpuinfo.py's stdout. Always returns a list (possibly empty)
@@ -249,20 +260,48 @@ function M.generate_json(devices)
         local speedo_icon = M.map_floor(util_lv, tonumber(fields.utilization) or 0)
         local current_clock = fields.current_clock_speed or fields.core_clock
 
-        local block = {
-            gpu_label,
-            thermo_icon .. " Temperature: " .. colorize(temp_display, color),
+        local block = {gpu_label}
+        -- Every sensor lactd reports gets its own line (NVIDIA: GPU, GPU
+        -- Hotspot, VRAM), labelled as lactd names it; the bar keeps the one
+        -- main reading in fields.temperature (#2096 review).
+        local sensor_lines = 0
+        if type(fields.temperatures) == "table" then
+            for _, sensor in ipairs(fields.temperatures) do
+                local value = type(sensor) == "table" and tonumber(sensor.value) or nil
+                if value then
+                    local floored = math.floor(value)
+                    block[#block + 1] = thermo_icon .. " " .. pango_escape(sensor.label or "Temperature") .. ": "
+                        .. colorize(M.format_temperature(floored), temp_color(clamp(floored, -999, 999)))
+                    sensor_lines = sensor_lines + 1
+                end
+            end
+        end
+        if sensor_lines == 0 then
+            block[#block + 1] = thermo_icon .. " Temperature: " .. colorize(temp_display, color)
+        end
+        local rest = {
             speedo_icon .. " Utilization: " .. value_or_dash(fields.utilization, "%"),
             chip_icon .. " Clock Speed: " .. value_or_dash(current_clock) .. " / " .. value_or_dash(fields.max_clock_speed) .. " MHz",
-            "\u{f1a89}" .. " Power Usage: " .. value_or_dash(fields.power_usage) .. " / " .. value_or_dash(fields.power_limit) .. " W",
+            "\u{f1a89}" .. " Power Usage: " .. watts_or_dash(fields.power_usage) .. " / " .. watts_or_dash(fields.power_limit) .. " W",
         }
+        for _, line in ipairs(rest) do
+            block[#block + 1] = line
+        end
         -- Only when the daemon actually reported a fan reading (present but
         -- 0 RPM is a real, meaningful "fan is off" answer on some cards, not
         -- a missing value) -- unlike temperature/clock/power there is no
         -- sensible N/A fallback line to show for a GPU with no fan sensor
         -- at all (blower-less cards, most laptop iGPUs).
         if fields.fan_speed ~= nil then
-            block[#block + 1] = fan_icon .. " Fan Speed: " .. value_or_dash(fields.fan_speed, " RPM")
+            -- 0 RPM is a real reading (zero-RPM fan stop at low load), not a
+            -- missing one, so it keeps its number; "stopped" only states what
+            -- was measured, since a stalled fan would read 0 as well (#2096
+            -- NVIDIA test: users took a bare "0 RPM" for a read failure).
+            local fan_text = value_or_dash(fields.fan_speed, " RPM")
+            if tonumber(fields.fan_speed) == 0 then
+                fan_text = "0 RPM (stopped)"
+            end
+            block[#block + 1] = fan_icon .. " Fan Speed: " .. fan_text
         end
 
         tooltip_blocks[#tooltip_blocks + 1] = table.concat(block, "\n")
