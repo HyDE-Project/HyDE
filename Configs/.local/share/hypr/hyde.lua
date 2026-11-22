@@ -76,3 +76,5 @@ check_require("monitors")
 check_require("hyprland")
 -- --* workflows configuration overrides everything
 check_require("lua_state.workflows")
+-- * Last, so no saved rule leaves a laptop without a screen
+hyde.handle.builtin_screen_fallback()
