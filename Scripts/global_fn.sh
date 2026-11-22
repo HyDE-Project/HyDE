@@ -74,17 +74,35 @@ login_shell() {
 }
 
 shell_listed() {
-    local wanted listed
+    local wanted wanted_name listed
     local shells="${2:-/etc/shells}"
+    # shell_listed_match carries the literal /etc/shells entry back to the
+    # caller: chsh checks that file by exact string, not by resolved path, so
+    # e.g. /usr/sbin/fish (root's PATH, usrmerge symlink) passes this
+    # realpath-based check but chsh still rejects it unless /usr/bin/fish --
+    # the entry actually listed -- is what gets passed to it (HyDE#2221).
+    shell_listed_match=""
     # The same shell is listed under /bin or /usr/bin, so both sides resolve.
     wanted="$(realpath -e "${1}" 2>/dev/null)" || return 1
-    [ -f "${shells}" ] || return 0
+    wanted_name="$(basename -- "${1}")"
+    if [ ! -f "${shells}" ]; then
+        shell_listed_match="${1}"
+        return 0
+    fi
     # The guard keeps a last line that carries no trailing newline.
     while IFS= read -r listed || [ -n "${listed}" ]; do
         listed="${listed%%#*}"
         listed="${listed//[[:space:]]/}"
         [ -n "${listed}" ] || continue
-        [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ] && return 0
+        # Require the same name, not just the same resolved file: a
+        # restricted alias (rzsh is the same binary as zsh) must never stand
+        # in for the plain shell just because it comes first and resolves
+        # to the same target.
+        if [ "$(basename -- "${listed}")" = "${wanted_name}" ] &&
+            [ "$(realpath -e "${listed}" 2>/dev/null)" = "${wanted}" ]; then
+            shell_listed_match="${listed}"
+            return 0
+        fi
     done < "${shells}"
     return 1
 }
@@ -280,6 +298,20 @@ run_pending_migrations() {
 
     [ -d "${migrationDir}" ] || return 0
     find "${migrationDir}" -maxdepth 1 -type f | grep -q . || return 0
+
+    # A dry run (install.sh -t) only lists what is pending: running a migration
+    # changes the user's files, and recording it would make the next real run
+    # skip it.
+    if [ "${flg_DryRun:-0}" -eq 1 ]; then
+        while read -r migrationFile; do
+            [ -n "${migrationFile}" ] || continue
+            [ -f "${stateFile}" ] && grep -qxF "${migrationFile}" "${stateFile}" && continue
+            pending=$((pending + 1))
+            print_log -y "[MIGRATION] " -b "dry-run :: " "Would run ${migrationFile}"
+        done < <(find "${migrationDir}" -maxdepth 1 -type f -printf '%f\n' | sort -V)
+        [ "${pending}" -gt 0 ] || echo "No outstanding migrations in ${migrationDir}."
+        return 0
+    fi
 
     mkdir -p "$(dirname "${stateFile}")"
     [ -f "${stateFile}" ] || : >"${stateFile}"

@@ -149,7 +149,7 @@ $layout_items"
         -theme-str 'entry { placeholder: "🔒 Hyprlock Layout..."; }' \
         -theme-str "$font_override" \
         -theme-str "$r_override" \
-        -theme-str "$(get_rofi_pos)" \
+        -theme-str "$(get_rofi_pos hyprlock)" \
         -on-selection-changed 'hyde-shell hyprlock.sh --test-preview  "{entry}"' \
         -theme "${ROFI_HYPRLOCK_STYLE:-clipboard}")
     if [ -z "$selected_layout" ]; then
