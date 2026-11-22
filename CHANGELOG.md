@@ -6,12 +6,19 @@ All notable changes to 'HyDE' will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to _Modified_ [CalVer](https://calver.org/). See [Versioning](https://github.com/HyDE-Project/HyDE/blob/master/RELEASE_POLICY.md#versioning-yymq) For more info
  -->
 
+## Unreleased
+
+### Added
+
+- Rofi: each rofi menu can open centered on screen instead of at the cursor, set with `follow_cursor` in `~/.config/hyde/config.toml`. `[rofi] follow_cursor` applies to all menus, and `follow_cursor` under a menu's own section overrides it for that menu: `[rofi.cliphist]`, `[rofi.emoji]`, `[rofi.glyph]`, `[rofi.hyprlock]`, `[rofi.animation]`, and the new `[rofi.quickapps]`, `[rofi.waybar]`, `[rofi.layout]`, `[rofi.workflow]`, `[rofi.shader]` and `[rofi.blur]` sections. Both default to `true`, so menus still open at the cursor unless one is set to `false`
+
 ## v26.11.12
 
 ### Added
 
 - Hyprland: Added blur variant profile selector. Add your own in ~/.config/hypr/blurs/
 - Waybar: "Show Cover" in the right-click menu of the media player (`custom/mediaplayer`, `group/mediaplayer`) and Spotify (`custom/spotify`) modules opens the current track's album art (#2153). Waybar tooltips are Pango text and cannot show images, so `mediacover.py` opens a small layer-shell popup next to the bar (top or bottom, following `WAYBAR_POSITION`) instead: a 300 px cover with title, artist and album as an overlay, in the active wallbash colours. It follows track changes while open and is non-modal, so it can stay up while you keep working; a click on it, Esc, choosing "Show Cover" again or the player closing dismisses it. `file://` art is shown in place, `http(s)` art is downloaded into `$XDG_RUNTIME_DIR/hyde/mediacover/` (tmpfs), which only ever holds the cover on screen: the previous one is deleted on every track change, the rest when the popup closes, and leftovers of a killed popup on the next start. A track without art shows a music-note placeholder. Uses GTK 3 and gtk-layer-shell, both already required by Waybar
+- Settings: add a searchable system and HyDE tool hub with live Waybar colours and a copyable system overview. Optional: offered with the other extra dots during `install.sh` and launched from the app launcher (`hyde-settings.desktop`). Pulled from its own [settings-gtk](https://github.com/HyDE-Project/settings-gtk) repo; see its manual there.
 - Docs: link to Lua migration guide in `README.md` and `MIGRATION-LUA.md`
 - Waybar: add VSCodium and Chromium icon rules to window module
 - Theme import: the "More Themes" fzf picker (`hydectl theme import`) marks themes already present in `~/.config/hyde/themes` with a "✓ installed" suffix, so browsing the gallery no longer requires cross-checking what's already on disk
@@ -24,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 
 ### Fixed
+- Notifications: an app launch error such as "Executable not found" (for example after a typo in the rofi app launcher) now disappears after 10 seconds instead of staying on screen until logout (#2246). app2unit sends these errors as critical notifications, and HyDE's dunst configuration never expires critical ones; a dunst rule now gives critical notifications from app2unit a timeout, while all other critical notifications stay on screen as before. Applies after the next `hyde-shell wallbash dunst` or theme change. swaync has no per-app timeout, so its shipped `config.json` gets a `notification-visibility` rule that downgrades critical app2unit notifications to normal; they then use the normal `timeout` (10 s) and the normal style
 - Install: a dry run (`./install.sh -r -t`) no longer runs the migrations. `run_pending_migrations()` ignored `flg_DryRun`, so the call at the end of the restore executed every pending migration in `Scripts/migrations/`, which then deleted deez-dots records and cached bundles or moved Waybar modules, and recorded each one in `~/.local/state/hyde/migration/applied`. The next real restore then skipped them as already done, so a migration that needs the files the real deploy puts in place ran too early, during the dry run, and never again. In a dry run the migrations are now only listed (`Would run <file>`), and the state file and its directory are left untouched
 - Shell: the install/restore script's chsh call no longer fails with `"<path>" is not listed in /etc/shells` for a shell it just confirmed is installed and listed (#2221). `restore_shl.sh` resolved the shell with `command -v`, which, run as root (its PATH puts `/usr/sbin` ahead of `/usr/bin`) on a usrmerge system, can return `/usr/sbin/fish` — the same binary as the `/usr/bin/fish` entry in `/etc/shells`, but not that literal string. `shell_listed()` already matched the two by resolved path, but `chsh` checks `/etc/shells` by exact string and rejected it anyway. `shell_listed()` now also returns the literal `/etc/shells` entry it matched (`shell_listed_match`), and that is what gets passed to `chsh -s`.
 - Hyprland: Update deez manifest.****

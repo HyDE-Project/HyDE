@@ -398,7 +398,27 @@ get_monitor_scale() {
         printf "%d", scale * 100 + 0.5
     }'
 }
+##
+# Returns 0 if the rofi menu [section] should follow the cursor.
+# Reads ROFI_<SECTION>_FOLLOW_CURSOR, then ROFI_FOLLOW_CURSOR; defaults to true.
+##
+rofi_follow_cursor() {
+    local follow="${ROFI_FOLLOW_CURSOR:-true}"
+    if [[ -n $1 ]]; then
+        local var="ROFI_${1^^}_FOLLOW_CURSOR"
+        follow="${!var:-$follow}"
+    fi
+    [[ ${follow,,} == true || $follow == 1 ]]
+}
 get_rofi_pos() {
+    # Usage: get_rofi_pos [section]
+    # Places rofi at the cursor unless follow_cursor is disabled in config.toml:
+    # [rofi.<section>] follow_cursor (ROFI_<SECTION>_FOLLOW_CURSOR), falling back
+    # to [rofi] follow_cursor (ROFI_FOLLOW_CURSOR). When disabled, rofi is centered.
+    if ! rofi_follow_cursor "$1"; then
+        echo "window{location:center;anchor:center;x-offset:0px;y-offset:0px;}"
+        return 0
+    fi
     [[ -n $HYPRLAND_INSTANCE_SIGNATURE ]] || return 1
     readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
     eval "$(hyprctl -j monitors | jq -r '.[] | select(.focused==true) |
@@ -587,7 +607,7 @@ dconf_write() {
         print_log -sec "dconf" -warn "failed to set" "$key"
     fi
 }
-export -f get_hyprConf get_monitor_scale get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
+export -f get_hyprConf get_monitor_scale rofi_follow_cursor get_rofi_pos is_hovered toml_write get_hashmap get_aurhlpr set_conf set_hash check_package get_themes print_log pkg_installed paste_string extract_thumbnail accepted_mime_types dconf_write send_notifs export_hyde_config wallbash_state_is_complete wallpaper_acquire_lock
 
 ##
 # Fails the source when the generated-state directories could not be created,
